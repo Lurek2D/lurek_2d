@@ -141,7 +141,9 @@ do
     mgr:markDirty()
     print("auto-save triggered = " .. tostring(mgr:update(6.0)))
     print("slot exists = " .. tostring(mgr:exists(slot)))
-    mgr:delete(slot)
+    if mgr:exists(slot) then
+        mgr:delete(slot)
+    end
 end
 
 --@api-stub: LSaveManager:markDirty

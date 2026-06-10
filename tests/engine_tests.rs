@@ -31,10 +31,6 @@ mod effect_tests;
 mod filesystem_tests;
 #[path = "rust/unit/globe_tests.rs"]
 mod globe_tests;
-#[path = "rust/unit/graph_node_tests.rs"]
-mod graph_node_tests;
-#[path = "rust/unit/graph_tests.rs"]
-mod graph_tests;
 #[path = "rust/unit/gui_tests.rs"]
 mod gui_tests;
 #[path = "rust/unit/i18n_tests.rs"]
@@ -93,5 +89,3 @@ mod tilemap_tests;
 mod timer_tests;
 #[path = "rust/unit/tween_tests.rs"]
 mod tween_tests;
-#[path = "rust/unit/ui_tests.rs"]
-mod ui_tests;

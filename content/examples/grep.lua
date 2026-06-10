@@ -49,7 +49,9 @@ end
 
 --@api-stub: lurek.grep.logSearch
 do
-    local results = lurek.grep.logSearch("logs/runtime.log", "ERROR", "panic")
+    local path = "save/grep_runtime.log"
+    lurek.filesystem.write(path, "[INFO] boot\n[ERROR] panic: sample failure\n")
+    local results = lurek.grep.logSearch(path, "ERROR", "panic")
     print("log results = " .. #results)
 end
 

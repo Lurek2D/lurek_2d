@@ -2,19 +2,22 @@
 
 ## Summary
 
-This module provides a dependency-aware workflow orchestration system that manages execution flows as directed acyclic graphs. Rather than using rigid call sequences, work is modeled as distinct steps linked by explicit prerequisites. This dependency-oriented design ensures that complex tasks execute in a safe and logical order, keeping code modular and allowing developers to assemble dynamic workflows from scripts and data-driven configuration tables.
+- This module gives users dependency-aware workflow orchestration for multi-step runtime jobs.
+- Work is modeled as graph-connected steps, enabling explicit ordering and clear prerequisites.
+- Graph validation catches missing dependencies and circular links before execution.
+- Parallel group computation reveals which independent steps can run concurrently.
+- Step policies support delays, retries, conditions, optionality, and metadata tagging.
+- Sync execution is available for blocking workflows with immediate result collection.
+- Async execution supports frame-by-frame progression for non-blocking runtime integration.
+- Progress and event callbacks expose run state for UI and monitoring hooks.
+- Result models capture completed, skipped, failed, cancelled, and timing outcomes.
+- Error modes allow abort-on-failure or continue-on-failure execution strategies.
+- Sub-pipeline embedding supports modular composition of larger workflow graphs.
+- ASCII graph export supports quick debugging and author verification.
+- The module is useful for content pipelines, setup sequences, and orchestration-heavy tools.
+- For users, it replaces fragile ad-hoc sequencing with explicit, reusable workflow contracts.
 
-Before execution, the system validates the graph using topological sorting and cycle detection, automatically catching invalid or circular arrangements. It groups independent steps into concurrent bands so unrelated tasks can run in parallel without sacrificing safety. Callers can also fold smaller pipelines into larger ones using namespaced aliases, and output readable ASCII diagrams to visualize the entire dependency structure for easy debugging.
-
-Individual steps carry granular configuration rules that govern their execution lifetime. Each task can define timing parameters such as pre-execution delays, timeouts, and automatic retry counts with separate intervals. Steps can also carry custom metadata, select optional or critical status, and evaluate predicate conditions dynamically. This lets pipelines skip unnecessary steps or recover from transient failures without aborting the entire sequence.
-
-Finally, the module supports both synchronous blocking execution and frame-driven asynchronous scheduling. Asynchronous pipelines run as lightweight coroutines that yield control, advancing step by step via update ticks. Execution tracks chronological progress, recording step durations, retry attempts, and detailed errors. Developers can customize the error mode to either abort on first failure or continue executing unaffected tasks.
-
-The runtime surface is feature-gated behind `pipeline`.
-
-Integration note: overlap with `automation` remains intentionally limited to composition at a higher level. This module still owns dependency-graph orchestration, while automation sequences remain a separate concern rather than being merged into the pipeline contract.
-
-Internal runtime note: hot-path dependency checks and async scheduler readiness now use borrowed step-name paths (`&str`) to reduce transient `String` cloning during per-frame updates. The public contract for parallel grouping and delayed-step readiness remains unchanged.
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

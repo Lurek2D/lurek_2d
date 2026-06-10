@@ -1,17 +1,17 @@
-# Audit Contract
+﻿# Audit Contract
 
-Covers work under `tools/audit/`.
+Adds local rules for `tools/audit/`.
 
 ## Mission & Scope
-- Own code quality audits, documentation coverage analyzers, and static analysis checkers.
-- Maintain tools that inspect code boundaries, verify spec alignment, and parse test logs.
-- Provide objective, script-driven reports on performance profiling, stress testing, and code health.
+- Own code quality audits, doc coverage analyzers, and static analysis checkers.
+- Maintain tools that inspect boundaries, verify spec alignment, and parse test logs.
+- Provide objective script-driven reports on profiling, stress, and code health.
 
 ## Files
 - `audit_module.py`: Main module-auditing entry point verifying specifications and test presence.
 - `cag_link_check.py`: Static analysis tool validating Markdown link target existence.
-- `doc_coverage.py`: Script evaluating complete API doc coverage in Rust and Lua source files.
-- `test_coverage.py`: Script calculating test-to-module coverage ratios.
+- `doc_coverage.py`: Script checking API doc coverage in Rust and Lua source.
+- `test_coverage.py`: Script calculating test-to-module coverage.
 
 ## Rules
 - Audits must print precise, actionable diagnostics, detailing the target file, line number, and exact policy violation.
@@ -20,10 +20,11 @@ Covers work under `tools/audit/`.
 - Parsers must be tested to ensure backward compatibility with historical test log files.
 
 ## Workflow
-- Run individual checks (e.g., `python tools/audit/cag_link_check.py --strict`) to trace links.
-- Audit a specific engine module using `python tools/audit/audit_module.py --module <name>`.
+- Run individual checks (e.g., `tools/python.cmd tools/audit/cag_link_check.py --strict`) to trace links.
+- Audit a specific engine module using `tools/python.cmd tools/audit/audit_module.py --module <name>`.
 
 ## References
 - tools/audit/audit_module.py
 - tools/audit/cag_link_check.py
 - tools/audit/doc_coverage.py
+

@@ -2,21 +2,27 @@
 
 ## Summary
 
-This module turns raw textures into reusable sprites, sheets, and UI panels. It supports named texture atlases parsed from TexturePacker and Aseprite JSON data, mapping semantic names to specific regions while handling rotation and flip flags. This allows scripts to query packed sprites by name instead of raw coordinates.
+- This module gives users reusable 2D sprite primitives for atlases, sheets, batches, and UI panel slicing.
+- Atlas support maps semantic names to texture regions from common export formats.
+- Rotation and flip metadata handling keeps packed-atlas imports accurate.
+- Sprite-sheet utilities precompute frame regions for fast animation frame access.
+- Row/column access helpers support character-sheet and strip-based animation workflows.
+- Nine-slice support enables scalable UI panels without border distortion.
+- Lightweight sprite records support transform and tint usage with low overhead.
+- Batch support groups shared-texture quads for more efficient draw submission.
+- Normal-map fields allow lit-sprite workflows without changing base sprite usage.
+- Runtime atlas packing supports dynamic region allocation and optional nine-slice metadata.
+- Animator support provides named clip playback, stepping, and callback hooks.
+- This module is useful for character rendering, VFX sprites, and UI skinning.
+- For users, it centralizes texture-region management and sprite playback logic.
+- It reduces manual UV bookkeeping and per-frame draw boilerplate.
+- Overall, users get a practical 2D sprite toolkit with both runtime and pipeline integration.
+- The module helps bridge authored assets and efficient in-engine rendering behavior.
+- It supports both simple sprite use cases and advanced packed-content workflows.
+- This makes sprite-heavy projects easier to scale and maintain.
+- Users gain consistent APIs from import through playback to batching.
 
-Atlas parsing now shares the engine's common Aseprite loader with the animation module. This keeps frame-shape validation and malformed-export error behavior aligned across sprite-atlas import and Aseprite animation ingest, instead of maintaining separate parsers for the same source format.
-
-For animations and interfaces, the system offers grid sheets and scalable panels. The sprite-sheet engine divides textures into grids, precomputing frame UVs for fast index lookup and character animations. A nine-slice engine splits frames into corners and edges, letting panels stretch to any size while keeping border dimensions crisp and distortion-free.
-
-Row and column extraction on `SpriteSheet` are implemented with allocation-light internal paths (row slices and column iterators), while Lua still receives the same table-shaped frame arrays via `LSpriteSheet:getRow` and `LSpriteSheet:getColumn`.
-
-To optimize drawing, the module provides lightweight sprite records and instanced batching. Sprite batches group quads sharing a single texture into one draw command, bypassing call overhead. Developers can configure batch capacities to keep render loops efficient.
-
-Individual sprites can also carry optional normal-map texture state and a strength scalar for lit-sprite workflows. This extends the sprite data model without changing atlas, sheet, or batch APIs for unlit content.
-
-The Lua API also provides a runtime atlas packer for dynamic content. `lurek.sprite.newAtlasPacker(width, height, padding)` builds an in-memory allocator that can pack named regions, query packed rectangles, and attach optional nine-slice insets for UI scaling workflows.
-
-Clip playback is now available as a Rust-backed animator userdata. `lurek.sprite.newAnimator(clips)` creates `LSpriteAnimator`, which handles named clip playback (`play`, `pause`, `resume`, `stop`), frame stepping (`update`, `currentFrame`), clip editing (`addClip`), timing helpers, and loop/end/frame callbacks.
+This module primarily collaborates with `animation`, `color`, `image`, `math`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

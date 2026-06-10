@@ -4,6 +4,14 @@
 
 --- Tilemap Module Part 1: map creation, layers, tiles, tilesets, solids, viewport
 
+local function hexCoords(cell)
+    return cell.q or cell[1], cell.r or cell[2]
+end
+
+local function chunkCoords(cell)
+    return cell.cx or cell[1], cell.cy or cell[2]
+end
+
 --@api-stub: lurek.tilemap.newTileMap
 do
     ---@type LTileMap
@@ -701,7 +709,8 @@ do
     local neighbors = lurek.tilemap.hexNeighbors(3, 4)
     print("neighbors of (3,4): " .. #neighbors .. " cells")
     for i, n in ipairs(neighbors) do
-        print("  " .. i .. ": q=" .. n.q .. " r=" .. n.r)
+        local q, r = hexCoords(n)
+        print("  " .. i .. ": q=" .. q .. " r=" .. r)
     end
 end
 
@@ -710,7 +719,8 @@ do
     local ring = lurek.tilemap.hexRing(0, 0, 2)
     print("ring at radius 2: " .. #ring .. " cells")
     for _, cell in ipairs(ring) do
-        print("  q=" .. cell.q .. " r=" .. cell.r)
+        local q, r = hexCoords(cell)
+        print("  q=" .. q .. " r=" .. r)
     end
 end
 
@@ -726,7 +736,8 @@ end
 do
     local spiral = lurek.tilemap.hexSpiral(0, 0, 2)
     print("spiral radius 2: " .. #spiral .. " cells")
-    print("center = q=" .. spiral[1].q .. " r=" .. spiral[1].r)
+    local q, r = hexCoords(spiral[1])
+    print("center = q=" .. q .. " r=" .. r)
 end
 
 --@api-stub: lurek.tilemap.hexLine
@@ -734,7 +745,8 @@ do
     local line = lurek.tilemap.hexLine(0, 0, 4, 2)
     print("line (0,0) to (4,2): " .. #line .. " cells")
     for i, cell in ipairs(line) do
-        print("  step " .. i .. ": q=" .. cell.q .. " r=" .. cell.r)
+        local q, r = hexCoords(cell)
+        print("  step " .. i .. ": q=" .. q .. " r=" .. r)
     end
 end
 
@@ -890,7 +902,10 @@ do
     cm:loadChunk(0, 0)
     local loaded = cm:getLoadedChunks()
     print("loaded chunks = " .. #loaded)
-    for _, c in ipairs(loaded) do print("  chunk (" .. c.cx .. ", " .. c.cy .. ")") end
+    for _, c in ipairs(loaded) do
+        local cx, cy = chunkCoords(c)
+        print("  chunk (" .. cx .. ", " .. cy .. ")")
+    end
 end
 
 --@api-stub: LChunkMap:unloadChunk
@@ -908,7 +923,10 @@ do
     cm:loadChunk(1, 0) ; cm:loadChunk(0, 1)
     local loaded = cm:getLoadedChunks()
     print("loaded chunks = " .. #loaded)
-    for _, c in ipairs(loaded) do print("  chunk (" .. c.cx .. ", " .. c.cy .. ")") end
+    for _, c in ipairs(loaded) do
+        local cx, cy = chunkCoords(c)
+        print("  chunk (" .. cx .. ", " .. cy .. ")")
+    end
 end
 
 --@api-stub: LChunkMap:chunkTileRange
@@ -925,7 +943,10 @@ do
     local cm = lurek.tilemap.newChunkMap(16)
     local visible = cm:getChunksInView(0, 0, 800, 600, 32, 32)
     print("visible chunks in 800x600 viewport: " .. #visible)
-    for i = 1, math.min(3, #visible) do print("  chunk (" .. visible[i].cx .. ", " .. visible[i].cy .. ")") end
+    for i = 1, math.min(3, #visible) do
+        local cx, cy = chunkCoords(visible[i])
+        print("  chunk (" .. cx .. ", " .. cy .. ")")
+    end
 end
 
 --@api-stub: lurek.tilemap.newIsoMap
@@ -1027,7 +1048,7 @@ end
 do
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(5, 5, 64, 32, 16, 4)
-    iso:setPartOrder({ 4, 3, 2, 1 })
+    iso:setPartOrder({ 3, 2, 1, 0 })
     local order = iso:getPartOrder()
     print("reversed order[1] = " .. order[1])
 end
@@ -1036,9 +1057,17 @@ end
 do
     local iso = lurek.tilemap.newIsoMap(5, 5, 64, 32, 16, 4) ; local order = iso:getPartOrder()
     print("default part order: " .. #order .. " entries")
-    iso:setPartOrder({ 4, 3, 2, 1 })
+    iso:setPartOrder({ 3, 2, 1, 0 })
     order = iso:getPartOrder()
     print("reversed order[1] = " .. order[1])
+end
+
+local function buildLargeMapData(width, height, value_mod)
+    local data = {}
+    for i = 1, width * height do
+        data[i] = (i % value_mod) + 1
+    end
+    return data
 end
 
 --@api-stub: lurek.tilemap.newLargeMapRenderer
@@ -1051,72 +1080,80 @@ end
 
 --@api-stub: LLargeMapRenderer:setMapData
 do
-    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; local data = {}
-    for i = 1, 100 * 100 do data[i] = (i % 4) + 1 end ; lmr:setMapData(data, 100, 100)
+    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
+    local width, height = 24, 24
+    lmr:setMapData(buildLargeMapData(width, height, 4), width, height)
     local w, h = lmr:getMapSize() ; print("map size = " .. w .. "x" .. h)
-    print("tile at (50,50) = " .. lmr:getTile(50, 50)) ; lmr:setTile(50, 50, 99)
-    print("after set = " .. lmr:getTile(50, 50))
+    print("tile at (12,12) = " .. lmr:getTile(12, 12)) ; lmr:setTile(12, 12, 99)
+    print("after set = " .. lmr:getTile(12, 12))
 end
 
 --@api-stub: LLargeMapRenderer:getMapSize
 do
-    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; local data = {}
-    for i = 1, 100 * 100 do data[i] = (i % 4) + 1 end ; lmr:setMapData(data, 100, 100)
+    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
+    local width, height = 24, 24
+    lmr:setMapData(buildLargeMapData(width, height, 4), width, height)
     local w, h = lmr:getMapSize() ; print("map size = " .. w .. "x" .. h)
-    print("tile at (50,50) = " .. lmr:getTile(50, 50)) ; lmr:setTile(50, 50, 99)
-    print("after set = " .. lmr:getTile(50, 50))
+    print("tile at (12,12) = " .. lmr:getTile(12, 12)) ; lmr:setTile(12, 12, 99)
+    print("after set = " .. lmr:getTile(12, 12))
 end
 
 --@api-stub: LLargeMapRenderer:getTile
 do
-    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; local data = {}
-    for i = 1, 100 * 100 do data[i] = (i % 4) + 1 end ; lmr:setMapData(data, 100, 100)
+    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
+    local width, height = 24, 24
+    lmr:setMapData(buildLargeMapData(width, height, 4), width, height)
     local w, h = lmr:getMapSize() ; print("map size = " .. w .. "x" .. h)
-    print("tile at (50,50) = " .. lmr:getTile(50, 50)) ; lmr:setTile(50, 50, 99)
-    print("after set = " .. lmr:getTile(50, 50))
+    print("tile at (12,12) = " .. lmr:getTile(12, 12)) ; lmr:setTile(12, 12, 99)
+    print("after set = " .. lmr:getTile(12, 12))
 end
 
 --@api-stub: LLargeMapRenderer:setTile
 do
-    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; local data = {}
-    for i = 1, 100 * 100 do data[i] = (i % 4) + 1 end ; lmr:setMapData(data, 100, 100)
+    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
+    local width, height = 24, 24
+    lmr:setMapData(buildLargeMapData(width, height, 4), width, height)
     local w, h = lmr:getMapSize() ; print("map size = " .. w .. "x" .. h)
-    print("tile at (50,50) = " .. lmr:getTile(50, 50)) ; lmr:setTile(50, 50, 99)
-    print("after set = " .. lmr:getTile(50, 50))
+    print("tile at (12,12) = " .. lmr:getTile(12, 12)) ; lmr:setTile(12, 12, 99)
+    print("after set = " .. lmr:getTile(12, 12))
 end
 
 --@api-stub: LLargeMapRenderer:setCamera
 do
-    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; local data = {}
-    for i = 1, 200 * 200 do data[i] = 1 end ; lmr:setMapData(data, 200, 200)
-    lmr:setViewport(800, 600) ; lmr:setCamera(3200, 3200, 1.0)
+    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
+    local width, height = 40, 40
+    lmr:setMapData(buildLargeMapData(width, height, 1), width, height)
+    lmr:setViewport(800, 600) ; lmr:setCamera(640, 640, 1.0)
     print("total chunks = " .. lmr:getTotalChunks())
     print("visible chunks = " .. lmr:getVisibleChunks())
 end
 
 --@api-stub: LLargeMapRenderer:setViewport
 do
-    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; local data = {}
-    for i = 1, 200 * 200 do data[i] = 1 end ; lmr:setMapData(data, 200, 200)
-    lmr:setViewport(800, 600) ; lmr:setCamera(3200, 3200, 1.0)
+    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
+    local width, height = 40, 40
+    lmr:setMapData(buildLargeMapData(width, height, 1), width, height)
+    lmr:setViewport(800, 600) ; lmr:setCamera(640, 640, 1.0)
     print("total chunks = " .. lmr:getTotalChunks())
     print("visible chunks = " .. lmr:getVisibleChunks())
 end
 
 --@api-stub: LLargeMapRenderer:getVisibleChunks
 do
-    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; local data = {}
-    for i = 1, 200 * 200 do data[i] = 1 end ; lmr:setMapData(data, 200, 200)
-    lmr:setViewport(800, 600) ; lmr:setCamera(3200, 3200, 1.0)
+    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
+    local width, height = 40, 40
+    lmr:setMapData(buildLargeMapData(width, height, 1), width, height)
+    lmr:setViewport(800, 600) ; lmr:setCamera(640, 640, 1.0)
     print("total chunks = " .. lmr:getTotalChunks())
     print("visible chunks = " .. lmr:getVisibleChunks())
 end
 
 --@api-stub: LLargeMapRenderer:getTotalChunks
 do
-    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32) ; local data = {}
-    for i = 1, 200 * 200 do data[i] = 1 end ; lmr:setMapData(data, 200, 200)
-    lmr:setViewport(800, 600) ; lmr:setCamera(3200, 3200, 1.0)
+    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
+    local width, height = 40, 40
+    lmr:setMapData(buildLargeMapData(width, height, 1), width, height)
+    lmr:setViewport(800, 600) ; lmr:setCamera(640, 640, 1.0)
     print("total chunks = " .. lmr:getTotalChunks())
     print("visible chunks = " .. lmr:getVisibleChunks())
 end
@@ -1231,9 +1268,9 @@ end
 --@api-stub: lurek.tilemap.newMapScript
 do
     local script = lurek.tilemap.newMapScript() ; print("type = " .. script:type())
-    script:addStep({ type = "fill", gid = 1 })
-    script:addStep({ type = "scatter", gid = 5, chance = 0.1 })
-    script:addStep({ type = "border", gid = 2 })
+    script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 4, h = 4 })
+    script:addStep({ type = "placeRandom", gid = 5, count = 2 })
+    script:addStep({ type = "fillRect", gid = 2, x = 0, y = 0, w = 5, h = 1 })
     print("step count = " .. script:getStepCount())
 end
 
@@ -1241,7 +1278,7 @@ end
 do
     local group = lurek.tilemap.newMapGroup("caves") ; local block = lurek.tilemap.newMapBlock(4, 4) ; block:setName("open")
     block:setTile(1, 1, 1, 1) ; block:setTile(1, 2, 2, 1) ; group:addBlock(block)
-    local script = lurek.tilemap.newMapScript() ; script:addStep({ type = "fill", gid = 1 }) ; group:addScript(script)
+    local script = lurek.tilemap.newMapScript() ; script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 4, h = 4 }) ; group:addScript(script)
     local gen = lurek.tilemap.newMapGen(group, "small", 1) ; print("type = " .. gen:type())
     local result = gen:generate(1, 42, "terrain") ; print("generated map type = " .. result:type())
 end
@@ -1250,7 +1287,7 @@ end
 do
     local group = lurek.tilemap.newMapGroup("caves") ; local block = lurek.tilemap.newMapBlock(4, 4) ; block:setName("open")
     block:setTile(1, 1, 1, 1) ; block:setTile(1, 2, 2, 1) ; group:addBlock(block)
-    local script = lurek.tilemap.newMapScript() ; script:addStep({ type = "fill", gid = 1 })
+    local script = lurek.tilemap.newMapScript() ; script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 4, h = 4 })
     group:addScript(script) ; local gen = lurek.tilemap.newMapGen(group, "small", 1)
     local result = gen:generate(1, 42, "terrain") ; print("generated map type = " .. result:type())
 end
@@ -1633,8 +1670,8 @@ end
 --@api-stub: LMapScript:getStepCount.2
 do
     local script = lurek.tilemap.newMapScript()
-    script:addStep({type = "fill", gid = 1})
-    script:addStep({type = "rect", x = 1, y = 1, w = 4, h = 4, gid = 2})
+    script:addStep({type = "fillArea", gid = 1, x = 0, y = 0, w = 8, h = 8})
+    script:addStep({type = "fillRect", x = 1, y = 1, w = 4, h = 4, gid = 2})
     local cnt = script:getStepCount()
     print("stepCount:", cnt)
 end
@@ -1656,7 +1693,7 @@ end
 --@api-stub: lurek.tilemap.syncMinimap
 do
     local tilemap = lurek.tilemap.newTileMap(16, 16, 32)
-    local minimap = lurek.minimap.new(16, 16)
+    local minimap = lurek.minimap.newMinimap(16, 16)
 
     -- Sync the tilemap's collision layer to minimap terrain with options
     lurek.tilemap.syncMinimap(tilemap, 1, minimap, {
@@ -1667,7 +1704,7 @@ do
 
     -- Also show sync with default terrain values
     local tilemap2 = lurek.tilemap.newTileMap(10, 10, 32)
-    local minimap2 = lurek.minimap.new(10, 10)
+    local minimap2 = lurek.minimap.newMinimap(10, 10)
     lurek.tilemap.syncMinimap(tilemap2, 1, minimap2)
     print("minimap synced with defaults")
 end

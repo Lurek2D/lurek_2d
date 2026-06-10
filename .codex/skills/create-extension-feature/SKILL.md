@@ -1,47 +1,61 @@
 ---
 name: create-extension-feature
-description: "End to end workflow to add new feature to extension for lurek, MS VS Code."
+description: "Load this skill when creating or modifying VS Code extension commands, providers, webviews, snippets integration, or package wiring. Skip it for engine runtime changes, Lua demos, or generated API data without extension behavior changes."
 ---
 # create-extension-feature
 
-## Goal
-- Develop a new feature for the Lurek2D VS Code extension (e.g., language features, commands, panels).
+## Mission
+- Create or modify VS Code extension features while preserving package wiring, generated API usage, and webview safety.
 
-## Required inputs
-- Feature description (e.g., new autocomplete, custom webview panel)
-- User must define the extension's functional requirement
-- Agent must collect the extension's current API usage and generated stub definitions
+## When To Load
+- Creating or modifying VS Code extension commands, providers, webviews, snippets integration, or package wiring.
 
-## Profile hint
-- `extension`
+## When To Skip
+- Engine runtime changes, Lua demos, or generated API data without extension behavior changes.
 
-## Read these contracts
-- `extension/AGENTS.md`
-- `extension/vscode/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the target path.
+- Run the listed RAG query before broad file reads and start from top hits.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Check whether the target artifact already exists; modify existing content unless a new owner is clearly required.
+- Read the nearest source, spec, test, doc, or config before editing.
+- Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
 
-## Steps
-- Read the listed contracts before editing the extension.
-- Edit `extension/vscode/package.json` to define the new contribution points, commands, or keybindings.
-- Write the feature code in `extension/vscode/src/` and keep heavy logic out of the activation path.
-- Execute `npm run compile` from `extension/vscode/`. If it exits with code >0, fix the syntax errors.
-- Execute `npm run test` from `extension/vscode/` or the extension's integration test suite. If tests are failing, fix the broken logic and rerun the test command.
+## Workflow
+- Read `extension/vscode/AGENTS.md` and inspect `extension/vscode/package.json` plus relevant `src/` owner files.
+- Modify existing command, provider, editor, or webview code when ownership already exists; create a new owner only when necessary.
+- Declare every user-facing command, activation hook, setting, and menu contribution in `package.json`.
+- Keep heavy logic out of activation and use generated API descriptors instead of ad hoc schemas.
+- Run `npm run build` from `extension/vscode/`, then `npm run test` when behavior changed.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Modified VS Code extension source code
-- Updated `extension/vscode/package.json`
-- Test results
+## Success Criteria
+- The target artifact was created or modified in the narrowest owning location.
+- Existing content was preserved and updated when it already owned the behavior.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- [ ] `npm run compile` exits with code 0 (0 compilation errors).
-- [ ] `npm run test` exits with code 0 (100% tests pass).
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Breaking backwards compatibility with older Lurek2D projects.
-- Ignoring standard VS Code UI/UX guidelines.
+## Companion File Index
+- Contracts: `extension/vscode/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "VS Code extension package.json webview commands" --profile engine --limit 10`, `npm run build`, `npm run test`
+- Owner profile: `extension`
+
+## Common RAG Queries
+- Use when locating current VS Code extension ownership:
+  - `VS Code extension package.json webview commands`
+  - `package.json contributes commands views`
+  - `hover completion tree view snippet`
+- Common areas to inspect after top hits:
+  - `extension/src/`
+  - `extension/package.json`
+  - `extension/webviews/`
+  - `docs/` extension references
 
 ## References
-- `contracts: extension/AGENTS.md, extension/vscode/AGENTS.md`
-- `tools: npm run compile, npm run test`
+- `contracts: extension/vscode/AGENTS.md`
+- `tools: tools/python.cmd tools/rag/query.py "VS Code extension package.json webview commands" --profile engine --limit 10, npm run build, npm run test`
 - `agent: extension`
-
-

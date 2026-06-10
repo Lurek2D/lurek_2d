@@ -48,9 +48,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Opens a URL in the default system browser. Only `http://`, `https://`, and `mailto:` schemes are permitted.
     /// @param | url | string | The URL to open.
     /// @return | boolean | `true` if the URL was accepted and the open command launched successfully.
+    let state_for_open_url = state.clone();
     system.set(
         "openURL",
-        lua.create_function(|_, url: String| Ok(open_url(&url)))?,
+        lua.create_function(move |_, url: String| {
+            if matches!(
+                state_for_open_url.borrow().runtime_mode,
+                crate::runtime::RuntimeMode::Headless
+            ) {
+                return Ok(true);
+            }
+            Ok(open_url(&url))
+        })?,
     )?;
 
     // -- getPreferredLocales --

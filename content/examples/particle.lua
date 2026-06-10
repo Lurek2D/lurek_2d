@@ -28,7 +28,7 @@ end
 
 --@api-stub: lurek.particle.fromTOML
 do
-    local path = "logs/particle_example.toml"
+    local path = "save/particle_example.toml"
     lurek.filesystem.write(path, "max_particles = 96\nemission_rate = 18.0\nlifetime_min = 0.2\nlifetime_max = 0.8\n")
 
     local ps = lurek.particle.fromTOML(path)
@@ -960,9 +960,9 @@ end
 --@api-stub: lurek.particle.drawLifecycleToImage
 do
     local snapshots = {
-        { step = 0, count = 0 },
-        { step = 5, count = 12 },
-        { step = 10, count = 4 },
+        { 0, 0 },
+        { 5, 12 },
+        { 10, 4 },
     }
     local image = lurek.particle.drawLifecycleToImage(snapshots, 16, 128, 64)
     print("lifecycle type = " .. image:type())

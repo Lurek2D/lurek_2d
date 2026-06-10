@@ -1,49 +1,61 @@
 ---
 name: create-test-evidence
-description: "Create or update lua tests with evidences/artifacts for a specific module and check test coverage."
+description: "Load this skill when creating or modifying Lua tests that produce evidence artifacts such as logs, snapshots, or golden files. Skip it for ordinary unit tests without artifacts or performance stress tests."
 ---
 # create-test-evidence
 
-## Goal
-- Write Lua tests that produce tangible evidence (like logs, screenshots, or golden files) for a specific module.
+## Mission
+- Create or modify evidence tests that produce durable artifacts for public Lua behavior.
 
-## Required inputs
-- Module name
-- Artifact type required (e.g., golden screenshot, structured log)
-- User must provide the specific module and desired evidence type
-- Agent must collect existing golden files and module API
+## When To Load
+- Creating or modifying Lua tests that produce evidence artifacts such as logs, snapshots, or golden files.
 
-## Profile hint
-- `tester`
+## When To Skip
+- Ordinary unit tests without artifacts or performance stress tests.
 
-## Read these contracts
-- `tests/AGENTS.md`
-- `tests/lua/AGENTS.md`
-- `content/games/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the target path.
+- Run the listed RAG query before broad file reads and start from top hits.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Check whether the target artifact already exists; modify existing content unless a new owner is clearly required.
+- Read the nearest source, spec, test, doc, or config before editing.
+- Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
 
-## Steps
-- Read the listed contracts before adding evidence coverage.
-- Execute `python tools/audit/lua_evidence_golden_contract_audit.py` to check the current evidence baseline and identify missing artifacts.
-- Write the test script to trigger the target API and save output (e.g., visual snapshot, structured log output) to the baseline artifact directory.
-- Execute `python tools/audit/golden_test.py` to compare new evidence against established baselines.
-- Execute `python tools/audit/lua_evidence_golden_contract_audit.py` to verify gap closure. If the audit reports >0 missing contracts, return to step 3 and generate the remaining missing artifacts.
+## Workflow
+- Inspect existing evidence tests, golden files, and target API before editing.
+- Modify an existing evidence path when it covers the module; create new artifact coverage only for missing contracts.
+- Save evidence in the established baseline artifact location.
+- Run golden comparison and evidence contract audit.
+- Iterate until missing contracts close or the blocker is explicit.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Updated Lua test files
-- Generated artifact files (golden data, logs)
-- Coverage report
+## Success Criteria
+- The target artifact was created or modified in the narrowest owning location.
+- Existing content was preserved and updated when it already owned the behavior.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- [ ] `python tools/audit/golden_test.py` exits with code 0 (0 differences detected between output and baseline).
-- [ ] `python tools/audit/lua_evidence_golden_contract_audit.py` reports exactly 0 missing contracts.
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Creating non-deterministic tests that produce varying evidence on each run.
-- Overwriting baseline golden files without explicit user approval.
+## Companion File Index
+- Contracts: `tests/AGENTS.md`, `tests/lua/AGENTS.md`, `content/games/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "Lua evidence tests golden artifacts" --profile game --limit 10`, `tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py`, `tools/python.cmd tools/audit/golden_test.py`
+- Owner profile: `tester`
+
+## Common RAG Queries
+- Use when locating golden files, snapshots, and evidence emitters:
+  - `Lua evidence tests golden artifacts`
+  - `work artifact snapshot compare`
+  - `golden file evidence test`
+- Common areas to inspect after top hits:
+  - `tests/`
+  - `work/`
+  - evidence helpers in `tools/`
+  - related fixtures or snapshot assets
 
 ## References
 - `contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/games/AGENTS.md`
-- `tools: python tools/audit/lua_evidence_golden_contract_audit.py, python tools/audit/golden_test.py`
+- `tools: tools/python.cmd tools/rag/query.py "Lua evidence tests golden artifacts" --profile game --limit 10, tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py, tools/python.cmd tools/audit/golden_test.py`
 - `agent: tester`
-
-

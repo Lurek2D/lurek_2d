@@ -1,50 +1,55 @@
 ---
 name: review-quality
-description: "Review overall code quality using tools/audit/quality_report.py."
+description: "Load this skill when auditing overall repo quality, hotspots, contract drift, and tool-reported quality findings. Skip it for narrow module implementation tasks with clear requested edits."
 ---
 # review-quality
 
-## Goal
-- Perform a holistic quality review of the codebase using comprehensive reporting tools.
+## Mission
+- Audit overall quality signals and convert tool findings into fixable owner-scoped work.
 
-## Required inputs
-- Target module or full codebase
-- User triggers the general quality audit
-- Agent must collect output from `python tools/audit/quality_report.py`
+## When To Load
+- Auditing overall repo quality, hotspots, contract drift, and tool-reported quality findings.
 
-## Profile hint
-- `reviewer`
+## When To Skip
+- Narrow module implementation tasks with clear requested edits.
 
-## Read these contracts
-- `AGENTS.md`
-- `src/AGENTS.md`
-- `tools/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the reviewed path.
+- Run the listed RAG query and audit/report tools before broad manual inspection.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Produce findings first with severity, affected files, and evidence.
+- If the active profile is read-only, stop after findings and hand off fixes to the owner profile; otherwise fix requested findings and rerun the same audits.
+- Treat review as audit-first, fix-second: findings must be grounded in tool output or direct file inspection.
 
-## Steps
-- Read the listed contracts and stay in read-only mode.
-- Run `python tools/audit/quality_report.py` for the selected scope and inspect the report sections that flag hotspots or contract drift.
-- Cross-check the report against the affected source files, especially `src/`, `src/lua_api/`, and the touched docs or tooling paths.
-- Record findings first, with severity and exact file or line evidence where possible.
-- Return a binary accept or reject decision with explicit follow-up gate conditions.
+## Workflow
+- Run quality report before broad file reads.
+- Group findings by severity and owner subsystem.
+- Verify tool findings against source before recommending or applying fixes.
+- If edit-capable and fixes are requested, address narrow high-confidence issues and rerun the report.
+- If read-only, produce findings-first output and owner handoff.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Findings-first review report
-- File and line evidence
-- Accept or reject decision with follow-up conditions
+## Success Criteria
+- Audit output was collected before fixes or handoff.
+- Findings are either fixed and revalidated, or handed off with an explicit owner profile and blocker.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- The review stays read-only unless the user explicitly expands scope to include fixes.
-- The output lists concrete findings and an explicit gate condition.
-- The decision is binary and supported by evidence.
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Do not mutate source or write tests during pure review work.
-- Do not return vague opinions without file-backed evidence.
-- Do not merge review and implementation into the same pass unless the user explicitly asks for both.
+## Companion File Index
+- Contracts: `AGENTS.md`, `src/AGENTS.md`, `tools/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "quality report hotspots contract drift" --profile all --limit 10`, `tools/python.cmd tools/audit/quality_report.py`, `tools/python.cmd tools/validate/cag_validate.py`
+- Owner profile: `reviewer`
+
+## Common RAG Queries
+- Start with: `quality report hotspots contract drift`, `review audits quality performance specs tests`, `review quality report hotspots`
+- Focus areas first: `tools/audit/`, `tests/`, `docs/`, `src/`, root `AGENTS.md`
+- For a narrower audit, append the module, subsystem, or contract path
 
 ## References
 - `contracts: AGENTS.md, src/AGENTS.md, tools/AGENTS.md`
-- `tools: python tools/audit/quality_report.py, cargo clippy`
+- `tools: tools/python.cmd tools/rag/query.py "quality report hotspots contract drift" --profile all --limit 10, tools/python.cmd tools/audit/quality_report.py, tools/python.cmd tools/validate/cag_validate.py`
 - `agent: reviewer`
-
-

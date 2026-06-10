@@ -1,50 +1,61 @@
 ---
 name: create-library
-description: "Create or update new lua pure library part of lureksome."
+description: "Load this skill when creating or modifying pure Lua library modules under library with tests and docs. Skip it for engine Rust modules, content demos, or one-off snippets."
 ---
 # create-library
 
-## Goal
-- Develop a pure Lua library module under the `library/` folder, including its docs and tests.
+## Mission
+- Create or modify pure Lua library modules that are reusable, documented, and covered.
 
-## Required inputs
-- Library name
-- Functionality description
-- User must provide the library purpose and interface requirements
-- Agent must collect existing library conventions
+## When To Load
+- Creating or modifying pure Lua library modules under library with tests and docs.
 
-## Profile hint
-- `content`
+## When To Skip
+- Engine Rust modules, content demos, or one-off snippets.
 
-## Read these contracts
-- `library/AGENTS.md`
-- `tests/lua/AGENTS.md`
-- `content/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the target path.
+- Run the listed RAG query before broad file reads and start from top hits.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Check whether the target artifact already exists; modify existing content unless a new owner is clearly required.
+- Read the nearest source, spec, test, doc, or config before editing.
+- Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
 
-## Steps
-- Read the listed contracts before editing the library module.
-- Execute `python tools/audit/library_coverage.py` to identify missing test or documentation dependencies for the current library set.
-- Create a new subdirectory under `library/` with an `init.lua` entry point and a `README.md` usage guide.
-- Add the corresponding Lua test under `tests/lua/library/` using the established `test_library_*.lua` naming convention.
-- Execute `python tools/validate/validate_library.py --lib <name>`. If it fails, fix the structure.
-- Execute `python tools/audit/library_coverage.py`. If coverage is below 100%, add the missing tests and docs and rerun the audit.
+## Workflow
+- Inspect the target `library/<name>/` and existing library conventions first.
+- Modify an existing library when it owns the requested API; create `init.lua` and docs only for a new library.
+- Keep the public Lua interface small and documented.
+- Add or update Lua tests and examples that exercise real behavior.
+- Run library validation and coverage before finishing.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- The new library folder with `init.lua`
-- Library documentation and tests
-- Coverage report
+## Success Criteria
+- The target artifact was created or modified in the narrowest owning location.
+- Existing content was preserved and updated when it already owned the behavior.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- [ ] `python tools/validate/validate_library.py` exits with code 0.
-- [ ] `python tools/audit/library_coverage.py` reports exactly 100% coverage for the new library.
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Introducing global variables into the Lua environment.
-- Using non-standard Lua paradigms that clash with LuaJIT performance.
+## Companion File Index
+- Contracts: `library/AGENTS.md`, `tests/lua/AGENTS.md`, `content/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "library Lua module conventions" --profile game --limit 10`, `tools/python.cmd tools/audit/library_coverage.py`, `tools/python.cmd tools/validate/validate_library.py --lib <name>`
+- Owner profile: `content`
+
+## Common RAG Queries
+- Use when finding existing Lua helper modules and tests:
+  - `library Lua module conventions`
+  - `require library module pattern`
+  - `tests lua helper assert fixture`
+- Common areas to inspect after top hits:
+  - `library/`
+  - `tests/lua/`
+  - `content/examples/`
+  - `docs/` API references
 
 ## References
 - `contracts: library/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md`
-- `tools: python tools/audit/library_coverage.py, python tools/validate/validate_library.py`
+- `tools: tools/python.cmd tools/rag/query.py "library Lua module conventions" --profile game --limit 10, tools/python.cmd tools/audit/library_coverage.py, tools/python.cmd tools/validate/validate_library.py --lib <name>`
 - `agent: content`
-
-

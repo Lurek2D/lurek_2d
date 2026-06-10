@@ -16,7 +16,7 @@ This folder owns the Codex-specific workspace layer for `lurek_2D`.
 - Role definition files in `agents/` serve as runtime configuration, not direct task instructions.
 - Prefer linking to the nearest nested `AGENTS.md` rather than duplicating directory rules here.
 - Pick the narrowest CAG artifact: invariants in `AGENTS.md`, role identities in `agents/`, reusable workflows in `skills/`.
-- Validate all configuration changes using `python tools/validate/cag_validate.py`.
+- Validate all configuration changes using `tools/python.cmd tools/validate/cag_validate.py`.
 - Review-oriented roles must not modify code unless the user explicitly requests bug fixes.
 
 ## Workflow

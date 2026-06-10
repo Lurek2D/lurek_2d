@@ -2,15 +2,32 @@
 
 ## Summary
 
-This module represents the directed logistics and transport network subsystem, providing tools to build, analyze, and simulate complex graph networks. The graph container stores nodes, connections, and individual payloads, managing entity lifecycles to ensure consistency across connections. This architecture allows developers to design logistics networks, supply grids, or economic pipelines directly using structured network nodes and connection endpoints.
+- This module gives users a simulation-ready logistics graph for resource movement and transformation gameplay.
+- You can model producers, consumers, processors, and transit routes as explicit network structures.
+- Node capacities, queue behavior, and overflow policies control how congestion is handled.
+- Push and pull mechanics support both source-driven and demand-driven transfer strategies.
+- Edge constraints such as throughput, cooldown, direction, and filtering define realistic transport limits.
+- Item lifecycles include transit, placement, decay, and cleanup behavior for long-running simulations.
+- Conversion rules enable factory-style nodes that transform inputs into outputs over time.
+- Pathfinding support computes practical routes under dynamic network constraints.
+- Supply-demand balancing helps route available goods toward prioritized deficits.
+- Simulation stepping advances movement, timers, conversion, and event emission deterministically.
+- Batch and parallel update paths support larger graph workloads.
+- Structural algorithms like cycle detection and topological ordering aid network health checks.
+- Reachability, components, and graph-coloring helpers support analysis and tooling use cases.
+- Debug render output helps users visualize topology quickly while tuning behavior.
+- Event callbacks expose simulation transitions for UI and analytics integration.
+- Subgraph extraction allows focused operations on selected regions of a large network.
+- Bulk node and edge creation supports procedural generation workflows.
+- The module is suitable for economy loops, factory systems, routing puzzles, and colony logistics.
+- It combines planning, simulation, and diagnostics in one runtime surface.
+- Users can iterate on network rules directly from scripts without rewriting engine internals.
+- The practical value is controllable complexity for resource-flow mechanics.
+- It also improves debuggability by making route and capacity behavior observable.
+- Overall, this module provides a full graph logistics toolkit for systemic gameplay design.
+- Teams get both expressive modeling and deterministic execution in a single API boundary.
 
-At the network junctions, nodes are configured with item capacities, inventory records, and queue rules. Nodes support advanced push and pull mechanics to guide item transfers automatically. They also manage item conversion recipes, consuming specific input items and generating transformed outputs after defined process intervals. When capacity limits are reached, customizable overflow policies decide how excess arrivals are handled at the node boundaries.
-
-Connections between nodes represent weighted transit paths that carry payloads over defined intervals. Connection edges enforce throughput limits, traversal cooldown timers, and directional rules. They also support item-type filtering to restrict which items may traverse specific routes. During simulation updates, items move along these edges, and their velocities are modified dynamically by edge attributes like distance and custom speed scales.
-
-To coordinate movement, the system includes algorithms for pathfinding and logistics balancing. A priority-based routing engine computes the cheapest pathways across connections, respecting current traversal constraints and filters. Additionally, a supply-demand manager matches prioritized needs at consumer nodes with resources available at producer sites, scheduling pathfinding routes to transport materials through the network.
-
-The simulation core updates all transit queues, item lifetimes, and node conversion timers dynamically. It resolves waiting items, handles backpressure, and removes expired items automatically. The graph structure supports diagnostic algorithms that perform structural health checks, including cycle detection and topological sorting. Additionally, a circular layout generator produces debug diagrams to help visualize the network state.
+This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the `Foundations` group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

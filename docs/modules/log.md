@@ -2,9 +2,16 @@
 
 ## Summary
 
-This module provides structured logging, letting developers filter and route runtime messages. It hosts a logging facade that dispatches level-tagged entries and key-value fields. Enforcing severity gates early minimizes performance overhead, keeping diagnostics highly efficient.
+- This module gives users structured runtime logging with severity control and flexible output routing.
+- It supports tagged messages and key-value fields for machine-friendly and human-friendly diagnostics.
+- Global level gates reduce noise and overhead by filtering early.
+- Sink management supports console, memory, file, rotating-file, and callback outputs.
+- Multiple output formats enable both readable logs and ingestion-ready streams.
+- Memory sink access supports in-game debug panels and test assertions.
+- File rotation controls support long sessions without unbounded log growth.
+- For users, this module centralizes diagnostics flow instead of scattering print logic across scripts.
 
-To direct outputs, the system manages a sink registry. Logs can target console streams, memory buffers, or rotating files in plain text, JSON, or NDJSON formats, serving both human inspectors and automated analysis tools.
+This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

@@ -6,7 +6,7 @@ Scans ``content/library/**/init.lua`` for LDoc-style docstrings and emits:
 * ``docs/api/lureksome.md`` — human-readable library API reference
 * ``docs/api/lureksome.lua`` — LuaCATS stubs for library modules
 
-LDoc tags recognised (see work/library-overhaul-20260418/reports/P6_doc_generator_spec.md):
+LDoc tags recognised by this parser:
 
 * ``@module name``                    – module title
 * ``@status full|partial|stub|proxy`` – implementation status badge

@@ -388,7 +388,7 @@ fn load_font_from_path(st: &mut SharedState, path: &str, size: f32) -> LuaResult
     let full_path = st.game_dir.join(path);
     let data = std::fs::read(&full_path).map_err(|e| {
         LuaError::RuntimeError(format!(
-            "lurek.graphic.newFont: failed to read '{}': {}",
+            "lurek.render.newFont: failed to read '{}': {}",
             path, e
         ))
     })?;
@@ -404,7 +404,7 @@ fn load_font_from_path(st: &mut SharedState, path: &str, size: f32) -> LuaResult
         _ => Font::from_font_bytes(&data, size)
             .or_else(|_| Font::from_png_bytes(&data, bitmap_cell_w, bitmap_cell_h, false)),
     }
-    .map_err(|e| LuaError::RuntimeError(format!("lurek.graphic.newFont: {}", e)))?;
+    .map_err(|e| LuaError::RuntimeError(format!("lurek.render.newFont: {}", e)))?;
     Ok(st.fonts.insert(font))
 }
 
@@ -608,6 +608,414 @@ fn queue_sprite_batch_draw(
     st.render_commands
         .push(RenderCommand::DrawBatch { batch_key });
     Ok(())
+}
+
+fn lua_value_as_f32(value: &LuaValue) -> Option<f32> {
+    match value {
+        LuaValue::Number(n) => Some(*n as f32),
+        LuaValue::Integer(n) => Some(*n as f32),
+        _ => None,
+    }
+}
+
+fn collect_numeric_args(args: &LuaMultiValue) -> Vec<f32> {
+    args.iter().filter_map(lua_value_as_f32).collect()
+}
+
+fn queue_render_line(st: &mut SharedState, args: LuaMultiValue) {
+    let vals = collect_numeric_args(&args);
+    if vals.len() == 4 {
+        st.render_commands.push(RenderCommand::Line {
+            x1: vals[0],
+            y1: vals[1],
+            x2: vals[2],
+            y2: vals[3],
+        });
+    } else if vals.len() >= 4 {
+        st.render_commands
+            .push(RenderCommand::Polyline { points: vals });
+    }
+}
+
+fn queue_render_polygon(st: &mut SharedState, args: LuaMultiValue) -> LuaResult<()> {
+    let mut iter = args.iter();
+    let mode_str = match iter.next() {
+        Some(LuaValue::String(s)) => s.to_str().unwrap_or("fill").to_string(),
+        _ => "fill".to_string(),
+    };
+    let mut vertices = Vec::new();
+    for value in iter {
+        match value {
+            LuaValue::Number(n) => vertices.push(*n as f32),
+            LuaValue::Integer(n) => vertices.push(*n as f32),
+            LuaValue::Table(t) => {
+                for n in t.clone().sequence_values::<f64>().flatten() {
+                    vertices.push(n as f32);
+                }
+            }
+            _ => {}
+        }
+    }
+    st.render_commands.push(RenderCommand::Polygon {
+        mode: parse_draw_mode(&mode_str)?,
+        vertices,
+    });
+    Ok(())
+}
+
+fn queue_render_points(st: &mut SharedState, args: LuaMultiValue) -> LuaResult<()> {
+    let mut points = Vec::new();
+    if args.len() == 1 {
+        if let Some(LuaValue::Table(t)) = args.get(0) {
+            for pair in t.clone().sequence_values::<LuaTable>() {
+                let p = pair?;
+                let x: f32 = p.get(1)?;
+                let y: f32 = p.get(2)?;
+                points.push((x, y));
+            }
+        }
+    } else {
+        let vals = collect_numeric_args(&args);
+        let mut i = 0;
+        while i + 1 < vals.len() {
+            points.push((vals[i], vals[i + 1]));
+            i += 2;
+        }
+    }
+    st.render_commands.push(RenderCommand::Points { points });
+    Ok(())
+}
+
+#[derive(Debug, Clone, Copy)]
+struct RenderDrawTransform {
+    x: f32,
+    y: f32,
+    rotation: f32,
+    sx: f32,
+    sy: f32,
+    ox: f32,
+    oy: f32,
+}
+
+impl RenderDrawTransform {
+    fn from_values(args_iter: &mut dyn Iterator<Item = &LuaValue>) -> Self {
+        Self {
+            x: args_iter.next().and_then(lua_value_as_f32).unwrap_or(0.0),
+            y: args_iter.next().and_then(lua_value_as_f32).unwrap_or(0.0),
+            rotation: args_iter.next().and_then(lua_value_as_f32).unwrap_or(0.0),
+            sx: args_iter.next().and_then(lua_value_as_f32).unwrap_or(1.0),
+            sy: args_iter.next().and_then(lua_value_as_f32).unwrap_or(1.0),
+            ox: args_iter.next().and_then(lua_value_as_f32).unwrap_or(0.0),
+            oy: args_iter.next().and_then(lua_value_as_f32).unwrap_or(0.0),
+        }
+    }
+
+    fn has_non_default_transform(self) -> bool {
+        self.rotation != 0.0 || self.sx != 1.0 || self.sy != 1.0 || self.ox != 0.0 || self.oy != 0.0
+    }
+}
+
+fn queue_draw_image(
+    st: &mut SharedState,
+    key: TextureKey,
+    transform: RenderDrawTransform,
+) -> LuaResult<()> {
+    if !st.textures.contains_key(key) {
+        return Err(LuaError::RuntimeError(
+            "lurek.render.draw: image handle is not valid".into(),
+        ));
+    }
+    if transform.has_non_default_transform() {
+        st.render_commands.push(RenderCommand::DrawImageEx {
+            texture_key: key,
+            x: transform.x,
+            y: transform.y,
+            rotation: transform.rotation,
+            sx: transform.sx,
+            sy: transform.sy,
+            ox: transform.ox,
+            oy: transform.oy,
+            effect: None,
+        });
+    } else {
+        st.render_commands.push(RenderCommand::DrawImage {
+            texture_key: key,
+            x: transform.x,
+            y: transform.y,
+            effect: None,
+        });
+    }
+    Ok(())
+}
+
+fn queue_draw_canvas(
+    st: &mut SharedState,
+    key: CanvasKey,
+    transform: RenderDrawTransform,
+) -> LuaResult<()> {
+    if !st.canvases.contains_key(key) {
+        return Err(LuaError::RuntimeError(
+            "lurek.render.draw: canvas handle is not valid".into(),
+        ));
+    }
+    st.render_commands.push(RenderCommand::DrawCanvas {
+        canvas_key: key,
+        x: transform.x,
+        y: transform.y,
+        rotation: transform.rotation,
+        sx: transform.sx,
+        sy: transform.sy,
+        ox: transform.ox,
+        oy: transform.oy,
+    });
+    Ok(())
+}
+
+fn queue_draw_mesh(
+    st: &mut SharedState,
+    key: MeshKey,
+    transform: RenderDrawTransform,
+) -> LuaResult<()> {
+    if !st.meshes.contains_key(key) {
+        return Err(LuaError::RuntimeError(
+            "lurek.render.draw: mesh handle is not valid".into(),
+        ));
+    }
+    st.render_commands.push(RenderCommand::DrawMesh {
+        mesh_key: key,
+        x: transform.x,
+        y: transform.y,
+        rotation: transform.rotation,
+        sx: transform.sx,
+        sy: transform.sy,
+        ox: transform.ox,
+        oy: transform.oy,
+    });
+    Ok(())
+}
+
+fn queue_render_draw(st: &mut SharedState, args: LuaMultiValue) -> LuaResult<()> {
+    let mut args_iter = args.iter();
+    let drawable = args_iter.next().cloned().unwrap_or(LuaValue::Nil);
+    let transform = RenderDrawTransform::from_values(&mut args_iter);
+    match &drawable {
+        LuaValue::UserData(ud) => {
+            if let Ok(img) = ud.borrow::<LuaImage>() {
+                let key = img.key;
+                drop(img);
+                return queue_draw_image(st, key, transform);
+            }
+            if let Ok(canvas) = ud.borrow::<LuaCanvas>() {
+                let key = canvas.key;
+                drop(canvas);
+                return queue_draw_canvas(st, key, transform);
+            }
+            if let Ok(batch) = ud.borrow::<LuaSpriteBatch>() {
+                let key = batch.key;
+                drop(batch);
+                return queue_sprite_batch_draw(st, key, "lurek.render.draw");
+            }
+            if let Ok(mesh) = ud.borrow::<LuaMesh>() {
+                let key = mesh.key;
+                drop(mesh);
+                return queue_draw_mesh(st, key, transform);
+            }
+            Err(LuaError::RuntimeError(
+                "lurek.render.draw: expected Image, Canvas, SpriteBatch, or Mesh".into(),
+            ))
+        }
+        LuaValue::Nil => Err(LuaError::RuntimeError(
+            "lurek.render.draw: drawable cannot be nil".into(),
+        )),
+        _ => Err(LuaError::RuntimeError(
+            "lurek.render.draw: unsupported drawable type".into(),
+        )),
+    }
+}
+
+fn parse_blend_mode_or_default(mode: &str) -> BlendMode {
+    match mode {
+        "add" => BlendMode::Add,
+        "multiply" => BlendMode::Multiply,
+        "replace" => BlendMode::Replace,
+        "screen" => BlendMode::Screen,
+        _ => BlendMode::Alpha,
+    }
+}
+
+fn blend_mode_name(mode: BlendMode) -> &'static str {
+    match mode {
+        BlendMode::Alpha => "alpha",
+        BlendMode::Add => "add",
+        BlendMode::Multiply => "multiply",
+        BlendMode::Replace => "replace",
+        BlendMode::Screen => "screen",
+    }
+}
+
+fn queue_draw_many(st: &mut SharedState, list: LuaTable) -> LuaResult<()> {
+    let len = list.raw_len();
+    for i in 1..=len {
+        let entry: LuaTable = match list.raw_get(i) {
+            Ok(LuaValue::Table(t)) => t,
+            _ => continue,
+        };
+        let img_val: LuaValue = entry.raw_get(1).unwrap_or(LuaValue::Nil);
+        let transform = RenderDrawTransform {
+            x: entry.raw_get::<_, Option<f32>>(2).unwrap_or(None).unwrap_or(0.0),
+            y: entry.raw_get::<_, Option<f32>>(3).unwrap_or(None).unwrap_or(0.0),
+            rotation: entry.raw_get::<_, Option<f32>>(4).unwrap_or(None).unwrap_or(0.0),
+            sx: entry.raw_get::<_, Option<f32>>(5).unwrap_or(None).unwrap_or(1.0),
+            sy: entry.raw_get::<_, Option<f32>>(6).unwrap_or(None).unwrap_or(1.0),
+            ox: entry.raw_get::<_, Option<f32>>(7).unwrap_or(None).unwrap_or(0.0),
+            oy: entry.raw_get::<_, Option<f32>>(8).unwrap_or(None).unwrap_or(0.0),
+        };
+        if let LuaValue::UserData(ud) = img_val {
+            if let Ok(img) = ud.borrow::<LuaImage>() {
+                let key = img.key;
+                drop(img);
+                if st.textures.contains_key(key) {
+                    queue_draw_image(st, key, transform)?;
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn centered_text_origin(st: &SharedState, font_key: FontKey, text: &str, scale: f32) -> LuaResult<(f32, f32)> {
+    let Some(font) = st.fonts.get(font_key) else {
+        return Err(LuaError::RuntimeError(
+            "lurek.render.printRotatedWithFont: font handle is not valid or was released".into(),
+        ));
+    };
+    Ok((
+        -font.text_width(text) * scale * 0.5,
+        -font.line_height() * scale * 0.5,
+    ))
+}
+
+struct RotatedTextCommand {
+    font_key: FontKey,
+    text: String,
+    x: f32,
+    y: f32,
+    angle: f32,
+    scale: f32,
+    origin_x: f32,
+    origin_y: f32,
+}
+
+fn queue_rotated_text(st: &mut SharedState, command: RotatedTextCommand) {
+    st.render_commands.push(RenderCommand::PushTransform);
+    st.render_commands.push(RenderCommand::Translate {
+        x: command.x,
+        y: command.y,
+    });
+    st.render_commands.push(RenderCommand::Rotate {
+        angle: command.angle,
+    });
+    st.render_commands.push(RenderCommand::Print {
+        font_key: command.font_key,
+        text: command.text,
+        x: command.origin_x,
+        y: command.origin_y,
+        scale: command.scale,
+    });
+    st.render_commands.push(RenderCommand::PopTransform);
+}
+
+fn queue_print(st: &mut SharedState, font_key: FontKey, text: String, x: f32, y: f32, scale: f32) {
+    st.render_commands.push(RenderCommand::Print {
+        font_key,
+        text,
+        x,
+        y,
+        scale,
+    });
+}
+
+fn parse_text_align(align: Option<&str>) -> TextAlign {
+    match align {
+        Some("center") => TextAlign::Center,
+        Some("right") => TextAlign::Right,
+        Some("justify") => TextAlign::Justify,
+        _ => TextAlign::Left,
+    }
+}
+
+fn queue_print_formatted(
+    st: &mut SharedState,
+    font_key: FontKey,
+    text: String,
+    x: f32,
+    y: f32,
+    limit: f32,
+    align: TextAlign,
+) {
+    st.render_commands.push(RenderCommand::PrintFormatted {
+        font_key,
+        text,
+        x,
+        y,
+        limit,
+        align,
+        scale: 1.0,
+    });
+}
+
+fn queue_rich_text(st: &mut SharedState, font_key: FontKey, spans: Vec<crate::render::renderer::TextSpan>, x: f32, y: f32) {
+    st.render_commands
+        .push(crate::render::renderer::RenderCommand::DrawRichText {
+            font_key,
+            spans,
+            x,
+            y,
+        });
+}
+
+fn parse_new_font_args(args: &LuaMultiValue) -> LuaResult<(Option<u32>, Option<String>, f32)> {
+    if let Some(LuaValue::Number(n)) = args.get(0) {
+        return Ok((Some((*n).max(1.0) as u32), None, 14.0));
+    }
+    if let Some(LuaValue::Integer(n)) = args.get(0) {
+        return Ok((Some((*n).max(1) as u32), None, 14.0));
+    }
+    let path = match args.get(0) {
+        Some(LuaValue::String(s)) => s
+            .to_str()
+            .map_err(|e| LuaError::RuntimeError(format!("lurek.render.newFont: invalid path: {}", e)))?
+            .to_string(),
+        _ => {
+            return Err(LuaError::RuntimeError(
+                "lurek.render.newFont: expected string path or number size".into(),
+            ))
+        }
+    };
+    let size = match args.get(1) {
+        Some(LuaValue::Number(n)) => *n as f32,
+        Some(LuaValue::Integer(n)) => *n as f32,
+        _ => 14.0,
+    };
+    Ok((None, Some(path), size))
+}
+
+fn resolve_new_font(st: &mut SharedState, numeric_size: Option<u32>, path: Option<String>, size: f32) -> LuaResult<FontKey> {
+    if let Some(point_size) = numeric_size {
+        return builtin_font_key_by_point_size(st, point_size, None).ok_or_else(|| {
+            LuaError::RuntimeError("lurek.render.newFont: built-in fonts not loaded".into())
+        });
+    }
+    let path = path.expect("path is present when numeric_size is None");
+    if path == "default" {
+        if let Some(key) = builtin_font_key_by_point_size(st, size.max(1.0) as u32, None) {
+            return Ok(key);
+        }
+    }
+    if let Some(key) = builtin_font_key_by_name(st, &path) {
+        return Ok(key);
+    }
+    load_font_from_path(st, &path, size)
 }
 
 /// Custom vertex mesh for advanced 2D geometry rendering with per-vertex color and UV data.
@@ -1471,26 +1879,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "line",
         lua.create_function(move |_, args: LuaMultiValue| {
-            let vals: Vec<f32> = args
-                .iter()
-                .filter_map(|v| match v {
-                    LuaValue::Number(n) => Some(*n as f32),
-                    LuaValue::Integer(n) => Some(*n as f32),
-                    _ => None,
-                })
-                .collect();
-            if vals.len() == 4 {
-                s.borrow_mut().render_commands.push(RenderCommand::Line {
-                    x1: vals[0],
-                    y1: vals[1],
-                    x2: vals[2],
-                    y2: vals[3],
-                });
-            } else if vals.len() >= 4 {
-                s.borrow_mut()
-                    .render_commands
-                    .push(RenderCommand::Polyline { points: vals });
-            }
+            queue_render_line(&mut s.borrow_mut(), args);
             Ok(())
         })?,
     )?;
@@ -1502,29 +1891,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "polygon",
         lua.create_function(move |_, args: LuaMultiValue| {
-            let mut iter = args.iter();
-            let mode_str = match iter.next() {
-                Some(LuaValue::String(s)) => s.to_str().unwrap_or("fill").to_string(),
-                _ => "fill".to_string(),
-            };
-            let mut vertices = Vec::new();
-            for v in iter {
-                match v {
-                    LuaValue::Number(n) => vertices.push(*n as f32),
-                    LuaValue::Integer(n) => vertices.push(*n as f32),
-                    LuaValue::Table(t) => {
-                        for n in t.clone().sequence_values::<f64>().flatten() {
-                            vertices.push(n as f32);
-                        }
-                    }
-                    _ => {}
-                }
-            }
-            s.borrow_mut().render_commands.push(RenderCommand::Polygon {
-                mode: parse_draw_mode(&mode_str)?,
-                vertices,
-            });
-            Ok(())
+            queue_render_polygon(&mut s.borrow_mut(), args)
         })?,
     )?;
     let s = state.clone();
@@ -1571,35 +1938,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "points",
         lua.create_function(move |_, args: LuaMultiValue| {
-            let mut points = Vec::new();
-            if args.len() == 1 {
-                if let Some(LuaValue::Table(t)) = args.get(0) {
-                    for pair in t.clone().sequence_values::<LuaTable>() {
-                        let p = pair?;
-                        let x: f32 = p.get(1)?;
-                        let y: f32 = p.get(2)?;
-                        points.push((x, y));
-                    }
-                }
-            } else {
-                let vals: Vec<f32> = args
-                    .iter()
-                    .filter_map(|v| match v {
-                        LuaValue::Number(n) => Some(*n as f32),
-                        LuaValue::Integer(n) => Some(*n as f32),
-                        _ => None,
-                    })
-                    .collect();
-                let mut i = 0;
-                while i + 1 < vals.len() {
-                    points.push((vals[i], vals[i + 1]));
-                    i += 2;
-                }
-            }
-            s.borrow_mut()
-                .render_commands
-                .push(RenderCommand::Points { points });
-            Ok(())
+            queue_render_points(&mut s.borrow_mut(), args)
         })?,
     )?;
     let s = state.clone();
@@ -1618,112 +1957,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "draw",
         lua.create_function(move |_, args: LuaMultiValue| {
-            let mut args_iter = args.iter();
-            let drawable = args_iter.next().cloned().unwrap_or(LuaValue::Nil);
-            let to_f32 = |v: &LuaValue| -> Option<f32> {
-                match v {
-                    LuaValue::Number(n) => Some(*n as f32),
-                    LuaValue::Integer(n) => Some(*n as f32),
-                    _ => None,
-                }
-            };
-            let x = args_iter.next().and_then(to_f32).unwrap_or(0.0);
-            let y = args_iter.next().and_then(to_f32).unwrap_or(0.0);
-            let r = args_iter.next().and_then(to_f32).unwrap_or(0.0);
-            let sx = args_iter.next().and_then(to_f32).unwrap_or(1.0);
-            let sy = args_iter.next().and_then(to_f32).unwrap_or(1.0);
-            let ox = args_iter.next().and_then(to_f32).unwrap_or(0.0);
-            let oy = args_iter.next().and_then(to_f32).unwrap_or(0.0);
-            let has_transform = r != 0.0 || sx != 1.0 || sy != 1.0 || ox != 0.0 || oy != 0.0;
-            let mut st = s.borrow_mut();
-            match &drawable {
-                LuaValue::UserData(ud) => {
-                    if let Ok(img) = ud.borrow::<LuaImage>() {
-                        let key = img.key;
-                        drop(img);
-                        if !st.textures.contains_key(key) {
-                            return Err(LuaError::RuntimeError(
-                                "lurek.graphic.draw: image handle is not valid".into(),
-                            ));
-                        }
-                        if has_transform {
-                            st.render_commands.push(RenderCommand::DrawImageEx {
-                                texture_key: key,
-                                x,
-                                y,
-                                rotation: r,
-                                sx,
-                                sy,
-                                ox,
-                                oy,
-                                effect: None,
-                            });
-                        } else {
-                            st.render_commands.push(RenderCommand::DrawImage {
-                                texture_key: key,
-                                x,
-                                y,
-                                effect: None,
-                            });
-                        }
-                        return Ok(());
-                    }
-                    if let Ok(canvas) = ud.borrow::<LuaCanvas>() {
-                        let key = canvas.key;
-                        drop(canvas);
-                        if !st.canvases.contains_key(key) {
-                            return Err(LuaError::RuntimeError(
-                                "lurek.graphic.draw: canvas handle is not valid".into(),
-                            ));
-                        }
-                        st.render_commands.push(RenderCommand::DrawCanvas {
-                            canvas_key: key,
-                            x,
-                            y,
-                            rotation: r,
-                            sx,
-                            sy,
-                            ox,
-                            oy,
-                        });
-                        return Ok(());
-                    }
-                    if let Ok(batch) = ud.borrow::<LuaSpriteBatch>() {
-                        let key = batch.key;
-                        drop(batch);
-                        return queue_sprite_batch_draw(&mut st, key, "lurek.graphic.draw");
-                    }
-                    if let Ok(mesh) = ud.borrow::<LuaMesh>() {
-                        let key = mesh.key;
-                        drop(mesh);
-                        if !st.meshes.contains_key(key) {
-                            return Err(LuaError::RuntimeError(
-                                "lurek.graphic.draw: mesh handle is not valid".into(),
-                            ));
-                        }
-                        st.render_commands.push(RenderCommand::DrawMesh {
-                            mesh_key: key,
-                            x,
-                            y,
-                            rotation: r,
-                            sx,
-                            sy,
-                            ox,
-                            oy,
-                        });
-                        return Ok(());
-                    }
-                    Err(LuaError::RuntimeError(
-                        "lurek.graphic.draw: expected Image, Canvas, SpriteBatch, or Mesh".into(),
-                    ))
-                }
-                LuaValue::Nil => Err(LuaError::RuntimeError(
-                    "lurek.graphic.draw: drawable cannot be nil".into(),
-                )),
-                _ => Err(LuaError::RuntimeError(
-                    "lurek.graphic.draw: unsupported drawable type".into(),
-                )),
-            }
+            queue_render_draw(&mut s.borrow_mut(), args)
         })?,
     )?;
     let s = state.clone();
@@ -1817,75 +2051,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "drawMany",
         lua.create_function(move |_, list: LuaTable| {
-            let mut st = s.borrow_mut();
-            let len = list.raw_len();
-            for i in 1..=len {
-                let entry: LuaTable = match list.raw_get(i) {
-                    Ok(LuaValue::Table(t)) => t,
-                    _ => continue,
-                };
-                let img_val: LuaValue = entry.raw_get(1).unwrap_or(LuaValue::Nil);
-                let x: f32 = entry
-                    .raw_get::<_, Option<f32>>(2)
-                    .unwrap_or(None)
-                    .unwrap_or(0.0);
-                let y: f32 = entry
-                    .raw_get::<_, Option<f32>>(3)
-                    .unwrap_or(None)
-                    .unwrap_or(0.0);
-                let r: f32 = entry
-                    .raw_get::<_, Option<f32>>(4)
-                    .unwrap_or(None)
-                    .unwrap_or(0.0);
-                let sx: f32 = entry
-                    .raw_get::<_, Option<f32>>(5)
-                    .unwrap_or(None)
-                    .unwrap_or(1.0);
-                let sy: f32 = entry
-                    .raw_get::<_, Option<f32>>(6)
-                    .unwrap_or(None)
-                    .unwrap_or(1.0);
-                let ox: f32 = entry
-                    .raw_get::<_, Option<f32>>(7)
-                    .unwrap_or(None)
-                    .unwrap_or(0.0);
-                let oy: f32 = entry
-                    .raw_get::<_, Option<f32>>(8)
-                    .unwrap_or(None)
-                    .unwrap_or(0.0);
-                if let LuaValue::UserData(ud) = img_val {
-                    if let Ok(img) = ud.borrow::<LuaImage>() {
-                        let key = img.key;
-                        drop(img);
-                        if !st.textures.contains_key(key) {
-                            continue;
-                        }
-                        let has_transform =
-                            r != 0.0 || sx != 1.0 || sy != 1.0 || ox != 0.0 || oy != 0.0;
-                        if has_transform {
-                            st.render_commands.push(RenderCommand::DrawImageEx {
-                                texture_key: key,
-                                x,
-                                y,
-                                rotation: r,
-                                sx,
-                                sy,
-                                ox,
-                                oy,
-                                effect: None,
-                            });
-                        } else {
-                            st.render_commands.push(RenderCommand::DrawImage {
-                                texture_key: key,
-                                x,
-                                y,
-                                effect: None,
-                            });
-                        }
-                    }
-                }
-            }
-            Ok(())
+            queue_draw_many(&mut s.borrow_mut(), list)
         })?,
     )?;
     let s = state.clone();
@@ -1907,25 +2073,24 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     let Some(font_key) = font_key else {
                         return Ok(());
                     };
-                    let Some(font) = st.fonts.get(font_key) else {
+                    let Ok((origin_x, origin_y)) = centered_text_origin(&st, font_key, &text, scale) else {
                         return Ok(());
                     };
-                    let origin_x = -font.text_width(&text) * scale * 0.5;
-                    let origin_y = -font.line_height() * scale * 0.5;
                     (font_key, origin_x, origin_y)
                 };
-                let st = &mut s.borrow_mut().render_commands;
-                st.push(RenderCommand::PushTransform);
-                st.push(RenderCommand::Translate { x, y });
-                st.push(RenderCommand::Rotate { angle });
-                st.push(RenderCommand::Print {
-                    font_key,
-                    text,
-                    x: origin_x,
-                    y: origin_y,
-                    scale,
-                });
-                st.push(RenderCommand::PopTransform);
+                queue_rotated_text(
+                    &mut s.borrow_mut(),
+                    RotatedTextCommand {
+                        font_key,
+                        text,
+                        x,
+                        y,
+                        angle,
+                        scale,
+                        origin_x,
+                        origin_y,
+                    },
+                );
                 Ok(())
             },
         )?,
@@ -1947,25 +2112,21 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let key = resolve_font_key(&font_ud)?;
                 let (origin_x, origin_y) = {
                     let st = s.borrow();
-                    let Some(font) = st.fonts.get(key) else {
-                        return Err(LuaError::RuntimeError(
-                            "lurek.graphic.printRotatedWithFont: font handle is not valid or was released".into(),
-                        ));
-                    };
-                    (-font.text_width(&text) * scale * 0.5, -font.line_height() * scale * 0.5)
+                    centered_text_origin(&st, key, &text, scale)?
                 };
-                let st = &mut s.borrow_mut().render_commands;
-                st.push(RenderCommand::PushTransform);
-                st.push(RenderCommand::Translate { x, y });
-                st.push(RenderCommand::Rotate { angle });
-                st.push(RenderCommand::Print {
-                    font_key: key,
-                    text,
-                    x: origin_x,
-                    y: origin_y,
-                    scale,
-                });
-                st.push(RenderCommand::PopTransform);
+                queue_rotated_text(
+                    &mut s.borrow_mut(),
+                    RotatedTextCommand {
+                        font_key: key,
+                        text,
+                        x,
+                        y,
+                        angle,
+                        scale,
+                        origin_x,
+                        origin_y,
+                    },
+                );
                 Ok(())
             },
         )?,
@@ -1984,19 +2145,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let x = x.unwrap_or(0.0);
                 let y = y.unwrap_or(0.0);
                 let scale = scale.unwrap_or(1.0);
-                let font_key = s.borrow().active_font.or(s.borrow().default_font);
+                let font_key = {
+                    let st = s.borrow();
+                    st.active_font.or(st.default_font)
+                };
                 match font_key {
                     Some(font_key) => {
-                        s.borrow_mut().render_commands.push(RenderCommand::Print {
-                            font_key,
-                            text,
-                            x,
-                            y,
-                            scale,
-                        });
+                        queue_print(&mut s.borrow_mut(), font_key, text, x, y, scale);
                     }
                     None => {
-                        log::warn!("lurek.graphic.print: no font loaded, text not rendered");
+                        log::warn!("lurek.render.print: no font loaded, text not rendered");
                     }
                 }
                 Ok(())
@@ -2023,13 +2181,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 Option<f32>,
             )| {
                 let key = resolve_font_key(&font_ud)?;
-                s.borrow_mut().render_commands.push(RenderCommand::Print {
-                    font_key: key,
+                queue_print(
+                    &mut s.borrow_mut(),
+                    key,
                     text,
-                    x: x.unwrap_or(0.0),
-                    y: y.unwrap_or(0.0),
-                    scale: scale.unwrap_or(1.0),
-                });
+                    x.unwrap_or(0.0),
+                    y.unwrap_or(0.0),
+                    scale.unwrap_or(1.0),
+                );
                 Ok(())
             },
         )?,
@@ -2046,28 +2205,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "printf",
         lua.create_function(
             move |_, (text, x, y, limit, align): (String, f32, f32, f32, Option<String>)| {
-                let align = match align.as_deref() {
-                    Some("center") => TextAlign::Center,
-                    Some("right") => TextAlign::Right,
-                    Some("justify") => TextAlign::Justify,
-                    _ => TextAlign::Left,
-                };
+                let align = parse_text_align(align.as_deref());
                 let active_font = {
                     let st = s.borrow();
                     st.active_font.or(st.default_font)
                 };
                 if let Some(font_key) = active_font {
-                    s.borrow_mut()
-                        .render_commands
-                        .push(RenderCommand::PrintFormatted {
-                            font_key,
-                            text,
-                            x,
-                            y,
-                            limit,
-                            align,
-                            scale: 1.0,
-                        });
+                    queue_print_formatted(&mut s.borrow_mut(), font_key, text, x, y, limit, align);
                 }
                 Ok(())
             },
@@ -2095,23 +2239,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 Option<String>,
             )| {
                 let key = resolve_font_key(&font_ud)?;
-                let align = match align.as_deref() {
-                    Some("center") => TextAlign::Center,
-                    Some("right") => TextAlign::Right,
-                    Some("justify") => TextAlign::Justify,
-                    _ => TextAlign::Left,
-                };
-                s.borrow_mut()
-                    .render_commands
-                    .push(RenderCommand::PrintFormatted {
-                        font_key: key,
-                        text,
-                        x,
-                        y,
-                        limit,
-                        align,
-                        scale: 1.0,
-                    });
+                let align = parse_text_align(align.as_deref());
+                queue_print_formatted(&mut s.borrow_mut(), key, text, x, y, limit, align);
                 Ok(())
             },
         )?,
@@ -2133,14 +2262,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 return Ok(());
             };
             let spans = build_rich_text_spans(&spans_table)?;
-            s.borrow_mut().render_commands.push(
-                crate::render::renderer::RenderCommand::DrawRichText {
-                    font_key,
-                    spans,
-                    x,
-                    y,
-                },
-            );
+            queue_rich_text(&mut s.borrow_mut(), font_key, spans, x, y);
             Ok(())
         })?,
     )?;
@@ -2157,14 +2279,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             move |_, (font_ud, spans_table, x, y): (LuaAnyUserData, LuaTable, f32, f32)| {
                 let key = resolve_font_key(&font_ud)?;
                 let spans = build_rich_text_spans(&spans_table)?;
-                s.borrow_mut().render_commands.push(
-                    crate::render::renderer::RenderCommand::DrawRichText {
-                        font_key: key,
-                        spans,
-                        x,
-                        y,
-                    },
-                );
+                queue_rich_text(&mut s.borrow_mut(), key, spans, x, y);
                 Ok(())
             },
         )?,
@@ -2233,13 +2348,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "setBlendMode",
         lua.create_function(move |_, mode: String| {
-            let bm = match mode.as_str() {
-                "add" => BlendMode::Add,
-                "multiply" => BlendMode::Multiply,
-                "replace" => BlendMode::Replace,
-                "screen" => BlendMode::Screen,
-                _ => BlendMode::Alpha,
-            };
+            let bm = parse_blend_mode_or_default(mode.as_str());
             let mut st = s.borrow_mut();
             st.blend_mode = bm;
             st.render_commands.push(RenderCommand::SetBlendMode(bm));
@@ -2254,14 +2363,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getBlendMode",
         lua.create_function(move |_, ()| {
             let st = s.borrow();
-            let name = match st.blend_mode {
-                BlendMode::Alpha => "alpha",
-                BlendMode::Add => "add",
-                BlendMode::Multiply => "multiply",
-                BlendMode::Replace => "replace",
-                BlendMode::Screen => "screen",
-            };
-            Ok(name.to_string())
+            Ok(blend_mode_name(st.blend_mode).to_string())
         })?,
     )?;
     let s = state.clone();
@@ -2274,66 +2376,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "newFont",
         lua.create_function(move |_, args: LuaMultiValue| {
             let mut st = s.borrow_mut();
-            if let Some(LuaValue::Number(n)) = args.get(0) {
-                let point_size = (*n).max(1.0) as u32;
-                if let Some(key) = builtin_font_key_by_point_size(&st, point_size, None) {
-                    return Ok(LuaFont {
-                        state: s.clone(),
-                        key,
-                    });
-                }
-                return Err(LuaError::RuntimeError(
-                    "lurek.graphic.newFont: built-in fonts not loaded".into(),
-                ));
-            }
-            if let Some(LuaValue::Integer(n)) = args.get(0) {
-                let point_size = (*n).max(1) as u32;
-                if let Some(key) = builtin_font_key_by_point_size(&st, point_size, None) {
-                    return Ok(LuaFont {
-                        state: s.clone(),
-                        key,
-                    });
-                }
-                return Err(LuaError::RuntimeError(
-                    "lurek.graphic.newFont: built-in fonts not loaded".into(),
-                ));
-            }
-            let path = match args.get(0) {
-                Some(LuaValue::String(s)) => s
-                    .to_str()
-                    .map_err(|e| {
-                        LuaError::RuntimeError(format!(
-                            "lurek.graphic.newFont: invalid path: {}",
-                            e
-                        ))
-                    })?
-                    .to_string(),
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "lurek.graphic.newFont: expected string path or number size".into(),
-                    ))
-                }
-            };
-            let size = match args.get(1) {
-                Some(LuaValue::Number(n)) => *n as f32,
-                Some(LuaValue::Integer(n)) => *n as f32,
-                _ => 14.0,
-            };
-            if path == "default" {
-                if let Some(key) = builtin_font_key_by_point_size(&st, size.max(1.0) as u32, None) {
-                    return Ok(LuaFont {
-                        state: s.clone(),
-                        key,
-                    });
-                }
-            }
-            if let Some(key) = builtin_font_key_by_name(&st, &path) {
-                return Ok(LuaFont {
-                    state: s.clone(),
-                    key,
-                });
-            }
-            let key = load_font_from_path(&mut st, &path, size)?;
+            let (numeric_size, path, size) = parse_new_font_args(&args)?;
+            let key = resolve_new_font(&mut st, numeric_size, path, size)?;
             Ok(LuaFont {
                 state: s.clone(),
                 key,
@@ -2349,7 +2393,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, ud: LuaAnyUserData| {
             let key = resolve_font_key(&ud).map_err(|_| {
                 LuaError::RuntimeError(
-                    "lurek.graphic.setFont: font handle is not valid or was released".into(),
+                    "lurek.render.setFont: font handle is not valid or was released".into(),
                 )
             })?;
             let mut st = s.borrow_mut();
@@ -2429,7 +2473,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 })
             } else {
                 Err(LuaError::RuntimeError(
-                    "lurek.graphic.getDefaultFont: built-in fonts not loaded".into(),
+                    "lurek.render.getDefaultFont: built-in fonts not loaded".into(),
                 ))
             }
         })?,
@@ -2450,7 +2494,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 .set_active_builtin_font(point_size, use_bold)
                 .ok_or_else(|| {
                     LuaError::RuntimeError(
-                        "lurek.graphic.setDefaultFont: built-in fonts not loaded".into(),
+                        "lurek.render.setDefaultFont: built-in fonts not loaded".into(),
                     )
                 })?;
             Ok(LuaFont {
@@ -2529,7 +2573,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
-                    "lurek.graphic.getFontCellWidth: font handle is not valid".into(),
+                    "lurek.render.getFontCellWidth: font handle is not valid".into(),
                 )
             })?;
             Ok(f.cell_width())
@@ -2550,7 +2594,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
-                    "lurek.graphic.getFontWidth: font handle is not valid".into(),
+                    "lurek.render.getFontWidth: font handle is not valid".into(),
                 )
             })?;
             Ok(f.text_width(&text))
@@ -2570,7 +2614,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
-                    "lurek.graphic.getFontHeight: font handle is not valid".into(),
+                    "lurek.render.getFontHeight: font handle is not valid".into(),
                 )
             })?;
             Ok(f.line_height())
@@ -2590,7 +2634,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
-                    "lurek.graphic.getFontLineHeight: font handle is not valid".into(),
+                    "lurek.render.getFontLineHeight: font handle is not valid".into(),
                 )
             })?;
             Ok(f.line_height())
@@ -2606,13 +2650,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, (font_ud, lh): (LuaAnyUserData, f32)| {
             let key = resolve_font_key(&font_ud).map_err(|_| {
                 LuaError::RuntimeError(
-                    "lurek.graphic.setFontLineHeight: font handle is not valid".into(),
+                    "lurek.render.setFontLineHeight: font handle is not valid".into(),
                 )
             })?;
             let mut st = s.borrow_mut();
             let f = st.fonts.get_mut(key).ok_or_else(|| {
                 LuaError::RuntimeError(
-                    "lurek.graphic.setFontLineHeight: font handle is not valid".into(),
+                    "lurek.render.setFontLineHeight: font handle is not valid".into(),
                 )
             })?;
             f.set_line_height(lh);
@@ -2633,7 +2677,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
-                    "lurek.graphic.getFontAscent: font handle is not valid".into(),
+                    "lurek.render.getFontAscent: font handle is not valid".into(),
                 )
             })?;
             Ok(f.ascent())
@@ -2653,7 +2697,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
-                    "lurek.graphic.getFontDescent: font handle is not valid".into(),
+                    "lurek.render.getFontDescent: font handle is not valid".into(),
                 )
             })?;
             Ok(f.descent())
@@ -2701,27 +2745,27 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let mut iter = args.into_iter();
             let arg = iter.next().ok_or_else(|| {
                 LuaError::RuntimeError(
-                    "lurek.graphic.newImage: expected a file path string or ImageData".into(),
+                    "lurek.render.newImage: expected a file path string or ImageData".into(),
                 )
             })?;
             let color_space = match iter.next() {
                 Some(LuaValue::String(mode)) => {
                     let mode = mode.to_str().map_err(|e| {
                         LuaError::RuntimeError(format!(
-                            "lurek.graphic.newImage: invalid color space string: {}",
+                            "lurek.render.newImage: invalid color space string: {}",
                             e
                         ))
                     })?;
                     Texture::parse_color_space(mode).ok_or_else(|| {
                         LuaError::RuntimeError(format!(
-                            "lurek.graphic.newImage: invalid color space '{}', expected 'srgb' or 'linear'",
+                            "lurek.render.newImage: invalid color space '{}', expected 'srgb' or 'linear'",
                             mode
                         ))
                     })?
                 }
                 Some(other) => {
                     return Err(LuaError::RuntimeError(format!(
-                        "lurek.graphic.newImage: second argument must be color space string, got {}",
+                        "lurek.render.newImage: second argument must be color space string, got {}",
                         other.type_name()
                     )));
                 }
@@ -2730,7 +2774,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             match arg {
             LuaValue::String(path_str) => {
                 let path = path_str.to_str().map_err(|e| {
-                    LuaError::RuntimeError(format!("lurek.graphic.newImage: invalid path: {}", e))
+                    LuaError::RuntimeError(format!("lurek.render.newImage: invalid path: {}", e))
                 })?;
                 let mut st = s.borrow_mut();
                 let full_path = st.game_dir.join(path);
@@ -2743,7 +2787,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                         })
                     }
                     Err(e) => Err(LuaError::RuntimeError(format!(
-                        "lurek.graphic.newImage: failed to load '{}': {}",
+                        "lurek.render.newImage: failed to load '{}': {}",
                         path, e
                     ))),
                 }
@@ -2768,13 +2812,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                         })
                     }
                     Err(e) => Err(LuaError::RuntimeError(format!(
-                        "lurek.graphic.newImage: failed to create from ImageData: {}",
+                        "lurek.render.newImage: failed to create from ImageData: {}",
                         e
                     ))),
                 }
             }
             _ => Err(LuaError::RuntimeError(
-                "lurek.graphic.newImage: expected a file path string or ImageData".into(),
+                "lurek.render.newImage: expected a file path string or ImageData".into(),
             )),
         }
         })?,
@@ -2790,7 +2834,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, (width, height): (u32, u32)| {
             if width == 0 || height == 0 {
                 return Err(LuaError::RuntimeError(
-                    "lurek.graphic.newCanvas: width and height must be greater than zero".into(),
+                    "lurek.render.newCanvas: width and height must be greater than zero".into(),
                 ));
             }
             let mut st = s.borrow_mut();
@@ -2842,7 +2886,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     drop(c);
                     if !st.canvases.contains_key(key) {
                         return Err(LuaError::RuntimeError(
-                            "lurek.graphic.setCanvas: canvas handle is not valid".into(),
+                            "lurek.render.setCanvas: canvas handle is not valid".into(),
                         ));
                     }
                     st.active_canvas = Some(key);
@@ -2884,7 +2928,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let st = s.borrow();
             let c = st.canvases.get(key).ok_or_else(|| {
                 LuaError::RuntimeError(
-                    "lurek.graphic.getCanvasSize: canvas handle is not valid".into(),
+                    "lurek.render.getCanvasSize: canvas handle is not valid".into(),
                 )
             })?;
             Ok((c.width, c.height))
@@ -2906,7 +2950,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let mut st = s.borrow_mut();
             if !st.textures.contains_key(img_key) {
                 return Err(LuaError::RuntimeError(
-                    "lurek.graphic.newSpriteBatch: image handle is not valid".into(),
+                    "lurek.render.newSpriteBatch: image handle is not valid".into(),
                 ));
             }
             let batch = SpriteBatch::new(img_key, max_entries);
@@ -2972,7 +3016,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let shader = match Shader::new(code) {
                 Ok(shader) => shader,
                 Err(err) => {
-                    let msg = format!("lurek.graphic.newShader: {}", err);
+                    let msg = format!("lurek.render.newShader: {}", err);
                     s.borrow_mut().last_shader_compile_error = Some(msg.clone());
                     return Err(LuaError::RuntimeError(msg));
                 }
@@ -3003,7 +3047,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     drop(sh);
                     if !st.shaders.contains_key(key) {
                         return Err(LuaError::RuntimeError(
-                            "lurek.graphic.setShader: shader handle is not valid".into(),
+                            "lurek.render.setShader: shader handle is not valid".into(),
                         ));
                     }
                     st.active_shader = Some(key);

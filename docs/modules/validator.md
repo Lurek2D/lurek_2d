@@ -2,9 +2,18 @@
 
 ## Summary
 
-This module provides a static analysis engine designed to inspect Lua projects before runtime. By scanning source files statically, it identifies API compliance issues, broken module imports, and missing asset references early. The validation orchestrator lets teams enforce clean code standards by combining built-in checks with customizable rules.
+- The validator module provides static pre-runtime checks for Lua project quality.
+- It runs composable rules through a central validation engine.
+- Built-in checks cover API usage, import resolution, and asset path existence.
+- Violations include severity, location, identifier, and human-readable message.
+- Report models support filtering and summary views for large result sets.
+- Parallel execution support improves throughput on large script sets.
+- Single-thread fallback preserves predictable behavior in constrained environments.
+- TOML-defined rules support data-driven policy extension.
+- Lua-backed rule adapters support project-specific checks without engine rebuild.
+- The module performs static analysis only and does not execute scripts.
 
-To handle large projects, the system runs checks across parallel threads and aggregates findings into structured diagnostic reports. These reports capture the location, severity, and context of each violation, feeding directly into local workflows and automated quality pipelines. Extensible rules can be loaded from TOML files or custom scripts.
+This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Functions
 

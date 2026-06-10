@@ -1,21 +1,21 @@
 # Examples Contract
 
-Covers work under `content/examples/`.
+Adds local rules for `content/examples/`.
 
 ## Mission & Scope
-- Deliver runnable, single-file teaching examples for every namespace in the public `lurek.*` API surface.
-- Keep examples isolated and simple to serve as reference snippets for engine and game developers.
-- Maintain accurate alignment with the generated API reference specs to avoid user confusion.
+- Deliver runnable single-file teaching examples for the public `lurek.*` API.
+- Keep examples isolated and simple as reference snippets.
+- Keep examples aligned with the generated API specs.
 
 ## Files
-- `README.md`: Index mapping example scripts to target namespaces.
-- `*.lua`: Namespace-specific example files (e.g., `physics.lua`, `render.lua`, `ui.lua`).
+- `README.md`: Index of example scripts by namespace.
+- `*.lua`: Namespace example files such as `physics.lua`, `render.lua`, and `ui.lua`.
 - `assets/`: Textures, fonts, sound files, and other resources loaded by the examples.
 
 ## Rules
-- One file must teach exactly one namespace or closely related API namespace; do not cross-pollinate logic.
-- Keep example code strictly executable and free of stub blocks; always map `-- @api-stub:` comments to working, runnable code blocks.
-- Never write complex game state machines here; focus on clear, step-by-step API usage.
+- One file must teach one namespace or one tight related group. Do not mix unrelated logic.
+- Keep example code executable and free of stubs. Map `-- @api-stub:` comments to working code.
+- Never write complex game state machines here. Focus on clear API usage.
 - All asset lookups in examples must use forward slashes and refer to subfolders inside the `assets/` directory.
 
 ## Workflow

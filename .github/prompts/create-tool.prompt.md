@@ -1,43 +1,43 @@
 ﻿---
 name: create-tool
-description: Create or update python or powershell tool in tools, review if all are properly documented and registered as CLI for agent to use.
+description: "Load this skill when creating or modifying tools under tools, audit scripts, validators, generators, or CLI registry entries. Skip it for product runtime changes or one-off local scripts that should stay in work/."
 ---
 
-# GOAL
-- Develop utility scripts for validation, auditing, or build processes, ensuring they are documented and registered.
+# Goal
+- Create or modify repo tools so they are discoverable, documented, locally runnable, and registered.
 
-# INPUTS REQUIRED
-- Tool purpose and target operation
-- Language choice (Python or PowerShell)
-= User must provide the utility requirement
-- Agent must collect the CLI registry format
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: build-system, scripting.
-2. Write the script in `tools/` with correct `--help` support and argument parsing.
-3. Register the tool in `tools/agent_cli_reference.md`.
-4. Execute `python tools/audit/tool_registry_audit.py`. If it reports the tool is unregistered (exit code >0), fix the registry file and repeat this step.
-5. Execute the newly created tool directly with standard inputs. If it exits with code >0, fix the tool's internal logic.
+# Steps
+1. Load the active `.codex/skills/create-tool/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect existing tool family, `tools/agent_cli_reference.md`, and nearest `AGENTS.md` before editing.
+5. Modify an existing tool when it owns the behavior; create a new script only for a new reusable command.
+6. Implement `--help`, deterministic output, and Windows-local execution.
+7. Register changed tools in `tools/agent_cli_reference.md`.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- New or updated script in `tools/`
-- Updated CLI reference docs-general
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `python tools/audit/tool_registry_audit.py` exits with code 0 (exactly 0 unregistered tools).
-- [ ] The new tool exits with code 0 on standard execution.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Writing scripts without `--help` docs-general.
-- Hardcoding paths instead of using relative repository roots.
+# Example Invocation
+- User: Use `create-tool` for the requested scope.
+- Agent: Loads `.codex/skills/create-tool/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: build-system, scripting
-- tools: python tools/audit/tool_registry_audit.py
-- agent: Build-Engineer
-
+# References
+- skills: `.codex/skills/create-tool/SKILL.md`
+- contracts: tools/AGENTS.md, tools/audit/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "tools audit validator CLI registry" --profile engine --limit 10, tools/python.cmd tools/audit/tool_registry_audit.py, tools/python.cmd tools/validate/cag_validate.py
+- agent: builder
 

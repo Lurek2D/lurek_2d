@@ -1,7 +1,0 @@
-# Lurek2D Rag Tools
-
-> [!NOTE]
-> Ten plik jest generowany automatycznie przez `tools/tests/gen_tool_registry.py`.
-
-- **`build_index.py`**: build_index.py — Builds the local SQLite FTS5 RAG index for Lurek2D docs-general and code.
-- **`query.py`**: query.py — Queries the local SQLite FTS5 RAG index for Lurek2D API examples and usage.

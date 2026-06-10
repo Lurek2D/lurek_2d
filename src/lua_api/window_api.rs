@@ -581,16 +581,23 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | box_type | string? | Dialog icon type: "info" (default), "warning", or "error".
     /// @param | btn_type | string? | Button layout: "ok" (default), "okcancel", or "yesno".
     /// @return | string | The button the user clicked.
+    let state_for_message_box = state.clone();
     tbl.set(
         "showMessageBox",
         lua.create_function(
-            |_,
-             (title, message, box_type, btn_type): (
+            move |_,
+                  (title, message, box_type, btn_type): (
                 String,
                 String,
                 Option<String>,
                 Option<String>,
             )| {
+                if matches!(
+                    state_for_message_box.borrow().runtime_mode,
+                    crate::runtime::RuntimeMode::Headless
+                ) {
+                    return Ok("ok");
+                }
                 Ok(window::show_message_box(
                     &title,
                     &message,
@@ -788,9 +795,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Opens a native file picker dialog and returns the selected file paths. Blocks until the user picks file(s) or cancels.
     /// @param | opts | table? | Optional config table with fields: title (string), defaultPath (string), multiple (boolean), filters (table of {name, extensions}).
     /// @return | string[] | Selected file path strings. Empty table if cancelled.
+    let state_for_open_file_dialog = state.clone();
     tbl.set(
         "openFileDialog",
         lua.create_function(move |lua, opts: Option<LuaTable>| {
+            if matches!(
+                state_for_open_file_dialog.borrow().runtime_mode,
+                crate::runtime::RuntimeMode::Headless
+            ) {
+                return Ok(LuaValue::Table(lua.create_table()?));
+            }
             let mut dialog = rfd::FileDialog::new();
             let mut multi = false;
             if let Some(t) = &opts {

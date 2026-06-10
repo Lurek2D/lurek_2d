@@ -2,11 +2,26 @@
 
 ## Summary
 
-The binary module serves as the core byte-manipulation and low-level data transformation toolbox for Lurek2D. Its primary purpose is to provide scripts with high-performance, safe control over raw binary structures, memory buffers, and network interchange payloads. It exposes mutable, owned byte containers supporting bit-level updates and text decoding, read-only typed window views for bounds-checked numeric reads, and growable, seekable data writers for endian-aware structure construction.
+- Gives scripts low-level byte control for save formats, protocol payloads, and compact runtime data exchange.
+- Supports mutable binary buffers for write-heavy flows and typed read views for safe structured parsing.
+- Enables bit-level edits and indexed byte access when gameplay systems need precise binary patch operations.
+- Provides format-string pack and unpack paths so teams can define wire/file layouts without hand-rolled serializers.
+- Handles endian selection and padding concerns for cross-platform compatibility and legacy format interoperability.
+- Offers data-writer primitives for building binary payloads incrementally with explicit cursor control.
+- Exposes TOML encode/decode helpers that bridge textual config and binary-centric pipelines.
+- Includes MsgPack conversion to move rich Lua values through compact transport or storage channels.
+- Provides compression and decompression across multiple codecs for bandwidth and disk footprint reduction.
+- Supports chunked compression paths for stream-like workflows where full-buffer loading is undesirable.
+- Adds base64 and hex transforms for systems that require text-safe binary representation.
+- Includes cryptographic and checksum hashing to verify integrity or fingerprint content deterministically.
+- Supplies ring-buffer utilities for rolling windows, streaming queues, and fixed-memory pipelines.
+- Helps users keep binary tooling in-engine instead of relying on external preprocessors.
+- Serves as the practical bridge between high-level Lua logic and byte-accurate data contracts.
+- Reduces serialization bugs by centralizing common conversion, packing, and validation patterns.
+- Improves debugging by exposing readable conversion outputs and deterministic hash/checksum results.
+- Lets gameplay and tooling scripts share one consistent binary workflow surface across the project.
 
-To serialize structured data compactly, the module implements dynamic format-driven packing and unpacking systems. Developers can pack heterogeneous Lua tables and values into binary strings using tokenized formatting rules that support endian directives, padding alignments, and value coercions. It also parses standard TOML documents and decodes high-efficiency MsgPack payloads directly into standard Lua values, bridging data interchange and runtime memory models seamlessly.
-
-Rhythmic queues, network protocols, and data protection are supported by a suite of helper structures. Fixed-capacity elements are managed by a circular element ring buffer that applies FIFO element caching and evictions. This is paired with multi-codec data compression systems—handling zlib, gzip, deflate, and lz4 streams—alongside base64 and hexadecimal conversions, MD5 and SHA cryptographic hashing, and CRC32 fast checksums for data integrity verification.
+This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Functions
 

@@ -2264,6 +2264,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 let t = lua.create_table()?;
                 t.set(1, *px)?;
                 t.set(2, *py)?;
+                t.set("x", *px)?;
+                t.set("y", *py)?;
                 result.set(i + 1, t)?;
             }
             Ok(result)

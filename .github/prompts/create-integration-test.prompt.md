@@ -1,43 +1,43 @@
 ﻿---
 name: create-integration-test
-description: Create or update integration lua test combining 2 or more modules together.
+description: "Load this skill when creating or modifying Lua integration tests that prove interactions between two or more modules. Skip it for single-module unit tests, Rust-only internal tests, or performance stress tests."
 ---
 
-# GOAL
-- Create comprehensive integration tests that verify the interaction and data flow between multiple modules.
+# Goal
+- Create or modify integration tests that verify cross-module public Lua behavior.
 
-# INPUTS REQUIRED
-- List of modules to integrate (e.g., `physics` and `graphics`)
-- Expected interaction behavior
-= User must define which modules are interacting and the expected outcome
-- Agent must collect API surfaces of all involved modules
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: testing-ecosystem, lua-scripting.
-2. Execute `python tools/audit/integration_coverage.py` to identify missing links between the targeted modules.
-3. Write a Lua script under `tests/lua/integration/` that initializes and feeds output from Module A into Module B, asserting the final combined state.
-4. Execute `cargo test --test lua_tests` ensuring the integration folder is included in the test runner. If tests fail, fix the integration script.
-5. Re-run `python tools/audit/integration_coverage.py`. If the cross-module link still reports as uncovered (0%), return to step 3 and fix the test implementation.
+# Steps
+1. Load the active `.codex/skills/create-integration-test/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect existing integration tests and involved API specs before writing.
+5. Modify an existing integration file for the module pair when present; create under `tests/lua/integration/` only for new coverage.
+6. Use public `lurek.*` APIs and explicit state assertions.
+7. Add or confirm harness registration when a new file is introduced.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- Integration test scripts in `tests/lua/integration/` (or similar appropriate path)
-- Test execution summary
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `cargo test --test lua_tests` exits with code 0.
-- [ ] `python tools/audit/integration_coverage.py` reports exactly 100% integration coverage for the target module pair.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Writing integration tests that mock the interaction layer.
-- Coupling the test too tightly to the internal implementation of either module.
+# Example Invocation
+- User: Use `create-integration-test` for the requested scope.
+- Agent: Loads `.codex/skills/create-integration-test/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: testing-ecosystem, lua-scripting
-- tools: python tools/audit/integration_coverage.py
-- agent: Tester
-
+# References
+- skills: `.codex/skills/create-integration-test/SKILL.md`
+- contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "Lua integration tests module interaction" --profile game --limit 10, tools/python.cmd tools/audit/integration_coverage.py, cargo test --test lua_tests
+- agent: tester
 

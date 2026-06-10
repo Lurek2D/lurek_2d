@@ -1,43 +1,43 @@
 ﻿---
 name: create-snippet
-description: Create or update new snippet code for specific module with API.
+description: "Load this skill when creating or modifying Lua snippets and generated VS Code snippet output. Skip it for full examples, docs pages, or extension features unrelated to snippets."
 ---
 
-# GOAL
-- Author reusable code snippets for common tasks related to a specific module API.
+# Goal
+- Create or modify snippets that reflect idiomatic public API usage and generated editor output.
 
-# INPUTS REQUIRED
-- Target module
-- Common task description
-= User must provide the specific use case requiring a snippet
-- Agent must collect the most idiomatic API usage patterns
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: docs-general, lua-scripting.
-2. Execute `python tools/audit/snippet_coverage.py` to identify missing snippets for highly-used public methods.
-3. Write a fast, optimized VS Code-compatible snippet in the `tools/snippets/` folder. Ensure variables are correctly tokenized (e.g., `$1`, `$2`).
-4. Execute `python tools/validate/validate_snippets.py`. If it returns exit code >0, fix the JSON structure of your snippet.
-5. Execute `python tools/audit/snippet_coverage.py`. If the target API coverage is still <100%, return to step 3 to add missing methods.
+# Steps
+1. Load the active `.codex/skills/create-snippet/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect existing snippets, current API docs, and generated extension output before editing.
+5. Modify an existing snippet when it owns the use case; create only for uncovered high-value API usage.
+6. Follow snippet template marker order and naming conventions.
+7. Regenerate VS Code snippets when inventory changes.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- Formatted code snippet file
-- Snippet coverage validation
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `python tools/validate/validate_snippets.py` exits with code 0.
-- [ ] `python tools/audit/snippet_coverage.py` reports exactly 100% coverage for the targeted snippet scope.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Creating snippets that use deprecated APIs.
-- Writing overly long snippets that should be full examples instead.
+# Example Invocation
+- User: Use `create-snippet` for the requested scope.
+- Agent: Loads `.codex/skills/create-snippet/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: docs-general, lua-scripting
-- tools: python tools/audit/snippet_coverage.py, python tools/validate/validate_snippets.py
-- agent: Doc-Writer
-
+# References
+- skills: `.codex/skills/create-snippet/SKILL.md`
+- contracts: content/snippets/AGENTS.md, docs/AGENTS.md, extension/vscode/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "content snippets API usage" --profile game --limit 10, tools/python.cmd tools/audit/snippet_coverage.py, tools/python.cmd tools/snippets/gen_vscode_snippets.py, tools/python.cmd tools/validate/validate_snippets.py
+- agent: doc_writer
 

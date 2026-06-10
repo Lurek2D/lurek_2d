@@ -1,43 +1,43 @@
 ﻿---
 name: create-demo
-description: Create or update new demo game using specific scope or specific modules.
+description: "Load this skill when creating or modifying runnable Lua demo games under content/games with validation and smoke coverage. Skip it for single-file examples, engine internals, or pure library modules."
 ---
 
-# GOAL
-- Build a fully runnable demo game in the `content/games/` directory that showcases engine features.
+# Goal
+- Create or modify runnable demo games that exercise real Lurek2D APIs and remain validator-safe.
 
-# INPUTS REQUIRED
-- Demo name and concept
-- Target modules to highlight
-= User must provide the overall theme, mechanics, and required modules
-- Agent must collect layout structures for demos and necessary assets
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: demo-creation, lua-scripting.
-2. Create a directory in `content/games/<demo_name>/` containing `main.lua`, `conf.toml`, and `README.md`.
-3. Write the main game loop, initialize the required subsystems, and add minimal representative gameplay logic.
-4. Write a rust integration test in `tests/demo_smoke_tests.rs` to ensure the demo is automatically verified on CI.
-5. Execute `python tools/validate/validate_game.py --path content/games/<demo_name>`. If the validation script returns errors, fix the demo structure and repeat step 5 until it exits with code 0.
+# Steps
+1. Load the active `.codex/skills/create-demo/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect the target demo folder and nearby demos before deciding create vs modify.
+5. Create a new `content/games/<name>/` only when no matching demo exists; otherwise modify the existing demo.
+6. Keep `main.lua`, config, assets, and README aligned with current demo conventions.
+7. Use real `lurek.*` calls and avoid placeholder gameplay.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- A new folder in `content/games/` with a complete demo structure
-- Smoke test registration
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `cargo test --test demo_smoke_tests` exits with code 0 (100% demo pass rate).
-- [ ] `python tools/validate/validate_game.py` exits with code 0 (0 validation errors).
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Creating complex logic that overshadows the engine features being demonstrated.
-- Forgetting to include a `conf.toml` file or a `README.md`.
+# Example Invocation
+- User: Use `create-demo` for the requested scope.
+- Agent: Loads `.codex/skills/create-demo/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: demo-creation, lua-scripting
-- tools: python tools/validate/validate_game.py, cargo test
-- agent: Content-Maker
-
+# References
+- skills: `.codex/skills/create-demo/SKILL.md`
+- contracts: content/AGENTS.md, content/games/AGENTS.md, tests/lua/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "content games demo conventions" --profile game --limit 10, tools/python.cmd tools/validate/validate_game.py <demo-dir>, cargo test --test demo_smoke_tests
+- agent: content
 

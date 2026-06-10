@@ -37,55 +37,60 @@ def _load(name: str, path: Path):
 VALID_AGENT = dedent("""\
     ---
     name: Developer
-    mission: "Implement Rust features for the engine."
-    personas: [EngDev, EngTest]
-    primary_skills: [rust-coding]
-    secondary_skills: []
-    routes_to: [Tester]
-    loads_tools: [tools/validate/cag_validate.py]
+    description: "Implements engine features and keeps validation current."
+    tools: [tools/validate/cag_validate.py]
     ---
 
     # Developer
 
     ## Mission
-    Persona EngDev. Implements Rust.
+    - Implement Rust-facing engine changes.
+    - Keep validation and docs in sync.
 
     ## Scope
-    ### Owns
     - src/
-
-    ### Must Not Become
-    - Renderer
-
-    ## Inputs
-    - issue
+    - tests/
+    - docs/specs/
+    - docs/api/
+    - tools/validate/
+    - content/examples/
+    - extension/vscode/
 
     ## Outputs
-    - diff
+    - Rust diffs.
+    - Updated specs.
+    - Validation proof.
 
     ## Workflow
     1. Read code.
     2. Edit code.
     3. Run tests.
 
-    ## Routing Table
-    | situation | next |
-    |---|---|
-    | done | Tester |
+    ## Success Metrics
+    Score work from 1 to 10 stars:
+    - Rust changes match requested scope.
+    - Validation is clean.
+    - Specs and tests stay aligned.
 
     ## Anti-patterns
     - git add .
+    - Skip validation.
+    - Change generated files without sources.
+    - Edit unrelated modules.
+    - Ignore specs.
+    - Ignore tests.
+    - Leave broken links.
+
+    ## CAG Metadata
+    Personas: EngDev, EngTest
+    Primary skills: rust-coding
+    Secondary skills:
     """)
 
 VALID_SKILL = dedent("""\
     ---
     name: rust-coding
     description: "Load this skill when writing Rust code. Skip it for Lua scripting."
-    companion_files:
-      examples: []
-      templates: []
-      snippets: []
-    related_skills: []
     ---
 
     # rust-coding
@@ -105,18 +110,19 @@ VALID_SKILL = dedent("""\
     ## Companion File Index
     No companions yet.
 
+    ## CAG Metadata
+    Related skills:
+
     ## References
     - docs/specs/runtime.md
     """)
 
 VALID_PROMPT = dedent("""\
     ---
+    name: add-feature
     description: "Add a new feature."
-    mode: agent
-    loads_skills: [rust-coding]
-    loads_tools: [tools/validate/cag_validate.py]
-    expected_agent: Developer
-    inputs_required: [name]
+    tools: [tools/validate/cag_validate.py]
+    agent: Developer
     ---
 
     # add-feature
@@ -140,6 +146,9 @@ VALID_PROMPT = dedent("""\
 
     ## Example Invocation
     Run with name=foo.
+
+    ## CAG Metadata
+    Loads skills: rust-coding
     """)
 
 VALID_SYSTEM_PROMPT = dedent("""\
@@ -164,6 +173,8 @@ VALID_SYSTEM_PROMPT = dedent("""\
 
     ## Repository Layout
     src/ tools/ docs/
+
+    Agents are autonomous and keep working until the task is done; if blocked, blocked by scope mismatch, or blocked by a manager-only handoff, report that explicitly.
     """)
 
 
@@ -239,12 +250,6 @@ class CagValidatorRules(unittest.TestCase):
     def _setup_baseline_valid(self) -> None:
         self.fix.add_skill("rust-coding")
         self.fix.add_agent("developer.agent.md")
-        # Stub Tester agent so routes_to: [Tester] resolves.
-        self.fix.add_agent(
-            "tester.agent.md",
-            body=VALID_AGENT.replace("name: Developer", "name: Tester")
-                            .replace("routes_to: [Tester]", "routes_to: []"),
-        )
         self.fix.add_prompt("add-feature.prompt.md")
         self.fix.add_system_prompt()
 
@@ -281,7 +286,7 @@ class CagValidatorRules(unittest.TestCase):
 
     def test_E102_invalid_persona(self) -> None:
         self.fix.add_skill("rust-coding")
-        body = VALID_AGENT.replace("[EngDev, EngTest]", "[Wizard]")
+        body = VALID_AGENT.replace("Personas: EngDev, EngTest", "Personas: Wizard")
         self.fix.add_agent("developer.agent.md", body=body)
         self.assertIn("E102", self._rules())
 
@@ -292,7 +297,7 @@ class CagValidatorRules(unittest.TestCase):
 
     def test_E104_unknown_agent_route(self) -> None:
         self.fix.add_skill("rust-coding")
-        body = VALID_AGENT.replace("[Tester]", "[Phantom]")
+        body = VALID_AGENT + "\nRoutes to: Phantom\n"
         self.fix.add_agent("developer.agent.md", body=body)
         self.assertIn("E104", self._rules())
 
@@ -312,7 +317,7 @@ class CagValidatorRules(unittest.TestCase):
 
     def test_W108_zero_personas(self) -> None:
         self.fix.add_skill("rust-coding")
-        body = VALID_AGENT.replace("[EngDev, EngTest]", "[]")
+        body = VALID_AGENT.replace("Personas: EngDev, EngTest", "Personas:")
         self.fix.add_agent("developer.agent.md", body=body)
         self.assertIn("W108", self._rules())
 
@@ -325,17 +330,9 @@ class CagValidatorRules(unittest.TestCase):
         self.fix.add_skill("rust-coding", body="# no frontmatter\n")
         self.assertIn("E202", self._rules())
 
-    def test_E203_missing_companion_file(self) -> None:
-        body = VALID_SKILL.replace(
-            "companion_files:\n  examples: []",
-            "companion_files:\n  examples: [missing.rs]",
-        )
-        self.fix.add_skill("rust-coding", body=body)
-        self.assertIn("E203", self._rules())
-
     def test_E204_unknown_related_skill(self) -> None:
-        body = VALID_SKILL.replace("related_skills: []",
-                                   "related_skills: [no-such]")
+        body = VALID_SKILL.replace("Related skills:",
+                                   "Related skills: no-such")
         self.fix.add_skill("rust-coding", body=body)
         self.assertIn("E204", self._rules())
 
@@ -359,7 +356,7 @@ class CagValidatorRules(unittest.TestCase):
 
     def test_E302_unknown_skill_in_prompt(self) -> None:
         self.fix.add_skill("rust-coding")
-        body = VALID_PROMPT.replace("[rust-coding]", "[ghost-skill]")
+        body = VALID_PROMPT.replace("Loads skills: rust-coding", "Loads skills: ghost-skill")
         self.fix.add_prompt("p.prompt.md", body=body)
         self.assertIn("E302", self._rules())
 
@@ -372,8 +369,7 @@ class CagValidatorRules(unittest.TestCase):
 
     def test_E304_unknown_expected_agent(self) -> None:
         self.fix.add_skill("rust-coding")
-        body = VALID_PROMPT.replace("expected_agent: Developer",
-                                    "expected_agent: Phantom")
+        body = VALID_PROMPT.replace("agent: Developer", "agent: Phantom")
         self.fix.add_prompt("p.prompt.md", body=body)
         self.assertIn("E304", self._rules())
 
@@ -449,7 +445,7 @@ class Personas(unittest.TestCase):
                    REPO / "tools" / "audit" / "cag_persona_matrix.py")
         fix = _CagFixture()
         _patch_cag_to_fixture(fix, common, persona=pm)
-        body = VALID_AGENT.replace("[EngDev, EngTest]", "[]")
+        body = VALID_AGENT.replace("Personas: EngDev, EngTest", "Personas:")
         fix.add_agent("noperson.agent.md", body=body)
         report = pm.scan()
         self.assertIn("noperson", report["warnings"]["agents_with_zero_personas"])

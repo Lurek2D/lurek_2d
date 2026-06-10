@@ -1,23 +1,23 @@
 # Architecture Contract
 
-Covers work under `docs/architecture/`.
+Adds local rules for `docs/architecture/`.
 
 ## Mission & Scope
-- Design the overarching architectural patterns, dependency structures, and boundary directions for Lurek2D.
-- Maintain comprehensive, high-level design documents (such as rendering pipeline logic and scripting bridges).
-- Document and govern major technical decisions, comparing concrete design options before execution.
+- Design the main architecture patterns, dependencies, and boundaries for Lurek2D.
+- Maintain high-level design docs such as the render pipeline and scripting bridge.
+- Record major technical decisions and compare options before execution.
 
 ## Files
-- `developer-ecosystem.md`: Doctrine for active context-augmented guidance (CAG) and roles.
-- `developer-workflow.md`: Contributor workflow guidelines, setup procedures, and branch conventions.
-- `engine-core.md` / `render-pipeline.md` / `scripting-bridge.md`: Technical anchor documents detailing engine internals.
-- `quality-assurance.md` / `build-and-distribution.md`: Governance files covering testing frameworks and deployment.
+- `developer-ecosystem.md`: Active CAG and role guidance.
+- `developer-workflow.md`: Workflow, setup, and branch guidance.
+- `engine-core.md` / `render-pipeline.md` / `scripting-bridge.md`: Core engine design docs.
+- `quality-assurance.md` / `build-and-distribution.md`: Testing and distribution docs.
 
 ## Rules
-- Always identify architectural options, comparing trade-offs, residual risks, and rollback strategies before large refactors.
+- Identify options, trade-offs, risks, and rollback paths before large refactors.
 - Strictly flag cyclic module dependencies, state leaks, and missing API fallback paths.
-- Ensure architecture docs stay aligned with the canonical project constraints defined in the root `AGENTS.md`, active specs, and current engine implementation.
-- Keep high-level architecture documents in this folder; do not duplicate low-level module implementation specifications.
+- Keep architecture docs aligned with root constraints, active specs, and current engine code.
+- Keep high-level architecture docs here. Do not duplicate low-level module specs.
 - When a durable constraint changes, update the canonical spec or architecture document first, then adjust related summaries here only if needed.
 
 ## Workflow

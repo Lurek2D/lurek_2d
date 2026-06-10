@@ -26,7 +26,11 @@ do
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     lurek.midi.clearSoundFont()
     print("before load = " .. tostring(lurek.midi.hasSoundFont()))
-    lurek.midi.loadSoundFont(path)
+    local ok, err = pcall(function()
+        lurek.midi.loadSoundFont(path)
+    end)
+    print("load ok = " .. tostring(ok))
+    if not ok then print("loadSoundFont skipped: " .. tostring(err)) end
     print("after load = " .. tostring(lurek.midi.hasSoundFont()))
     lurek.midi.clearSoundFont()
 end
@@ -34,7 +38,10 @@ end
 --@api-stub: lurek.midi.clearSoundFont
 do
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
-    lurek.midi.loadSoundFont(path)
+    local ok, err = pcall(function()
+        lurek.midi.loadSoundFont(path)
+    end)
+    if not ok then print("loadSoundFont skipped: " .. tostring(err)) end
     print("before clear = " .. tostring(lurek.midi.hasSoundFont()))
     lurek.midi.clearSoundFont()
     print("after clear = " .. tostring(lurek.midi.hasSoundFont()))

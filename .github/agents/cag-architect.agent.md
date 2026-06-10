@@ -1,4 +1,4 @@
----
+﻿---
 name: CAG-Architect
 description: "Own .github CAG layer, validation rules, retrieval corpus, chunking, and source ranking."
 tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/runInTerminal, read/readFile, read/skill, edit/createFile, edit/editFiles, edit/rename, search/fileSearch, search/textSearch, search/usages, todo]
@@ -29,7 +29,7 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
 
 ## Workflow
 - **CAG mode**:
-  - Run python tools/validate/cag_validate.py --baseline first.
+  - Run tools/python.cmd tools/validate/cag_validate.py --baseline first.
   - Load cag-validation, cag-workflow, enterprise-architecture, togaf.
   - Model change at smallest layer: prompt, agent, skill, tool.
   - Keep scopes complementary, remove duplicate policy.
@@ -69,3 +69,4 @@ Score work from 1 to 10 stars:
 Personas: EngDev, GameDev, Modder, GameTest, EngTest
 Primary skills: cag-workflow, cag-validation, cag-routing
 Secondary skills: retrieval-architecture, docs-general, module-architecture, enterprise-architecture
+

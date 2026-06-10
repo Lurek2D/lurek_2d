@@ -1,50 +1,61 @@
 ---
 name: review-architecture
-description: "Review if docs in architecture are in sync with specs and lurek api, fix all gaps."
+description: "Load this skill when auditing and fixing architecture docs against specs, source, and current API boundaries. Skip it for low-level code review without durable architecture impact."
 ---
 # review-architecture
 
-## Goal
-- Validate that high-level architecture documents align with module specs and the actual API surface.
+## Mission
+- Audit and fix architecture documentation drift against current specs and engine code.
 
-## Required inputs
-- Entire codebase context
-- User triggers the architecture review
-- Agent must collect `docs/architecture/` files, specs, and API definitions
+## When To Load
+- Auditing and fixing architecture docs against specs, source, and current API boundaries.
 
-## Profile hint
-- `architect`
+## When To Skip
+- Low-level code review without durable architecture impact.
 
-## Read these contracts
-- `AGENTS.md`
-- `docs/AGENTS.md`
-- `docs/architecture/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the reviewed path.
+- Run the listed RAG query and audit/report tools before broad manual inspection.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Produce findings first with severity, affected files, and evidence.
+- If the active profile is read-only, stop after findings and hand off fixes to the owner profile; otherwise fix requested findings and rerun the same audits.
+- Treat review as audit-first, fix-second: findings must be grounded in tool output or direct file inspection.
 
-## Steps
-- Read the listed contracts and stay in read-only mode.
-- Run `python tools/audit/cag_link_check.py --strict` and inspect the broken-link output before comparing architecture text to the codebase.
-- Compare `docs/architecture/`, `docs/specs/`, and `docs/api/lurek.lua` against the current Rust and Lua API surface.
-- Record findings first, with severity and exact file or line evidence where possible.
-- Return a binary accept or reject decision with explicit follow-up gate conditions.
+## Workflow
+- Run strict link checking before semantic review.
+- Compare architecture docs with specs, source modules, and public Lua API.
+- List drift findings before editing.
+- If edit-capable, update canonical specs or architecture docs in the right order and rerun link checks.
+- If read-only, hand off to `architect` with concrete files and expected edits.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Findings-first review report
-- File and line evidence
-- Accept or reject decision with follow-up conditions
+## Success Criteria
+- Audit output was collected before fixes or handoff.
+- Findings are either fixed and revalidated, or handed off with an explicit owner profile and blocker.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- The review stays read-only unless the user explicitly expands scope to include fixes.
-- The output lists concrete findings and an explicit gate condition.
-- The decision is binary and supported by evidence.
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Do not mutate source or write tests during pure review work.
-- Do not return vague opinions without file-backed evidence.
-- Do not merge review and implementation into the same pass unless the user explicitly asks for both.
+## Companion File Index
+- Contracts: `AGENTS.md`, `docs/AGENTS.md`, `docs/architecture/AGENTS.md`, `docs/specs/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "architecture docs specs engine boundaries" --profile engine --limit 10`, `tools/python.cmd tools/audit/cag_link_check.py --strict`
+- Owner profile: `architect`
+
+## Common RAG Queries
+- Use when locating architecture sources of truth:
+  - `architecture docs specs engine boundaries`
+  - `system design module api boundary`
+  - `docs architecture runtime pipeline`
+- Common areas to inspect after top hits:
+  - `docs/architecture/`
+  - `src/`
+  - root and nested `AGENTS.md`
+  - specs tied to touched subsystems
 
 ## References
-- `contracts: AGENTS.md, docs/AGENTS.md, docs/architecture/AGENTS.md`
-- `tools: python tools/audit/cag_link_check.py`
+- `contracts: AGENTS.md, docs/AGENTS.md, docs/architecture/AGENTS.md, docs/specs/AGENTS.md`
+- `tools: tools/python.cmd tools/rag/query.py "architecture docs specs engine boundaries" --profile engine --limit 10, tools/python.cmd tools/audit/cag_link_check.py --strict`
 - `agent: architect`
-
-

@@ -1596,13 +1596,13 @@ end
 --@api-stub: LVec2:x
 do
     local v = lurek.math.Vec2(3, 4)
-    print("x=" .. v:x())
+    print("x=" .. v.x)
 end
 
 --@api-stub: LVec2:y
 do
     local v = lurek.math.Vec2(3, 4)
-    print("y=" .. v:y())
+    print("y=" .. v.y)
 end
 
 --@api-stub: LVec3:type

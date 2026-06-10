@@ -1,43 +1,43 @@
 ﻿---
 name: create-test-stress
-description: Create or update heavy stress test for specific module and check test coverage.
+description: "Load this skill when creating or modifying stress tests, ceilings, or heavy-load validation for a module. Skip it for normal unit tests, integration tests, or benchmark-free code reviews."
 ---
 
-# GOAL
-- Develop stress and load tests to evaluate the performance boundaries and stability of a specific module.
+# Goal
+- Create or modify stress coverage that records realistic load ceilings and failure behavior.
 
-# INPUTS REQUIRED
-- Target module
-- Expected load parameters (e.g., number of entities, iteration counts)
-= User must provide the target module and acceptable performance degradation thresholds
-- Agent must collect current baseline performance metrics
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: testing-ecosystem, performance-profiling.
-2. Execute `python tools/audit/stress_report.py` to gather current stress test ceilings.
-3. Write high-volume loops or parallel execution paths that hammer the module's primary functionality in `tests/lua/stress/` or `tests/rust/stress/`.
-4. Execute the stress script and monitor output. If the script causes an OOM crash or the frame time exceeds the target threshold (e.g. >16.6ms), adjust the load parameters or implement graceful degradation in step 3.
-5. Re-run `python tools/audit/stress_report.py`. If the output ceiling is below the user-provided target, return to step 3.
+# Steps
+1. Load the active `.codex/skills/create-test-stress/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect current stress reports, existing stress tests, and user threshold before editing.
+5. Modify an existing stress case when it owns the module; create a new stress path only for missing load coverage.
+6. Keep load deterministic and record artifacts under `work/<short-chat-name>/` when temporary output is needed.
+7. Run the stress script and monitor OOM, timeout, and frame-time behavior.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- Stress test scripts
-- Performance/Stress report output
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] Engine crash count is exactly 0 under load.
-- [ ] `python tools/audit/stress_report.py` generates a report showing the load ceiling is >= the user's expected target.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Writing stress tests that don't clean up resources, leading to artificial OOMs.
-- Making stress tests part of the standard CI pipeline without isolating them.
+# Example Invocation
+- User: Use `create-test-stress` for the requested scope.
+- Agent: Loads `.codex/skills/create-test-stress/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: testing-ecosystem, performance-profiling
-- tools: python tools/audit/stress_report.py
-- agent: Tester
-
+# References
+- skills: `.codex/skills/create-test-stress/SKILL.md`
+- contracts: tests/AGENTS.md, tests/lua/AGENTS.md, tools/audit/AGENTS.md, work/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "stress tests performance ceilings" --profile engine --limit 10, tools/python.cmd tools/audit/stress_report.py
+- agent: tester
 

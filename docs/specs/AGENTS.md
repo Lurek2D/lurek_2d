@@ -3,18 +3,18 @@
 This file adds local rules for work under `docs/specs/`.
 
 ## Mission & Scope
-- Own the per-module reference layer detailing internal and external APIs for every `src/<module>/` package.
-- Keep hand-written architectural intent and programmatically generated documentation clearly separated.
-- Maintain a complete coverage index, ensuring that all engine changes sync with their respective specifications.
+- Own the per-module reference layer for internal and external APIs in `src/<module>/`.
+- Keep hand-written intent and generated sections clearly separate.
+- Maintain a complete coverage index so engine changes stay synced with specs.
 
 ## Files
 - `README.md`: Master index and tiering guide for the specification corpus.
-- `SPEC_TEMPLATE.md`: Template outline showing the required section layout for a new specification.
-- `*.md` files (e.g., `physics.md`, `render.md`): Module-specific specifications.
+- `SPEC_TEMPLATE.md`: Template for new specs.
+- `*.md` files such as `physics.md` and `render.md`: Module specs.
 
 ## Rules
 - Treat each spec file as a strict contract; do not allow source implementation to drift from its specification.
-- The `## Summary` section is hand-curated; the sections `## General Info`, `## Imports`, `## Files`, and `## Lua API Ref` are generator-owned and must never be edited manually.
+- The `## Summary` section is hand-written. `## General Info`, `## Imports`, `## Files`, and `## Lua API Ref` are generator-owned and must not be edited by hand.
 - When adding, removing, or tiering a top-level module, update the catalog entries in the main index.
 - If a Lua API function signature is updated in Rust code, the specification must be rebuilt to reflect the exact changes.
 

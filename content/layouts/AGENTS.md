@@ -1,26 +1,26 @@
 # Layouts Contract
 
-Covers work under `content/layouts/`.
+Adds local rules for `content/layouts/`.
 
 ## Mission & Scope
-- Own TOML UI layout coordinate files defining screen alignments, flexboxes, and node structures.
-- Maintain coordinate alignment and syntax validity for all standalone apps and game layouts.
-- Keep coordinate data structured and snapped to consistent pixel boundaries for multi-resolution support.
+- Own TOML UI layout files for alignments, flexboxes, and nodes.
+- Keep layouts valid for standalone apps and games.
+- Keep coordinates structured and snapped to stable pixel boundaries.
 
 ## Files
-- `apps/`: UI layouts for standalone tools and debug overlays (e.g., settings panels, debugger).
+- `apps/`: UI layouts for tools and debug overlays.
 - `games/`: In-game HUDs, health bars, inventory grids, and main menus.
 
 ## Rules
 - Component IDs must use `snake_case` and remain unique within a single layout file.
-- Always snap layout coordinates to an 8-pixel boundary to prevent subpixel layout rendering issues.
-- Prefer dynamic flexbox directions, wrapping, and alignment properties over hardcoded coordinate offsets where possible.
+- Always snap layout coordinates to an 8-pixel grid.
+- Prefer flexbox directions, wrapping, and alignment over hardcoded offsets when possible.
 - Never add custom/undocumented keys that are not supported by the engine layout deserializer.
 
 ## Workflow
 - Run `python tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive` to enforce grid snapping.
 - Auto-format layout syntax using `python tools/ui/fix_layouts.py content/layouts/ --recursive --fix`.
-- Verify visual output with the existing GUI evidence tests or another checked-in layout rendering path that exists in the repo.
+- Verify visual output with GUI evidence tests or another checked-in layout render path.
 
 ## References
 - tools/ui/snap_to_grid.py

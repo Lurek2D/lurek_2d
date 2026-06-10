@@ -2,13 +2,23 @@
 
 ## Summary
 
-This module provides virtual filesystem services, sandboxing file access to game directories. It coordinates path resolution, file operations, and virtual mounts, ensuring scripting layers interact with files safely. Normalising paths across systems guarantees consistent cross-platform behavior for all read, write, and directory workflows.
+- This module gives users a sandboxed file service that keeps script I/O inside controlled game paths.
+- Path normalization and traversal checks help keep behavior consistent and safe across desktop platforms.
+- Virtual mount support lets teams overlay directories and ZIP content under logical prefixes.
+- This is useful for mods, DLC-style content packs, and environment-specific asset overrides.
+- Archive mounting reads files on demand, avoiding full extraction overhead.
+- Sync file handles support common stream patterns such as read, write, append, seek, and line iteration.
+- Async read/write operations move heavy transfer work off the main thread.
+- Poll-based watcher features enable hot-reload loops for assets and config updates.
+- JSON helpers and temporary file utilities reduce boilerplate in tooling scripts.
+- Metadata and recursive listing APIs support content indexing and diagnostics.
+- Mount introspection helps users reason about effective storage topology at runtime.
+- The module unifies persistence, asset lookup, and automation-friendly file access in one namespace.
+- For users, this means fewer custom path hacks and fewer platform-specific surprises.
+- It supports both gameplay persistence and build/test tooling workflows.
+- Overall, it is the core storage abstraction for safe and flexible runtime file operations.
 
-To support asset loading, the system features virtual overlays. It mounts directories or ZIP archives under virtual prefixes, building lookup indexes to read archive files on demand without full extraction. This lets the engine resolve assets across folders dynamically, simplifying modding support and content overrides.
-
-I/O operations support both synchronous streams and non-blocking asynchronous requests. The async loader delegates tasks to a dedicated worker thread, allowing the engine to transfer files without main-thread stalls. Buffered handles support mode-aware reading, writing, seeking, and appending for predictable stream control.
-
-Additionally, a poll-based file watcher tracks modification timestamps. This detects file changes on demand, serving as the foundation for hot-reloading configurations and assets. The virtual filesystem layer also provides JSON serialization, temporary file creation, and directory metadata inspection.
+This module primarily collaborates with `dataframe`, `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

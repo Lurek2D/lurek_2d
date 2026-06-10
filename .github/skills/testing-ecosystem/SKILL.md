@@ -1,4 +1,4 @@
----
+﻿---
 name: testing-ecosystem
 description: "Load this skill when writing or reviewing Rust unit tests, Lua API tests, Lua game logic tests, or test coverage rules. Skip it for feature implementation or non-test game scripting."
 ---
@@ -21,16 +21,16 @@ Own the testing strategy, file layout, assertion patterns, and coverage tooling 
 - Lua scripting unrelated to tests -> use lua-scripting skill
 
 ## Domain Knowledge
-- Lua-first split: behavior reachable through `lurek.*` belongs in `tests/lua/unit/test_<module>_<layer>.lua`, Rust-only private internals in `tests/rust/unit/<module>_tests.rs`. When in doubt, the Lua layer is preferred — if it can be tested via the public API, it must be.
+- Lua-first split: behavior reachable through `lurek.*` belongs in `tests/lua/unit/test_<module>_<layer>.lua`, Rust-only private internals in `tests/rust/unit/<module>_tests.rs`. When in doubt, the Lua layer is preferred â€” if it can be tested via the public API, it must be.
 - Never put `#[cfg(test)]` in `src/`. Every test that uses `src/` code but is about private internals lives in `tests/rust/unit/<module>_tests.rs` as a separate binary target.
 - File naming is enforced: Rust test files are `<module>_tests.rs`, Lua unit test files are `test_<module>_<layer>.lua`. A file that does not follow the naming convention is not discoverable by `parallel_cargo.py` or the Lua harness.
-- Lua test file structure: each file ends with `test_summary()` and every test case uses `assert_equal`, `assert_true`, `assert_near`, or `assert_error` from the harness — not bare `assert()`. Missing `test_summary()` means the harness reports 0 tests, not a pass.
+- Lua test file structure: each file ends with `test_summary()` and every test case uses `assert_equal`, `assert_true`, `assert_near`, or `assert_error` from the harness â€” not bare `assert()`. Missing `test_summary()` means the harness reports 0 tests, not a pass.
 - New Lua test files must be registered in `tests/lua/harness.rs` under the correct suite. New Rust test binaries must be added to `Cargo.toml` as `[[test]]` targets with the correct `name` and `path`.
-- Float comparison: use `assert_near(a, b, epsilon)` always. Direct `==` on floats in tests is a defect — CI will catch it intermittently on different build profiles or OS.
+- Float comparison: use `assert_near(a, b, epsilon)` always. Direct `==` on floats in tests is a defect â€” CI will catch it intermittently on different build profiles or OS.
 - Determinism checklist: fixed random seed, fixed `dt` value, no filesystem reads outside `tests/fixtures/`, no wall-clock time, no window.
 - Test granularity: one failing reason per test. `test_body_position_after_one_step()` tests exactly that.
 - Evidence strength: prefer state-readback assertions over side-effect checks. `assert_equal(body.position.x, 5.0)` is stronger than `assert_true(on_contact_called)`.
-- After adding tests, run `python tools/audit/test_coverage.py` and `python tools/audit/lua_api_test_coverage.py` to confirm that coverage registration matches the touched suite.
+- After adding tests, run `tools/python.cmd tools/audit/test_coverage.py` and `tools/python.cmd tools/audit/lua_api_test_coverage.py` to confirm that coverage registration matches the touched suite.
 - Folder marker rules:
   - `tests/lua/unit/` -> `-- @covers ...`
   - `tests/lua/security/` -> `-- @security ...`
@@ -44,9 +44,9 @@ Own the testing strategy, file layout, assertion patterns, and coverage tooling 
   - Work in batches of **max 3 Lua files**.
   - Read each file fully before editing.
     - Apply **manual** marker corrections.
-    - After each 3-file batch, run `python tools/audit/lua_test_structure_audit.py --path <file>` for each touched file and proceed only if all pass.
+    - After each 3-file batch, run `tools/python.cmd tools/audit/lua_test_structure_audit.py --path <file>` for each touched file and proceed only if all pass.
     - Use helper scripts only for detection/reporting, not for blind mass edits.
-- Demo tests go in `tests/lua/demos/test_<name>.lua` and `tests/demo_smoke_tests.rs` — not in `tests/lua/unit/`. Optional colocated `content/games/**/test.lua` files run via `lua_demo_colocated_games`.
+- Demo tests go in `tests/lua/demos/test_<name>.lua` and `tests/demo_smoke_tests.rs` â€” not in `tests/lua/unit/`. Optional colocated `content/games/**/test.lua` files run via `lua_demo_colocated_games`.
 
 ## Test Type Matrix (Authoritative)
 
@@ -93,7 +93,7 @@ Each Lua test family has a distinct goal, marker set, and acceptance rule. Do no
 - **Marker accuracy (CRITICAL)**:
     - A marker symbol must correspond to a call that TESTS the symbol, not merely uses it.
     - If `local x = lurek.module.new()` appears with NO assertion validating `new()` contract, DO NOT mark `lurek.module.new`.
-    - Setup calls without assertions are **invisible to markers** — remove them from the marker list.
+    - Setup calls without assertions are **invisible to markers** â€” remove them from the marker list.
     - Example violation: calling `lurek.animation.new()` to create an object but never asserting the object's type/fields/behavior. REMOVE that marker.
     - Example correct: calling `lurek.animation.new()` AND asserting `expect_type("userdata", anim)` or similar. KEEP that marker.
 - Marker placement:
@@ -132,7 +132,7 @@ Each Lua test family has a distinct goal, marker set, and acceptance rule. Do no
     - Example invalid: calling `lurek.animation.new()` and asserting it returns a table.
 
 - Integration tests must prove subsystem interaction, not internal path geometry.
-- Avoid testing single-module contracts through integration files — those belong in `tests/lua/unit/`.
+- Avoid testing single-module contracts through integration files â€” those belong in `tests/lua/unit/`.
 - Prefer stable invariants:
   - endpoint correctness,
   - object lifecycle (`create`, `replace`, `clear`),
@@ -156,7 +156,7 @@ Each Lua test family has a distinct goal, marker set, and acceptance rule. Do no
 ## Definition of Done (Per Changed Test File)
 
 - File-level checks:
-    - `python tools/audit/lua_test_structure_audit.py --path <file>` passes.
+    - `tools/python.cmd tools/audit/lua_test_structure_audit.py --path <file>` passes.
   - Markers match file family rules above.
 
 - Execution checks:

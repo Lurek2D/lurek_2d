@@ -1,50 +1,55 @@
 ---
 name: review-tests
-description: "Review unit lua test coverage and fix all gaps, ensure all practices are followed."
+description: "Load this skill when auditing and fixing Lua unit test coverage, structure, harness registration, and public API test gaps. Skip it for Rust-only internal tests or non-test code reviews."
 ---
 # review-tests
 
-## Goal
-- Audit and improve the Lua unit testing suite to guarantee full functional coverage.
+## Mission
+- Audit and fix Lua test coverage and structure for public `lurek.*` APIs.
 
-## Required inputs
-- Target module
-- User defines the module for test review
-- Agent must collect output from `python tools/audit/lua_api_test_coverage.py` and `python tools/audit/lua_test_structure_audit.py`
+## When To Load
+- Auditing and fixing Lua unit test coverage, structure, harness registration, and public API test gaps.
 
-## Profile hint
-- `reviewer`
+## When To Skip
+- Rust-only internal tests or non-test code reviews.
 
-## Read these contracts
-- `AGENTS.md`
-- `tests/AGENTS.md`
-- `tests/lua/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the reviewed path.
+- Run the listed RAG query and audit/report tools before broad manual inspection.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Produce findings first with severity, affected files, and evidence.
+- If the active profile is read-only, stop after findings and hand off fixes to the owner profile; otherwise fix requested findings and rerun the same audits.
+- Treat review as audit-first, fix-second: findings must be grounded in tool output or direct file inspection.
 
-## Steps
-- Read the listed contracts and stay in read-only mode.
-- Run `python tools/audit/lua_api_test_coverage.py` and `python tools/audit/lua_test_structure_audit.py` for the selected module.
-- Compare the audit output with the actual files under `tests/lua/` and confirm the naming, placement, and coverage paths match the current conventions.
-- Record findings first, with severity and exact file or line evidence where possible.
-- Return a binary accept or reject decision with explicit follow-up gate conditions.
+## Workflow
+- Run Lua API coverage and structure audits before reading many test files.
+- Compare audit output with `tests/lua/` files and harness registration.
+- Report missing `@covers`, structure issues, and uncovered public APIs first.
+- If edit-capable, fix tests and rerun coverage, structure audit, and `cargo test --test lua_tests`.
+- If read-only, hand off to `tester` with exact missing API coverage.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Findings-first review report
-- File and line evidence
-- Accept or reject decision with follow-up conditions
+## Success Criteria
+- Audit output was collected before fixes or handoff.
+- Findings are either fixed and revalidated, or handed off with an explicit owner profile and blocker.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- The review stays read-only unless the user explicitly expands scope to include fixes.
-- The output lists concrete findings and an explicit gate condition.
-- The decision is binary and supported by evidence.
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Do not mutate source or write tests during pure review work.
-- Do not return vague opinions without file-backed evidence.
-- Do not merge review and implementation into the same pass unless the user explicitly asks for both.
+## Companion File Index
+- Contracts: `AGENTS.md`, `tests/AGENTS.md`, `tests/lua/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10`, `tools/python.cmd tools/audit/lua_api_test_coverage.py --module <module>`, `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/`, `cargo test --test lua_tests`
+- Owner profile: `tester`
+
+## Common RAG Queries
+- Start with: `Lua test coverage structure harness public API`, `Lua unit tests public API coverage`, `tests contract Lua API coverage harness`
+- Focus areas first: `tests/lua/`, `tests/`, `content/examples/`, `docs/specs/`
+- Append the target module, API path, or failing test file before broad reads
 
 ## References
 - `contracts: AGENTS.md, tests/AGENTS.md, tests/lua/AGENTS.md`
-- `tools: python tools/audit/lua_api_test_coverage.py, python tools/audit/lua_test_structure_audit.py, cargo test`
+- `tools: tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10, tools/python.cmd tools/audit/lua_api_test_coverage.py --module <module>, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/, cargo test --test lua_tests`
 - `agent: tester`
-
-

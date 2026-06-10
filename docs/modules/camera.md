@@ -2,11 +2,28 @@
 
 ## Summary
 
-The camera module serves as the primary viewport projection layer for Lurek2D, mapping 2D world coordinates onto the user's screen. Its core purpose is to track gameplay targets smoothly using follow algorithms that apply dead-zone constraints, speed smoothing, easing modes, and look-ahead displacements. It supplies follow presets—aggressive, balanced, cinematic, and tight—to quickly capture common movement profiles while enforcing hard bounds to lock the view inside active maps.
+- Controls how players see the world by mapping game-space motion into stable, readable screen framing.
+- Enables smooth target following with dead zones, easing, and look-ahead to reduce jitter and improve readability.
+- Provides practical follow presets so teams can get a good camera feel quickly before deep tuning.
+- Supports world bounds to prevent exposing invalid map regions during traversal and high-speed movement.
+- Exposes direct positioning and rotation controls for scripted cinematics and authored transitions.
+- Includes zoom controls with constraints and damping so scale changes stay intentional and comfortable.
+- Adds screen shake for impact feedback while preserving controllable intensity and duration.
+- Adds sway and breathing effects for subtle motion language in exploration and menu-heavy scenes.
+- Supports zoom pulses and timed transitions for moment-to-moment emphasis during gameplay beats.
+- Provides world-to-screen and screen-to-world conversion for UI overlays, targeting, and interaction tools.
+- Handles resize-aware viewport behavior so camera output remains predictable across resolutions.
+- Supports scale modes like letterbox and pixel-perfect for different visual presentation goals.
+- Enables path-driven camera movement for intros, cutscenes, and guided tutorial sequences.
+- Allows multiple named cameras in one rig for split-screen, minimap, and inset workflows.
+- Lets systems switch active views cleanly without rebuilding render pipelines.
+- Gives gameplay, UI, and render code one shared camera contract instead of parallel ad-hoc logic.
+- Helps users build camera behavior that feels responsive, cinematic, and technically stable.
+- Acts as the core module for viewport control across single-camera and multi-camera game experiences.
+- Reduces implementation friction by packaging common camera patterns behind script-friendly APIs.
+- Improves player comfort by keeping motion framing, zoom, and rotation behavior consistent and bounded.
 
-To enhance the visual and kinetic feel of gameplay, the module layers a dynamic suite of transient camera effects on top of the base tracking transform. Scripts can programmatically trigger camera shake impulses, pulse-based zoom bursts, oscillatory sways with adjustable damping, and ambient breathing zoom modulations for low-action timing. The engine composes these layers with zoom, rotation, and dampening constraints to construct a stable, frame-accurate view matrix while providing pixel-to-world coordinate conversion tools.
-
-For split-screen multiplayer, picture-in-picture maps, or multi-pass scenes, the module supplies multi-camera rig orchestrators. Rigs govern groups of named cameras, auto-calculating split-screen, minimap, and inset display layouts. Viewports are governed by scaling policies that resolve aspect-ratio adjustments into letterbox, stretched, or pixel-perfect projection dimensions, while waypoint-driven path systems interpolate guided cameras along authored waypoints.
+This module primarily collaborates with `math`, `render`, `tilemap`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 
@@ -644,8 +661,9 @@ LCamera:getRotationConstraints()
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-1.0, 1.0)
-    local mn, mx = cam:getRotationConstraints()
-    print("rotation range = " .. mn .. " to " .. mx)
+    local has_min, mn, has_max, mx = cam:getRotationConstraints()
+    print("rotation min enabled = " .. tostring(has_min) .. " value = " .. mn)
+    print("rotation max enabled = " .. tostring(has_max) .. " value = " .. mx)
 end
 ```
 

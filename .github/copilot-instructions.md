@@ -1,4 +1,4 @@
-< MANDATORY NEVER REMOVE BELOW TEXT FROM AGENT SYSTEM PROMPT>
+﻿< MANDATORY NEVER REMOVE BELOW TEXT FROM AGENT SYSTEM PROMPT>
 
 # Lurek2D System Prompt
 
@@ -32,7 +32,7 @@
 - TST-04 `mod.rs` only has pub mods. No logic inside.
 - TST-05 Demos in `tests/lua/demos/`. Screenshot in `tests/demo_smoke_tests.rs`.
 - TST-06 One test file per module per layer: `test_<module>_<layer>.lua`.
-- Never edit `docs/api/lurek.lua` directly. Edit `src/lua_api/` and run `python tools/gen_all_docs.py`.
+- Never edit `docs/api/lurek.lua` directly. Edit `src/lua_api/` and run `tools/python.cmd tools/gen_all_docs.py`.
 - No warning suppress in `.vscode/settings.json`.
 - No `---@diagnostic disable` in Lua. Fix `src/lua_api/`.
 - No Lua type casts. Use `any` in rust bindings if needed.
@@ -40,7 +40,7 @@
 ## Cross-Artifact Sync
 Change one, update all:
 - `src/<module>/*.rs` -> `docs/specs/<module>.md`.
-- `src/lua_api/*_api.rs` -> `docs/specs/` and run `python tools/gen_all_docs.py`.
+- `src/lua_api/*_api.rs` -> `docs/specs/` and run `tools/python.cmd tools/gen_all_docs.py`.
 - API change -> `content/examples/`, `content/games/`, `library/`.
 - New module -> `docs/specs/<module>.md` and `docs/specs/README.md`.
 - `library/<name>/init.lua` -> example, tests, docs.
@@ -58,8 +58,8 @@ Change one, update all:
 ## Quality Gates
 Do before commit:
 - `cargo test` and `cargo clippy -- -D warnings`.
-- `python tools/validate/cag_validate.py`.
-- `python tools/audit/cag_link_check.py --strict`.
+- `tools/python.cmd tools/validate/cag_validate.py`.
+- `tools/python.cmd tools/audit/cag_link_check.py --strict`.
 
 ## Repository Layout
 - `src/` has Rust code.
@@ -69,3 +69,4 @@ Do before commit:
 - `library/` has Lua modules.
 - `.github/` has Agents, skills, prompts.
 - `work/` has Flat temp files.
+

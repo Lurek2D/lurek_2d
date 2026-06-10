@@ -1,45 +1,43 @@
 ﻿---
 name: create-shader
-description: Create or update shader code which is used by GPU to render things.
+description: "Load this skill when creating or modifying WGSL shaders or renderer shader-loader integration. Skip it for non-shader rendering logic, UI layouts, or visual asset edits only."
 ---
 
-# GOAL
-- Write or modify GPU shader code (WGSL) and integrate it into the 2D renderer.
+# Goal
+- Create or modify WGSL shader code and integrate it with the existing renderer pipeline.
 
-# INPUTS REQUIRED
-- Shader effect description (e.g., bloom, blur, CRT)
-- Target render pass
-= User must describe the visual effect desired
-- Agent must collect current wgpu render pipeline configurations
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: gpu-programming, visual-effects.
-2. Write the `.wgsl` shader file ensuring strict WebGPU/wgpu 22 compatibility.
-3. Update the relevant `RenderCommand` or pipeline setup in `src/` to compile and bind the new shader.
-4. Execute `cargo check`. If the compiler throws WGSL validation errors, fix the shader code in step 2.
-5. Execute `cargo test`. Ensure 100% of render tests still pass.
-6. Execute a standalone demo locally that utilizes the new shader. Verify visual output. If rendering fails, adjust uniforms and repeat step 4.
+# Steps
+1. Load the active `.codex/skills/create-shader/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Read `src/AGENTS.md`, inspect `assets/shaders/`, and inspect relevant `src/render/` loader/pipeline files.
+5. Modify an existing shader when it owns the effect; create a new `.wgsl` file only for a new effect.
+6. Keep shader names, bind groups, uniforms, and renderer loader wiring aligned.
+7. Run `cargo check` for WGSL/rust validation and `cargo test` for render pipeline coverage.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- `.wgsl` shader file
-- Modified Rust rendering code
-- Lua test script
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `cargo check` exits with code 0 (0 compilation/WGSL validation errors).
-- [ ] `cargo test` exits with code 0 (0 broken render pipelines).
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Using features not supported by wgpu 22 or the target WebGPU standard.
-- Hardcoding uniforms that should be configurable via the Lua API.
+# Example Invocation
+- User: Use `create-shader` for the requested scope.
+- Agent: Loads `.codex/skills/create-shader/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: gpu-programming, visual-effects, rust-coding
-- tools: cargo check, cargo test
-- agent: Developer
-
+# References
+- skills: `.codex/skills/create-shader/SKILL.md`
+- contracts: src/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "WGSL shader src render pipeline" --profile engine --limit 10, cargo check, cargo test
+- agent: developer
 

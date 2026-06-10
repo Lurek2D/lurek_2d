@@ -1,45 +1,43 @@
 ﻿---
 name: create-library
-description: Create or update new lua pure library part of lureksome.
+description: "Load this skill when creating or modifying pure Lua library modules under library with tests and docs. Skip it for engine Rust modules, content demos, or one-off snippets."
 ---
 
-# GOAL
-- Develop a pure Lua library module under the `library/` folder, including its docs and tests.
+# Goal
+- Create or modify pure Lua library modules that are reusable, documented, and covered.
 
-# INPUTS REQUIRED
-- Library name
-- Functionality description
-= User must provide the library purpose and interface requirements
-- Agent must collect existing library conventions
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: library-authoring, lua-scripting.
-2. Execute `python tools/audit/library_coverage.py` to identify missing test/doc dependencies for existing libraries as a reference point.
-3. Create `library/<name>/init.lua`. Write standard, highly optimized Lua code relying strictly on the `lurek.*` API.
-4. Add `tests/lua/test_library_<name>.lua` and `library/<name>/README.md` containing usage docs-general.
-5. Execute `python tools/validate/validate_library.py --lib <name>`. If it fails, fix the structure.
-6. Execute `python tools/audit/library_coverage.py`. If coverage is <100%, write additional tests and docs in step 4 until the script reports 100%.
+# Steps
+1. Load the active `.codex/skills/create-library/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect the target `library/<name>/` and existing library conventions first.
+5. Modify an existing library when it owns the requested API; create `init.lua` and docs only for a new library.
+6. Keep the public Lua interface small and documented.
+7. Add or update Lua tests and examples that exercise real behavior.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- The new `init.lua` library file
-- Library docs-general and tests
-- Coverage report
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `python tools/validate/validate_library.py` exits with code 0.
-- [ ] `python tools/audit/library_coverage.py` reports exactly 100% coverage for the new library.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Introducing global variables into the Lua environment.
-- Using non-standard Lua paradigms that clash with LuaJIT performance.
+# Example Invocation
+- User: Use `create-library` for the requested scope.
+- Agent: Loads `.codex/skills/create-library/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: library-authoring, lua-scripting
-- tools: python tools/audit/library_coverage.py, python tools/validate/validate_library.py
-- agent: Content-Maker
-
+# References
+- skills: `.codex/skills/create-library/SKILL.md`
+- contracts: library/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "library Lua module conventions" --profile game --limit 10, tools/python.cmd tools/audit/library_coverage.py, tools/python.cmd tools/validate/validate_library.py --lib <name>
+- agent: content
 

@@ -2,13 +2,22 @@
 
 ## Summary
 
-This module handles audio signal processing and synthesis, offering control over sound generation and manipulation. It provides the runtime for real-time effects like filters, delays, and modulations. These effects use lock-free parameters to ensure low-latency safety, wrapping audio sources to apply clean transformations sample-by-sample during live playback.
+- This module gives users programmable audio processing for both live playback and offline content workflows.
+- It supports effect chains with runtime-adjustable parameters for filters, modulation, and tone shaping.
+- DSP graph composition lets teams define ordered signal flows instead of hardcoding one-off pipelines.
+- Real-time and offline paths make the same processing ideas usable in gameplay and asset preparation.
+- Procedural synthesis tools generate tones and noise directly, reducing dependence on pre-rendered clips.
+- ADSR envelope support enables musically useful shaping for notes, hits, and generated effects.
+- Analysis tools expose peak, RMS, and spectrum insights for mix decisions and diagnostics.
+- Visualization outputs help users inspect waveform and frequency behavior quickly.
+- Offline normalization and processing utilities support repeatable batch prep steps.
+- The module improves iteration by keeping synthesis, effects, and analysis in one namespace.
+- Users can prototype sound design ideas directly in script before committing to asset pipelines.
+- It also supports advanced debug workflows where audible behavior must be measurable.
+- In short, this is the signal-processing layer for adaptive and inspectable game audio.
+- It bridges creative sound design and deterministic runtime control in one module.
 
-To organize audio paths, the module features a digital signal processing graph where developers connect nodes to describe ordered signal flows. This supports both real-time streaming and offline processing, enabling users to batch render effect chains to files. This is ideal for asset baking, peak normalization, and preparing audio exports.
-
-Procedural synthesis is supported by primitives generating waveforms and noise. These oscillators combine with envelopes that apply gain changes over attack, decay, sustain, and release phases. This makes it easy to generate dynamic sound effects and musical notes dynamically, without relying on pre-recorded files.
-
-Additionally, the system provides level detectors tracking peak, average amplitude, and clipping thresholds, alongside spectral analyzers. These feed visualization utilities that convert audio data into waveform plots and spectrogram images, helping developers inspect audio assets and verify sound behaviors.
+This module primarily collaborates with `audio`, `runtime`. Its responsibility should stay inside the `Platform Services` group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

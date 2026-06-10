@@ -685,14 +685,14 @@ end
 do
     local ca = lurek.procgen.newCellular(16, 16)
     local img = ca:toImageData()
-    print("toImageData type = " .. img:type())
+    print("toImageData bytes = " .. #img)
 end
 
 --@api-stub: LCellular:toImageDataRegion
 do
     local ca = lurek.procgen.newCellular(32, 32)
     local img = ca:toImageDataRegion(0, 0, 16, 16)
-    print("toImageDataRegion type = " .. img:type())
+    print("toImageDataRegion bytes = " .. #img)
 end
 
 --@api-stub: LCellular:type

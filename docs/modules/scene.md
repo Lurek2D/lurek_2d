@@ -2,15 +2,26 @@
 
 ## Summary
 
-This module provides a robust game flow and state control subsystem built on a structured scene stack model. It organizes game progression across major runtime states, such as menus, levels, and popup screens, through standard push, pop, and switch operations. The stack supports overlay layouts that can run alongside underlying states, and utilizes prototype metatable factories to define and instantiate custom scene classes dynamically.
+- This module gives users stack-based scene flow control for menus, gameplay states, overlays, and transitions.
+- Push/pop/switch operations provide explicit runtime state navigation primitives.
+- Overlay support allows stacked scene behavior without fully replacing underlying context.
+- Lifecycle callbacks coordinate enter, leave, pause, resume, and ready phases consistently.
+- Preload hooks support deferred scene initialization to reduce transition stutter.
+- Shared scene data APIs support parameter passing without global-variable sprawl.
+- Registered scene names support lookup, reuse, and navigation by symbolic identifiers.
+- Transition helpers support fade, slide, wipe, and iris style visual changes.
+- Transition queues allow staged cinematic scene changes.
+- Serialization helpers capture stack and shared data snapshots for save/load workflows.
+- Process/update/render toggle controls support selective scene execution policies.
+- Active-scene and layer queries support debug overlays and tooling integration.
+- Built-in depth sorter supports painter-order rendering for mixed drawables.
+- Stable-sort support prevents equal-depth flicker artifacts.
+- This module is useful for game-state architecture, UI layering, and narrative flow systems.
+- For users, it centralizes scene lifecycle semantics instead of scattered ad-hoc table swaps.
+- It improves maintainability of complex navigation and transition behavior.
+- Overall, users get a robust orchestration layer for stateful game flow.
 
-State navigation is governed by a predictable lifecycle callback pipeline. Pushed, popped, or transitioned scenes receive timely enter, leave, pause, resume, and ready callbacks in strict stack order, ensuring consistent state setups. To prevent startup stutters under heavy loads, developers can register deferred preload functions, lazy-loading heavy asset pools only when a scene is first pushed to the stack.
-
-To bridge state changes smoothly, the module implements timed visual transition queues. Scene switches can trigger animated slides, fades, sweeps, or iris wipes with configurable easing curves. Easing parameters convert name descriptors into dynamic progress values, while a first-in-first-out transition queue schedules sequential animations automatically to support complex cinematic reveal loops.
-
-Frictions during transition and save-state routing are resolved using shared contexts and serialization engines. The module maintains a shared key-value data register that lets adjacent scenes pass parameters cleanly without global namespace sprawl. Additionally, it compiles the active scene stack and its shared context into a serializable snapshot table, enabling quick save and reload workflows.
-
-Finally, the system integrates a z-ordered painter-style depth sorter to handle visual overlays. The sorter collects raw draw callbacks or drawable game tables, sorting them in a back-to-front order before rendering. It supports both high-performance sorting and stable sorting configurations; enabling stable sorting prevents visual flickering for overlapping objects that share identical z-depths.
+This module primarily collaborates with `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

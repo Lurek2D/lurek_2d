@@ -6,9 +6,11 @@ Usage:
     python tools/audit/scan_exact.py
 ```
 """
-import re, os, sys
+from __future__ import annotations
 
-ROOT = r'c:\Users\tombl\Documents\lurek2D'
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
 
 queries = {
     'src/lua_api/ui_api.rs': ['newLabel', 'newSeparator', 'addButton', 'LTheme', 'typeOf', 'newToolbar', 'impl_type'],
@@ -20,7 +22,7 @@ queries = {
 }
 
 for rel, targets in queries.items():
-    fpath = os.path.join(ROOT, rel)
+    fpath = ROOT / rel
     with open(fpath, encoding='utf-8') as f:
         lines = f.readlines()
     print(f'\n=== {rel} ===')

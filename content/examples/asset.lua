@@ -3,11 +3,13 @@
 -- @module lurek.asset
 
 -- Shared fixture paths used throughout the file.
+local PATH_TEXT   = "content/examples/assets/data/sample_hello.txt"
 local PATH_JSON   = "assets/fonts/bitmap_fonts.json"
-local PATH_TOML   = "Cargo.toml"
-local PATH_LUA    = "main.lua"
+local PATH_TOML   = "content/examples/assets/data/sample_config.toml"
+local PATH_LUA    = "content/examples/asset.lua"
 local PATH_SHADER = "assets/shaders/province_map.wgsl"
-local PATH_BIN    = "assets/textures/province_map.png"
+local PATH_OBJ    = "content/examples/assets/models/sample_tank.obj"
+local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- LOAD / UNLOAD  (text-like types read content; binary types store path ref)
@@ -16,7 +18,7 @@ local PATH_BIN    = "assets/textures/province_map.png"
 --@api-stub: lurek.asset.load
 do
     -- Minimal load: text type reads file content immediately.
-    local h = lurek.asset.load(PATH_JSON, "text")
+    local h = lurek.asset.load(PATH_TEXT, "text")
     print("loaded: " .. h:type())
     lurek.asset.unload(h)
 
@@ -41,7 +43,7 @@ do
     lurek.asset.unload(hs)
 
     -- load type=obj (any text file works for raw OBJ geometry)
-    local ho = lurek.asset.load(PATH_LUA, "obj")
+    local ho = lurek.asset.load(PATH_OBJ, "obj")
     print("obj loaded: " .. tostring(lurek.asset.isLoaded(ho)))
     lurek.asset.unload(ho)
 
@@ -69,7 +71,7 @@ end
 
 --@api-stub: lurek.asset.unload
 do
-    local h = lurek.asset.load(PATH_JSON, "text")
+    local h = lurek.asset.load(PATH_TEXT, "text")
     lurek.asset.unload(h)
     print("unloaded, isLoaded=" .. tostring(lurek.asset.isLoaded(h)))
 end
@@ -77,7 +79,7 @@ end
 --@api-stub: lurek.asset.get
 do
     -- get() for text-like types returns cached file content as a string.
-    local h = lurek.asset.load(PATH_JSON, "text")
+    local h = lurek.asset.load(PATH_TEXT, "text")
     local content = lurek.asset.get(h)
     print("content length=" .. tostring(type(content) == "string" and #content or 0))
     lurek.asset.unload(h)
@@ -94,6 +96,7 @@ do
     local results = {}
     lurek.asset.preload(
         {
+            {PATH_TEXT,   "text"},
             {PATH_JSON,   "json"},
             {PATH_TOML,   "toml"},
             {PATH_LUA,    "lua"},
@@ -111,14 +114,14 @@ end
 
 --@api-stub: lurek.asset.refcount
 do
-    local h = lurek.asset.load(PATH_JSON, "text")
+    local h = lurek.asset.load(PATH_TEXT, "text")
     print("refcount=" .. lurek.asset.refcount(h))
     lurek.asset.unload(h)
 end
 
 --@api-stub: lurek.asset.isLoaded
 do
-    local h = lurek.asset.load(PATH_JSON, "text")
+    local h = lurek.asset.load(PATH_TEXT, "text")
     print("isLoaded=" .. tostring(lurek.asset.isLoaded(h)))
     lurek.asset.unload(h)
     print("isLoaded after unload=" .. tostring(lurek.asset.isLoaded(h)))
@@ -140,7 +143,7 @@ end
 
 --@api-stub: lurek.asset.clear
 do
-    lurek.asset.load(PATH_JSON, "text")
+    lurek.asset.load(PATH_TEXT, "text")
     lurek.asset.clear()
     print("after clear loaded=" .. lurek.asset.stats().loaded)
 end
@@ -338,14 +341,14 @@ end
 
 --@api-stub: LAssetHandle:type
 do
-    local h = lurek.asset.load(PATH_JSON, "text")
+    local h = lurek.asset.load(PATH_TEXT, "text")
     print("type=" .. h:type())                    -- "LAssetHandle"
     lurek.asset.unload(h)
 end
 
 --@api-stub: LAssetHandle:typeOf
 do
-    local h = lurek.asset.load(PATH_JSON, "text")
+    local h = lurek.asset.load(PATH_TEXT, "text")
     print("typeOf LAssetHandle=" .. tostring(h:typeOf("LAssetHandle")))
     print("typeOf LObject="      .. tostring(h:typeOf("LObject")))
     print("typeOf other="        .. tostring(h:typeOf("other")))

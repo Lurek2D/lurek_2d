@@ -8,9 +8,15 @@
 //! - Holds depth-stencil states, target formats, and multi-sampling options.
 //! - Facilitates frame resource reuse, minimizing CPU-GPU synchronization overhead.
 //! - Maps texture IDs to raw wgpu texture handles securely.
-use crate::runtime::resource_keys::{StaticGeometryKey, InstanceBufferKey};
+use crate::runtime::resource_keys::{InstanceBufferKey, StaticGeometryKey};
 
 /// GPU texture with its bind group; held in slot-maps keyed by `TextureKey` / `CanvasKey` / `FontKey`.
+///
+/// # Fields
+/// - `_texture` - Owned texture kept alive while the view and bind group are in use.
+/// - `view` - Texture view bound by render and shader passes.
+/// - `bind_group` - Texture/sampler bind group for draw submission.
+/// - `width` / `height` - Pixel dimensions used for target validation and stats.
 pub struct GpuTexture {
     /// Owned wgpu texture object (prefixed with `_` to avoid unused-field warnings).
     pub(crate) _texture: wgpu::Texture,
@@ -46,6 +52,12 @@ pub struct PendingSurfaceReadback {
     pub(crate) height: u32,
 }
 /// Per-frame GPU draw statistics exposed to the Lua profiler API.
+///
+/// # Fields
+/// - `draw_calls` - Number of GPU draw calls encoded for the frame.
+/// - `texture_switches` / `canvas_switches` / `shader_switches` - State transition counters.
+/// - `batched_draws` - Draws merged by batching.
+/// - `cpu_render_ms` - CPU time spent in `render_frame`.
 #[derive(Debug, Default, Clone)]
 pub struct RenderStats {
     /// Total number of GPU draw calls issued this frame.
@@ -61,7 +73,6 @@ pub struct RenderStats {
     /// CPU time spent in `render_frame` this frame in milliseconds.
     pub cpu_render_ms: f32,
 }
-
 
 /// Cache entry for uploaded static geometry buffers.
 #[allow(dead_code)]

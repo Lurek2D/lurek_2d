@@ -1,50 +1,55 @@
 ---
 name: review-api
-description: "Review lua api coverage (if public rust methods are covered by lua api wrapper, if they have properly thin layer, have proper paramers, returns, description all setup in code in lua_api module), fix all the gaps."
+description: "Load this skill when auditing and fixing Rust-to-Lua API coverage, thin wrappers, signatures, docs, and specs. Skip it for internal Rust-only tests or docs reviews without Lua API impact."
 ---
 # review-api
 
-## Goal
-- Audit the Lua API bridge for completeness, "thin wrapper" compliance, and correctness.
+## Mission
+- Audit and fix Lua API parity between Rust modules, `src/lua_api/`, specs, and generated docs.
 
-## Required inputs
-- Target module
-- User specifies the module to review
-- Agent must collect Rust source public methods and their Lua API counterparts
+## When To Load
+- Auditing and fixing Rust-to-Lua API coverage, thin wrappers, signatures, docs, and specs.
 
-## Profile hint
-- `lua_designer`
+## When To Skip
+- Internal Rust-only tests or docs reviews without Lua API impact.
 
-## Read these contracts
-- `AGENTS.md`
-- `src/lua_api/AGENTS.md`
-- `docs/specs/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the reviewed path.
+- Run the listed RAG query and audit/report tools before broad manual inspection.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Produce findings first with severity, affected files, and evidence.
+- If the active profile is read-only, stop after findings and hand off fixes to the owner profile; otherwise fix requested findings and rerun the same audits.
+- Treat review as audit-first, fix-second: findings must be grounded in tool output or direct file inspection.
 
-## Steps
-- Read the listed contracts and stay in read-only mode.
-- Run `python tools/audit/lua_covers_lurek_api_audit.py` and `python tools/audit/thin_wrapper_audit.py` for the selected module surface.
-- Compare the Rust public API, the `src/lua_api/` wrapper, and the generated docs or specs for missing functions, thin-wrapper drift, or bad signatures.
-- Record findings first, with severity and exact file or line evidence where possible.
-- Return a binary accept or reject decision with explicit follow-up gate conditions.
+## Workflow
+- Run API coverage and thin-wrapper audits for the selected module.
+- Compare Rust public methods, Lua wrappers, generated docs, and specs.
+- Record findings first with file paths and missing signatures.
+- If edit-capable, fix wrappers/specs/docs and rerun the same audits.
+- If read-only, hand off fixes to `lua_designer` or `developer`.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Findings-first review report
-- File and line evidence
-- Accept or reject decision with follow-up conditions
+## Success Criteria
+- Audit output was collected before fixes or handoff.
+- Findings are either fixed and revalidated, or handed off with an explicit owner profile and blocker.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- The review stays read-only unless the user explicitly expands scope to include fixes.
-- The output lists concrete findings and an explicit gate condition.
-- The decision is binary and supported by evidence.
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Do not mutate source or write tests during pure review work.
-- Do not return vague opinions without file-backed evidence.
-- Do not merge review and implementation into the same pass unless the user explicitly asks for both.
+## Companion File Index
+- Contracts: `AGENTS.md`, `src/lua_api/AGENTS.md`, `docs/specs/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "Lua API wrapper coverage thin wrapper" --profile engine --limit 10`, `tools/python.cmd tools/audit/lua_covers_lurek_api_audit.py`, `tools/python.cmd tools/audit/thin_wrapper_audit.py`, `tools/python.cmd tools/gen_all_docs.py`
+- Owner profile: `lua_designer`
+
+## Common RAG Queries
+- Start with: `Lua API wrapper coverage thin wrapper`, `Rust engine module lua_api docs specs`, `src lua_api AGENTS thin wrappers registration only`
+- Focus areas first: `src/lua_api/`, `src/`, `docs/specs/`, `tests/lua/`, `tools/audit/`
+- Append the API path or module name such as `lurek.input`, `lurek.render`, `math`, `scene`
 
 ## References
 - `contracts: AGENTS.md, src/lua_api/AGENTS.md, docs/specs/AGENTS.md`
-- `tools: python tools/audit/lua_covers_lurek_api_audit.py, python tools/audit/thin_wrapper_audit.py`
+- `tools: tools/python.cmd tools/rag/query.py "Lua API wrapper coverage thin wrapper" --profile engine --limit 10, tools/python.cmd tools/audit/lua_covers_lurek_api_audit.py, tools/python.cmd tools/audit/thin_wrapper_audit.py, tools/python.cmd tools/gen_all_docs.py`
 - `agent: lua_designer`
-
-

@@ -6753,7 +6753,7 @@ end
 --@api-stub: lurek.ui.loadLayoutGameFile
 do
     local ok, result = pcall(function()
-        return lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+        return lurek.ui.loadLayoutGameFile("content/examples/assets/layouts/sample_main_menu.toml")
     end)
     print("loadLayoutGameFile ok:", ok, "result:", tostring(result))
 end

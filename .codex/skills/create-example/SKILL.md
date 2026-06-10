@@ -1,48 +1,55 @@
 ---
 name: create-example
-description: "Create new example or update example for specific module."
+description: "Load this skill when creating or modifying API examples under content/examples for a specific public lurek API. Skip it for full demos, snippets, engine implementation, or non-public internals."
 ---
 # create-example
 
-## Goal
-- Create a clear, concise example script in `content/examples/` illustrating a specific module's API.
+## Mission
+- Create or modify concise runnable API examples that cover real public behavior.
 
-## Required inputs
-- Target module
-- API function or concept to demonstrate
-- User must specify which part of the API needs an example
-- Agent must collect the exact API signatures from `docs/api/lurek.lua`
+## When To Load
+- Creating or modifying API examples under content/examples for a specific public lurek API.
 
-## Profile hint
-- `content`
+## When To Skip
+- Full demos, snippets, engine implementation, or non-public internals.
 
-## Read these contracts
-- `content/AGENTS.md`
-- `content/examples/AGENTS.md`
-- `docs/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the target path.
+- Run the listed RAG query before broad file reads and start from top hits.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Check whether the target artifact already exists; modify existing content unless a new owner is clearly required.
+- Read the nearest source, spec, test, doc, or config before editing.
+- Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
 
-## Steps
-- Read the listed contracts before authoring the example.
-- Execute `python tools/audit/example_coverage.py --module <module>` for the target module to confirm which API signatures are currently un-exampled.
-- Write a self-contained Lua script in `content/examples/` that sets up and invokes the targeted API cleanly.
-- Execute `python tools/validate/validate_example_coverage.py`. If it fails or shows unlinked examples, fix the registration metadata in the script.
-- Execute `python tools/audit/example_coverage.py --module <module>` again. If the target API coverage is still below 100%, return to the example and cover the missing methods.
+## Workflow
+- Inspect existing examples and current API signatures before writing.
+- Modify an existing example when it already owns the API; create a new file only for an uncovered surface.
+- Keep the example self-contained, runnable, and free of stub calls.
+- Run example coverage before and after the change.
+- Regenerate or validate docs only when example metadata changes.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- New or modified example script
-- Example coverage report
+## Success Criteria
+- The target artifact was created or modified in the narrowest owning location.
+- Existing content was preserved and updated when it already owned the behavior.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- [ ] `python tools/validate/validate_example_coverage.py` exits with code 0.
-- [ ] `python tools/audit/example_coverage.py` reports exactly 100% example coverage for the targeted API method.
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Writing overly complex examples that obscure the actual API being demonstrated.
-- Failing to document the code with clear comments.
+## Companion File Index
+- Contracts: `content/AGENTS.md`, `content/examples/AGENTS.md`, `docs/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "content examples API coverage" --profile game --limit 10`, `tools/python.cmd tools/audit/example_coverage.py --module <module>`, `tools/python.cmd tools/validate/validate_example_coverage.py`
+- Owner profile: `content`
+
+## Common RAG Queries
+- Start with: `content examples API coverage`, `example coverage content examples API`, `keyboard input lua API examples tests`
+- Focus areas first: `content/examples/`, `docs/`, `tests/lua/`, `content/snippets/`
+- Append the API or module name such as `input`, `render`, `tilemap`, `math` when narrowing
 
 ## References
 - `contracts: content/AGENTS.md, content/examples/AGENTS.md, docs/AGENTS.md`
-- `tools: python tools/audit/example_coverage.py, python tools/validate/validate_example_coverage.py`
+- `tools: tools/python.cmd tools/rag/query.py "content examples API coverage" --profile game --limit 10, tools/python.cmd tools/audit/example_coverage.py --module <module>, tools/python.cmd tools/validate/validate_example_coverage.py`
 - `agent: content`
-
-

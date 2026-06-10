@@ -2,13 +2,28 @@
 
 ## Summary
 
-This module represents the dynamic 2D illumination and shadow-casting subsystem, offering developers control over visual lighting environments. It operates a centralized light world container that manages active lights and structural occluders keyed by stable handles. By processing coordinates, global ambient colors, and light groupings, the system produces coordinated illumination layers that shape visual depth and gameplay moods in real-time.
+- This module gives users dynamic 2D lighting and shadow control for mood, readability, and gameplay signaling.
+- It supports point, spot, and directional light types with configurable intensity and color behavior.
+- Attenuation and falloff controls let teams tune how light fades across distance.
+- Blend modes support additive and subtractive composition for different visual styles.
+- Ambient controls provide scene-wide baseline illumination.
+- Group operations allow bulk edits to sets of lights during state transitions.
+- Flicker and transition helpers support animated lighting effects without custom per-frame math.
+- Shadow casting uses polygon occluders for geometry-driven blocking behavior.
+- Shadow masks and receiver masks provide control over which objects interact with which lights.
+- Filter settings support quality/performance trade-offs for hard and softened shadows.
+- Normal-map hinting and volumetric-adjacent settings help integrate richer shading workflows.
+- Light-world APIs centralize creation, mutation, and cleanup of runtime light entities.
+- Preview-to-image utilities support debug and evidence workflows for visual validation.
+- The module is useful for stealth, atmosphere, navigation cues, and dramatic scene transitions.
+- For users, it turns lighting from static art into a controllable gameplay system.
+- It reduces custom lighting glue code while keeping behavior script-driven.
+- The practical result is faster lighting iteration and clearer visual feedback loops.
+- It also improves testability by exposing deterministic controls and introspection-friendly outputs.
+- Overall, users get a comprehensive 2D illumination toolkit integrated with runtime scripting.
+- This helps teams balance style, performance, and legibility in one place.
 
-At the heart of the light simulation are geometric models distinguishing point, spot-cone, and directional light types. Individual lights carry parameters for color, energy, and quadratic attenuation formulas that dictate how intensity decays over distance. Radial falloff profiles define custom decay curves between light centers and outer radii. These properties blend using additive or subtractive modes to compose complex, overlapping lighting maps.
-
-To animate lighting layouts dynamically, the module includes temporal flicker modules and smooth transition helpers. Flicker units animate lights using sine-based oscillations that simulate torches, candles, or flickering neon bulbs over time. Transition systems interpolate values linearly across frame boundaries, stepping colors, intensities, and sizes toward target goals smoothly to create environmental changes.
-
-Shadow casting is supported by convex polygon occluders that block light dynamically. Occluders carry local coordinates, enabling developers to position collision shapes and modify their opacity in real-time. Inclusion and shadow receiver masks allow developers to control which lights interact with specific occluding objects. This system features hard-shadowing or soft-shadow PCF-based filters to control both visual styling and rendering costs.
+This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

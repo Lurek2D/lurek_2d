@@ -1,46 +1,51 @@
 ---
 name: route-prompt
-description: "Find the best prompt for the current work context."
+description: "Load this skill when choosing the best active Codex skill, owner profile, or legacy prompt for a user request. Skip it for executing the selected workflow or doing implementation directly."
 ---
 # route-prompt
 
-## Goal
-- Identify the single most appropriate prompt for a user's request so the user can invoke it immediately.
+## Mission
+- Route user requests to the narrowest active Codex skill and owner profile before falling back to legacy prompts.
 
-## Required inputs
-- User's request description (natural language)
-- Optional: known agent name or domain constraint
-- User provides the work objective
-- Agent must collect available prompts in `.github/prompts/`
+## When To Load
+- Choosing the best active Codex skill, owner profile, or legacy prompt for a user request.
 
-## Profile hint
-- `manager`
+## When To Skip
+- Executing the selected workflow or doing implementation directly.
 
-## Read these contracts
-- `.codex/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md` and `.codex/AGENTS.md` before routing.
+- Use RAG and filesystem metadata to avoid guessing available skills or prompts.
 
-## Steps
-- Read `.codex/AGENTS.md` and route by current folder contracts, role profiles, and task-skill scope instead of legacy routing skills.
-- Read the user's natural language request. Categorize it to a primary domain (e.g., Rust engine, Lua API, testing).
-- Identify the owning agent from the CAG architecture rules that is responsible for that domain.
-- Scan `.github/prompts/` to find the prompt whose `description` or `goal` directly solves the user's request.
-- Print the single best-matching prompt, detailing its agent, required skills, and provide a filled-out example invocation command. Do not guess or invent files.
+## Workflow
+- Read `.codex/AGENTS.md`, root `AGENTS.md`, active agent TOMLs, and relevant skill metadata.
+- Search `.codex/skills` first because it is the active Codex surface.
+- Choose one primary skill and one owner profile; mention supporting skills only when needed.
+- Use `.github/prompts` only as a legacy mirror when the user explicitly asks for a prompt or no active skill matches.
+- Return a concrete invocation or handoff with no invented filenames.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Recommendation output block with prompt details
-- Filled-in example invocation line
+## Success Criteria
+- Output names exactly one primary active skill and one owner profile unless no active skill fits.
+- Legacy prompts are used only as fallback or explicit user request.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- [ ] Output lists exactly 1 prompt matching the request's domain.
-- [ ] The printed invocation command contains 0 generic placeholders and 100% real values from the user's context.
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Nominating multiple prompts without a clear recommendation.
-- Inventing prompt filenames that don't exist.
+## Companion File Index
+- Contracts: `.codex/AGENTS.md`, `AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "codex skills agents routing" --profile all --limit 10`, `filesystem reads of .codex/skills, .codex/agents, and .github/prompts`
+- Owner profile: `manager`
+
+## Common RAG Queries
+- Start with: `codex skills agents routing`, `Codex AGENTS skills agents routing`, `codex CAG skills agents prompts`
+- Focus areas first: `.codex/skills/`, `.codex/agents/`, `.codex/AGENTS.md`, root `AGENTS.md`
+- If the request names a surface, append it directly: `tests`, `pages`, `tool`, `module`, `extension`, `rag`
 
 ## References
-- `contracts: .codex/AGENTS.md`
-- `tools: file system read over `.github/prompts/``
+- `contracts: .codex/AGENTS.md, AGENTS.md`
+- `tools: tools/python.cmd tools/rag/query.py "codex skills agents routing" --profile all --limit 10, filesystem reads of .codex/skills, .codex/agents, and .github/prompts`
 - `agent: manager`
-
-

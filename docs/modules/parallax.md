@@ -2,9 +2,18 @@
 
 ## Summary
 
-This module provides a multi-layered parallax scrolling system that creates a sense of depth in 2D environments. By assigning distinct scroll factors, z-orders, and offsets to individual planes, layers move relative to the camera at varying speeds. The system supports autonomous autoscrolling for moving skies, as well as scroll clamping to restrict layer movement within designated map boundaries.
+- This module gives users layered parallax control for creating depth in 2D scenes.
+- Layers can move at different scroll factors relative to camera movement.
+- Autoscroll support enables moving skies, fog drift, and ambient motion backgrounds.
+- Clamp options keep layer motion within designed world bounds.
+- Tiling logic maintains seamless coverage across the viewport.
+- Preset layers provide quick-start setups for common depth planes.
+- Motion-stretch options add velocity-driven style cues.
+- Per-layer effect chains support stylized post-processing on background planes.
+- Layer sets help organize multiple planes into reusable scene groups.
+- For users, this module turns depth presentation into a configurable runtime system.
 
-To ease implementation, the module provides ready-made depth templates, such as distant skies and foreground fog. It tiles textures across the viewport using smart visibility logic that avoids edge gaps. Additionally, layers can incorporate motion-based stretch blur driven by velocity and custom shader chains to create stylized visual atmosphere.
+This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

@@ -2,9 +2,15 @@
 
 ## Summary
 
-This module establishes a communication bridge between the active game session and external editing panels. By running a background network server, it allows developers to remotely inspect and control the engine's state without interrupting gameplay. It enables on-the-fly code updates, performance tracking, and screenshot captures.
+- Connects a running game session to external tooling so developers can inspect and control runtime state live.
+- Enables remote debugging workflows without stopping gameplay or attaching heavyweight local instrumentation.
+- Exposes protocol and capability metadata so client tools can negotiate supported bridge behavior safely.
+- Streams print history and broadcast events to connected clients for faster issue triage.
+- Supports screenshot and hot-reload request flows that accelerate iteration during content and script tuning.
+- Provides basic session hardening through handshake and nonce-based access checks.
+- Gives teams one remote diagnostics channel for live observability and command dispatch.
 
-Additionally, the system manages session security and distributes console logs to all connected screens. This remote messaging streamlines session monitoring and facilitates diagnosing behaviors during development.
+This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Functions
 

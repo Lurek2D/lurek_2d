@@ -220,8 +220,8 @@ def main() -> int:
     ap.add_argument("--check-first", action="store_true",
                     help="Run cargo check before tests; abort if it fails")
     ap.add_argument("--log-dir", metavar="PATH",
-                    default="work/test-framework-parallel/logs",
-                    help="Directory to save run logs (default: work/test-framework-parallel/logs)")
+                    default="work/test-fix-loop/logs",
+                    help="Directory to save run logs (default: work/test-fix-loop/logs)")
     ap.add_argument("--no-colour", action="store_true",
                     help="Disable ANSI colours")
     ap.add_argument("--once", action="store_true",
@@ -235,7 +235,7 @@ def main() -> int:
     if ptl is None:
         print(clr(RED, "ERROR: Cannot import parse_test_log from tools/audit/parse_test_log.py"))
         print("Make sure you run this script from the repo root with:")
-        print("  python tools/scripts/test_fix_loop.py")
+        print("  python tools/dev/test_fix_loop.py")
         return 2
 
     loop_mode = args.loop and not args.once

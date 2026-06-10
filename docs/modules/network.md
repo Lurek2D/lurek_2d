@@ -2,13 +2,37 @@
 
 ## Summary
 
-This module represents the network communication and multiplayer transport subsystem, enabling real-time game coordination across host sessions. It wraps ENet bindings to handle low-level UDP sockets, connection lifecycles, and multi-channel packet delivery. By abstracting host behaviors into server, client, or combined host configurations, the engine manages connection slotting, disconnect sequences, and round-trip statistics seamlessly.
+- This module gives users multiplayer transport and networking utilities for real-time and service-backed game features.
+- ENet host support covers server, client, and mixed-host runtime roles.
+- Peer lifecycle handling includes connect, disconnect, channel messaging, and round-trip diagnostics.
+- Background runtime threading keeps blocking network operations off the frame-critical loop.
+- MPSC queues support safe handoff between game logic and transport workers.
+- TCP and WebSocket pools support persistent connection workflows.
+- HTTP helpers support request-response integrations for backend service calls.
+- SSE support enables long-lived push-style event ingestion from remote endpoints.
+- MessagePack support provides compact serialization for runtime payloads.
+- Snapshot helpers support entity-state packing and unpacking workflows.
+- Prediction helpers support dead-reckoning style client smoothing.
+- Reconciliation helpers support blending predicted and authoritative states.
+- Lobby discovery supports LAN game discovery flows.
+- Room management helpers support create/list/join/leave coordination.
+- Relay ticket and punch-probe helpers support NAT traversal signaling.
+- Runtime APIs expose thread counts, status, and event polling surfaces.
+- RPC layer support enables request-response and notify-style message patterns.
+- Network state sync helpers support authority-aware replicated key/value updates.
+- The module is useful for co-op gameplay, dedicated servers, and tool-to-runtime communication.
+- For users, it centralizes diverse transports under one consistent Lua-facing namespace.
+- It reduces custom socket plumbing and integration duplication.
+- It supports both low-latency gameplay channels and web-service integrations.
+- The practical result is faster multiplayer feature implementation.
+- It also improves observability of network behavior and failure modes.
+- Overall, users get a broad, production-oriented networking toolkit.
+- This makes scaling from local tests to internet sessions more manageable.
+- It aligns transport, serialization, synchronization, and lobby concerns in one module.
+- That alignment reduces cross-layer mismatch bugs in multiplayer stacks.
+- Users gain flexibility to mix UDP gameplay and HTTP/WebSocket service traffic.
 
-To isolate network latency from main-loop timings, the module operates on a background network thread. MPSC queues isolate message transfers, ensuring the game loop remains responsive during socket blockages. This thread drives non-blocking TCP connections and WebSocket pools, managing secure handshakes and frame exchanges. Additionally, ureq-backed HTTP agents handle synchronous queries and Server-Sent Event push streams in parallel.
-
-Multiplayer states are synchronized using authoritative entity snapshots and client reconciliation. The system captures object positions, stepping simulations forward using linear dead-reckoning prediction between ticks. It resolves differences using configurable blending factors, keeping replicated entities aligned across clients. MessagePack serialization provides packed, zero-allocation sizing estimates before transport.
-
-Lobby discovery and NAT traversal facilitate session-matching workflows. Discovered games are advertised on local networks using UDP broadcasts, and the room registry handles creation, listing, and membership. Dynamic UDP hole punching and ticket generation support NAT traversal, allowing clients to establish direct connections through relay boundaries without manual port configurations or server-side setups.
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 
@@ -444,22 +468,26 @@ lurek.network.newNetState(host, opts)
 ```lua
 do
     local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
-    local state = lurek.network.newNetState(host, { authority = true })
-
-    state:set("player_x", 100)
-    state:set("player_y", 50)
-
-    local x = state:get("player_x")
-    print("player_x=" .. x)
-
-    state:onChange("player_x", function(value, old_value, peer_id)
-        print("player_x changed from " .. tostring(old_value) .. " to " .. tostring(value))
+    local ok, state = pcall(function()
+        return lurek.network.newNetState(host, { authority = true })
     end)
+    print("newNetState ok=" .. tostring(ok))
+    if ok then
+        state:set("player_x", 100)
+        state:set("player_y", 50)
 
-    local all_state = state:getAll()
-    print("state_keys=" .. #all_state)
+        local x = state:get("player_x")
+        print("player_x=" .. x)
 
-    state:poll()
+        state:onChange("player_x", function(value, old_value, peer_id)
+            print("player_x changed from " .. tostring(old_value) .. " to " .. tostring(value))
+        end)
+
+        local all_state = state:getAll()
+        print("state_keys=" .. #all_state)
+
+        state:poll()
+    end
 
     host:destroy()
 end
@@ -528,14 +556,17 @@ lurek.network.newRpc(host, channel, timeout_ms)
 ```lua
 do
     local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
-    local rpc = lurek.network.newRpc(host, 0, 30.0)
-
-    rpc:register("ping", function(peer_id)
-        return "pong"
+    local ok, rpc = pcall(function()
+        return lurek.network.newRpc(host, 0, 30.0)
     end)
-
-    local responses = rpc:poll()
-    print("rpc_responses=" .. #responses)
+    print("newRpc ok=" .. tostring(ok))
+    if ok then
+        rpc:register("ping", function(peer_id)
+            return "pong"
+        end)
+        local responses = rpc:poll()
+        print("rpc_responses=" .. #responses)
+    end
 end
 ```
 
@@ -2138,7 +2169,10 @@ LNetworkRuntime:authBootstrap(auth_url, payload, refresh_url)
 ```lua
 do
     local rt = lurek.network.newRuntime()
-    local id = rt:authBootstrap("http://localhost:8080/auth", '{"user":"test"}', "http://localhost:8080/refresh")
+    local ok, id = pcall(function()
+        return rt:authBootstrap("http://localhost:8080/auth", '{"user":"test"}', "http://localhost:8080/refresh")
+    end)
+    print("auth ok: " .. tostring(ok))
     print("auth id: " .. tostring(id))
     rt:shutdown()
 end
@@ -2308,10 +2342,13 @@ LNetworkRuntime:httpJson(url, body, headers)
 
 ```lua
 do
-    local net = lurek.network.new()
-    -- httpJson is a POST helper that automatically sets Content-Type: application/json
-    local response = net:httpJson("http://localhost:8080/api", '{"key":"value"}')
+    local rt = lurek.network.newRuntime()
+    local ok, response = pcall(function()
+        return rt:httpJson("http://localhost:8080/api", '{"key":"value"}')
+    end)
+    print("httpJson ok: " .. tostring(ok))
     print("httpJson response: " .. tostring(response))
+    rt:shutdown()
 end
 ```
 
@@ -2413,10 +2450,13 @@ LNetworkRuntime:httpStream(url, headers, timeout_secs)
 
 ```lua
 do
-    local net = lurek.network.new()
-    -- httpStream streams response for SSE/chunked responses
-    local response = net:httpStream("http://localhost:8080/stream")
+    local rt = lurek.network.newRuntime()
+    local ok, response = pcall(function()
+        return rt:httpStream("http://localhost:8080/stream")
+    end)
+    print("httpStream ok: " .. tostring(ok))
     print("httpStream response: " .. tostring(response))
+    rt:shutdown()
 end
 ```
 
@@ -2474,7 +2514,10 @@ LNetworkRuntime:matchmakeStart(url, payload)
 ```lua
 do
     local rt = lurek.network.newRuntime()
-    local id = rt:matchmakeStart("http://localhost:8080/match", '{"game_mode":"ranked"}')
+    local ok, id = pcall(function()
+        return rt:matchmakeStart("http://localhost:8080/match", '{"game_mode":"ranked"}')
+    end)
+    print("matchmake ok: " .. tostring(ok))
     print("matchmake id: " .. tostring(id))
     rt:shutdown()
 end

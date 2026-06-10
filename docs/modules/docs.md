@@ -2,13 +2,28 @@
 
 ## Summary
 
-This module acts as the docs-general workflow and quality assurance core, managing the generation, validation, and export of the engine's public interface data. It handles the parsing of API metadata into a unified in-memory docs-general catalog. This central catalog groups and organizes symbols across modules, maintaining their entry definitions to provide a single, consistent source of truth for the entire scripting framework.
+- This module gives users a documentation pipeline that can discover, validate, score, and export API knowledge.
+- It builds a catalog of API entries that serves as a single source for docs and editor tooling outputs.
+- Live reflection checks help detect drift between documented symbols and what the runtime actually exposes.
+- Validation reports highlight missing, phantom, and incomplete entries so cleanup work is explicit.
+- Quality scoring provides per-module and global signals for documentation health tracking.
+- Exporters generate completion, hover, signature, and markdown artifacts for IDE and reference workflows.
+- Catalog editing APIs allow targeted improvements without rebuilding the entire pipeline.
+- Module-focused scanning supports incremental documentation work on large codebases.
+- Schema support adds structured validation for doc-linked configuration and table contracts.
+- This module helps teams keep docs useful as APIs evolve across frequent engine changes.
+- It reduces stale references by tying documentation checks to runtime reflection.
+- For extension authors, it provides machine-readable outputs ready for integration.
+- For maintainers, it centralizes quality evidence instead of scattered manual checks.
+- Users can automate doc freshness and coverage checks directly in scripting workflows.
+- The practical value is higher confidence that docs match runtime behavior.
+- It also shortens the path from API change to updated editor assistance.
+- In short, this module treats documentation as a maintained system, not static prose.
+- That improves onboarding, discoverability, and long-term maintainability.
+- Teams gain repeatable documentation governance with actionable diagnostics.
+- The result is clearer API communication with less manual coordination overhead.
 
-To verify the accuracy and completeness of API references, the module supplies detailed reporting and validation tools. It cross-references the catalog against live runtime tables to identify undocumented, missing, or outdated symbols. Additionally, the quality analyzer scores individual docs-general records based on detail, generating overall and per-module grades that highlight areas needing expansion or cleanup.
-
-For external tool integration, the system includes export builders that transform docs-general entries into files. These builders output rich autocomplete catalogs, hover details, and signature definitions formatted specifically for text editors and development extensions. This bridges the runtime's docs-general directly with the editor workspace, improving the developer experience.
-
-Additionally, a schema validation layer provides structured data checks. It connects docs-general workflows with unified type rules, allowing runtime systems to validate tables against schemas and generate detailed reports. This ensures all configuration and API data structures remain correct, providing reliable validation errors when data checks fail.
+This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Functions
 

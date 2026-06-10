@@ -76,8 +76,7 @@ a release build should be used instead.
 
 options:
   -h, --help            show this help message and exit
-  --binary BINARY       Engine binary (default C:/Users\tombl\Documents\lurek2
-                        D\build\debug\lurek2d.exe)
+  --binary BINARY       Engine binary (default repo build/debug/lurek2d[.exe])
   --games-root GAMES_ROOT
   --examples-root EXAMPLES_ROOT
   --frames FRAMES       --screenshot-frames value passed to engine (default
@@ -85,8 +84,7 @@ options:
   --timeout TIMEOUT     Per-target wall-clock timeout in seconds (default
                         30.0)
   --report REPORT       Output JSON report path (default
-                        C:/Users\tombl\Documents\lurek2D\work\engine-
-                        recovery-20260421\reports\smoke_results.json)
+                        work/smoke-sweep/reports/smoke_results.json)
   --only ONLY           Run only targets whose label contains this substring
   --kind {game,example,all}
   --limit LIMIT         Run at most N targets (0 = all)
@@ -118,7 +116,7 @@ DEFAULT_BINARY = REPO_ROOT / "build" / "debug" / (
     "lurek2d.exe" if os.name == "nt" else "lurek2d"
 )
 DEFAULT_REPORT = (
-    REPO_ROOT / "work" / "engine-recovery-20260421" / "reports" / "smoke_results.json"
+    REPO_ROOT / "work" / "smoke-sweep" / "reports" / "smoke_results.json"
 )
 
 
@@ -396,7 +394,7 @@ def write_reports(results: list[Result], report_path: Path) -> None:
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--binary", type=Path, default=DEFAULT_BINARY,
-                   help=f"Engine binary (default {DEFAULT_BINARY})")
+                   help="Engine binary (default: repo build/debug/lurek2d[.exe])")
     p.add_argument("--games-root", type=Path, default=REPO_ROOT / "content" / "games")
     p.add_argument("--examples-root", type=Path, default=REPO_ROOT / "content" / "examples")
     p.add_argument("--frames", type=int, default=DEFAULT_FRAMES,
@@ -404,7 +402,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT,
                    help=f"Per-target wall-clock timeout in seconds (default {DEFAULT_TIMEOUT})")
     p.add_argument("--report", type=Path, default=DEFAULT_REPORT,
-                   help=f"Output JSON report path (default {DEFAULT_REPORT})")
+                   help="Output JSON report path (default: work/smoke-sweep/reports/smoke_results.json)")
     p.add_argument("--only", type=str, default=None,
                    help="Run only targets whose label contains this substring")
     p.add_argument("--kind", choices=("game", "example", "all"), default="all")

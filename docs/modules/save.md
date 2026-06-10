@@ -2,9 +2,16 @@
 
 ## Summary
 
-This module provides a unified state persistence and save slot manager designed to handle game progress. Diverse gameplay systems register data sections using collector and restorer callback pairs. When saving, the manager invokes collectors to assemble a single structured state payload; during loads, it distributes this data back to their respective systems to ensure smooth, reliable state restorations.
+- The save module gives users a centralized save-state manager for persistent progress across slots.
+- Systems register collector and restorer callbacks so each subsystem contributes and rebuilds its own state segment.
+- Save operations assemble one coherent payload from all registered sections.
+- Load operations replay restorers so runtime state returns predictably.
+- Dirty tracking and auto-save timers support low-friction periodic persistence.
+- Compression reduces save-file size for content-heavy projects.
+- Schema versioning and migration callbacks support forward compatibility of older saves.
+- Persistence stays controlled and extensible instead of ad-hoc.
 
-To optimize disk usage, the system integrates compression, auto-saves, and migrations. It applies LZ4 compression to minimize files, tracks modifications with a dirty flag, and schedules auto-save timers. Additionally, it enforces schema versioning and runs registered transformation callbacks to migrate old save files to current formats.
+This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 
@@ -880,7 +887,9 @@ do
     mgr:markDirty()
     print("auto-save triggered = " .. tostring(mgr:update(6.0)))
     print("slot exists = " .. tostring(mgr:exists(slot)))
-    mgr:delete(slot)
+    if mgr:exists(slot) then
+        mgr:delete(slot)
+    end
 end
 ```
 

@@ -1121,6 +1121,8 @@ impl LuaUserData for LuaChunkMap {
                 let entry = lua.create_table()?;
                 entry.set(1, *cx)?;
                 entry.set(2, *cy)?;
+                entry.set("cx", *cx)?;
+                entry.set("cy", *cy)?;
                 tbl.set(i + 1, entry)?;
             }
             Ok(tbl)
@@ -1148,6 +1150,8 @@ impl LuaUserData for LuaChunkMap {
                     let entry = lua.create_table()?;
                     entry.set(1, *cx)?;
                     entry.set(2, *cy)?;
+                    entry.set("cx", *cx)?;
+                    entry.set("cy", *cy)?;
                     tbl.set(i + 1, entry)?;
                 }
                 Ok(tbl)
@@ -2147,6 +2151,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let entry = lua.create_table()?;
                 entry.set(1, *q)?;
                 entry.set(2, *r)?;
+                entry.set("q", *q)?;
+                entry.set("r", *r)?;
                 tbl.set(i + 1, entry)?;
             }
             Ok(tbl)
@@ -2169,6 +2175,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let entry = lua.create_table()?;
                 entry.set(1, *cq)?;
                 entry.set(2, *cr)?;
+                entry.set("q", *cq)?;
+                entry.set("r", *cr)?;
                 tbl.set(i + 1, entry)?;
             }
             Ok(tbl)
@@ -2191,6 +2199,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let entry = lua.create_table()?;
                 entry.set(1, *cq)?;
                 entry.set(2, *cr)?;
+                entry.set("q", *cq)?;
+                entry.set("r", *cr)?;
                 tbl.set(i + 1, entry)?;
             }
             Ok(tbl)
@@ -2213,6 +2223,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let entry = lua.create_table()?;
                 entry.set(1, *cq)?;
                 entry.set(2, *cr)?;
+                entry.set("q", *cq)?;
+                entry.set("r", *cr)?;
                 tbl.set(i + 1, entry)?;
             }
             Ok(tbl)

@@ -1,48 +1,61 @@
 ---
 name: create-integration-test
-description: "Create or update integration lua test combining 2 or more modules together."
+description: "Load this skill when creating or modifying Lua integration tests that prove interactions between two or more modules. Skip it for single-module unit tests, Rust-only internal tests, or performance stress tests."
 ---
 # create-integration-test
 
-## Goal
-- Create comprehensive integration tests that verify the interaction and data flow between multiple modules.
+## Mission
+- Create or modify integration tests that verify cross-module public Lua behavior.
 
-## Required inputs
-- List of modules to integrate (e.g., `physics` and `graphics`)
-- Expected interaction behavior
-- User must define which modules are interacting and the expected outcome
-- Agent must collect API surfaces of all involved modules
+## When To Load
+- Creating or modifying Lua integration tests that prove interactions between two or more modules.
 
-## Profile hint
-- `tester`
+## When To Skip
+- Single-module unit tests, Rust-only internal tests, or performance stress tests.
 
-## Read these contracts
-- `tests/AGENTS.md`
-- `tests/lua/AGENTS.md`
-- `content/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the target path.
+- Run the listed RAG query before broad file reads and start from top hits.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Check whether the target artifact already exists; modify existing content unless a new owner is clearly required.
+- Read the nearest source, spec, test, doc, or config before editing.
+- Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
 
-## Steps
-- Read the listed contracts before adding the integration test.
-- Execute `python tools/audit/integration_coverage.py` to identify missing links between the targeted modules.
-- Write a Lua script under `tests/lua/integration/` that initializes and feeds output from Module A into Module B, asserting the final combined state.
-- Execute `cargo test --test lua_tests` ensuring the integration folder is included in the test runner. If tests fail, fix the integration script.
-- Re-run `python tools/audit/integration_coverage.py`. If the cross-module link still reports as uncovered (0%), return to step 3 and fix the test implementation.
+## Workflow
+- Inspect existing integration tests and involved API specs before writing.
+- Modify an existing integration file for the module pair when present; create under `tests/lua/integration/` only for new coverage.
+- Use public `lurek.*` APIs and explicit state assertions.
+- Add or confirm harness registration when a new file is introduced.
+- Run integration coverage and `cargo test --test lua_tests`, then rerun coverage.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Integration test scripts in `tests/lua/integration/` (or similar appropriate path)
-- Test execution summary
+## Success Criteria
+- The target artifact was created or modified in the narrowest owning location.
+- Existing content was preserved and updated when it already owned the behavior.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- [ ] `cargo test --test lua_tests` exits with code 0.
-- [ ] `python tools/audit/integration_coverage.py` reports exactly 100% integration coverage for the target module pair.
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Writing integration tests that mock the interaction layer.
-- Coupling the test too tightly to the internal implementation of either module.
+## Companion File Index
+- Contracts: `tests/AGENTS.md`, `tests/lua/AGENTS.md`, `content/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "Lua integration tests module interaction" --profile game --limit 10`, `tools/python.cmd tools/audit/integration_coverage.py`, `cargo test --test lua_tests`
+- Owner profile: `tester`
+
+## Common RAG Queries
+- Use when finding existing multi-module test patterns:
+  - `Lua integration tests module interaction`
+  - `tests lua integration scene input physics`
+  - `assert helper fixture register`
+- Common areas to inspect after top hits:
+  - `tests/lua/`
+  - `tests/harness/`
+  - `library/`
+  - touched modules in `src/` or `content/`
 
 ## References
 - `contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md`
-- `tools: python tools/audit/integration_coverage.py`
+- `tools: tools/python.cmd tools/rag/query.py "Lua integration tests module interaction" --profile game --limit 10, tools/python.cmd tools/audit/integration_coverage.py, cargo test --test lua_tests`
 - `agent: tester`
-
-

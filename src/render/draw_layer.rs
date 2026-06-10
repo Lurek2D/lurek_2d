@@ -6,6 +6,10 @@
 //! - Provides methods to queue, flush, clear, and inspect pending callbacks.
 
 /// A pending draw-callback slot queued in `DrawLayer`.
+///
+/// # Fields
+/// - `z_order` - Depth key used to order callbacks before flush.
+/// - `callback_id` - Opaque callback handle returned to the Lua runtime.
 pub struct LayerEntry {
     /// Depth key used to sort entries front-to-back before flush.
     pub z_order: f64,
@@ -13,6 +17,10 @@ pub struct LayerEntry {
     pub callback_id: usize,
 }
 /// Z-ordered pending-callback queue flushed once per frame by the render loop.
+///
+/// # Fields
+/// - `entries` - Pending callback slots in insertion order until flush.
+/// - `next_id` - Monotonic callback ID counter.
 pub struct DrawLayer {
     /// Pending entries in insertion order; sorted at flush.
     entries: Vec<LayerEntry>,

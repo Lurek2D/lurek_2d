@@ -1,47 +1,61 @@
 ---
 name: create-pages
-description: "Create or modify the generated docs site and the templates that feed it."
+description: "Load this skill when creating or modifying generated docs site templates, pages output, or docs-site build flow. Skip it for plain source docs edits that do not affect generated pages."
 ---
 # create-pages
 
-## Goal
-- Update the generated docs site structure, styles, or generators, and rebuild the published static site content.
+## Mission
+- Create or modify the generated docs site while preserving source/template/output consistency.
 
-## Required inputs
-- Target web feature or design change
-- User must define the visual or functional change to the docs site
-- Agent must collect the site generation pipeline scripts
+## When To Load
+- Creating or modifying generated docs site templates, pages output, or docs-site build flow.
 
-## Profile hint
-- `doc_writer`
+## When To Skip
+- Plain source docs edits that do not affect generated pages.
 
-## Read these contracts
-- `docs/AGENTS.md`
-- `docs/templates/AGENTS.md`
-- `content/AGENTS.md`
-- `pages/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the target path.
+- Run the listed RAG query before broad file reads and start from top hits.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Check whether the target artifact already exists; modify existing content unless a new owner is clearly required.
+- Read the nearest source, spec, test, doc, or config before editing.
+- Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
 
-## Steps
-- Read the listed contracts before changing docs-site templates, source docs, or generated-site markup.
-- Modify the source templates inside `docs/templates/` or the source docs/content that feed the site.
-- Regenerate `pages/` from the source docs and templates; do not hand-edit generated HTML unless the generator output is the artifact under test.
-- Execute `python tools/gen_all_docs.py` to rebuild the HTML output. If the script exits with code >0, fix the template parsing errors.
-- Execute `python tools/audit/cag_link_check.py --strict`. If it returns >0 broken links, fix the internal navigation anchors and repeat step 4.
+## Workflow
+- Inspect source docs, templates, and generated pages before editing.
+- Modify existing templates or generated surfaces when they own the requested display; create new pages only when the site needs a new route.
+- Keep generated output aligned with template/source ownership.
+- Run `tools/python.cmd tools/gen_all_docs.py` after template or generator changes.
+- Run strict link checking for navigation and CAG links.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Modified template files
-- Regenerated HTML content
+## Success Criteria
+- The target artifact was created or modified in the narrowest owning location.
+- Existing content was preserved and updated when it already owned the behavior.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- [ ] `python tools/gen_all_docs.py` exits with code 0.
-- [ ] `python tools/audit/cag_link_check.py --strict` reports exactly 0 broken links.
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Hand-editing generated HTML files instead of their templates.
-- Introducing heavy JavaScript that impacts doc load times.
+## Companion File Index
+- Contracts: `docs/AGENTS.md`, `docs/templates/AGENTS.md`, `content/AGENTS.md`, `pages/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "docs templates pages generated site" --profile all --limit 10`, `tools/python.cmd tools/gen_all_docs.py`, `tools/python.cmd tools/audit/cag_link_check.py --strict`
+- Owner profile: `doc_writer`
+
+## Common RAG Queries
+- Use when locating docs-site templates and generators:
+  - `docs templates pages generated site`
+  - `pages build docs markdown template`
+  - `sidebar nav frontmatter generated page`
+- Common areas to inspect after top hits:
+  - `pages/`
+  - `docs/`
+  - docs build scripts in `tools/`
+  - generated site assets
 
 ## References
 - `contracts: docs/AGENTS.md, docs/templates/AGENTS.md, content/AGENTS.md, pages/AGENTS.md`
-- `tools: python tools/gen_all_docs.py, python tools/audit/cag_link_check.py`
+- `tools: tools/python.cmd tools/rag/query.py "docs templates pages generated site" --profile all --limit 10, tools/python.cmd tools/gen_all_docs.py, tools/python.cmd tools/audit/cag_link_check.py --strict`
 - `agent: doc_writer`
-

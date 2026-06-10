@@ -1,14 +1,14 @@
 # Lua API Contract
 
-Covers work under `src/lua_api/`.
+Adds local rules for `src/lua_api/`.
 
 ## Mission & Scope
 - Manage the public `lurek.*` Lua API surface.
-- Maintain API registration, documentation string generation, types conversion, and Lua-to-Rust binding boundaries.
+- Maintain API registration, docstrings, type conversion, and Lua-to-Rust boundaries.
 
 ## Files
 - `mod.rs`: Defines the module entry point, public structures, and visibility boundaries.
-- Peer implementation files: Contain the concrete logic, algorithms, and local structures.
+- Peer files: Contain concrete logic, algorithms, and local structures.
 
 ## Rules
 - Keep binding files thin; restrict content to registration, conversions, `LuaUserData` implementations, and parameter validation.
@@ -18,9 +18,9 @@ Covers work under `src/lua_api/`.
 - Keep naming conventions, default parameters, and returns consistent with `lurek.*` specs.
 - Do not manually edit generated Lua documentation files (`docs/api/lurek.lua`).
 - Use concise docstrings matching the actual Rust-exposed callable signature.
-- Persist script callbacks using `lua.create_registry_value(...)`; do not let borrowed `LuaFunction` handles escape the call stack.
+- Persist script callbacks with `lua.create_registry_value(...)`; do not let borrowed `LuaFunction` handles escape the call stack.
 - Wrap internal engine indices or shared handles in exposed `UserData`, never raw Rust structs.
-- Maintain `LuaUserData::add_methods` as registration-only blocks without embedded logic.
+- Keep `LuaUserData::add_methods` registration-only.
 - Include the exact name of the failing `lurek.<module>.<method>` in runtime errors when raising exceptions.
 
 ## Workflow

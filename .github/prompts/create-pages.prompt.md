@@ -1,41 +1,43 @@
 ﻿---
 name: create-pages
-description: Create or modify feature in gitub pages folder, then regnerate all content for modules lua.
+description: "Load this skill when creating or modifying generated docs site templates, pages output, or docs-site build flow. Skip it for plain source docs edits that do not affect generated pages."
 ---
 
-# GOAL
-- Update the GitHub pages structure, styles, or generators, and rebuild the static site content.
+# Goal
+- Create or modify the generated docs site while preserving source/template/output consistency.
 
-# INPUTS REQUIRED
-- Target web feature or design change
-= User must define the visual or functional change to the docs site
-- Agent must collect the site generation pipeline scripts
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: ui-html, docs-general.
-2. Modify the static HTML/CSS template structures inside `docs/`.
-3. Execute `python tools/gen_all_docs.py` to rebuild the HTML output. If the script exits with code >0, fix the template parsing errors.
-4. Execute `python tools/audit/cag_link_check.py --strict`. If it returns >0 broken links, fix the internal navigation anchors and repeat step 4.
+# Steps
+1. Load the active `.codex/skills/create-pages/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect source docs, templates, and generated pages before editing.
+5. Modify existing templates or generated surfaces when they own the requested display; create new pages only when the site needs a new route.
+6. Keep generated output aligned with template/source ownership.
+7. Run `tools/python.cmd tools/gen_all_docs.py` after template or generator changes.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- Modified template files
-- Regenerated HTML content
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `python tools/gen_all_docs.py` exits with code 0.
-- [ ] `python tools/audit/cag_link_check.py --strict` reports exactly 0 broken links.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Hand-editing generated HTML files instead of their templates.
-- Introducing heavy JavaScript that impacts doc load times.
+# Example Invocation
+- User: Use `create-pages` for the requested scope.
+- Agent: Loads `.codex/skills/create-pages/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: ui-html, docs-general
-- tools: python tools/gen_all_docs.py, python tools/audit/cag_link_check.py
-- agent: Doc-Writer
-
+# References
+- skills: `.codex/skills/create-pages/SKILL.md`
+- contracts: docs/AGENTS.md, docs/templates/AGENTS.md, content/AGENTS.md, pages/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "docs templates pages generated site" --profile all --limit 10, tools/python.cmd tools/gen_all_docs.py, tools/python.cmd tools/audit/cag_link_check.py --strict
+- agent: doc_writer
 

@@ -2,13 +2,31 @@
 
 ## Summary
 
-The agent module provides a complete artificial intelligence and language model capability layer for the Lurek2D engine runtime, enabling gameplay scripts to integrate smart behaviors and dynamic conversations. It establishes stateful and stateless interface models that allow game entities to interact with large language models, perform text prompt completions, execute structured JSON requests, and generate text embeddings directly within the live simulation framework.
+- Use `lurek.agent` when a game or tool script needs language-model features without building its own HTTP, polling, memory, or provider-management layer.
+- The module gives the user one place to handle one-shot prompts, structured JSON replies, embeddings, persistent chat sessions, and long-running async requests.
+- It is the path for turning LLM access from a raw network call into a reusable gameplay system.
+- A script can start small with direct completion helpers.
+- The same script can later grow into named agents with roles, system prompts, model options, and retry policy.
+- That lets prototypes begin with simple prompt/response experiments and scale into stable production flows without moving to another module.
+- Multi-turn conversations are a first-class use case here.
+- Chat handles keep message history and system context together so follow-up prompts behave like part of one session instead of isolated requests.
+- Memory support is also built around practical author needs rather than storage theory.
+- Working memory keeps recent context available for immediate prompt quality.
+- Episodic memory preserves timestamped events that can be recalled or forgotten over time.
+- Semantic memory stores durable facts that should survive conversational churn and session boundaries.
+- When a script needs several specialists instead of one assistant, the module provides orchestration rather than forcing the user to hand-roll routing logic.
+- Users can register named agents, add instruction blocks, attach keyword-driven skills, dispatch parallel tasks, and collect results through one polling loop.
+- Async execution is designed for frame-safe game runtime behavior.
+- Requests can run in the background, be polled during update, and be cancelled when gameplay state has changed before the reply arrives.
+- Local Ollama support makes the module useful even when the goal is offline or self-hosted workflows.
+- Model discovery, service health checks, downloads, and lifecycle control all stay close to the same scripting surface that sends prompts.
+- The module owns agent-facing state, memory, orchestration, and backend coordination.
+- Network transport stays a dependency, but user-visible AI behavior and control policy live here.
+- In practice, this is the module a developer reaches for when they want NPC dialogue helpers, runtime content generation, semantic recall, agent squads, or tooling assistants powered by LLMs.
+- It is not just a chat wrapper.
+- It is the engine's user-facing runtime for building persistent, configurable, multi-agent AI behavior on top of external or local language models.
 
-To support long-term reasoning and context-aware interactions, the module supplies a robust, tiered agent memory system. Scripts can utilize bounded first-in-first-out working memory for immediate conversation contexts, append-only episodic memory to log and query timestamped game events, and unbounded semantic memory to retain key-value facts. These tiers can be unified into a cohesive memory bundle that supports saving and loading across sessions for persistent player-agent history.
-
-For complex multi-agent simulation scenarios, the module exposes high-level orchestration architectures like multi-agent managers and intelligent AI systems. Developers can register several distinct agent profiles with specialized roles, supply explicit instructions, and define keyword-gated systems that automatically inject relevant skill prompts based on user input. This setup coordinates parallel execution flows and schedules background processing seamlessly.
-
-Additionally, the module takes charge of local Ollama infrastructure management, providing complete control over server processes, model downloads, and operational status checks. By handling network transport details—such as request retries, time-out bounds, task cancellations, and frame-safe background polling—the runtime isolates gameplay loops from networking latency, ensuring deterministic frame updates and stable performance.
+This module primarily collaborates with `network`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 
@@ -36,7 +54,10 @@ lurek.agent.complete(prompt)
 
 ```lua
 do
-    local reply = lurek.agent.complete("Hello, world!")
+    local ok, reply = pcall(function()
+        return lurek.agent.complete("Hello, world!")
+    end)
+    print("complete ok:", ok)
     print("Reply:", reply)
 end
 ```
@@ -68,13 +89,17 @@ lurek.agent.completeAsync(prompt, callback)
 
 ```lua
 do
-    lurek.agent.completeAsync("What is Lua?", function(text, err)
-        if err then
-            print("Error:", err)
-        else
-            print("Async reply:", text)
-        end
+    local ok, err = pcall(function()
+        lurek.agent.completeAsync("What is Lua?", function(text, async_err)
+            if async_err then
+                print("Error:", async_err)
+            else
+                print("Async reply:", text)
+            end
+        end)
     end)
+    print("completeAsync ok:", ok)
+    if not ok then print("completeAsync error:", err) end
 end
 ```
 
@@ -104,7 +129,10 @@ lurek.agent.completeJson(prompt)
 
 ```lua
 do
-    local result = lurek.agent.completeJson("List three colors as JSON.")
+    local ok, result = pcall(function()
+        return lurek.agent.completeJson("List three colors as JSON.")
+    end)
+    print("completeJson ok:", ok)
     print("JSON result:", result)
 end
 ```
@@ -171,8 +199,11 @@ lurek.agent.embed(text)
 
 ```lua
 do
-    local vec = lurek.agent.embed("Semantic embedding test.")
-    print("Embedding dimensions:", #vec)
+    local ok, vec = pcall(function()
+        return lurek.agent.embed("Semantic embedding test.")
+    end)
+    print("embed ok:", ok)
+    print("Embedding dimensions:", ok and #vec or 0)
 end
 ```
 
@@ -2123,7 +2154,10 @@ LAgentChat:complete()
 do
     local chat = lurek.agent.newChat()
     chat:addMessage("user", "Hi!")
-    local reply = chat:complete()
+    local ok, reply = pcall(function()
+        return chat:complete()
+    end)
+    print("chat complete ok:", ok)
     print("Chat reply:", reply)
 end
 ```

@@ -1,22 +1,22 @@
 # Games Contract
 
-Covers work under `content/games/`.
+Adds local rules for `content/games/`.
 
 ## Mission & Scope
-- Deliver category-grouped 2D game demos, simulations, and prototypes showcasing real-world game logic in Lurek2D.
-- Maintain standard configuration templates and lifecycle entry points across all games.
-- Ensure every game is fully runnable and compliant with automated smoke tests and headless runners.
+- Deliver category-grouped 2D game demos, simulations, and prototypes.
+- Maintain standard config templates and lifecycle entry points.
+- Keep every game runnable in smoke tests and headless runners.
 
 ## Files
-- `README.md`: List of all games grouped by categories (e.g., `action/`, `arcade/`, `rpg/`, `simulation/`).
-- `*/main.lua`: Required entry points implementing game loops and callbacks.
-- `*/conf.toml`: Optional local configs specifying window settings and asset dependencies.
+- `README.md`: Game index by category such as `action/`, `arcade/`, `rpg/`, and `simulation/`.
+- `*/main.lua`: Required entry point for game loops and callbacks.
+- `*/conf.toml`: Optional local config for window settings and assets.
 - `*/screen.png`: Visual preview screenshots used in catalog indexing.
 
 ## Rules
-- Every game folder must have a valid `main.lua` entry script implementing the required callbacks (tick, physics, draw).
-- Never invoke low-level window buffers or manual presentation swaps like `lurek.window.present`; frame swaps are owned by the engine runtime.
-- Keep all local game states isolated inside local tables or module scopes to facilitate hot-reloading.
+- Every game folder must have a valid `main.lua` with the required callbacks.
+- Never call low-level window buffers or manual presentation swaps like `lurek.window.present`.
+- Keep local game state inside local tables or module scope.
 - Custom game assets must live exclusively inside the game's subdirectory and be loaded via relative paths.
 
 ## Workflow

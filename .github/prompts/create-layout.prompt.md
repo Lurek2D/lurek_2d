@@ -1,44 +1,43 @@
 ﻿---
 name: create-layout
-description: Create or update new user interface layout and review it, regenerate to png.
+description: "Load this skill when creating or modifying TOML UI layouts under content/layouts and producing visual/evidence validation. Skip it for HTML UI, engine renderer internals, or non-layout Lua examples."
 ---
 
-# GOAL
-- Design and author a TOML UI layout under `content/layouts/`, review its structure, and generate visual previews.
+# Goal
+- Create or modify layout assets that follow current content rules and visual evidence expectations.
 
-# INPUTS REQUIRED
-- Layout name
-- UI components and hierarchy
-= User must define the required UI elements and their visual arrangement
-- Agent must collect available UI primitives from the engine
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: ui-layout, ui-html.
-2. Author the UI layout in TOML format within `content/layouts/`, explicitly setting anchors, alignment, and hierarchical node structures.
-3. Write a small Lua script under `content/examples/` that loads the new TOML file.
-4. Execute the UI screenshot rendering tool to generate a PNG preview. If the TOML parser throws an error (exit code >0), fix the syntax in step 2.
-5. Review the layout screenshot. If visual anchors are misaligned, adjust the TOML file and repeat step 4.
+# Steps
+1. Load the active `.codex/skills/create-layout/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect existing layouts and UI primitives before editing.
+5. Modify a matching layout when present; create a new TOML layout only when no existing asset owns the screen.
+6. Keep layout dimensions, anchors, and naming consistent with content conventions.
+7. Run snap-to-grid and layout fixer after hand edits.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- TOML layout file
-- Generated PNG preview
-- Supporting Lua load script
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] The TOML parser exits with code 0 (0 syntax errors).
-- [ ] 1 valid PNG file is successfully generated reflecting the intended layout.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Using hardcoded pixel values where relative anchors are required.
-- Defining invalid or unsupported style properties in TOML.
+# Example Invocation
+- User: Use `create-layout` for the requested scope.
+- Agent: Loads `.codex/skills/create-layout/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: ui-layout, visual-effects
-- tools: Lurek2D layout rendering tools
-- agent: Content-Maker
-
+# References
+- skills: `.codex/skills/create-layout/SKILL.md`
+- contracts: content/AGENTS.md, content/layouts/AGENTS.md, content/examples/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "content layouts TOML UI primitives" --profile game --limit 10, tools/python.cmd tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive, tools/python.cmd tools/ui/fix_layouts.py content/layouts/ --recursive --fix, tests/lua/evidence/test_gui_evidence.lua
+- agent: content
 

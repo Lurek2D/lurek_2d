@@ -1,9 +1,34 @@
 [indexing]
-max_chunk_size = 1500
-allowed_extensions = [".md", ".lua", ".rs"]
-default_target_dirs = [".codex", ".github", "content", "docs", "extension", "library", "src", "tests", "tools"]
+max_chunk_size = 1800
+min_chunk_size = 120
+max_file_bytes = 2000000
+allowed_extensions = [".md", ".lua", ".rs", ".py", ".toml", ".json", ".html", ".js", ".ts", ".css", ".wgsl"]
+default_target_dirs = ["AGENTS.md", ".agents", ".codex", ".github", "content", "docs", "extension", "ideas", "library", "pages", "src", "tests", "tools"]
+ignore_dirs = [".git", ".pytest_cache", "__pycache__", "node_modules", "target", "dist", "build", ".cache"]
+ignore_files = ["rag_index.db", "recall_baseline.json"]
+ignore_path_patterns = ["pages/assets/javascripts/lunr/"]
 
 [search]
 # Weights for BM25 ranking (path, title, content)
-# We heavily favor title matches so structured API definitions appear first
-bm25_weights = [1.0, 10.0, 1.0]
+# Favor title matches, but keep content useful for reading-oriented queries.
+bm25_weights = [1.0, 8.0, 1.0]
+snippet_tokens = 96
+
+[ranking]
+generated_path_patterns = [".github/prompts/", "pages/", "docs/api/lurek.lua", "docs/api/lurek.md", "docs/wiki/API-Reference.md"]
+vendor_path_patterns = ["node_modules/", "/vendor/"]
+
+[ranking.source_priorities]
+api = 8.0
+contract = 7.5
+skill = 7.0
+agent = 6.5
+spec = 6.0
+source = 5.5
+test = 5.0
+docs = 4.5
+tool = 4.5
+example = 4.0
+page = 2.0
+prompt_mirror = 1.5
+default = 1.0

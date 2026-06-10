@@ -1,50 +1,61 @@
 ---
 name: review-examples
-description: "Review example coverage and fix all the gaps, ensure all practices are followed."
+description: "Load this skill when auditing and fixing example coverage, example correctness, and content/examples conventions. Skip it for full demos, snippets, or internal tests."
 ---
 # review-examples
 
-## Goal
-- Audit `content/examples/` to ensure every public Lua API is demonstrated correctly.
+## Mission
+- Audit and fix API example coverage and example quality.
 
-## Required inputs
-- Target module or full codebase
-- User defines the scope of the example review
-- Agent must collect output from `python tools/audit/example_coverage.py`
+## When To Load
+- Auditing and fixing example coverage, example correctness, and content/examples conventions.
 
-## Profile hint
-- `content`
+## When To Skip
+- Full demos, snippets, or internal tests.
 
-## Read these contracts
-- `AGENTS.md`
-- `content/AGENTS.md`
-- `content/examples/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the reviewed path.
+- Run the listed RAG query and audit/report tools before broad manual inspection.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Produce findings first with severity, affected files, and evidence.
+- If the active profile is read-only, stop after findings and hand off fixes to the owner profile; otherwise fix requested findings and rerun the same audits.
+- Treat review as audit-first, fix-second: findings must be grounded in tool output or direct file inspection.
 
-## Steps
-- Read the listed contracts and stay in read-only mode.
-- Run `python tools/audit/example_coverage.py --module <module>` for the selected scope and inspect the uncovered example list.
-- Cross-check the example scripts under `content/examples/` against the current API documentation and module contracts.
-- Record findings first, with severity and exact file or line evidence where possible.
-- Return a binary accept or reject decision with explicit follow-up gate conditions.
+## Workflow
+- Run example coverage for the selected scope.
+- Inspect uncovered APIs and existing examples before editing.
+- Report gaps and convention violations first.
+- If edit-capable, add or modify examples and rerun coverage plus validation.
+- If read-only, hand off to `content` with target API methods.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Findings-first review report
-- File and line evidence
-- Accept or reject decision with follow-up conditions
+## Success Criteria
+- Audit output was collected before fixes or handoff.
+- Findings are either fixed and revalidated, or handed off with an explicit owner profile and blocker.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- The review stays read-only unless the user explicitly expands scope to include fixes.
-- The output lists concrete findings and an explicit gate condition.
-- The decision is binary and supported by evidence.
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Do not mutate source or write tests during pure review work.
-- Do not return vague opinions without file-backed evidence.
-- Do not merge review and implementation into the same pass unless the user explicitly asks for both.
+## Companion File Index
+- Contracts: `AGENTS.md`, `content/AGENTS.md`, `content/examples/AGENTS.md`, `docs/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "example coverage content examples API" --profile game --limit 10`, `tools/python.cmd tools/audit/example_coverage.py --module <module>`, `tools/python.cmd tools/validate/validate_example_coverage.py`
+- Owner profile: `content`
+
+## Common RAG Queries
+- Use when locating example owners and similar samples:
+  - `example coverage content examples API`
+  - `content examples lua sample feature`
+  - `docs example usage snippet`
+- Common areas to inspect after top hits:
+  - `content/examples/`
+  - `docs/`
+  - `library/`
+  - feature-owning modules in `src/`
 
 ## References
-- `contracts: AGENTS.md, content/AGENTS.md, content/examples/AGENTS.md`
-- `tools: python tools/audit/example_coverage.py, python tools/validate/validate_example_coverage.py`
+- `contracts: AGENTS.md, content/AGENTS.md, content/examples/AGENTS.md, docs/AGENTS.md`
+- `tools: tools/python.cmd tools/rag/query.py "example coverage content examples API" --profile game --limit 10, tools/python.cmd tools/audit/example_coverage.py --module <module>, tools/python.cmd tools/validate/validate_example_coverage.py`
 - `agent: content`
-
-

@@ -2,12 +2,23 @@
 
 ## Summary
 
-The app module serves as the desktop execution heartbeat for Lurek2D. It unifies winit windowing, wgpu graphics, user inputs, and the LuaJIT virtual machine into a deterministic main loop. From process launch to final shutdown, it governs bootstrapping, manages graphic surface reconfigurations, and controls viewport scaling so visuals remain stable.
+- The `app` module is the desktop runtime shell that drives launch-to-shutdown execution.
+- It composes windowing, rendering, input routing, and Lua callbacks into one deterministic frame loop.
+- This is the operational boundary that turns engine subsystems into a running application.
+- It owns startup bootstrap, graphics surface bring-up, and steady frame progression.
+- It handles resize, focus, visibility, and other host-level transitions during runtime.
+- Callback dispatch goes through guarded execution paths instead of raw host invocations.
+- Guarding contains script failures, timeout risks, and hot-reload edge cases.
+- The module routes lifecycle, update, draw, input, and controller callbacks consistently.
+- It also owns user-visible startup and failure presentation paths.
+- Splash rendering is available before gameplay content is fully ready.
+- Fatal errors switch to a readable error screen instead of silent termination.
+- Development observability includes frame profile summaries and debug overlay metrics.
+- Runtime health becomes inspectable through FPS and draw workload surfaces.
+- Splash and error presentation are intentionally separated so startup, failure, and recovery states remain readable and testable.
+- The module owns process lifecycle, frame orchestration, callback safety, and top-level diagnostics.
+- Domain modules provide behavior, but `app` keeps the host responsive, ordered, and recoverable.
 
-For scripting, the module coordinates the delivery of platform updates into Lua event handlers. It serves as the safety boundary, executing key lifecycle callbacks—such as fixed physics ticks, variable updates, rendering passes, and input event handlers—inside guarded boundaries. This protects against script anomalies, timeout lockups, and supports hot-reloading during live development.
-
-To guide early startup and handle system faults, the module implements specialized visual screens. It renders a pre-game splash screen with branding elements and drag-and-drop feedback. If an unrecoverable failure occurs, it transitions to a formatted, clipboard-ready fatal crash screen that isolates traceback details and shows immediate troubleshooting guidance.
-
-For diagnostics, the module incorporates lightweight performance tracking utilities. It aggregates frame timing profiles—update, rendering, and callback durations—into compact text traces for logs. It also supplies a togglable debug HUD showing real-time frame rates and draw workloads, offering low-cost visibility into live engine budgets.
+This module primarily collaborates with `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, `math`, `parallax`, and adjacent engine modules. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
 *No public API documented yet.*

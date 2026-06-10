@@ -1,44 +1,43 @@
 ﻿---
 name: create-test-rust
-description: Create or update rust test for specific module and check test coverage.
+description: "Load this skill when creating or modifying Rust tests for private engine seams and internal module behavior. Skip it for public lurek API tests that belong in Lua or content demo smoke tests."
 ---
 
-# GOAL
-- Write or update Rust unit tests for internal logic and internal systems of a specific module.
+# Goal
+- Create or modify Rust tests only for internal logic that is not better covered through public Lua API tests.
 
-# INPUTS REQUIRED
-- Rust module path (e.g., `src/physics`)
-- Internal structures or functions to test
-= User must provide the module path and the specific behavior to test
-- Agent must collect the internal implementation details and existing Rust tests
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: testing-ecosystem, rust-coding.
-2. Execute `cargo test --package lurek2d --test unit_tests` to gather baseline pass rates and ensure the workspace is currently clean.
-3. Navigate to `tests/rust/unit/` corresponding to the target module. Add `#[test]` functions covering the missing internal logic.
-4. Execute `cargo test --package lurek2d --test unit_tests` to isolate and verify the newly written tests. If the test runner reports any test failures, return to step 3 and fix the test assertions or module code.
-5. Execute `cargo clippy -- -D warnings` to verify test code quality and ensure no `#[cfg(test)]` leaked into `src/`.
+# Steps
+1. Load the active `.codex/skills/create-test-rust/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect `Cargo.toml` test targets and existing `tests/rust/unit/` files before editing.
+5. Modify the module-specific test target when one exists; create a new Rust test target only when needed and registered in `Cargo.toml`.
+6. Do not add `#[cfg(test)]` to `src/`; use public/private seams allowed by `src/AGENTS.md`.
+7. Run the module-specific Cargo test target from `Cargo.toml`, or `cargo test` when no narrow target exists.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- Updated or newly created `tests/rust/unit/` files
-- Successful `cargo test` execution log
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `cargo test` exits with code 0 (100% of the unit tests pass).
-- [ ] `cargo clippy -- -D warnings` exits with code 0 (0 warnings or errors).
-- [ ] 0 instances of `#[cfg(test)]` are found inside `src/`.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Placing tests inside `src/` modules using `#[cfg(test)]`.
-- Testing Lua APIs via Rust unit tests (Lua APIs should be tested via Lua).
+# Example Invocation
+- User: Use `create-test-rust` for the requested scope.
+- Agent: Loads `.codex/skills/create-test-rust/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: testing-ecosystem, rust-coding
-- tools: cargo test, cargo clippy
-- agent: Tester
-
+# References
+- skills: `.codex/skills/create-test-rust/SKILL.md`
+- contracts: src/AGENTS.md, tests/AGENTS.md, tests/rust/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "Rust tests internal module Cargo target" --profile engine --limit 10, cargo test --test <module_tests>, cargo test, cargo clippy -- -D warnings
+- agent: tester
 

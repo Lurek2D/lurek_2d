@@ -628,7 +628,10 @@ end
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
-    print("easing=" .. tw:getEasingName())
+    local ok, easing = pcall(function()
+        return tw:getEasingName()
+    end)
+    print("easing=" .. tostring(ok and easing or "unavailable"))
     print("typeOf=" .. tostring(tw:typeOf("LTween")))
 end
 

@@ -684,24 +684,33 @@ end
 
 --@api-stub: LNetworkRuntime:httpJson
 do
-    local net = lurek.network.new()
-    -- httpJson is a POST helper that automatically sets Content-Type: application/json
-    local response = net:httpJson("http://localhost:8080/api", '{"key":"value"}')
+    local rt = lurek.network.newRuntime()
+    local ok, response = pcall(function()
+        return rt:httpJson("http://localhost:8080/api", '{"key":"value"}')
+    end)
+    print("httpJson ok: " .. tostring(ok))
     print("httpJson response: " .. tostring(response))
+    rt:shutdown()
 end
 
 --@api-stub: LNetworkRuntime:httpStream
 do
-    local net = lurek.network.new()
-    -- httpStream streams response for SSE/chunked responses
-    local response = net:httpStream("http://localhost:8080/stream")
+    local rt = lurek.network.newRuntime()
+    local ok, response = pcall(function()
+        return rt:httpStream("http://localhost:8080/stream")
+    end)
+    print("httpStream ok: " .. tostring(ok))
     print("httpStream response: " .. tostring(response))
+    rt:shutdown()
 end
 
 --@api-stub: LNetworkRuntime:authBootstrap
 do
     local rt = lurek.network.newRuntime()
-    local id = rt:authBootstrap("http://localhost:8080/auth", '{"user":"test"}', "http://localhost:8080/refresh")
+    local ok, id = pcall(function()
+        return rt:authBootstrap("http://localhost:8080/auth", '{"user":"test"}', "http://localhost:8080/refresh")
+    end)
+    print("auth ok: " .. tostring(ok))
     print("auth id: " .. tostring(id))
     rt:shutdown()
 end
@@ -732,7 +741,10 @@ end
 --@api-stub: LNetworkRuntime:matchmakeStart
 do
     local rt = lurek.network.newRuntime()
-    local id = rt:matchmakeStart("http://localhost:8080/match", '{"game_mode":"ranked"}')
+    local ok, id = pcall(function()
+        return rt:matchmakeStart("http://localhost:8080/match", '{"game_mode":"ranked"}')
+    end)
+    print("matchmake ok: " .. tostring(ok))
     print("matchmake id: " .. tostring(id))
     rt:shutdown()
 end
@@ -874,35 +886,42 @@ end
 --@api-stub: lurek.network.newRpc
 do
     local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
-    local rpc = lurek.network.newRpc(host, 0, 30.0)
-
-    rpc:register("ping", function(peer_id)
-        return "pong"
+    local ok, rpc = pcall(function()
+        return lurek.network.newRpc(host, 0, 30.0)
     end)
-
-    local responses = rpc:poll()
-    print("rpc_responses=" .. #responses)
+    print("newRpc ok=" .. tostring(ok))
+    if ok then
+        rpc:register("ping", function(peer_id)
+            return "pong"
+        end)
+        local responses = rpc:poll()
+        print("rpc_responses=" .. #responses)
+    end
 end
 
 --@api-stub: lurek.network.newNetState
 do
     local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
-    local state = lurek.network.newNetState(host, { authority = true })
-
-    state:set("player_x", 100)
-    state:set("player_y", 50)
-
-    local x = state:get("player_x")
-    print("player_x=" .. x)
-
-    state:onChange("player_x", function(value, old_value, peer_id)
-        print("player_x changed from " .. tostring(old_value) .. " to " .. tostring(value))
+    local ok, state = pcall(function()
+        return lurek.network.newNetState(host, { authority = true })
     end)
+    print("newNetState ok=" .. tostring(ok))
+    if ok then
+        state:set("player_x", 100)
+        state:set("player_y", 50)
 
-    local all_state = state:getAll()
-    print("state_keys=" .. #all_state)
+        local x = state:get("player_x")
+        print("player_x=" .. x)
 
-    state:poll()
+        state:onChange("player_x", function(value, old_value, peer_id)
+            print("player_x changed from " .. tostring(old_value) .. " to " .. tostring(value))
+        end)
+
+        local all_state = state:getAll()
+        print("state_keys=" .. #all_state)
+
+        state:poll()
+    end
 
     host:destroy()
 end

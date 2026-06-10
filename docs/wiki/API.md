@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8827 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (31317 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8849 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (31407 lines)
 
 ## Coverage
 
 - 70 modules
-- 5758 functions and methods
+- 5780 functions and methods
 - 100.0% documented
 
 ## API Module Index
@@ -39,10 +39,10 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.binary](Module-binary) | 22 | 4 | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack. |
 | [lurek.camera](Module-camera) | 4 | 3 | 2D camera and viewport types. Pure data; no GPU resources. |
 | [lurek.charts](Module-charts) | 7 | 5 | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers. |
-| [lurek.cinematic](Module-cinematic) | 2 | 2 | This module provides scriptable cinematic timelines for orchestrating complex game sequences. |
+| [lurek.cinematic](Module-cinematic) | 2 | 2 | The cinematic module provides scriptable timelines for cutscenes and other authored sequences. |
 | [lurek.color](Module-color) | 19 | 0 | RGBA color primitives with color-space conversions, blending modes, and predefined palettes. |
 | [lurek.compute](Module-compute) | 13 | 1 | Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads. |
-| [lurek.cursor](Module-cursor) | 4 | 3 | The cursor module manages pointer presentation, custom cursor assets, context-sensitive switching policies, and visual pointer feedback effects in Lurek2D. |
+| [lurek.cursor](Module-cursor) | 4 | 3 | Lets users shape pointer behavior as part of UX, not just rely on default OS cursor visuals. |
 | [lurek.dataframe](Module-dataframe) | 15 | 6 | In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*). |
 | [lurek.debugbridge](Module-debugbridge) | 16 | 0 | TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server. |
 | [lurek.devtools](Module-devtools) | 50 | 2 | In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*). |
@@ -58,7 +58,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.font](Module-font) | 11 | 1 | CPU-side font loading, glyph metrics, text measurement, and shaping for bitmap fonts. |
 | [lurek.globe](Module-globe) | 11 | 2 | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night. |
 | [lurek.grep](Module-grep) | 7 | 2 | Text search engine for game content: literal, regex, glob, fuzzy, parallel file search. |
-| [lurek.html](Module-html) | 6 | 2 | This module provides the HTML/CSS user interface subsystem, letting developers build interactive menus and HUDs. |
+| [lurek.html](Module-html) | 6 | 2 | This module gives users an in-engine HTML/CSS UI layer for menus, HUDs, and tool panels. |
 | [lurek.i18n](Module-i18n) | 36 | 0 | Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*). |
 | [lurek.image](Module-image) | 12 | 5 | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
 | [lurek.input](Module-input) | 89 | 3 | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |

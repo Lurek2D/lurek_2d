@@ -5,6 +5,10 @@
 //! - Ensures decal targets are cleanly referenced and reused across frame lifecycles.
 
 /// Paint-target surface for persistent world decals; holds pixel dimensions only.
+///
+/// # Fields
+/// - `width` - Pixel width of the decal target.
+/// - `height` - Pixel height of the decal target.
 pub struct DecalSurface {
     /// Pixel width of this surface.
     pub width: u32,
@@ -14,7 +18,7 @@ pub struct DecalSurface {
 
 /// Construction and dimension queries for a decal surface.
 impl DecalSurface {
-    /// Create a `DecalSurface` sized `width` × `height` pixels.
+    /// Create a `DecalSurface` sized `width` x `height` pixels.
     pub fn new(width: u32, height: u32) -> Self {
         Self { width, height }
     }

@@ -645,30 +645,30 @@ fn fs_main(
 "#;
 
     #[test]
-    fn test_phase02_live_scissor_normalization_clamps_to_target_bounds() {
+    fn scissor_normalization_clamps_to_target_bounds() {
         assert_eq!(
             normalize_scissor(Some((-1.2, 2.8, 20.1, 100.0)), 10, 8),
             Some((0, 2, 10, 6))
         );
     }
     #[test]
-    fn test_phase02_live_scissor_normalization_discards_fully_offscreen_rects() {
+    fn scissor_normalization_discards_fully_offscreen_rects() {
         assert_eq!(normalize_scissor(Some((11.0, 0.0, 2.0, 2.0)), 10, 8), None);
     }
     #[test]
-    fn test_phase02_live_color_mask_bits_round_trip_selected_channels() {
+    fn color_mask_bits_round_trip_selected_channels() {
         let bits = color_write_mask_bits((true, false, true, false));
         let mask = color_write_mask_from_bits(bits);
         assert_eq!(mask, wgpu::ColorWrites::RED | wgpu::ColorWrites::BLUE);
     }
     #[test]
-    fn test_phase02_live_filter_mode_maps_linear_and_defaults_to_nearest() {
+    fn filter_mode_maps_linear_and_defaults_to_nearest() {
         assert_eq!(parse_filter_mode("linear"), wgpu::FilterMode::Linear);
         assert_eq!(parse_filter_mode("nearest"), wgpu::FilterMode::Nearest);
         assert_eq!(parse_filter_mode("unsupported"), wgpu::FilterMode::Nearest);
     }
     #[test]
-    fn test_phase02_live_uniform_bytes_pack_bool_and_vec4_values() {
+    fn uniform_bytes_pack_bool_and_vec4_values() {
         let bool_bytes = uniform_bytes(&UniformValue::Bool(true));
         let vec4_bytes = uniform_bytes(&UniformValue::Vec4([1.0, 2.0, 3.0, 4.0]));
         assert_eq!(u32::from_ne_bytes(bool_bytes[..4].try_into().unwrap()), 1);
@@ -690,7 +690,7 @@ fn fs_main(
         );
     }
     #[test]
-    fn test_phase02_live_custom_color_shader_source_is_parseable_with_uniforms() {
+    fn custom_color_shader_source_is_parseable_with_uniforms() {
         let uniform_signature = vec![
             ("tint".to_string(), ShaderUniformKind::Vec4),
             ("time_scale".to_string(), ShaderUniformKind::Float),
@@ -705,7 +705,7 @@ fn fs_main(
             .expect("wrapped color shader source should remain valid WGSL");
     }
     #[test]
-    fn test_phase02_live_custom_texture_shader_source_is_parseable_with_uniforms() {
+    fn custom_texture_shader_source_is_parseable_with_uniforms() {
         let uniform_signature = vec![("uv_scale".to_string(), ShaderUniformKind::Vec2)];
         let shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
             .expect("expected valid fragment shader");
@@ -718,7 +718,7 @@ fn fs_main(
             .expect("wrapped texture shader source should remain valid WGSL");
     }
     #[test]
-    fn test_phase02_live_stencil_write_depth_state_enables_writes_and_action() {
+    fn stencil_write_depth_state_enables_writes_and_action() {
         let state = depth_stencil_state(GpuStencilMode::Write(StencilAction::IncrementWrap));
         assert_eq!(state.format, wgpu::TextureFormat::Depth24PlusStencil8);
         assert_eq!(state.depth_compare, wgpu::CompareFunction::Always);
@@ -735,7 +735,7 @@ fn fs_main(
         );
     }
     #[test]
-    fn test_phase02_live_stencil_test_depth_state_reads_without_writing() {
+    fn stencil_test_depth_state_reads_without_writing() {
         let state = depth_stencil_state(GpuStencilMode::Test(CompareMode::GreaterEqual));
         assert_eq!(state.stencil.read_mask, 0xFF);
         assert_eq!(state.stencil.write_mask, 0);

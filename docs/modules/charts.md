@@ -2,9 +2,21 @@
 
 ## Summary
 
-The charts module provides a CPU-rasterized data-visualization rendering engine for Lurek2D. Its functional purpose is to generate static chart images directly from raw data series, Lua tables, or column-driven tabular DataFrames. This enables the creation of debug telemetry panels, player statistics HUDs, and diagnostic data overlays at runtime without external dependencies.
+- Lets users render runtime charts directly inside the engine for telemetry, balancing, and player-facing dashboards.
+- Converts raw Lua series and table-like data into ready-to-display RGBA images without external plotting tools.
+- Supports line, bar, area, scatter, and pie workflows so teams can choose the right visual grammar per metric.
+- Helps debug progression, economy, and performance trends during live sessions instead of offline exports.
+- Exposes chart titles, sizing, and palette controls for fast integration into HUD or debug overlays.
+- Handles value-range mapping and coordinate transforms so scripts can focus on data, not pixel math.
+- Works well for static snapshots and repeated redraws in tooling panels.
+- Bridges DataFrame-style analytics output with immediate visual interpretation.
+- Reduces friction for QA and designers who need quick, embedded diagnostic visuals.
+- Keeps chart generation deterministic and portable because it runs on CPU-side rasterization.
+- Serves as the in-engine visualization surface for numeric storytelling and runtime observability.
+- Helps turn raw counters into actionable feedback for tuning gameplay systems.
+- Gives projects a practical path from data collection to readable visual output in one module.
 
-The rasterization engine supports several standard chart formats: line charts for continuous trends, vertical or horizontal bar charts for categorical comparisons, stacked area charts for compositional trends, scatter plots for sample distributions, and proportional pie charts with optional donut-hole ring designs. It translates numerical data arrays into 32-bit RGBA pixel buffers, managing coordinate transformations, automatic axis domain estimation, title margins, and multi-color palette mappings.
+This module primarily collaborates with `color`, `dataframe`, `image`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

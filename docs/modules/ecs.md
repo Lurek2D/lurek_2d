@@ -2,13 +2,23 @@
 
 ## Summary
 
-This module provides the Entity-Component-System framework, serving as the central database and simulation coordinator for the game world. It tracks entity lifecycles using generational IDs, which prevent dangling references when slots are reused. Component data is stored in flexible tables, exposing optimized methods to set, query, and remove components dynamically during runtime updates.
+- This module gives users a full ECS world model for organizing gameplay state at scale.
+- Entities use generational identities, which helps prevent stale-handle bugs after deletion and reuse.
+- Components can be attached and queried dynamically, enabling data-driven behavior composition.
+- Hierarchy, tags, and layers support practical grouping for rendering, logic, and tooling workflows.
+- Relationship support lets systems model directed links and graph-like ownership between entities.
+- Query APIs support include/exclude filtering so systems can target the exact data shape they need.
+- System registration and ordering rules provide deterministic update and render phase execution.
+- Dependency-aware scheduling reduces order-related bugs in multi-system simulations.
+- Blueprint and bulk-spawn features speed up content-heavy spawning scenarios.
+- Snapshot and serialization flows support save/restore, rollback, and sync-style workflows.
+- Dirty tracking and observer hooks help downstream systems react to world mutations efficiently.
+- For users, the value is one coherent world-state core instead of scattered object tables.
+- It scales from simple prototypes to larger simulations with many interacting subsystems.
+- The module keeps ECS ergonomics script-friendly while preserving predictable runtime behavior.
+- In practice, it enables maintainable gameplay architecture with better queryability and control.
 
-To organize the game world, the module supports hierarchical parent-child nesting, layers, and tag-based grouping. Entities can be grouped using fast bitmap tags for low-cost queries, while a relation tracking system maps directed or unordered connections between entities. This allows gameplay systems to reason about structured ownership and network routing directly within the world model.
-
-Data processing is optimized through advanced queries with inclusion and exclusion filters, allowing systems to locate entities efficiently. The module orchestrates systems using a phase-aware scheduler. Systems are registered with custom priorities, and the engine executes them in a topologically sorted order across update and render cycles to guarantee deterministic behaviors.
-
-To support data-driven workflows, the system implements blueprints, bulk-spawning routines, and snapshot serialization. Blueprints act as templates supporting overrides, letting developers instantiate large batches of entities easily. Finally, the snapshot manager captures incremental diffs and serialized states, making it simple to save, restore, or synchronize world states.
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

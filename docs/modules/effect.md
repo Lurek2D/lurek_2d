@@ -2,13 +2,22 @@
 
 ## Summary
 
-This module represents the visual post-processing pipeline, enabling developers to apply full-screen shader effects to render outputs. It manages effect instances coupling specific shader algorithms with customizable parameters. These apply dynamically using either built-in effect types or custom shaders, giving developers control over the final visual presentation of their games.
+- This module lets users shape final frame look through configurable post-processing passes.
+- You can combine built-in and custom shader effects to build a visual style pipeline per scene.
+- Stack ordering controls allow deliberate multi-pass composition instead of one-off filter toggles.
+- Runtime enable/disable and reordering support fast visual iteration during gameplay testing.
+- Preset stacks provide one-call mood changes for common cinematic or stylized looks.
+- Capture-aware stack behavior integrates with render flow without forcing manual pass orchestration.
+- Image-specific chains support applying effects to selected assets independently of full-screen capture.
+- Parameter APIs make tuning brightness, saturation, threshold, and similar controls straightforward.
+- Diagnostic helpers expose stack state and shader issues to speed up troubleshooting.
+- Viewport-aware defaults help effects remain consistent across resolution changes.
+- For users, this module turns post FX from engine internals into script-level art direction control.
+- It reduces visual-pipeline glue code and encourages reusable look presets.
+- The result is faster experimentation and more consistent presentation quality.
+- Overall, it provides the practical runtime layer for stylized rendering workflows.
 
-The post-processing stack coordinates the order and execution of multiple visual passes. The stack manages active capture boundaries, directing the renderer to intercept draw commands and route them through the active shader sequence. Effects can be enabled or reordered dynamically, automatically falling back to no-op modes when inactive to preserve processing performance.
-
-To streamline styling, a preset system bundles curated configurations into ready-to-use stacks. These presets allow developers to apply complex visual moods with a single operation. Viewport-aware initializations ensure that newly spawned stacks automatically scale to match the window dimensions, maintaining sharp scaling and alignment across different display sizes.
-
-Additionally, the module supports image-specific processing chains operating independently from main game capture. These custom chains apply shader filters directly to separate graphical assets. Introspection features offer diagnostic stack indicators and shader error displays to make debugging and tuning visual effects straightforward.
+This module primarily collaborates with `image`, `overlay`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

@@ -1,47 +1,43 @@
 ﻿---
 name: create-test-lua
-description: Create or update lua test for specific module and check test coverage.
+description: "Load this skill when creating or modifying Lua tests for public lurek APIs under tests/lua. Skip it for Rust-only internals, integration-only coverage, or visual evidence tests."
 ---
 
-# GOAL
-- Create or update unit tests in Lua for a specific module to ensure its behavior is fully covered.
+# Goal
+- Create or modify Lua tests that are canonical coverage for public `lurek.*` APIs.
 
-# INPUTS REQUIRED
-- Module name
-- Target functions or behaviors to test
-= User must provide the scope of changes or the specific module
-- Agent must collect current test coverage metrics and existing test files
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: testing-ecosystem, lua-scripting, quality-pipeline.
-2. Execute `python tools/audit/test_coverage.py --module <module>` to get the baseline test coverage percentage.
-3. Review the missing coverage areas identified by the script output.
-4. Create or update `tests/lua/test_<module>_<layer>.lua`. Write test cases to cover the missing logic paths, including negative testing.
-5. Execute `cargo test --test lua_tests` to verify that your new test cases compile and run successfully.
-6. Execute `python tools/validate/cag_validate.py` to ensure the new files respect project constraints.
-7. Execute `python tools/audit/test_coverage.py --module <module>` again to measure the new test coverage. If the output coverage is strictly less than 100%, repeat step 4 to write more tests until 100% coverage is achieved.
+# Steps
+1. Load the active `.codex/skills/create-test-lua/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect existing test files, harness registration, and coverage output before writing.
+5. Modify the matching `tests/lua/` file when present; create a new file only for uncovered module coverage.
+6. Use `@covers` markers, specific assertions, and `test_summary()`.
+7. Register new files in `tests/lua/harness.rs`.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- New or updated test files in `tests/lua/`
-- Console output showing passed tests and updated coverage report
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `cargo test --test lua_tests` exits with code 0 (0 failed tests).
-- [ ] `python tools/audit/test_coverage.py` reports exactly 100% test coverage for the target module.
-- [ ] `python tools/validate/cag_validate.py` returns exactly 0 validation errors.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Writing tests that test implementation details instead of the public API.
-- Skipping negative or boundary condition tests.
-- Modifying module source code within this prompt.
+# Example Invocation
+- User: Use `create-test-lua` for the requested scope.
+- Agent: Loads `.codex/skills/create-test-lua/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: testing-ecosystem, lua-scripting, quality-pipeline
-- tools: python tools/validate/cag_validate.py, python tools/audit/test_coverage.py
-- agent: Tester
-
+# References
+- skills: `.codex/skills/create-test-lua/SKILL.md`
+- contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "Lua unit tests public API coverage" --profile game --limit 10, tools/python.cmd tools/audit/lua_api_test_coverage.py --module <module>, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/, cargo test --test lua_tests, tools/python.cmd tools/validate/cag_validate.py
+- agent: tester
 

@@ -2,29 +2,88 @@
 
 ## Summary
 
-This module provides a robust, retained-mode user interface toolkit designed to support both in-game graphical HUDs and complex editor-style workspaces. At its core, a centralized context manager manages the complete widget lifecycle, allocating every node inside an indexed arena to guarantee memory stability and fast lookups. The context monitors root-level viewport scales and base resolutions to ensure widgets scale cleanly across high-DPI displays.
+- The ui module provides a retained-mode interface system for HUDs, menus, overlays, and tool screens.
+- Dialogs now act as full popup windows with modal or non-modal behavior, footer slots, semantic actions, default/cancel shortcuts, and close-policy controls.
+- Popup shells support shared drag and resize behavior with viewport clamping, so dialogs and tool windows stay aligned in runtime behavior and rendering defaults.
+- It centralizes widget ownership in a context-managed arena with stable handles.
+- Stable IDs make per-frame mutation safe for large interactive trees.
+- The context owns lifecycle, layout, input routing, and event queue behavior.
+- Root scaling controls support DPI-aware rendering across resolutions.
+- Layout is recursive and deterministic from root to leaf bounds.
+- Container primitives include vertical, horizontal, grid, split, and dock arrangements.
+- Scrollable containers support overflow while preserving parent layout contracts.
+- Window containers support dragging and resizing interactions.
+- Nine-patch support preserves border fidelity under scale changes.
+- Widget base state captures visibility, interaction flags, and style links.
+- Shared state semantics keep hover, focus, and press behavior consistent.
+- Focus traversal supports sequential and geometric navigation modes.
+- Keyboard-driven UI is supported without mouse-only assumptions.
+- Input events are normalized into frame-coherent dispatch.
+- Event queues allow deterministic script-side consumption order.
+- Drag-and-drop lifecycle is explicit from begin to drop/cancel.
+- Parent-child safety checks prevent cyclic widget relationships.
+- Core controls include button, label, input, checkbox, radio, slider, and spinbox.
+- Additional controls include list, combo, progress, separator, and spacer variants.
+- Extended widgets include dialogs, menus, tree views, toolbars, and badges.
+- Notification/toast systems provide transient user feedback primitives.
+- Data visualization widgets support line, bar, pie, area, and scatter charts.
+- Chart rendering maps abstract data series to viewport-aware geometry.
+- DataFrame integration supports direct table-to-chart workflows.
+- Theming maps widget type/state to style records and semantic tokens.
+- Style records include colors, borders, shadows, spacing, and typography knobs.
+- Fallback style resolution keeps partial themes functional.
+- Theme tokenization supports global skin changes with low churn.
+- Rendering converts widget tree state into shared draw command primitives.
+- Headless software rendering supports screenshot and regression test flows.
+- Headless output allows CI verification without a window backend.
+- Text measurement is integrated with active font context and alignment rules.
+- Global and per-widget font overrides are both supported.
+- Animation channels include alpha, scale, rotation, and color transitions.
+- Animation updates are integrated in context progression each frame.
+- Data bindings synchronize widget values with script-managed keys.
+- Binding utilities reduce repetitive synchronization code.
+- Layout loading supports TOML-defined UI structures.
+- Lua table definitions can also be loaded into runtime widget trees.
+- Data-driven layouts speed iteration without Rust-side recompilation.
+- Render signatures and cache controls reduce unnecessary full recomputation.
+- Widget count and cache APIs support runtime diagnostics.
+- Clear/reset APIs support controlled tree rebuild scenarios.
+- The module supports both lightweight HUDs and complex editor-like screens.
+- It is designed for predictable behavior under heavy UI mutation.
+- Ownership boundaries separate widget semantics from gameplay domain logic.
+- Integration with runtime and render remains explicit and acyclic.
+- Geometry and color helpers are consumed through math/color modules.
+- The module does not own business logic; it owns presentation and interaction contracts.
+- Deterministic traversal order is a core invariant.
+- Stable widget handle lifetime is a core invariant.
+- Layout consistency across scale changes is a core invariant.
+- Style fallback correctness is a core invariant.
+- Event ordering guarantees are required for reproducible interaction behavior.
+- The API surface is broad but internally structured by focused submodules.
+- Context, controls, containers, theme, and render layers remain separated.
+- This separation keeps maintenance practical as feature count grows.
+- The module supports accessibility-oriented keyboard navigation paths.
+- It supports tool-facing UI and in-game UI with one runtime model.
+- It enables rapid prototyping while staying production-capable.
+- Headless rendering makes visual QA automatable in test pipelines.
+- Theme tokens make large-scale visual changes manageable.
+- Drag/drop support enables inventory and editor workflows.
+- Chart widgets make telemetry and debugging views first-class.
+- The retained model reduces imperative draw boilerplate in scripts.
+- It improves readability and maintainability of complex interface flows.
+- The module is a key user-facing layer in Feature Systems.
+- It bridges gameplay state and player interaction with deterministic contracts.
+- It is designed for reliability under both runtime and tooling workloads.
+- Overall, ui is the canonical interface subsystem in Lurek2D.
+- It closes the full loop of definition, layout, input, animation, and rendering.
+- It provides the structure needed to scale UI complexity without architectural drift.
+- The subsystem remains testable, observable, and extensible by design.
+- This balance of flexibility and control is its primary architectural value.
+- It is intended to remain the long-term UI foundation across project types.
+- The module's contracts prioritize stability as screen complexity grows.
+- It gives teams one consistent UI language for game and tool surfaces.
 
-The toolkit structures layout compositions using horizontal, vertical, and grid arrangement container nodes. Rather than manually positioning elements, developers specify alignment, cross-axis rules, spacing, and cell justification to distribute nodes automatically. Recursive layout passes compute absolute screen-space bounds based on parent configurations, supporting wrapping options when elements overflow.
-
-Every user interface element inherits from a highly standardized base widget prototype. This prototype packages layout bounds, transformation matrices, visibility states, and style references into one record. The widget base tracks active interaction states like hover, focus, press, and drag operations, driving a spatial keyboard navigation system that handles focus direction queries deterministically.
-
-The module supplies a comprehensive catalog of standard interactive controls for data entry and triggers. These controls include action buttons, checkboxes, radio groups, switches, numeric spinboxes, and combo-box drop-downs. Each control type implements internal validation rules, clamping inputs and firing change events only when states mutate, ensuring scripts receive sanitised inputs.
-
-Visual layout structures are organized via flexible panel containers, resizable split views, and dock panels. These containers let developers construct complex, split-screen interfaces, sidebars, and hierarchical dashboards. A specialized nine-slice layout helper preserves corner proportions, stretching only center segments to ensure borders remain crisp when containers resize dynamically.
-
-For desktop-like tools, the system provides draggable, resizable window shells alongside modal dialog wrappers. Windows capture drag events on their header bars to translate layout positions, while modal dialogs temporarily trap keyboard and mouse focus to isolate interactions during critical gameplay choices. These floating shells support manual close triggers and custom title overlays.
-
-To streamline development, the module integrates a declarative layout loader that parses external TOML files and Lua table definitions. This system converts text-based definitions into fully configured runtime widget hierarchies, applying predefined defaults and property bindings automatically. By separating markup from scripting, the loader allows developers to tweak layouts without reloading.
-
-A robust styling engine drives consistent look-and-feel modifications across the entire widget catalog. The system maps widget states to reusable theme records containing color palettes, margins, font styles, drop shadows, and border widths. Fallback rules ensure that incomplete themes remain fully functional by falling back to defaults, while semantic tokens allow uniform color skins.
-
-For telemetry dashboards and statistics panels, the module bundles an analytical data graph renderer. It supports line, bar, pie, and area charts that map series lists onto visual axes. The graph engine translates virtual coordinates, calculates optimal viewing ranges, and outputs rasterized charts. Furthermore, it binds directly to DataFrame structures to plot tabular databases.
-
-Advanced interface interactions are powered by alpha transitions, spatial transformations, and script-bound key synchronizers. Widgets can bind directly to global data keys, updating their labels or selections automatically when underlying states shift. Concurrently, context-driven transitions animate scale, rotation, and opacity changes to keep visual transitions responsive and dynamic.
-
-Complex input workflows are resolved through drag-and-drop operations and a thread-safe event queue. The context coordinates drag cycles, checking parent-child relationships to prevent cycles, and dispatches events like clicks and selections into a clean, frame-coherent queue. This allows game loops to dequeue and process user inputs deterministically at the start of each execution frame.
-
-Finally, the UI module provides a headless rendering pipeline that rasterizes active widget configurations into static image buffers and PNG files. This software rasterization path is independent of GPU render passes, making it ideal for offline automated testing, screenshot checks, and visual regression testing. It measures and aligns text sizes beforehand, ensuring accurate typography layout.
+This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 
@@ -972,7 +1031,7 @@ lurek.ui.loadLayoutGameFile(path)
 ```lua
 do
     local ok, result = pcall(function()
-        return lurek.ui.loadLayoutGameFile("assets/layouts/sample_main_menu.toml")
+        return lurek.ui.loadLayoutGameFile("content/examples/assets/layouts/sample_main_menu.toml")
     end)
     print("loadLayoutGameFile ok:", ok, "result:", tostring(result))
 end
@@ -1420,25 +1479,50 @@ lurek.ui.newDialog(title)
 
 ```lua
 do
-    local dlg = lurek.ui.newDialog("Confirm Action")
-    local content = lurek.ui.newPanel()
-    content:setSize(300, 200)
-    dlg:setModal(true)
-    dlg:setContent(content._idx)
-    dlg:addButton("OK")
-    dlg:addButton("Cancel")
-    dlg:setOnClose(function(idx)
-        print("dialog closed, widget index:", idx)
-    end)
-    dlg:open()
-    print("dialog title:", dlg:getTitle())
-    print("is modal:", dlg:isModal())
-    print("is open:", dlg:isOpen())
-    dlg:setTitle("Advanced Settings")
-    print("dialog content index:", dlg:getContent())
-    print("new title:", dlg:getTitle())
-    dlg:close()
-    print("after close, is open:", dlg:isOpen())
+    local modal = lurek.ui.newDialog("Quest Reward")
+    modal:setPosition(120, 100)
+    modal:setSize(320, 220)
+    modal:setModal(true)
+    modal:setDraggable(true)
+    modal:setResizable(true)
+    modal:setCenterOnOpen(false)
+    modal:setCloseable(false)
+
+    local body = lurek.ui.newPanel()
+    body:setSize(300, 150)
+    local preview = lurek.ui.newImageWidget()
+    preview:setSize(64, 64)
+    local copy = lurek.ui.newLabel("Choose your reward and confirm.")
+    copy:setPosition(76, 8)
+    body:addChild(preview)
+    body:addChild(copy)
+
+    local footer = lurek.ui.newLayout("horizontal")
+    footer:setSize(300, 26)
+    modal:setContent(body._idx)
+    modal:setFooter(footer._idx)
+    modal:addAction("Equip", function(_, action_idx)
+        print("default action fired:", action_idx)
+    end, "default", true)
+    modal:addAction("Back", function(_, action_idx)
+        print("cancel action fired:", action_idx)
+    end, "cancel", true)
+    modal:setDefaultAction(1)
+    modal:setCancelAction(2)
+    modal:open()
+
+    local inspector = lurek.ui.newDialog("Companion Notes")
+    inspector:setModal(false)
+    inspector:setDismissOnOutsideClick(true)
+    inspector:setDraggable(true)
+    inspector:setResizable(true)
+    inspector:setCenterOnOpen(false)
+    inspector:setPosition(470, 110)
+    inspector:setSize(260, 180)
+    inspector:addButton("Close")
+    inspector:open()
+
+    print("modal open:", modal:isOpen(), "non modal open:", inspector:isOpen())
 end
 ```
 
@@ -4686,9 +4770,45 @@ end
 
 ### Type Methods
 
+#### `LDialog:addAction`
+
+Adds a footer action button and returns its 1-based index.
+
+```lua
+LDialog:addAction(text, cb, role, close_on_activate)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `text` | string | Visible button label. |
+| `cb?` | function | Optional callback fired when the action activates. |
+| `role?` | string | Optional semantic role: "custom", "default", or "cancel". |
+| `close_on_activate?` | boolean | Optional override for auto-close behavior. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | The new 1-based action index. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Actions")
+    local idx = dlg:addAction("Apply", nil, "default", true)
+    dlg:setDefaultAction(idx)
+    print("addAction/default:", idx, dlg:getDefaultAction())
+end
+```
+
+---
+
 #### `LDialog:addButton`
 
-Adds a footer button to this dialog and returns its 1-based index.
+/// Returns a value for addButton (auto-generated).
 
 ```lua
 LDialog:addButton(text, cb)
@@ -4698,14 +4818,8 @@ LDialog:addButton(text, cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | string | The button label. |
-| `cb?` | function | Optional click callback (reserved for future use). |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | The 1-based button index. |
+| `text` | any |  |
+| `cb?` | any |  |
 
 **Example**
 
@@ -4722,9 +4836,30 @@ end
 
 ---
 
+#### `LDialog:centerInViewport`
+
+Repositions this dialog to the center of the active viewport immediately.
+
+```lua
+LDialog:centerInViewport()
+```
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Center")
+    dlg:setCenterOnOpen(false)
+    dlg:centerInViewport()
+    print("centerInViewport ok")
+end
+```
+
+---
+
 #### `LDialog:close`
 
-Closes this dialog and fires the onClose callback if it was open.
+/// Returns a value for close (auto-generated).
 
 ```lua
 LDialog:close()
@@ -4745,19 +4880,66 @@ end
 
 ---
 
-#### `LDialog:getContent`
+#### `LDialog:getCancelAction`
 
-Returns the widget index of this dialog's content, or nil if not set.
+Returns the 1-based action index triggered by Escape, if any.
 
 ```lua
-LDialog:getContent()
+LDialog:getCancelAction()
 ```
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| number | The content widget index. |
+| number? | The cancel action index. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Cancel")
+    local idx = dlg:addAction("Cancel", nil, "cancel", true)
+    dlg:setCancelAction(idx)
+    print("cancel action:", dlg:getCancelAction())
+end
+```
+
+---
+
+#### `LDialog:getCenterOnOpen`
+
+Returns whether opening this dialog recenters it in the viewport.
+
+```lua
+LDialog:getCenterOnOpen()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the dialog recenters when opened. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Center Flag")
+    dlg:setCenterOnOpen(false)
+    print("centerOnOpen:", dlg:getCenterOnOpen())
+end
+```
+
+---
+
+#### `LDialog:getContent`
+
+/// Returns a value for getContent (auto-generated).
+
+```lua
+LDialog:getContent()
+```
 
 **Example**
 
@@ -4774,19 +4956,149 @@ end
 
 ---
 
-#### `LDialog:getTitle`
+#### `LDialog:getDefaultAction`
 
-Returns the title text of this dialog.
+Returns the 1-based action index triggered by Enter, if any.
 
 ```lua
-LDialog:getTitle()
+LDialog:getDefaultAction()
 ```
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| string | The dialog title. |
+| number? | The default action index. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Default")
+    local idx = dlg:addAction("Confirm", nil, "default", true)
+    dlg:setDefaultAction(idx)
+    print("default action:", dlg:getDefaultAction())
+end
+```
+
+---
+
+#### `LDialog:getDismissOnOutsideClick`
+
+Returns whether outside clicks dismiss this non-modal dialog.
+
+```lua
+LDialog:getDismissOnOutsideClick()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if outside dismissal is enabled. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Dismiss Flag")
+    dlg:setDismissOnOutsideClick(true)
+    print("dismissOnOutsideClick:", dlg:getDismissOnOutsideClick())
+end
+```
+
+---
+
+#### `LDialog:getFooter`
+
+Returns the optional footer content widget index.
+
+```lua
+LDialog:getFooter()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number? | Footer widget index if one is assigned. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Footer")
+    local footer = lurek.ui.newPanel()
+    dlg:setFooter(footer._idx)
+    print("footer idx:", dlg:getFooter())
+end
+```
+
+---
+
+#### `LDialog:getMaxSize`
+
+Returns the optional maximum popup dimensions for this dialog.
+
+```lua
+LDialog:getMaxSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number? | Maximum width and height; or nil when unbounded. (value 1). |
+| number? | Maximum width and height; or nil when unbounded. (value 2). |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Max")
+    dlg:setMaxSize(420, 260)
+    local w, h = dlg:getMaxSize()
+    print("max size:", w, h)
+end
+```
+
+---
+
+#### `LDialog:getMinSize`
+
+Returns the minimum popup size for this dialog.
+
+```lua
+LDialog:getMinSize()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Minimum width and height in pixels. (value 1). |
+| number | Minimum width and height in pixels. (value 2). |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Min")
+    dlg:setMinSize(220, 140)
+    local w, h = dlg:getMinSize()
+    print("min size:", w, h)
+end
+```
+
+---
+
+#### `LDialog:getTitle`
+
+/// Returns a value for getTitle (auto-generated).
+
+```lua
+LDialog:getTitle()
+```
 
 **Example**
 
@@ -4803,19 +5115,63 @@ end
 
 ---
 
-#### `LDialog:isModal`
+#### `LDialog:isCloseable`
 
-Returns whether this dialog is modal (blocks interaction with other widgets).
+Returns whether this dialog exposes user-driven close affordances.
 
 ```lua
-LDialog:isModal()
+LDialog:isCloseable()
 ```
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| boolean | True if modal. |
+| boolean | True if the dialog can be dismissed by the user. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Closeable")
+    print("isCloseable:", dlg:isCloseable())
+end
+```
+
+---
+
+#### `LDialog:isDraggable`
+
+Returns whether this dialog can be dragged by its title bar.
+
+```lua
+LDialog:isDraggable()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if title-bar dragging is enabled. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Draggable")
+    print("isDraggable:", dlg:isDraggable())
+end
+```
+
+---
+
+#### `LDialog:isModal`
+
+/// Returns a value for isModal (auto-generated).
+
+```lua
+LDialog:isModal()
+```
 
 **Example**
 
@@ -4834,17 +5190,11 @@ end
 
 #### `LDialog:isOpen`
 
-Returns whether this dialog is currently open and visible.
+/// Returns a value for isOpen (auto-generated).
 
 ```lua
 LDialog:isOpen()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if open. |
 
 **Example**
 
@@ -4861,9 +5211,34 @@ end
 
 ---
 
+#### `LDialog:isResizable`
+
+Returns whether this dialog can be resized from its edges or corners.
+
+```lua
+LDialog:isResizable()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if resize handles are active. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Resizable")
+    print("isResizable:", dlg:isResizable())
+end
+```
+
+---
+
 #### `LDialog:open`
 
-Opens this dialog, making it visible.
+/// Returns a value for open (auto-generated).
 
 ```lua
 LDialog:open()
@@ -4884,9 +5259,88 @@ end
 
 ---
 
+#### `LDialog:setCancelAction`
+
+Sets the action triggered by Escape, using a 1-based action index.
+
+```lua
+LDialog:setCancelAction(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index?` | number | Action index to bind, or nil to clear the cancel action. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Cancel Setter")
+    local idx = dlg:addAction("Abort", nil, "cancel", true)
+    dlg:setCancelAction(idx)
+    print("setCancelAction:", dlg:getCancelAction())
+end
+```
+
+---
+
+#### `LDialog:setCenterOnOpen`
+
+Controls whether opening this dialog recenters it in the viewport.
+
+```lua
+LDialog:setCenterOnOpen(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to center the dialog each time it opens from closed state. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Center Setter")
+    dlg:setCenterOnOpen(false)
+    print("setCenterOnOpen ok")
+end
+```
+
+---
+
+#### `LDialog:setCloseable`
+
+Sets whether this dialog can be dismissed by close affordances or Escape fallback.
+
+```lua
+LDialog:setCloseable(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to allow user dismissal. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Closeable Setter")
+    dlg:setCloseable(false)
+    print("setCloseable:", false)
+end
+```
+
+---
+
 #### `LDialog:setContent`
 
-Sets the content widget for this dialog.
+/// Returns a value for setContent (auto-generated).
 
 ```lua
 LDialog:setContent(content_idx)
@@ -4896,7 +5350,7 @@ LDialog:setContent(content_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `content_idx?` | number | The widget index to show as content, or nil to clear. |
+| `content_idx?` | any |  |
 
 **Example**
 
@@ -4913,9 +5367,170 @@ end
 
 ---
 
+#### `LDialog:setDefaultAction`
+
+Sets the action triggered by Enter, using a 1-based action index.
+
+```lua
+LDialog:setDefaultAction(index)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `index?` | number | Action index to bind, or nil to clear the default action. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Default Setter")
+    local idx = dlg:addAction("Confirm", nil, "default", true)
+    dlg:setDefaultAction(idx)
+    print("set default action:", idx)
+end
+```
+
+---
+
+#### `LDialog:setDismissOnOutsideClick`
+
+Controls whether clicking outside a non-modal dialog closes it.
+
+```lua
+LDialog:setDismissOnOutsideClick(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to dismiss on outside click for non-modal dialogs. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Dismiss")
+    dlg:setModal(false)
+    dlg:setDismissOnOutsideClick(true)
+    print("dismiss setter ok")
+end
+```
+
+---
+
+#### `LDialog:setDraggable`
+
+Enables or disables title-bar dragging for this dialog.
+
+```lua
+LDialog:setDraggable(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to allow dragging. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Draggable Setter")
+    dlg:setDraggable(true)
+    print("setDraggable:", true)
+end
+```
+
+---
+
+#### `LDialog:setFooter`
+
+Assigns an optional footer content root for this dialog.
+
+```lua
+LDialog:setFooter(footer_idx)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `footer_idx?` | number | Optional widget index rendered in the footer slot. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Footer Setter")
+    local footer = lurek.ui.newLayout("horizontal")
+    dlg:setFooter(footer._idx)
+    print("setFooter:", dlg:getFooter())
+end
+```
+
+---
+
+#### `LDialog:setMaxSize`
+
+Sets optional maximum popup dimensions for this dialog.
+
+```lua
+LDialog:setMaxSize(width, height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width?` | number | Maximum width in pixels, or nil for no horizontal cap. |
+| `height?` | number | Maximum height in pixels, or nil for no vertical cap. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Max Size")
+    dlg:setMaxSize(480, 320)
+    print("setMaxSize:", 480, 320)
+end
+```
+
+---
+
+#### `LDialog:setMinSize`
+
+Sets the minimum popup size for this dialog.
+
+```lua
+LDialog:setMinSize(width, height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `width` | number | Minimum width in pixels. |
+| `height` | number | Minimum height in pixels. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Min Size")
+    dlg:setMinSize(200, 120)
+    print("setMinSize:", 200, 120)
+end
+```
+
+---
+
 #### `LDialog:setModal`
 
-Sets whether this dialog widget is modal.
+/// Returns a value for setModal (auto-generated).
 
 ```lua
 LDialog:setModal(v)
@@ -4925,7 +5540,7 @@ LDialog:setModal(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | boolean | True to make modal. |
+| `v` | any |  |
 
 **Example**
 
@@ -4944,7 +5559,7 @@ end
 
 #### `LDialog:setOnClose`
 
-Registers a callback invoked when this dialog is closed.
+/// Returns a value for setOnClose (auto-generated).
 
 ```lua
 LDialog:setOnClose(f)
@@ -4954,7 +5569,7 @@ LDialog:setOnClose(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | function | Callback receiving the widget index. |
+| `f` | any |  |
 
 **Example**
 
@@ -4971,9 +5586,35 @@ end
 
 ---
 
+#### `LDialog:setResizable`
+
+Enables or disables edge and corner resizing for this dialog.
+
+```lua
+LDialog:setResizable(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to allow resizing. |
+
+**Example**
+
+```lua
+do
+    local dlg = lurek.ui.newDialog("Resizable Setter")
+    dlg:setResizable(true)
+    print("setResizable:", true)
+end
+```
+
+---
+
 #### `LDialog:setTitle`
 
-Sets the title text of this dialog widget.
+/// Returns a value for setTitle (auto-generated).
 
 ```lua
 LDialog:setTitle(title)
@@ -4983,7 +5624,7 @@ LDialog:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | string | The dialog title. |
+| `title` | any |  |
 
 **Example**
 

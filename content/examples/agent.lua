@@ -756,7 +756,10 @@ end
 
 --@api-stub: lurek.agent.complete
 do
-    local reply = lurek.agent.complete("Hello, world!")
+    local ok, reply = pcall(function()
+        return lurek.agent.complete("Hello, world!")
+    end)
+    print("complete ok:", ok)
     print("Reply:", reply)
 end
 
@@ -764,13 +767,17 @@ end
 
 --@api-stub: lurek.agent.completeAsync
 do
-    lurek.agent.completeAsync("What is Lua?", function(text, err)
-        if err then
-            print("Error:", err)
-        else
-            print("Async reply:", text)
-        end
+    local ok, err = pcall(function()
+        lurek.agent.completeAsync("What is Lua?", function(text, async_err)
+            if async_err then
+                print("Error:", async_err)
+            else
+                print("Async reply:", text)
+            end
+        end)
     end)
+    print("completeAsync ok:", ok)
+    if not ok then print("completeAsync error:", err) end
 end
 
 -- ─── lurek.agent.newChat ─────────────────────────────────────────────────────
@@ -804,7 +811,10 @@ end
 do
     local chat = lurek.agent.newChat()
     chat:addMessage("user", "Hi!")
-    local reply = chat:complete()
+    local ok, reply = pcall(function()
+        return chat:complete()
+    end)
+    print("chat complete ok:", ok)
     print("Chat reply:", reply)
 end
 
@@ -848,7 +858,10 @@ end
 
 --@api-stub: lurek.agent.completeJson
 do
-    local result = lurek.agent.completeJson("List three colors as JSON.")
+    local ok, result = pcall(function()
+        return lurek.agent.completeJson("List three colors as JSON.")
+    end)
+    print("completeJson ok:", ok)
     print("JSON result:", result)
 end
 
@@ -856,8 +869,11 @@ end
 
 --@api-stub: lurek.agent.embed
 do
-    local vec = lurek.agent.embed("Semantic embedding test.")
-    print("Embedding dimensions:", #vec)
+    local ok, vec = pcall(function()
+        return lurek.agent.embed("Semantic embedding test.")
+    end)
+    print("embed ok:", ok)
+    print("Embedding dimensions:", ok and #vec or 0)
 end
 
 -- ─── lurek.agent.isAvailable ─────────────────────────────────────────────────

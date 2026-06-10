@@ -46,8 +46,6 @@ import json
 import math
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
-
 ASCII_START = 32
 ASCII_END = 255  # Latin-1 full range: 224 chars → 16 cols × 14 rows
 COLUMNS = 16
@@ -124,6 +122,8 @@ def find_font(font_path: str | None, candidates: list[Path], label: str) -> Path
 
 
 def render_bitmap(font_path: Path, pt_size: int, output_path: Path, style: str = "regular") -> dict:
+    from PIL import Image, ImageDraw, ImageFont
+
     # Convert point size to pixels at Windows 96 DPI.
     pixel_size = round(pt_size * SCREEN_DPI / 72)
     font = ImageFont.truetype(str(font_path), pixel_size)

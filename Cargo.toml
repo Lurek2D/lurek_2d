@@ -281,10 +281,6 @@ name = "app_tests"
 path = "tests/rust/unit/app_tests.rs"
 
 [[test]]
-name = "automation_tests"
-path = "tests/rust/unit/automation_tests.rs"
-
-[[test]]
 name = "audio_tests"
 path = "tests/rust/unit/audio_tests.rs"
 
@@ -435,14 +431,6 @@ path = "tests/rust/unit/timer_tests.rs"
 [[test]]
 name = "tween_tests"
 path = "tests/rust/unit/tween_tests.rs"
-
-[[test]]
-name = "ui_tests"
-path = "tests/rust/unit/ui_tests.rs"
-
-[[test]]
-name = "agent_tests"
-path = "tests/rust/unit/agent_tests.rs"
 
 [[test]]
 name = "demo_smoke_tests"

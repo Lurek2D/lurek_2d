@@ -1,42 +1,43 @@
 ﻿---
 name: create-rag-artifact
-description: Create or update how RAG system works, new feature or something, reindex it.
+description: "Load this skill when creating or modifying RAG corpus configuration, indexing rules, retrieval ranking, or recall tests. Skip it for normal code search, one-off rg usage, or unrelated docs edits."
 ---
 
-# GOAL
-- Configure Retrieval-Augmented Generation rules, specify new indexing targets, and regenerate the corpus.
+# Goal
+- Create or modify RAG sources, ranking, and indexes so Codex retrieval finds canonical repo context.
 
-# INPUTS REQUIRED
-- New docs-general source or structural change
-- Relevance weighting rules
-= User must define what needs to be indexed or how retrieval should change
-- Agent must collect RAG tooling configuration
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: retrieval-architecture, cag-workflow.
-2. Edit the RAG JSON or Python config files under `tools/rag/` to ingest new sources or adjust vector chunk sizes.
-3. Execute the local indexing tool (e.g., `python tools/rag/reindex.py`). If the tool fails (exit code >0), fix the configuration syntax.
-4. Run test queries against the new index to verify that >95% of expected chunks are accurately recalled.
+# Steps
+1. Load the active `.codex/skills/create-rag-artifact/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect `tools/rag/rag.toml`, `build_index.py`, `query.py`, and current recall before changing configuration.
+5. Modify existing source lists, chunking, or ranking before adding new indexing logic.
+6. Rebuild the index after source or ranking changes.
+7. Run recall queries for `.codex/skills`, `.codex/AGENTS.md`, and active `.codex/agents/*.toml`.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- Updated RAG configuration files
-- Newly generated RAG index/corpus database
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `python tools/rag/reindex.py` exits with code 0 (0 indexing failures).
-- [ ] Query recall tests return >= 95% accuracy.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Indexing massive binary files or unhelpful raw logs.
-- Over-chunking documents so context is lost.
+# Example Invocation
+- User: Use `create-rag-artifact` for the requested scope.
+- Agent: Loads `.codex/skills/create-rag-artifact/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: retrieval-architecture, cag-workflow
-- tools: RAG indexing scripts inside `tools/rag/`
-- agent: CAG-Architect
-
+# References
+- skills: `.codex/skills/create-rag-artifact/SKILL.md`
+- contracts: .codex/AGENTS.md, tools/AGENTS.md, tools/rag/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "RAG rag.toml build_index query" --profile engine --limit 10, tools/python.cmd tools/rag/build_index.py, tools/python.cmd tools/rag/query.py "create-module skill" --profile all --limit 10, tools/python.cmd tools/rag/query.py "Codex AGENTS skills agents" --profile engine --limit 10
+- agent: cag_architect
 

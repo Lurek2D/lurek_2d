@@ -6,6 +6,18 @@ describe("lurek.render module exists", function()
     it("lurek.render is a table", function()
         expect_type("table", lurek.render)
     end)
+
+    -- @covers lurek.render.newDepthSorter
+    -- @covers LDepthSorter:type
+    -- @covers LDepthSorter:typeOf
+    -- @covers LDepthSorter:getCount
+    it("newDepthSorter creates an empty depth sorter", function()
+        local sorter = lurek.render.newDepthSorter()
+        expect_type("userdata", sorter)
+        expect_equal("LDepthSorter", sorter:type())
+        expect_true(sorter:typeOf("LDepthSorter"))
+        expect_equal(0, sorter:getCount())
+    end)
 end)
 
 -- @describe lurek.render color functions
@@ -50,6 +62,7 @@ describe("lurek.render shape functions", function()
     end)
 
     -- @covers lurek.render.rectangle
+    -- @covers LShape:rectangle
     it("rectangle fill mode", function()
         expect_no_error(function()
             lurek.render.rectangle("fill", 10, 10, 100, 50)
@@ -57,6 +70,7 @@ describe("lurek.render shape functions", function()
     end)
 
     -- @covers lurek.render.rectangle
+    -- @covers LShape:rectangle
     it("rectangle line mode", function()
         expect_no_error(function()
             lurek.render.rectangle("line", 10, 10, 100, 50)
@@ -69,6 +83,7 @@ describe("lurek.render shape functions", function()
     end)
 
     -- @covers lurek.render.circle
+    -- @covers LShape:circle
     it("circle fill mode", function()
         expect_no_error(function()
             lurek.render.circle("fill", 50, 50, 25)
@@ -81,6 +96,7 @@ describe("lurek.render shape functions", function()
     end)
 
     -- @covers lurek.render.line
+    -- @covers LShape:line
     it("line accepts 4 args", function()
         expect_no_error(function()
             lurek.render.line(0, 0, 100, 100)
@@ -96,6 +112,7 @@ describe("lurek.render text functions", function()
     end)
 
     -- @covers lurek.render.print
+    -- @covers LTerminal:print
     it("print accepts text and position", function()
         expect_no_error(function()
             lurek.render.print("Hello", 10, 10)
@@ -124,6 +141,7 @@ describe("lurek.render advanced shapes", function()
     end)
 
     -- @covers lurek.render.ellipse
+    -- @covers LShape:ellipse
     it("ellipse fill mode", function()
         expect_no_error(function()
             lurek.render.ellipse("fill", 100, 100, 50, 30)
@@ -136,6 +154,7 @@ describe("lurek.render advanced shapes", function()
     end)
 
     -- @covers lurek.render.polygon
+    -- @covers LShape:polygon
     it("polygon fill mode with vertices", function()
         expect_no_error(function()
             lurek.render.polygon("fill", 0, 0, 100, 0, 50, 100)
@@ -148,6 +167,7 @@ describe("lurek.render advanced shapes", function()
     end)
 
     -- @covers lurek.render.triangle
+    -- @covers LShape:triangle
     it("triangle fill mode", function()
         expect_no_error(function()
             lurek.render.triangle("fill", 0, 0, 100, 0, 50, 80)
@@ -166,6 +186,7 @@ describe("lurek.render advanced shapes", function()
 
     -- @covers lurek.render.getLineWidth
     -- @covers lurek.render.setLineWidth
+    -- @covers LShape:setLineWidth
     it("setLineWidth and getLineWidth roundtrip", function()
         lurek.render.setLineWidth(3.0)
         expect_near(3.0, lurek.render.getLineWidth())
@@ -257,6 +278,7 @@ describe("lurek.render nine-slice", function()
     -- @covers lurek.render.drawNineSlice
     -- @covers lurek.render.newImage
     -- @covers lurek.render.newNineSlice
+    -- @covers LImageData:drawNineSlice
     it("drawNineSlice accepts NineSlice and rect", function()
         local img = lurek.render.newImage("assets/icon.png")
         local ns = lurek.render.newNineSlice(img, 10, 10, 10, 10)
@@ -268,6 +290,7 @@ describe("lurek.render nine-slice", function()
     -- @covers lurek.render.drawNineSlice
     -- @covers lurek.render.newImage
     -- @covers lurek.render.newNineSlice
+    -- @covers LImageData:drawNineSlice
     it("NineSlice:draw method works", function()
         local img = lurek.render.newImage("assets/icon.png")
         local ns = lurek.render.newNineSlice(img, 5, 5, 5, 5)
@@ -725,6 +748,7 @@ describe("render missing API coverage sweep", function()
     -- @covers lurek.render.printRich
     -- @covers lurek.render.printf
     -- @covers lurek.render.arc
+    -- @covers LShape:arc
     it("text and arc helpers are callable", function()
         expect_no_error(function()
             lurek.render.printRich({ { text = "Hello", r = 255, g = 255, b = 255, a = 255 } }, 8, 8)
@@ -860,6 +884,7 @@ describe("render missing API coverage sweep", function()
 
     -- @covers lurek.render.drawBatch
     -- @covers lurek.render.draw
+    -- @covers lurek.render.newImage
     -- @covers lurek.render.newSpriteBatch
     -- @covers LSpriteBatch:add
     -- @covers LSpriteBatch:getCount
@@ -924,6 +949,7 @@ describe("render missing API coverage sweep", function()
     -- @covers lurek.render.applyTransform
     -- @covers lurek.render.setDefaultFilter
     -- @covers lurek.render.getDefaultFilter
+    -- @covers LSvgImage:getCanvas
     it("canvas/transform/filter APIs are callable", function()
         local canvas = lurek.render.getCanvas()
         if canvas == nil then
@@ -967,6 +993,7 @@ describe("render strict: screen globals", function()
     end)
 
     -- @covers lurek.render.getStats
+    -- @covers LGraph:getStats
     it("getStats returns a table", function()
         local stats = lurek.render.getStats()
         expect_type("table", stats)
@@ -993,6 +1020,7 @@ end)
 -- @describe render strict: transform stack
 describe("render strict: transform stack", function()
     -- @covers lurek.render.push
+    -- @covers lurek.render.pop
     it("push is callable without error", function()
         local ok = pcall(lurek.render.push)
         expect_true(ok)
@@ -1000,6 +1028,7 @@ describe("render strict: transform stack", function()
     end)
 
     -- @covers lurek.render.translate
+    -- @covers lurek.render.origin
     it("translate is callable without error", function()
         local ok = pcall(lurek.render.translate, 10, 20)
         expect_true(ok)
@@ -1007,6 +1036,7 @@ describe("render strict: transform stack", function()
     end)
 
     -- @covers lurek.render.rotate
+    -- @covers lurek.render.origin
     it("rotate is callable without error", function()
         local ok = pcall(lurek.render.rotate, 0.5)
         expect_true(ok)
@@ -1014,6 +1044,7 @@ describe("render strict: transform stack", function()
     end)
 
     -- @covers lurek.render.scale
+    -- @covers lurek.render.origin
     it("scale is callable without error", function()
         local ok = pcall(lurek.render.scale, 2, 2)
         expect_true(ok)
@@ -1021,6 +1052,7 @@ describe("render strict: transform stack", function()
     end)
 
     -- @covers lurek.render.shear
+    -- @covers lurek.render.origin
     it("shear is callable without error", function()
         local ok = pcall(lurek.render.shear, 0.1, 0.1)
         expect_true(ok)
@@ -1038,6 +1070,7 @@ end)
 describe("render strict: canvas and shader", function()
     -- @covers lurek.render.resetCanvas
     -- @covers lurek.render.setCanvas
+    -- @covers lurek.render.newCanvas
     it("setCanvas with nil resets to screen", function()
         local ok = pcall(lurek.render.setCanvas, nil)
         expect_true(ok)
@@ -1105,6 +1138,8 @@ end)
 -- @describe render strict: LNineSlice methods
 describe("render strict: LNineSlice methods", function()
     -- @covers LNineSlice:type
+    -- @covers lurek.render.newImage
+    -- @covers lurek.render.newNineSlice
     it("LNineSlice:type returns correct string", function()
         local img = lurek.render.newImage("assets/icon.png")
         local ns = lurek.render.newNineSlice(img, 10, 10, 10, 10)
@@ -1116,6 +1151,7 @@ end)
 describe("render strict: LImage methods", function()
     -- @covers LImage:type
     -- @covers LImage:typeOf
+    -- @covers lurek.render.newImage
     it("LImage type and typeOf return correct strings", function()
         local img = lurek.render.newImage("assets/icon.png")
         expect_equal(img:type(), "LImage")
@@ -1124,13 +1160,22 @@ describe("render strict: LImage methods", function()
 
     -- @covers LImage:getWidth
     -- @covers LImage:getHeight
+    -- @covers lurek.render.newImage
     it("LImage getWidth and getHeight return numbers", function()
         local img = lurek.render.newImage("assets/icon.png")
         expect_type("number", img:getWidth())
         expect_type("number", img:getHeight())
     end)
 
+    -- @covers LImage:getId
+    -- @covers lurek.render.newImage
+    it("LImage getId returns a number", function()
+        local img = lurek.render.newImage("assets/icon.png")
+        expect_type("number", img:getId())
+    end)
+
     -- @covers LImage:getDimensions
+    -- @covers lurek.render.newImage
     it("LImage getDimensions returns two numbers", function()
         local img = lurek.render.newImage("assets/icon.png")
         local w, h = img:getDimensions()
@@ -1139,6 +1184,7 @@ describe("render strict: LImage methods", function()
     end)
 
     -- @covers LImage:release
+    -- @covers lurek.render.newImage
     it("LImage release is callable without error", function()
         local img = lurek.render.newImage("assets/icon.png")
         local ok = pcall(function() img:release() end)
@@ -1150,6 +1196,7 @@ end)
 describe("render strict: LFont methods", function()
     -- @covers LFont:type
     -- @covers LFont:typeOf
+    -- @covers lurek.render.getDefaultFont
     it("LFont type and typeOf return correct strings", function()
         local font = lurek.render.getDefaultFont()
         expect_equal(font:type(), "LFont")
@@ -1157,18 +1204,21 @@ describe("render strict: LFont methods", function()
     end)
 
     -- @covers LFont:getWidth
+    -- @covers lurek.render.getDefaultFont
     it("LFont getWidth returns a number for a string", function()
         local font = lurek.render.getDefaultFont()
         expect_type("number", font:getWidth("hello"))
     end)
 
     -- @covers LFont:getHeight
+    -- @covers lurek.render.getDefaultFont
     it("LFont getHeight returns a number", function()
         local font = lurek.render.getDefaultFont()
         expect_type("number", font:getHeight())
     end)
 
     -- @covers LFont:getWrap
+    -- @covers lurek.render.getDefaultFont
     it("LFont getWrap returns lines and width", function()
         local font = lurek.render.getDefaultFont()
         local lines, max_w = font:getWrap("hello world", 100)
@@ -1178,6 +1228,7 @@ describe("render strict: LFont methods", function()
     end)
 
     -- @covers LFont:release
+    -- @covers lurek.render.newFont
     it("LFont release is callable without error", function()
         local font = lurek.render.newFont(12)
         local ok = pcall(function() font:release() end)
@@ -1189,6 +1240,7 @@ end)
 describe("render strict: LCanvas methods", function()
     -- @covers LCanvas:type
     -- @covers LCanvas:typeOf
+    -- @covers lurek.render.newCanvas
     it("LCanvas type and typeOf return correct strings", function()
         local canvas = lurek.render.newCanvas(8, 8)
         expect_equal(canvas:type(), "LCanvas")
@@ -1197,6 +1249,7 @@ describe("render strict: LCanvas methods", function()
 
     -- @covers LCanvas:getWidth
     -- @covers LCanvas:getHeight
+    -- @covers lurek.render.newCanvas
     it("LCanvas getWidth and getHeight return numbers", function()
         local canvas = lurek.render.newCanvas(8, 8)
         expect_type("number", canvas:getWidth())
@@ -1204,6 +1257,7 @@ describe("render strict: LCanvas methods", function()
     end)
 
     -- @covers LCanvas:getDimensions
+    -- @covers lurek.render.newCanvas
     it("LCanvas getDimensions returns two numbers", function()
         local canvas = lurek.render.newCanvas(8, 8)
         local w, h = canvas:getDimensions()
@@ -1212,6 +1266,7 @@ describe("render strict: LCanvas methods", function()
     end)
 
     -- @covers LCanvas:release
+    -- @covers lurek.render.newCanvas
     it("LCanvas release is callable without error", function()
         local canvas = lurek.render.newCanvas(8, 8)
         local ok = pcall(function() canvas:release() end)
@@ -1223,6 +1278,8 @@ end)
 describe("render strict: LSpriteBatch methods", function()
     -- @covers LSpriteBatch:type
     -- @covers LSpriteBatch:typeOf
+    -- @covers lurek.render.newImage
+    -- @covers lurek.render.newSpriteBatch
     it("LSpriteBatch type and typeOf return correct strings", function()
         local img = lurek.render.newImage("assets/icon.png")
         local sb = lurek.render.newSpriteBatch(img, 8)
@@ -1232,6 +1289,8 @@ describe("render strict: LSpriteBatch methods", function()
 
     -- @covers LSpriteBatch:getCount
     -- @covers LSpriteBatch:getBufferSize
+    -- @covers lurek.render.newImage
+    -- @covers lurek.render.newSpriteBatch
     it("LSpriteBatch getCount and getBufferSize return numbers", function()
         local img = lurek.render.newImage("assets/icon.png")
         local sb = lurek.render.newSpriteBatch(img, 8)
@@ -1240,6 +1299,8 @@ describe("render strict: LSpriteBatch methods", function()
     end)
 
     -- @covers LSpriteBatch:clear
+    -- @covers lurek.render.newImage
+    -- @covers lurek.render.newSpriteBatch
     it("LSpriteBatch clear is callable without error", function()
         local img = lurek.render.newImage("assets/icon.png")
         local sb = lurek.render.newSpriteBatch(img, 8)
@@ -1248,6 +1309,8 @@ describe("render strict: LSpriteBatch methods", function()
     end)
 
     -- @covers LSpriteBatch:release
+    -- @covers lurek.render.newImage
+    -- @covers lurek.render.newSpriteBatch
     it("LSpriteBatch release is callable without error", function()
         local img = lurek.render.newImage("assets/icon.png")
         local sb = lurek.render.newSpriteBatch(img, 8)
@@ -1260,6 +1323,7 @@ end)
 describe("render strict: LMesh methods", function()
     -- @covers LMesh:type
     -- @covers LMesh:typeOf
+    -- @covers lurek.render.newMesh
     it("LMesh type and typeOf return correct strings", function()
         local mesh = lurek.render.newMesh({
             {0,0,0,0}, {1,0,1,0}, {0.5,1,0.5,1}
@@ -1269,6 +1333,7 @@ describe("render strict: LMesh methods", function()
     end)
 
     -- @covers LMesh:setTexture
+    -- @covers lurek.render.newMesh
     it("LMesh setTexture with nil is callable without error", function()
         local mesh = lurek.render.newMesh({
             {0,0,0,0}, {1,0,1,0}, {0.5,1,0.5,1}
@@ -1278,6 +1343,7 @@ describe("render strict: LMesh methods", function()
     end)
 
     -- @covers LMesh:release
+    -- @covers lurek.render.newMesh
     it("LMesh release is callable without error", function()
         local mesh = lurek.render.newMesh({
             {0,0,0,0}, {1,0,1,0}, {0.5,1,0.5,1}
@@ -1291,6 +1357,7 @@ end)
 describe("render strict: LShader methods", function()
     -- @covers LShader:type
     -- @covers LShader:typeOf
+    -- @covers lurek.render.newShader
     it("LShader type and typeOf return correct strings", function()
         local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
         expect_equal(shader:type(), "LShader")
@@ -1298,6 +1365,7 @@ describe("render strict: LShader methods", function()
     end)
 
     -- @covers LShader:send
+    -- @covers lurek.render.newShader
     it("LShader send with a uniform name and value is callable", function()
         local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
         local ok = pcall(function() shader:send("u_time", 1.0) end)
@@ -1305,6 +1373,7 @@ describe("render strict: LShader methods", function()
     end)
 
     -- @covers LShader:release
+    -- @covers lurek.render.newShader
     it("LShader release is callable without error", function()
         local shader = lurek.render.newShader("@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }")
         local ok = pcall(function() shader:release() end)
@@ -1316,6 +1385,7 @@ end)
 describe("render strict: LQuad methods", function()
     -- @covers LQuad:type
     -- @covers LQuad:typeOf
+    -- @covers lurek.render.newQuad
     it("LQuad type and typeOf return correct strings", function()
         local q = lurek.render.newQuad(0, 0, 1, 1, 1, 1)
         expect_equal(q:type(), "LQuad")
@@ -1323,6 +1393,7 @@ describe("render strict: LQuad methods", function()
     end)
 
     -- @covers LQuad:getViewport
+    -- @covers lurek.render.newQuad
     it("LQuad getViewport returns four numbers", function()
         local q = lurek.render.newQuad(0, 0, 8, 8, 32, 32)
         local x, y, w, h = q:getViewport()
@@ -1333,6 +1404,7 @@ describe("render strict: LQuad methods", function()
     end)
 
     -- @covers LQuad:setViewport
+    -- @covers lurek.render.newQuad
     it("LQuad setViewport is callable without error", function()
         local q = lurek.render.newQuad(0, 0, 8, 8, 32, 32)
         local ok = pcall(function() q:setViewport(0, 0, 4, 4) end)
@@ -1344,6 +1416,7 @@ end)
 describe("render strict: LShape methods", function()
     -- @covers LShape:type
     -- @covers LShape:typeOf
+    -- @covers lurek.render.newShape
     it("LShape type and typeOf return correct strings", function()
         local shape = lurek.render.newShape()
         expect_equal(shape:type(), "LShape")
@@ -1375,7 +1448,6 @@ describe("render strict: batch text and OBJ APIs", function()
     end)
 
     -- @covers lurek.render.newImage
-    -- @covers LImage:getId
     it("newImage accepts optional color-space mode", function()
         local ok_srgb, img_srgb = pcall(function()
             return lurek.render.newImage("assets/icon.png", "srgb")
@@ -1401,12 +1473,12 @@ describe("render strict: batch text and OBJ APIs", function()
 
     -- @covers lurek.render.loadObj
     -- @covers lurek.render.loadModel
-    -- @covers LuaObjModel:getFaceCount
-    -- @covers LuaObjModel:getUvCount
-    -- @covers LuaObjModel:getNormalCount
-    -- @covers LuaObjModel:getVertexCount
-    -- @covers LuaObjModel:renderToImage
-    -- @covers LuaObjModel:projectToMesh
+    -- @covers LObjModel:getFaceCount
+    -- @covers LObjModel:getUvCount
+    -- @covers LObjModel:getNormalCount
+    -- @covers LObjModel:getVertexCount
+    -- @covers LObjModel:renderToImage
+    -- @covers LObjModel:projectToMesh
     it("loads OBJ model and exposes mesh projection methods", function()
         local obj = lurek.render.loadObj("content/games/retro/dungeon_crawler/assets/models/tank.obj")
         local mdl = lurek.render.loadModel("content/games/retro/dungeon_crawler/assets/models/tank.obj")
@@ -1428,6 +1500,7 @@ describe("render strict: batch text and OBJ APIs", function()
     end)
     -- @covers lurek.render.isBold
     -- @covers lurek.render.setBold
+    -- @covers LFont:isBold
     it("isBold and setBold work correctly", function()
         local prev = lurek.render.isBold()
         expect_no_error(function()

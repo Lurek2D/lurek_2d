@@ -193,6 +193,79 @@ def handle_rag_rebuild(args: dict[str, Any]) -> dict[str, Any]:
     return _text_result(summary, data)
 
 
+def handle_rag_read(args: dict[str, Any]) -> dict[str, Any]:
+    chunk_id = str(args.get("id", "")).strip()
+    if not chunk_id:
+        return _text_result("`id` is required.", {"ok": False}, is_error=True)
+
+    cmd = [chunk_id, "--neighbors", str(int(args.get("neighbors", 1)))]
+    if args.get("content_chars"):
+        cmd.extend(["--content-chars", str(int(args["content_chars"]))])
+    data = _run_python_tool("tools/rag/read.py", cmd, timeout_sec=60)
+    parsed = _parse_json_stdout(data) or {}
+    data["parsed"] = parsed
+    chunk = parsed.get("chunk", {})
+    if parsed.get("error"):
+        return _text_result(parsed["error"], data, is_error=True)
+    text = (
+        f"RAG chunk `{chunk.get('id')}` from {chunk.get('path')}:"
+        f"{chunk.get('line_start')}-{chunk.get('line_end')}."
+    )
+    return _text_result(text, data)
+
+
+def handle_rag_context(args: dict[str, Any]) -> dict[str, Any]:
+    prompt = str(args.get("prompt", "")).strip()
+    if not prompt:
+        return _text_result("`prompt` is required.", {"ok": False}, is_error=True)
+
+    cmd = [
+        prompt,
+        "--profile",
+        str(args.get("profile", "all")),
+        "--limit",
+        str(int(args.get("limit", 8))),
+        "--neighbors",
+        str(int(args.get("neighbors", 1))),
+    ]
+    if args.get("content_chars"):
+        cmd.extend(["--content-chars", str(int(args["content_chars"]))])
+    data = _run_python_tool("tools/rag/context.py", cmd, timeout_sec=90)
+    parsed = _parse_json_stdout(data) or {}
+    data["parsed"] = parsed
+    results = parsed.get("results", [])
+    lines = [f"RAG context bundle returned {len(results)} chunk(s) for `{prompt}`."]
+    for item in results[:8]:
+        lines.append(f"- {item.get('path')}:{item.get('line_start')}-{item.get('line_end')} {item.get('title')}")
+    if parsed.get("error"):
+        lines.append(parsed["error"])
+    return _text_result("\n".join(lines), data, is_error=bool(parsed.get("error")))
+
+
+def handle_rag_stats(args: dict[str, Any]) -> dict[str, Any]:
+    data = _run_python_tool("tools/rag/query.py", ["--stats"], timeout_sec=60)
+    parsed = _parse_json_stdout(data) or {}
+    data["parsed"] = parsed
+    if parsed.get("error"):
+        return _text_result(parsed["error"], data, is_error=True)
+    lines = [f"RAG index contains {parsed.get('total_chunks', 0)} chunk(s)."]
+    for row in parsed.get("by_kind", [])[:8]:
+        lines.append(f"- {row.get('source_kind')}: {row.get('chunks')}")
+    return _text_result("\n".join(lines), data)
+
+
+def handle_rag_eval(args: dict[str, Any]) -> dict[str, Any]:
+    cmd = ["--json", "--limit", str(int(args.get("limit", 10)))]
+    data = _run_python_tool("tools/rag/eval.py", cmd, timeout_sec=180)
+    parsed = _parse_json_stdout(data) or {}
+    data["parsed"] = parsed
+    lines = [f"RAG recall: {parsed.get('passed', 0)}/{parsed.get('total', 0)} ({parsed.get('pass_rate', 0)}%)."]
+    for item in parsed.get("results", []):
+        if not item.get("ok"):
+            lines.append(f"- FAIL {item.get('query')}: {', '.join(item.get('top_paths', [])[:3])}")
+    return _text_result("\n".join(lines), data, is_error=not bool(parsed.get("ok")))
+
+
 def handle_quality_report(args: dict[str, Any]) -> dict[str, Any]:
     data = _run_python_tool(
         "tools/audit/quality_report.py",
@@ -306,11 +379,14 @@ def handle_unit_test_api_coverage(args: dict[str, Any]) -> dict[str, Any]:
     )
     report = data.get("parsed") or {}
     summary = report.get("summary", {})
+    structure = report.get("structure", {})
     modules = report.get("modules", {})
     worst = sorted(modules.items(), key=lambda item: item[1].get("pct_explicit", 0))[:5]
     lines = [
         f"Explicit coverage: {summary.get('pct_explicit', 0)}% ({summary.get('covered_explicit', 0)}/{summary.get('total_apis', 0)}).",
         f"Any-coverage: {summary.get('pct_any', 0)}% ({summary.get('covered_heuristic', 0)} heuristic hits).",
+        f"Unit test structure violations: {len(structure.get('violations', []))} across {structure.get('total_it_blocks', 0)} it() blocks.",
+        f"Duplicate API markers: {structure.get('duplicate_api_markers', 0)}.",
         f"Modules inspected: {summary.get('total_modules', len(modules))}.",
     ]
     if worst:
@@ -695,6 +771,60 @@ TOOLS: dict[str, ToolSpec] = {
             "additionalProperties": False,
         },
         handler=handle_rag_rebuild,
+    ),
+    "rag_read": ToolSpec(
+        name="rag_read",
+        description="Read full content for a RAG chunk id, optionally including adjacent chunks from the same file.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "id": {"type": "string"},
+                "neighbors": {"type": "integer", "minimum": 0, "maximum": 3, "default": 1},
+                "content_chars": {"type": "integer", "minimum": 1000, "maximum": 40000, "default": 12000},
+            },
+            "required": ["id"],
+            "additionalProperties": False,
+        },
+        handler=handle_rag_read,
+    ),
+    "rag_context_bundle": ToolSpec(
+        name="rag_context_bundle",
+        description="Build an agent-readable RAG context bundle with full chunks for a task prompt.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "prompt": {"type": "string"},
+                "profile": {"type": "string", "enum": ["all", "engine", "game"], "default": "all"},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 20, "default": 8},
+                "neighbors": {"type": "integer", "minimum": 0, "maximum": 3, "default": 1},
+                "content_chars": {"type": "integer", "minimum": 1000, "maximum": 40000, "default": 8000},
+            },
+            "required": ["prompt"],
+            "additionalProperties": False,
+        },
+        handler=handle_rag_context,
+    ),
+    "rag_stats": ToolSpec(
+        name="rag_stats",
+        description="Return local RAG index stats by source kind, type, and largest paths.",
+        input_schema={
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+        handler=handle_rag_stats,
+    ),
+    "rag_eval": ToolSpec(
+        name="rag_eval",
+        description="Run the local RAG recall baseline prompt suite.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "limit": {"type": "integer", "minimum": 3, "maximum": 25, "default": 10},
+            },
+            "additionalProperties": False,
+        },
+        handler=handle_rag_eval,
     ),
     "quality_report": ToolSpec(
         name="quality_report",

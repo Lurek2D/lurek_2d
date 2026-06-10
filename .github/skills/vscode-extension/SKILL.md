@@ -1,4 +1,4 @@
----
+﻿---
 name: vscode-extension
 description: "Load this skill when building, debugging, or extending the VS Code extension in extension/vscode/. Skip it for engine Rust, game scripts, or non-extension docs."
 ---
@@ -22,11 +22,11 @@ description: "Load this skill when building, debugging, or extending the VS Code
 - Layer ownership in extension/vscode/src/: `commands/` handles VS Code command registration and entry points; `providers/` implements language providers; `editors/` implements custom editors and webviews; `services/` holds extension-side business logic and state; `generated/` holds files produced by engine-side generators; `mcp/` holds MCP server integration. Do not mix responsibilities across layers.
 - `package.json` is the contract between the extension and VS Code. Every command, view, editor type, activation event, and contribution point must be declared there.
 - Build and test commands: `npm run build`, `npm run watch`, `npm test`. Run these from `extension/vscode/`.
-- Generated data under `extension/vscode/src/generated/` comes from `python tools/docs/gen_extension_api.py`. Never hand-edit generated files â€” fix the generator or its data source.
+- Generated data under `extension/vscode/src/generated/` comes from `tools/python.cmd tools/docs/gen_extension_api.py`. Never hand-edit generated files Ă˘â‚¬â€ť fix the generator or its data source.
 - MCP integration in `mcp/` expects specific message shapes defined in `src/debugbridge/`. Changes to debugbridge message types require synchronized updates to the MCP handler.
 - Activation cost rule: extension/vscode must activate lazily. Contribution points with `onCommand:` activation are preferred.
 - Webview content security policy: all webview HTML must include a CSP `<meta>` tag. No inline scripts.
-- Extension-Rust boundary: the extension communicates with the engine exclusively through the debug bridge protocol over stdio or a local socket â€” never by importing Rust types directly into TypeScript or vice versa. If data needs to cross this boundary, define a message type in the protocol spec.
+- Extension-Rust boundary: the extension communicates with the engine exclusively through the debug bridge protocol over stdio or a local socket Ă˘â‚¬â€ť never by importing Rust types directly into TypeScript or vice versa. If data needs to cross this boundary, define a message type in the protocol spec.
 - After any `package.json` contribution point change, run `vsce package` to validate the manifest schema and confirm the extension packages without errors before committing.
 - `A-01` applies here: the extension is a developer-experience layer, not part of the engine binary. Engine behavior must not depend on extension presence.
 ## Companion File Index
@@ -37,3 +37,4 @@ description: "Load this skill when building, debugging, or extending the VS Code
 - extension/vscode/package.json
 - extension/vscode/esbuild.config.mjs
 - tools/docs/gen_extension_api.py
+

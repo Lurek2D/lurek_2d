@@ -2,11 +2,25 @@
 
 ## Summary
 
-This module provides the procedural map block assembly and generation subsystem, enabling developers to build large tilemaps from pre-configured block layouts. It manages individual map blocks that bundle tile grids, edge connectors, and weighted metadata. Adjacency constraints use socket-style interfaces, defining how blocks link to their neighbors. This allows the generator to validate boundary compatibilities during runtime procedurally.
+- This module gives users procedural map assembly from reusable authored blocks.
+- Blocks package tile data, sockets, and metadata so placement remains data-driven.
+- Neighbor constraints enforce legal block adjacency and prevent invalid seams.
+- Scripted generation steps support fill, targeted placement, random placement, and repeats.
+- Placement grids track occupancy and legality during generation.
+- Multi-level support enables stacked floors and vertical map structures.
+- Orientation support covers top-down and isometric output expectations.
+- Weighted groups support biome or theme-biased block selection.
+- Deterministic seeded generation supports reproducible builds.
+- Tileset references map block slots into concrete output tile identifiers.
+- Output conversion produces renderer-ready layered tilemap structures.
+- This module is useful for dungeons, city chunks, and modular world assembly.
+- It keeps generation logic separate from final render map representation.
+- For users, it reduces hand-authored map workload while preserving authored control.
+- It also improves iteration speed for procedural level design workflows.
+- Overall, users get a complete block-based map generation pipeline in one module.
+- The practical value is reliable procedural layout with explicit constraint control.
 
-The generation engine is controlled by scripted procedural steps, driving layout passes through fill, targeted, and random placement operations. The generator evaluates candidates using neighbor rules, resolving conflicts dynamically to maintain structural consistency. Multiple vertical storeys are supported, allowing developers to generate multi-level buildings and layered biomes under unified grid seeds.
-
-Placement grids handle spatial validation and keep track of cell occupancies. These coordinate fields support top-down and isometric orientations, tailoring block placements to the game's presentation style. When placement finishes, the output converter translates layered slot layouts into concrete tile layer arrays and resolves tileset IDs. This decouples procedural generation logic from final map rendering systems.
+This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Functions
 

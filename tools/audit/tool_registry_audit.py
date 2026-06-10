@@ -1,21 +1,21 @@
-"""Audit the tools registry for internal consistency.
+"""Audit the single-source tools registry for internal consistency.
 
-Self-validates that every Python script under tools/ is:
-  1. Registered in its subfolder README.md.
-  2. Registered in the master tools/README.md.
-  3. Has a module-level docstring.
-  4. Uses relative paths (no hardcoded absolute user paths).
-  5. Not a duplicate of another script in a different subfolder.
+Checks that every durable Python script under `tools/` is:
+  1. Registered in `tools/README.md`.
+  2. Registered in `tools/agent_cli_reference.md`.
+  3. Documented with a module-level docstring.
+  4. Free from hardcoded user-home paths.
+  5. Not duplicated under a second tool path with the same filename.
 
-Also checks for phantom entries — scripts listed in READMEs but missing
-from disk.
+Also checks for phantom registry entries: scripts listed in the generated
+registry files but missing on disk.
 
 Usage:
     python tools/audit/tool_registry_audit.py [--strict] [--format text|json]
-
-Exit code:
-    0 if clean, 1 if any errors found.
 """
+
+from __future__ import annotations
+
 import argparse
 import ast
 import json
@@ -26,167 +26,170 @@ from pathlib import Path
 ROOT = Path(".").resolve()
 TOOLS_DIR = ROOT / "tools"
 MASTER_README = TOOLS_DIR / "README.md"
-
-# Subfolders that contain Python scripts
-TOOL_SUBFOLDERS = [
-    "validate", "audit", "fix", "docs", "dev",
-    "dist", "github", "demos", "ui", "mods",
-    "mcp",
-]
-
-# Files that are helpers, not standalone tools
-HELPER_FILES = {"_cag_common.py", "__init__.py"}
+CLI_REFERENCE = TOOLS_DIR / "agent_cli_reference.md"
+HELPER_FILES = {"__init__.py"}
 
 
 def find_all_scripts() -> list[Path]:
-    """Find all .py files under tools/ (excluding __pycache__)."""
-    scripts = []
-    for subfolder in TOOL_SUBFOLDERS:
-        subdir = TOOLS_DIR / subfolder
-        if subdir.is_dir():
-            for f in sorted(subdir.glob("*.py")):
-                if f.name not in HELPER_FILES and "__pycache__" not in str(f):
-                    scripts.append(f)
-    # Root-level scripts
-    for f in sorted(TOOLS_DIR.glob("*.py")):
-        scripts.append(f)
+    """Find tool scripts under `tools/`, excluding tests and helper modules."""
+    scripts: list[Path] = []
+    for script in sorted(TOOLS_DIR.rglob("*.py")):
+        rel = script.relative_to(TOOLS_DIR).as_posix()
+        if rel.startswith("tests/") or "__pycache__" in rel:
+            continue
+        if script.name in HELPER_FILES:
+            continue
+        scripts.append(script)
     return scripts
 
 
 def has_docstring(script: Path) -> bool:
-    """Check if script has a module-level docstring."""
+    """Check whether the module has a top-level docstring."""
     try:
         text = script.read_text(encoding="utf-8")
         tree = ast.parse(text)
-        return (
-            tree.body
-            and isinstance(tree.body[0], ast.Expr)
-            and isinstance(tree.body[0].value, (ast.Constant, ast.Str))
-        )
     except Exception:
         return False
+    return (
+        bool(tree.body)
+        and isinstance(tree.body[0], ast.Expr)
+        and isinstance(tree.body[0].value, ast.Constant)
+        and isinstance(tree.body[0].value.value, str)
+    )
 
 
 def has_hardcoded_user_path(script: Path) -> str | None:
-    """Check for hardcoded absolute user paths. Returns the path if found."""
+    """Return the first hardcoded absolute user path if one is present."""
     try:
         text = script.read_text(encoding="utf-8")
     except Exception:
         return None
-    # Match Windows-style user paths like C:/Users/... or C:\\Users\\...
-    m = re.search(r'["\']([A-Z]:[/\\]+Users[/\\]+\w+)', text)
-    if m:
-        return m.group(1)
-    # Match Unix home paths
-    m = re.search(r'["\'](/home/\w+|/Users/\w+)', text)
-    if m:
-        return m.group(1)
+    match = re.search(r'["\']([A-Za-z]:[/\\]+Users[/\\]+\w+)', text)
+    if match:
+        return match.group(1)
+    match = re.search(r'["\'](/home/\w+|/Users/\w+)', text)
+    if match:
+        return match.group(1)
     return None
 
 
-def extract_readme_scripts(readme_path: Path) -> set[str]:
-    """Extract script names mentioned in a README.md table or backtick refs."""
+def extract_registry_scripts(readme_path: Path) -> set[str]:
+    """Extract backtick-wrapped Python paths from a generated registry file."""
     if not readme_path.exists():
         return set()
     text = readme_path.read_text(encoding="utf-8")
-    # Match backtick-wrapped .py filenames in table cells
-    return set(re.findall(r"`(\w+\.py)`", text))
+    return set(re.findall(r"`([a-zA-Z0-9_./-]+\.py)`", text))
+
+
+def find_duplicate_names(scripts: list[Path]) -> list[tuple[str, list[str]]]:
+    """Return duplicate filenames that appear under multiple tool paths."""
+    buckets: dict[str, list[str]] = {}
+    for script in scripts:
+        buckets.setdefault(script.name, []).append(script.relative_to(TOOLS_DIR).as_posix())
+    return [(name, paths) for name, paths in buckets.items() if len(paths) > 1]
 
 
 def main() -> int:
-    from argparse import RawDescriptionHelpFormatter
-    epilog = """
-Examples:
-  # Default execution
-  python tools/audit/tool_registry_audit.py
-
-  # Show all arguments
-  python tools/audit/tool_registry_audit.py --help
-"""
+    """Run the audit and report findings in text or JSON form."""
     parser = argparse.ArgumentParser(
-        description="Audit the tools registry for internal consistency.",
-        epilog=epilog,
-        formatter_class=RawDescriptionHelpFormatter
+        description="Audit the generated tools registry for consistency."
     )
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--format", choices=["text", "json"], default="text")
     args = parser.parse_args()
 
     all_scripts = find_all_scripts()
-    findings: list[dict] = []
-
-    # Gather README registrations
-    master_scripts = extract_readme_scripts(MASTER_README)
-    subfolder_scripts: dict[str, set[str]] = {}
-    for sub in TOOL_SUBFOLDERS:
-        readme = TOOLS_DIR / sub / "README.md"
-        subfolder_scripts[sub] = extract_readme_scripts(readme)
+    findings: list[dict[str, str]] = []
+    master_scripts = extract_registry_scripts(MASTER_README)
+    cli_scripts = extract_registry_scripts(CLI_REFERENCE)
 
     for script in all_scripts:
-        name = script.name
-        rel = script.relative_to(TOOLS_DIR)
-        subfolder = rel.parts[0] if len(rel.parts) > 1 else None
+        rel = script.relative_to(TOOLS_DIR).as_posix()
 
-        # 1. Check subfolder README registration
-        if subfolder and subfolder in subfolder_scripts:
-            if name not in subfolder_scripts[subfolder]:
-                findings.append({
-                    "level": "ERROR", "script": str(rel),
-                    "check": "subfolder_readme",
-                    "message": f"Not registered in tools/{subfolder}/README.md",
-                })
+        if rel not in master_scripts:
+            findings.append(
+                {
+                    "level": "ERROR",
+                    "script": rel,
+                    "check": "master_readme",
+                    "message": "Not registered in tools/README.md",
+                }
+            )
 
-        # 2. Check master README registration
-        if name not in master_scripts:
-            findings.append({
-                "level": "WARN", "script": str(rel),
-                "check": "master_readme",
-                "message": "Not registered in tools/README.md",
-            })
+        if rel not in cli_scripts:
+            findings.append(
+                {
+                    "level": "ERROR",
+                    "script": rel,
+                    "check": "agent_cli_reference",
+                    "message": "Not registered in tools/agent_cli_reference.md",
+                }
+            )
 
-        # 3. Check docstring
         if not has_docstring(script):
-            findings.append({
-                "level": "ERROR", "script": str(rel),
-                "check": "docstring",
-                "message": "Missing module-level docstring",
-            })
+            findings.append(
+                {
+                    "level": "ERROR",
+                    "script": rel,
+                    "check": "docstring",
+                    "message": "Missing module-level docstring",
+                }
+            )
 
-        # 4. Check hardcoded paths
         bad_path = has_hardcoded_user_path(script)
         if bad_path:
-            findings.append({
-                "level": "ERROR", "script": str(rel),
-                "check": "hardcoded_path",
-                "message": f"Contains hardcoded user path: {bad_path}",
-            })
+            findings.append(
+                {
+                    "level": "ERROR",
+                    "script": rel,
+                    "check": "hardcoded_path",
+                    "message": f"Contains hardcoded user path: {bad_path}",
+                }
+            )
 
-    # 5. Check for phantom README entries
-    for sub in TOOL_SUBFOLDERS:
-        subdir = TOOLS_DIR / sub
-        disk_scripts = {f.name for f in subdir.glob("*.py")} if subdir.is_dir() else set()
-        for listed in subfolder_scripts.get(sub, set()):
-            if listed not in disk_scripts and listed not in HELPER_FILES:
-                findings.append({
-                    "level": "ERROR", "script": f"{sub}/{listed}",
+    disk_scripts = {script.relative_to(TOOLS_DIR).as_posix() for script in all_scripts}
+    for listed in sorted(master_scripts | cli_scripts):
+        if listed not in disk_scripts:
+            findings.append(
+                {
+                    "level": "ERROR",
+                    "script": listed,
                     "check": "phantom",
-                    "message": f"Listed in tools/{sub}/README.md but not on disk",
-                })
+                    "message": "Listed in generated registry but not on disk",
+                }
+            )
 
-    errors = [f for f in findings if f["level"] == "ERROR"]
-    warns = [f for f in findings if f["level"] == "WARN"]
+    for name, paths in find_duplicate_names(all_scripts):
+        findings.append(
+            {
+                "level": "WARN",
+                "script": name,
+                "check": "duplicate_name",
+                "message": f"Filename reused across tools: {', '.join(paths)}",
+            }
+        )
+
+    errors = [finding for finding in findings if finding["level"] == "ERROR"]
 
     if args.format == "json":
-        print(json.dumps({
-            "total_scripts": len(all_scripts),
-            "findings": findings,
-        }, indent=2))
+        print(
+            json.dumps(
+                {
+                    "total_scripts": len(all_scripts),
+                    "findings": findings,
+                },
+                indent=2,
+            )
+        )
     else:
-        for f in findings:
-            print(f"[{f['level']}] {f['script']}: {f['message']}")
-        print(f"\n{len(all_scripts)} scripts audited, "
-              f"{len(errors)} error(s), {len(warns)} warning(s)")
+        for finding in findings:
+            print(
+                f"[{finding['level']}] {finding['script']}: {finding['message']}"
+            )
+        print(f"\n{len(all_scripts)} scripts audited, {len(errors)} error(s)")
 
+    if args.strict:
+        return 1 if findings else 0
     return 1 if errors else 0
 
 

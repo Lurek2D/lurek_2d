@@ -1,47 +1,61 @@
 ---
 name: create-cag-artifact
-description: "Create or update new prompt, agent, skill or update them, revalidate CAG after it."
+description: "Load this skill when creating or modifying Codex CAG artifacts such as local skills, agents, prompts, routing guidance, or legacy prompt mirrors. Skip it for product code, docs content unrelated to Codex behavior, or broad repo audits."
 ---
 # create-cag-artifact
 
-## Goal
-- Author or modify Context Augmented Guidance (CAG) artifacts in the active `.codex/` layer and keep the legacy `.github/` mirrors in sync when the migration surface still matters.
+## Mission
+- Create or modify active Codex CAG artifacts and keep validation, routing, and legacy mirrors coherent.
 
-## Required inputs
-- Artifact type: agent, skill, or prompt
-- Desired behavioral change or definition
-- User must define what the CAG system needs to learn or adjust
-- Agent must collect the current CAG validation rules before editing
+## When To Load
+- Creating or modifying Codex CAG artifacts such as local skills, agents, prompts, routing guidance, or legacy prompt mirrors.
 
-## Profile hint
-- `cag_architect`
+## When To Skip
+- Product code, docs content unrelated to Codex behavior, or broad repo audits.
 
-## Read these contracts
-- `AGENTS.md`
-- `.codex/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the target path.
+- Run the listed RAG query before broad file reads and start from top hits.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Check whether the target artifact already exists; modify existing content unless a new owner is clearly required.
+- Read the nearest source, spec, test, doc, or config before editing.
+- Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
 
-## Steps
-- Read the listed contracts before editing CAG artifacts.
-- Identify the active target surface first: `.codex/agents/` or `.codex/skills/`; use `.github/agents/`, `.github/skills/`, or `.github/prompts/` only when you are explicitly syncing a legacy mirror.
-- Edit or create the Markdown file with strict YAML formatting and a mandatory metadata block.
-- Execute `python tools/validate/cag_validate.py`. If it exits with code >0, fix the YAML metadata or naming conventions and repeat this step.
-- Execute `python tools/audit/cag_link_check.py --strict`. If it reports >0 broken links, fix the file references and repeat.
+## Workflow
+- Identify the active surface first: `.codex/agents/`, `.codex/skills/`, or `.github/prompts/` legacy mirror.
+- Read validator rules before editing; skill frontmatter requires only `name` and `description`.
+- Use `## CAG Metadata` only where the validator or artifact type needs body metadata such as related skills; do not require it for every skill.
+- For same-name legacy prompt mirrors, sync only the parts that would otherwise conflict with the active `.codex` artifact.
+- Run CAG validation and strict link checking after edits.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Updated CAG artifact files (`.md`)
-- Clean validation output
+## Success Criteria
+- The target artifact was created or modified in the narrowest owning location.
+- Existing content was preserved and updated when it already owned the behavior.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- [ ] `python tools/validate/cag_validate.py` exits with code 0 (exactly 0 validation errors).
-- [ ] `python tools/audit/cag_link_check.py --strict` exits with code 0 (exactly 0 broken links).
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Creating overlapping skills or agents that confuse the routing logic.
-- Failing to include the mandatory `CAG Metadata` block.
+## Companion File Index
+- Contracts: `AGENTS.md`, `.codex/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "codex CAG skills agents prompts" --profile engine --limit 10`, `tools/python.cmd tools/validate/cag_validate.py`, `tools/python.cmd tools/audit/cag_link_check.py --strict`
+- Owner profile: `cag_architect`
+
+## Common RAG Queries
+- Use when locating current Codex guidance before editing:
+  - `codex CAG skills agents prompts`
+  - `AGENTS.md SKILL.md prompt routing`
+  - `.codex skills agents vendor_imports`
+- Common areas to inspect after top hits:
+  - `.codex/`
+  - `.agents/`
+  - root `AGENTS.md`
+  - nested `AGENTS.md`
 
 ## References
 - `contracts: AGENTS.md, .codex/AGENTS.md`
-- `tools: python tools/validate/cag_validate.py, python tools/audit/cag_link_check.py`
+- `tools: tools/python.cmd tools/rag/query.py "codex CAG skills agents prompts" --profile engine --limit 10, tools/python.cmd tools/validate/cag_validate.py, tools/python.cmd tools/audit/cag_link_check.py --strict`
 - `agent: cag_architect`
-
-

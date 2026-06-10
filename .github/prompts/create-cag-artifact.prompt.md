@@ -1,42 +1,43 @@
 ﻿---
 name: create-cag-artifact
-description: Create or update new prompt, agent, skill or update them, revalidate CAG after it.
+description: "Load this skill when creating or modifying Codex CAG artifacts such as local skills, agents, prompts, routing guidance, or legacy prompt mirrors. Skip it for product code, docs content unrelated to Codex behavior, or broad repo audits."
 ---
 
-# GOAL
-- Author or modify Context Augmented Guidance (CAG) artifacts in `.github/` and validate their structural integrity.
+# Goal
+- Create or modify active Codex CAG artifacts and keep validation, routing, and legacy mirrors coherent.
 
-# INPUTS REQUIRED
-- Artifact type (agent, skill, prompt)
-- Desired behavioral change or definition
-= User must define what the CAG system needs to learn or adjust
-- Agent must collect existing CAG validation rules
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: cag-workflow, cag-validation.
-2. Edit or create the Markdown file in `.github/agents/`, `.github/skills/`, or `.github/prompts/` applying strict YAML formatting rules.
-3. Execute `python tools/validate/cag_validate.py`. If it exits with code >0, fix the YAML metadata or naming conventions and repeat this step.
-4. Execute `python tools/audit/cag_link_check.py --strict`. If it reports >0 broken links, fix the file references and repeat.
+# Steps
+1. Load the active `.codex/skills/create-cag-artifact/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Identify the active surface first: `.codex/agents/`, `.codex/skills/`, or `.github/prompts/` legacy mirror.
+5. Read validator rules before editing; skill frontmatter requires only `name` and `description`.
+6. Use `## CAG Metadata` only where the validator or artifact type needs body metadata such as related skills; do not require it for every skill.
+7. For same-name legacy prompt mirrors, sync only the parts that would otherwise conflict with the active `.codex` artifact.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- Updated CAG artifact files (`.md`)
-- Clean validation output
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `python tools/validate/cag_validate.py` exits with code 0 (exactly 0 validation errors).
-- [ ] `python tools/audit/cag_link_check.py --strict` exits with code 0 (exactly 0 broken links).
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Creating overlapping skills or agents that confuse the routing logic.
-- Failing to include the mandatory `CAG Metadata` block.
+# Example Invocation
+- User: Use `create-cag-artifact` for the requested scope.
+- Agent: Loads `.codex/skills/create-cag-artifact/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: cag-workflow, cag-validation
-- tools: python tools/validate/cag_validate.py, python tools/audit/cag_link_check.py
-- agent: CAG-Architect
-
+# References
+- skills: `.codex/skills/create-cag-artifact/SKILL.md`
+- contracts: AGENTS.md, .codex/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "codex CAG skills agents prompts" --profile engine --limit 10, tools/python.cmd tools/validate/cag_validate.py, tools/python.cmd tools/audit/cag_link_check.py --strict
+- agent: cag_architect
 

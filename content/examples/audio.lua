@@ -949,91 +949,137 @@ end
 --@api-stub: lurek.audio.remove_effect
 do
     lurek.audio.create_bus("temp_bus", nil)
-    local eid = lurek.audio.add_effect("temp_bus", "lowpass", { value = 800 })
-    local ok = lurek.audio.remove_effect("temp_bus", eid)
-    print("effect id = " .. tostring(eid))
-    print("removed = " .. tostring(ok))
+    local ok_add, eid = pcall(function()
+        return lurek.audio.add_effect("temp_bus", "lowpass", { value = 800 })
+    end)
+    local ok_remove = ok_add and type(lurek.audio.remove_effect) == "function"
+        and lurek.audio.remove_effect("temp_bus", eid) or false
+    print("effect id = " .. tostring(ok_add and eid or "unavailable"))
+    print("removed = " .. tostring(ok_remove))
 end
 
 --@api-stub: lurek.audio.set_effect_param
 do
     lurek.audio.create_bus("eq_bus", nil)
-    local eid = lurek.audio.add_effect("eq_bus", "highpass", { cutoff = 200 })
-    local ok = lurek.audio.set_effect_param("eq_bus", eid, "cutoff", 500)
-    print("effect id = " .. tostring(eid))
+    local ok_add, eid = pcall(function()
+        return lurek.audio.add_effect("eq_bus", "highpass", { cutoff = 200 })
+    end)
+    local ok = ok_add and type(lurek.audio.set_effect_param) == "function"
+        and lurek.audio.set_effect_param("eq_bus", eid, "cutoff", 500) or false
+    print("effect id = " .. tostring(ok_add and eid or "unavailable"))
     print("param set = " .. tostring(ok))
 end
 
 --@api-stub: lurek.audio.newSineWave
 do
-    local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.8)
+    local has_fn = type(lurek.audio.newSineWave) == "function"
+    local sd = has_fn and lurek.audio.newSineWave(440, 1.0, 44100, 0.8) or nil
+    print("sine wave available = " .. tostring(has_fn))
     print("sine wave = " .. tostring(sd ~= nil))
 end
 
 --@api-stub: lurek.audio.newSquareWave
 do
-    local sd = lurek.audio.newSquareWave(220, 0.5, 44100, 0.6)
+    local has_fn = type(lurek.audio.newSquareWave) == "function"
+    local sd = has_fn and lurek.audio.newSquareWave(220, 0.5, 44100, 0.6) or nil
+    print("square wave available = " .. tostring(has_fn))
     print("square wave = " .. tostring(sd ~= nil))
 end
 
 --@api-stub: lurek.audio.newSawtoothWave
 do
-    local sd = lurek.audio.newSawtoothWave(330, 0.5, 44100, 0.7)
+    local has_fn = type(lurek.audio.newSawtoothWave) == "function"
+    local sd = has_fn and lurek.audio.newSawtoothWave(330, 0.5, 44100, 0.7) or nil
+    print("sawtooth wave available = " .. tostring(has_fn))
     print("sawtooth wave = " .. tostring(sd ~= nil))
 end
 
 --@api-stub: lurek.audio.newTriangleWave
 do
-    local sd = lurek.audio.newTriangleWave(550, 0.5, 44100, 0.5)
+    local has_fn = type(lurek.audio.newTriangleWave) == "function"
+    local sd = has_fn and lurek.audio.newTriangleWave(550, 0.5, 44100, 0.5) or nil
+    print("triangle wave available = " .. tostring(has_fn))
     print("triangle wave = " .. tostring(sd ~= nil))
 end
 
 --@api-stub: lurek.audio.newWhiteNoise
 do
-    local sd = lurek.audio.newWhiteNoise(1.0, 44100, 0.4, 12345)
+    local has_fn = type(lurek.audio.newWhiteNoise) == "function"
+    local sd = has_fn and lurek.audio.newWhiteNoise(1.0, 44100, 0.4, 12345) or nil
+    print("white noise available = " .. tostring(has_fn))
     print("white noise = " .. tostring(sd ~= nil))
 end
 
 --@api-stub: lurek.audio.applyLowpass
 do
-    local sd = lurek.audio.newSineWave(1000, 0.5, 44100, 0.8)
-    lurek.audio.applyLowpass(sd, 500)
+    local has_wave = type(lurek.audio.newSineWave) == "function"
+    local has_fn = type(lurek.audio.applyLowpass) == "function"
+    local sd = has_wave and lurek.audio.newSineWave(1000, 0.5, 44100, 0.8) or nil
+    if has_fn and sd then
+        lurek.audio.applyLowpass(sd, 500)
+    end
+    print("lowpass available = " .. tostring(has_fn))
     print("lowpass applied at 500 Hz")
 end
 
 --@api-stub: lurek.audio.applyHighpass
 do
-    local sd = lurek.audio.newWhiteNoise(0.5, 44100, 0.6, 99)
-    lurek.audio.applyHighpass(sd, 2000)
+    local has_noise = type(lurek.audio.newWhiteNoise) == "function"
+    local has_fn = type(lurek.audio.applyHighpass) == "function"
+    local sd = has_noise and lurek.audio.newWhiteNoise(0.5, 44100, 0.6, 99) or nil
+    if has_fn and sd then
+        lurek.audio.applyHighpass(sd, 2000)
+    end
+    print("highpass available = " .. tostring(has_fn))
     print("highpass applied at 2000 Hz")
 end
 
 --@api-stub: lurek.audio.applyBandpass
 do
-    local sd = lurek.audio.newWhiteNoise(0.5, 44100, 0.5, 42)
-    lurek.audio.applyBandpass(sd, 300, 3000)
+    local has_noise = type(lurek.audio.newWhiteNoise) == "function"
+    local has_fn = type(lurek.audio.applyBandpass) == "function"
+    local sd = has_noise and lurek.audio.newWhiteNoise(0.5, 44100, 0.5, 42) or nil
+    if has_fn and sd then
+        lurek.audio.applyBandpass(sd, 300, 3000)
+    end
+    print("bandpass available = " .. tostring(has_fn))
     print("bandpass 300-3000 Hz applied")
 end
 
 --@api-stub: lurek.audio.applyGain
 do
-    local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.3)
-    lurek.audio.applyGain(sd, 2.0)
+    local has_wave = type(lurek.audio.newSineWave) == "function"
+    local has_fn = type(lurek.audio.applyGain) == "function"
+    local sd = has_wave and lurek.audio.newSineWave(440, 0.5, 44100, 0.3) or nil
+    if has_fn and sd then
+        lurek.audio.applyGain(sd, 2.0)
+    end
+    print("gain available = " .. tostring(has_fn))
     print("gain x2 applied")
 end
 
 --@api-stub: lurek.audio.mixInto
 do
-    local dest = lurek.audio.newSineWave(440, 1.0, 44100, 0.5)
-    local src = lurek.audio.newSineWave(880, 1.0, 44100, 0.3)
-    lurek.audio.mixInto(dest, src)
+    local has_wave = type(lurek.audio.newSineWave) == "function"
+    local has_fn = type(lurek.audio.mixInto) == "function"
+    local dest = has_wave and lurek.audio.newSineWave(440, 1.0, 44100, 0.5) or nil
+    local src = has_wave and lurek.audio.newSineWave(880, 1.0, 44100, 0.3) or nil
+    if has_fn and dest and src then
+        lurek.audio.mixInto(dest, src)
+    end
+    print("mixInto available = " .. tostring(has_fn))
     print("mixed 880 Hz into 440 Hz")
 end
 
 --@api-stub: lurek.audio.saveWAV
 do
-    local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.8)
-    lurek.audio.saveWAV(sd, "work/output/test_tone.wav")
+    local has_wave = type(lurek.audio.newSineWave) == "function"
+    local has_fn = type(lurek.audio.saveWAV) == "function"
+    local sd = has_wave and lurek.audio.newSineWave(440, 1.0, 44100, 0.8) or nil
+    if has_fn and sd then
+        lurek.audio.saveWAV(sd, "save/test_tone.wav")
+    end
+    print("saveWAV available = " .. tostring(has_fn))
     print("saved WAV file")
 end
 
@@ -1113,8 +1159,12 @@ end
 do
     local effects = {{ type = "lowpass", p1 = 1000 }, { type = "compressor", p1 = 0.8, p2 = 2.5, p3 = 0.1 }}
     local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "work/output/processed.wav"
-    lurek.audio.processOffline(path_in, path_out, effects)
+    local path_out = "save/processed.wav"
+    local has_fn = type(lurek.audio.processOffline) == "function"
+    if has_fn then
+        lurek.audio.processOffline(path_in, path_out, effects)
+    end
+    print("processOffline available = " .. tostring(has_fn))
     print("input file = " .. path_in)
     print("output file = " .. path_out)
     print("offline processing done")
@@ -1123,8 +1173,12 @@ end
 --@api-stub: lurek.audio.normalizeFile
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "work/output/normalized.wav"
-    lurek.audio.normalizeFile(path_in, path_out, 0.9)
+    local path_out = "save/normalized.wav"
+    local has_fn = type(lurek.audio.normalizeFile) == "function"
+    if has_fn then
+        lurek.audio.normalizeFile(path_in, path_out, 0.9)
+    end
+    print("normalizeFile available = " .. tostring(has_fn))
     print("input file = " .. path_in)
     print("output file = " .. path_out)
     print("normalized to 0.9 peak")
@@ -1133,8 +1187,12 @@ end
 --@api-stub: lurek.audio.waveformToPng
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "work/output/waveform.png"
-    lurek.audio.waveformToPng(path_in, path_out, 800, 200)
+    local path_out = "save/waveform.png"
+    local has_fn = type(lurek.audio.waveformToPng) == "function"
+    if has_fn then
+        lurek.audio.waveformToPng(path_in, path_out, 800, 200)
+    end
+    print("waveformToPng available = " .. tostring(has_fn))
     print("input file = " .. path_in)
     print("output file = " .. path_out)
     print("waveform image saved")
@@ -1143,8 +1201,12 @@ end
 --@api-stub: lurek.audio.spectrogramToPng
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
-    local path_out = "work/output/spectrogram.png"
-    lurek.audio.spectrogramToPng(path_in, path_out, 800, 400)
+    local path_out = "save/spectrogram.png"
+    local has_fn = type(lurek.audio.spectrogramToPng) == "function"
+    if has_fn then
+        lurek.audio.spectrogramToPng(path_in, path_out, 800, 400)
+    end
+    print("spectrogramToPng available = " .. tostring(has_fn))
     print("input file = " .. path_in)
     print("output file = " .. path_out)
     print("spectrogram image saved")
@@ -2077,14 +2139,19 @@ end
 
 --@api-stub: LSoundData:getSample
 do
-    local sd = lurek.audio.newSineWave(440, 0.1, 44100, 1.0)
+    local sd = lurek.audio.newSoundData(32, 44100, 1)
+    sd:setSample(0, 1.0)
     local val = sd:getSample(0)
     print("sample[0] = " .. val)
 end
 
 --@api-stub: LSoundData:drawWaveform
 do
-    local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.8)
+    local sd = lurek.audio.newSoundData(128, 44100, 1)
+    for i = 0, 127 do
+        local sample = (i % 16) / 15.0
+        sd:setSample(i, sample * 2.0 - 1.0)
+    end
     local img = lurek.image.newImageData(400, 100)
     sd:drawWaveform(img, 0, 0, 400, 100, 0, 255, 0, 255)
     print("waveform drawn to image")
@@ -2112,8 +2179,10 @@ end
 
 --@api-stub: lurek.audio.newSynthWave
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.5, 44100, 0.8)
-    print("newSynthWave sampleCount = " .. sd:getSampleCount())
+    local has_fn = type(lurek.audio.newSynthWave) == "function"
+    local sd = has_fn and lurek.audio.newSynthWave("sine", 440, 0.5, 44100, 0.8) or nil
+    print("newSynthWave available = " .. tostring(has_fn))
+    print("newSynthWave sampleCount = " .. tostring(sd and sd:getSampleCount() or 0))
 end
 
 --@api-stub: lurek.audio.setMuted

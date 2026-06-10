@@ -2,15 +2,36 @@
 
 ## Summary
 
-This module represents the machine-learning runtime and artificial intelligence modeling subsystem, providing a rich collection of CPU-side training and inference blocks. It allows developers to build, organize, and evaluate various learning architectures directly in active game sessions. These models run without external runtime dependencies, utilizing flat, row-major tensor buffers for fast and predictable numeric calculations on the main CPU thread.
+- This module gives users a script-accessible ML toolkit for inference, lightweight training loops, and policy experimentation.
+- It supports tensor-based numeric workflows with deterministic CPU-side execution.
+- Neural building blocks include dense, convolutional, recurrent, attention, and transformer-style components.
+- Mixed architectures can be assembled through a unified engine rather than hardcoded model pipelines.
+- Parameter import/export support enables model mutation, checkpointing, and external optimization workflows.
+- Genetic algorithm support provides population-based optimization for parameter search.
+- Neuroevolution helpers connect genomes to model structures for evolving behavior policies.
+- Bandit strategies support online decision tuning under uncertainty.
+- Tabular Q-learning support enables classic reinforcement-learning experiments in discrete spaces.
+- Environment wrappers standardize observations, rewards, and termination controls.
+- Frame-stack and time-limit wrappers help shape training contexts for temporal tasks.
+- ONNX loading enables reuse of externally trained models for runtime inference.
+- This bridges in-engine experimentation with broader ML tool ecosystems.
+- The module supports prototyping AI behavior without requiring separate external runtimes.
+- For users, this means shorter loops from idea to tested gameplay policy.
+- It is useful for adaptive NPC logic, balancing agents, and simulation decision support.
+- Deterministic tensor and model operations make behavior easier to test and debug.
+- Script-level APIs keep model control close to gameplay systems that consume predictions.
+- The practical value is flexible AI capability without committing to one single algorithm family.
+- Users can combine supervised-style inference, RL, and evolutionary methods in one environment.
+- This enables comparative experimentation before locking production strategy.
+- It also lowers integration friction by sharing one data model across learning components.
+- Overall, the module turns ML from an external dependency into an integrated engine feature set.
+- Teams gain both rapid prototyping tools and deployable runtime inference paths.
+- It helps bridge research ideas and shippable behavior systems with fewer rewrites.
+- In short, users get a broad, scriptable learning sandbox aligned with game-runtime constraints.
+- That makes AI development more iterative, observable, and maintainable.
+- The module also supports long-term evolution as project AI needs grow in complexity.
 
-At the core of the neural modeling system is a dynamic network engine that chains diverse layer types into unified model pipelines. It supports feed-forward dense layers, spatial Conv2D grids, downsampling MaxPool2D layers, and stateful GRU or LSTM recurrent sequence blocks. Additionally, advanced sequence blocks like multi-head attention and transformer blocks are supported, complete with sinusoidal positional encodings for temporal context modeling.
-
-To optimize weights, the module implements population-based genetic algorithms and neuroevolution workflows. Trainable parameters are exported and imported as flat floating-point buffers, allowing evolutionary search tools to manipulate layer architectures uniformly. The neuroevolution orchestrator rebuilds neural nets from flat chromosomes and tracks generation metadata, making it easy to evolve behavioral policies and prototype gameplay agents.
-
-For decision-making tasks under uncertainty, the module integrates reinforcement learning components. A multi-armed bandit selector supports epsilon-greedy, Thompson sampling, and upper confidence bound strategies. This is paired with tabular Q-learning over discrete state-action spaces, supporting epsilon decay and Bellman updates. Environment wrappers standardize reward step structures and observation limits to streamline training loops.
-
-Finally, the module provides a seamless path for integrating externally trained models via ONNX format loading. By converting native tensor descriptors into plan structures, it performs optimized CPU inference on pre-trained networks. This enables developers to deploy complex, industry-standard neural network policies directly into game scripts, combining local training, evolutionary prototyping, and external inference in one cohesive system.
+This module is mostly self-contained inside the `Feature Systems` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Functions
 

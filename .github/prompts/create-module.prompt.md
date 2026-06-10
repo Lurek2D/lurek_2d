@@ -1,47 +1,43 @@
 ﻿---
 name: create-module
-description: Create or update module in src, perform all needed steps to make it work, including tests, examples, specs.
+description: "Load this skill when creating or modifying Rust engine modules in src with Lua API, specs, examples, and tests. Skip it for small docs-only updates, pure Lua content, or VS Code extension work."
 ---
 
-# GOAL
-- End-to-end creation of a new Rust engine module, including API bindings, docs-general, and tests.
+# Goal
+- Create or modify Rust engine modules while keeping public Lua API, specs, examples, and tests aligned.
 
-# INPUTS REQUIRED
-- Module name and group (Foundations, Core, Platform, Feature, Edge)
-- Core functionality description
-= User must provide the architectural purpose of the module
-- Agent must collect project constraints regarding cyclic dependencies
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: module-architecture, rust-coding, lua-rust-bridge.
-2. Create `docs/specs/<module>.md` defining boundaries.
-3. Implement internal logic in `src/<module>/` and expose the thin Lua wrapper in `src/lua_api/<module>_api.rs`.
-4. Execute `python tools/gen_all_docs.py` to sync bindings into `docs/api/`. If generation throws an error, fix the API wrapper docstrings.
-5. Write Lua unit tests and run `cargo test` and `cargo clippy -- -D warnings`. If tests <100% pass rate or clippy >0 warnings, fix the code.
-6. Execute `python tools/validate/cag_validate.py`. If exit code is >0, resolve architectural cyclic dependencies and repeat step 6.
+# Steps
+1. Load the active `.codex/skills/create-module/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect existing `src/<module>/`, `src/lua_api/`, specs, examples, and tests before deciding create vs modify.
+5. Create a new top-level module only when no current module owns the behavior.
+6. Keep `src/lua_api/` registration-only and implement logic in the domain module.
+7. Update specs, generated API docs, Lua tests, and examples when public behavior changes.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- `src/<module>/` code
-- `src/lua_api/<module>_api.rs`
-- `docs/specs/<module>.md`
-- Updated API docs-general and tests
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `cargo test` exits with code 0 (100% test pass rate).
-- [ ] `cargo clippy -- -D warnings` exits with code 0 (0 warnings).
-- [ ] `python tools/validate/cag_validate.py` exits with code 0 (0 cyclic dependencies).
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Putting business logic inside the `lua_api` wrapper instead of the domain module.
-- Forgetting to register the module in the global `mod.rs`.
+# Example Invocation
+- User: Use `create-module` for the requested scope.
+- Agent: Loads `.codex/skills/create-module/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: module-architecture, rust-coding, lua-rust-bridge, docs-general
-- tools: python tools/validate/cag_validate.py, python tools/gen_all_docs.py, cargo test
-- agent: Developer
-
+# References
+- skills: `.codex/skills/create-module/SKILL.md`
+- contracts: src/AGENTS.md, src/lua_api/AGENTS.md, docs/architecture/AGENTS.md, docs/specs/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "Rust engine module lua_api docs specs" --profile engine --limit 10, tools/python.cmd tools/gen_all_docs.py, cargo test, cargo clippy -- -D warnings, tools/python.cmd tools/validate/cag_validate.py
+- agent: developer
 

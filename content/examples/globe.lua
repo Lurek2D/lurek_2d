@@ -58,7 +58,7 @@ end
 
 --@api-stub: lurek.globe.loadFromTOMLFile
 do
-    local path = "logs/globe_example.toml"
+    local path = "save/globe_example.toml"
     lurek.filesystem.write(path, "[[province]]\nid = 1\ncentroid = [10.0, 20.0]\nvertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]\n")
 
     local g = lurek.globe.loadFromTOMLFile("toml_file_globe", path, {})

@@ -195,7 +195,7 @@ impl LuaUserData for LSceneObjectContainer {
         methods.add_method("add", |lua, this, obj: LuaTable| {
             let container = this.get_container(lua)?;
             let add_fn: LuaFunction = container.get("add")?;
-            add_fn.call::<_, ()>(obj)?;
+            add_fn.call::<_, ()>((container.clone(), obj))?;
             Ok(())
         });
 
@@ -204,7 +204,7 @@ impl LuaUserData for LSceneObjectContainer {
         methods.add_method("remove", |lua, this, obj: LuaTable| {
             let container = this.get_container(lua)?;
             let remove_fn: LuaFunction = container.get("remove")?;
-            remove_fn.call::<_, ()>(obj)?;
+            remove_fn.call::<_, ()>((container.clone(), obj))?;
             Ok(())
         });
 
@@ -212,7 +212,7 @@ impl LuaUserData for LSceneObjectContainer {
         methods.add_method("clear", |lua, this, ()| {
             let container = this.get_container(lua)?;
             let clear_fn: LuaFunction = container.get("clear")?;
-            clear_fn.call::<_, ()>(())?;
+            clear_fn.call::<_, ()>(container.clone())?;
             Ok(())
         });
 
@@ -221,7 +221,7 @@ impl LuaUserData for LSceneObjectContainer {
         methods.add_method("update", |lua, this, dt: f64| {
             let container = this.get_container(lua)?;
             let update_fn: LuaFunction = container.get("update")?;
-            update_fn.call::<_, ()>(dt)?;
+            update_fn.call::<_, ()>((container.clone(), dt))?;
             Ok(())
         });
 
@@ -229,7 +229,7 @@ impl LuaUserData for LSceneObjectContainer {
         methods.add_method("draw", |lua, this, ()| {
             let container = this.get_container(lua)?;
             let draw_fn: LuaFunction = container.get("draw")?;
-            draw_fn.call::<_, ()>(())?;
+            draw_fn.call::<_, ()>(container.clone())?;
             Ok(())
         });
 
@@ -237,7 +237,7 @@ impl LuaUserData for LSceneObjectContainer {
         methods.add_method("getCount", |lua, this, ()| {
             let container = this.get_container(lua)?;
             let count_fn: LuaFunction = container.get("count")?;
-            count_fn.call::<_, i32>(())
+            count_fn.call::<_, i32>(container.clone())
         });
 
         /// Get all objects as an array (layer-sorted).
@@ -254,7 +254,7 @@ impl LuaUserData for LSceneObjectContainer {
         methods.add_method("getByLayer", |lua, this, n: i32| {
             let container = this.get_container(lua)?;
             let get_by_layer_fn: LuaFunction = container.get("getByLayer")?;
-            get_by_layer_fn.call::<_, LuaValue>(n)
+            get_by_layer_fn.call::<_, LuaValue>((container.clone(), n))
         });
 
         /// Check whether an object is present in the container.
@@ -263,7 +263,7 @@ impl LuaUserData for LSceneObjectContainer {
         methods.add_method("has", |lua, this, obj: LuaTable| {
             let container = this.get_container(lua)?;
             let has_fn: LuaFunction = container.get("has")?;
-            has_fn.call::<_, bool>(obj)
+            has_fn.call::<_, bool>((container.clone(), obj))
         });
 
         /// Get the type name of this userdata.

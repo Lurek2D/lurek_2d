@@ -1,0 +1,337 @@
+[
+  {
+    "query": "Codex AGENTS skills agents routing",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/route-prompt/SKILL.md", ".codex/AGENTS.md"]
+  },
+  {
+    "query": "RAG rag.toml build_index query context bundle",
+    "profile": "engine",
+    "must_match_any": ["tools/rag/build_index.py", "tools/rag/query.py", "tools/rag/AGENTS.md"]
+  },
+  {
+    "query": "create module Rust engine lua_api docs specs tests",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-module/SKILL.md", ".codex/skills/create-engine-feature/SKILL.md"]
+  },
+  {
+    "query": "pages generated docs site template",
+    "profile": "all",
+    "must_match_any": [".codex/skills/create-pages/SKILL.md", "pages/"]
+  },
+  {
+    "query": "keyboard input lua API examples tests",
+    "profile": "all",
+    "must_match_any": ["content/examples/input.lua", "tests/lua/unit/test_input_core_unit.lua", "docs/wiki/API-Reference.md"]
+  },
+  {
+    "query": "Lua unit tests public API coverage",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-test-lua/SKILL.md", "tools/audit/lua_api_test_coverage.py"]
+  },
+  {
+    "query": "example coverage content examples API",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-example/SKILL.md", "tools/audit/example_coverage.py", "content/examples/"]
+  },
+  {
+    "query": "VS Code extension package json webview commands",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-extension-feature/SKILL.md", "extension/"]
+  },
+  {
+    "query": "WGSL shader render pipeline",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-shader/SKILL.md", "src/"]
+  },
+  {
+    "query": "quality report hotspots contract drift",
+    "profile": "all",
+    "must_match_any": [".codex/skills/review-quality/SKILL.md", "tools/audit/quality_report.py"]
+  },
+  {
+    "query": "module specs generated summary coverage",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/review-specs/SKILL.md", "tools/docs/gen_module_specs.py", "docs/specs/"]
+  },
+  {
+    "query": "content games demo conventions validate_game demo smoke",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-demo/SKILL.md", "tools/validate/validate_game.py", "tests/demo_smoke_tests.rs"]
+  },
+  {
+    "query": "library Lua module conventions validate library",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-library/SKILL.md", "library/", "tools/validate/validate_library.py"]
+  },
+  {
+    "query": "TOML UI layouts snap to grid",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-layout/SKILL.md", "content/layouts/", "tools/ui/"]
+  },
+  {
+    "query": "stress tests performance ceilings regression gate",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-test-stress/SKILL.md", "tools/audit/stress_report.py", "tools/audit/perf_regression_gate.py"]
+  },
+  {
+    "query": "docstring audit Rust lua_api generated docs",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/review-docstrings/SKILL.md", "tools/audit/docstring_audit.py", "tools/docs/gen_rust_docstrings.py"]
+  },
+  {
+    "query": "Lua evidence tests golden artifacts",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-test-evidence/SKILL.md", "tests/lua/evidence/", "tools/audit/golden_test.py"]
+  },
+  {
+    "query": "tools audit validator CLI registry",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-tool/SKILL.md", "tools/tests/gen_tool_registry.py", "tools/validate/"]
+  },
+  {
+    "query": "architecture docs specs engine boundaries",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/review-architecture/SKILL.md", "docs/architecture/", "docs/specs/"]
+  },
+  {
+    "query": "Lua snippets generated VS Code snippets",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-snippet/SKILL.md", "content/snippets/", "tools/snippets/"]
+  },
+  {
+    "query": "build profiles Cargo clippy dist tools",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-build/SKILL.md", "Cargo.toml", "tools/"]
+  },
+  {
+    "query": "codex CAG skills agents prompts",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-cag-artifact/SKILL.md", ".codex/agents/", ".github/prompts/"]
+  },
+  {
+    "query": "Lua integration tests module interaction",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-integration-test/SKILL.md", "tests/lua/integration/", "tools/audit/integration_coverage.py"]
+  },
+  {
+    "query": "Rust tests internal module Cargo target",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-test-rust/SKILL.md", "tests/rust/", "cargo"]
+  },
+  {
+    "query": "engine feature src lua_api specs tests",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-engine-feature/SKILL.md", "src/lua_api/", "docs/specs/"]
+  },
+  {
+    "query": "content examples API coverage",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-example/SKILL.md", "content/examples/", "tools/audit/example_coverage.py"]
+  },
+  {
+    "query": "VS Code extension package webview commands npm build test",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-extension-feature/SKILL.md", "extension/vscode/", "package.json"]
+  },
+  {
+    "query": "docs templates pages generated site gen_all_docs",
+    "profile": "all",
+    "must_match_any": [".codex/skills/create-pages/SKILL.md", "tools/gen_all_docs.py", "pages/AGENTS.md"]
+  },
+  {
+    "query": "codex skills agents routing manager",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/route-prompt/SKILL.md", ".codex/agents/manager.toml", ".codex/skills/"]
+  },
+  {
+    "query": "review audits quality performance specs tests",
+    "profile": "all",
+    "must_match_any": [".codex/skills/review-all/SKILL.md", "tools/audit/quality_report.py", "tools/audit/perf_regression_gate.py"]
+  },
+  {
+    "query": "Lua API wrapper coverage thin wrapper",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/review-api/SKILL.md", "tools/audit/thin_wrapper_audit.py", "tools/audit/lua_covers_lurek_api_audit.py"]
+  },
+  {
+    "query": "example coverage content examples API review",
+    "profile": "game",
+    "must_match_any": [".codex/skills/review-examples/SKILL.md", "content/examples/AGENTS.md", "tools/audit/example_coverage.py"]
+  },
+  {
+    "query": "performance regression gate baseline stress report",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/review-performance/SKILL.md", "tools/audit/perf_regression_gate.py", "tools/audit/stress_report.py"]
+  },
+  {
+    "query": "Lua test coverage structure harness public API",
+    "profile": "game",
+    "must_match_any": [".codex/skills/review-tests/SKILL.md", "tests/lua/harness.rs", "tools/audit/lua_test_structure_audit.py"]
+  },
+  {
+    "query": "Rust engine module lua_api docs specs",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-module/SKILL.md", "src/lua_api/AGENTS.md", "docs/specs/"]
+  },
+  {
+    "query": "content games demo conventions",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-demo/SKILL.md", "content/games/AGENTS.md", "tests/demo_smoke_tests.rs"]
+  },
+  {
+    "query": "library Lua module conventions",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-library/SKILL.md", "library/AGENTS.md", "tools/validate/validate_library.py"]
+  },
+  {
+    "query": "content layouts TOML UI primitives",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-layout/SKILL.md", "content/layouts/AGENTS.md", "tools/ui/fix_layouts.py"]
+  },
+  {
+    "query": "docs site generated pages output",
+    "profile": "all",
+    "must_match_any": [".codex/skills/create-pages/SKILL.md", "pages/AGENTS.md", "docs/templates/AGENTS.md"]
+  },
+  {
+    "query": "RAG recall tests ranking chunking source priorities",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-rag-artifact/SKILL.md", "tools/rag/eval.py", "tools/rag/rag.toml"]
+  },
+  {
+    "query": "WGSL shader src render pipeline cargo check",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-shader/SKILL.md", "src/render/", "docs/specs/render.md"]
+  },
+  {
+    "query": "content snippets API usage",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-snippet/SKILL.md", "content/snippets/AGENTS.md", "tools/snippets/gen_vscode_snippets.py"]
+  },
+  {
+    "query": "Lua evidence tests golden artifacts contract",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-test-evidence/SKILL.md", "tools/audit/lua_evidence_golden_contract_audit.py", "tests/lua/golden/"]
+  },
+  {
+    "query": "Lua unit tests public API coverage module",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-test-lua/SKILL.md", "tests/lua/unit/", "tools/audit/lua_api_test_coverage.py"]
+  },
+  {
+    "query": "stress tests performance ceilings",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-test-stress/SKILL.md", "tools/audit/stress_report.py", "tests/lua/stress/"]
+  },
+  {
+    "query": "tools audit validator CLI registry create tool",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/create-tool/SKILL.md", "tools/agent_cli_reference.md", "tools/tests/gen_tool_registry.py"]
+  },
+  {
+    "query": "review architecture docs specs boundaries",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/review-architecture/SKILL.md", "docs/architecture/AGENTS.md", "docs/specs/AGENTS.md"]
+  },
+  {
+    "query": "review docstrings audit Rust lua_api docs",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/review-docstrings/SKILL.md", "tools/audit/docstring_audit.py", "tools/docs/gen_rust_docstrings.py"]
+  },
+  {
+    "query": "review specs generated summary coverage docs",
+    "profile": "engine",
+    "must_match_any": [".codex/skills/review-specs/SKILL.md", "tools/docs/gen_module_specs.py", "docs/specs/README.md"]
+  },
+  {
+    "query": "review quality report hotspots",
+    "profile": "all",
+    "must_match_any": [".codex/skills/review-quality/SKILL.md", "tools/audit/quality_report.py", "tools/AGENTS.md"]
+  },
+  {
+    "query": "root AGENTS repo workflow RAG MCP",
+    "profile": "engine",
+    "must_match_any": ["AGENTS.md", ".codex/AGENTS.md", "tools/AGENTS.md"]
+  },
+  {
+    "query": "tests contract Lua API coverage harness",
+    "profile": "game",
+    "must_match_any": ["tests/AGENTS.md", "tests/lua/AGENTS.md", "tests/lua/harness.rs"]
+  },
+  {
+    "query": "extension vscode AGENTS commands providers webview",
+    "profile": "engine",
+    "must_match_any": ["extension/vscode/AGENTS.md", ".codex/skills/create-extension-feature/SKILL.md", "extension/vscode/README.md"]
+  },
+  {
+    "query": "library AGENTS reusable Lua gameplay systems",
+    "profile": "game",
+    "must_match_any": ["library/AGENTS.md", ".codex/skills/create-library/SKILL.md", "library/README.md"]
+  },
+  {
+    "query": "content examples AGENTS runnable single file teaching examples",
+    "profile": "game",
+    "must_match_any": ["content/examples/AGENTS.md", ".codex/skills/create-example/SKILL.md", "content/examples/"]
+  },
+  {
+    "query": "content layouts AGENTS TOML UI layouts",
+    "profile": "game",
+    "must_match_any": ["content/layouts/AGENTS.md", ".codex/skills/create-layout/SKILL.md", "content/layouts/"]
+  },
+  {
+    "query": "pages AGENTS generated docs site output",
+    "profile": "all",
+    "must_match_any": ["pages/AGENTS.md", ".codex/skills/create-pages/SKILL.md", "pages/"]
+  },
+  {
+    "query": "src lua_api AGENTS thin wrappers registration only",
+    "profile": "engine",
+    "must_match_any": ["src/lua_api/AGENTS.md", ".codex/skills/create-module/SKILL.md", "src/lua_api/"]
+  },
+  {
+    "query": "cag validate baseline prompts skills agents",
+    "profile": "engine",
+    "must_match_any": ["tools/validate/cag_validate.py", "tools/validate/_cag_common.py", ".codex/skills/create-cag-artifact/SKILL.md"]
+  },
+  {
+    "query": "cag link check strict docs links",
+    "profile": "engine",
+    "must_match_any": ["tools/audit/cag_link_check.py", "tools/AGENTS.md", ".codex/skills/review-architecture/SKILL.md"]
+  },
+  {
+    "query": "RAG stats chunks by kind source priorities",
+    "profile": "engine",
+    "must_match_any": ["tools/rag/query.py", "tools/rag/rag.toml", "tools/rag/AGENTS.md"]
+  },
+  {
+    "query": "RAG read chunk neighbors full content",
+    "profile": "engine",
+    "must_match_any": ["tools/rag/read.py", "tools/rag/query.py", "tools/rag/context.py"]
+  },
+  {
+    "query": "agent context bundle prompt searches deduplicated chunks",
+    "profile": "engine",
+    "must_match_any": ["tools/rag/context.py", "tools/rag/query.py", ".codex/skills/create-rag-artifact/SKILL.md"]
+  },
+  {
+    "query": "render module docs specs shader pipeline",
+    "profile": "engine",
+    "must_match_any": ["docs/specs/render.md", "docs/modules/render.md", "src/render/"]
+  },
+  {
+    "query": "input module spec keyboard mouse gamepad touch",
+    "profile": "all",
+    "must_match_any": ["docs/specs/input.md", "docs/modules/input.md", "src/lua_api/input_api.rs"]
+  },
+  {
+    "query": "tool registry audit agent cli reference",
+    "profile": "engine",
+    "must_match_any": ["tools/audit/tool_registry_audit.py", "tools/agent_cli_reference.md", "tools/tests/gen_tool_registry.py"]
+  },
+  {
+    "query": "snippet validate vscode snippets",
+    "profile": "game",
+    "must_match_any": ["tools/validate/validate_snippets.py", "tools/snippets/gen_vscode_snippets.py", "content/snippets/AGENTS.md"]
+  }
+]

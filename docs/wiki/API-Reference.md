@@ -7606,17 +7606,39 @@ LComboBox:setSelectedIndex(index: integer) -- Sets the selected item by 1-based 
 ### LDialog
 
 ```lua
-LDialog:addButton(text: string, [cb]: function) -> integer -- Adds a footer button to this dialog and returns its 1-based index.
-LDialog:close() -- Closes this dialog and fires the onClose callback if it was open.
-LDialog:getContent() -> integer -- Returns the widget index of this dialog's content, or nil if not set.
-LDialog:getTitle() -> string -- Returns the title text of this dialog.
-LDialog:isModal() -> boolean -- Returns whether this dialog is modal (blocks interaction with other widgets).
-LDialog:isOpen() -> boolean -- Returns whether this dialog is currently open and visible.
-LDialog:open() -- Opens this dialog, making it visible.
-LDialog:setContent([content_idx]: integer) -- Sets the content widget for this dialog.
-LDialog:setModal(v: boolean) -- Sets whether this dialog widget is modal.
-LDialog:setOnClose(f: function) -- Registers a callback invoked when this dialog is closed.
-LDialog:setTitle(title: string) -- Sets the title text of this dialog widget.
+LDialog:addAction(text: string, [cb]: function, [role]: string, [close_on_activate]: boolean) -> integer -- Adds a footer action button and returns its 1-based index.
+LDialog:addButton(text: any, [cb]: any) -- /// Returns a value for addButton (auto-generated).
+LDialog:centerInViewport() -- Repositions this dialog to the center of the active viewport immediately.
+LDialog:close() -- /// Returns a value for close (auto-generated).
+LDialog:getCancelAction() -> integer? -- Returns the 1-based action index triggered by Escape, if any.
+LDialog:getCenterOnOpen() -> boolean -- Returns whether opening this dialog recenters it in the viewport.
+LDialog:getContent() -- /// Returns a value for getContent (auto-generated).
+LDialog:getDefaultAction() -> integer? -- Returns the 1-based action index triggered by Enter, if any.
+LDialog:getDismissOnOutsideClick() -> boolean -- Returns whether outside clicks dismiss this non-modal dialog.
+LDialog:getFooter() -> integer? -- Returns the optional footer content widget index.
+LDialog:getMaxSize() -> number?, number? -- Returns the optional maximum popup dimensions for this dialog.
+LDialog:getMinSize() -> number, number -- Returns the minimum popup size for this dialog.
+LDialog:getTitle() -- /// Returns a value for getTitle (auto-generated).
+LDialog:isCloseable() -> boolean -- Returns whether this dialog exposes user-driven close affordances.
+LDialog:isDraggable() -> boolean -- Returns whether this dialog can be dragged by its title bar.
+LDialog:isModal() -- /// Returns a value for isModal (auto-generated).
+LDialog:isOpen() -- /// Returns a value for isOpen (auto-generated).
+LDialog:isResizable() -> boolean -- Returns whether this dialog can be resized from its edges or corners.
+LDialog:open() -- /// Returns a value for open (auto-generated).
+LDialog:setCancelAction([index]: integer) -- Sets the action triggered by Escape, using a 1-based action index.
+LDialog:setCenterOnOpen(value: boolean) -- Controls whether opening this dialog recenters it in the viewport.
+LDialog:setCloseable(value: boolean) -- Sets whether this dialog can be dismissed by close affordances or Escape fallback.
+LDialog:setContent([content_idx]: any) -- /// Returns a value for setContent (auto-generated).
+LDialog:setDefaultAction([index]: integer) -- Sets the action triggered by Enter, using a 1-based action index.
+LDialog:setDismissOnOutsideClick(value: boolean) -- Controls whether clicking outside a non-modal dialog closes it.
+LDialog:setDraggable(value: boolean) -- Enables or disables title-bar dragging for this dialog.
+LDialog:setFooter([footer_idx]: integer) -- Assigns an optional footer content root for this dialog.
+LDialog:setMaxSize([width]: number, [height]: number) -- Sets optional maximum popup dimensions for this dialog.
+LDialog:setMinSize(width: number, height: number) -- Sets the minimum popup size for this dialog.
+LDialog:setModal(v: any) -- /// Returns a value for setModal (auto-generated).
+LDialog:setOnClose(f: any) -- /// Returns a value for setOnClose (auto-generated).
+LDialog:setResizable(value: boolean) -- Enables or disables edge and corner resizing for this dialog.
+LDialog:setTitle(title: any) -- /// Returns a value for setTitle (auto-generated).
 ```
 
 ### LDockPanel

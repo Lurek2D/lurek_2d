@@ -27,6 +27,10 @@ from pathlib import Path
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
 TOOLS_DIR = WORKSPACE_ROOT / "tools"
+MODULE_AUDIT_CANDIDATES = (
+    "audit/audit_module.py",
+    "audit/module_audit.py",
+)
 
 
 def _run_tool(script: str, extra_args: list = None) -> dict:
@@ -48,6 +52,14 @@ def _run_tool(script: str, extra_args: list = None) -> dict:
         tmp.unlink(missing_ok=True)
 
     return data
+
+
+def _resolve_existing_tool(candidates: tuple[str, ...]) -> str:
+    """Return the first existing tools/ script from a candidate list."""
+    for script in candidates:
+        if (TOOLS_DIR / script).exists():
+            return script
+    return candidates[0]
 
 
 def generate_report(
@@ -178,7 +190,7 @@ def main() -> int:
     test_data = _run_tool("audit/test_coverage.py")
 
     print("[3/4] Running module audit...", file=sys.stderr)
-    module_data = _run_tool("audit/module_audit.py")
+    module_data = _run_tool(_resolve_existing_tool(MODULE_AUDIT_CANDIDATES))
 
     print("[4/4] Running API validation...", file=sys.stderr)
     validation_data = _run_tool("validate/validate_game.py", ["--all-examples"])

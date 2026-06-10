@@ -2,7 +2,12 @@
 
 ## Summary
 
-The color module provides fundamental color representations, space conversions, blending mathematics, and curated palettes for Lurek2D, supporting UI, rendering, and effects. It manages RGBA colors, supplying conversions between RGB, HSL, and HSV spaces, alongside Hex string parsing. For rendering, it computes clamped linear interpolations, alpha compositing (Porter-Duff), channel inversions, perceived luminance, gamma-to-linear conversions, and multiple blend modes. It also includes retro palettes like PICO-8, Game Boy, and NES.
+- The color module gives scripts one toolbox for creation, conversion, blending, and palette-based styling.
+- It supports RGB, HSL, HSV, and hex workflows so designers can work in the representation that fits the task.
+- Predictable interpolation and compositing support fades, highlights, and layered UI rendering.
+- Blend modes and luminance helpers help with effects tuning and contrast-aware presentation.
+- Retro palettes accelerate thematic prototyping without manual color picking.
+- The module bridges art-facing color intent with runtime-safe numeric operations.
 
 This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 

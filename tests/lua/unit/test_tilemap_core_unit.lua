@@ -216,6 +216,15 @@ describe("lurek.tilemap hexagonal coordinates", function()
         expect_equal(3, #line)
     end)
 
+    -- @covers lurek.tilemap.hexLine
+    it("hexLine entries expose q and r fields", function()
+        local line = lurek.tilemap.hexLine(0, 0, 2, 0)
+        for _, cell in ipairs(line) do
+            expect_not_nil(cell.q)
+            expect_not_nil(cell.r)
+        end
+    end)
+
     -- @covers lurek.tilemap.hexRing
     it("hexRing at radius 0 returns 1 cell (the center)", function()
         local ring = lurek.tilemap.hexRing(0, 0, 0)
@@ -234,6 +243,15 @@ describe("lurek.tilemap hexagonal coordinates", function()
         expect_equal(12, #ring)
     end)
 
+    -- @covers lurek.tilemap.hexRing
+    it("hexRing entries expose q and r fields", function()
+        local ring = lurek.tilemap.hexRing(0, 0, 2)
+        for _, cell in ipairs(ring) do
+            expect_not_nil(cell.q)
+            expect_not_nil(cell.r)
+        end
+    end)
+
     -- @covers lurek.tilemap.hexSpiral
     it("hexSpiral at radius 0 returns 1 cell", function()
         local spiral = lurek.tilemap.hexSpiral(0, 0, 0)
@@ -246,6 +264,15 @@ describe("lurek.tilemap hexagonal coordinates", function()
         expect_equal(7, #spiral)
     end)
 
+    -- @covers lurek.tilemap.hexSpiral
+    it("hexSpiral entries expose q and r fields", function()
+        local spiral = lurek.tilemap.hexSpiral(0, 0, 1)
+        for _, cell in ipairs(spiral) do
+            expect_not_nil(cell.q)
+            expect_not_nil(cell.r)
+        end
+    end)
+
     -- @covers lurek.tilemap.hexArea
     it("hexArea at radius 0 returns 1 cell", function()
         local area = lurek.tilemap.hexArea(0, 0, 0)
@@ -256,6 +283,15 @@ describe("lurek.tilemap hexagonal coordinates", function()
     it("hexArea at radius 1 returns 7 cells", function()
         local area = lurek.tilemap.hexArea(0, 0, 1)
         expect_equal(7, #area)
+    end)
+
+    -- @covers lurek.tilemap.hexArea
+    it("hexArea entries expose q and r fields", function()
+        local area = lurek.tilemap.hexArea(0, 0, 1)
+        for _, cell in ipairs(area) do
+            expect_not_nil(cell.q)
+            expect_not_nil(cell.r)
+        end
     end)
 
     -- @covers lurek.tilemap.hexRotate
@@ -2237,6 +2273,25 @@ describe("tilemap regression coverage", function()
         expect_false(has_chunk(loaded, 0, 0))
         expect_true(has_chunk(loaded, 1, 0))
     end)
+
+    -- @covers LChunkMap:getChunksInView
+    -- @covers LChunkMap:getLoadedChunks
+    it("ChunkMap chunk coordinate entries expose named and positional fields", function()
+        local cm = lurek.tilemap.newChunkMap(8)
+        cm:loadChunk(0, 0)
+        local loaded = cm:getLoadedChunks()
+        expect_not_nil(loaded[1])
+        expect_equal(0, loaded[1][1])
+        expect_equal(0, loaded[1][2])
+        expect_equal(0, loaded[1].cx)
+        expect_equal(0, loaded[1].cy)
+
+        local visible = cm:getChunksInView(0, 0, 64, 64, 16, 16)
+        if #visible > 0 then
+            expect_not_nil(visible[1].cx)
+            expect_not_nil(visible[1].cy)
+        end
+    end)
     -- @covers LIsoMap:addLevel
     -- @covers LIsoMap:fillLevel
     -- @covers LIsoMap:getLevelHeight
@@ -2715,8 +2770,6 @@ end)
 -- syncMinimap function
 -- =========================================================================
 -- @describe lurek.tilemap.syncMinimap
-
--- @covers lurek.tilemap.syncMinimap
 it("syncMinimap syncs tilemap solidity to minimap terrain", function()
     local tilemap = lurek.tilemap.newTileMap(10, 10, 32)
     local minimap = lurek.minimap.new(10, 10)
@@ -2731,7 +2784,6 @@ it("syncMinimap syncs tilemap solidity to minimap terrain", function()
     -- minimap should now have terrain values set
     expect_type("userdata", minimap)
 end)
--- @covers lurek.tilemap
 it("syncMinimap uses default terrain values", function()
     local tilemap = lurek.tilemap.newTileMap(10, 10, 32)
     local minimap = lurek.minimap.new(10, 10)

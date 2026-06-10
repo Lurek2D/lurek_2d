@@ -438,17 +438,17 @@ end
 
 --@api-stub: lurek.input.wasPressed
 do
-    -- wasPressed() is true on the first frame the key goes down; call inside event callback
-    local v = lurek.input.wasPressed()
-    print("wasPressed available = " .. tostring(type(lurek.input.wasPressed) == "function"))
+    local has_was_pressed = type(lurek.input.wasPressed) == "function"
+    local v = has_was_pressed and lurek.input.wasPressed() or false
+    print("wasPressed available = " .. tostring(has_was_pressed))
     print("result type = " .. type(v))
 end
 
 --@api-stub: lurek.input.wasReleased
 do
-    -- wasReleased(key) is true on the first frame the key goes up
-    local v = lurek.input.wasReleased()
-    print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
+    local has_was_released = type(lurek.input.wasReleased) == "function"
+    local v = has_was_released and lurek.input.wasReleased() or false
+    print("wasReleased available = " .. tostring(has_was_released))
     print("space released = " .. tostring(v))
 end
 

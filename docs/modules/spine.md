@@ -2,17 +2,22 @@
 
 ## Summary
 
-This module provides a skeletal animation runtime for 2D assets, offering pose-driven movement through hierarchies of bones and slots. Bones carry local transform offsets that propagate down parent-child chains to resolve world-space positions. To achieve organic, procedural responsiveness alongside keyframed animations, the system implements an inverse-kinematics solver that constrains joint angles toward target positions with controllable bend directions.
+- This module gives users skeletal 2D animation with bones, slots, skins, and timeline playback.
+- Bone hierarchies support pose propagation from local transforms to world-space outputs.
+- Slot and skin systems separate rig structure from visual attachment variants.
+- Timeline sampling supports smooth and stepped interpolation styles.
+- Event keyframes support trigger points for gameplay or audio synchronization.
+- IK constraints support target-driven limb posing with bend-direction control.
+- Animation blending supports transition-friendly pose mixing.
+- Runtime APIs support play, stop, seek-style updates, and clip management.
+- JSON import support bridges Spine and DragonBones authored content into runtime rigs.
+- Render conversion paths flatten pose data into draw-friendly outputs.
+- Debug image generation helps inspect skeleton state and hierarchy behavior.
+- Feature gating keeps module usage explicit for builds that need skeletal animation.
+- The module is useful for character animation, articulated props, and procedural pose adjustments.
+- For users, it centralizes rig playback and control without custom per-character math.
 
-Skins and slots isolate visual assets from bone hierarchies. Slots are attached directly to bones to manage layering and draw order, letting sprites swap dynamically. Skins group slot mappings to switch visual variants on a single skeletal rig. Playback advances through sampled timelines, interpolating values with smooth or stepped curves while triggering timeline event markers.
-
-Per-frame pose updates are designed to avoid cloning full animation or IK constraint objects in runtime hot paths. Animation sampling and IK solving operate on borrowed indexed data, so update loops scale with rig size without extra heap churn from repeated structural clones.
-
-The module is available only when the `spine` feature is enabled. That feature gate applies to the Rust module, Lua bindings, and the dedicated `spine_update_world_transforms` benchmark that tracks hierarchy-update cost for the public `updateWorldTransforms` path.
-
-The module also integrates rendering and diagnostic layers. It flattens rig poses into generic draw commands, letting the renderer paint attachments without skeleton awareness. The system parses standard Spine and DragonBones JSON rig files (bones, slots, skins, and basic timelines) and provides software visualizers that render skeleton linkages to CPU images for debug inspection.
-
-Current public behavior is covered through the Lua-facing spine test suite, including construction, hierarchy updates, animation playback helpers, and render-adjacent debug outputs, while the benchmark focuses specifically on steady-state world-transform recomputation.
+This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 

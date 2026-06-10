@@ -13,14 +13,12 @@ use std::rc::Rc;
 
 use lurek2d::lua_api::{create_lua_vm, SharedState};
 use lurek2d::runtime::config::Config;
+use lurek2d::runtime::RuntimeMode;
 
 fn make_vm() -> mlua::Lua {
-    let state = Rc::new(RefCell::new(SharedState::new(
-        800,
-        600,
-        "ExamplesTest",
-        PathBuf::from("."),
-    )));
+    let mut shared = SharedState::new(800, 600, "ExamplesTest", PathBuf::from("."));
+    shared.runtime_mode = RuntimeMode::Headless;
+    let state = Rc::new(RefCell::new(shared));
     state.borrow_mut().load_default_fonts();
     create_lua_vm(state, &Config::default().modules).expect("create_lua_vm failed")
 }

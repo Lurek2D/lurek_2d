@@ -2,7 +2,10 @@
 
 ## Summary
 
-This module handles MIDI playback and software synthesis by managing SoundFont resources. It implements a stateful transport player to control files, seeking, and loops. Additionally, it exposes per-channel mix properties like instrument selection, volume, mute, and solo controls, routing audio to the mixer.
+- The midi module provides MIDI-focused playback and synthesis control backed by SoundFont rendering.
+- It exposes transport operations such as load, play, pause, stop, seek, and loop.
+- Channel and track controls support mute, solo, volume shaping, and instrument-level adjustment.
+- The module gives users scriptable MIDI sequencing that plugs cleanly into the engine audio runtime.
 
 This module primarily collaborates with `audio`, `runtime`. Its responsibility should stay inside the `Platform Services` group rather than absorb behavior owned by those neighbors.
 
@@ -21,7 +24,10 @@ lurek.midi.clearSoundFont()
 ```lua
 do
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
-    lurek.midi.loadSoundFont(path)
+    local ok, err = pcall(function()
+        lurek.midi.loadSoundFont(path)
+    end)
+    if not ok then print("loadSoundFont skipped: " .. tostring(err)) end
     print("before clear = " .. tostring(lurek.midi.hasSoundFont()))
     lurek.midi.clearSoundFont()
     print("after clear = " .. tostring(lurek.midi.hasSoundFont()))
@@ -51,7 +57,11 @@ do
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     lurek.midi.clearSoundFont()
     print("before load = " .. tostring(lurek.midi.hasSoundFont()))
-    lurek.midi.loadSoundFont(path)
+    local ok, err = pcall(function()
+        lurek.midi.loadSoundFont(path)
+    end)
+    print("load ok = " .. tostring(ok))
+    if not ok then print("loadSoundFont skipped: " .. tostring(err)) end
     print("after load = " .. tostring(lurek.midi.hasSoundFont()))
     lurek.midi.clearSoundFont()
 end

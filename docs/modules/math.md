@@ -2,19 +2,50 @@
 
 ## Summary
 
-This module represents the core numeric and geometric foundation of the engine, supplying a comprehensive suite of mathematical types, algorithms, and spatial data structures. It provides basic vectors and row-major matrices to manage positions, velocities, and affine transformations. Chained operations like translation, rotation, scale, and shear are packaged in memory-efficient structures, serving as the mathematical backbone for motion and collision across the entire engine.
+- This module gives users the shared numeric foundation used by movement, collision, rendering, AI, and procedural systems.
+- Vec2 and Vec3 types provide common vector operations for positions, directions, and velocity calculations.
+- Mat3 and transform utilities support 2D affine composition for translation, rotation, scale, and shear workflows.
+- Scalar helpers cover clamp, remap, interpolation, inverse interpolation, and smoothstep-style value shaping.
+- Easing utilities provide standardized motion curves for animation and UI transitions.
+- Tween helpers support consistent timing math for value progression over runtime updates.
+- Bézier and spline primitives support authored paths and smooth camera or object trajectories.
+- Geometry helpers support line tests, segment queries, and circle interactions.
+- Rectangle and circle primitives provide reliable containment and overlap checks.
+- Polygon operations support hulls, winding, triangulation, and shape analysis use cases.
+- Delaunay and Voronoi utilities support procedural region generation and spatial partition workflows.
+- AABB tree support enables dynamic broad-phase spatial queries over moving entities.
+- Spatial hash support enables efficient neighborhood and occupancy-style lookups.
+- Both spatial indices are useful for reducing expensive all-to-all collision checks.
+- Random utilities provide deterministic seeded generation for reproducible simulation and content workflows.
+- Gaussian and uniform sampling helpers support varied procedural distributions.
+- Loot table support implements weighted sampling with efficient runtime draws.
+- Pity-tracking helpers support predictable reward behavior over repeated rolls.
+- Math functions are designed to remain deterministic and side-effect free.
+- This keeps subsystems aligned on shared numeric semantics.
+- It reduces subtle divergence between physics, rendering, and gameplay calculations.
+- The module is useful for both low-level engine code and high-level gameplay scripts.
+- It supports debugging by making core geometric and numeric operations explicit and reusable.
+- It improves maintainability by avoiding ad-hoc reimplementation of common formulas.
+- Consistent helper APIs reduce cognitive load when switching between engine domains.
+- Curve and interpolation features support expressive but controlled runtime motion.
+- Spatial structures support scalability as world density and actor counts grow.
+- Deterministic random support helps test reproducibility and save/load continuity.
+- The module acts as a single source for core math contracts used throughout the project.
+- Users can build advanced systems without importing separate math stacks.
+- It bridges authored data and runtime simulation with consistent numeric behavior.
+- It is especially valuable in projects with pathfinding, tactics, and procedural generation layers.
+- Shared conventions improve cross-team collaboration and bug diagnosis.
+- The practical result is fewer numeric edge-case regressions.
+- It also improves performance by reusing optimized foundational primitives.
+- Overall, this module is the backbone for reliable, composable engine mathematics.
+- It underpins gameplay feel, simulation accuracy, and visual coherence.
+- Users benefit from one coherent math vocabulary across all major subsystems.
+- That coherence is critical for long-lived projects with many interacting systems.
+- The module enables growth from simple prototypes to complex simulations.
+- It keeps mathematical behavior predictable as feature complexity increases.
+- In short, it is the engine's core quantitative infrastructure.
 
-For coordinate manipulation, the module implements lightweight scalar helpers and vector primitives. Flat 2D and 3D float vectors support essential calculations like normalisation, dot products, cross products, and reflections. These are paired with scalar tools for interpolation, range remapping, and clamp functions. Linear, inverse, and smoothstep algorithms ensure that numeric ranges can be evaluated and converted cleanly across different subsystems.
-
-For spatial organization and querying, the module implements advanced broad-phase index structures. A dynamic axis-aligned bounding box tree organizes moving boundaries hierarchically, reusing nodes to prevent heap allocations. This is paired with a uniform spatial hash grid that partitions sparse entities across large playfields. Both structures support optimized range searches, segment intersection tests, and proximity checks to keep query latencies predictable.
-
-Geometric calculations are supported by primitives for circles, rectangles, and complex polygons. The module handles containment checks, Boolean polygon operations (intersections, differences, and unions), convex hull generation, and Delaunay triangulation. These low-level routines support path grid traversals, spatial partitioning, and Voronoi cell constructions, bridging graphics and geography with reliable, data-driven geometric computations.
-
-To animate gameplay transitions and camera rails, the system provides advanced curve and tween tools. It includes multi-segment splines supporting Hermite and Catmull-Rom formulations, alongside Bézier curves with dynamic control points and derivative evaluations for velocity tracking. A structured tween engine handles multi-value animation clocks, applying a curated library of easing functions to shape interpolation responses smoothly.
-
-Procedural generation and loot systems are driven by stateful random generators and sampling algorithms. A seedable pseudo-random wrapper produces Gaussian, uniform float, and integer distributions that serialize easily to preserve continuity across restarts. This is paired with gacha-style loot tables implementing the Walker-Vose alias method for constant-time weighted rolls, complete with pity-tracking managers to guarantee drops.
-
-Additionally, the module unifies coordinate and spatial helpers that serve as the common language between independent engine layers. By centralizing operations for collision boxes, coordinate conversions, and deterministic algorithms in one side-effect-free library, it ensures that graphics, physics, pathfinding, and scripting layers share consistent math behaviors, preventing rounding drift and keeping replication networks stable.
+This module primarily collaborates with `globe`, `image`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 
@@ -8018,7 +8049,7 @@ LVec2:x()
 ```lua
 do
     local v = lurek.math.Vec2(3, 4)
-    print("x=" .. v:x())
+    print("x=" .. v.x)
 end
 ```
 
@@ -8043,7 +8074,7 @@ LVec2:y()
 ```lua
 do
     local v = lurek.math.Vec2(3, 4)
-    print("y=" .. v:y())
+    print("y=" .. v.y)
 end
 ```
 

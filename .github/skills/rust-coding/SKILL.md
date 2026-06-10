@@ -1,4 +1,4 @@
----
+﻿---
 name: rust-coding
 description: "Load this skill when writing or reviewing Rust engine code. It owns safe Rust conventions, error patterns, module structure, and idiomatic style. Skip it for Lua scripts, CAG files, or docs."
 ---
@@ -26,14 +26,14 @@ description: "Load this skill when writing or reviewing Rust engine code. It own
 - Never hold `borrow_mut()` or `RefCell::borrow_mut()` across a Lua callback invocation. The pattern is: extract all needed values while holding the borrow, release it, then invoke Lua.
 - SharedState access rule: `{ let guard = state.borrow(); let val = guard.field.clone(); } /* borrow released */ call_lua(val)`. The guard must be dropped before any call that might re-enter Rust.
 - Pinned library versions: mlua 0.9, wgpu 22, winit 0.30, rapier2d 0.32, rodio 0.17, fontdue 0.9. Do not bump without explicit authorization; each bump needs wgpu/winit API adjustments.
-- When a Rust change touches public types or functions visible through `lurek.*`, run `python tools/validate/validate_lua_api.py` to catch shape drift in generated docs.
+- When a Rust change touches public types or functions visible through `lurek.*`, run `tools/python.cmd tools/validate/validate_lua_api.py` to catch shape drift in generated docs.
 - Public changes must update `docs/specs/<module>.md` in the same commit. Compiler green does not mean the task is done.
 - Use `?` for propagation but never let it cross a callback boundary silently. Closures passed to mlua must return `mlua::Result`; inner `?` should map errors before they reach Lua with a clear message.
 - Keep `unsafe` blocks small, one-purpose, and accompanied by a `// SAFETY:` comment that explains the invariant. No `unsafe` for convenience when a safe alternative exists.
 - Prefer explicit module imports over glob imports. Glob imports make it impossible to grep what the file actually depends on during refactors.
 - Tests in `tests/rust/unit/` name their test functions `test_<behavior>_<condition>`. Keep each test assertion to one failure mode so failing tests name the problem immediately.
 
-## Rustdoc Comment Standards — AI-First, Compact
+## Rustdoc Comment Standards â€” AI-First, Compact
 
 Comments exist for AI agents reading the code. Goal: maximum signal per token. No prose, no repetition, no filler.
 
@@ -42,16 +42,16 @@ Comments exist for AI agents reading the code. Goal: maximum signal per token. N
 ### Regular Rust files (`src/` excluding `src/lua_api/`)
 
 **What requires a doc comment**
-Every one of the following lines must have a `///` comment directly above it — no exceptions, no qualifications:
+Every one of the following lines must have a `///` comment directly above it â€” no exceptions, no qualifications:
 - `pub fn`, `pub async fn`
 - `fn` (every private function, without exception)
 - `pub struct`, `struct`
 - `pub enum`, `enum`
 - `pub mod` (every occurrence, in any file)
 - `pub type`, `pub const`, `pub static`
-- `impl Trait for Type` — one `///` line above: what the trait provides for this type
-- Every field inside a struct — pub and private — one `///` line each
-- Every variant inside an enum — one `///` line each
+- `impl Trait for Type` â€” one `///` line above: what the trait provides for this type
+- Every field inside a struct â€” pub and private â€” one `///` line each
+- Every variant inside an enum â€” one `///` line each
 
 Plain `impl Type { }` (inherent impl): keep existing `///` comments and improve them. Add `///` when the block groups distinct functionality. Never remove existing `///` on impl blocks.
 
@@ -61,13 +61,13 @@ Use bullet-point format: each line starts with `//! - `. Proportional to file si
 - Medium file: ~600 characters, 5-7 bullets.
 - Large file: ~1200 characters, 8-12 bullets.
 
-Content of bullets — describe in order:
+Content of bullets â€” describe in order:
 1. What the file provides (capability groups, not individual symbol names).
 2. How groups of related functions/types behave and what algorithms they use.
 3. Design decisions: data representations, fallback behaviors, degenerate-path handling.
 4. Integration notes: what kind of callers use this (runtime, tests, Lua bindings, tools).
 
-**Do NOT list individual function names, struct names, or method names.** Describe capabilities and behaviors. The reader can see declarations — the `//!` block explains WHY this file exists and HOW its pieces relate.
+**Do NOT list individual function names, struct names, or method names.** Describe capabilities and behaviors. The reader can see declarations â€” the `//!` block explains WHY this file exists and HOW its pieces relate.
 
 Reference example (`src/math/geometry.rs`):
 > //! - Provides standalone 2D geometry algorithms over scalar coordinates and flat vertex arrays.
@@ -78,10 +78,10 @@ Reference example (`src/math/geometry.rs`):
 
 **Struct (`///`)**
 One line: role in the system + which other type uses it.
-Every field — pub and private — one `///` line: what it holds + range/units/invariant when non-obvious.
+Every field â€” pub and private â€” one `///` line: what it holds + range/units/invariant when non-obvious.
 
 **Enum (`///`)**
-One line: purpose. Every variant: one line — when it applies.
+One line: purpose. Every variant: one line â€” when it applies.
 
 **Impl blocks (`///`)**
 Every `impl Trait for Type` block gets one `///` line above it: what the trait provides for this type.
@@ -98,7 +98,7 @@ Single compact example (only one):
 - No AI-generated prose: "returns a fully initialised instance", "the insertion is O(1) amortised", "this accessor incurs no allocation", "call it freely in hot paths".
 - No synonym inflation: "alias for `foo()`", "alias of `foo()`", "shorthand for", "convenience wrapper".
 - No placeholders: "placeholder", "empty placeholder", "tombstone", "replacement value".
-- No `incurs no allocation`, `O(1)`, `amortised` — these are implementation details, not user-facing docs.
+- No `incurs no allocation`, `O(1)`, `amortised` â€” these are implementation details, not user-facing docs.
 - No `returns` when opening a function doc. Use imperative: "Return" or "Read" or "Parse" instead of "Returns".
 
 **Rules (tool-aligned)**
@@ -142,7 +142,7 @@ Only methods/functions actually registered to Lua (`methods.add_method`, `method
 - `/// @return | <lua_type> | <description>`
 - `lua_type` values: `number`, `integer`, `string`, `boolean`, `nil`, `Source`, `Bus`, `table`, etc.
 - Every registered Lua call must have at least one `@return` marker.
-- Keep `@param` / `@return` descriptions to one line — they appear verbatim in generated API docs.
+- Keep `@param` / `@return` descriptions to one line â€” they appear verbatim in generated API docs.
 - Do not mix marker styles: never use `@param name : type` in files validated by `validate_lua_api.py`.
 
 **Validator-enforced checks (must stay true)**

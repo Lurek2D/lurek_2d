@@ -2,13 +2,28 @@
 
 ## Summary
 
-This module provides a unified control-state and input-processing subsystem, bridging raw host hardware events into clean gameplay inputs. It monitors physical inputs across keyboards, mice, gamepads, and multi-touch panels. By translating hardware-specific codes and controller layouts into stable logical naming conventions, the system exposes a consistent, cross-platform interface for all polling and event dispatch pathways.
+- This module gives users a unified input layer across keyboard, mouse, gamepad, and touch devices.
+- It normalizes hardware-specific events into stable runtime-facing controls.
+- Keyboard state includes held/pressed/released tracking, modifiers, and optional text input behavior.
+- Mouse APIs cover position, wheel, visibility, lock/grab state, and cursor management.
+- Gamepad support includes connection lifecycle, axis/button polling, mapping, and vibration requests.
+- Touch APIs expose active points, pressure, and per-frame transition state.
+- Action bindings map logical commands to multiple physical inputs.
+- Binding definitions can be serialized and restored, enabling rebindable controls and user presets.
+- Action query helpers support common checks like down, pressed, released, and timing-window variants.
+- Combo detection enables timed gesture sequences for fighting-game or rhythm-style interactions.
+- Input recording and playback support deterministic replay for automation and debugging.
+- Frame-indexed replay helps reproduce issues without manual re-entry.
+- Category and conflict helpers support tooling around control-map maintenance.
+- The module is useful for gameplay, UI navigation, accessibility mapping, and test automation.
+- For users, it centralizes all input concerns into one scriptable control surface.
+- It reduces per-device branching code and keeps behavior consistent across platforms.
+- The practical value is faster control iteration and more reliable input diagnostics.
+- It also supports robust QA through record/replay and deterministic input timelines.
+- Overall, users get both ergonomic control APIs and advanced tooling hooks in one module.
+- This makes input behavior easier to tune, test, and ship confidently.
 
-At the device level, the keyboard system tracks held keys, layout transitions, modifier bitmasks, and repeat parameters, alongside text buffering for chat and UI fields. The mouse system tracks screen coordinates, wheel scroll deltas, and cursor settings, supporting pointer locking, warp requests, and custom hotspots. The gamepad manager handles device connection slotting, axis calibration, virtual d-pad mapping, and motor vibration commands.
-
-To support advanced gameplay actions, the system includes a serialized action-binding mapping model. Developers can bind complex logical commands to multiple physical keys or buttons, compiling configurations into shared JSON presets that support user rebinding. The action engine monitors transition events per frame, offering convenient checks for whether bindings were recently triggered, held down, or released.
-
-Specialized input handlers manage gesture detection and automation workflows. A sequential combo recognizer detects timed pattern gestures, evaluating transition deadlines and feeding progress states to gameplay scripts. Additionally, an input recorder captures sparse, frame-indexed events during gameplay. These sequences can be serialized to JSON, replayed deterministically, and seeked, supporting game automation and debug workflows.
+This module primarily collaborates with `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Functions
 
@@ -871,9 +886,9 @@ lurek.input.wasPressed()
 
 ```lua
 do
-    -- wasPressed() is true on the first frame the key goes down; call inside event callback
-    local v = lurek.input.wasPressed()
-    print("wasPressed available = " .. tostring(type(lurek.input.wasPressed) == "function"))
+    local has_was_pressed = type(lurek.input.wasPressed) == "function"
+    local v = has_was_pressed and lurek.input.wasPressed() or false
+    print("wasPressed available = " .. tostring(has_was_pressed))
     print("result type = " .. type(v))
 end
 ```
@@ -898,9 +913,9 @@ lurek.input.wasReleased()
 
 ```lua
 do
-    -- wasReleased(key) is true on the first frame the key goes up
-    local v = lurek.input.wasReleased()
-    print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
+    local has_was_released = type(lurek.input.wasReleased) == "function"
+    local v = has_was_released and lurek.input.wasReleased() or false
+    print("wasReleased available = " .. tostring(has_was_released))
     print("space released = " .. tostring(v))
 end
 ```

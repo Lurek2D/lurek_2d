@@ -1,43 +1,43 @@
 ﻿---
 name: create-build
-description: Create or update build (release, debug, dist) settings.
+description: "Load this skill when creating or modifying Cargo profiles, release/debug/dist settings, packaging scripts, or build automation. Skip it for runtime feature work, docs-only changes, or pure test authoring."
 ---
 
-# GOAL
-- Modify Cargo profiles, feature flags, or distribution scripts to optimize the build process.
+# Goal
+- Create or modify build, release, debug, dist, and packaging behavior while preserving local Windows-first tooling.
 
-# INPUTS REQUIRED
-- Target environment (debug, release, dist)
-- Desired build characteristic (e.g., smaller binary, faster compile)
-= User must specify what needs optimization
-- Agent must collect current `Cargo.toml` profiles and build scripts
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: build-system, ci-cd-pipeline.
-2. Open `Cargo.toml` or `tools/dist/` scripts and apply the specific requested build configuration changes.
-3. Execute `cargo build --profile <target>`. If compilation fails (exit code >0), revert the unstable flags and repeat step 2.
-4. Measure the binary output size or compile times via OS stat commands. If the metric has not improved by the target percentage, tweak flags and repeat step 3.
-5. Document the profile improvements in `CONTRIBUTING.md`.
+# Steps
+1. Load the active `.codex/skills/create-build/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect existing `Cargo.toml` profiles and `tools/dist/` scripts before adding new knobs.
+5. Choose modify when a matching profile, script, or package path already exists; create only when there is no owner.
+6. Measure the baseline size or compile time before changing flags.
+7. Update the smallest build profile or packaging script that owns the requested behavior.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- Modified `Cargo.toml` or dist scripts
-- Build metrics report
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `cargo build --profile <target>` exits with code 0.
-- [ ] Binary size or compilation time metric shows an improvement >0% compared to baseline.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Enabling features that break cross-platform compatibility.
-- Using unstable Rust features that require nightly.
+# Example Invocation
+- User: Use `create-build` for the requested scope.
+- Agent: Loads `.codex/skills/create-build/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: build-system, ci-cd-pipeline
-- tools: cargo build --profile
-- agent: Build-Engineer
-
+# References
+- skills: `.codex/skills/create-build/SKILL.md`
+- contracts: AGENTS.md, tools/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "build profiles Cargo.toml dist tools" --profile engine --limit 10, cargo build --profile <profile>, cargo clippy -- -D warnings, tools/python.cmd tools/validate/cag_validate.py
+- agent: builder
 

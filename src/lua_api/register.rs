@@ -168,14 +168,12 @@ pub fn create_headless_vm(
 
 /// Creates a default test Lua VM with default module configuration.
 pub fn create_test_vm() -> LuaResult<Lua> {
+    use crate::runtime::RuntimeMode;
     use crate::runtime::config::Config;
     use std::path::PathBuf;
-    let state = Rc::new(RefCell::new(SharedState::new(
-        800,
-        600,
-        "Test",
-        PathBuf::from("."),
-    )));
+    let mut shared = SharedState::new(800, 600, "Test", PathBuf::from("."));
+    shared.runtime_mode = RuntimeMode::Headless;
+    let state = Rc::new(RefCell::new(shared));
     let modules = Config::default().modules;
     create_lua_vm(state, &modules)
 }

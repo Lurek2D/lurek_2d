@@ -859,3 +859,23 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `LSpriteBatch:release() -> boolean`: Releases the sprite batch resource.
 - `LSpriteBatch:type() -> string`: Returns the type name string for this sprite batch.
 - `LSpriteBatch:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+## Lua API Reference
+
+The generated Lua API reference for this module is maintained in `## Lua API Ref` above.
+Do not edit generated function or type rows by hand; rebuild them with `python tools/gen_all_docs.py`.
+
+## References
+
+- `src/render/`
+- `src/lua_api/render_api.rs`
+- `docs/architecture/render-pipeline.md`
+- `content/examples/render.lua`
+- `tests/lua/unit/test_render_core_unit.lua`
+- `tests/rust/unit/render_tests.rs`
+
+## Notes
+
+- Public `lurek.render` behavior is Lua-first and should keep canonical coverage in `tests/lua/unit/`.
+- `src/render/mod.rs` stays export-only; implementation logic belongs in peer files.
+- Renderer reliability changes should prefer recoverable errors or skipped invalid draws over panics in frame submission.

@@ -1,44 +1,43 @@
 ﻿---
 name: create-test-evidence
-description: Create or update lua tests with evidences/artifacts for a specific module and check test coverage.
+description: "Load this skill when creating or modifying Lua tests that produce evidence artifacts such as logs, snapshots, or golden files. Skip it for ordinary unit tests without artifacts or performance stress tests."
 ---
 
-# GOAL
-- Write Lua tests that produce tangible evidence (like logs, screenshots, or golden files) for a specific module.
+# Goal
+- Create or modify evidence tests that produce durable artifacts for public Lua behavior.
 
-# INPUTS REQUIRED
-- Module name
-- Artifact type required (e.g., golden screenshot, structured log)
-= User must provide the specific module and desired evidence type
-- Agent must collect existing golden files and module API
+# Inputs
+- User request, target artifact/module/path, and expected outcome.
+- Relevant constraints from root and nested AGENTS files.
+- Baseline output from the listed RAG query and audit/validation tools.
 
-# STEPS TO DO
-1. Load skills: testing-ecosystem, demo-creation.
-2. Execute `python tools/audit/lua_evidence_golden_contract_audit.py` to check the current evidence baseline and identify missing artifacts.
-3. Write the test script to trigger the target API and save output (e.g., visual snapshot, structured log output) to the baseline artifact directory.
-4. Execute `python tools/audit/golden_test.py` to compare new evidence against established baselines.
-5. Execute `python tools/audit/lua_evidence_golden_contract_audit.py` to verify gap closure. If the audit reports >0 missing contracts, return to step 3 and generate the remaining missing artifacts.
+# Steps
+1. Load the active `.codex/skills/create-test-evidence/SKILL.md` workflow as the source of truth.
+2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
+3. Run the listed RAG query before broad file reads.
+4. Inspect existing evidence tests, golden files, and target API before editing.
+5. Modify an existing evidence path when it covers the module; create new artifact coverage only for missing contracts.
+6. Save evidence in the established baseline artifact location.
+7. Run golden comparison and evidence contract audit.
+8. Report changed files, findings, validation output, and unresolved blockers.
 
-# OUTPUTS PROVIDED
-- Updated Lua test files
-- Generated artifact files (golden data, logs)
-- Coverage report
+# Success Criteria
+- [ ] The active `.codex/skills` workflow and this legacy prompt do not conflict.
+- [ ] Required validation commands are run or explicitly reported as blocked.
+- [ ] Output includes concrete files, tools, and owner profile.
 
-# SUCCESS CRITERIA
-- [ ] `python tools/audit/golden_test.py` exits with code 0 (0 differences detected between output and baseline).
-- [ ] `python tools/audit/lua_evidence_golden_contract_audit.py` reports exactly 0 missing contracts.
+# Anti-patterns
+- Using `.github/skills` as the active source when `.codex/skills` has a same-name skill.
+- Skipping RAG, AGENTS contracts, or repo audit tools before broad manual inspection.
+- Creating new artifacts when an existing owner should be modified.
 
-# ANTI-PATTERNS
-- Creating non-deterministic tests that produce varying evidence on each run.
-- Overwriting baseline golden files without explicit user approval.
+# Example Invocation
+- User: Use `create-test-evidence` for the requested scope.
+- Agent: Loads `.codex/skills/create-test-evidence/SKILL.md`, follows the workflow, and reports validation evidence.
 
-# EXAMPLE INVOCATION
-- User: "request for this prompt"
-- Agent: Runs this prompt workflow with provided constraints and reports changed files plus validation evidence.
-
-# REFERENCES
-- skills: testing-ecosystem, lua-scripting, demo-creation
-- tools: python tools/audit/lua_evidence_golden_contract_audit.py, python tools/audit/golden_test.py
-- agent: Tester
-
+# References
+- skills: `.codex/skills/create-test-evidence/SKILL.md`
+- contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/games/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "Lua evidence tests golden artifacts" --profile game --limit 10, tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py, tools/python.cmd tools/audit/golden_test.py
+- agent: tester
 

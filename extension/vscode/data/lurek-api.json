@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-08",
+  "generated": "2026-06-10",
   "modules": [
     {
       "name": "agent",
@@ -56119,10 +56119,10 @@
           "name": "getTitle",
           "fullPath": "LDialog:getTitle",
           "signature": "()",
-          "description": "Returns the title text of this dialog.",
+          "description": "/// Returns a value for getTitle (auto-generated).",
           "parameters": [],
-          "returns": "string",
-          "returnType": "string",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -56130,12 +56130,12 @@
           "name": "setTitle",
           "fullPath": "LDialog:setTitle",
           "signature": "(title)",
-          "description": "Sets the title text of this dialog widget.",
+          "description": "/// Returns a value for setTitle (auto-generated).",
           "parameters": [
             {
               "name": "title",
-              "type": "string",
-              "description": "The dialog title.",
+              "type": "any",
+              "description": "",
               "optional": false
             }
           ],
@@ -56148,10 +56148,10 @@
           "name": "isModal",
           "fullPath": "LDialog:isModal",
           "signature": "()",
-          "description": "Returns whether this dialog is modal (blocks interaction with other widgets).",
+          "description": "/// Returns a value for isModal (auto-generated).",
           "parameters": [],
-          "returns": "boolean",
-          "returnType": "boolean",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -56159,12 +56159,12 @@
           "name": "setModal",
           "fullPath": "LDialog:setModal",
           "signature": "(v)",
-          "description": "Sets whether this dialog widget is modal.",
+          "description": "/// Returns a value for setModal (auto-generated).",
           "parameters": [
             {
               "name": "v",
-              "type": "boolean",
-              "description": "True to make modal.",
+              "type": "any",
+              "description": "",
               "optional": false
             }
           ],
@@ -56177,10 +56177,10 @@
           "name": "isOpen",
           "fullPath": "LDialog:isOpen",
           "signature": "()",
-          "description": "Returns whether this dialog is currently open and visible.",
+          "description": "/// Returns a value for isOpen (auto-generated).",
           "parameters": [],
-          "returns": "boolean",
-          "returnType": "boolean",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -56188,7 +56188,7 @@
           "name": "open",
           "fullPath": "LDialog:open",
           "signature": "()",
-          "description": "Opens this dialog, making it visible.",
+          "description": "/// Returns a value for open (auto-generated).",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -56199,7 +56199,7 @@
           "name": "close",
           "fullPath": "LDialog:close",
           "signature": "()",
-          "description": "Closes this dialog and fires the onClose callback if it was open.",
+          "description": "/// Returns a value for close (auto-generated).",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -56210,12 +56210,12 @@
           "name": "setOnClose",
           "fullPath": "LDialog:setOnClose",
           "signature": "(f)",
-          "description": "Registers a callback invoked when this dialog is closed.",
+          "description": "/// Returns a value for setOnClose (auto-generated).",
           "parameters": [
             {
               "name": "f",
-              "type": "function",
-              "description": "Callback receiving the widget index.",
+              "type": "any",
+              "description": "",
               "optional": false
             }
           ],
@@ -56228,12 +56228,12 @@
           "name": "setContent",
           "fullPath": "LDialog:setContent",
           "signature": "([content_idx])",
-          "description": "Sets the content widget for this dialog.",
+          "description": "/// Returns a value for setContent (auto-generated).",
           "parameters": [
             {
               "name": "content_idx",
-              "type": "integer",
-              "description": "The widget index to show as content, or nil to clear.",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
@@ -56246,8 +56246,299 @@
           "name": "getContent",
           "fullPath": "LDialog:getContent",
           "signature": "()",
-          "description": "Returns the widget index of this dialog's content, or nil if not set.",
+          "description": "/// Returns a value for getContent (auto-generated).",
           "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setFooter",
+          "fullPath": "LDialog:setFooter",
+          "signature": "([footer_idx])",
+          "description": "Assigns an optional footer content root for this dialog.",
+          "parameters": [
+            {
+              "name": "footer_idx",
+              "type": "integer",
+              "description": "Optional widget index rendered in the footer slot.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "getFooter",
+          "fullPath": "LDialog:getFooter",
+          "signature": "()",
+          "description": "Returns the optional footer content widget index.",
+          "parameters": [],
+          "returns": "integer?",
+          "returnType": "integer?",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "isCloseable",
+          "fullPath": "LDialog:isCloseable",
+          "signature": "()",
+          "description": "Returns whether this dialog exposes user-driven close affordances.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setCloseable",
+          "fullPath": "LDialog:setCloseable",
+          "signature": "(value)",
+          "description": "Sets whether this dialog can be dismissed by close affordances or Escape fallback.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to allow user dismissal.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "isDraggable",
+          "fullPath": "LDialog:isDraggable",
+          "signature": "()",
+          "description": "Returns whether this dialog can be dragged by its title bar.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setDraggable",
+          "fullPath": "LDialog:setDraggable",
+          "signature": "(value)",
+          "description": "Enables or disables title-bar dragging for this dialog.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to allow dragging.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "isResizable",
+          "fullPath": "LDialog:isResizable",
+          "signature": "()",
+          "description": "Returns whether this dialog can be resized from its edges or corners.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setResizable",
+          "fullPath": "LDialog:setResizable",
+          "signature": "(value)",
+          "description": "Enables or disables edge and corner resizing for this dialog.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to allow resizing.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setMinSize",
+          "fullPath": "LDialog:setMinSize",
+          "signature": "(width, height)",
+          "description": "Sets the minimum popup size for this dialog.",
+          "parameters": [
+            {
+              "name": "width",
+              "type": "number",
+              "description": "Minimum width in pixels.",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "number",
+              "description": "Minimum height in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "getMinSize",
+          "fullPath": "LDialog:getMinSize",
+          "signature": "()",
+          "description": "Returns the minimum popup size for this dialog.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setMaxSize",
+          "fullPath": "LDialog:setMaxSize",
+          "signature": "([width], [height])",
+          "description": "Sets optional maximum popup dimensions for this dialog.",
+          "parameters": [
+            {
+              "name": "width",
+              "type": "number",
+              "description": "Maximum width in pixels, or nil for no horizontal cap.",
+              "optional": true
+            },
+            {
+              "name": "height",
+              "type": "number",
+              "description": "Maximum height in pixels, or nil for no vertical cap.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "getMaxSize",
+          "fullPath": "LDialog:getMaxSize",
+          "signature": "()",
+          "description": "Returns the optional maximum popup dimensions for this dialog.",
+          "parameters": [],
+          "returns": "number?, number?",
+          "returnType": "number?, number?",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setDismissOnOutsideClick",
+          "fullPath": "LDialog:setDismissOnOutsideClick",
+          "signature": "(value)",
+          "description": "Controls whether clicking outside a non-modal dialog closes it.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to dismiss on outside click for non-modal dialogs.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "getDismissOnOutsideClick",
+          "fullPath": "LDialog:getDismissOnOutsideClick",
+          "signature": "()",
+          "description": "Returns whether outside clicks dismiss this non-modal dialog.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setCenterOnOpen",
+          "fullPath": "LDialog:setCenterOnOpen",
+          "signature": "(value)",
+          "description": "Controls whether opening this dialog recenters it in the viewport.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to center the dialog each time it opens from closed state.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "getCenterOnOpen",
+          "fullPath": "LDialog:getCenterOnOpen",
+          "signature": "()",
+          "description": "Returns whether opening this dialog recenters it in the viewport.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "centerInViewport",
+          "fullPath": "LDialog:centerInViewport",
+          "signature": "()",
+          "description": "Repositions this dialog to the center of the active viewport immediately.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "addAction",
+          "fullPath": "LDialog:addAction",
+          "signature": "LDialog:addAction(text, [cb], [role], [close_on_activate])",
+          "description": "Adds a footer action button and returns its 1-based index.",
+          "parameters": [
+            {
+              "name": "text",
+              "type": "string",
+              "description": "Visible button label.",
+              "optional": false
+            },
+            {
+              "name": "cb",
+              "type": "function",
+              "description": "Optional callback fired when the action activates.",
+              "optional": true
+            },
+            {
+              "name": "role",
+              "type": "string",
+              "description": "Optional semantic role: \"custom\", \"default\", or \"cancel\".",
+              "optional": true
+            },
+            {
+              "name": "close_on_activate",
+              "type": "boolean",
+              "description": "Optional override for auto-close behavior.",
+              "optional": true
+            }
+          ],
           "returns": "integer",
           "returnType": "integer",
           "isMethod": true,
@@ -56257,23 +56548,81 @@
           "name": "addButton",
           "fullPath": "LDialog:addButton",
           "signature": "(text, [cb])",
-          "description": "Adds a footer button to this dialog and returns its 1-based index.",
+          "description": "/// Returns a value for addButton (auto-generated).",
           "parameters": [
             {
               "name": "text",
-              "type": "string",
-              "description": "The button label.",
+              "type": "any",
+              "description": "",
               "optional": false
             },
             {
               "name": "cb",
-              "type": "function",
-              "description": "Optional click callback (reserved for future use).",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
-          "returns": "integer",
-          "returnType": "integer",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setDefaultAction",
+          "fullPath": "LDialog:setDefaultAction",
+          "signature": "([index])",
+          "description": "Sets the action triggered by Enter, using a 1-based action index.",
+          "parameters": [
+            {
+              "name": "index",
+              "type": "integer",
+              "description": "Action index to bind, or nil to clear the default action.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "getDefaultAction",
+          "fullPath": "LDialog:getDefaultAction",
+          "signature": "()",
+          "description": "Returns the 1-based action index triggered by Enter, if any.",
+          "parameters": [],
+          "returns": "integer?",
+          "returnType": "integer?",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setCancelAction",
+          "fullPath": "LDialog:setCancelAction",
+          "signature": "([index])",
+          "description": "Sets the action triggered by Escape, using a 1-based action index.",
+          "parameters": [
+            {
+              "name": "index",
+              "type": "integer",
+              "description": "Action index to bind, or nil to clear the cancel action.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "getCancelAction",
+          "fullPath": "LDialog:getCancelAction",
+          "signature": "()",
+          "description": "Returns the 1-based action index triggered by Escape, if any.",
+          "parameters": [],
+          "returns": "integer?",
+          "returnType": "integer?",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -57043,76 +57392,6 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LDialog"
-        },
-        {
-          "name": "setMinSize",
-          "fullPath": "LDialog.setMinSize",
-          "signature": "(w, h)",
-          "description": "Sets the minimum allowed width and height for this widget during layout.",
-          "parameters": [
-            {
-              "name": "w",
-              "type": "number",
-              "description": "Minimum width in pixels.",
-              "optional": false
-            },
-            {
-              "name": "h",
-              "type": "number",
-              "description": "Minimum height in pixels.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LDialog"
-        },
-        {
-          "name": "getMinSize",
-          "fullPath": "LDialog.getMinSize",
-          "signature": "()",
-          "description": "Returns the minimum width and height of this widget.",
-          "parameters": [],
-          "returns": "number, number",
-          "returnType": "number, number",
-          "isMethod": true,
-          "objectType": "LDialog"
-        },
-        {
-          "name": "setMaxSize",
-          "fullPath": "LDialog.setMaxSize",
-          "signature": "(w, h)",
-          "description": "Sets the maximum allowed width and height for this widget during layout.",
-          "parameters": [
-            {
-              "name": "w",
-              "type": "number",
-              "description": "Maximum width in pixels.",
-              "optional": false
-            },
-            {
-              "name": "h",
-              "type": "number",
-              "description": "Maximum height in pixels.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LDialog"
-        },
-        {
-          "name": "getMaxSize",
-          "fullPath": "LDialog.getMaxSize",
-          "signature": "()",
-          "description": "Returns the maximum width and height of this widget.",
-          "parameters": [],
-          "returns": "number, number",
-          "returnType": "number, number",
           "isMethod": true,
           "objectType": "LDialog"
         },

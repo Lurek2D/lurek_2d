@@ -1,52 +1,55 @@
 ---
 name: create-engine-feature
-description: "End to end workflow to new new feature to engine of lurek in rust, should run set of other prompts."
+description: "Load this skill when creating or modifying Rust engine features that may touch modules, Lua API, specs, examples, and tests end to end. Skip it for docs-only reviews, content-only demos, or VS Code extension work."
 ---
 # create-engine-feature
 
-## Goal
-- Orchestrate the creation of a major engine feature, driving Rust implementation, API exposure, and validation.
+## Mission
+- Deliver engine feature changes end to end while keeping public Lua contracts, specs, examples, and tests in sync.
 
-## Required inputs
-- Feature description and constraints
-- Affected subsystems
-- User must provide the high-level goal
-- Agent must collect architecture guidelines and relevant prompt references
+## When To Load
+- Creating or modifying Rust engine features that may touch modules, Lua API, specs, examples, and tests end to end.
 
-## Profile hint
-- `developer`
+## When To Skip
+- Docs-only reviews, content-only demos, or VS Code extension work.
 
-## Read these contracts
-- `src/AGENTS.md`
-- `src/lua_api/AGENTS.md`
-- `tests/AGENTS.md`
-- `content/examples/AGENTS.md`
-- `docs/specs/AGENTS.md`
+## Domain Knowledge
+- Read root `AGENTS.md`, then every listed contract nearest to the target path.
+- Run the listed RAG query before broad file reads and start from top hits.
+- Prefer MCP server `lurek_tools` and repo CLI/audit tools before ad hoc scripts.
+- Check whether the target artifact already exists; modify existing content unless a new owner is clearly required.
+- Read the nearest source, spec, test, doc, or config before editing.
+- Treat create skills as create-or-modify workflows; existing artifacts are the default owner when present.
 
-## Steps
-- Read the listed contracts before implementation.
-- Delegate to `create-module` or write Rust logic. Execute `cargo test`. If <100% pass, fix Rust logic.
-- Delegate to `create-api-function` to wrap the code in `lua_api`.
-- Delegate to `create-test-lua` and `create-example` to prove the feature works end-to-end.
-- Execute `cargo clippy -- -D warnings` and `python tools/validate/cag_validate.py`. If either tool exits with code >0, fix the warnings or architectural violations and repeat this step.
+## Workflow
+- Inspect the existing module, spec, Lua API wrapper, examples, and tests before choosing create vs modify.
+- Use `create-module` only when a new top-level module is needed; otherwise update the existing owner module.
+- Change Lua API, specs, examples, and tests only when public behavior changes.
+- Keep `src/lua_api/` thin and put business logic in the Rust domain module.
+- Run cargo, docs generation, and CAG validation appropriate to the changed surface.
+- Finish by reporting changed files and validation evidence.
 
-## Outputs
-- Rust source code modifications
-- Lua API wrappers
-- Tests, examples, and docs-general updates
+## Success Criteria
+- The target artifact was created or modified in the narrowest owning location.
+- Existing content was preserved and updated when it already owned the behavior.
+- Listed validation tools complete successfully, or any remaining failure is reported with exact output and next owner.
 
-## Success criteria
-- [ ] `cargo test` exits with code 0 (100% pass rate).
-- [ ] `cargo clippy -- -D warnings` exits with code 0 (exactly 0 warnings).
-- [ ] `python tools/validate/cag_validate.py` exits with code 0 (0 architectural violations).
+## Stop Conditions
+- Required user intent, target module, or validation threshold is missing and cannot be inferred from repo context.
+- A referenced owner path or tool is absent after checking the repository.
+- Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
-## Stop conditions
-- Implementing massive features in a single commit without breaking them down.
-- Skipping the Lua API design phase before implementing Rust code.
+## Companion File Index
+- Contracts: `src/AGENTS.md`, `src/lua_api/AGENTS.md`, `tests/AGENTS.md`, `content/examples/AGENTS.md`, `docs/specs/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "engine feature src lua_api specs tests" --profile engine --limit 10`, `cargo test`, `cargo clippy -- -D warnings`, `tools/python.cmd tools/gen_all_docs.py`, `tools/python.cmd tools/validate/cag_validate.py`
+- Owner profile: `developer`
+
+## Common RAG Queries
+- Start with: `engine feature src lua_api specs tests`, `Rust engine module lua_api docs specs`, `review audits quality performance specs tests`
+- Focus areas first: `src/`, `src/lua_api/`, `tests/`, `content/examples/`, `docs/specs/`
+- For a behavior change, append the feature or module name before broad reads
 
 ## References
 - `contracts: src/AGENTS.md, src/lua_api/AGENTS.md, tests/AGENTS.md, content/examples/AGENTS.md, docs/specs/AGENTS.md`
-- `tools: cargo test, python tools/validate/cag_validate.py, cargo clippy`
-- `agent: manager`
-
-
+- `tools: tools/python.cmd tools/rag/query.py "engine feature src lua_api specs tests" --profile engine --limit 10, cargo test, cargo clippy -- -D warnings, tools/python.cmd tools/gen_all_docs.py, tools/python.cmd tools/validate/cag_validate.py`
+- `agent: developer`

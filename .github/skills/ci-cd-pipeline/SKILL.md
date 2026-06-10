@@ -1,4 +1,4 @@
----
+﻿---
 name: ci-cd-pipeline
 description: "Load this skill when setting up or maintaining CI/CD, GitHub Actions, test pipelines, or release automation. Skip it for local dev work or code changes."
 ---
@@ -26,8 +26,8 @@ description: "Load this skill when setting up or maintaining CI/CD, GitHub Actio
 - Cargo dependency caching: cache `~/.cargo/registry`, `~/.cargo/git`, and `target/` by hashing `Cargo.lock`. Invalidate on any `Cargo.lock` change.
 - Artifact naming convention: `lurek2d-{os}-{arch}-{git-sha-short}.zip`. Artifacts produced during CI must match the layout that `tools/dist/dist.ps1` produces, so local and CI packaging outputs are structurally identical.
 - Release triggers: tag matching `v*.*.*` on the `main` branch. Pre-release triggers: tag matching `v*.*.*-rc.*`.
-- Docs generation in CI: run `python tools/gen_all_docs.py` and fail the job if generated files differ from committed files. This enforces that contributors do not commit stale generated docs.
-- CI YAML should remain readably staged — each logical step is a named step in the YAML, not a long inline shell block. Prefer checked-in scripts over inline YAML logic.
+- Docs generation in CI: run `tools/python.cmd tools/gen_all_docs.py` and fail the job if generated files differ from committed files. This enforces that contributors do not commit stale generated docs.
+- CI YAML should remain readably staged â€” each logical step is a named step in the YAML, not a long inline shell block. Prefer checked-in scripts over inline YAML logic.
 ## Companion File Index
 - None.
 

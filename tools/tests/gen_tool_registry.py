@@ -1,87 +1,194 @@
-import glob
-import os
+"""Generate the single-source tools registry and CLI reference files.
+
+This script scans durable Python tools under `tools/`, extracts their module
+docstring summaries, and rewrites:
+  - `tools/README.md`: one compact registry for the whole tools tree
+  - `tools/agent_cli_reference.md`: quick CLI-oriented reference for agents
+
+Per-folder `README.md` files are intentionally not generated. The repo keeps a
+single tools registry so agents and humans have one stable entry point.
+"""
+
+from __future__ import annotations
+
 import ast
 from pathlib import Path
 
-def generate_registry():
-    root_dir = Path(__file__).resolve().parents[2]
-    tools_dir = root_dir / 'tools'
-    py_files = sorted(glob.glob(str(tools_dir / '**' / '*.py'), recursive=True))
+ROOT_DIR = Path(__file__).resolve().parents[2]
+TOOLS_DIR = ROOT_DIR / "tools"
+SKIP_PARTS = {"__pycache__", "tests"}
+INTERNAL_HELPERS = {
+    "validate/_cag_common.py",
+    "snippets/snippet_catalog.py",
+}
+MCP_READY_PATHS = {
+    "audit/cag_link_check.py",
+    "audit/example_coverage.py",
+    "audit/library_coverage.py",
+    "audit/lua_api_test_coverage.py",
+    "audit/lua_spec_coverage.py",
+    "audit/quality_report.py",
+    "audit/snippet_coverage.py",
+    "audit/test_coverage.py",
+    "audit/tool_registry_audit.py",
+    "rag/query.py",
+    "validate/cag_validate.py",
+    "validate/validate_example_coverage.py",
+    "validate/validate_game.py",
+    "validate/validate_library.py",
+    "validate/validate_lua_binding_reports.py",
+    "validate/validate_module_coverage.py",
+    "validate/validate_param_types.py",
+    "validate/validate_snippets.py",
+}
+SURFACE_BY_FOLDER = {
+    "assets": "generator",
+    "audit": "audit",
+    "demos": "maintenance",
+    "dev": "developer",
+    "dist": "packaging",
+    "docs": "generator",
+    "fix": "maintenance",
+    "github": "integration",
+    "mcp": "mcp-server",
+    "mods": "scaffold",
+    "rag": "query",
+    "root": "meta",
+    "snippets": "generator",
+    "ui": "maintenance",
+    "validate": "validate",
+}
 
-    registry = []
-    
-    for filepath in py_files:
-        if 'tests' in filepath.replace('\\', '/') or '__pycache__' in filepath:
+
+def iter_tool_files() -> list[Path]:
+    """Return Python tool files, excluding tests and cache folders."""
+    files: list[Path] = []
+    for path in sorted(TOOLS_DIR.rglob("*.py")):
+        if any(part in SKIP_PARTS for part in path.parts):
             continue
-            
-        with open(filepath, 'r', encoding='utf-8') as f:
-            content = f.read()
-            
-        try:
-            tree = ast.parse(content)
-            docstring = ast.get_docstring(tree)
-            if not docstring:
-                docstring = "Brak docstringu."
-            
-            # Get the first sentence of the docstring for summary
-            summary = docstring.strip().split('\n')[0]
-            
-            rel_path = Path(filepath).relative_to(tools_dir).as_posix()
-            registry.append({
+        files.append(path)
+    return files
+
+
+def summary_from_docstring(path: Path) -> str:
+    """Extract a short first-line summary from a module docstring."""
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    docstring = ast.get_docstring(tree) or "Missing module docstring."
+    return docstring.strip().splitlines()[0].strip()
+
+
+def classify_surface(rel_path: str) -> str:
+    """Classify the script by its primary usage surface."""
+    parts = rel_path.split("/")
+    folder = parts[0] if len(parts) > 1 else "root"
+    if rel_path in INTERNAL_HELPERS:
+        return "internal-helper"
+    return SURFACE_BY_FOLDER.get(folder, "misc")
+
+
+def classify_stability(rel_path: str) -> str:
+    """Label whether the script looks reusable or mostly targeted maintenance."""
+    if rel_path in INTERNAL_HELPERS:
+        return "internal"
+    if rel_path.startswith(("fix/", "demos/", "github/")) or rel_path.startswith("fix_"):
+        return "targeted-maintenance"
+    if rel_path.startswith("dev/"):
+        return "developer-workflow"
+    return "durable"
+
+
+def classify_mcp(rel_path: str) -> str:
+    """Label whether the tool looks suitable for direct MCP registration."""
+    if rel_path == "mcp/lurek_mcp_server.py":
+        return "server"
+    if rel_path in MCP_READY_PATHS:
+        return "candidate"
+    return "no"
+
+
+def build_registry() -> list[dict[str, str]]:
+    """Build registry rows for README and CLI reference generation."""
+    registry: list[dict[str, str]] = []
+    for path in iter_tool_files():
+        rel_path = path.relative_to(TOOLS_DIR).as_posix()
+        registry.append(
+            {
                 "path": rel_path,
-                "summary": summary
-            })
-        except Exception:
-            continue
+                "summary": summary_from_docstring(path),
+                "surface": classify_surface(rel_path),
+                "stability": classify_stability(rel_path),
+                "mcp": classify_mcp(rel_path),
+            }
+        )
+    return registry
 
-    # Group by category (top level folder)
-    categories = {}
+
+def grouped_registry(
+    registry: list[dict[str, str]],
+) -> dict[str, list[dict[str, str]]]:
+    """Group registry entries by top-level folder, or `root` for flat scripts."""
+    groups: dict[str, list[dict[str, str]]] = {}
     for item in registry:
-        parts = item['path'].split('/')
-        category = parts[0] if len(parts) > 1 else 'root'
-        if category not in categories:
-            categories[category] = []
-        categories[category].append(item)
+        parts = item["path"].split("/")
+        group = parts[0] if len(parts) > 1 else "root"
+        groups.setdefault(group, []).append(item)
+    return groups
 
-    # Write README.md
-    readme_path = tools_dir / 'README.md'
-    with open(readme_path, 'w', encoding='utf-8') as f:
-        f.write("# Lurek2D Tools Registry (Auto-generated)\n\n")
-        f.write("> [!NOTE]\n> Ten plik jest generowany automatycznie przez `tools/tests/gen_tool_registry.py`.\n\n")
-        
-        for category in sorted(categories.keys()):
-            f.write(f"## {category}\n\n")
-            for item in sorted(categories[category], key=lambda x: x['path']):
-                f.write(f"- **`{item['path']}`**: {item['summary']}\n")
-            f.write("\n")
 
-    # Write agent_cli_reference.md
-    agent_ref_path = tools_dir / 'agent_cli_reference.md'
-    with open(agent_ref_path, 'w', encoding='utf-8') as f:
-        f.write("# Agent CLI Reference (Auto-generated)\n\n")
-        f.write("Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sciezka> --help`.\n\n")
-        
-        for category in sorted(categories.keys()):
-            f.write(f"### /{category}\n")
-            for item in sorted(categories[category], key=lambda x: x['path']):
-                f.write(f"- `{item['path']}` - {item['summary']}\n")
-            f.write("\n")
-            
-    # Write individual README.md for each subfolder
-    for category, items in categories.items():
-        if category == 'root':
-            continue
-        folder_path = tools_dir / category
-        if folder_path.is_dir():
-            readme_path = folder_path / 'README.md'
-            with open(readme_path, 'w', encoding='utf-8') as f:
-                f.write(f"# Lurek2D {category.capitalize()} Tools\n\n")
-                f.write(f"> [!NOTE]\n> Ten plik jest generowany automatycznie przez `tools/tests/gen_tool_registry.py`.\n\n")
-                for item in sorted(items, key=lambda x: x['path']):
-                    filename = item['path'].split('/')[-1]
-                    f.write(f"- **`{filename}`**: {item['summary']}\n")
-            
-    print(f"Generated registry with {len(registry)} tools.")
+def write_tools_readme(registry: list[dict[str, str]]) -> None:
+    """Write the single README registry for the whole tools tree."""
+    groups = grouped_registry(registry)
+    readme_path = TOOLS_DIR / "README.md"
+    with readme_path.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write("# Lurek2D Tools\n\n")
+        handle.write("> [!NOTE]\n")
+        handle.write("> Generated by `tools/python.cmd tools/tests/gen_tool_registry.py`.\n\n")
+        handle.write("Single registry for all durable tooling under `tools/`.\n\n")
+        handle.write("## CLI Use\n\n")
+        handle.write("- Run most tools as `tools/python.cmd tools/<path>.py --help`.\n")
+        handle.write("- Prefer `audit/`, `validate/`, and `rag/query.py` for repeatable review flows.\n")
+        handle.write("- Treat `fix/`, `demos/`, and some `dev/` scripts as targeted maintenance, not default MCP tools.\n")
+        handle.write("- MCP registration should prefer entries marked `candidate`: stable input, bounded output, and low-surprise side effects.\n\n")
+        for group in sorted(groups):
+            handle.write(f"## {group}\n\n")
+            for item in sorted(groups[group], key=lambda row: row["path"]):
+                handle.write(
+                    f"- `{item['path']}`"
+                    f" [{item['surface']}; {item['stability']}; mcp:{item['mcp']}]"
+                    f" - {item['summary']}\n"
+                )
+            handle.write("\n")
 
-if __name__ == '__main__':
+
+def write_agent_cli_reference(registry: list[dict[str, str]]) -> None:
+    """Write a compact CLI reference file for agents."""
+    groups = grouped_registry(registry)
+    reference_path = TOOLS_DIR / "agent_cli_reference.md"
+    with reference_path.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write("# Agent CLI Reference\n\n")
+        handle.write("Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --help`.\n\n")
+        handle.write("## Heuristics\n\n")
+        handle.write("- Use `rag/query.py` before broad file reads.\n")
+        handle.write("- Use `audit/` for reports, `validate/` for pass/fail gates, `docs/` for generation, and `fix/` only for controlled rewrites.\n")
+        handle.write("- Prefer tools marked `mcp:candidate` when exposing new MCP commands.\n\n")
+        for group in sorted(groups):
+            handle.write(f"## /{group}\n")
+            for item in sorted(groups[group], key=lambda row: row["path"]):
+                handle.write(
+                    f"- `{item['path']}`"
+                    f" - {item['summary']}"
+                    f" [{item['stability']}; mcp:{item['mcp']}]\n"
+                )
+            handle.write("\n")
+
+
+def generate_registry() -> None:
+    """Generate both registry artifacts from the current tools inventory."""
+    registry = build_registry()
+    write_tools_readme(registry)
+    write_agent_cli_reference(registry)
+    print(f"Generated registry for {len(registry)} tools.")
+
+
+if __name__ == "__main__":
     generate_registry()

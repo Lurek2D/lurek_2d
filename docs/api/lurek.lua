@@ -29121,48 +29121,138 @@ function LComboBox:removeItem(index) end
 ---@param index number The 1-based index of the item to select.
 function LComboBox:setSelectedIndex(index) end
 
---- Adds a footer button to this dialog and returns its 1-based index.
----@param text string The button label.
----@param cb? function Optional click callback (reserved for future use).
----@return number The 1-based button index.
+--- Adds a footer action button and returns its 1-based index.
+---@param text string Visible button label.
+---@param cb? function Optional callback fired when the action activates.
+---@param role? string Optional semantic role: "custom", "default", or "cancel".
+---@param close_on_activate? boolean Optional override for auto-close behavior.
+---@return number The new 1-based action index.
+function LDialog:addAction(text, cb, role, close_on_activate) end
+
+--- /// Returns a value for addButton (auto-generated).
+---@param text any
+---@param cb? any
 function LDialog:addButton(text, cb) end
 
---- Closes this dialog and fires the onClose callback if it was open.
+--- Repositions this dialog to the center of the active viewport immediately.
+function LDialog:centerInViewport() end
+
+--- /// Returns a value for close (auto-generated).
 function LDialog:close() end
 
---- Returns the widget index of this dialog's content, or nil if not set.
----@return number The content widget index.
+--- Returns the 1-based action index triggered by Escape, if any.
+---@return number? The cancel action index.
+function LDialog:getCancelAction() end
+
+--- Returns whether opening this dialog recenters it in the viewport.
+---@return boolean True if the dialog recenters when opened.
+function LDialog:getCenterOnOpen() end
+
+--- /// Returns a value for getContent (auto-generated).
 function LDialog:getContent() end
 
---- Returns the title text of this dialog.
----@return string The dialog title.
+--- Returns the 1-based action index triggered by Enter, if any.
+---@return number? The default action index.
+function LDialog:getDefaultAction() end
+
+--- Returns whether outside clicks dismiss this non-modal dialog.
+---@return boolean True if outside dismissal is enabled.
+function LDialog:getDismissOnOutsideClick() end
+
+--- Returns the optional footer content widget index.
+---@return number? Footer widget index if one is assigned.
+function LDialog:getFooter() end
+
+--- Returns the optional maximum popup dimensions for this dialog.
+---@return number? Maximum width and height; or nil when unbounded. (value 1).
+---@return number? Maximum width and height; or nil when unbounded. (value 2).
+function LDialog:getMaxSize() end
+
+--- Returns the minimum popup size for this dialog.
+---@return number Minimum width and height in pixels. (value 1).
+---@return number Minimum width and height in pixels. (value 2).
+function LDialog:getMinSize() end
+
+--- /// Returns a value for getTitle (auto-generated).
 function LDialog:getTitle() end
 
---- Returns whether this dialog is modal (blocks interaction with other widgets).
----@return boolean True if modal.
+--- Returns whether this dialog exposes user-driven close affordances.
+---@return boolean True if the dialog can be dismissed by the user.
+function LDialog:isCloseable() end
+
+--- Returns whether this dialog can be dragged by its title bar.
+---@return boolean True if title-bar dragging is enabled.
+function LDialog:isDraggable() end
+
+--- /// Returns a value for isModal (auto-generated).
 function LDialog:isModal() end
 
---- Returns whether this dialog is currently open and visible.
----@return boolean True if open.
+--- /// Returns a value for isOpen (auto-generated).
 function LDialog:isOpen() end
 
---- Opens this dialog, making it visible.
+--- Returns whether this dialog can be resized from its edges or corners.
+---@return boolean True if resize handles are active.
+function LDialog:isResizable() end
+
+--- /// Returns a value for open (auto-generated).
 function LDialog:open() end
 
---- Sets the content widget for this dialog.
----@param content_idx? number The widget index to show as content, or nil to clear.
+--- Sets the action triggered by Escape, using a 1-based action index.
+---@param index? number Action index to bind, or nil to clear the cancel action.
+function LDialog:setCancelAction(index) end
+
+--- Controls whether opening this dialog recenters it in the viewport.
+---@param value boolean True to center the dialog each time it opens from closed state.
+function LDialog:setCenterOnOpen(value) end
+
+--- Sets whether this dialog can be dismissed by close affordances or Escape fallback.
+---@param value boolean True to allow user dismissal.
+function LDialog:setCloseable(value) end
+
+--- /// Returns a value for setContent (auto-generated).
+---@param content_idx? any
 function LDialog:setContent(content_idx) end
 
---- Sets whether this dialog widget is modal.
----@param v boolean True to make modal.
+--- Sets the action triggered by Enter, using a 1-based action index.
+---@param index? number Action index to bind, or nil to clear the default action.
+function LDialog:setDefaultAction(index) end
+
+--- Controls whether clicking outside a non-modal dialog closes it.
+---@param value boolean True to dismiss on outside click for non-modal dialogs.
+function LDialog:setDismissOnOutsideClick(value) end
+
+--- Enables or disables title-bar dragging for this dialog.
+---@param value boolean True to allow dragging.
+function LDialog:setDraggable(value) end
+
+--- Assigns an optional footer content root for this dialog.
+---@param footer_idx? number Optional widget index rendered in the footer slot.
+function LDialog:setFooter(footer_idx) end
+
+--- Sets optional maximum popup dimensions for this dialog.
+---@param width? number Maximum width in pixels, or nil for no horizontal cap.
+---@param height? number Maximum height in pixels, or nil for no vertical cap.
+function LDialog:setMaxSize(width, height) end
+
+--- Sets the minimum popup size for this dialog.
+---@param width number Minimum width in pixels.
+---@param height number Minimum height in pixels.
+function LDialog:setMinSize(width, height) end
+
+--- /// Returns a value for setModal (auto-generated).
+---@param v any
 function LDialog:setModal(v) end
 
---- Registers a callback invoked when this dialog is closed.
----@param f function Callback receiving the widget index.
+--- /// Returns a value for setOnClose (auto-generated).
+---@param f any
 function LDialog:setOnClose(f) end
 
---- Sets the title text of this dialog widget.
----@param title string The dialog title.
+--- Enables or disables edge and corner resizing for this dialog.
+---@param value boolean True to allow resizing.
+function LDialog:setResizable(value) end
+
+--- /// Returns a value for setTitle (auto-generated).
+---@param title any
 function LDialog:setTitle(title) end
 
 --- Docks a child widget to the specified side of this dock panel.
