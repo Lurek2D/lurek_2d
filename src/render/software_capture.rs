@@ -456,6 +456,7 @@ fn replay_command(img: &mut ImageData, state: &mut CaptureState, command: &Rende
     }
 }
 
+/// Replay queued render commands into a CPU `ImageData` buffer using a solid background color.
 pub fn capture_commands_to_image(
     commands: &[RenderCommand],
     background_color: [f32; 4],

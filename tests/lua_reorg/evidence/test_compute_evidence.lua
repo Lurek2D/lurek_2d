@@ -1,4 +1,21 @@
 -- Canonical evidence file for lurek.compute data outputs.
+-- @covers lurek.compute.affine2d
+-- @covers lurek.compute.fft
+-- @covers lurek.compute.fftMagnitude
+-- @covers lurek.compute.fromTable
+-- @covers lurek.compute.gaussianKernel
+-- @covers lurek.compute.getParThreshold
+-- @covers lurek.compute.ifft
+-- @covers lurek.compute.newArray
+-- @covers lurek.compute.ones
+-- @covers lurek.compute.range
+-- @covers lurek.compute.rotate2dMatrix
+-- @covers lurek.compute.setParThreshold
+-- @covers lurek.compute.zeros
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 local OUT = evidence_output_dir("compute")
 

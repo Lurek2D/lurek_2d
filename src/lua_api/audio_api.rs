@@ -2602,6 +2602,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok(())
         })?,
     )?;
+    /// Manager table with high-level audio pause and resume helpers.
     tbl.set("manager", mgr)?;
 
     lurek.set("audio", tbl)?;

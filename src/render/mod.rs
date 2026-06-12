@@ -13,15 +13,23 @@ pub mod decal_surface;
 pub mod draw_layer;
 /// Fontdue-backed font rasterisation and glyph atlas management.
 pub mod font;
+/// GPU light extraction, uniform packing, and light pass helpers.
 pub mod gpu_light;
+/// High-level wgpu pipeline descriptors and render pipeline construction helpers.
 pub mod gpu_pipeline;
 /// wgpu device/queue wrapper, pipeline creation, render-pass execution.
 pub mod gpu_renderer;
+/// GPU resource upload and bind-group management for textures, buffers, and samplers.
 pub mod gpu_resources;
+/// WGSL shader loading, preprocessing, and module creation utilities.
 pub mod gpu_shaders;
+/// Shadow-map and occluder rendering support for GPU lighting passes.
 pub mod gpu_shadows;
+/// Shared renderer state that owns wgpu devices, surfaces, and frame resources.
 pub mod gpu_state;
+/// Tessellation helpers that convert 2D primitives into GPU vertex/index buffers.
 pub mod gpu_tess;
+/// Common GPU-facing structs, enums, and packed data layouts used by render passes.
 pub mod gpu_types;
 /// Per-frame image post-processing effect descriptors and shader parameter blocks.
 pub mod image_effect;

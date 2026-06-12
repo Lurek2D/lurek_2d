@@ -1,5 +1,15 @@
 -- test_globe_evidence.lua
 -- Canonical evidence file for lurek.globe visual outputs.
+-- @covers lurek.filesystem.write
+-- @covers lurek.globe.greatCircleDistance
+-- @covers lurek.globe.greatCirclePath
+-- @covers lurek.globe.latLonToUnit
+-- @covers lurek.globe.new
+-- @covers lurek.globe.raySphereIntersect
+-- @covers lurek.globe.remove
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 
 
@@ -525,6 +535,7 @@ describe("Evidence: lurek.globe visual scenarios", function()
 
 end)
 
+-- @describe Evidence: lurek.globe camera, fog, and registry trace
 describe("Evidence: lurek.globe camera, fog, and registry trace", function()
     before_each(function()
         ensure_evidence_dir("globe")

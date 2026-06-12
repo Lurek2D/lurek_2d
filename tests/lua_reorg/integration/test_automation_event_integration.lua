@@ -1,4 +1,19 @@
 -- Integration: automation script replay + event queue
+-- @covers lurek.automation.isComplete
+-- @covers lurek.automation.isFailed
+-- @covers lurek.automation.load
+-- @covers lurek.automation.saveMacro
+-- @covers lurek.automation.setCondition
+-- @covers lurek.automation.start
+-- @covers lurek.automation.stop
+-- @covers lurek.automation.unload
+-- @covers lurek.automation.update
+-- @covers lurek.event.clear
+-- @covers lurek.event.poll
+-- @covers lurek.event.wait
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 
 

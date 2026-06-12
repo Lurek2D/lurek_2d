@@ -238,6 +238,7 @@ fn draw_color_box(img: &mut ImageData, width: u32, height: u32, x: u32, y: u32, 
 }
 
 #[allow(clippy::too_many_arguments)]
+/// Draw axes, tick labels, optional title, axis captions, category labels, and legend entries for cartesian chart images.
 pub fn annotate_cartesian_chart(
     buffer: &mut [u8],
     width: u32,
@@ -342,6 +343,7 @@ pub fn annotate_cartesian_chart(
     write_back_buffer(buffer, &img);
 }
 
+/// Draw the title and optional legend for pie chart images after the segment renderer has filled the chart body.
 pub fn annotate_pie_chart(
     buffer: &mut [u8],
     width: u32,

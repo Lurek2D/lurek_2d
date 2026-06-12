@@ -1,28 +1,20 @@
 # Layouts Contract
 
-Adds local rules for `content/layouts/`.
-
 ## Mission & Scope
-- Own TOML UI layout files for alignments, flexboxes, and nodes.
-- Keep layouts valid for standalone apps and games.
-- Keep coordinates structured and snapped to stable pixel boundaries.
+- Own TOML UI layouts for apps, games, HUDs, menus, and overlays.
+- Keep layout files valid, stable, and visually verifiable.
 
 ## Files
-- `apps/`: UI layouts for tools and debug overlays.
-- `games/`: In-game HUDs, health bars, inventory grids, and main menus.
+- `apps/`: Tool and debug overlay layouts.
+- `games/`: In-game UI layouts.
 
 ## Rules
-- Component IDs must use `snake_case` and remain unique within a single layout file.
-- Always snap layout coordinates to an 8-pixel grid.
-- Prefer flexbox directions, wrapping, and alignment over hardcoded offsets when possible.
-- Never add custom/undocumented keys that are not supported by the engine layout deserializer.
+- Use unique `snake_case` component IDs per file.
+- Snap coordinates to an 8-pixel grid.
+- Prefer flexbox direction, wrapping, and alignment over hardcoded offsets.
+- Do not add keys unsupported by the engine layout deserializer.
 
 ## Workflow
-- Run `python tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive` to enforce grid snapping.
-- Auto-format layout syntax using `python tools/ui/fix_layouts.py content/layouts/ --recursive --fix`.
-- Verify visual output with GUI evidence tests or another checked-in layout render path.
-
-## References
-- tools/ui/snap_to_grid.py
-- tools/ui/fix_layouts.py
-- tests/lua_reorg/evidence/test_gui_evidence.lua
+- Run `python tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive`.
+- Run `python tools/ui/fix_layouts.py content/layouts/ --recursive --fix`.
+- Verify rendered output with checked-in visual or GUI evidence tests.

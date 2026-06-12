@@ -28,6 +28,7 @@ use slotmap::{Key, SlotMap};
 use super::GpuRenderer;
 
 impl GpuRenderer {
+    /// Returns the next power-of-two-style capacity large enough for `needed`.
     pub(crate) fn grow_capacity(current: u64, needed: u64) -> u64 {
         let mut cap = current.max(1);
         while cap < needed {
@@ -39,6 +40,7 @@ impl GpuRenderer {
         cap.max(needed)
     }
 
+    /// Recreates shared geometry buffers when the current capacities are too small.
     pub(crate) fn ensure_geometry_buffer_capacity(
         &mut self,
         color_verts_needed: usize,
@@ -100,6 +102,7 @@ impl GpuRenderer {
         }
     }
 
+    /// Recreates the instance buffer when the current capacity cannot hold `needed` instances.
     pub(crate) fn ensure_instance_buffer_capacity(&mut self, needed: usize) {
         let needed_inst = needed as u64;
         if needed_inst > self.instance_capacity {
@@ -115,6 +118,7 @@ impl GpuRenderer {
         }
     }
 
+    /// Creates a sampler from the renderer's default min/mag filter and anisotropy tuple.
     pub(crate) fn create_sampler(&self, default_filter: &(String, String, u32)) -> wgpu::Sampler {
         let min_filter = parse_filter_mode(&default_filter.0);
         let mag_filter = parse_filter_mode(&default_filter.1);
@@ -135,6 +139,7 @@ impl GpuRenderer {
         })
     }
 
+    /// Creates a texture bind group using the renderer's standard texture layout.
     pub(crate) fn create_texture_bind_group(
         &self,
         view: &wgpu::TextureView,
@@ -157,6 +162,7 @@ impl GpuRenderer {
         })
     }
 
+    /// Uploads raw RGBA pixels into a GPU texture and builds its view, sampler, and bind group.
     pub(crate) fn create_gpu_texture_raw(
         &self,
         pixels: &[u8],
@@ -224,6 +230,7 @@ impl GpuRenderer {
         self.gpu_textures.insert(key, gt);
     }
 
+    /// Ensures the font atlas texture exists and is synchronized with dirty font atlas data.
     pub(crate) fn ensure_font_atlas(
         &mut self,
         font_key: FontKey,
@@ -283,6 +290,7 @@ impl GpuRenderer {
         self.canvas_needs_clear.insert(key, true);
     }
 
+    /// Creates a depth-stencil render target matching the provided dimensions.
     pub(crate) fn create_depth_stencil_target(
         &self,
         width: u32,
@@ -312,6 +320,7 @@ impl GpuRenderer {
         }
     }
 
+    /// Ensures the screen-sized stencil target exists and matches the current surface size.
     pub(crate) fn ensure_screen_stencil_target(&mut self) {
         let needs_recreate = self
             .screen_stencil_target
@@ -327,6 +336,7 @@ impl GpuRenderer {
         }
     }
 
+    /// Ensures a canvas-specific stencil target exists and matches the canvas size.
     pub(crate) fn ensure_canvas_stencil_target(&mut self, key: CanvasKey, width: u32, height: u32) {
         let needs_recreate = self
             .canvas_stencil_targets
@@ -341,6 +351,7 @@ impl GpuRenderer {
         }
     }
 
+    /// Drops GPU-side resources whose CPU-side slotmap entries no longer exist.
     pub(crate) fn prune_released_resources(
         &mut self,
         textures: &SlotMap<TextureKey, TextureData>,
@@ -402,6 +413,7 @@ impl GpuRenderer {
         }
     }
 
+    /// Synchronizes one mesh into cached static GPU geometry buffers.
     pub(crate) fn sync_mesh(&mut self, mesh_key: MeshKey, mesh: &crate::render::Mesh) {
         use wgpu::util::DeviceExt;
 

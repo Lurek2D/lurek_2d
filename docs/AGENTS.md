@@ -1,29 +1,22 @@
 # Docs Contract
 
-Adds local rules for `docs/`.
-
 ## Mission & Scope
-- Manage engine docs: specs, design docs, API reference, and contribution guides.
-- Keep source code, Lua annotations, and generated Markdown docs aligned.
+- Own source docs, specs, API reference inputs, templates, and design notes.
+- Keep docs aligned with code, Lua annotations, and generated output.
 
 ## Files
-- `specs/`: Per-module specs for boundaries, rules, and Lua API signatures.
-- `architecture/`: System design docs and core platform constraints.
-- `api/`: Generated Lua types and Markdown API references.
-- `templates/`: Doc templates for contracts, specs, and playbooks.
+- `specs/`: Module contracts and Lua signatures.
+- `architecture/`: System design and platform constraints.
+- `api/`: Generated API reference outputs.
+- `templates/`: Doc, spec, role, and skill templates.
 
 ## Rules
-- Do not edit generated API document outputs directly; update Rust doc comments under `src/lua_api/` and rebuild them.
-- Keep Markdown file links functional; verify that document moves or renames do not break links.
-- When expanding specifications, preserve hand-written `## Summary` sections across regenerations.
-- Contributor docs must target developers and modders and explain constraints clearly.
+- Do not edit generated API outputs directly; update source doc comments under `src/lua_api/`.
+- Keep Markdown links valid after moves or renames.
+- Preserve hand-written spec `## Summary` sections during regeneration.
+- Write contributor docs for developers and modders in clear terms.
 
 ## Workflow
-- Start from the nearest nested docs contract before subtree-specific changes.
-- Run the strict link checker after doc moves, renames, or structural edits that can affect references.
-- Rebuild generated API references only when editing binding doc comments or generated-doc inputs.
-
-## References
-- `docs/specs/`
-- `CONTRIBUTING.md`
-- `README.md`
+- Read the nearest nested docs contract first.
+- Run strict link checks after structural doc edits.
+- Rebuild generated API refs only when binding docs or generator inputs change.

@@ -1,4 +1,7 @@
 -- Canonical evidence file for lurek.ecs data outputs.
+-- @covers lurek.ecs.newUniverse
+-- @covers lurek.filesystem.write
+
 
 local OUT = evidence_output_dir("ecs")
 

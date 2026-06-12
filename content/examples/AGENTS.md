@@ -1,28 +1,20 @@
 # Examples Contract
 
-Adds local rules for `content/examples/`.
-
 ## Mission & Scope
-- Deliver runnable single-file teaching examples for the public `lurek.*` API.
-- Keep examples isolated and simple as reference snippets.
-- Keep examples aligned with the generated API specs.
+- Own runnable single-file examples for public `lurek.*` APIs.
+- Keep examples small, isolated, and synced with generated API specs.
 
 ## Files
-- `README.md`: Index of example scripts by namespace.
-- `*.lua`: Namespace example files such as `physics.lua`, `render.lua`, and `ui.lua`.
-- `assets/`: Textures, fonts, sound files, and other resources loaded by the examples.
+- `README.md`: Example index by namespace.
+- `*.lua`: One namespace or tight API group per file.
+- `assets/`: Resources loaded by examples.
 
 ## Rules
-- One file must teach one namespace or one tight related group. Do not mix unrelated logic.
-- Keep example code executable and free of stubs. Map `-- @api-stub:` comments to working code.
-- Never write complex game state machines here. Focus on clear API usage.
-- All asset lookups in examples must use forward slashes and refer to subfolders inside the `assets/` directory.
+- Teach clear API usage, not full game state machines.
+- Keep examples executable and free of stubs.
+- Map `-- @api-stub:` comments to working code.
+- Use forward-slash paths inside `assets/`.
 
 ## Workflow
-- Run the full smoke test sweep `python tools/demos/smoke_sweep.py --kind example` after modifying any example.
-- Validate API mappings using `python tools/audit/example_coverage.py` to identify missing namespace stubs.
-
-## References
-- content/examples/README.md
-- docs/api/lurek.md
-- tools/audit/example_coverage.py
+- Run `python tools/demos/smoke_sweep.py --kind example`.
+- Run `python tools/audit/example_coverage.py` for API mapping gaps.

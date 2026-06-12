@@ -28,6 +28,7 @@ use super::GpuRenderer;
 use crate::light::occluder::Occluder;
 use crate::render::gpu_light::{LightGpuState, SHADOW_COMPUTE_WORKGROUP_SIZE, SHADOW_MAP_RES};
 
+/// Converts occluder polygons into light-relative shadow edge segments.
 pub(crate) fn collect_shadow_edges(
     light_x: f32,
     light_y: f32,
@@ -67,6 +68,7 @@ pub(crate) fn collect_shadow_edges(
 }
 
 impl GpuRenderer {
+    /// Creates or recreates all GPU resources needed for light and shadow rendering.
     pub(crate) fn ensure_light_resources(&mut self) {
         let needs_recreate = match &self.light_gpu {
             Some(lg) => lg.width != self.width || lg.height != self.height,
@@ -387,6 +389,7 @@ impl GpuRenderer {
         });
     }
 
+    /// Grows the shadow edge storage buffer to hold the required edge count.
     pub(crate) fn ensure_shadow_edge_capacity(&mut self, required_edges: usize) {
         let Some(lg) = self.light_gpu.as_mut() else {
             return;
@@ -424,6 +427,7 @@ impl GpuRenderer {
         lg.shadow_compute_bind_group = shadow_compute_bind_group;
     }
 
+    /// Uploads shadow edges and dispatches the compute shader for one light row.
     pub(crate) fn dispatch_shadow_map_gpu(
         &mut self,
         encoder: &mut wgpu::CommandEncoder,
@@ -469,6 +473,7 @@ impl GpuRenderer {
     }
 
     #[allow(clippy::too_many_arguments)]
+    /// Tests whether a transformed 2D axis-aligned rectangle intersects the viewport.
     pub(crate) fn aabb_visible_2d(
         x: f32,
         y: f32,

@@ -56,6 +56,7 @@ pub struct Track {
 }
 
 impl Track {
+    /// Creates an empty track with the given display name.
     pub fn new(name: String) -> Self {
         Self {
             name,
@@ -88,6 +89,7 @@ pub enum TimelineState {
 }
 
 impl TimelineState {
+    /// Returns the Lua-facing string representation of this playback state.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Stopped => "stopped",

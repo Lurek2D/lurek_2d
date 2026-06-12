@@ -45,6 +45,7 @@ pub enum SequencerState {
 }
 
 impl SequencerState {
+    /// Returns the Lua-facing string representation of this sequencer state.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Idle => "idle",

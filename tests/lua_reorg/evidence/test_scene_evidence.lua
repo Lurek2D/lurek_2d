@@ -1,4 +1,28 @@
 -- Canonical evidence file for lurek.scene data and visual outputs.
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.scene.clear
+-- @covers lurek.scene.clearQueuedTransitions
+-- @covers lurek.scene.deserializeScene
+-- @covers lurek.scene.getActiveScenes
+-- @covers lurek.scene.getData
+-- @covers lurek.scene.getQueuedTransitionCount
+-- @covers lurek.scene.getTransitionProgress
+-- @covers lurek.scene.isPreloaded
+-- @covers lurek.scene.newDepthSorter
+-- @covers lurek.scene.newObjectContainer
+-- @covers lurek.scene.preload
+-- @covers lurek.scene.push
+-- @covers lurek.scene.pushOverlay
+-- @covers lurek.scene.pushPreloaded
+-- @covers lurek.scene.queueTransition
+-- @covers lurek.scene.registerScene
+-- @covers lurek.scene.serializeScene
+-- @covers lurek.scene.setData
+-- @covers lurek.scene.unregisterScene
+-- @covers lurek.scene.update
+
 
 local OUT = evidence_output_dir("scene")
 
@@ -100,6 +124,7 @@ describe("Evidence: lurek.scene DepthSorter", function()
     end)
 end)
 
+-- @describe Evidence: lurek.scene runtime flow
 describe("Evidence: lurek.scene runtime flow", function()
     before_each(function()
         ensure_evidence_dir("scene")
@@ -228,6 +253,7 @@ describe("Evidence: lurek.scene runtime flow", function()
     end)
 end)
 
+-- @describe Evidence: lurek.scene state registry and serialization
 describe("Evidence: lurek.scene state registry and serialization", function()
     before_each(function()
         ensure_evidence_dir("scene")
@@ -285,6 +311,7 @@ describe("Evidence: lurek.scene state registry and serialization", function()
     end)
 end)
 
+-- @describe Evidence: lurek.scene object container flow
 describe("Evidence: lurek.scene object container flow", function()
     before_each(function()
         ensure_evidence_dir("scene")

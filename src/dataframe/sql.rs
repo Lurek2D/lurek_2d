@@ -762,7 +762,7 @@ pub fn query_sql(df: &DataFrame, sql: &str) -> Result<DataFrame, String> {
     execute_select(df, &stmt)
 }
 /// Parse SQL-like query and return a compact execution-plan summary.
-pub fn explain_sql(df: &DataFrame, sql: &str) -> Result<String, String> {
+pub(crate) fn explain_sql(df: &DataFrame, sql: &str) -> Result<String, String> {
     let tokens = tokenize(sql)?;
     let mut parser = Parser::new(tokens);
     let stmt = parser.parse_select()?;

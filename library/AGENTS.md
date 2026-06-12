@@ -1,29 +1,21 @@
 # Library Contract
 
-Adds local rules for `library/`.
-
 ## Mission & Scope
-- Own reusable pure Lua gameplay systems.
-- Provide encapsulated packages that can be loaded into any Lurek2D game.
-- Maintain docs, examples, and tests for each package.
+- Own reusable pure Lua gameplay packages.
+- Keep packages portable across games, LuaJIT, and Lua 5.4.
 
 ## Files
-- `README.md`: Guide mapping each library folder to its design goal.
-- `*/init.lua`: Main entrypoint for a package such as `inventory/init.lua`.
-- `*/example.lua`: Minimal runnable integration example.
+- `README.md`: Package index and design goals.
+- `*/init.lua`: Package entry point.
+- `*/example.lua`: Minimal runnable example.
 
 ## Rules
-- Library modules must be written in pure Lua and remain agnostic of specific game assets or hardcoded textures.
-- Never write stateful globals inside libraries; return module tables with constructors or local state.
-- If a package API interface changes, immediately update the matching `example.lua` and rebuild documentation.
-- All library modules must run correctly under both LuaJIT and Lua 5.4.
-- Do not silence warnings in `.vscode/settings.json` or hide Lua API issues with `---@diagnostic disable`.
+- Keep modules pure Lua and game-asset agnostic.
+- Return module tables with constructors or local state; do not create globals.
+- Update matching `example.lua` and docs when a package API changes.
+- Support both LuaJIT and Lua 5.4.
+- Do not hide warnings with `.vscode/settings.json` or `---@diagnostic disable`.
 
 ## Workflow
-- Run and test library updates against their corresponding unit test files under `tests/lua/`.
-- Rebuild markdown documentation blocks using `python tools/docs/gen_lib_docs.py`.
-
-## References
-- content/examples/
-- tests/lua/
-- tools/docs/gen_lib_docs.py
+- Run matching Lua tests under `tests/lua/`.
+- Rebuild docs with `python tools/docs/gen_lib_docs.py`.

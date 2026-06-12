@@ -1,31 +1,28 @@
 # Src Contract
 
-Adds local rules for `src/`.
-
 ## Mission & Scope
-- Own the Rust engine runtime, including render, physics, audio, assets, and windowing.
-- Keep the Lua-to-Rust binding edge (`src/lua_api/`) thin. Keep gameplay logic and state in Rust modules under `src/`.
-- Maintain decoupled module boundaries and narrow test seams without exposing internal data.
+- Own the Rust engine runtime: render, physics, audio, assets, windowing, and runtime orchestration.
+- Keep modules decoupled and Lua-facing behavior synced with specs.
 
 ## Files
-- `lib.rs`: Entrypoint library exposing engine subsystems.
-- `main.rs`: Standalone binary that boots the window, graphics, and event loop.
-- `lua_api/`: Binding layer exposing the public `lurek.*` namespaces.
-- `app/` / `runtime/`: App orchestration and execution frameworks.
+- `lib.rs`: Engine subsystem entry point.
+- `main.rs`: Standalone app boot path.
+- `lua_api/`: Public `lurek.*` binding layer.
+- `app/`, `runtime/`: App and execution frameworks.
 
 ## Rules
-- Do not add `#[cfg(test)]` to files under `src/`.
-- Do not hold mutable borrow locks (`borrow_mut()`) on shared state across mlua callbacks or yielding frames.
-- Use `pub(crate)` to expose test seams and document the invariant.
-- Document any `unsafe` block with a clear, verifiable `// SAFETY:` invariant comment.
-- Keep `mod.rs` files strictly export-only; do not write business logic or types directly inside them.
-- Ensure all mlua-crossing closures handle errors gracefully and return `mlua::Result` instead of panicking.
+- Keep gameplay logic and state in Rust modules; keep `src/lua_api/` thin.
+- Every `.rs` file needs `//!` file docs stating purpose, owned state, and boundary.
+- Public structs, enums, fields, methods, and Lua-facing helpers need factual `///` docs.
+- Method docs must state units, defaults, bounds, errors, and side effects when relevant.
+- Do not add `#[cfg(test)]`, `mod tests`, or inline test fixtures under `src/`.
+- Put Rust tests in `tests/rust/unit|ext|golden` and public API tests in Lua.
+- Do not hold `borrow_mut()` locks across mlua callbacks or yielding frames.
+- Use `pub(crate)` for test seams and document the invariant.
+- Add clear `// SAFETY:` comments for every `unsafe` block.
+- Keep `mod.rs` export-only.
+- Return `mlua::Result` across Lua boundaries instead of panicking.
 
 ## Workflow
-- Run local unit tests with `cargo test` and code checks with `cargo clippy -- -D warnings`.
-- If an mlua binding signature is changed, rebuild all public interfaces via `python tools/gen_all_docs.py`.
-
-## References
-- docs/specs/
-- tests/rust/
-- src/lua_api/
+- Run `cargo test` and `cargo clippy -- -D warnings`.
+- If a binding signature changes, run `python tools/gen_all_docs.py`.

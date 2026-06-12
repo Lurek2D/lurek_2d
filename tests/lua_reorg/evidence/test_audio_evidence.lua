@@ -1,5 +1,28 @@
 -- test_audio_evidence.lua
 -- Canonical evidence file for lurek.audio and lurek.dsp artifacts.
+-- @covers lurek.audio.judgeBeat
+-- @covers lurek.audio.mixInto
+-- @covers lurek.audio.newBeatClock
+-- @covers lurek.audio.newBus
+-- @covers lurek.audio.newDecoder
+-- @covers lurek.audio.newPool
+-- @covers lurek.audio.newSoundData
+-- @covers lurek.audio.saveWAV
+-- @covers lurek.dsp.applyBandpass
+-- @covers lurek.dsp.applyHighpass
+-- @covers lurek.dsp.applyLowpass
+-- @covers lurek.dsp.newSawtoothWave
+-- @covers lurek.dsp.newSineWave
+-- @covers lurek.dsp.newSquareWave
+-- @covers lurek.dsp.newTriangleWave
+-- @covers lurek.dsp.newWhiteNoise
+-- @covers lurek.dsp.normalize
+-- @covers lurek.dsp.processOffline
+-- @covers lurek.dsp.spectrogramToPng
+-- @covers lurek.dsp.waveformToPng
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 local OUT = evidence_output_dir("audio")
 local FIXTURE_WAVE = "tests/fixtures/sine_mono_44100.wav"

@@ -10,9 +10,13 @@ use crate::ui::extras::{DialogAction, DialogActionRole};
 use crate::ui::widget::TextVAlign;
 use serde::Deserialize;
 #[derive(Debug, Clone, Deserialize, Default)]
+/// Declarative dialog footer action loaded from TOML or Lua layout definitions.
 pub struct DialogActionDef {
+    /// Button label displayed for this action.
     pub text: String,
+    /// Semantic role such as `default`, `cancel`, or `custom`.
     pub role: Option<String>,
+    /// Whether activating the action should close the dialog.
     pub close_on_activate: Option<bool>,
 }
 /// Flat description of a single widget produced by TOML deserialisation; children are nested inline.

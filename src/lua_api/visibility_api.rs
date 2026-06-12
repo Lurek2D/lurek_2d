@@ -159,16 +159,22 @@ impl LuaUserData for LuaVisibilityGrid {
                         player_id,
                         region_id,
                     } => {
+                        /// Event type string for this visibility event.
                         tbl.set("type", "revealed")?;
+                        /// Player index affected by this visibility event.
                         tbl.set("player_id", *player_id)?;
+                        /// Region index affected by this visibility event.
                         tbl.set("region_id", *region_id)?;
                     }
                     VisibilityEvent::Hidden {
                         player_id,
                         region_id,
                     } => {
+                        /// Event type string for this hidden visibility event.
                         tbl.set("type", "hidden")?;
+                        /// Player index affected by this hidden visibility event.
                         tbl.set("player_id", *player_id)?;
+                        /// Region index hidden from this player.
                         tbl.set("region_id", *region_id)?;
                     }
                     VisibilityEvent::Forgotten {
@@ -179,7 +185,7 @@ impl LuaUserData for LuaVisibilityGrid {
                         tbl.set("type", "forgotten")?;
                         /// Player index affected by this forgotten visibility event.
                         tbl.set("player_id", *player_id)?;
-                        /// Region index hidden from this player.
+                        /// Region index forgotten for this player.
                         tbl.set("region_id", *region_id)?;
                     }
                     VisibilityEvent::GroupChanged {

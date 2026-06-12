@@ -472,6 +472,7 @@ pub fn uniform_bytes(value: &UniformValue) -> [u8; 16] {
     bytes
 }
 
+/// Applies a transform matrix to a 2D point and returns the transformed coordinates.
 pub(crate) fn apply(t: &Mat3, x: f32, y: f32) -> (f32, f32) {
     let p = t.transform_point(Vec2 { x, y });
     (p.x, p.y)

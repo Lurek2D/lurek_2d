@@ -182,6 +182,7 @@ pub fn leave_room(id: &str) -> Option<RoomInfo> {
 /// Per-player state tracked in a room: peer_id → (name, ready).
 use std::collections::HashMap;
 #[derive(Debug, Clone)]
+/// Per-player lobby state stored inside a room, including display name and ready flag.
 pub struct PlayerState {
     /// Display name of the player.
     pub name: String,

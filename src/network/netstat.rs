@@ -4,33 +4,41 @@
 
 use crate::runtime::SharedState;
 use mlua::prelude::*;
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::rc::Rc;
 
 #[derive(Debug, Default, Clone)]
+/// Snapshot of network throughput and latency counters reported through `lurek.netstat`.
 pub struct NetStat {
+    /// Total bytes sent through the tracked network channel.
     pub bytes_sent: u64,
+    /// Total bytes received through the tracked network channel.
     pub bytes_recv: u64,
+    /// Last observed round-trip latency in milliseconds.
     pub latency_ms: f32,
 }
 
 impl NetStat {
+    /// Creates a zeroed network statistics snapshot.
     pub fn new() -> Self {
         Self::default()
     }
 
     // In a real engine these would be updated by the networking layer.
+    /// Accumulates sent and received byte counters and stores the latest latency.
     pub fn update(&mut self, sent: u64, recv: u64, latency: f32) {
         self.bytes_sent += sent;
         self.bytes_recv += recv;
         self.latency_ms = latency;
     }
 
+    /// Returns a copy of the current statistics counters.
     pub fn snapshot(&self) -> NetStat {
         self.clone()
     }
 }
 
+/// Register the `lurek.netstat` Lua table with constructors and snapshot helpers.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let api = lua.create_table()?;
     api.set(
