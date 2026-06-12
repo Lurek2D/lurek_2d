@@ -13,16 +13,16 @@ pub mod decal_surface;
 pub mod draw_layer;
 /// Fontdue-backed font rasterisation and glyph atlas management.
 pub mod font;
+pub mod gpu_light;
+pub mod gpu_pipeline;
 /// wgpu device/queue wrapper, pipeline creation, render-pass execution.
 pub mod gpu_renderer;
-pub mod gpu_types;
-pub mod gpu_state;
-pub mod gpu_pipeline;
-pub mod gpu_shaders;
-pub mod gpu_light;
-pub mod gpu_tess;
 pub mod gpu_resources;
+pub mod gpu_shaders;
 pub mod gpu_shadows;
+pub mod gpu_state;
+pub mod gpu_tess;
+pub mod gpu_types;
 /// Per-frame image post-processing effect descriptors and shader parameter blocks.
 pub mod image_effect;
 /// GPU-uploadable mesh geometry: vertices, indices, and draw modes.
@@ -40,20 +40,22 @@ pub mod renderer;
 pub mod shader;
 /// Compound 2D shape builder using `ShapeCommand` sequences.
 pub mod shape;
+/// CPU fallback for evidence-oriented screenshot capture from queued render commands.
+pub mod software_capture;
 pub use canvas::Canvas;
 pub use decal_surface::DecalSurface;
 pub use draw_layer::DrawLayer;
 pub use font::Font;
+pub use gpu_pipeline::GpuStencilMode;
 pub use gpu_renderer::GpuRenderer;
 pub use image_effect::ShaderPassDescriptor;
 pub use mesh::{Mesh, MeshDrawMode, MeshVertex};
 pub use postfx_pipeline::PostFxPipeline;
 pub use province_map_pipeline::ProvinceMapPipeline;
+pub use renderer::StencilMode;
 pub use renderer::{
     BlendMode, CompareMode, DepthMode, DrawMode, DrawableKind, RenderCommand, StencilAction,
     TextAlign, TextureData,
 };
 pub use shader::{Shader, UniformValue};
 pub use shape::{CompoundShape, ShapeCommand};
-pub use gpu_pipeline::GpuStencilMode;
-pub use renderer::StencilMode;

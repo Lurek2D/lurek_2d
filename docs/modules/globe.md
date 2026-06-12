@@ -337,6 +337,32 @@ end
 
 ---
 
+### `lurek.globe.newRegistry`
+
+Creates an empty globe registry handle independent from the module registry.
+
+```lua
+lurek.globe.newRegistry()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LGlobeRegistry](#lgloberegistry) | New globe registry handle. |
+
+**Example**
+
+```lua
+do
+    local reg = lurek.globe.newRegistry()
+    print("registry created = " .. tostring(reg ~= nil))
+    print("registry type = " .. reg:type())
+end
+```
+
+---
+
 ### `lurek.globe.raySphereIntersect`
 
 Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
@@ -2565,9 +2591,9 @@ LGlobeRegistry:get(name)
 
 ```lua
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry get = " .. tostring(reg and reg:get("earth") or nil))
+    local reg = lurek.globe.newRegistry()
+    reg:new("earth")
+    print("registry get = " .. tostring(reg:get("earth")))
 end
 ```
 
@@ -2591,9 +2617,10 @@ LGlobeRegistry:names()
 
 ```lua
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry names = " .. tostring(reg and reg:names() or nil))
+    local reg = lurek.globe.newRegistry()
+    reg:new("earth")
+    reg:new("mars")
+    print("registry names count = " .. #reg:names())
 end
 ```
 
@@ -2624,9 +2651,8 @@ LGlobeRegistry:new(name, spec_tbl)
 
 ```lua
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry new = " .. tostring(reg and reg:new("mars", { radius = 1.0 }) or nil))
+    local reg = lurek.globe.newRegistry()
+    print("registry new = " .. tostring(reg:new("mars", { radius = 1.0 })))
 end
 ```
 
@@ -2656,9 +2682,9 @@ LGlobeRegistry:remove(name)
 
 ```lua
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry remove = " .. tostring(reg and reg:remove("mars") or nil))
+    local reg = lurek.globe.newRegistry()
+    reg:new("mars")
+    print("registry remove = " .. tostring(reg:remove("mars")))
 end
 ```
 
@@ -2682,9 +2708,8 @@ LGlobeRegistry:type()
 
 ```lua
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry type = " .. tostring(reg and reg:type() or nil))
+    local reg = lurek.globe.newRegistry()
+    print("registry type = " .. tostring(reg:type()))
 end
 ```
 
@@ -2714,9 +2739,8 @@ LGlobeRegistry:typeOf(name)
 
 ```lua
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry typeOf = " .. tostring(reg and reg:typeOf("LGlobeRegistry") or nil))
+    local reg = lurek.globe.newRegistry()
+    print("registry typeOf = " .. tostring(reg:typeOf("LGlobeRegistry")))
 end
 ```
 

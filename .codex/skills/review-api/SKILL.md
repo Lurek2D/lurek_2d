@@ -46,7 +46,7 @@ description: "Load this skill when auditing and fixing Rust-to-Lua API coverage,
 
 ## Common RAG Queries
 - Start with: `Lua API wrapper coverage thin wrapper`, `Rust engine module lua_api docs specs`, `src lua_api AGENTS thin wrappers registration only`
-- Focus areas first: `src/lua_api/`, `src/`, `docs/specs/`, `tests/lua/`, `tools/audit/`
+- Focus areas first: `src/lua_api/`, `src/`, `docs/specs/`, `tests/lua_reorg/`, `tools/audit/`
 - Append the API path or module name such as `lurek.input`, `lurek.render`, `math`, `scene`
 
 ## References

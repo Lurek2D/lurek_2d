@@ -3,6 +3,8 @@
 //! Functionally this delivers the low-friction type safety that keeps body references explicit across Rust and Lua-facing boundaries.
 
 /// Unique identifier for a physics body.
+/// # Fields
+/// - `0`: raw stable slot id.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct BodyId(pub usize);
 

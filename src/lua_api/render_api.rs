@@ -862,13 +862,34 @@ fn queue_draw_many(st: &mut SharedState, list: LuaTable) -> LuaResult<()> {
         };
         let img_val: LuaValue = entry.raw_get(1).unwrap_or(LuaValue::Nil);
         let transform = RenderDrawTransform {
-            x: entry.raw_get::<_, Option<f32>>(2).unwrap_or(None).unwrap_or(0.0),
-            y: entry.raw_get::<_, Option<f32>>(3).unwrap_or(None).unwrap_or(0.0),
-            rotation: entry.raw_get::<_, Option<f32>>(4).unwrap_or(None).unwrap_or(0.0),
-            sx: entry.raw_get::<_, Option<f32>>(5).unwrap_or(None).unwrap_or(1.0),
-            sy: entry.raw_get::<_, Option<f32>>(6).unwrap_or(None).unwrap_or(1.0),
-            ox: entry.raw_get::<_, Option<f32>>(7).unwrap_or(None).unwrap_or(0.0),
-            oy: entry.raw_get::<_, Option<f32>>(8).unwrap_or(None).unwrap_or(0.0),
+            x: entry
+                .raw_get::<_, Option<f32>>(2)
+                .unwrap_or(None)
+                .unwrap_or(0.0),
+            y: entry
+                .raw_get::<_, Option<f32>>(3)
+                .unwrap_or(None)
+                .unwrap_or(0.0),
+            rotation: entry
+                .raw_get::<_, Option<f32>>(4)
+                .unwrap_or(None)
+                .unwrap_or(0.0),
+            sx: entry
+                .raw_get::<_, Option<f32>>(5)
+                .unwrap_or(None)
+                .unwrap_or(1.0),
+            sy: entry
+                .raw_get::<_, Option<f32>>(6)
+                .unwrap_or(None)
+                .unwrap_or(1.0),
+            ox: entry
+                .raw_get::<_, Option<f32>>(7)
+                .unwrap_or(None)
+                .unwrap_or(0.0),
+            oy: entry
+                .raw_get::<_, Option<f32>>(8)
+                .unwrap_or(None)
+                .unwrap_or(0.0),
         };
         if let LuaValue::UserData(ud) = img_val {
             if let Ok(img) = ud.borrow::<LuaImage>() {
@@ -883,7 +904,12 @@ fn queue_draw_many(st: &mut SharedState, list: LuaTable) -> LuaResult<()> {
     Ok(())
 }
 
-fn centered_text_origin(st: &SharedState, font_key: FontKey, text: &str, scale: f32) -> LuaResult<(f32, f32)> {
+fn centered_text_origin(
+    st: &SharedState,
+    font_key: FontKey,
+    text: &str,
+    scale: f32,
+) -> LuaResult<(f32, f32)> {
     let Some(font) = st.fonts.get(font_key) else {
         return Err(LuaError::RuntimeError(
             "lurek.render.printRotatedWithFont: font handle is not valid or was released".into(),
@@ -964,7 +990,13 @@ fn queue_print_formatted(
     });
 }
 
-fn queue_rich_text(st: &mut SharedState, font_key: FontKey, spans: Vec<crate::render::renderer::TextSpan>, x: f32, y: f32) {
+fn queue_rich_text(
+    st: &mut SharedState,
+    font_key: FontKey,
+    spans: Vec<crate::render::renderer::TextSpan>,
+    x: f32,
+    y: f32,
+) {
     st.render_commands
         .push(crate::render::renderer::RenderCommand::DrawRichText {
             font_key,
@@ -984,7 +1016,9 @@ fn parse_new_font_args(args: &LuaMultiValue) -> LuaResult<(Option<u32>, Option<S
     let path = match args.get(0) {
         Some(LuaValue::String(s)) => s
             .to_str()
-            .map_err(|e| LuaError::RuntimeError(format!("lurek.render.newFont: invalid path: {}", e)))?
+            .map_err(|e| {
+                LuaError::RuntimeError(format!("lurek.render.newFont: invalid path: {}", e))
+            })?
             .to_string(),
         _ => {
             return Err(LuaError::RuntimeError(
@@ -1000,7 +1034,12 @@ fn parse_new_font_args(args: &LuaMultiValue) -> LuaResult<(Option<u32>, Option<S
     Ok((None, Some(path), size))
 }
 
-fn resolve_new_font(st: &mut SharedState, numeric_size: Option<u32>, path: Option<String>, size: f32) -> LuaResult<FontKey> {
+fn resolve_new_font(
+    st: &mut SharedState,
+    numeric_size: Option<u32>,
+    path: Option<String>,
+    size: f32,
+) -> LuaResult<FontKey> {
     if let Some(point_size) = numeric_size {
         return builtin_font_key_by_point_size(st, point_size, None).ok_or_else(|| {
             LuaError::RuntimeError("lurek.render.newFont: built-in fonts not loaded".into())
@@ -2050,9 +2089,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | list | table | Array of draw entry tables.
     graphics.set(
         "drawMany",
-        lua.create_function(move |_, list: LuaTable| {
-            queue_draw_many(&mut s.borrow_mut(), list)
-        })?,
+        lua.create_function(move |_, list: LuaTable| queue_draw_many(&mut s.borrow_mut(), list))?,
     )?;
     let s = state.clone();
     // -- printRotated --
@@ -2073,7 +2110,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     let Some(font_key) = font_key else {
                         return Ok(());
                     };
-                    let Ok((origin_x, origin_y)) = centered_text_origin(&st, font_key, &text, scale) else {
+                    let Ok((origin_x, origin_y)) =
+                        centered_text_origin(&st, font_key, &text, scale)
+                    else {
                         return Ok(());
                     };
                     (font_key, origin_x, origin_y)
@@ -2107,7 +2146,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     graphics.set(
         "printRotatedWithFont",
         lua.create_function(
-            move |_, (font_ud, text, x, y, angle, scale): (LuaAnyUserData, String, f32, f32, f32, Option<f32>)| {
+            move |_,
+                  (font_ud, text, x, y, angle, scale): (
+                LuaAnyUserData,
+                String,
+                f32,
+                f32,
+                f32,
+                Option<f32>,
+            )| {
                 let scale = scale.unwrap_or(1.0);
                 let key = resolve_font_key(&font_ud)?;
                 let (origin_x, origin_y) = {
@@ -2593,9 +2640,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             drop(font);
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "lurek.render.getFontWidth: font handle is not valid".into(),
-                )
+                LuaError::RuntimeError("lurek.render.getFontWidth: font handle is not valid".into())
             })?;
             Ok(f.text_width(&text))
         })?,
@@ -3653,13 +3698,19 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok(())
         })?,
     )?;
+    let s = state.clone();
     // -- captureScreenshot --
-    /// Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
+    /// Captures the queued 2D render commands into an ImageData fallback and passes it to a callback.
     /// @param | callback | function | Called with an LImageData argument.
     graphics.set(
         "captureScreenshot",
-        lua.create_function(|lua, callback: LuaFunction| {
-            let img = ImageData::new(1, 1);
+        lua.create_function(move |lua, callback: LuaFunction| {
+            let st = s.borrow();
+            let img = crate::render::software_capture::capture_commands_to_image(
+                &st.render_commands,
+                st.background_color,
+            );
+            drop(st);
             let ud = lua.create_userdata(img)?;
             callback.call::<_, ()>(ud)?;
             Ok(())

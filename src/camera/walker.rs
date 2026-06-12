@@ -97,10 +97,7 @@ impl CameraWalker {
         let map_ref = self.map.borrow();
         let (wx, wy) = map_ref.tile_to_world(tx - 1, ty - 1);
         drop(map_ref);
-        self.set_position(
-            wx + self.tile_w * 0.5,
-            wy + self.tile_h * 0.5,
-        );
+        self.set_position(wx + self.tile_w * 0.5, wy + self.tile_h * 0.5);
     }
 
     /// Returns current walker tile coordinates (1-based).

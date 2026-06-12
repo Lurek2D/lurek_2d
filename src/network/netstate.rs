@@ -126,9 +126,7 @@ impl LuaUserData for LNetworkState {
         });
 
         /// Get the type name of this userdata.
-        methods.add_method("type", |_lua, _this, ()| {
-            Ok("LNetworkState")
-        });
+        methods.add_method("type", |_lua, _this, ()| Ok("LNetworkState"));
 
         /// Check type by name.
         methods.add_method("typeOf", |_lua, _this, name: String| {

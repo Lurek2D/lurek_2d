@@ -17,7 +17,7 @@ and direct class declarations:
 
 Usage:
   python tools/audit/lua_covers_lurek_api_audit.py
-  python tools/audit/lua_covers_lurek_api_audit.py --path tests/lua/unit
+  python tools/audit/lua_covers_lurek_api_audit.py --path tests/lua_reorg/unit
   python tools/audit/lua_covers_lurek_api_audit.py --fix
 """
 

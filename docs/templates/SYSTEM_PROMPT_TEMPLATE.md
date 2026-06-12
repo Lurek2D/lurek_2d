@@ -84,10 +84,10 @@ Both must exit 0.
 - A-01 Runtime only. No embedded editor or IDE.
 - B-01 LuaJIT is the main runtime. lua54 is a non-shipping fallback for CI.
 - C-01 Use lurek.* only. No bare globals.
-- TST-01 lurek.* behavior → tested in tests/lua/. Rust tests must not duplicate Lua-reachable coverage.
+- TST-01 lurek.* behavior → tested in tests/lua_reorg/. Rust tests must not duplicate Lua-reachable coverage.
 - TST-02 No #[cfg(test)] in src/. Rust unit tests → tests/rust/unit/<module>_tests.rs.
 - TST-03 src/lua_api/<module>_api.rs: bindings only. Business logic stays in src/<module>/ as pure Rust.
 - TST-04 Every mod.rs: only pub mod, pub use, attributes, and doc comments.
-- TST-05 Demo tests → tests/lua/demos/test_<name>.lua. Screenshot demos → tests/demo_smoke_tests.rs with #[ignore].
+- TST-05 Demo tests → tests/lua_reorg/demos/test_<name>.lua. Screenshot demos → tests/demo_smoke_tests.rs with #[ignore].
 - TST-06 One test file per module per layer: test_<module>_<layer>.lua.
 ```

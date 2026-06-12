@@ -113,7 +113,7 @@ def process_file(filepath: Path, dry_run: bool = False) -> tuple:
 
 def main():
     dry_run = "--dry-run" in sys.argv
-    test_dir = Path("tests/lua")
+    test_dir = Path("tests/lua_reorg")
 
     if not test_dir.exists():
         print(f"Error: {test_dir} not found. Run from the repo root.")

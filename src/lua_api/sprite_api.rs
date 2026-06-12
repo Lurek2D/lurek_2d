@@ -480,10 +480,13 @@ impl LuaUserData for LuaSpriteAnimator {
         /// Play or restart a named clip.
         /// @param | name | string | Clip name.
         /// @param | restart | boolean? | Whether to restart when already playing this clip. Defaults to true.
-        methods.add_method_mut("play", |_, this, (name, restart): (String, Option<bool>)| {
-            this.inner.play(&name, restart.unwrap_or(true));
-            Ok(())
-        });
+        methods.add_method_mut(
+            "play",
+            |_, this, (name, restart): (String, Option<bool>)| {
+                this.inner.play(&name, restart.unwrap_or(true));
+                Ok(())
+            },
+        );
 
         // -- pause --
         /// Pause playback without resetting frame state.

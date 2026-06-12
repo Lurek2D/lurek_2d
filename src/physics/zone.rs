@@ -13,6 +13,11 @@ pub type ZoneId = usize;
 pub type ZonePriority = i32;
 
 /// Gravity behaviour applied to bodies inside the zone.
+/// # Variants
+/// - `Directional`: constant gravity vector override.
+/// - `Point`: attraction toward a point.
+/// - `Repulsor`: repulsion away from a point.
+/// - `Zero`: zero-gravity override.
 #[derive(Debug, Clone, PartialEq)]
 pub enum ZoneGravityMode {
     /// Constant directional gravity `(gx, gy)`.
@@ -25,6 +30,9 @@ pub enum ZoneGravityMode {
     Zero,
 }
 /// Spatial boundary shape for a zone.
+/// # Variants
+/// - `Rect`: axis-aligned rectangle boundary.
+/// - `Circle`: circular boundary.
 #[derive(Debug, Clone, PartialEq)]
 pub enum ZoneBoundary {
     /// Axis-aligned rectangle with top-left `(x, y)` and size.
@@ -68,6 +76,9 @@ impl ZoneBoundary {
     }
 }
 /// Zone enter/exit event discriminant.
+/// # Variants
+/// - `Enter`: a body entered the zone.
+/// - `Leave`: a body left the zone.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ZoneEventKind {
     /// A body entered the zone.
@@ -76,6 +87,10 @@ pub enum ZoneEventKind {
     Leave,
 }
 /// A zone crossing event emitted by `ZoneTracker::update`.
+/// # Fields
+/// - `zone_id`: zone crossed by the body.
+/// - `body_id`: body that crossed the boundary.
+/// - `kind`: whether it was an enter or leave transition.
 #[derive(Debug, Clone)]
 pub struct ZoneEvent {
     /// Id of the zone that was crossed.
@@ -86,6 +101,15 @@ pub struct ZoneEvent {
     pub kind: ZoneEventKind,
 }
 /// A trigger zone that applies gravity and damping overrides to bodies inside it.
+/// # Fields
+/// - `id`: stable zone identifier.
+/// - `boundary`: current containment shape.
+/// - `gravity_mode`: override gravity behavior inside the zone.
+/// - `priority`: higher-priority zones win during overlap.
+/// - `linear_damping_override`: optional linear damping override.
+/// - `angular_damping_override`: optional angular damping override.
+/// - `layer_mask`: body layer filter mask.
+/// - `enabled`: whether the zone participates in updates.
 pub struct PhysicsZone {
     /// Unique numeric id assigned by `World`.
     pub id: ZoneId,
@@ -150,6 +174,8 @@ impl PhysicsZone {
     }
 }
 /// Tracks which bodies are inside which zones to generate enter/exit events.
+/// # Fields
+/// - `body_zones`: per-body zone membership cache.
 pub struct ZoneTracker {
     /// Per-body set of zone ids currently containing that body.
     body_zones: HashMap<usize, HashSet<ZoneId>>,

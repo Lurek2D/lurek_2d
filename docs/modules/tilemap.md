@@ -275,6 +275,10 @@ lurek.tilemap.hexLine(q1, r1, q2, r2)
 
 ```lua
 do
+    local function hexCoords(cell)
+        return cell.q or cell[1], cell.r or cell[2]
+    end
+
     local line = lurek.tilemap.hexLine(0, 0, 4, 2)
     print("line (0,0) to (4,2): " .. #line .. " cells")
     for i, cell in ipairs(line) do
@@ -311,6 +315,10 @@ lurek.tilemap.hexNeighbors(q, r)
 
 ```lua
 do
+    local function hexCoords(cell)
+        return cell.q or cell[1], cell.r or cell[2]
+    end
+
     local neighbors = lurek.tilemap.hexNeighbors(3, 4)
     print("neighbors of (3,4): " .. #neighbors .. " cells")
     for i, n in ipairs(neighbors) do
@@ -386,6 +394,10 @@ lurek.tilemap.hexRing(q, r, radius)
 
 ```lua
 do
+    local function hexCoords(cell)
+        return cell.q or cell[1], cell.r or cell[2]
+    end
+
     local ring = lurek.tilemap.hexRing(0, 0, 2)
     print("ring at radius 2: " .. #ring .. " cells")
     for _, cell in ipairs(ring) do
@@ -496,6 +508,10 @@ lurek.tilemap.hexSpiral(q, r, radius)
 
 ```lua
 do
+    local function hexCoords(cell)
+        return cell.q or cell[1], cell.r or cell[2]
+    end
+
     local spiral = lurek.tilemap.hexSpiral(0, 0, 2)
     print("spiral radius 2: " .. #spiral .. " cells")
     local q, r = hexCoords(spiral[1])
@@ -1604,6 +1620,10 @@ LChunkMap:getChunksInView(vx, vy, vw, vh, tw, th)
 
 ```lua
 do
+    local function chunkCoords(cell)
+        return cell.cx or cell[1], cell.cy or cell[2]
+    end
+
     local cm = lurek.tilemap.newChunkMap(16)
     local visible = cm:getChunksInView(0, 0, 800, 600, 32, 32)
     print("visible chunks in 800x600 viewport: " .. #visible)
@@ -1634,6 +1654,10 @@ LChunkMap:getLoadedChunks()
 
 ```lua
 do
+    local function chunkCoords(cell)
+        return cell.cx or cell[1], cell.cy or cell[2]
+    end
+
     local cm = lurek.tilemap.newChunkMap(16) ; cm:loadChunk(0, 0)
     cm:loadChunk(1, 0) ; cm:loadChunk(0, 1)
     local loaded = cm:getLoadedChunks()
@@ -1701,6 +1725,10 @@ LChunkMap:loadChunk(cx, cy)
 
 ```lua
 do
+    local function chunkCoords(cell)
+        return cell.cx or cell[1], cell.cy or cell[2]
+    end
+
     local cm = lurek.tilemap.newChunkMap(16)
     cm:loadChunk(0, 0)
     local loaded = cm:getLoadedChunks()
@@ -2478,6 +2506,16 @@ LLargeMapRenderer:getMapSize()
 
 ```lua
 do
+    local function buildLargeMapData(width, height, value_mod)
+        local data = {}
+        for y = 1, height do
+            for x = 1, width do
+                data[#data + 1] = ((x + y) % value_mod) + 1
+            end
+        end
+        return data
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
     local width, height = 24, 24
     lmr:setMapData(buildLargeMapData(width, height, 4), width, height)
@@ -2514,6 +2552,16 @@ LLargeMapRenderer:getTile(x, y)
 
 ```lua
 do
+    local function buildLargeMapData(width, height, value_mod)
+        local data = {}
+        for y = 1, height do
+            for x = 1, width do
+                data[#data + 1] = ((x + y) % value_mod) + 1
+            end
+        end
+        return data
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
     local width, height = 24, 24
     lmr:setMapData(buildLargeMapData(width, height, 4), width, height)
@@ -2569,6 +2617,16 @@ LLargeMapRenderer:getTotalChunks()
 
 ```lua
 do
+    local function buildLargeMapData(width, height, value_mod)
+        local data = {}
+        for y = 1, height do
+            for x = 1, width do
+                data[#data + 1] = ((x + y) % value_mod) + 1
+            end
+        end
+        return data
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
     local width, height = 40, 40
     lmr:setMapData(buildLargeMapData(width, height, 1), width, height)
@@ -2598,6 +2656,16 @@ LLargeMapRenderer:getVisibleChunks()
 
 ```lua
 do
+    local function buildLargeMapData(width, height, value_mod)
+        local data = {}
+        for y = 1, height do
+            for x = 1, width do
+                data[#data + 1] = ((x + y) % value_mod) + 1
+            end
+        end
+        return data
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
     local width, height = 40, 40
     lmr:setMapData(buildLargeMapData(width, height, 1), width, height)
@@ -2708,6 +2776,16 @@ LLargeMapRenderer:setCamera(x, y, zoom)
 
 ```lua
 do
+    local function buildLargeMapData(width, height, value_mod)
+        local data = {}
+        for y = 1, height do
+            for x = 1, width do
+                data[#data + 1] = ((x + y) % value_mod) + 1
+            end
+        end
+        return data
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
     local width, height = 40, 40
     lmr:setMapData(buildLargeMapData(width, height, 1), width, height)
@@ -2823,6 +2901,16 @@ LLargeMapRenderer:setMapData(data, width, height)
 
 ```lua
 do
+    local function buildLargeMapData(width, height, value_mod)
+        local data = {}
+        for y = 1, height do
+            for x = 1, width do
+                data[#data + 1] = ((x + y) % value_mod) + 1
+            end
+        end
+        return data
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
     local width, height = 24, 24
     lmr:setMapData(buildLargeMapData(width, height, 4), width, height)
@@ -2854,6 +2942,16 @@ LLargeMapRenderer:setTile(x, y, tileId)
 
 ```lua
 do
+    local function buildLargeMapData(width, height, value_mod)
+        local data = {}
+        for y = 1, height do
+            for x = 1, width do
+                data[#data + 1] = ((x + y) % value_mod) + 1
+            end
+        end
+        return data
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
     local width, height = 24, 24
     lmr:setMapData(buildLargeMapData(width, height, 4), width, height)
@@ -2912,6 +3010,16 @@ LLargeMapRenderer:setViewport(w, h)
 
 ```lua
 do
+    local function buildLargeMapData(width, height, value_mod)
+        local data = {}
+        for y = 1, height do
+            for x = 1, width do
+                data[#data + 1] = ((x + y) % value_mod) + 1
+            end
+        end
+        return data
+    end
+
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
     local width, height = 40, 40
     lmr:setMapData(buildLargeMapData(width, height, 1), width, height)

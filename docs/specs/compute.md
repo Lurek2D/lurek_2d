@@ -13,7 +13,7 @@
 - Namespace: `lurek.compute`
 - Lua API surface: `13` functions, `6` types, `80` methods
 - Rust test path(s): tests/rust/unit/compute_tests.rs; tests/rust/stress/compute_stress_tests.rs; inline tests in src/compute/array.rs, src/compute/spatial.rs
-- Lua test path(s): tests/lua/unit/test_compute.lua; tests/lua/stress/test_compute_stress.lua; tests/lua/integration/test_data_compute.lua; tests/lua/integration/test_compute_dataframe.lua; tests/lua/golden/test_compute_golden.lua
+- Lua test path(s): tests/lua_reorg/unit/test_compute.lua; tests/lua_reorg/stress/test_compute_stress.lua; tests/lua_reorg/integration/test_data_compute.lua; tests/lua_reorg/integration/test_compute_dataframe.lua; tests/lua_reorg/golden/test_compute_golden.lua
 
 ## Summary
 

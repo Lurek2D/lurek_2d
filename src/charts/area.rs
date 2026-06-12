@@ -6,7 +6,9 @@
 //! Serves as the filled-series rendering backend behind the charts area API surface.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
-use crate::charts::render_utils::{auto_range, draw_line, fill_buffer, set_pixel, world_to_screen};
+use crate::charts::render_utils::{
+    annotate_cartesian_chart, auto_range, draw_line, fill_buffer, set_pixel, world_to_screen,
+};
 use crate::color::Color;
 use crate::dataframe::frame::DataFrame;
 use crate::image::ImageData;
@@ -103,9 +105,14 @@ impl AreaChart {
         fill_buffer(buffer, self.config.bg_color);
 
         let margin = &self.config.margin;
+        let legend_reserve = if self.config.show_legend {
+            self.config.legend_width
+        } else {
+            0.0
+        };
         let plot_x = margin.left;
         let plot_y = margin.top;
-        let plot_w = w as f32 - margin.left - margin.right;
+        let plot_w = w as f32 - margin.left - margin.right - legend_reserve;
         let plot_h = h as f32 - margin.top - margin.bottom;
 
         if plot_w <= 0.0 || plot_h <= 0.0 || self.series.is_empty() {
@@ -136,7 +143,13 @@ impl AreaChart {
         }
 
         let min_y = 0.0_f32;
-        let max_y = if stacked_max > 0.0 { stacked_max } else { 1.0 };
+        let max_y = if self.y_max > min_y {
+            self.y_max
+        } else if stacked_max > 0.0 {
+            stacked_max
+        } else {
+            1.0
+        };
 
         // Draw grid.
         if self.config.show_grid {
@@ -228,6 +241,28 @@ impl AreaChart {
             plot_x,
             plot_y + plot_h,
             self.config.axis_color,
+        );
+
+        let legend_entries: Vec<(&str, [f32; 4])> = self
+            .series
+            .iter()
+            .map(|series| (series.name.as_str(), series.color))
+            .collect();
+        annotate_cartesian_chart(
+            buffer,
+            w,
+            h,
+            &self.config,
+            plot_x,
+            plot_y,
+            plot_w,
+            plot_h,
+            min_x,
+            max_x,
+            min_y,
+            max_y,
+            &legend_entries,
+            None,
         );
     }
 }

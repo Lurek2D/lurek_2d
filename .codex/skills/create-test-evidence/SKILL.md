@@ -6,6 +6,9 @@ description: "Load this skill when creating or modifying Lua tests that produce 
 
 ## Mission
 - Create or modify evidence tests that produce durable artifacts for public Lua behavior.
+- Keep canonical `tests/lua_reorg/evidence/test_<module>_evidence.lua` markers aligned with the APIs that a produced artifact genuinely demonstrates. One `it()` may carry multiple `@evidence` markers when one artifact proves several related APIs.
+- Treat evidence as artifact generation: the block should pass when it successfully emits the intended screenshot, audio, text, JSON, or similar proof artifact.
+- Treat golden as a separate comparison layer: a golden test should validate a newly produced artifact against a stored baseline rather than merely producing the artifact.
 
 ## When To Load
 - Creating or modifying Lua tests that produce evidence artifacts such as logs, snapshots, or golden files.
@@ -24,8 +27,10 @@ description: "Load this skill when creating or modifying Lua tests that produce 
 ## Workflow
 - Inspect existing evidence tests, golden files, and target API before editing.
 - Modify an existing evidence path when it covers the module; create new artifact coverage only for missing contracts.
+- Keep `@evidence` markers directly adjacent to the `it()` block and include only APIs that the emitted artifact genuinely proves. Split a block only when one artifact no longer serves as meaningful evidence for all marked APIs.
 - Save evidence in the established baseline artifact location.
-- Run golden comparison and evidence contract audit.
+- Run golden comparison and evidence contract audit when the workflow also updates or depends on stored golden baselines. Use the canonical scripts so the shared Lua artifact lock serializes reseed/audit access to `tests/artifacts/baselines/`.
+- Rerun `python tools/audit/lua_nonunit_test_coverage.py --category evidence`.
 - Iterate until missing contracts close or the blocker is explicit.
 - Finish by reporting changed files and validation evidence.
 
@@ -40,8 +45,8 @@ description: "Load this skill when creating or modifying Lua tests that produce 
 - Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
 ## Companion File Index
-- Contracts: `tests/AGENTS.md`, `tests/lua/AGENTS.md`, `content/games/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "Lua evidence tests golden artifacts" --profile game --limit 10`, `tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py`, `tools/python.cmd tools/audit/golden_test.py`
+- Contracts: `tests/AGENTS.md`, `tests/lua_reorg/AGENTS.md`, `content/games/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "Lua evidence tests golden artifacts" --profile game --limit 10`, `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py --category evidence`, `tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py`, `tools/python.cmd tools/audit/golden_test.py`
 - Owner profile: `tester`
 
 ## Common RAG Queries
@@ -56,6 +61,6 @@ description: "Load this skill when creating or modifying Lua tests that produce 
   - related fixtures or snapshot assets
 
 ## References
-- `contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/games/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "Lua evidence tests golden artifacts" --profile game --limit 10, tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py, tools/python.cmd tools/audit/golden_test.py`
+- `contracts: tests/AGENTS.md, tests/lua_reorg/AGENTS.md, content/games/AGENTS.md`
+- `tools: tools/python.cmd tools/rag/query.py "Lua evidence tests golden artifacts" --profile game --limit 10, tools/python.cmd tools/audit/lua_nonunit_test_coverage.py --category evidence, tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py, tools/python.cmd tools/audit/golden_test.py`
 - `agent: tester`

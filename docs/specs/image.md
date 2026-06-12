@@ -13,7 +13,7 @@
 - Namespace: `lurek.image`
 - Lua API surface: `12` functions, `10` types, `90` methods
 - Rust test path(s): tests/rust/unit/image_tests.rs, tests/rust/stress/image_stress_tests.rs
-- Lua test path(s): tests/lua/unit/test_image_core_unit.lua, tests/lua/unit/test_image.lua, tests/lua/unit/test_image_effect.lua, tests/lua/unit/test_render_core_unit.lua, tests/lua/stress/test_image_stress.lua, tests/lua/evidence/test_evidence_image_drawing.lua, tests/lua/evidence/test_evidence_imagedata.lua, tests/lua/evidence/test_evidence_image_effects.lua, tests/lua/evidence/test_evidence_imagedata_effects.lua
+- Lua test path(s): tests/lua_reorg/unit/test_image_core_unit.lua, tests/lua_reorg/unit/test_image.lua, tests/lua_reorg/unit/test_image_effect.lua, tests/lua_reorg/unit/test_render_core_unit.lua, tests/lua_reorg/stress/test_image_stress.lua, tests/lua_reorg/evidence/test_evidence_image_drawing.lua, tests/lua_reorg/evidence/test_evidence_imagedata.lua, tests/lua_reorg/evidence/test_evidence_image_effects.lua, tests/lua_reorg/evidence/test_evidence_imagedata_effects.lua
 
 ## Summary
 

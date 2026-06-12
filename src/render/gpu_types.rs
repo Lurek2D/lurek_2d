@@ -10,10 +10,10 @@
 //! - Standardizes buffer bindings, pipeline options, and draw batch tags.
 //! - Limits padding bytes to comply with GPU uniform block alignment rules.
 //! - Declares struct attributes suitable for standard graphics api input.
-use bytemuck::{Pod, Zeroable};
-use crate::runtime::resource_keys::{CanvasKey, FontKey, TextureKey, ShaderKey};
 use crate::render::gpu_pipeline::GeometryKind;
 use crate::render::renderer::BlendMode;
+use crate::runtime::resource_keys::{CanvasKey, FontKey, ShaderKey, TextureKey};
+use bytemuck::{Pod, Zeroable};
 
 /// Flat-shaded vertex with `position` and per-vertex `color`.
 #[repr(C)]
@@ -208,4 +208,3 @@ impl From<crate::math::Mat3> for InstanceData {
         }
     }
 }
-

@@ -11,6 +11,11 @@ use crate::physics::shape::Shape;
 use crate::runtime::log_messages::{BD01, BD02, BD03};
 
 /// Simulation role of a physics body.
+/// # Variants
+/// - `Static`: no movement; collides with dynamic bodies.
+/// - `Dynamic`: mass-based simulation; affected by forces and gravity.
+/// - `Kinematic`: velocity-driven; not affected by forces.
+/// - `Sensor`: non-colliding overlap detector.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BodyType {
     /// No movement; collides with dynamic bodies.
@@ -23,6 +28,9 @@ pub enum BodyType {
     Sensor,
 }
 /// Primitive collision shape baked into the body descriptor.
+/// # Variants
+/// - `Rect`: axis-aligned rectangle with explicit dimensions.
+/// - `Circle`: circle with the given radius.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum BodyShape {
     /// Axis-aligned bounding box.
@@ -31,6 +39,21 @@ pub enum BodyShape {
     Circle { radius: f32 },
 }
 /// Data-only description of a physics body passed to `World` for simulation.
+/// # Fields
+/// - `position`: world-space body center.
+/// - `velocity`: linear velocity in world units per second.
+/// - `mass`: body mass in kilograms.
+/// - `body_type`: simulation role used by the solver.
+/// - `shape`: primary primitive shape used for broad behavior.
+/// - `restitution`: bounce coefficient.
+/// - `layer`: collision layer membership mask.
+/// - `mask`: collision interaction mask.
+/// - `width`: cached AABB-equivalent width.
+/// - `height`: cached AABB-equivalent height.
+/// - `friction`: surface friction coefficient.
+/// - `angle`: rotation in radians.
+/// - `angular_velocity`: rotational velocity in radians per second.
+/// - `shape_ext`: optional extended polygon/edge/chain geometry.
 pub struct Body {
     /// World-space position.
     pub position: Vec2,

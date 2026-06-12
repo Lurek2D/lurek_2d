@@ -871,11 +871,11 @@ Do not edit generated function or type rows by hand; rebuild them with `python t
 - `src/lua_api/render_api.rs`
 - `docs/architecture/render-pipeline.md`
 - `content/examples/render.lua`
-- `tests/lua/unit/test_render_core_unit.lua`
+- `tests/lua_reorg/unit/test_render_core_unit.lua`
 - `tests/rust/unit/render_tests.rs`
 
 ## Notes
 
-- Public `lurek.render` behavior is Lua-first and should keep canonical coverage in `tests/lua/unit/`.
+- Public `lurek.render` behavior is Lua-first and should keep canonical coverage in `tests/lua_reorg/unit/`.
 - `src/render/mod.rs` stays export-only; implementation logic belongs in peer files.
 - Renderer reliability changes should prefer recoverable errors or skipped invalid draws over panics in frame submission.

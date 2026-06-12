@@ -14,6 +14,9 @@ use std::collections::{HashMap, HashSet};
 const CHUNK_SIZE: u32 = 16;
 
 /// Key identifying a chunk by its chunk-grid coordinates.
+/// # Fields
+/// - `cx`: chunk-space column index.
+/// - `cy`: chunk-space row index.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ChunkId {
     /// Column index in chunk space.
@@ -23,6 +26,12 @@ pub struct ChunkId {
 }
 
 /// Tile-based terrain map that synchronises static physics bodies with a `World`.
+/// # Fields
+/// - `width`: grid width in cells.
+/// - `height`: grid height in cells.
+/// - `cell_size`: world-space cell size.
+/// - `offset_x`: world-space x origin.
+/// - `offset_y`: world-space y origin.
 pub struct TerrainMap {
     /// Grid width in cells.
     pub width: u32,

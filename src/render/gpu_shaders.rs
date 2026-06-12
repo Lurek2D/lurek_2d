@@ -6,9 +6,9 @@
 //! - Defines uniform value mappings for scalars, vectors, matrices, and arrays.
 //! - Provides conversion helpers to bridge dynamic uniforms to byte arrays.
 //! - Translates compile errors into standard Lurek2D diagnostic logs.
-use std::collections::HashMap;
-use crate::runtime::resource_keys::ShaderKey;
 use crate::render::gpu_pipeline::PipelineKey;
+use crate::runtime::resource_keys::ShaderKey;
+use std::collections::HashMap;
 
 /// WGSL uniform value type tag; used to select the correct buffer layout.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -230,7 +230,7 @@ Tests verify that Rust functions are correctly exposed, types marshal properly, 
 
 ### Layer 3: Lua Integration Tests
 
-Scripts in `tests/lua/` exercise the `lurek.*` API from the game-author perspective. These run through the engine's test harness in headless mode â€” no window, no GPU context required. CI executes these without a display server.
+Scripts in `tests/lua_reorg/` exercise the `lurek.*` API from the game-author perspective. These run through the engine's test harness in headless mode â€” no window, no GPU context required. CI executes these without a display server.
 
 ### Headless Mode
 

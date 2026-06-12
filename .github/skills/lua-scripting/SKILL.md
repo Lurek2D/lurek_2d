@@ -23,7 +23,7 @@ description: "Load this skill when writing or reviewing Lua game scripts and lur
 - Multiply all movement, physics, tween, and timer increments by `dt`. Hardcoded per-frame increments break at non-60-FPS rates and in headless tests.
 - Local variable scope: keep state in `local` variables or explicit state tables, never in module-level upvalues that persist across scene transitions. Stale upvalues from a previous scene are a common source of hard-to-trace bugs.
 - Asset paths must be relative to the game's content root. Use forward slashes.
-- Content structure: `content/examples/<module>/` holds single-concept demos for one API; `content/games/<name>/` holds multi-file playable demos with a `conf.lua` and `main.lua`; `tests/lua/unit/` holds assertion-only proof files that call `test_summary()` at the end. Do not mix these styles.
+- Content structure: `content/examples/<module>/` holds single-concept demos for one API; `content/games/<name>/` holds multi-file playable demos with a `conf.lua` and `main.lua`; `tests/lua_reorg/unit/` holds assertion-only proof files that call `test_summary()` at the end. Do not mix these styles.
 - When writing a demo or example, every `lurek.*` call used must also appear in `docs/api/lurek.md`. If you find a call that does not appear there, either it is undocumented or it is a private function that should not be called from content.
 - Harness-registered Lua test files must end with `test_summary()` and use `assert_equal`, `assert_true`, `assert_false`, `assert_near` from the test harness. Do not use plain `assert()` â€” it gives no context on failure.
 - Library modules under `library/<name>/init.lua` expose a single table. Usage: `local Inv = lurek.require("library/inventory")`.
@@ -35,5 +35,5 @@ description: "Load this skill when writing or reviewing Lua game scripts and lur
 ## References
 - content/games/
 - content/examples/
-- tests/lua/
+- tests/lua_reorg/
 - docs/api/lurek.md

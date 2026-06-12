@@ -167,4 +167,4 @@ Only methods/functions actually registered to Lua (`methods.add_method`, `method
 - src/
 - docs/specs/
 - tests/rust/unit/
-- tests/lua/
+- tests/lua_reorg/

@@ -6,6 +6,7 @@ description: "Load this skill when creating or modifying Lua integration tests t
 
 ## Mission
 - Create or modify integration tests that verify cross-module public Lua behavior.
+- Keep one canonical `test_<modules>_integration.lua` file per module-pair or module-set, and keep `@integration` markers aligned with the APIs each scenario actually exercises.
 
 ## When To Load
 - Creating or modifying Lua integration tests that prove interactions between two or more modules.
@@ -23,10 +24,11 @@ description: "Load this skill when creating or modifying Lua integration tests t
 
 ## Workflow
 - Inspect existing integration tests and involved API specs before writing.
-- Modify an existing integration file for the module pair when present; create under `tests/lua/integration/` only for new coverage.
+- Modify an existing canonical `tests/lua_reorg/integration/test_<modules>_integration.lua` file for the module pair when present; create a new file only for a genuinely new module pair or module set.
 - Use public `lurek.*` APIs and explicit state assertions.
+- Keep markers directly adjacent to each `it()` block and update them when scenario ownership changes.
 - Add or confirm harness registration when a new file is introduced.
-- Run integration coverage and `cargo test --test lua_tests`, then rerun coverage.
+- Run `python tools/audit/lua_nonunit_test_coverage.py --category integration` and `cargo test --test lua_reorg_tests <module-pair>` when possible, then rerun the audit.
 - Finish by reporting changed files and validation evidence.
 
 ## Success Criteria
@@ -40,8 +42,8 @@ description: "Load this skill when creating or modifying Lua integration tests t
 - Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
 ## Companion File Index
-- Contracts: `tests/AGENTS.md`, `tests/lua/AGENTS.md`, `content/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "Lua integration tests module interaction" --profile game --limit 10`, `tools/python.cmd tools/audit/integration_coverage.py`, `cargo test --test lua_tests`
+- Contracts: `tests/AGENTS.md`, `tests/lua_reorg/AGENTS.md`, `content/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "Lua integration tests module interaction" --profile game --limit 10`, `tools/python.cmd tools/audit/integration_coverage.py`, `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py --category integration`, `cargo test --test lua_reorg_tests`
 - Owner profile: `tester`
 
 ## Common RAG Queries
@@ -50,12 +52,12 @@ description: "Load this skill when creating or modifying Lua integration tests t
   - `tests lua integration scene input physics`
   - `assert helper fixture register`
 - Common areas to inspect after top hits:
-  - `tests/lua/`
+  - `tests/lua_reorg/`
   - `tests/harness/`
   - `library/`
   - touched modules in `src/` or `content/`
 
 ## References
-- `contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "Lua integration tests module interaction" --profile game --limit 10, tools/python.cmd tools/audit/integration_coverage.py, cargo test --test lua_tests`
+- `contracts: tests/AGENTS.md, tests/lua_reorg/AGENTS.md, content/AGENTS.md`
+- `tools: tools/python.cmd tools/rag/query.py "Lua integration tests module interaction" --profile game --limit 10, tools/python.cmd tools/audit/integration_coverage.py, tools/python.cmd tools/audit/lua_nonunit_test_coverage.py --category integration, cargo test --test lua_reorg_tests`
 - `agent: tester`

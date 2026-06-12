@@ -979,6 +979,21 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let tbl = lua.create_table()?;
     let registry = Arc::new(Mutex::new(GlobeRegistry::new()));
     {
+        let s = state.clone();
+        // -- newRegistry --
+        /// Creates an empty globe registry handle independent from the module registry.
+        /// @return | LGlobeRegistry | New globe registry handle.
+        tbl.set(
+            "newRegistry",
+            lua.create_function(move |lua, ()| {
+                lua.create_userdata(LuaGlobeRegistry {
+                    reg: Arc::new(Mutex::new(GlobeRegistry::new())),
+                    state: s.clone(),
+                })
+            })?,
+        )?;
+    }
+    {
         let reg = registry.clone();
         let s = state.clone();
         // -- new --

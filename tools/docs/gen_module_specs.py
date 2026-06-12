@@ -12,9 +12,12 @@ Manual sections preserved from the existing spec when present:
 
 Auto-collected sections rebuilt from source code and Lua binding data:
 - General Info
-- Imports
+- References
 - Files
-- Lua API Ref
+- Types
+- Functions
+- Lua API Reference
+- Notes
 
 Usage:
 ```
@@ -1158,7 +1161,15 @@ def format_references(group: str, refs: list[str], overrides: dict[str, str]) ->
 
 
 def build_default_notes(module: str, lua_api: dict) -> str:
-    return ""
+    return "- No additional module-specific notes."
+
+
+def discover_lua_tests(module: str) -> str:
+    candidates = [
+        ROOT / "tests" / "lua_reorg" / "unit" / f"test_{module}_unit.lua",
+    ]
+    found = [path.relative_to(ROOT).as_posix() for path in candidates if path.exists()]
+    return ", ".join(found)
 
 
 def build_spec(module: str, lua_parser) -> tuple[str, dict]:
@@ -1177,6 +1188,9 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     info_maps = build_info_maps(spec_text, spec_sections, agent_text, agent_sections, legacy_text)
     rust_tests = lookup_info(info_maps, "Rust test path(s)", "Rust Tests") or "None found in the workspace"
     lua_tests = lookup_info(info_maps, "Lua test path(s)", "Lua Tests") or "None found in the workspace"
+    discovered_lua_tests = discover_lua_tests(module)
+    if discovered_lua_tests and lua_tests.lower().startswith("none found"):
+        lua_tests = discovered_lua_tests
 
     group = module_group(module)
     if group == "Edge/Integration":
@@ -1196,7 +1210,14 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     # Methods and Types are fully auto-generated from source and should not reuse
     # old section text; this avoids stale or duplicated details across reruns.
     reference_overrides = combine_pair_maps(spec_sections["references"], legacy_sections["references"])
-    # Notes section removed per current spec layout requirements.
+    type_overrides = combine_pair_maps(spec_sections["types"], legacy_sections["types"])
+    function_overrides = combine_pair_maps(spec_sections["functions"], legacy_sections["functions"])
+    notes_text = first_non_empty(
+        spec_sections["notes"],
+        agent_sections["notes"],
+        legacy_sections["notes"],
+        build_default_notes(module, lua_api),
+    )
 
     tldr_text = first_non_empty(spec_sections.get("tldr", ""), agent_sections.get("tldr", ""), legacy_sections.get("tldr", ""))
 
@@ -1213,6 +1234,13 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
         })
 
     files_text = format_files(files_with_docs, {})
+    types_text = format_types(module, source["files"], source["types_by_file"], type_overrides)
+    functions_text = format_functions(
+        module,
+        source["files"],
+        source["functions_by_file"],
+        function_overrides,
+    )
     lua_api_text = format_lua_api(lua_api)
     references_text = format_references(group, source["references"], reference_overrides)
 
@@ -1230,17 +1258,29 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 
 {summary_text}
 
-## Imports
-
-{references_text}
-
 ## Files
 
 {files_text}
 
-## Lua API Ref
+## Types
+
+{types_text}
+
+## Functions
+
+{functions_text}
+
+## Lua API Reference
 
 {lua_api_text}
+
+## References
+
+{references_text}
+
+## Notes
+
+{notes_text}
 """
 
     inventory = {

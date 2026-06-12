@@ -13,7 +13,7 @@
 - Namespace: `lurek.parallax`
 - Lua API surface: `3` functions, `2` types, `48` methods
 - Rust test path(s): tests/rust/unit/parallax_tests.rs
-- Lua test path(s): tests/lua/unit/test_parallax_core_unit.lua, tests/lua/integration/test_parallax_camera.lua
+- Lua test path(s): tests/lua_reorg/unit/test_parallax_core_unit.lua, tests/lua_reorg/integration/test_parallax_camera.lua
 
 ## Summary
 

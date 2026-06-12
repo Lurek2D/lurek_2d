@@ -1,6 +1,6 @@
 //! File: tests/rust/unit/particle_tests.rs
 
-// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua_reorg/unit/; keep only private/internal seams here.
 
 use lurek2d::particle::visualization::draw_to_image;
 use lurek2d::particle::{AreaDistribution, ParticleConfig, ParticleSystem};
@@ -83,8 +83,9 @@ mod distribution_and_fuzz_tests {
         let samples = 5000;
         let hw = cfg.area_width * 0.5;
         let hh = cfg.area_height * 0.5;
+        let mut rng_state = 1;
         for _ in 0..samples {
-            let (x, y) = emission_offset(&cfg);
+            let (x, y) = emission_offset(&cfg, &mut rng_state);
             let on_vertical = (x.abs() - hw).abs() < 1e-3;
             let on_horizontal = (y.abs() - hh).abs() < 1e-3;
             if on_vertical || on_horizontal {

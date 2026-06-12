@@ -26,11 +26,11 @@
 - B-04 Rust threads. LuaJIT VMs isolated. MPMC Channel for data.
 - B-05 TOML for config. JSON for tools. No YAML.
 - C-01 Use `lurek.*` only. No other globals.
-- TST-01 `lurek.*` tests in `tests/lua/`.
+- TST-01 `lurek.*` tests in `tests/lua_reorg/`.
 - TST-02 No `#[cfg(test)]` in `src/`. Rust tests in `tests/rust/unit/`.
 - TST-03 `src/lua_api/` is bindings. Logic in `src/`.
 - TST-04 `mod.rs` only has pub mods. No logic inside.
-- TST-05 Demos in `tests/lua/demos/`. Screenshot in `tests/demo_smoke_tests.rs`.
+- TST-05 Demos in `tests/lua_reorg/demos/`. Screenshot in `tests/demo_smoke_tests.rs`.
 - TST-06 One test file per module per layer: `test_<module>_<layer>.lua`.
 - Never edit `docs/api/lurek.lua` directly. Edit `src/lua_api/` and run `tools/python.cmd tools/gen_all_docs.py`.
 - No warning suppress in `.vscode/settings.json`.

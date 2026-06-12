@@ -161,12 +161,12 @@ pub mod tween;
 pub mod ui;
 /// Exposes the content validation subsystem module.
 pub mod validator;
+/// Exposes the vector graphics SVG subsystem module.
+pub mod vector;
 /// Exposes the visibility subsystem module.
 pub mod visibility;
 /// Exposes the window subsystem module.
 pub mod window;
-/// Exposes the vector graphics SVG subsystem module.
-pub mod vector;
 
 /// Return true when `path` has the `.lurek` archive extension (case-insensitive).
 pub fn is_lurek_archive_path(path: &std::path::Path) -> bool {

@@ -20,7 +20,12 @@ pub struct LNetworkRpc {
 
 impl LNetworkRpc {
     /// Creates a new network RPC manager attached to a host.
-    pub fn new(lua: &Lua, host: LuaValue, channel: Option<u8>, timeout: Option<f64>) -> LuaResult<Self> {
+    pub fn new(
+        lua: &Lua,
+        host: LuaValue,
+        channel: Option<u8>,
+        timeout: Option<f64>,
+    ) -> LuaResult<Self> {
         // Load and execute the RPC library code in Lua
         // let rpc_module = include_str!("../../library/rpc/init.lua");
         // let rpc_lib: LuaTable = lua.load(rpc_module).eval()?;
@@ -44,19 +49,24 @@ impl LNetworkRpc {
         let val: LuaValue = lua.registry_value(&self.inner)?;
         match val {
             LuaValue::Table(t) => Ok(t),
-            _ => Err(LuaError::RuntimeError("RPC instance is not a table".to_string())),
+            _ => Err(LuaError::RuntimeError(
+                "RPC instance is not a table".to_string(),
+            )),
         }
     }
 }
 
 impl LuaUserData for LNetworkRpc {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("register", |lua, this, (name, fn_): (String, LuaFunction)| {
-            let rpc = this.get_rpc(lua)?;
-            let register_fn: LuaFunction = rpc.get("register")?;
-            register_fn.call::<_, ()>((name, fn_))?;
-            Ok(())
-        });
+        methods.add_method(
+            "register",
+            |lua, this, (name, fn_): (String, LuaFunction)| {
+                let rpc = this.get_rpc(lua)?;
+                let register_fn: LuaFunction = rpc.get("register")?;
+                register_fn.call::<_, ()>((name, fn_))?;
+                Ok(())
+            },
+        );
 
         methods.add_method("call", |lua, this, args: LuaMultiValue| {
             let rpc = this.get_rpc(lua)?;

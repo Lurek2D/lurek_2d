@@ -221,7 +221,7 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 | Love2D | Community snippets. No official test framework. |
 | Defold | Examples and demos. No formal BDD test layer exposed to game devs. |
 | Unity 2D | Massive community. But AI-generated Unity code has high slop rate because the API is inconsistent and the scene graph is opaque. |
-| **Lurek2D** | **Every API function has: (1) `///` doc comment at source, (2) at least one BDD Lua test in `tests/lua/`, (3) at least one integration test, (4) at least one `content/examples/` working example, (5) optional demo evidence.** This is enforced by quality gates Q-03, Q-04, Q-05, and `TST-01` through `TST-06`. |
+| **Lurek2D** | **Every API function has: (1) `///` doc comment at source, (2) at least one BDD Lua test in `tests/lua_reorg/`, (3) at least one integration test, (4) at least one `content/examples/` working example, (5) optional demo evidence.** This is enforced by quality gates Q-03, Q-04, Q-05, and `TST-01` through `TST-06`. |
 
 **Lurek2D verdict:** The test + example + doc triangle is the primary AI slop prevention mechanism. An AI that reads the docs, sees the example, and copies the test pattern writes correct code. Competitors have none of these as hard requirements.
 

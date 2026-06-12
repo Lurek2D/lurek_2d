@@ -12,7 +12,7 @@
 - Namespace: `lurek.timer`
 - Lua API surface: `21` functions, `1` types, `28` methods
 - Rust test path(s): tests/rust/unit/timer_tests.rs, tests/fixtures/timer_api_fixture.rs, plus inline unit coverage in src/timer/scheduler.rs
-- Lua test path(s): tests/lua/unit/test_timer.lua, tests/lua/stress/test_timer_stress.lua, tests/lua/integration/test_timer_math.lua, tests/lua/integration/test_physics_timer.lua, tests/lua/integration/test_particle_timer.lua, tests/lua/integration/test_audio_timer.lua, tests/lua/integration/test_animation_timer.lua
+- Lua test path(s): tests/lua_reorg/unit/test_timer.lua, tests/lua_reorg/stress/test_timer_stress.lua, tests/lua_reorg/integration/test_timer_math.lua, tests/lua_reorg/integration/test_physics_timer.lua, tests/lua_reorg/integration/test_particle_timer.lua, tests/lua_reorg/integration/test_audio_timer.lua, tests/lua_reorg/integration/test_animation_timer.lua
 
 ## Summary
 

@@ -25,4 +25,4 @@ Adds local rules for `content/layouts/`.
 ## References
 - tools/ui/snap_to_grid.py
 - tools/ui/fix_layouts.py
-- tests/lua/evidence/test_gui_evidence.lua
+- tests/lua_reorg/evidence/test_gui_evidence.lua

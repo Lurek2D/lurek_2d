@@ -30,4 +30,4 @@ Adds local rules for `content/`.
 ## References
 - `../library/`
 - `../docs/specs/`
-- `../tests/lua/`
+- `../tests/lua_reorg/`

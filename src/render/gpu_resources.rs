@@ -14,14 +14,16 @@
 //! - Integrates with shader resource keys to match draw commands to assets.
 //! - Tracks resource usage dirty flags to compile bind groups on demand.
 
-use crate::runtime::resource_keys::{TextureKey, FontKey, CanvasKey, ShaderKey, MeshKey, StaticGeometryKey};
+use crate::render::gpu_state::{DepthStencilTarget, GpuTexture};
 use crate::render::shader::Shader;
-use crate::render::gpu_state::{GpuTexture, DepthStencilTarget};
+use crate::runtime::resource_keys::{
+    CanvasKey, FontKey, MeshKey, ShaderKey, StaticGeometryKey, TextureKey,
+};
 
-use crate::render::renderer::TextureData;
-use slotmap::{SlotMap, Key};
-use crate::render::gpu_types::{ColorVertex, TexVertex};
 use crate::render::gpu_tess::parse_filter_mode;
+use crate::render::gpu_types::{ColorVertex, TexVertex};
+use crate::render::renderer::TextureData;
+use slotmap::{Key, SlotMap};
 
 use super::GpuRenderer;
 
@@ -104,7 +106,8 @@ impl GpuRenderer {
             let new_cap = Self::grow_capacity(self.instance_capacity, needed_inst);
             self.instance_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
                 label: Some("instance_vbo"),
-                size: new_cap * std::mem::size_of::<crate::render::gpu_types::InstanceData>() as u64,
+                size: new_cap
+                    * std::mem::size_of::<crate::render::gpu_types::InstanceData>() as u64,
                 usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
                 mapped_at_creation: false,
             });
@@ -401,10 +404,10 @@ impl GpuRenderer {
 
     pub(crate) fn sync_mesh(&mut self, mesh_key: MeshKey, mesh: &crate::render::Mesh) {
         use wgpu::util::DeviceExt;
-        
+
         let tri_indices = mesh.triangulate();
         let static_key = StaticGeometryKey::from(mesh_key.data());
-        
+
         let entry = if mesh.texture.is_some() {
             let mut verts = Vec::with_capacity(tri_indices.len());
             let mut idxs = Vec::with_capacity(tri_indices.len());
@@ -420,17 +423,21 @@ impl GpuRenderer {
                     idxs.push(i as u32);
                 }
             }
-            
-            let v_buf = self.device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                label: Some("static_mesh_vbo"),
-                contents: bytemuck::cast_slice(&verts),
-                usage: wgpu::BufferUsages::VERTEX,
-            });
-            let i_buf = self.device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                label: Some("static_mesh_ibo"),
-                contents: bytemuck::cast_slice(&idxs),
-                usage: wgpu::BufferUsages::INDEX,
-            });
+
+            let v_buf = self
+                .device
+                .create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some("static_mesh_vbo"),
+                    contents: bytemuck::cast_slice(&verts),
+                    usage: wgpu::BufferUsages::VERTEX,
+                });
+            let i_buf = self
+                .device
+                .create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some("static_mesh_ibo"),
+                    contents: bytemuck::cast_slice(&idxs),
+                    usage: wgpu::BufferUsages::INDEX,
+                });
             crate::render::gpu_state::StaticGeometryCacheEntry {
                 vertex_buffer: v_buf,
                 index_buffer: i_buf,
@@ -450,17 +457,21 @@ impl GpuRenderer {
                     idxs.push(i as u32);
                 }
             }
-            
-            let v_buf = self.device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                label: Some("static_mesh_vbo"),
-                contents: bytemuck::cast_slice(&verts),
-                usage: wgpu::BufferUsages::VERTEX,
-            });
-            let i_buf = self.device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                label: Some("static_mesh_ibo"),
-                contents: bytemuck::cast_slice(&idxs),
-                usage: wgpu::BufferUsages::INDEX,
-            });
+
+            let v_buf = self
+                .device
+                .create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some("static_mesh_vbo"),
+                    contents: bytemuck::cast_slice(&verts),
+                    usage: wgpu::BufferUsages::VERTEX,
+                });
+            let i_buf = self
+                .device
+                .create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some("static_mesh_ibo"),
+                    contents: bytemuck::cast_slice(&idxs),
+                    usage: wgpu::BufferUsages::INDEX,
+                });
             crate::render::gpu_state::StaticGeometryCacheEntry {
                 vertex_buffer: v_buf,
                 index_buffer: i_buf,
@@ -469,7 +480,7 @@ impl GpuRenderer {
                 texture: None,
             }
         };
-        
+
         self.mesh_cache.static_geometry.insert(static_key, entry);
     }
 }

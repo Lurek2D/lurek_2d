@@ -492,12 +492,34 @@ do
     print("after", world:getBodyCount())
 end
 
+--@api-stub: LBody:isValid
+do
+    local world = lurek.physics.newWorld(0, 400)
+    local temp = world:newBody(400, 400, "dynamic")
+    print("valid", temp:isValid())
+    temp:destroy()
+    print("valid_after_destroy", temp:isValid())
+end
+
 --@api-stub: LWorld:getBodyCount
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(100, 100, "dynamic")
     world:newBody(200, 200, "static")
     print("body_count", world:getBodyCount())
+end
+
+--@api-stub: LWorld:getStats
+do
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    local stats = world:getStats()
+    print("bodies", stats.bodies, "slots", stats.bodySlots, "colliders", stats.colliders)
+    print("joints", stats.joints, "joint_slots", stats.jointSlots)
+    print("zones", stats.zones, "sleeping", stats.sleepingBodies)
+    body:destroy()
+    stats = world:getStats()
+    print("after_destroy", stats.bodies, "slots", stats.bodySlots)
 end
 
 --@api-stub: LBody:type
@@ -690,6 +712,15 @@ do
     local ids = world:getBodyIds()
     print("count", #ids)
     print("first", ids[1])
+end
+
+--@api-stub: LWorld:hasBody
+do
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    print("has_body", world:hasBody(body:getId()))
+    body:destroy()
+    print("has_body_after_destroy", world:hasBody(body:getId()))
 end
 
 --@api-stub: LWorld:getBodyType
@@ -951,13 +982,25 @@ do
     print("after", world:jointCount())
 end
 
+--@api-stub: LWorld:hasJoint
+do
+    local world = lurek.physics.newWorld(0, 400)
+    local a = world:newBody(100, 100, "static")
+    local b = world:newBody(100, 200, "dynamic")
+    local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
+    print("has_joint", world:hasJoint(jid))
+    world:destroyJoint(jid)
+    print("has_joint_after_destroy", world:hasJoint(jid))
+end
+
 --- Physics Module Part 4: raycasting, AABB queries, contacts, collision events
 
 --@api-stub: LWorld:raycast
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newCircleBody(200, 200, 20, "static")
-    local hit = world:raycast(0, 200, 600, 200)
+    local body = world:newCircleBody(200, 200, 20, "static")
+    body:setLayer(0x2)
+    local hit = world:raycast(0, 200, 600, 200, { layer = 0x1, mask = 0x2 })
     if hit then
         print("body", hit.bodyId)
         print("point", hit.x, hit.y)
@@ -970,8 +1013,9 @@ end
 --@api-stub: LWorld:raycastClosest
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newCircleBody(200, 300, 15, "static")
-    local hit = world:raycastClosest(200, 100, 0, 1, 500)
+    local body = world:newCircleBody(200, 300, 15, "static")
+    body:setLayer(0x2)
+    local hit = world:raycastClosest(200, 100, 0, 1, 500, { layer = 0x1, mask = 0x2 })
     if hit then
         print("body", hit.bodyId)
         print("point", hit.x, hit.y)
@@ -985,9 +1029,10 @@ end
 do
     local world = lurek.physics.newWorld(0, 0)
     for i = 1, 5 do
-        world:newCircleBody(100 + i * 80, 200, 10, "static")
+        local body = world:newCircleBody(100 + i * 80, 200, 10, "static")
+        body:setLayer(0x2)
     end
-    local hits = world:raycastAll(50, 200, 1, 0, 600)
+    local hits = world:raycastAll(50, 200, 1, 0, 600, { layer = 0x1, mask = 0x2 })
     print("count", #hits)
     if hits[1] then
         print("first", hits[1].bodyId, hits[1].x, hits[1].y)
@@ -997,10 +1042,13 @@ end
 --@api-stub: LWorld:queryAABB
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newCircleBody(100, 100, 10, "dynamic")
-    world:newCircleBody(150, 120, 10, "dynamic")
-    world:newCircleBody(500, 500, 10, "dynamic")
-    local found = world:queryAABB(50, 50, 200, 200)
+    local a = world:newCircleBody(100, 100, 10, "dynamic")
+    local b = world:newCircleBody(150, 120, 10, "dynamic")
+    local c = world:newCircleBody(500, 500, 10, "dynamic")
+    a:setLayer(0x2)
+    b:setLayer(0x2)
+    c:setLayer(0x4)
+    local found = world:queryAABB(50, 50, 200, 200, { layer = 0x1, mask = 0x2 })
     print("count", #found)
     print("first", found[1])
 end
@@ -1008,9 +1056,10 @@ end
 --@api-stub: LWorld:getBodyAtPoint
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newCircleBody(200, 200, 30, "static")
-    local hitId = world:getBodyAtPoint(210, 205)
-    local missId = world:getBodyAtPoint(0, 0)
+    local body = world:newCircleBody(200, 200, 30, "static")
+    body:setLayer(0x2)
+    local hitId = world:getBodyAtPoint(210, 205, { layer = 0x1, mask = 0x2 })
+    local missId = world:getBodyAtPoint(0, 0, { layer = 0x1, mask = 0x2 })
     print("hit", hitId)
     print("miss", missId)
 end
@@ -1026,6 +1075,9 @@ do
     local contacts = world:getContacts()
     print("count", #contacts)
     print("ball", ball:getId())
+    if contacts[1] then
+        print("touching", contacts[1].isTouching)
+    end
 end
 
 --@api-stub: LWorld:getBeginContactEvents

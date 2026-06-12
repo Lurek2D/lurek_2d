@@ -2,4 +2,4 @@
 //! Bridges parsed XML vector trees and Lurek2D's RenderCommand drawing pipeline.
 
 pub mod svg_image;
-pub use svg_image::{SvgImage, SvgElement, SvgPath};
+pub use svg_image::{SvgElement, SvgImage, SvgPath};

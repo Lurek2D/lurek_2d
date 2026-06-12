@@ -13,7 +13,7 @@
 - Namespace: `lurek.docs`
 - Lua API surface: `26` functions, `13` types, `60` methods
 - Rust test path(s): tests/rust/unit/docs_tests.rs
-- Lua test path(s): tests/lua/unit/test_docs.lua
+- Lua test path(s): tests/lua_reorg/unit/test_docs.lua
 
 ## Summary
 

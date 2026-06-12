@@ -3557,6 +3557,22 @@ LAreaChart:render()
 
 ---
 
+#### `LAreaChart:setShowLegend`
+
+Enables or disables the layer legend for this area chart.
+
+```lua
+LAreaChart:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to show the legend. |
+
+---
+
 #### `LAreaChart:setTitle`
 
 Set or update the chart's displayed title.
@@ -3570,6 +3586,54 @@ LAreaChart:setTitle(title)
 | Name | Type | Description |
 |------|------|-------------|
 | `title` | string | New chart title text. |
+
+---
+
+#### `LAreaChart:setXLabel`
+
+Sets the X-axis label for this area chart.
+
+```lua
+LAreaChart:setXLabel(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | string | Axis label text. |
+
+---
+
+#### `LAreaChart:setXTickCount`
+
+Sets the number of X-axis tick labels for this area chart.
+
+```lua
+LAreaChart:setXTickCount(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count` | number | Tick count, minimum 2. |
+
+---
+
+#### `LAreaChart:setYLabel`
+
+Sets the Y-axis label for this area chart.
+
+```lua
+LAreaChart:setYLabel(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | string | Axis label text. |
 
 ---
 
@@ -3599,6 +3663,22 @@ do
     print("checkbox setText ok; addLayer, setYMax ok")
 end
 ```
+
+---
+
+#### `LAreaChart:setYTickCount`
+
+Sets the number of Y-axis tick labels for this area chart.
+
+```lua
+LAreaChart:setYTickCount(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count` | number | Tick count, minimum 2. |
 
 ---
 
@@ -3971,6 +4051,22 @@ LBarChart:setBarWidth(width)
 
 ---
 
+#### `LBarChart:setShowLegend`
+
+Enables or disables the series legend for this bar chart.
+
+```lua
+LBarChart:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to show the legend. |
+
+---
+
 #### `LBarChart:setTitle`
 
 Set or update the chart's displayed title.
@@ -3984,6 +4080,70 @@ LBarChart:setTitle(title)
 | Name | Type | Description |
 |------|------|-------------|
 | `title` | string | New chart title text. |
+
+---
+
+#### `LBarChart:setXLabel`
+
+Sets the X-axis label for this bar chart.
+
+```lua
+LBarChart:setXLabel(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | string | Axis label text. |
+
+---
+
+#### `LBarChart:setXTickCount`
+
+Sets the number of X-axis tick labels for this bar chart.
+
+```lua
+LBarChart:setXTickCount(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count` | number | Tick count, minimum 2. |
+
+---
+
+#### `LBarChart:setYLabel`
+
+Sets the Y-axis label for this bar chart.
+
+```lua
+LBarChart:setYLabel(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | string | Axis label text. |
+
+---
+
+#### `LBarChart:setYTickCount`
+
+Sets the number of Y-axis tick labels for this bar chart.
+
+```lua
+LBarChart:setYTickCount(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count` | number | Tick count, minimum 2. |
 
 ---
 
@@ -8402,6 +8562,22 @@ LLineChart:render()
 
 ---
 
+#### `LLineChart:setShowLegend`
+
+Enables or disables the series legend for this line chart.
+
+```lua
+LLineChart:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to show the legend. |
+
+---
+
 #### `LLineChart:setTitle`
 
 Set or update the chart's displayed title.
@@ -8415,6 +8591,22 @@ LLineChart:setTitle(title)
 | Name | Type | Description |
 |------|------|-------------|
 | `title` | string | New chart title text. |
+
+---
+
+#### `LLineChart:setXLabel`
+
+Sets the X-axis label for this line chart.
+
+```lua
+LLineChart:setXLabel(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | string | Axis label text. |
 
 ---
 
@@ -8447,6 +8639,38 @@ end
 
 ---
 
+#### `LLineChart:setXTickCount`
+
+Sets the number of X-axis tick labels for this line chart.
+
+```lua
+LLineChart:setXTickCount(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count` | number | Tick count, minimum 2. |
+
+---
+
+#### `LLineChart:setYLabel`
+
+Sets the Y-axis label for this line chart.
+
+```lua
+LLineChart:setYLabel(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | string | Axis label text. |
+
+---
+
 #### `LLineChart:setYMax`
 
 Sets the maximum Y-axis value for this line chart.
@@ -8473,6 +8697,22 @@ do
     print("setXMax/setYMax ok; type:", t)
 end
 ```
+
+---
+
+#### `LLineChart:setYTickCount`
+
+Sets the number of Y-axis tick labels for this line chart.
+
+```lua
+LLineChart:setYTickCount(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count` | number | Tick count, minimum 2. |
 
 ---
 
@@ -9986,6 +10226,22 @@ LPieChart:render()
 
 ---
 
+#### `LPieChart:setShowLegend`
+
+Enables or disables the segment legend for this pie chart.
+
+```lua
+LPieChart:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to show the legend. |
+
+---
+
 #### `LPieChart:setTitle`
 
 Set or update the chart's displayed title.
@@ -10661,6 +10917,22 @@ LScatterPlot:setDotRadius(r)
 
 ---
 
+#### `LScatterPlot:setShowLegend`
+
+Enables or disables the series legend for this scatter plot.
+
+```lua
+LScatterPlot:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | boolean | True to show the legend. |
+
+---
+
 #### `LScatterPlot:setTitle`
 
 Set or update the chart's displayed title.
@@ -10674,6 +10946,22 @@ LScatterPlot:setTitle(title)
 | Name | Type | Description |
 |------|------|-------------|
 | `title` | string | New chart title text. |
+
+---
+
+#### `LScatterPlot:setXLabel`
+
+Sets the X-axis label for this scatter plot.
+
+```lua
+LScatterPlot:setXLabel(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | string | Axis label text. |
 
 ---
 
@@ -10708,6 +10996,38 @@ end
 
 ---
 
+#### `LScatterPlot:setXTickCount`
+
+Sets the number of X-axis tick labels for this scatter plot.
+
+```lua
+LScatterPlot:setXTickCount(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count` | number | Tick count, minimum 2. |
+
+---
+
+#### `LScatterPlot:setYLabel`
+
+Sets the Y-axis label for this scatter plot.
+
+```lua
+LScatterPlot:setYLabel(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | string | Axis label text. |
+
+---
+
 #### `LScatterPlot:setYRange`
 
 Sets the Y-axis range for this scatter plot.
@@ -10735,6 +11055,22 @@ do
     print("setYRange ok, type:", t, "typeOf:", ok)
 end
 ```
+
+---
+
+#### `LScatterPlot:setYTickCount`
+
+Sets the number of Y-axis tick labels for this scatter plot.
+
+```lua
+LScatterPlot:setYTickCount(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count` | number | Tick count, minimum 2. |
 
 ---
 

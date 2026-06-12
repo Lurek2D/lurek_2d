@@ -1610,6 +1610,34 @@ end
 
 ---
 
+#### `LBody:isValid`
+
+Returns whether this body handle still points to an active body.
+
+```lua
+LBody:isValid()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the body has not been destroyed. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 400)
+    local temp = world:newBody(400, 400, "dynamic")
+    print("valid", temp:isValid())
+    temp:destroy()
+    print("valid_after_destroy", temp:isValid())
+end
+```
+
+---
+
 #### `LBody:setAngle`
 
 Sets the body's rotation angle directly.
@@ -3742,7 +3770,7 @@ end
 Returns the body ID at a specific world point, or nil if no body is there.
 
 ```lua
-LWorld:getBodyAtPoint(x, y)
+LWorld:getBodyAtPoint(x, y, filter)
 ```
 
 **Parameters**
@@ -3751,6 +3779,7 @@ LWorld:getBodyAtPoint(x, y)
 |------|------|-------------|
 | `x` | number | Query point X. |
 | `y` | number | Query point Y. |
+| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
 
 **Returns**
 
@@ -3763,9 +3792,10 @@ LWorld:getBodyAtPoint(x, y)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newCircleBody(200, 200, 30, "static")
-    local hitId = world:getBodyAtPoint(210, 205)
-    local missId = world:getBodyAtPoint(0, 0)
+    local body = world:newCircleBody(200, 200, 30, "static")
+    body:setLayer(0x2)
+    local hitId = world:getBodyAtPoint(210, 205, { layer = 0x1, mask = 0x2 })
+    local missId = world:getBodyAtPoint(0, 0, { layer = 0x1, mask = 0x2 })
     print("hit", hitId)
     print("miss", missId)
 end
@@ -4069,6 +4099,9 @@ do
     local contacts = world:getContacts()
     print("count", #contacts)
     print("ball", ball:getId())
+    if contacts[1] then
+        print("touching", contacts[1].isTouching)
+    end
 end
 ```
 
@@ -4398,6 +4431,38 @@ end
 
 ---
 
+#### `LWorld:getStats`
+
+Returns active counts and slot diagnostics for the world.
+
+```lua
+LWorld:getStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LWorldGetStatsResult | Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    local stats = world:getStats()
+    print("bodies", stats.bodies, "slots", stats.bodySlots, "colliders", stats.colliders)
+    print("joints", stats.joints, "joint_slots", stats.jointSlots)
+    print("zones", stats.zones, "sleeping", stats.sleepingBodies)
+    body:destroy()
+    stats = world:getStats()
+    print("after_destroy", stats.bodies, "slots", stats.bodySlots)
+end
+```
+
+---
+
 #### `LWorld:getZoneEvents`
 
 Returns all zone enter/leave events from the last step.
@@ -4427,6 +4492,76 @@ do
         count = count + #events
     end
     print("count", count)
+end
+```
+
+---
+
+#### `LWorld:hasBody`
+
+Returns true when a body ID still refers to a live body slot.
+
+```lua
+LWorld:hasBody(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Body ID to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the body is active. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    print("has_body", world:hasBody(body:getId()))
+    body:destroy()
+    print("has_body_after_destroy", world:hasBody(body:getId()))
+end
+```
+
+---
+
+#### `LWorld:hasJoint`
+
+Returns true when a joint ID still refers to a live joint slot.
+
+```lua
+LWorld:hasJoint(id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Joint ID to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the joint is active. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 400)
+    local a = world:newBody(100, 100, "static")
+    local b = world:newBody(100, 200, "dynamic")
+    local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
+    print("has_joint", world:hasJoint(jid))
+    world:destroyJoint(jid)
+    print("has_joint_after_destroy", world:hasJoint(jid))
 end
 ```
 
@@ -4721,7 +4856,7 @@ end
 Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
 
 ```lua
-LWorld:queryAABB(x, y, w, h)
+LWorld:queryAABB(x, y, w, h, filter)
 ```
 
 **Parameters**
@@ -4732,6 +4867,7 @@ LWorld:queryAABB(x, y, w, h)
 | `y` | number | Query rectangle top Y. |
 | `w` | number | Query rectangle width. |
 | `h` | number | Query rectangle height. |
+| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
 
 **Returns**
 
@@ -4744,10 +4880,13 @@ LWorld:queryAABB(x, y, w, h)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newCircleBody(100, 100, 10, "dynamic")
-    world:newCircleBody(150, 120, 10, "dynamic")
-    world:newCircleBody(500, 500, 10, "dynamic")
-    local found = world:queryAABB(50, 50, 200, 200)
+    local a = world:newCircleBody(100, 100, 10, "dynamic")
+    local b = world:newCircleBody(150, 120, 10, "dynamic")
+    local c = world:newCircleBody(500, 500, 10, "dynamic")
+    a:setLayer(0x2)
+    b:setLayer(0x2)
+    c:setLayer(0x4)
+    local found = world:queryAABB(50, 50, 200, 200, { layer = 0x1, mask = 0x2 })
     print("count", #found)
     print("first", found[1])
 end
@@ -4760,7 +4899,7 @@ end
 Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 
 ```lua
-LWorld:raycast(x1, y1, x2, y2)
+LWorld:raycast(x1, y1, x2, y2, filter)
 ```
 
 **Parameters**
@@ -4771,6 +4910,7 @@ LWorld:raycast(x1, y1, x2, y2)
 | `y1` | number | Ray origin Y. |
 | `x2` | number | Ray end X. |
 | `y2` | number | Ray end Y. |
+| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
 
 **Returns**
 
@@ -4783,8 +4923,9 @@ LWorld:raycast(x1, y1, x2, y2)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newCircleBody(200, 200, 20, "static")
-    local hit = world:raycast(0, 200, 600, 200)
+    local body = world:newCircleBody(200, 200, 20, "static")
+    body:setLayer(0x2)
+    local hit = world:raycast(0, 200, 600, 200, { layer = 0x1, mask = 0x2 })
     if hit then
         print("body", hit.bodyId)
         print("point", hit.x, hit.y)
@@ -4802,7 +4943,7 @@ end
 Casts a directional ray and returns all bodies hit within max distance as a table of results.
 
 ```lua
-LWorld:raycastAll(x, y, dx, dy, maxDist)
+LWorld:raycastAll(x, y, dx, dy, maxDist, filter)
 ```
 
 **Parameters**
@@ -4814,6 +4955,7 @@ LWorld:raycastAll(x, y, dx, dy, maxDist)
 | `dx` | number | Ray direction X. |
 | `dy` | number | Ray direction Y. |
 | `maxDist` | number | Maximum ray travel distance. |
+| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
 
 **Returns**
 
@@ -4827,9 +4969,10 @@ LWorld:raycastAll(x, y, dx, dy, maxDist)
 do
     local world = lurek.physics.newWorld(0, 0)
     for i = 1, 5 do
-        world:newCircleBody(100 + i * 80, 200, 10, "static")
+        local body = world:newCircleBody(100 + i * 80, 200, 10, "static")
+        body:setLayer(0x2)
     end
-    local hits = world:raycastAll(50, 200, 1, 0, 600)
+    local hits = world:raycastAll(50, 200, 1, 0, 600, { layer = 0x1, mask = 0x2 })
     print("count", #hits)
     if hits[1] then
         print("first", hits[1].bodyId, hits[1].x, hits[1].y)
@@ -4844,7 +4987,7 @@ end
 Casts a directional ray from a point and returns the closest hit within max distance.
 
 ```lua
-LWorld:raycastClosest(x, y, dx, dy, maxDist)
+LWorld:raycastClosest(x, y, dx, dy, maxDist, filter)
 ```
 
 **Parameters**
@@ -4856,6 +4999,7 @@ LWorld:raycastClosest(x, y, dx, dy, maxDist)
 | `dx` | number | Ray direction X (does not need to be normalized). |
 | `dy` | number | Ray direction Y. |
 | `maxDist` | number | Maximum ray travel distance. |
+| `filter?` | table | Optional query filter: {layer?, mask?, includeSensors?}. |
 
 **Returns**
 
@@ -4868,8 +5012,9 @@ LWorld:raycastClosest(x, y, dx, dy, maxDist)
 ```lua
 do
     local world = lurek.physics.newWorld(0, 400)
-    world:newCircleBody(200, 300, 15, "static")
-    local hit = world:raycastClosest(200, 100, 0, 1, 500)
+    local body = world:newCircleBody(200, 300, 15, "static")
+    body:setLayer(0x2)
+    local hit = world:raycastClosest(200, 100, 0, 1, 500, { layer = 0x1, mask = 0x2 })
     if hit then
         print("body", hit.bodyId)
         print("point", hit.x, hit.y)

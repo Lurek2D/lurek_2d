@@ -344,17 +344,18 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
                 dialog.default_action_idx = None;
                 dialog.cancel_action_idx = None;
                 for action_def in actions {
-                    let normalized_role =
-                        action_def.role.as_deref().unwrap_or("custom").to_ascii_lowercase();
+                    let normalized_role = action_def
+                        .role
+                        .as_deref()
+                        .unwrap_or("custom")
+                        .to_ascii_lowercase();
                     let role = DialogActionRole::parse_str(&normalized_role).ok_or_else(|| {
                         format!("unsupported dialog action role \"{}\"", normalized_role)
                     })?;
-                    let close_on_activate = action_def
-                        .close_on_activate
-                        .unwrap_or(matches!(
-                            role,
-                            DialogActionRole::Default | DialogActionRole::Cancel
-                        ));
+                    let close_on_activate = action_def.close_on_activate.unwrap_or(matches!(
+                        role,
+                        DialogActionRole::Default | DialogActionRole::Cancel
+                    ));
                     dialog.actions.push(DialogAction::new(
                         action_def.text.clone(),
                         role,

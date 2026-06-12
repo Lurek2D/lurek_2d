@@ -218,6 +218,8 @@ pub struct ParticleConfig {
     pub area_direction_relative: bool,
     /// Total emitter lifetime in seconds; negative means infinite.
     pub emitter_lifetime: f32,
+    /// Optional RNG seed used to make particle emission and evolution deterministic.
+    pub seed: Option<u64>,
     /// Controls insertion position in the particle pool when spawning.
     pub insert_mode: InsertMode,
     /// X offset applied to spawn positions relative to the emitter position.
@@ -305,6 +307,7 @@ impl Default for ParticleConfig {
             area_angle: 0.0,
             area_direction_relative: false,
             emitter_lifetime: -1.0,
+            seed: None,
             insert_mode: InsertMode::Top,
             offset_x: 0.0,
             offset_y: 0.0,

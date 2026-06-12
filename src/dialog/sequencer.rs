@@ -248,7 +248,11 @@ impl DialogSequencer {
             self.current_index += 1;
 
             match node {
-                DialogNode::Say { actor, text, duration: _ } => {
+                DialogNode::Say {
+                    actor,
+                    text,
+                    duration: _,
+                } => {
                     self.current_speaker = Some(actor);
                     self.current_text = text;
                     self.revealed_chars = 0;

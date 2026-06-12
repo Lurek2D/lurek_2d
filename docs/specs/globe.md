@@ -209,6 +209,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `lurek.globe.loadFromTOML(name, toml_src, spec_tbl?) -> LGlobe`: Creates a globe and populates provinces from TOML source text.
 - `lurek.globe.loadFromTOMLFile(name, path, spec_tbl?) -> LGlobe`: Creates a globe and populates provinces from a TOML file path.
 - `lurek.globe.new(name, spec_tbl?) -> LGlobe`: Creates a named globe with optional specification fields in the module registry.
+- `lurek.globe.newRegistry() -> LGlobeRegistry`: Creates an empty globe registry handle independent from the module registry.
 - `lurek.globe.raySphereIntersect(ox, oy, oz, dx, dy, dz, radius) -> number`: Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
 - `lurek.globe.remove(name) -> boolean`: Removes a globe from the registry by name.
 

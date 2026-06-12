@@ -1,6 +1,6 @@
 //! File: tests/rust/unit/thread_tests.rs
 
-// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua_reorg/unit/; keep only private/internal seams here.
 
 mod internal_tests {
     use lurek2d::thread::channel::ChannelValue;

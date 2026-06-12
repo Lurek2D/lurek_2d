@@ -16,7 +16,7 @@
 - Namespace: `lurek.ui`
 - Lua API surface: `91` functions, `44` types, `360` methods
 - Rust test path(s): tests/rust/unit/gui_tests.rs
-- Lua test path(s): tests/lua/unit/test_gui.lua, tests/lua/unit/test_ui_input_unit.lua, tests/lua/unit/test_ui_layout.lua, tests/lua/integration/test_i18n_ui.lua
+- Lua test path(s): tests/lua_reorg/unit/test_gui.lua, tests/lua_reorg/unit/test_ui_input_unit.lua, tests/lua_reorg/unit/test_ui_layout.lua, tests/lua_reorg/integration/test_i18n_ui.lua
 
 ## Summary
 

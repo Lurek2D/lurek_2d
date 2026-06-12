@@ -28,8 +28,8 @@ use crate::ui::controls::{
     SpinBox, Switch, TabBar, TextInput,
 };
 use crate::ui::extras::{
-    Accordion, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget, MenuBar,
-    MenuItem, Separator, Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeNode, TreeView,
+    Accordion, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget, MenuBar, MenuItem,
+    Separator, Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeNode, TreeView,
 };
 use crate::ui::theme::Theme;
 use crate::ui::widget::{
@@ -1833,14 +1833,15 @@ impl GuiContext {
     }
 
     fn widget_accepts_input(&self, idx: usize) -> bool {
-        self.widget_in_active_input_scope(idx) && self.widgets.get(idx).is_some_and(|w| {
-            let base = w.base();
-            if let WidgetKind::Dialog(dialog) = w {
-                base.visible && base.is_visible && base.enabled && dialog.open
-            } else {
-                base.visible && base.is_visible && base.enabled
-            }
-        })
+        self.widget_in_active_input_scope(idx)
+            && self.widgets.get(idx).is_some_and(|w| {
+                let base = w.base();
+                if let WidgetKind::Dialog(dialog) = w {
+                    base.visible && base.is_visible && base.enabled && dialog.open
+                } else {
+                    base.visible && base.is_visible && base.enabled
+                }
+            })
     }
 
     fn widget_contains_point(&self, idx: usize, x: f32, y: f32) -> bool {
@@ -2723,16 +2724,19 @@ impl GuiContext {
             return false;
         }
         let Some(PointerCapture::PopupMove {
-            offset_x,
-            offset_y,
-            ..
+            offset_x, offset_y, ..
         }) = self.captured_pointer
         else {
             return false;
         };
         self.apply_popup_rect(
             idx,
-            Rect::new(x - offset_x, y - offset_y, self.widgets[idx].base().width, self.widgets[idx].base().height),
+            Rect::new(
+                x - offset_x,
+                y - offset_y,
+                self.widgets[idx].base().width,
+                self.widgets[idx].base().height,
+            ),
         )
     }
 
@@ -2840,8 +2844,12 @@ impl GuiContext {
             - DIALOG_FOOTER_BUTTON_GAP;
         let mut button_x = footer_rect.x + (footer_rect.width - total_width).max(0.0);
         for (button_idx, _action) in dialog.actions.iter().enumerate() {
-            let button_rect =
-                Rect::new(button_x, footer_rect.y, DIALOG_FOOTER_BUTTON_WIDTH, footer_rect.height.min(24.0));
+            let button_rect = Rect::new(
+                button_x,
+                footer_rect.y,
+                DIALOG_FOOTER_BUTTON_WIDTH,
+                footer_rect.height.min(24.0),
+            );
             if button_rect.contains(x, y) {
                 return Some(button_idx);
             }
@@ -2949,7 +2957,8 @@ impl GuiContext {
 
     /// Center a dialog widget within the active viewport while keeping it clamped.
     pub(crate) fn center_dialog_widget(&mut self, idx: usize) -> bool {
-        matches!(self.widgets.get(idx), Some(WidgetKind::Dialog(_))) && self.center_popup_in_viewport(idx)
+        matches!(self.widgets.get(idx), Some(WidgetKind::Dialog(_)))
+            && self.center_popup_in_viewport(idx)
     }
 
     fn toolbar_button_at(&self, idx: usize, x: f32, y: f32) -> Option<usize> {
@@ -3397,7 +3406,11 @@ impl GuiContext {
         }
         for i in 1..self.widgets.len() {
             let base = self.widgets[i].base();
-            if !base.visible || !base.is_visible || !base.enabled || !self.widget_in_active_input_scope(i) {
+            if !base.visible
+                || !base.is_visible
+                || !base.enabled
+                || !self.widget_in_active_input_scope(i)
+            {
                 continue;
             }
             // Ignore widgets do not receive hover state changes.
@@ -3472,7 +3485,10 @@ impl GuiContext {
                         matches!(self.widgets.get(idx), Some(WidgetKind::TextInput(_)))
                     });
                     let focused_is_dialog_shell = self.focused_widget == Some(dialog_idx);
-                    if focused_is_text_input || focused_is_dialog_shell || self.focused_widget.is_none() {
+                    if focused_is_text_input
+                        || focused_is_dialog_shell
+                        || self.focused_widget.is_none()
+                    {
                         return self.activate_dialog_default_action(dialog_idx);
                     }
                 }
@@ -3484,7 +3500,10 @@ impl GuiContext {
                 if closed_combos {
                     return true;
                 }
-                if let Some(dialog_idx) = self.active_modal_dialog().or_else(|| self.topmost_open_dialog()) {
+                if let Some(dialog_idx) = self
+                    .active_modal_dialog()
+                    .or_else(|| self.topmost_open_dialog())
+                {
                     return self.activate_dialog_cancel_action(dialog_idx);
                 }
                 false

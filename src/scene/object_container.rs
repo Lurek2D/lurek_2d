@@ -38,5 +38,3 @@ impl LSceneObjectContainer {
         lua.registry_value::<LuaTable>(&self.inner)
     }
 }
-
-

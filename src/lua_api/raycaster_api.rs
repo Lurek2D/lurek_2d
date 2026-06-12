@@ -3,9 +3,9 @@
 use super::SharedState;
 use crate::color::Color;
 use crate::image::ImageData;
+use crate::lua_api::render_api::LuaImage;
 #[cfg(feature = "obj-loader")]
 use crate::lua_api::render_api::LuaObjModel;
-use crate::lua_api::render_api::LuaImage;
 use crate::minimap::raycaster_overlay::extract_minimap;
 use crate::minimap::{build_minimap_tile_window, compute_tile_light, reveal_cells_from_rays};
 use crate::raycaster::lighting::apply_lit_shade;

@@ -3,7 +3,7 @@
 Checks every library directory for required structure and conventions:
   - Has init.lua (the entry point loaded by require()).
   - Has example.lua demonstrating usage.
-  - Has a corresponding test at tests/lua/library/test_library_<name>.lua.
+  - Has a corresponding test at tests/lua_reorg/library/test_<name>_library.lua.
   - init.lua returns a table (scans for 'return' at file end).
   - init.lua contains at least one LDoc-style tag (--- @, --- @module, etc.).
   - No library uses raw global writes (enforces local-only exports).
@@ -27,7 +27,7 @@ from pathlib import Path
 
 ROOT = Path(".").resolve()
 LIBRARY_DIR = ROOT / "library"
-TESTS_DIR = ROOT / "tests" / "lua" / "library"
+TESTS_DIR = ROOT / "tests" / "lua_reorg" / "library"
 
 
 def validate_one(lib_dir: Path, strict: bool = False) -> list[dict]:
@@ -38,7 +38,7 @@ def validate_one(lib_dir: Path, strict: bool = False) -> list[dict]:
     # --- Required files ---
     init_lua = lib_dir / "init.lua"
     example_lua = lib_dir / "example.lua"
-    test_file = TESTS_DIR / f"test_library_{name}.lua"
+    test_file = TESTS_DIR / f"test_{name}_library.lua"
 
     if not init_lua.exists():
         findings.append({

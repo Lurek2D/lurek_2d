@@ -21,8 +21,8 @@ use crate::math::Vec2;
 use crate::render::image_effect::ShaderPassDescriptor;
 use crate::render::mesh::Mesh;
 use crate::runtime::resource_keys::{
-    CanvasKey, FontKey, MeshKey, ShaderKey, ShapeKey, SpriteBatchKey, TextureKey,
-    StaticGeometryKey, InstanceBufferKey,
+    CanvasKey, FontKey, InstanceBufferKey, MeshKey, ShaderKey, ShapeKey, SpriteBatchKey,
+    StaticGeometryKey, TextureKey,
 };
 use std::collections::HashMap;
 /// Depth comparison function for stencil and depth-buffer tests.

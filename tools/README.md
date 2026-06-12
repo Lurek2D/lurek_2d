@@ -34,7 +34,7 @@ Single registry for all durable tooling under `tools/`.
 - `audit/example_coverage.py` [audit; durable; mcp:candidate] - Cross-reference Lua example scripts against the lurek.* Lua API.
 - `audit/extract_constructors.py` [audit; durable; mcp:no] - Extract all lurek.module.function signatures from docs/api/lurek.lua
 - `audit/gen_coverage_gaps.py` [audit; durable; mcp:no] - gen_coverage_gaps.py — Generate an API gap report for Lurek2D.
-- `audit/gen_demo_lua_tests.py` [audit; durable; mcp:no] - Generate tests/lua/demos/test_*.lua from demo_smoke_tests.rs paths.
+- `audit/gen_demo_lua_tests.py` [audit; durable; mcp:no] - Generate tests/lua_reorg/demos/test_*.lua from demo_smoke_tests.rs paths.
 - `audit/gen_lua_contract_tests.py` [audit; durable; mcp:no] - gen_lua_contract_tests.py — generate Lua contract smoke tests from lua_api_data.json.
 - `audit/get_api_sigs.py` [audit; durable; mcp:no] - Extract all lurek.* namespace-level function signatures from docs/api/lurek.lua
 - `audit/golden_test.py` [audit; durable; mcp:no] - golden_test.py — Lurek2D golden file comparison tests.
@@ -42,15 +42,18 @@ Single registry for all durable tooling under `tools/`.
 - `audit/integration_coverage.py` [audit; durable; mcp:no] - integration_coverage.py — Lurek2D integration test coverage analysis.
 - `audit/library_coverage.py` [audit; durable; mcp:candidate] - library_coverage.py — Audit Lureksome library coverage across three dimensions.
 - `audit/lua_api_test_coverage.py` [audit; durable; mcp:candidate] - lua_api_test_coverage.py — Precise Lua API test coverage analysis.
+- `audit/lua_artifact_lock.py` [audit; durable; mcp:no] - Shared lock for Lua artifact maintenance tools.
 - `audit/lua_covers_lurek_api_audit.py` [audit; durable; mcp:no] - Audit @covers markers against docs/api/lurek.lua.
 - `audit/lua_evidence_golden_contract_audit.py` [audit; durable; mcp:no] - Audit Lua evidence and golden test contract compliance.
+- `audit/lua_nonunit_test_coverage.py` [audit; durable; mcp:no] - lua_nonunit_test_coverage.py - Audit canonical non-unit Lua tests in tests/lua_reorg.
 - `audit/lua_spec_coverage.py` [audit; durable; mcp:candidate] - lua_spec_coverage.py — Measure how completely docs/specs/<module>.md covers the lurek.* Lua API.
-- `audit/lua_test_structure_audit.py` [audit; durable; mcp:no] - Audit and normalize Lua BDD test structure under tests/lua.
+- `audit/lua_test_structure_audit.py` [audit; durable; mcp:no] - Audit and normalize Lua BDD test structure under tests/lua_reorg_reorg.
 - `audit/module_docstring_audit.py` [audit; durable; mcp:no] - module_docstring_audit.py -- Audit Rust source files for adequate module-level //! docstrings.
 - `audit/mutation_report.py` [audit; durable; mcp:no] - mutation_report.py — run cargo-mutants for selected priority modules.
 - `audit/parse_test_log.py` [audit; durable; mcp:no] - tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary.
 - `audit/perf_regression_gate.py` [audit; durable; mcp:no] - perf_regression_gate.py — lightweight perf/stress regression gate for CI.
 - `audit/quality_report.py` [audit; durable; mcp:candidate] - quality_report.py — Lurek2D master quality report.
+- `audit/reseed_lua_artifacts.py` [audit; durable; mcp:no] - Rebuild Lua golden baselines from current evidence artifacts.
 - `audit/scan_api_names.py` [audit; durable; mcp:no] - Extract all registered function names from Rust API files.
 - `audit/scan_exact.py` [audit; durable; mcp:no] - Scan specific Rust API files for exact function signatures.
 - `audit/scan_module_fns.py` [audit; durable; mcp:no] - Find module-level constructors (registered on lurek.X table, not on UserData).
@@ -64,7 +67,7 @@ Single registry for all durable tooling under `tools/`.
 - `audit/thin_modrs_audit.py` [audit; durable; mcp:no] - thin_modrs_audit.py — Enforce TST-04 (thin `mod.rs`).
 - `audit/thin_wrapper_audit.py` [audit; durable; mcp:no] - thin_wrapper_audit.py — Enforce TST-03 (thin wrappers in src/lua_api/).
 - `audit/tool_registry_audit.py` [audit; durable; mcp:candidate] - Audit the single-source tools registry for internal consistency.
-- `audit/unit_test_api_coverage.py` [audit; durable; mcp:no] - unit_test_api_coverage.py — Lurek2D unit-test API coverage analysis.
+- `audit/unit_test_api_coverage.py` [audit; durable; mcp:no] - unit_test_api_coverage.py - Lurek2D unit-test API coverage analysis.
 - `audit/wiki_coverage.py` [audit; durable; mcp:no] - Audit wiki page coverage against engine modules and Lua API.
 
 ## demos

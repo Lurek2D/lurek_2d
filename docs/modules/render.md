@@ -166,7 +166,7 @@ end
 
 ### `lurek.render.captureScreenshot`
 
-Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
+Captures the queued 2D render commands into an ImageData fallback and passes it to a callback.
 
 ```lua
 lurek.render.captureScreenshot(callback)

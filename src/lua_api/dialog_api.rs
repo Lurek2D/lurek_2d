@@ -1,6 +1,8 @@
 //! File: src/lua_api/dialog_api.rs
 
-use crate::dialog::{DialogueAI, DialogueState, Speaker, SpeakerRegistry, DialogSequencer, SequencerNode};
+use crate::dialog::{
+    DialogSequencer, DialogueAI, DialogueState, SequencerNode, Speaker, SpeakerRegistry,
+};
 use crate::runtime::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -325,7 +327,11 @@ impl LuaUserData for LuaDialogSequencer {
                         let actor = node_tbl.get("actor")?;
                         let text = node_tbl.get("text")?;
                         let duration = node_tbl.get("duration").ok();
-                        SequencerNode::Say { actor, text, duration }
+                        SequencerNode::Say {
+                            actor,
+                            text,
+                            duration,
+                        }
                     }
                     "choice" => {
                         let prompt = node_tbl.get("prompt")?;
@@ -358,7 +364,10 @@ impl LuaUserData for LuaDialogSequencer {
                         SequencerNode::Jump { target }
                     }
                     _ => {
-                        return Err(LuaError::RuntimeError(format!("Unknown node type: {}", node_type)));
+                        return Err(LuaError::RuntimeError(format!(
+                            "Unknown node type: {}",
+                            node_type
+                        )));
                     }
                 };
                 seq_nodes.push(node);
@@ -558,18 +567,20 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | table | Say node table for sequencer.load().
     dialog_table.set(
         "say",
-        lua.create_function(|lua, (actor, text, opts): (String, String, Option<LuaTable>)| {
-            let node = lua.create_table()?;
-            node.set("type", "say")?;
-            node.set("actor", actor)?;
-            node.set("text", text)?;
-            if let Some(o) = opts {
-                if let Ok(duration) = o.get::<_, f32>("duration") {
-                    node.set("duration", duration)?;
+        lua.create_function(
+            |lua, (actor, text, opts): (String, String, Option<LuaTable>)| {
+                let node = lua.create_table()?;
+                node.set("type", "say")?;
+                node.set("actor", actor)?;
+                node.set("text", text)?;
+                if let Some(o) = opts {
+                    if let Ok(duration) = o.get::<_, f32>("duration") {
+                        node.set("duration", duration)?;
+                    }
                 }
-            }
-            Ok(node)
-        })?,
+                Ok(node)
+            },
+        )?,
     )?;
 
     // -- choice --
@@ -580,13 +591,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | table | Choice node table for sequencer.load().
     dialog_table.set(
         "choice",
-        lua.create_function(|lua, (prompt, options, _opts): (String, LuaTable, Option<LuaTable>)| {
-            let node = lua.create_table()?;
-            node.set("type", "choice")?;
-            node.set("prompt", prompt)?;
-            node.set("options", options)?;
-            Ok(node)
-        })?,
+        lua.create_function(
+            |lua, (prompt, options, _opts): (String, LuaTable, Option<LuaTable>)| {
+                let node = lua.create_table()?;
+                node.set("type", "choice")?;
+                node.set("prompt", prompt)?;
+                node.set("options", options)?;
+                Ok(node)
+            },
+        )?,
     )?;
 
     // -- wait --
@@ -612,15 +625,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | table | Event node table for sequencer.load().
     dialog_table.set(
         "event",
-        lua.create_function(|lua, (name, data, _opts): (String, Option<String>, Option<LuaTable>)| {
-            let node = lua.create_table()?;
-            node.set("type", "event")?;
-            node.set("name", name)?;
-            if let Some(d) = data {
-                node.set("data", d)?;
-            }
-            Ok(node)
-        })?,
+        lua.create_function(
+            |lua, (name, data, _opts): (String, Option<String>, Option<LuaTable>)| {
+                let node = lua.create_table()?;
+                node.set("type", "event")?;
+                node.set("name", name)?;
+                if let Some(d) = data {
+                    node.set("data", d)?;
+                }
+                Ok(node)
+            },
+        )?,
     )?;
 
     // -- call --

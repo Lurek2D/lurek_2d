@@ -26,7 +26,7 @@ description: "Load this skill when collecting or reading logs, telemetry, SQL re
 - When a metric is missing from the data source, report the missing field, the query that would produce it, and what instrumentation would be needed to fill the gap. Do not interpolate or proxy a missing metric without labeling it as estimated.
 - Telemetry schema evolution: `logs/data/` files may have inconsistent schemas across sessions. Always inspect the schema before aggregating across sessions.
 - Engine quality metrics are in `logs/quality/` and are produced by `tools/python.cmd tools/audit/quality_report.py`. These are module-level, not per-commit.
-- Balance analysis for library modules: check `library/<name>/example.lua` and `tests/lua/library/test_library_<name>.lua` for the baseline scenario. If a balance question cannot be answered from existing test fixtures, recommend adding a parameterized scenario test rather than inventing simulation data.
+- Balance analysis for library modules: check `library/<name>/example.lua` and `tests/lua_reorg/library/test_library_<name>.lua` for the baseline scenario. If a balance question cannot be answered from existing test fixtures, recommend adding a parameterized scenario test rather than inventing simulation data.
 ## Companion File Index
 - None.
 

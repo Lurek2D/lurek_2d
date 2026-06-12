@@ -493,11 +493,7 @@ pub struct DialogAction {
 }
 impl DialogAction {
     /// Create a dialog action with an explicit role and close behavior.
-    pub fn new(
-        label: impl Into<String>,
-        role: DialogActionRole,
-        close_on_activate: bool,
-    ) -> Self {
+    pub fn new(label: impl Into<String>, role: DialogActionRole, close_on_activate: bool) -> Self {
         Self {
             label: label.into(),
             role,

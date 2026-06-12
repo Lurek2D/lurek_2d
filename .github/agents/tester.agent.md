@@ -12,7 +12,7 @@ tools: [vscode/memory, vscode/askQuestions, execute/runInTerminal, execute/runTe
 - Do not fix production code.
 
 ## Scope
-- Lua-facing tests in tests/lua/.
+- Lua-facing tests in tests/lua_reorg/.
 - Rust internal tests in tests/rust/unit/.
 - Harness registration and naming rules.
 - Test-layer placement under Lua-first policy.
@@ -30,7 +30,7 @@ tools: [vscode/memory, vscode/askQuestions, execute/runInTerminal, execute/runTe
 - **Standard tests**:
   - Read spec, tests, docs/specs/<module>.md before choosing layer.
   - Load testing-ecosystem.
-  - Put lurek.* behavior in tests/lua/; Rust internals in tests/rust/unit/.
+  - Put lurek.* behavior in tests/lua_reorg/; Rust internals in tests/rust/unit/.
   - No #[cfg(test)] in src/, no logic in src/lua_api/.
   - Small assertions, one failure reason.
   - test_summary() and markers: unit (@covers), security (@security), integration (@integration), stress (@stress), evidence (@evidence).

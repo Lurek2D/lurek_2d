@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-10",
+  "generated": "2026-06-12",
   "modules": [
     {
       "name": "agent",
@@ -10169,6 +10169,17 @@
       "description": "File: src/lua_api/globe_api.rs",
       "functions": [
         {
+          "name": "newRegistry",
+          "fullPath": "lurek.globe.newRegistry",
+          "signature": "()",
+          "description": "Creates an empty globe registry handle independent from the module registry.",
+          "parameters": [],
+          "returns": "LGlobeRegistry",
+          "returnType": "LGlobeRegistry",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "new",
           "fullPath": "lurek.globe.new",
           "signature": "(name, [spec_tbl])",
@@ -11575,6 +11586,36 @@
               "type": "string",
               "description": "Output filename relative to game directory.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "saveGIF",
+          "fullPath": "lurek.image.saveGIF",
+          "signature": "(frames, filename, [opts])",
+          "description": "Encodes a sequence of equally sized image frames as an animated GIF.",
+          "parameters": [
+            {
+              "name": "frames",
+              "type": "table",
+              "description": "Array of `LImageData` frames in playback order.",
+              "optional": false
+            },
+            {
+              "name": "filename",
+              "type": "string",
+              "description": "Output filename relative to the current game directory.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional GIF settings such as `delayMs`, `speed`, `loop`, or `loopCount`.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -18398,7 +18439,7 @@
             {
               "name": "config",
               "type": "table",
-              "description": "Particle config table.",
+              "description": "Particle config table. Supports `seed` for deterministic emission and reset behavior.",
               "optional": true
             }
           ],
@@ -18440,7 +18481,7 @@
             {
               "name": "path",
               "type": "string",
-              "description": "TOML file path.",
+              "description": "TOML file path. The TOML config may include `seed` for deterministic emission.",
               "optional": false
             }
           ],
@@ -22095,7 +22136,7 @@
         {
           "name": "printRotatedWithFont",
           "fullPath": "lurek.render.printRotatedWithFont",
-          "signature": "(font_ud, text, x, y, angle, [scale])",
+          "signature": "lurek.render.printRotatedWithFont(font, text, x, y, angle, [scale])",
           "description": "Draws text centered and rotated around its midpoint using a specific font without changing the global active font.",
           "parameters": [
             {
@@ -23603,7 +23644,7 @@
           "name": "captureScreenshot",
           "fullPath": "lurek.render.captureScreenshot",
           "signature": "(callback)",
-          "description": "Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).",
+          "description": "Captures the queued 2D render commands into an ImageData fallback and passes it to a callback.",
           "parameters": [
             {
               "name": "callback",
@@ -28261,7 +28302,7 @@
         {
           "name": "syncMinimap",
           "fullPath": "lurek.tilemap.syncMinimap",
-          "signature": "(map_ud, layer, minimap_ud, [opts])",
+          "signature": "lurek.tilemap.syncMinimap(map, layer, minimap, [opts])",
           "description": "Synchronizes a tilemap layer's solid tiles into a minimap's terrain grid.",
           "parameters": [
             {
@@ -36511,6 +36552,96 @@
           "objectType": "LAreaChart"
         },
         {
+          "name": "setXLabel",
+          "fullPath": "LAreaChart:setXLabel",
+          "signature": "(label)",
+          "description": "Sets the X-axis label for this area chart.",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "string",
+              "description": "Axis label text.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "setYLabel",
+          "fullPath": "LAreaChart:setYLabel",
+          "signature": "(label)",
+          "description": "Sets the Y-axis label for this area chart.",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "string",
+              "description": "Axis label text.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "setXTickCount",
+          "fullPath": "LAreaChart:setXTickCount",
+          "signature": "(count)",
+          "description": "Sets the number of X-axis tick labels for this area chart.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Tick count, minimum 2.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "setYTickCount",
+          "fullPath": "LAreaChart:setYTickCount",
+          "signature": "(count)",
+          "description": "Sets the number of Y-axis tick labels for this area chart.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Tick count, minimum 2.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LAreaChart:setShowLegend",
+          "signature": "(value)",
+          "description": "Enables or disables the layer legend for this area chart.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to show the legend.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
           "name": "drawToImage",
           "fullPath": "LAreaChart:drawToImage",
           "signature": "LAreaChart:drawToImage(target)",
@@ -40030,6 +40161,96 @@
           "objectType": "LBarChart"
         },
         {
+          "name": "setXLabel",
+          "fullPath": "LBarChart:setXLabel",
+          "signature": "(label)",
+          "description": "Sets the X-axis label for this bar chart.",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "string",
+              "description": "Axis label text.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "setYLabel",
+          "fullPath": "LBarChart:setYLabel",
+          "signature": "(label)",
+          "description": "Sets the Y-axis label for this bar chart.",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "string",
+              "description": "Axis label text.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "setXTickCount",
+          "fullPath": "LBarChart:setXTickCount",
+          "signature": "(count)",
+          "description": "Sets the number of X-axis tick labels for this bar chart.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Tick count, minimum 2.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "setYTickCount",
+          "fullPath": "LBarChart:setYTickCount",
+          "signature": "(count)",
+          "description": "Sets the number of Y-axis tick labels for this bar chart.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Tick count, minimum 2.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LBarChart:setShowLegend",
+          "signature": "(value)",
+          "description": "Enables or disables the series legend for this bar chart.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to show the legend.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
           "name": "addCategoriesFromDataFrame",
           "fullPath": "LBarChart:addCategoriesFromDataFrame",
           "signature": "LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, [opts])",
@@ -41759,6 +41980,17 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LBody"
+        },
+        {
+          "name": "isValid",
+          "fullPath": "LBody:isValid",
+          "signature": "()",
+          "description": "Returns whether this body handle still points to an active body.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LBody"
         },
@@ -82520,6 +82752,96 @@
           "objectType": "LLineChart"
         },
         {
+          "name": "setXLabel",
+          "fullPath": "LLineChart:setXLabel",
+          "signature": "(label)",
+          "description": "Sets the X-axis label for this line chart.",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "string",
+              "description": "Axis label text.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setYLabel",
+          "fullPath": "LLineChart:setYLabel",
+          "signature": "(label)",
+          "description": "Sets the Y-axis label for this line chart.",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "string",
+              "description": "Axis label text.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setXTickCount",
+          "fullPath": "LLineChart:setXTickCount",
+          "signature": "(count)",
+          "description": "Sets the number of X-axis tick labels for this line chart.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Tick count, minimum 2.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setYTickCount",
+          "fullPath": "LLineChart:setYTickCount",
+          "signature": "(count)",
+          "description": "Sets the number of Y-axis tick labels for this line chart.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Tick count, minimum 2.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LLineChart:setShowLegend",
+          "signature": "(value)",
+          "description": "Enables or disables the series legend for this line chart.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to show the legend.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
           "name": "drawToImage",
           "fullPath": "LLineChart:drawToImage",
           "signature": "LLineChart:drawToImage(target)",
@@ -102220,7 +102542,7 @@
             {
               "name": "config_tbl",
               "type": "table",
-              "description": "Particle config table.",
+              "description": "Particle config table. Supports `seed` for deterministic sub-emission.",
               "optional": false
             },
             {
@@ -102285,7 +102607,7 @@
             {
               "name": "config_tbl",
               "type": "table",
-              "description": "Particle config table.",
+              "description": "Particle config table. Supports `seed` for deterministic sub-systems.",
               "optional": false
             }
           ],
@@ -103162,6 +103484,24 @@
           ],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LPieChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LPieChart:setShowLegend",
+          "signature": "(value)",
+          "description": "Enables or disables the segment legend for this pie chart.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to show the legend.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LPieChart"
         },
@@ -107972,11 +108312,11 @@
           "name": "render",
           "fullPath": "LProvinceRegistry:render",
           "signature": "([opts])",
-          "description": "Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.",
+          "description": "Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.",
           "parameters": [
             {
               "name": "opts",
-              "type": "table?|Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
+              "type": "table?|Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (\"auto\"|\"strategic\"",
               "description": "\"tactical\"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).",
               "optional": true
             }
@@ -113378,6 +113718,96 @@
               "name": "mx",
               "type": "number",
               "description": "Maximum Y value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setXLabel",
+          "fullPath": "LScatterPlot:setXLabel",
+          "signature": "(label)",
+          "description": "Sets the X-axis label for this scatter plot.",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "string",
+              "description": "Axis label text.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setYLabel",
+          "fullPath": "LScatterPlot:setYLabel",
+          "signature": "(label)",
+          "description": "Sets the Y-axis label for this scatter plot.",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "string",
+              "description": "Axis label text.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setXTickCount",
+          "fullPath": "LScatterPlot:setXTickCount",
+          "signature": "(count)",
+          "description": "Sets the number of X-axis tick labels for this scatter plot.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Tick count, minimum 2.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setYTickCount",
+          "fullPath": "LScatterPlot:setYTickCount",
+          "signature": "(count)",
+          "description": "Sets the number of Y-axis tick labels for this scatter plot.",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "integer",
+              "description": "Tick count, minimum 2.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LScatterPlot:setShowLegend",
+          "signature": "(value)",
+          "description": "Enables or disables the series legend for this scatter plot.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "boolean",
+              "description": "True to show the legend.",
               "optional": false
             }
           ],
@@ -131017,7 +131447,7 @@
         {
           "name": "draw",
           "fullPath": "LSvgImage:draw",
-          "signature": "(x, y, [rotation], [sx], [sy], [ox], [oy])",
+          "signature": "LSvgImage:draw(x, y, [rotation], [sx], [sy], [ox], [oy])",
           "description": "Renders the SVG document at the given position and transform overrides.",
           "parameters": [
             {
@@ -152139,6 +152569,24 @@
           "objectType": "LWorld"
         },
         {
+          "name": "hasBody",
+          "fullPath": "LWorld:hasBody",
+          "signature": "(id)",
+          "description": "Returns true when a body ID still refers to a live body slot.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Body ID to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
           "name": "getBodyIds",
           "fullPath": "LWorld:getBodyIds",
           "signature": "()",
@@ -152146,6 +152594,35 @@
           "parameters": [],
           "returns": "integer[]",
           "returnType": "integer[]",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "hasJoint",
+          "fullPath": "LWorld:hasJoint",
+          "signature": "(id)",
+          "description": "Returns true when a joint ID still refers to a live joint slot.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Joint ID to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LWorld"
+        },
+        {
+          "name": "getStats",
+          "fullPath": "LWorld:getStats",
+          "signature": "()",
+          "description": "Returns active counts and slot diagnostics for the world.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LWorld"
         },
@@ -153212,7 +153689,7 @@
         {
           "name": "raycast",
           "fullPath": "LWorld:raycast",
-          "signature": "(x1, y1, x2, y2)",
+          "signature": "(...)",
           "description": "Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.",
           "parameters": [
             {
@@ -153238,6 +153715,12 @@
               "type": "number",
               "description": "Ray end Y.",
               "optional": false
+            },
+            {
+              "name": "filter",
+              "type": "table",
+              "description": "Optional query filter: {layer?, mask?, includeSensors?}.",
+              "optional": true
             }
           ],
           "returns": "table",
@@ -153248,7 +153731,7 @@
         {
           "name": "raycastClosest",
           "fullPath": "LWorld:raycastClosest",
-          "signature": "(x1, y1, dx, dy, max_dist)",
+          "signature": "(...)",
           "description": "Casts a directional ray from a point and returns the closest hit within max distance.",
           "parameters": [
             {
@@ -153280,6 +153763,12 @@
               "type": "number",
               "description": "Maximum ray travel distance.",
               "optional": false
+            },
+            {
+              "name": "filter",
+              "type": "table",
+              "description": "Optional query filter: {layer?, mask?, includeSensors?}.",
+              "optional": true
             }
           ],
           "returns": "table",
@@ -153290,7 +153779,7 @@
         {
           "name": "raycastAll",
           "fullPath": "LWorld:raycastAll",
-          "signature": "(x1, y1, dx, dy, max_dist)",
+          "signature": "(...)",
           "description": "Casts a directional ray and returns all bodies hit within max distance as a table of results.",
           "parameters": [
             {
@@ -153322,6 +153811,12 @@
               "type": "number",
               "description": "Maximum ray travel distance.",
               "optional": false
+            },
+            {
+              "name": "filter",
+              "type": "table",
+              "description": "Optional query filter: {layer?, mask?, includeSensors?}.",
+              "optional": true
             }
           ],
           "returns": "table",
@@ -153332,7 +153827,7 @@
         {
           "name": "queryAABB",
           "fullPath": "LWorld:queryAABB",
-          "signature": "(x, y, w, h)",
+          "signature": "(...)",
           "description": "Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.",
           "parameters": [
             {
@@ -153358,6 +153853,12 @@
               "type": "number",
               "description": "Query rectangle height.",
               "optional": false
+            },
+            {
+              "name": "filter",
+              "type": "table",
+              "description": "Optional query filter: {layer?, mask?, includeSensors?}.",
+              "optional": true
             }
           ],
           "returns": "integer[]",
@@ -153368,7 +153869,7 @@
         {
           "name": "getBodyAtPoint",
           "fullPath": "LWorld:getBodyAtPoint",
-          "signature": "(x, y)",
+          "signature": "(...)",
           "description": "Returns the body ID at a specific world point, or nil if no body is there.",
           "parameters": [
             {
@@ -153382,6 +153883,12 @@
               "type": "number",
               "description": "Query point Y.",
               "optional": false
+            },
+            {
+              "name": "filter",
+              "type": "table",
+              "description": "Optional query filter: {layer?, mask?, includeSensors?}.",
+              "optional": true
             }
           ],
           "returns": "integer",

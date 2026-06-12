@@ -73,7 +73,7 @@ def _profile_clause(profile: str) -> str:
     if profile == "game":
         return (
             " AND (type = 'api' OR path LIKE '.codex/skills/%' OR path LIKE 'content/%' "
-            "OR path LIKE 'docs/%' OR path LIKE 'library/%' OR path LIKE 'tests/lua/%' "
+            "OR path LIKE 'docs/%' OR path LIKE 'library/%' OR path LIKE 'tests/lua_reorg/%' "
             "OR path LIKE 'tools/audit/%' OR path LIKE 'tools/validate/%' OR path LIKE 'tools/ui/%' "
             "OR path LIKE 'tools/snippets/%') "
         )

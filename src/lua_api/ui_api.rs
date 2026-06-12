@@ -4774,8 +4774,16 @@ fn add_dialog_methods(
             let g = c.borrow();
             Ok(match g.widgets.get(idx) {
                 Some(dialog) => (
-                    dialog.base().max_width.is_finite().then_some(dialog.base().max_width),
-                    dialog.base().max_height.is_finite().then_some(dialog.base().max_height),
+                    dialog
+                        .base()
+                        .max_width
+                        .is_finite()
+                        .then_some(dialog.base().max_width),
+                    dialog
+                        .base()
+                        .max_height
+                        .is_finite()
+                        .then_some(dialog.base().max_height),
                 ),
                 None => (None, None),
             })
@@ -4890,8 +4898,10 @@ fn add_dialog_methods(
                         })?,
                     None => DialogActionRole::Custom,
                 };
-                let close_on_activate =
-                    close_on_activate.unwrap_or(matches!(role, DialogActionRole::Default | DialogActionRole::Cancel));
+                let close_on_activate = close_on_activate.unwrap_or(matches!(
+                    role,
+                    DialogActionRole::Default | DialogActionRole::Cancel
+                ));
                 dialog
                     .actions
                     .push(DialogAction::new(text, role, close_on_activate));
@@ -4974,7 +4984,9 @@ fn add_dialog_methods(
         lua.create_function(move |_, _self: LuaValue| {
             let g = c.borrow();
             Ok(match g.widgets.get(idx) {
-                Some(WidgetKind::Dialog(dialog)) => dialog.default_action_idx.map(|value| value + 1),
+                Some(WidgetKind::Dialog(dialog)) => {
+                    dialog.default_action_idx.map(|value| value + 1)
+                }
                 _ => None,
             })
         })?,
@@ -7021,7 +7033,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                             let f: LuaFunction = lua.registry_value(key)?;
                             f.call::<_, ()>((widget_idx as u64, item_idx as u64))?;
                         }
-                        if let Some(key) = cbs_update.borrow().dialog_action.get(&(widget_idx, item_idx))
+                        if let Some(key) = cbs_update
+                            .borrow()
+                            .dialog_action
+                            .get(&(widget_idx, item_idx))
                         {
                             let f: LuaFunction = lua.registry_value(key)?;
                             f.call::<_, ()>((widget_idx as u64, (item_idx + 1) as u64))?;
@@ -7144,15 +7159,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newLineChart",
         lua.create_function(move |_, opts: LuaTable| {
-            let width = opts.get::<_, u32>("width").unwrap_or(400);
-            let height = opts.get::<_, u32>("height").unwrap_or(300);
-            let title = opts.get::<_, Option<String>>("title").ok().flatten();
-            let cfg = crate::charts::ChartConfig {
-                width,
-                height,
-                title,
-                ..crate::charts::ChartConfig::default()
-            };
+            let cfg = parse_ui_chart_config(&opts)?;
             Ok(LuaLineChart {
                 inner: crate::charts::LineChart::new(cfg),
             })
@@ -7165,15 +7172,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newBarChart",
         lua.create_function(move |_, opts: LuaTable| {
-            let width = opts.get::<_, u32>("width").unwrap_or(400);
-            let height = opts.get::<_, u32>("height").unwrap_or(300);
-            let title = opts.get::<_, Option<String>>("title").ok().flatten();
-            let cfg = crate::charts::ChartConfig {
-                width,
-                height,
-                title,
-                ..crate::charts::ChartConfig::default()
-            };
+            let cfg = parse_ui_chart_config(&opts)?;
             Ok(LuaBarChart {
                 inner: crate::charts::BarChart::new(cfg),
             })
@@ -7186,15 +7185,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newScatterPlot",
         lua.create_function(move |_, opts: LuaTable| {
-            let width = opts.get::<_, u32>("width").unwrap_or(400);
-            let height = opts.get::<_, u32>("height").unwrap_or(400);
-            let title = opts.get::<_, Option<String>>("title").ok().flatten();
-            let cfg = crate::charts::ChartConfig {
-                width,
-                height,
-                title,
-                ..crate::charts::ChartConfig::default()
-            };
+            let cfg = parse_ui_chart_config(&opts)?;
             Ok(LuaScatterPlot {
                 inner: crate::charts::ScatterPlot::new(cfg),
             })
@@ -7207,15 +7198,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newPieChart",
         lua.create_function(move |_, opts: LuaTable| {
-            let width = opts.get::<_, u32>("width").unwrap_or(400);
-            let height = opts.get::<_, u32>("height").unwrap_or(400);
-            let title = opts.get::<_, Option<String>>("title").ok().flatten();
-            let cfg = crate::charts::ChartConfig {
-                width,
-                height,
-                title,
-                ..crate::charts::ChartConfig::default()
-            };
+            let cfg = parse_ui_chart_config(&opts)?;
             Ok(LuaPieChart {
                 inner: crate::charts::PieChart::new(cfg),
             })
@@ -7228,15 +7211,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newAreaChart",
         lua.create_function(move |_, opts: LuaTable| {
-            let width = opts.get::<_, u32>("width").unwrap_or(400);
-            let height = opts.get::<_, u32>("height").unwrap_or(300);
-            let title = opts.get::<_, Option<String>>("title").ok().flatten();
-            let cfg = crate::charts::ChartConfig {
-                width,
-                height,
-                title,
-                ..crate::charts::ChartConfig::default()
-            };
+            let cfg = parse_ui_chart_config(&opts)?;
             Ok(LuaAreaChart {
                 inner: crate::charts::AreaChart::new(cfg),
             })
@@ -7653,6 +7628,76 @@ fn parse_chart_dataframe_options(opts: Option<LuaTable>) -> LuaResult<ChartDataF
         max_rows: opts.get("maxRows")?,
     })
 }
+
+fn parse_chart_color(tbl: &LuaTable, key: &str) -> LuaResult<Option<[f32; 4]>> {
+    let Ok(Some(color_tbl)) = tbl.get::<_, Option<LuaTable>>(key) else {
+        return Ok(None);
+    };
+    Ok(Some([
+        color_tbl.get::<_, f32>(1)?.clamp(0.0, 1.0),
+        color_tbl.get::<_, f32>(2)?.clamp(0.0, 1.0),
+        color_tbl.get::<_, f32>(3)?.clamp(0.0, 1.0),
+        color_tbl
+            .get::<_, Option<f32>>(4)?
+            .unwrap_or(1.0)
+            .clamp(0.0, 1.0),
+    ]))
+}
+
+fn parse_ui_chart_config(opts: &LuaTable) -> LuaResult<crate::charts::ChartConfig> {
+    let mut cfg = crate::charts::ChartConfig {
+        width: opts.get::<_, Option<u32>>("width")?.unwrap_or(400),
+        height: opts.get::<_, Option<u32>>("height")?.unwrap_or(300),
+        title: opts.get::<_, Option<String>>("title")?,
+        x_label: opts.get::<_, Option<String>>("xLabel")?,
+        y_label: opts.get::<_, Option<String>>("yLabel")?,
+        show_legend: opts.get::<_, Option<bool>>("showLegend")?.unwrap_or(false),
+        x_tick_count: opts
+            .get::<_, Option<u32>>("xTickCount")?
+            .unwrap_or(5)
+            .max(2),
+        y_tick_count: opts
+            .get::<_, Option<u32>>("yTickCount")?
+            .unwrap_or(5)
+            .max(2),
+        legend_width: opts
+            .get::<_, Option<f32>>("legendWidth")?
+            .unwrap_or(80.0)
+            .max(40.0),
+        ..crate::charts::ChartConfig::default()
+    };
+    if let Some(bg) = parse_chart_color(opts, "bgColor")? {
+        cfg.bg_color = bg;
+    }
+    if let Some(axis) = parse_chart_color(opts, "axisColor")? {
+        cfg.axis_color = axis;
+    }
+    if let Some(grid) = parse_chart_color(opts, "gridColor")? {
+        cfg.grid_color = grid;
+    }
+    if let Some(label) = parse_chart_color(opts, "labelColor")? {
+        cfg.label_color = label;
+    }
+    if let Ok(Some(show_grid)) = opts.get::<_, Option<bool>>("showGrid") {
+        cfg.show_grid = show_grid;
+    }
+    if let Ok(Some(margin_tbl)) = opts.get::<_, Option<LuaTable>>("margin") {
+        cfg.margin.top = margin_tbl
+            .get::<_, Option<f32>>("top")?
+            .unwrap_or(cfg.margin.top);
+        cfg.margin.right = margin_tbl
+            .get::<_, Option<f32>>("right")?
+            .unwrap_or(cfg.margin.right);
+        cfg.margin.bottom = margin_tbl
+            .get::<_, Option<f32>>("bottom")?
+            .unwrap_or(cfg.margin.bottom);
+        cfg.margin.left = margin_tbl
+            .get::<_, Option<f32>>("left")?
+            .unwrap_or(cfg.margin.left);
+    }
+    Ok(cfg)
+}
+
 fn rgb_color(r: f32, g: f32, b: f32) -> Color {
     Color::new(r, g, b, 1.0)
 }
@@ -7738,6 +7783,41 @@ impl LuaUserData for LuaLineChart {
             this.inner.x_max = v;
             Ok(())
         });
+        // -- setXLabel --
+        /// Sets the X-axis label for this line chart.
+        /// @param | label | string | Axis label text.
+        methods.add_method_mut("setXLabel", |_, this, label: String| {
+            this.inner.config.x_label = Some(label);
+            Ok(())
+        });
+        // -- setYLabel --
+        /// Sets the Y-axis label for this line chart.
+        /// @param | label | string | Axis label text.
+        methods.add_method_mut("setYLabel", |_, this, label: String| {
+            this.inner.config.y_label = Some(label);
+            Ok(())
+        });
+        // -- setXTickCount --
+        /// Sets the number of X-axis tick labels for this line chart.
+        /// @param | count | integer | Tick count, minimum 2.
+        methods.add_method_mut("setXTickCount", |_, this, count: u32| {
+            this.inner.config.x_tick_count = count.max(2);
+            Ok(())
+        });
+        // -- setYTickCount --
+        /// Sets the number of Y-axis tick labels for this line chart.
+        /// @param | count | integer | Tick count, minimum 2.
+        methods.add_method_mut("setYTickCount", |_, this, count: u32| {
+            this.inner.config.y_tick_count = count.max(2);
+            Ok(())
+        });
+        // -- setShowLegend --
+        /// Enables or disables the series legend for this line chart.
+        /// @param | value | boolean | True to show the legend.
+        methods.add_method_mut("setShowLegend", |_, this, value: bool| {
+            this.inner.config.show_legend = value;
+            Ok(())
+        });
         // -- drawToImage --
         /// Renders this line chart to an image buffer.
         /// @param | target | LImageData | The image to draw into.
@@ -7794,6 +7874,41 @@ impl LuaUserData for LuaBarChart {
                 Ok(())
             },
         );
+        // -- setXLabel --
+        /// Sets the X-axis label for this bar chart.
+        /// @param | label | string | Axis label text.
+        methods.add_method_mut("setXLabel", |_, this, label: String| {
+            this.inner.config.x_label = Some(label);
+            Ok(())
+        });
+        // -- setYLabel --
+        /// Sets the Y-axis label for this bar chart.
+        /// @param | label | string | Axis label text.
+        methods.add_method_mut("setYLabel", |_, this, label: String| {
+            this.inner.config.y_label = Some(label);
+            Ok(())
+        });
+        // -- setXTickCount --
+        /// Sets the number of X-axis tick labels for this bar chart.
+        /// @param | count | integer | Tick count, minimum 2.
+        methods.add_method_mut("setXTickCount", |_, this, count: u32| {
+            this.inner.config.x_tick_count = count.max(2);
+            Ok(())
+        });
+        // -- setYTickCount --
+        /// Sets the number of Y-axis tick labels for this bar chart.
+        /// @param | count | integer | Tick count, minimum 2.
+        methods.add_method_mut("setYTickCount", |_, this, count: u32| {
+            this.inner.config.y_tick_count = count.max(2);
+            Ok(())
+        });
+        // -- setShowLegend --
+        /// Enables or disables the series legend for this bar chart.
+        /// @param | value | boolean | True to show the legend.
+        methods.add_method_mut("setShowLegend", |_, this, value: bool| {
+            this.inner.config.show_legend = value;
+            Ok(())
+        });
         // -- addCategoriesFromDataFrame --
         /// Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
         /// @param | df | LDataFrame | Source dataframe.
@@ -7925,6 +8040,41 @@ impl LuaUserData for LuaScatterPlot {
             this.inner.y_range = (mn, mx);
             Ok(())
         });
+        // -- setXLabel --
+        /// Sets the X-axis label for this scatter plot.
+        /// @param | label | string | Axis label text.
+        methods.add_method_mut("setXLabel", |_, this, label: String| {
+            this.inner.config.x_label = Some(label);
+            Ok(())
+        });
+        // -- setYLabel --
+        /// Sets the Y-axis label for this scatter plot.
+        /// @param | label | string | Axis label text.
+        methods.add_method_mut("setYLabel", |_, this, label: String| {
+            this.inner.config.y_label = Some(label);
+            Ok(())
+        });
+        // -- setXTickCount --
+        /// Sets the number of X-axis tick labels for this scatter plot.
+        /// @param | count | integer | Tick count, minimum 2.
+        methods.add_method_mut("setXTickCount", |_, this, count: u32| {
+            this.inner.config.x_tick_count = count.max(2);
+            Ok(())
+        });
+        // -- setYTickCount --
+        /// Sets the number of Y-axis tick labels for this scatter plot.
+        /// @param | count | integer | Tick count, minimum 2.
+        methods.add_method_mut("setYTickCount", |_, this, count: u32| {
+            this.inner.config.y_tick_count = count.max(2);
+            Ok(())
+        });
+        // -- setShowLegend --
+        /// Enables or disables the series legend for this scatter plot.
+        /// @param | value | boolean | True to show the legend.
+        methods.add_method_mut("setShowLegend", |_, this, value: bool| {
+            this.inner.config.show_legend = value;
+            Ok(())
+        });
         // -- drawToImage --
         /// Renders this scatter plot to an image buffer.
         /// @param | target | LImageData | The image to draw into.
@@ -7992,6 +8142,13 @@ impl LuaUserData for LuaPieChart {
                     .map_err(LuaError::RuntimeError)
             },
         );
+        // -- setShowLegend --
+        /// Enables or disables the segment legend for this pie chart.
+        /// @param | value | boolean | True to show the legend.
+        methods.add_method_mut("setShowLegend", |_, this, value: bool| {
+            this.inner.config.show_legend = value;
+            Ok(())
+        });
         // -- drawToImage --
         /// Renders this pie chart to an image buffer.
         /// @param | target | LImageData | The image to draw into.
@@ -8080,6 +8237,41 @@ impl LuaUserData for LuaAreaChart {
         /// @param | v | number | The Y-axis maximum.
         methods.add_method_mut("setYMax", |_, this, v: f32| {
             this.inner.y_max = v;
+            Ok(())
+        });
+        // -- setXLabel --
+        /// Sets the X-axis label for this area chart.
+        /// @param | label | string | Axis label text.
+        methods.add_method_mut("setXLabel", |_, this, label: String| {
+            this.inner.config.x_label = Some(label);
+            Ok(())
+        });
+        // -- setYLabel --
+        /// Sets the Y-axis label for this area chart.
+        /// @param | label | string | Axis label text.
+        methods.add_method_mut("setYLabel", |_, this, label: String| {
+            this.inner.config.y_label = Some(label);
+            Ok(())
+        });
+        // -- setXTickCount --
+        /// Sets the number of X-axis tick labels for this area chart.
+        /// @param | count | integer | Tick count, minimum 2.
+        methods.add_method_mut("setXTickCount", |_, this, count: u32| {
+            this.inner.config.x_tick_count = count.max(2);
+            Ok(())
+        });
+        // -- setYTickCount --
+        /// Sets the number of Y-axis tick labels for this area chart.
+        /// @param | count | integer | Tick count, minimum 2.
+        methods.add_method_mut("setYTickCount", |_, this, count: u32| {
+            this.inner.config.y_tick_count = count.max(2);
+            Ok(())
+        });
+        // -- setShowLegend --
+        /// Enables or disables the layer legend for this area chart.
+        /// @param | value | boolean | True to show the legend.
+        methods.add_method_mut("setShowLegend", |_, this, value: bool| {
+            this.inner.config.show_legend = value;
             Ok(())
         });
         // -- drawToImage --

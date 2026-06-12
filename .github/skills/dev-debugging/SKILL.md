@@ -18,7 +18,7 @@ description: "Load this skill when diagnosing runtime bugs, crashes, or wrong be
 - Test authoring.
 
 ## Domain Knowledge
-- Start from an existing failing script or fixture before reading src/. `tests/lua/`, `content/games/`, and `save/` already contain repro anchors.
+- Start from an existing failing script or fixture before reading src/. `tests/lua_reorg/`, `content/games/`, and `save/` already contain repro anchors.
 - Common failure surfaces in this repo, in order of frequency: `RefCell::borrow_mut()` panic inside a Lua callback, stale registry key after a scene reload, wrong callback ordering between `process` and `render`, RunState transition skipping an init step, and channel drop causing silent loss of a thread result.
 - To trace a Lua-boundary crash: find the Lua call in logs, then find the corresponding `*_api.rs` binding, then trace from there into `src/<module>/`. Stop at the first concrete control path that explains the symptom.
 - To trace a render glitch: find which `RenderCommand` variant is wrong or missing in the command buffer log. Then find where that command is pushed.

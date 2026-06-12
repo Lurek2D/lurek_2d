@@ -1,6 +1,6 @@
 //! File: tests/rust/unit/app_tests.rs
 
-// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua_reorg/unit/; keep only private/internal seams here.
 
 use lurek2d::app::app::{
     classify_drop_startup_target, fit_contain_size, recompute_viewport, DropStartupTarget, LurekApp,

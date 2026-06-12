@@ -65,11 +65,7 @@ impl SvgImage {
 
         // Helper to convert usvg::Transform to [f32; 9] column-major
         let convert_transform = |t: &usvg::Transform| -> [f32; 9] {
-            [
-                t.sx,  t.kx, 0.0,
-                t.ky,  t.sy, 0.0,
-                t.tx,  t.ty, 1.0,
-            ]
+            [t.sx, t.kx, 0.0, t.ky, t.sy, 0.0, t.tx, t.ty, 1.0]
         };
 
         // Recursive walker to build SvgElement hierarchy
@@ -208,13 +204,13 @@ impl SvgImage {
     /// Recursively submits render commands to draw the elements.
     pub fn render(&self, st: &mut SharedState) {
         // Render helper that applies transformations hierarchically
-        fn render_element(
-            svg: &SvgImage,
-            element_id: &str,
-            st: &mut SharedState,
-        ) {
-            let Some(el) = svg.elements.get(element_id) else { return; };
-            if !el.visible { return; }
+        fn render_element(svg: &SvgImage, element_id: &str, st: &mut SharedState) {
+            let Some(el) = svg.elements.get(element_id) else {
+                return;
+            };
+            if !el.visible {
+                return;
+            }
 
             st.render_commands.push(RenderCommand::PushTransform);
 
@@ -231,9 +227,8 @@ impl SvgImage {
                 });
             }
             if el.rotation != 0.0 {
-                st.render_commands.push(RenderCommand::Rotate {
-                    angle: el.rotation,
-                });
+                st.render_commands
+                    .push(RenderCommand::Rotate { angle: el.rotation });
             }
             if el.scale.x != 1.0 || el.scale.y != 1.0 {
                 st.render_commands.push(RenderCommand::Scale {
@@ -257,14 +252,17 @@ impl SvgImage {
             } else {
                 // Otherwise, render geometry paths
                 for path in &el.paths {
-                    if path.segments.is_empty() { continue; }
+                    if path.segments.is_empty() {
+                        continue;
+                    }
 
                     // Apply fill
                     if let Some(mut fill) = path.fill_color {
                         if let Some(over) = el.color_override {
                             fill = over;
                         }
-                        st.render_commands.push(RenderCommand::SetColor(fill[0], fill[1], fill[2], fill[3]));
+                        st.render_commands
+                            .push(RenderCommand::SetColor(fill[0], fill[1], fill[2], fill[3]));
                         st.render_commands.push(RenderCommand::DrawPath {
                             segments: path.segments.clone(),
                             mode: DrawMode::Fill,
@@ -277,8 +275,11 @@ impl SvgImage {
                         if let Some(over) = el.color_override {
                             stroke = over;
                         }
-                        st.render_commands.push(RenderCommand::SetLineWidth(path.stroke_width));
-                        st.render_commands.push(RenderCommand::SetColor(stroke[0], stroke[1], stroke[2], stroke[3]));
+                        st.render_commands
+                            .push(RenderCommand::SetLineWidth(path.stroke_width));
+                        st.render_commands.push(RenderCommand::SetColor(
+                            stroke[0], stroke[1], stroke[2], stroke[3],
+                        ));
                         st.render_commands.push(RenderCommand::DrawPath {
                             segments: path.segments.clone(),
                             mode: DrawMode::Line,
@@ -323,7 +324,11 @@ impl SvgImage {
     }
 
     /// Recursively flattens Bezier path segments of the element (and its children) into a flat list of points.
-    pub fn get_element_points(&self, element_id: &str, step_size: Option<f32>) -> Option<Vec<Vec2>> {
+    pub fn get_element_points(
+        &self,
+        element_id: &str,
+        step_size: Option<f32>,
+    ) -> Option<Vec<Vec2>> {
         let el = self.elements.get(element_id)?;
         let step = step_size.unwrap_or(5.0);
         let mut points = Vec::new();
@@ -336,8 +341,12 @@ impl SvgImage {
             step: f32,
             points: &mut Vec<Vec2>,
         ) {
-            let Some(el) = svg.elements.get(el_id) else { return; };
-            if !el.visible { return; }
+            let Some(el) = svg.elements.get(el_id) else {
+                return;
+            };
+            if !el.visible {
+                return;
+            }
 
             // Compute transform for this element
             let mat = mul_matrix(parent_mat, &el.local_transform);
@@ -374,7 +383,14 @@ impl SvgImage {
                             }
                             current_pos = p1;
                         }
-                        PathSegment::CubicTo { cx1, cy1, cx2, cy2, x, y } => {
+                        PathSegment::CubicTo {
+                            cx1,
+                            cy1,
+                            cx2,
+                            cy2,
+                            x,
+                            y,
+                        } => {
                             let p0 = current_pos;
                             let pc1 = Vec2::new(*cx1, *cy1);
                             let pc2 = Vec2::new(*cx2, *cy2);
@@ -388,7 +404,10 @@ impl SvgImage {
                             for i in 1..=n {
                                 let t = i as f32 / n as f32;
                                 let mt = 1.0 - t;
-                                let pt = p0 * (mt * mt * mt) + pc1 * (3.0 * mt * mt * t) + pc2 * (3.0 * mt * t * t) + p1 * (t * t * t);
+                                let pt = p0 * (mt * mt * mt)
+                                    + pc1 * (3.0 * mt * mt * t)
+                                    + pc2 * (3.0 * mt * t * t)
+                                    + p1 * (t * t * t);
                                 points.push(transform_point(&mat, pt));
                             }
                             current_pos = p1;
@@ -416,7 +435,11 @@ impl SvgImage {
 
     /// Automatically detects adjacency graph between elements matching the given prefix.
     #[allow(clippy::needless_range_loop)]
-    pub fn get_adjacencies(&self, prefix: &str, epsilon: Option<f32>) -> HashMap<String, Vec<String>> {
+    pub fn get_adjacencies(
+        &self,
+        prefix: &str,
+        epsilon: Option<f32>,
+    ) -> HashMap<String, Vec<String>> {
         let eps = epsilon.unwrap_or(2.0);
         let mut adj: HashMap<String, Vec<String>> = HashMap::new();
 
@@ -451,8 +474,11 @@ impl SvgImage {
                 let (ref id_b, ref pts_b, bbox_b) = target_elements[j];
 
                 // Overlap check with epsilon margin
-                if bbox_a.1 + eps < bbox_b.0 - eps || bbox_b.1 + eps < bbox_a.0 - eps ||
-                   bbox_a.3 + eps < bbox_b.2 - eps || bbox_b.3 + eps < bbox_a.2 - eps {
+                if bbox_a.1 + eps < bbox_b.0 - eps
+                    || bbox_b.1 + eps < bbox_a.0 - eps
+                    || bbox_a.3 + eps < bbox_b.2 - eps
+                    || bbox_b.3 + eps < bbox_a.2 - eps
+                {
                     continue;
                 }
 
@@ -478,7 +504,13 @@ impl SvgImage {
     }
 
     /// Renders the target element/group to a GPU off-screen texture (Canvas) and caches its key.
-    pub fn cache_to_canvas(&mut self, element_id: &str, w: u32, h: u32, st: &mut SharedState) -> Result<CanvasKey, String> {
+    pub fn cache_to_canvas(
+        &mut self,
+        element_id: &str,
+        w: u32,
+        h: u32,
+        st: &mut SharedState,
+    ) -> Result<CanvasKey, String> {
         if !self.elements.contains_key(element_id) {
             return Err(format!("Element '{}' not found", element_id));
         }
@@ -491,16 +523,18 @@ impl SvgImage {
             height: h,
         });
 
-        st.render_commands.push(RenderCommand::ResetCanvas(canvas_key));
-        st.render_commands.push(RenderCommand::SetCanvas(Some(canvas_key)));
+        st.render_commands
+            .push(RenderCommand::ResetCanvas(canvas_key));
+        st.render_commands
+            .push(RenderCommand::SetCanvas(Some(canvas_key)));
 
-        fn draw_element_paths_only(
-            svg: &SvgImage,
-            el_id: &str,
-            st: &mut SharedState,
-        ) {
-            let Some(el) = svg.elements.get(el_id) else { return; };
-            if !el.visible { return; }
+        fn draw_element_paths_only(svg: &SvgImage, el_id: &str, st: &mut SharedState) {
+            let Some(el) = svg.elements.get(el_id) else {
+                return;
+            };
+            if !el.visible {
+                return;
+            }
 
             st.render_commands.push(RenderCommand::PushTransform);
             st.render_commands.push(RenderCommand::ApplyTransform {
@@ -508,21 +542,33 @@ impl SvgImage {
             });
 
             if el.translation.x != 0.0 || el.translation.y != 0.0 {
-                st.render_commands.push(RenderCommand::Translate { x: el.translation.x, y: el.translation.y });
+                st.render_commands.push(RenderCommand::Translate {
+                    x: el.translation.x,
+                    y: el.translation.y,
+                });
             }
             if el.rotation != 0.0 {
-                st.render_commands.push(RenderCommand::Rotate { angle: el.rotation });
+                st.render_commands
+                    .push(RenderCommand::Rotate { angle: el.rotation });
             }
             if el.scale.x != 1.0 || el.scale.y != 1.0 {
-                st.render_commands.push(RenderCommand::Scale { sx: el.scale.x, sy: el.scale.y });
+                st.render_commands.push(RenderCommand::Scale {
+                    sx: el.scale.x,
+                    sy: el.scale.y,
+                });
             }
 
             for path in &el.paths {
-                if path.segments.is_empty() { continue; }
+                if path.segments.is_empty() {
+                    continue;
+                }
 
                 if let Some(mut fill) = path.fill_color {
-                    if let Some(over) = el.color_override { fill = over; }
-                    st.render_commands.push(RenderCommand::SetColor(fill[0], fill[1], fill[2], fill[3]));
+                    if let Some(over) = el.color_override {
+                        fill = over;
+                    }
+                    st.render_commands
+                        .push(RenderCommand::SetColor(fill[0], fill[1], fill[2], fill[3]));
                     st.render_commands.push(RenderCommand::DrawPath {
                         segments: path.segments.clone(),
                         mode: DrawMode::Fill,
@@ -531,9 +577,14 @@ impl SvgImage {
                 }
 
                 if let Some(mut stroke) = path.stroke_color {
-                    if let Some(over) = el.color_override { stroke = over; }
-                    st.render_commands.push(RenderCommand::SetLineWidth(path.stroke_width));
-                    st.render_commands.push(RenderCommand::SetColor(stroke[0], stroke[1], stroke[2], stroke[3]));
+                    if let Some(over) = el.color_override {
+                        stroke = over;
+                    }
+                    st.render_commands
+                        .push(RenderCommand::SetLineWidth(path.stroke_width));
+                    st.render_commands.push(RenderCommand::SetColor(
+                        stroke[0], stroke[1], stroke[2], stroke[3],
+                    ));
                     st.render_commands.push(RenderCommand::DrawPath {
                         segments: path.segments.clone(),
                         mode: DrawMode::Line,
@@ -551,9 +602,11 @@ impl SvgImage {
 
         draw_element_paths_only(self, element_id, st);
 
-        st.render_commands.push(RenderCommand::SetCanvas(st.active_canvas));
+        st.render_commands
+            .push(RenderCommand::SetCanvas(st.active_canvas));
 
-        self.cached_canvases.insert(element_id.to_string(), canvas_key);
+        self.cached_canvases
+            .insert(element_id.to_string(), canvas_key);
 
         Ok(canvas_key)
     }
@@ -582,10 +635,18 @@ impl SvgImage {
         let mut max_x = f32::MIN;
         let mut max_y = f32::MIN;
         for p in &pts {
-            if p.x < min_x { min_x = p.x; }
-            if p.y < min_y { min_y = p.y; }
-            if p.x > max_x { max_x = p.x; }
-            if p.y > max_y { max_y = p.y; }
+            if p.x < min_x {
+                min_x = p.x;
+            }
+            if p.y < min_y {
+                min_y = p.y;
+            }
+            if p.x > max_x {
+                max_x = p.x;
+            }
+            if p.y > max_y {
+                max_y = p.y;
+            }
         }
         Some((min_x, min_y, max_x, max_y))
     }
@@ -606,7 +667,13 @@ impl SvgImage {
     /// the original SVG-embedded local transform.
     pub fn get_element_transform(&self, element_id: &str) -> Option<(f32, f32, f32, f32, f32)> {
         let el = self.elements.get(element_id)?;
-        Some((el.translation.x, el.translation.y, el.rotation, el.scale.x, el.scale.y))
+        Some((
+            el.translation.x,
+            el.translation.y,
+            el.rotation,
+            el.scale.x,
+            el.scale.y,
+        ))
     }
 
     /// Resets the runtime translation, rotation, and scale of the element to identity.
@@ -614,7 +681,9 @@ impl SvgImage {
     /// The original SVG-embedded local transform is not affected.
     /// Returns `Err` when the element ID is not found.
     pub fn reset_element_transform(&mut self, element_id: &str) -> Result<(), String> {
-        let el = self.elements.get_mut(element_id)
+        let el = self
+            .elements
+            .get_mut(element_id)
             .ok_or_else(|| format!("Element '{}' not found", element_id))?;
         el.translation = Vec2::new(0.0, 0.0);
         el.rotation = 0.0;
@@ -626,7 +695,9 @@ impl SvgImage {
     ///
     /// Returns `Err` when the element ID is not found.
     pub fn reset_element_color(&mut self, element_id: &str) -> Result<(), String> {
-        let el = self.elements.get_mut(element_id)
+        let el = self
+            .elements
+            .get_mut(element_id)
             .ok_or_else(|| format!("Element '{}' not found", element_id))?;
         el.color_override = None;
         Ok(())
@@ -653,17 +724,15 @@ impl SvgImage {
 
 fn mul_matrix(a: &[f32; 9], b: &[f32; 9]) -> [f32; 9] {
     [
-        a[0]*b[0] + a[3]*b[1] + a[6]*b[2],
-        a[1]*b[0] + a[4]*b[1] + a[7]*b[2],
-        a[2]*b[0] + a[5]*b[1] + a[8]*b[2],
-
-        a[0]*b[3] + a[3]*b[4] + a[6]*b[5],
-        a[1]*b[3] + a[4]*b[4] + a[7]*b[5],
-        a[2]*b[3] + a[5]*b[4] + a[8]*b[5],
-
-        a[0]*b[6] + a[3]*b[7] + a[6]*b[8],
-        a[1]*b[6] + a[4]*b[7] + a[7]*b[8],
-        a[2]*b[6] + a[5]*b[7] + a[8]*b[8],
+        a[0] * b[0] + a[3] * b[1] + a[6] * b[2],
+        a[1] * b[0] + a[4] * b[1] + a[7] * b[2],
+        a[2] * b[0] + a[5] * b[1] + a[8] * b[2],
+        a[0] * b[3] + a[3] * b[4] + a[6] * b[5],
+        a[1] * b[3] + a[4] * b[4] + a[7] * b[5],
+        a[2] * b[3] + a[5] * b[4] + a[8] * b[5],
+        a[0] * b[6] + a[3] * b[7] + a[6] * b[8],
+        a[1] * b[6] + a[4] * b[7] + a[7] * b[8],
+        a[2] * b[6] + a[5] * b[7] + a[8] * b[8],
     ]
 }
 
@@ -671,9 +740,15 @@ fn apply_trs(m: &[f32; 9], t: Vec2, r: f32, s: Vec2) -> [f32; 9] {
     let cos = r.cos();
     let sin = r.sin();
     let trs = [
-        cos * s.x, sin * s.x, 0.0,
-        -sin * s.y, cos * s.y, 0.0,
-        t.x, t.y, 1.0,
+        cos * s.x,
+        sin * s.x,
+        0.0,
+        -sin * s.y,
+        cos * s.y,
+        0.0,
+        t.x,
+        t.y,
+        1.0,
     ];
     mul_matrix(m, &trs)
 }
@@ -683,4 +758,3 @@ fn transform_point(m: &[f32; 9], p: Vec2) -> Vec2 {
     let ny = p.x * m[1] + p.y * m[4] + m[7];
     Vec2::new(nx, ny)
 }
-

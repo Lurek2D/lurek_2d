@@ -12,7 +12,7 @@
 - Namespace: `lurek.color`
 - Lua API surface: `19` functions, `0` types, `0` methods
 - Rust test path(s): tests/rust/unit/color_tests.rs
-- Lua test path(s): tests/lua/unit/test_color_core_unit.lua
+- Lua test path(s): tests/lua_reorg/unit/test_color_core_unit.lua
 
 ## Summary
 

@@ -7,6 +7,8 @@
 //! Interaction-oriented highlights ensure the same rendering path can surface hover and selection feedback for tools or gameplay UI.
 //! Functionally this file delivers the visible province map assembled from registry state, view transforms, and style policy.
 
+use std::collections::HashMap;
+
 use crate::province::map_modes::resolve_color_fallback;
 use crate::province::registry::ProvinceRegistry;
 use crate::province::types::{BorderPairFlags, ProvinceId};
@@ -41,6 +43,10 @@ pub struct ProvinceRenderOptions {
     pub screen_h: f32,
     /// Active map mode name that drives fill colour selection.
     pub map_mode: String,
+    /// Optional render-time RGBA multiplier applied to province fills.
+    pub tint: Option<[f32; 4]>,
+    /// Optional render-time province fill colour overrides keyed by province id.
+    pub province_tints: HashMap<ProvinceId, [f32; 4]>,
     /// When true, emit fill rectangles for province spans.
     pub draw_fills: bool,
     /// When true, emit line segments for province borders.
@@ -74,6 +80,8 @@ impl Default for ProvinceRenderOptions {
             screen_w: 1280.0,
             screen_h: 720.0,
             map_mode: "political".to_string(),
+            tint: None,
+            province_tints: HashMap::new(),
             draw_fills: true,
             draw_borders: true,
             draw_labels: false,
@@ -117,6 +125,29 @@ const VISIBILITY_VISIBLE_MIN: u8 = 2;
 
 fn discovered_fill_color() -> [f32; 4] {
     [0.2, 0.2, 0.2, 1.0]
+}
+
+fn multiply_color(color: [f32; 4], tint: [f32; 4]) -> [f32; 4] {
+    [
+        color[0] * tint[0],
+        color[1] * tint[1],
+        color[2] * tint[2],
+        color[3] * tint[3],
+    ]
+}
+
+fn fill_color_for_province(
+    opts: &ProvinceRenderOptions,
+    id: ProvinceId,
+    base: [f32; 4],
+) -> [f32; 4] {
+    if let Some(color) = opts.province_tints.get(&id) {
+        return *color;
+    }
+    if let Some(tint) = opts.tint {
+        return multiply_color(base, tint);
+    }
+    base
 }
 
 fn is_hidden(visibility_state: u8) -> bool {
@@ -193,12 +224,13 @@ pub fn generate_render_commands(
             if is_hidden(style.visibility_state) {
                 continue;
             }
-            let c = if is_discovered(style.visibility_state) {
+            let base_color = if is_discovered(style.visibility_state) {
                 discovered_fill_color()
             } else {
                 let mode_config = registry.map_mode_config();
                 resolve_color_fallback(mode_config, style)
             };
+            let c = fill_color_for_province(opts, id, base_color);
             cmds.push(RenderCommand::SetColor(c[0], c[1], c[2], c[3]));
             if let Some(spans) = registry.spans_for(id) {
                 // Merge vertically-adjacent spans with same x0,x1 into taller rectangles

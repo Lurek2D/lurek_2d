@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Generate tests/lua/demos/test_*.lua from demo_smoke_tests.rs paths."""
+"""Generate tests/lua_reorg/demos/test_*.lua from demo_smoke_tests.rs paths."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
 WORKSPACE = Path(__file__).resolve().parent.parent.parent
-OUT = WORKSPACE / "tests" / "lua" / "demos"
+OUT = WORKSPACE / "tests" / "lua_reorg" / "demos"
 
 DEMOS: list[tuple[str, str, str]] = [
     ("test_globe_demo.lua", "globe_demo", "content/games/showcase/globe_demo"),
@@ -43,7 +43,7 @@ DEMOS: list[tuple[str, str, str]] = [
 ]
 
 TEMPLATE = """-- Headless contract test for {slug} ({path})
-dofile("tests/lua/demos/_common_checks.lua")
+dofile("tests/lua_reorg/demos/_common_checks.lua")
 
 -- @describe demo: {slug}
 describe("demo: {slug}", function()

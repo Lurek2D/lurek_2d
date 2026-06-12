@@ -2,7 +2,7 @@
 """
 gen_lua_contract_tests.py — generate Lua contract smoke tests from lua_api_data.json.
 
-Generates a single smoke-contract file under tests/lua/generated/ that verifies
+Generates a single smoke-contract file under tests/lua_reorg/generated/ that verifies
 the existence of top-level lurek.* functions from the canonical API metadata.
 """
 

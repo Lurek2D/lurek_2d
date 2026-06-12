@@ -1,7 +1,8 @@
 //! File: tests/rust/unit/province_tests.rs
 
-// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua_reorg/unit/; keep only private/internal seams here.
 
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use lurek2d::image::{ImageData, ProvinceGrid};
@@ -362,6 +363,43 @@ fn test_fow_render_hidden_and_discovered_fill_rules() {
         has_discovered_gray,
         "discovered province should render gray fill"
     );
+}
+
+#[test]
+fn test_render_applies_province_tints_without_mutating_registry_colors() {
+    let grid = sample_grid();
+    let mut reg = ProvinceRegistry::from_grid(&grid);
+    assert!(reg.set_visibility_state(ProvinceId(1), 2));
+    assert!(reg.set_visibility_state(ProvinceId(2), 2));
+    assert!(reg.set_political_color(ProvinceId(1), [0.1, 0.1, 0.1, 1.0]));
+
+    let mut province_tints = HashMap::new();
+    province_tints.insert(ProvinceId(1), [0.25, 0.5, 0.75, 1.0]);
+
+    let opts = ProvinceRenderOptions {
+        draw_fills: true,
+        draw_borders: false,
+        draw_labels: false,
+        draw_capitals: false,
+        province_tints,
+        ..ProvinceRenderOptions::default()
+    };
+    let cmds = generate_render_commands(&reg, &opts, None);
+
+    let has_tinted_fill = cmds.iter().any(|cmd| {
+        matches!(
+            cmd,
+            RenderCommand::SetColor(r, g, b, a)
+                if (*r, *g, *b, *a) == (0.25_f32, 0.5_f32, 0.75_f32, 1.0_f32)
+        )
+    });
+    assert!(
+        has_tinted_fill,
+        "province_tints should override fill color for this render"
+    );
+
+    let style_after = reg.style_for(ProvinceId(1)).expect("province style");
+    assert_eq!(style_after.political_color, [0.1, 0.1, 0.1, 1.0]);
 }
 
 #[test]

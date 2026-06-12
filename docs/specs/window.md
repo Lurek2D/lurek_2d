@@ -12,7 +12,7 @@
 - Namespace: `lurek.window`
 - Lua API surface: `55` functions, `4` types, `0` methods
 - Rust test path(s): tests/rust/unit/window_tests.rs
-- Lua test path(s): tests/lua/unit/test_window_core_unit.lua
+- Lua test path(s): tests/lua_reorg/unit/test_window_core_unit.lua
 
 ## Summary
 

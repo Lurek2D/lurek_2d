@@ -12,6 +12,7 @@
   - [brick_breaker](#brickbreaker)
   - [bullet_hell](#bullethell)
   - [cannon_fodder](#cannonfodder)
+  - [cinematic_chase](#cinematicchase)
   - [endless_runner](#endlessrunner)
   - [fighting_game](#fightinggame)
   - [horde_survivor](#hordesurvivor)
@@ -22,12 +23,21 @@
   - [roguelite](#roguelite)
   - [sniper](#sniper)
   - [soulslike](#soulslike)
+  - [spine_boss_arena](#spinebossarena)
   - [stealth](#stealth)
+  - [stealth_ops](#stealthops)
   - [vertical_climber](#verticalclimber)
 - [apps](#apps)
+  - [audio_composer](#audiocomposer)
   - [household_finance_lab](#householdfinancelab)
+  - [html_ui_suite](#htmluisuite)
+  - [image_workbench](#imageworkbench)
+  - [learning_lab](#learninglab)
   - [learning_route_attention_lab](#learningrouteattentionlab)
   - [learning_sales_forecast_lab](#learningsalesforecastlab)
+  - [localization_dialog_studio](#localizationdialogstudio)
+  - [mod_manager_lab](#modmanagerlab)
+  - [network_sync_lab](#networksynclab)
 - [arcade](#arcade)
   - [asteroids](#asteroids)
   - [centipede](#centipede)
@@ -35,11 +45,14 @@
   - [dyna_blaster](#dynablaster)
   - [frogger](#frogger)
   - [galaga](#galaga)
+  - [network_duel](#networkduel)
   - [pac_man](#pacman)
   - [pong](#pong)
   - [snake](#snake)
   - [space_invaders](#spaceinvaders)
   - [tetris](#tetris)
+- [puzzle](#puzzle)
+  - [mapblock_labyrinth](#mapblocklabyrinth)
 - [retro](#retro)
   - [another_world](#anotherworld)
   - [boulder_dash](#boulderdash)
@@ -65,6 +78,9 @@
   - [loot_rpg_demo](#lootrpgdemo)
   - [merchant](#merchant)
   - [merchant_demo](#merchantdemo)
+  - [modded_arena](#moddedarena)
+  - [mystery_case](#mysterycase)
+  - [raycaster_dungeon](#raycasterdungeon)
   - [roguelike](#roguelike)
   - [social_deduction](#socialdeduction)
   - [star_voyage](#starvoyage)
@@ -73,6 +89,7 @@
 - [showcase](#showcase)
   - [agent_pipeline_demo](#agentpipelinedemo)
   - [automation_demo](#automationdemo)
+  - [automation_replay_lab](#automationreplaylab)
   - [debugbridge_demo](#debugbridgedemo)
   - [demo_game](#demogame)
   - [devtools_demo](#devtoolsdemo)
@@ -105,11 +122,14 @@
   - [sprites](#sprites)
   - [svg_provinces](#svgprovinces)
   - [terminal_demo](#terminaldemo)
+  - [terminal_dev_console](#terminaldevconsole)
   - [tween_demo](#tweendemo)
   - [vending_lights](#vendinglights)
+  - [visual_fx_lab](#visualfxlab)
 - [simulation](#simulation)
   - [colony_sim](#colonysim)
   - [cooking_sim](#cookingsim)
+  - [deep_cave_rescue](#deepcaverescue)
   - [factory](#factory)
   - [farming_sim](#farmingsim)
   - [god_game](#godgame)
@@ -120,6 +140,7 @@
   - [physics_demo](#physicsdemo)
   - [physics_sandbox](#physicssandbox)
   - [province_economy_demo](#provinceeconomydemo)
+  - [rail_flow_tycoon](#railflowtycoon)
   - [railroad](#railroad)
   - [settlers_rise](#settlersrise)
   - [tower_sim](#towersim)
@@ -132,6 +153,7 @@
   - [drift_racing](#driftracing)
   - [fishing](#fishing)
   - [golf_classic](#golfclassic)
+  - [physics_arena](#physicsarena)
   - [pinball](#pinball)
   - [rhythm_game](#rhythmgame)
   - [sensible_soccer](#sensiblesoccer)
@@ -146,6 +168,7 @@
   - [deckbuilder](#deckbuilder)
   - [dune2_like](#dune2like)
   - [eu2](#eu2)
+  - [frontier_tactics](#frontiertactics)
   - [hex_strategy](#hexstrategy)
   - [logic_game](#logicgame)
   - [match3](#match3)
@@ -153,6 +176,7 @@
   - [party_games](#partygames)
   - [physics_puzzle](#physicspuzzle)
   - [rts](#rts)
+  - [swarm_evolution](#swarmevolution)
   - [tactical_battle](#tacticalbattle)
   - [tower_defense](#towerdefense)
   - [wargame](#wargame)
@@ -187,6 +211,12 @@ Dodge intricate bullet patterns, graze for bonus points, and bomb your way throu
 Top-down military squad action inspired by Cannon Fodder (Amiga). Lead four soldiers across a tile-based jungle map, click to move the squad, while they auto...
 
 **Modules:** [automation](Module-automation), [event](Module-event), [math](Module-math), [render](Module-render), [ui](Module-ui), [window](Module-window)
+
+### [cinematic_chase](../tree/main/content/games/action/cinematic_chase)
+
+**Category:** action / cinematic runner **Status:** skeleton
+
+**Modules:** [audio](Module-audio), [camera](Module-camera), [cinematic](Module-cinematic), [event](Module-event), [input](Module-input), [parallax](Module-parallax), [render](Module-render), [tween](Module-tween), +1
 
 ### [endless_runner](../tree/main/content/games/action/endless_runner)
 
@@ -268,6 +298,12 @@ Precision boss fight with stamina management, dodge i-frames, estus heals, and a
 
 **Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
 
+### [spine_boss_arena](../tree/main/content/games/action/spine_boss_arena)
+
+**Category:** action / boss fight **Status:** skeleton
+
+**Modules:** [animation](Module-animation), [audio](Module-audio), [cinematic](Module-cinematic), [event](Module-event), [input](Module-input), [physics](Module-physics), [render](Module-render), [spine](Module-spine), +1
+
 ### [stealth](../tree/main/content/games/action/stealth)
 
 ![stealth screenshot](../raw/main/content/games/action/stealth/screen.png)
@@ -275,6 +311,14 @@ Precision boss fight with stamina management, dodge i-frames, estus heals, and a
 Top-down stealth game — sneak past patrolling guards, collect keycards, and reach the exit unseen.
 
 **Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +2
+
+### [stealth_ops](../tree/main/content/games/action/stealth_ops)
+
+![stealth_ops screenshot](../raw/main/content/games/action/stealth_ops/screen.png)
+
+**Category:** action / stealth tactics **Status:** playable foundation
+
+**Modules:** [ai](Module-ai), [event](Module-event), [input](Module-input), [light](Module-light), [pathfind](Module-pathfind), [render](Module-render), [tilemap](Module-tilemap), [visibility](Module-visibility), +1
 
 ### [vertical_climber](../tree/main/content/games/action/vertical_climber)
 
@@ -287,6 +331,12 @@ Endless Doodle Jump-style vertical platformer — auto-bounce upward through pro
 
 ## apps
 
+### [audio_composer](../tree/main/content/games/apps/audio_composer)
+
+**Category:** apps / audio **Status:** skeleton
+
+**Modules:** [audio](Module-audio), [dsp](Module-dsp), [event](Module-event), [input](Module-input), [midi](Module-midi), [render](Module-render), [ui](Module-ui), [window](Module-window)
+
 ### [household_finance_lab](../tree/main/content/games/apps/household_finance_lab)
 
 ![household_finance_lab screenshot](../raw/main/content/games/apps/household_finance_lab/screen.png)
@@ -294,6 +344,26 @@ Endless Doodle Jump-style vertical platformer — auto-bounce upward through pro
 _Kompleksowe laboratorium finansów domowych — analityczny dashboard oparty o bazy danych SQL, biblioteki Dataframe, zaawansowane wykresy statystyczne oraz interaktywne widżety UI._
 
 **Modules:** [filesystem](Module-filesystem), [render](Module-render), [save](Module-save), [ui](Module-ui), [window](Module-window)
+
+### [html_ui_suite](../tree/main/content/games/apps/html_ui_suite)
+
+**Category:** apps / HTML UI **Status:** skeleton
+
+**Modules:** [event](Module-event), [filesystem](Module-filesystem), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [image_workbench](../tree/main/content/games/apps/image_workbench)
+
+**Category:** apps / image processing **Status:** skeleton
+
+**Modules:** [compute](Module-compute), [effect](Module-effect), [event](Module-event), [filesystem](Module-filesystem), [image](Module-image), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [learning_lab](../tree/main/content/games/apps/learning_lab)
+
+![learning_lab screenshot](../raw/main/content/games/apps/learning_lab/screen.png)
+
+**Category:** apps / machine learning **Status:** skeleton
+
+**Modules:** [charts](Module-charts), [compute](Module-compute), [dataframe](Module-dataframe), [event](Module-event), [input](Module-input), [learning](Module-learning), [render](Module-render), [window](Module-window)
 
 ### [learning_route_attention_lab](../tree/main/content/games/apps/learning_route_attention_lab)
 
@@ -306,6 +376,24 @@ Aplikacja demo z konkretnymi danymi mapy ryzyka i sekwencji trasy.
 Mała aplikacja demo pokazująca lurek.learning na konkretnych danych sprzedaży miesięcznej.
 
 **Modules:** [learning](Module-learning)
+
+### [localization_dialog_studio](../tree/main/content/games/apps/localization_dialog_studio)
+
+**Category:** apps / narrative tooling **Status:** skeleton
+
+**Modules:** [dialog](Module-dialog), [event](Module-event), [grep](Module-grep), [html](Module-html), [i18n](Module-i18n), [input](Module-input), [render](Module-render), [save](Module-save), +1
+
+### [mod_manager_lab](../tree/main/content/games/apps/mod_manager_lab)
+
+**Category:** apps / mod tooling **Status:** skeleton
+
+**Modules:** [event](Module-event), [filesystem](Module-filesystem), [input](Module-input), [mods](Module-mods), [pipeline](Module-pipeline), [render](Module-render), [validator](Module-validator), [window](Module-window)
+
+### [network_sync_lab](../tree/main/content/games/apps/network_sync_lab)
+
+**Category:** apps / network diagnostics **Status:** skeleton
+
+**Modules:** [charts](Module-charts), [event](Module-event), [input](Module-input), [network](Module-network), [render](Module-render), [thread](Module-thread), [window](Module-window)
 
 
 ## arcade
@@ -356,6 +444,12 @@ Classic Galaga arcade shooter with formation enemies, dive-bombing attacks, boss
 
 **Modules:** [automation](Module-automation), [input](Module-input), [scene](Module-scene), [ui](Module-ui)
 
+### [network_duel](../tree/main/content/games/arcade/network_duel)
+
+**Category:** arcade / multiplayer **Status:** skeleton
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [network](Module-network), [render](Module-render), [scene](Module-scene), [window](Module-window)
+
 ### [pac_man](../tree/main/content/games/arcade/pac_man)
 
 ![pac_man screenshot](../raw/main/content/games/arcade/pac_man/screen.png)
@@ -395,6 +489,15 @@ Defend Earth from descending alien formations. Shoot them before they reach you.
 _Rotate and stack falling tetrominoes — classic arcade puzzle with hold piece, ghost preview, and line-clear particles._
 
 **Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [ui](Module-ui), +1
+
+
+## puzzle
+
+### [mapblock_labyrinth](../tree/main/content/games/puzzle/mapblock_labyrinth)
+
+**Category:** puzzle / procedural maps **Status:** skeleton
+
+**Modules:** [event](Module-event), [input](Module-input), [mapblock](Module-mapblock), [pathfind](Module-pathfind), [procgen](Module-procgen), [render](Module-render), [tilemap](Module-tilemap), [visibility](Module-visibility), +1
 
 
 ## retro
@@ -586,6 +689,24 @@ _A playable demo of the Lurek2D merchant simulation — buy, sell, serve custome
 
 **Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
+### [modded_arena](../tree/main/content/games/rpg/modded_arena)
+
+**Category:** rpg / moddable combat **Status:** skeleton
+
+**Modules:** [asset](Module-asset), [dialog](Module-dialog), [event](Module-event), [filesystem](Module-filesystem), [input](Module-input), [mods](Module-mods), [render](Module-render), [save](Module-save), +1
+
+### [mystery_case](../tree/main/content/games/rpg/mystery_case)
+
+**Category:** rpg / narrative investigation **Status:** skeleton
+
+**Modules:** [dialog](Module-dialog), [event](Module-event), [html](Module-html), [i18n](Module-i18n), [input](Module-input), [render](Module-render), [save](Module-save), [scene](Module-scene), +1
+
+### [raycaster_dungeon](../tree/main/content/games/rpg/raycaster_dungeon)
+
+**Category:** rpg / pseudo-3D dungeon **Status:** skeleton
+
+**Modules:** [audio](Module-audio), [dialog](Module-dialog), [event](Module-event), [input](Module-input), [light](Module-light), [raycaster](Module-raycaster), [render](Module-render), [save](Module-save), +1
+
 ### [roguelike](../tree/main/content/games/rpg/roguelike)
 
 ![roguelike screenshot](../raw/main/content/games/rpg/roguelike/screen.png)
@@ -642,6 +763,12 @@ Simple demo that opens a window and runs a full lurek.agent pipeline with consol
 **Category:** showcase
 
 **Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [automation_replay_lab](../tree/main/content/games/showcase/automation_replay_lab)
+
+**Category:** showcase / QA automation **Status:** skeleton
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [patterns](Module-patterns), [pipeline](Module-pipeline), [render](Module-render), [scene](Module-scene), [window](Module-window)
 
 ### [debugbridge_demo](../tree/main/content/games/showcase/debugbridge_demo)
 
@@ -897,6 +1024,12 @@ Full-screen terminal UI character creation wizard with box-drawing borders, colo
 
 **Modules:** [automation](Module-automation), [render](Module-render), [terminal](Module-terminal), [window](Module-window)
 
+### [terminal_dev_console](../tree/main/content/games/showcase/terminal_dev_console)
+
+**Category:** showcase / developer tools **Status:** skeleton
+
+**Modules:** [debugbridge](Module-debugbridge), [devtools](Module-devtools), [event](Module-event), [input](Module-input), [log](Module-log), [render](Module-render), [terminal](Module-terminal), [window](Module-window)
+
 ### [tween_demo](../tree/main/content/games/showcase/tween_demo)
 
 ![tween_demo screenshot](../raw/main/content/games/showcase/tween_demo/screen.png)
@@ -912,6 +1045,14 @@ Full-screen terminal UI character creation wizard with box-drawing borders, colo
 No description available.
 
 **Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [light](Module-light), [render](Module-render), [window](Module-window)
+
+### [visual_fx_lab](../tree/main/content/games/showcase/visual_fx_lab)
+
+![visual_fx_lab screenshot](../raw/main/content/games/showcase/visual_fx_lab/screen.png)
+
+**Category:** showcase / visual systems **Status:** skeleton
+
+**Modules:** [effect](Module-effect), [event](Module-event), [image](Module-image), [input](Module-input), [light](Module-light), [overlay](Module-overlay), [particle](Module-particle), [render](Module-render), +3
 
 
 ## simulation
@@ -931,6 +1072,12 @@ No description available.
 Kitchen cooking simulation where you prep ingredients, cook dishes, and serve customers under time pressure.
 
 **Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [deep_cave_rescue](../tree/main/content/games/simulation/deep_cave_rescue)
+
+**Category:** simulation / exploration **Status:** skeleton
+
+**Modules:** [event](Module-event), [input](Module-input), [pathfind](Module-pathfind), [procgen](Module-procgen), [render](Module-render), [save](Module-save), [thread](Module-thread), [tilemap](Module-tilemap), +1
 
 ### [factory](../tree/main/content/games/simulation/factory)
 
@@ -1009,6 +1156,14 @@ Free-form physics playground where you build structures and destroy them with ex
 No description available.
 
 **Modules:** [province](Module-province), [render](Module-render), [window](Module-window)
+
+### [rail_flow_tycoon](../tree/main/content/games/simulation/rail_flow_tycoon)
+
+![rail_flow_tycoon screenshot](../raw/main/content/games/simulation/rail_flow_tycoon/screen.png)
+
+**Category:** simulation / logistics **Status:** playable foundation
+
+**Modules:** [charts](Module-charts), [event](Module-event), [input](Module-input), [pathfind](Module-pathfind), [render](Module-render), [save](Module-save), [ui](Module-ui), [window](Module-window)
 
 ### [railroad](../tree/main/content/games/simulation/railroad)
 
@@ -1100,6 +1255,14 @@ Side-view boxing game with a full 3-round fight system, stamina management, comb
 **Category:** Sports
 
 **Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [physics_arena](../tree/main/content/games/sports/physics_arena)
+
+![physics_arena screenshot](../raw/main/content/games/sports/physics_arena/screen.png)
+
+**Category:** sports / physics **Status:** playable foundation
+
+**Modules:** [audio](Module-audio), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [physics](Module-physics), [render](Module-render), [window](Module-window)
 
 ### [pinball](../tree/main/content/games/sports/pinball)
 
@@ -1202,9 +1365,15 @@ A compact RTS-style demo with a sand-swept desert map, spice harvesting, unit se
 
 ![eu2 screenshot](../raw/main/content/games/strategy/eu2/screen.png)
 
-**Category:** Strategy / Grand Strategy Engine Showcase **Engine:** Lurek2D **Language:** Polish & English
+Playable grand-strategy province slice with semi-historical countries, campaign time, economy, armies, map modes, and AI movement.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [province](Module-province), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [filesystem](Module-filesystem), [input](Module-input), [log](Module-log), [province](Module-province), [render](Module-render), [window](Module-window)
+
+### [frontier_tactics](../tree/main/content/games/strategy/frontier_tactics)
+
+**Category:** strategy / tactics **Status:** skeleton
+
+**Modules:** [ai](Module-ai), [event](Module-event), [input](Module-input), [minimap](Module-minimap), [pathfind](Module-pathfind), [render](Module-render), [tilemap](Module-tilemap), [visibility](Module-visibility), +1
 
 ### [hex_strategy](../tree/main/content/games/strategy/hex_strategy)
 
@@ -1261,6 +1430,12 @@ Place planks, ramps, and blocks to guide a falling ball into the goal — with a
 Real-time strategy game — build a base, train units, harvest resources, and survive 5 enemy waves.
 
 **Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [swarm_evolution](../tree/main/content/games/strategy/swarm_evolution)
+
+**Category:** strategy / learning sandbox **Status:** skeleton
+
+**Modules:** [ai](Module-ai), [charts](Module-charts), [compute](Module-compute), [event](Module-event), [input](Module-input), [learning](Module-learning), [render](Module-render), [window](Module-window)
 
 ### [tactical_battle](../tree/main/content/games/strategy/tactical_battle)
 

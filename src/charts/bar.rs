@@ -6,7 +6,7 @@
 
 use crate::charts::config::{ChartConfig, ChartSeries};
 use crate::charts::render_utils::{
-    auto_range, draw_line, draw_rect_filled, fill_buffer, world_to_screen,
+    annotate_cartesian_chart, auto_range, draw_line, draw_rect_filled, fill_buffer, world_to_screen,
 };
 
 /// A bar chart that renders series as grouped vertical bars.
@@ -20,6 +20,8 @@ pub struct BarChart {
     bar_width: f32,
     /// Gap between bar groups in pixels.
     gap: f32,
+    /// Category labels aligned with grouped bars.
+    category_labels: Vec<String>,
 }
 
 impl BarChart {
@@ -30,6 +32,7 @@ impl BarChart {
             series: Vec::new(),
             bar_width: 20.0,
             gap: 4.0,
+            category_labels: Vec::new(),
         }
     }
 
@@ -48,8 +51,9 @@ impl BarChart {
     }
 
     /// Add a category with one value per registered series.
-    pub fn add_category(&mut self, _label: &str, vals: &[f32]) {
+    pub fn add_category(&mut self, label: &str, vals: &[f32]) {
         let cat_idx = self.series.iter().map(|s| s.data.len()).max().unwrap_or(0) as f32;
+        self.category_labels.push(label.to_string());
         for (i, series) in self.series.iter_mut().enumerate() {
             let v = vals.get(i).copied().unwrap_or(0.0);
             series.data.push((cat_idx, v));
@@ -90,6 +94,7 @@ impl BarChart {
     /// Remove all series from the chart.
     pub fn clear(&mut self) {
         self.series.clear();
+        self.category_labels.clear();
     }
 
     /// Set the individual bar width in pixels.
@@ -107,9 +112,14 @@ impl BarChart {
         fill_buffer(buffer, self.config.bg_color);
 
         let margin = &self.config.margin;
+        let legend_reserve = if self.config.show_legend {
+            self.config.legend_width
+        } else {
+            0.0
+        };
         let plot_x = margin.left;
         let plot_y = margin.top;
-        let plot_w = w as f32 - margin.left - margin.right;
+        let plot_w = w as f32 - margin.left - margin.right - legend_reserve;
         let plot_h = h as f32 - margin.top - margin.bottom;
 
         if plot_w <= 0.0 || plot_h <= 0.0 {
@@ -199,5 +209,27 @@ impl BarChart {
                 );
             }
         }
+
+        let legend_entries: Vec<(&str, [f32; 4])> = self
+            .series
+            .iter()
+            .map(|series| (series.name.as_str(), series.color))
+            .collect();
+        annotate_cartesian_chart(
+            buffer,
+            w,
+            h,
+            &self.config,
+            plot_x,
+            plot_y,
+            plot_w,
+            plot_h,
+            0.0,
+            max_points.max(1) as f32,
+            min_y,
+            max_y,
+            &legend_entries,
+            Some(&self.category_labels),
+        );
     }
 }

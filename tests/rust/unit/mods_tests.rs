@@ -1,6 +1,6 @@
 //! File: tests/rust/unit/mods_tests.rs
 
-// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua_reorg/unit/; keep only private/internal seams here.
 
 mod mod_manager_tests {
     use lurek2d::mods::{ModInfo, ModManager};

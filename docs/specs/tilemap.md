@@ -15,7 +15,7 @@
 - Namespace: `lurek.physics`
 - Lua API surface: `29` functions, `23` types, `162` methods
 - Rust test path(s): tests/rust/unit/tilemap_tests.rs
-- Lua test path(s): tests/lua/unit/test_tilemap_core_unit.lua, tests/lua/stress/test_tilemap_stress.lua, tests/lua/integration/test_tilemap_physics.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_procgen_tilemap.lua, tests/lua/golden/test_tilemap_golden.lua, tests/lua/evidence/test_evidence_tilemap.lua
+- Lua test path(s): tests/lua_reorg/unit/test_tilemap_core_unit.lua, tests/lua_reorg/stress/test_tilemap_stress.lua, tests/lua_reorg/integration/test_tilemap_physics.lua, tests/lua_reorg/integration/test_tilemap_pathfind.lua, tests/lua_reorg/integration/test_tilemap_camera.lua, tests/lua_reorg/integration/test_save_tilemap.lua, tests/lua_reorg/integration/test_procgen_tilemap.lua, tests/lua_reorg/golden/test_tilemap_golden.lua, tests/lua_reorg/evidence/test_evidence_tilemap.lua
 
 ## Summary
 

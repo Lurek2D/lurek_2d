@@ -4,7 +4,7 @@
 
  - feat(network): implement MMO Support Sprint 3 Snapshot Authority Split & Reconcile Policy (`E4-T01`) — add `SyncSnapshot` enum (`Full`, `Delta`, `Corrective` variants) with NetValue serialization, distance-based reconciliation policy (soft correction threshold, alpha interpolation, hard snap), Lua bindings `packSnapshot`, `unpackSnapshot`, and `reconcileWithPolicy` under `lurek.network`, and comprehensive BDD integration test coverage.
 
- - test(terminal): migrate focus-layer scenario tests from Rust to Lua — remove `mouse_focus_respects_topmost_and_visibility_enabled_state` and `remove_widget_reindexes_focus_and_clears_when_focused_removed` from `tests/rust/unit/terminal_tests.rs` (Lua-reachable behavior, TST-01) and add equivalent `describe("focus behaviour: mouse and widget removal")` block in `tests/lua/unit/test_terminal_core_unit.lua` covering `LTerminal:mousepressed`/`getFocused` with z-order/visibility/enabled filtering, and `LTerminal:removeWidget` focus-clear semantics.
+ - test(terminal): migrate focus-layer scenario tests from Rust to Lua — remove `mouse_focus_respects_topmost_and_visibility_enabled_state` and `remove_widget_reindexes_focus_and_clears_when_focused_removed` from `tests/rust/unit/terminal_tests.rs` (Lua-reachable behavior, TST-01) and add equivalent `describe("focus behaviour: mouse and widget removal")` block in `tests/lua_reorg/unit/test_terminal_core_unit.lua` covering `LTerminal:mousepressed`/`getFocused` with z-order/visibility/enabled filtering, and `LTerminal:removeWidget` focus-clear semantics.
 
  - fix(sprite): split stacked `LAtlasPacker` example stubs in `content/examples/sprite.lua` into individual `--@api-stub: / do...end` blocks (E3 lint), add missing `LAtlasPacker:type` and `LAtlasPacker:typeOf` stubs (MISS), and extend `LAtlasPacker:getRegion`/`getDimensions` summary descriptions to meet minimum length in `src/lua_api/sprite_api.rs`; regenerated Lua API docs.
 
@@ -12,7 +12,7 @@
 
  - refactor(render): deduplicate post-processing pipeline setup in `src/render/postfx_pipeline.rs` by extracting shared pipeline-layout and render-pipeline builders used by both built-in effects and `register_custom`, reducing duplicated blend/primitive/target configuration paths.
 
- - feat(spine): add Spine/DragonBones JSON skeleton importer with explicit typed errors in `src/spine/importer.rs` and Lua entrypoint `lurek.spine.skeletonFromJson`; importer covers standard bones, slots, skins, and basic animation timelines/events. Added Rust success/error tests in `tests/rust/unit/spine_tests.rs`, Lua-facing coverage in `tests/lua/unit/test_spine_core_unit.lua`, and synced spine usage docs/examples.
+ - feat(spine): add Spine/DragonBones JSON skeleton importer with explicit typed errors in `src/spine/importer.rs` and Lua entrypoint `lurek.spine.skeletonFromJson`; importer covers standard bones, slots, skins, and basic animation timelines/events. Added Rust success/error tests in `tests/rust/unit/spine_tests.rs`, Lua-facing coverage in `tests/lua_reorg/unit/test_spine_core_unit.lua`, and synced spine usage docs/examples.
 
  - perf(spine): remove per-frame cloning from the skeleton hot path by applying active animation timelines directly to borrowed bone slices and solving IK constraints over borrowed collections in `update_animation`/`apply_ik_constraints`; add Rust/Lua regression coverage for repeated frame-loop updates and IK application, plus synced spine spec/example notes.
 
@@ -30,9 +30,9 @@
 
  - refactor(terminal): extract shared UTF-8-safe text helpers into `src/terminal/text_utils.rs` and wire `terminal_state`, `widget`, and `ansi` to use the shared path; add Rust regression coverage for Unicode-safe textbox editing and widget text truncation in `tests/rust/unit/terminal_tests.rs`.
 
- - feat(sprite): add runtime atlas packing API in `lurek.sprite` via `newAtlasPacker(width, height, padding)` with `LAtlasPacker` methods (`pack`, `getRegion`, `regionCount`, `getDimensions`, `setNineSlice`, `clear`, `type`, `typeOf`) backed by `image::TextureAtlas`; add Lua coverage in `tests/lua/unit/test_sprite_core_unit.lua`, Rust coverage in `tests/rust/unit/sprite_tests.rs`, and sync usage docs in `docs/specs/sprite.md` plus runnable stubs in `content/examples/sprite.lua`.
+ - feat(sprite): add runtime atlas packing API in `lurek.sprite` via `newAtlasPacker(width, height, padding)` with `LAtlasPacker` methods (`pack`, `getRegion`, `regionCount`, `getDimensions`, `setNineSlice`, `clear`, `type`, `typeOf`) backed by `image::TextureAtlas`; add Lua coverage in `tests/lua_reorg/unit/test_sprite_core_unit.lua`, Rust coverage in `tests/rust/unit/sprite_tests.rs`, and sync usage docs in `docs/specs/sprite.md` plus runnable stubs in `content/examples/sprite.lua`.
 
- - test(lua): normalize Lua test marker hygiene by adding missing per-case markers in `tests/lua/library/test_library_*.lua`, remove remaining UTF-8 BOM issues in Lua test files, and restore missing trailing `test_summary()` in pathfind/visibility suites; relocate crafting library assertions out of unit by removing `tests/lua/unit/test_crafting_core_unit.lua`, folding namespace-boundary coverage into `tests/lua/library/test_library_crafting.lua`, and deleting obsolete `lua_unit_crafting_unit` harness registration.
+ - test(lua): normalize Lua test marker hygiene by adding missing per-case markers in `tests/lua_reorg/library/test_library_*.lua`, remove remaining UTF-8 BOM issues in Lua test files, and restore missing trailing `test_summary()` in pathfind/visibility suites; relocate crafting library assertions out of unit by removing `tests/lua_reorg/unit/test_crafting_core_unit.lua`, folding namespace-boundary coverage into `tests/lua_reorg/library/test_library_crafting.lua`, and deleting obsolete `lua_unit_crafting_unit` harness registration.
 
  - docs(ideas): add comprehensive MMO support rollout plan in `ideas/mmo_support_detailed_plan.md` covering hybrid architecture, phased roadmap (F0-F12), engineering backlog, SLO metrics, testing strategy, risk controls, and production release gates for 1000-player lobby + 64 rooms + 15v15 battles.
 
@@ -62,27 +62,27 @@
 
  - fix(audio,test): ensure `LBeatClock:at` callbacks fire on crossed beats by deferring cancelled-schedule cleanup until after callback dispatch in `src/lua_api/audio_api.rs`; `lua_unit_beat_clock_unit` now passes the one-shot callback assertion.
 
- - fix(test,tween): add missing harness mapping `lua_unit_tween_chain_unit` -> `tests/lua/unit/test_tween_chain_unit.lua` in `tests/lua/harness.rs`, so filtered Phase 3 gate executes tween-chain tests instead of `0 filtered` no-op; fix fluent chain loop semantics so `:stop()` called from `onLoop` keeps `:isComplete()` false (manual stop is not natural completion).
+ - fix(test,tween): add missing harness mapping `lua_unit_tween_chain_unit` -> `tests/lua_reorg/unit/test_tween_chain_unit.lua` in `tests/lua_reorg_tests.rs`, so filtered Phase 3 gate executes tween-chain tests instead of `0 filtered` no-op; fix fluent chain loop semantics so `:stop()` called from `onLoop` keeps `:isComplete()` false (manual stop is not natural completion).
 
- - feat(tween): Phase 3 F3-A fluent chain parity — extend `lurek.tween.newChain` with fluent builder methods (`to`, `wait`, `call`, `loop`, `onLoop`, `onComplete`), lifecycle controls (`start`, `stop`, `pause`, `resume`), and query helpers (`getProgress`, `isComplete`, `isActive`, `getIteration`) while keeping legacy `LTweenChain` scalar `push/tick/value` compatibility; wire fluent chains into `lurek.tween.update`; add/refresh coverage in `tests/lua/unit/test_tween_chain_unit.lua` and fluent usage stubs in `content/examples/tween.lua`; sync `docs/specs/tween.md`.
+ - feat(tween): Phase 3 F3-A fluent chain parity — extend `lurek.tween.newChain` with fluent builder methods (`to`, `wait`, `call`, `loop`, `onLoop`, `onComplete`), lifecycle controls (`start`, `stop`, `pause`, `resume`), and query helpers (`getProgress`, `isComplete`, `isActive`, `getIteration`) while keeping legacy `LTweenChain` scalar `push/tick/value` compatibility; wire fluent chains into `lurek.tween.update`; add/refresh coverage in `tests/lua_reorg/unit/test_tween_chain_unit.lua` and fluent usage stubs in `content/examples/tween.lua`; sync `docs/specs/tween.md`.
 
- - feat(audio): Phase 2 F2-B beat clock parity slice — extended `src/audio/beat_clock.rs` with options-driven construction, beat/bar/phase queries, `update`, `rampBpm`, `setSwing`, `syncToPosition`, judgement windows, and scheduling step helpers; exposed `lurek.audio.newBeatClock`, `beatClockFromSource`, `judgeBeat`, `setJudgementWindows`, and `getJudgementWindows` in `src/lua_api/audio_api.rs`; added `LBeatClock:every`, `LBeatClock:at`, `LBeatClock:pattern`, `LBeatClock:cancel`, and `LBeatClock:cancelAll`; expanded `tests/lua/unit/test_beat_clock_unit.lua` and beat clock example stubs in `content/examples/audio.lua`; updated `docs/specs/audio.md`.
+ - feat(audio): Phase 2 F2-B beat clock parity slice — extended `src/audio/beat_clock.rs` with options-driven construction, beat/bar/phase queries, `update`, `rampBpm`, `setSwing`, `syncToPosition`, judgement windows, and scheduling step helpers; exposed `lurek.audio.newBeatClock`, `beatClockFromSource`, `judgeBeat`, `setJudgementWindows`, and `getJudgementWindows` in `src/lua_api/audio_api.rs`; added `LBeatClock:every`, `LBeatClock:at`, `LBeatClock:pattern`, `LBeatClock:cancel`, and `LBeatClock:cancelAll`; expanded `tests/lua_reorg/unit/test_beat_clock_unit.lua` and beat clock example stubs in `content/examples/audio.lua`; updated `docs/specs/audio.md`.
 
  - test(app,runtime): add startup-path coverage for all requested launch cases — new Rust tests for drag-and-drop classification (`folder with main.lua`, dropped `main.lua` file resolving to parent folder, `.lurek` archive, unsupported inputs) and CLI startup path helpers (`.lurek` extension detection, explicit-folder `main.lua` resolution, and explicit `main.lua` path remaining unsupported); refactor keeps behavior unchanged by extracting `classify_drop_startup_target`, `is_lurek_archive_path`, and `cli_startup_main_path`.
 
- - feat(demo): add `content/games/showcase/agent_pipeline_demo` — simple windowed Lua demo that initializes the full `lurek.agent` stack in `lurek.init` (Ollama manager startup + optional model pull, global `configure`, 3 agents, `LAgentManager`, `LAISystem`, instructions, keyword skills, memory/template usage), then dispatches sequential async prompts (`prompt`, `promptBatch`, `runAll`, `system:prompt`, `system:runAll`, `completeAsync`) with visible `[agent-demo]` console logs and on-screen status lines; include headless contract test `tests/lua/demos/test_agent_pipeline_demo.lua`.
+ - feat(demo): add `content/games/showcase/agent_pipeline_demo` — simple windowed Lua demo that initializes the full `lurek.agent` stack in `lurek.init` (Ollama manager startup + optional model pull, global `configure`, 3 agents, `LAgentManager`, `LAISystem`, instructions, keyword skills, memory/template usage), then dispatches sequential async prompts (`prompt`, `promptBatch`, `runAll`, `system:prompt`, `system:runAll`, `completeAsync`) with visible `[agent-demo]` console logs and on-screen status lines; include headless contract test `tests/lua_reorg/demos/test_agent_pipeline_demo.lua`.
 
- - fix(test,math): Phase 1b verifier F2-A follow-up — wire `lua_unit_loot_unit` in `tests/lua/harness.rs` to execute `tests/lua/unit/test_loot_unit.lua` under harness filtering, and align `lurek.math.newLootTable` docstring with accepted inputs (`nil`, non-negative seed number, or options table with `seed`).
+ - fix(test,math): Phase 1b verifier F2-A follow-up — wire `lua_unit_loot_unit` in `tests/lua_reorg_tests.rs` to execute `tests/lua_reorg/unit/test_loot_unit.lua` under harness filtering, and align `lurek.math.newLootTable` docstring with accepted inputs (`nil`, non-negative seed number, or options table with `seed`).
 
- - feat(math): F2-A LootTable + Pity parity slice under `lurek.math` for low-risk compatibility — added `lurek.math.lootFromList`, `lurek.math.lootFromToml`, and `lurek.math.sampleWithPity`; extended `LLootTable` with `merge`, `save`, `restore` and metadata-preserving sample payloads; added `LootTable::save/restore` and `LootTable::from_toml` in Rust core; added `LPityTracker:save/restore` aliases while keeping `export/import`; expanded `tests/lua/unit/test_loot_unit.lua` and `content/examples/math.lua`; updated `docs/specs/math.md`.
+ - feat(math): F2-A LootTable + Pity parity slice under `lurek.math` for low-risk compatibility — added `lurek.math.lootFromList`, `lurek.math.lootFromToml`, and `lurek.math.sampleWithPity`; extended `LLootTable` with `merge`, `save`, `restore` and metadata-preserving sample payloads; added `LootTable::save/restore` and `LootTable::from_toml` in Rust core; added `LPityTracker:save/restore` aliases while keeping `export/import`; expanded `tests/lua_reorg/unit/test_loot_unit.lua` and `content/examples/math.lua`; updated `docs/specs/math.md`.
 
  - fix(test): stabilize Lua and Rust test runs for local distribution builds — make `test_debugbridge_core_unit.lua` choose a free high port, normalize migrated TOML golden sample line endings, restore missing Rust ext test targets, and skip `content/games/retro/commando/main.lua` in `games_load_test` due LuaJIT upvalue-limit parsing constraints.
 
- - test(ext,lua): migrate API-level `effects_audio_runtime_smoke` to `tests/lua/unit/test_effects_audio_runtime_smoke_unit.lua`, then remove remaining `tests/rust/ext/*` files and ext wiring in `tests/engine_tests.rs`.
+ - test(ext,lua): migrate API-level `effects_audio_runtime_smoke` to `tests/lua_reorg/unit/test_effects_audio_runtime_smoke_unit.lua`, then remove remaining `tests/rust/ext/*` files and ext wiring in `tests/engine_tests.rs`.
 
  - fix(coverage): clear API coverage gaps (0 Rust→Lua, 0 Rust docstrings, 0 Lua docstrings) by demoting internal helpers from public Rust API (`rot_y`, gilrs name mappers, CSV reader helper, tween easing resolver), removing dead internal helpers (`log::enabled_for`, `network::estimate_size`), updating affected Rust unit tests to assert public behavior, and regenerating `logs/reports/coverage_gaps.md`.
 
- - test(ext): remove duplicated behavioral extension suites `tests/rust/ext/graphics_ext_tests.rs` and `tests/rust/ext/math_ext_tests.rs`; keep runtime smoke coverage in `tests/rust/ext/` and Lua-first behavioral coverage in `tests/lua/unit/`.
+ - test(ext): remove duplicated behavioral extension suites `tests/rust/ext/graphics_ext_tests.rs` and `tests/rust/ext/math_ext_tests.rs`; keep runtime smoke coverage in `tests/rust/ext/` and Lua-first behavioral coverage in `tests/lua_reorg/unit/`.
 
  - fix(tests): update physics test files to use lurek.procgen.newCellular/CELL_* (namespace migrated in prior commit)
  - fix(examples): add 25 missing example stubs for learning, network, procgen, render modules
@@ -90,11 +90,11 @@
  - fix(examples): remove duplicate LCellular stub markers from physics.lua (canonical stubs now in procgen.lua).
  - feat(asset): expand `lurek.asset` from 8 to 23 Lua functions — new asset types (`toml`, `json`, `lua`, `shader`, `obj`, `music`), metadata fields (`name`, `group`, `tags`), 4 search functions (`findByName`, `findByGroup`, `findByTag`, `findByType`), inspection helpers (`getPath`, `getType`, `getInfo`), setters/getters (`setName`, `getName`, `setGroup`, `getGroup`, `addTag`, `removeTag`, `getTags`, `hasTag`), `stats()` now returns `groups` field; `AssetCache` in `src/asset/cache.rs` extended with metadata maps and search methods; 79 Lua unit tests; updated example stubs in `content/examples/asset.lua`; spec rewritten in `docs/specs/asset.md`.
 
- - feat(math): NM-03 — extend `lurek.math` with `lurek.math.easingNames()` → `string[]` (returns all built-in easing function names) and `lurek.math.cubicBezier(p1x, p1y, p2x, p2y, t)` → `number` (CSS cubic-bezier Y value via Newton's method inversion); business logic (`easing_names`, `cubic_bezier`) added to `src/math/easing.rs`; bindings in `src/lua_api/math_api.rs`; 6 Lua unit tests in `tests/lua/unit/test_math_core_unit.lua`; example stubs in `content/examples/math.lua`.
- - feat(learning): NM-07 — extend `lurek.learning` with ONNX model loading and inference via `tract-onnx`: `lurek.learning.loadOnnx(path)` → `LOnnxModel`, `lurek.learning.newTensor(shape, data)` → `LTensor`; `LOnnxModel` supports `run(inputs)`, `inputCount()`, `outputCount()`, `type()`, `typeOf()`; `LTensor` supports `shape()`, `data()`, `get(indices...)`, `len()`, `type()`, `typeOf()`; business logic in `src/learning/onnx.rs` (`OnnxModel`, `LurekTensor`); bindings in `src/lua_api/learning_api.rs`; 8 Lua unit tests in `tests/lua/unit/test_learning_core_unit.lua`; example stubs in `content/examples/learning.lua`.
- - feat(procgen): NM-09 — extend `lurek.procgen` with LLM-assisted WFC constraint generation: `lurek.procgen.setConstraintsFromLLM(prompt)` → `table` (adjacency map, empty on LLM error); `lurek.procgen.wfcFromPrompt(prompt, config)` → `table` (WFC grid with `.width`, `.height`, `.cells`, `.failed_cells`, gracefully empty when LLM is unavailable); business logic in `src/procgen/wfc_llm.rs` (`parse_llm_constraints`, `parse_llm_wfc_response`); bindings in `src/lua_api/procgen_api.rs`; backed by `crate::agent::chat::{ollama_generate_json, read_global_config}`; 5 Lua smoke tests added to `tests/lua/unit/test_procgen_core_unit.lua`; example stubs added to `content/examples/procgen.lua`.
- - feat(learning): NM-08 — extend `lurek.learning` with gym-compatible environment wrappers: `lurek.learning.defineEnv(config)` → `LEnv`, `lurek.learning.frameStack(n)` → `LFrameStack`, `lurek.learning.normalizeEnv(env, mean, std)` → `LEnv`, `lurek.learning.timeLimit(env, max_steps)` → `LEnv`; `LEnv` supports `reset()`, `step(action)`, `obsSpace()`, `actionSpace()`, `type()`, `typeOf()`; `LFrameStack` supports `push(obs)`, `get()`, `reset()`, `capacity()`, `type()`, `typeOf()`; business logic in `src/learning/env.rs` (`FrameStack`, `SpaceSpec`); bindings in `src/lua_api/learning_api.rs`; 19 Lua unit tests in `tests/lua/unit/test_learning_core_unit.lua`; example stubs in `content/examples/learning.lua`.
- - feat(asset): NM-05 — add `lurek.asset` module: ref-counted media cache with `lurek.asset.load(path, type)`, `lurek.asset.unload(handle)`, `lurek.asset.get(handle)`, `lurek.asset.preload(paths, callback)`, `lurek.asset.refcount(handle)`, `lurek.asset.isLoaded(handle)`, `lurek.asset.stats()`, `lurek.asset.clear()`; `LAssetHandle` userdata with `type()` and `typeOf()` methods; business logic in `src/asset/cache.rs` (`AssetCache`, `AssetEntry`, `AssetType`); bindings in `src/lua_api/asset_api.rs`; 25 Lua unit tests in `tests/lua/unit/test_asset_core_unit.lua`; example stubs in `content/examples/asset.lua`; spec in `docs/specs/asset.md`.
+ - feat(math): NM-03 — extend `lurek.math` with `lurek.math.easingNames()` → `string[]` (returns all built-in easing function names) and `lurek.math.cubicBezier(p1x, p1y, p2x, p2y, t)` → `number` (CSS cubic-bezier Y value via Newton's method inversion); business logic (`easing_names`, `cubic_bezier`) added to `src/math/easing.rs`; bindings in `src/lua_api/math_api.rs`; 6 Lua unit tests in `tests/lua_reorg/unit/test_math_core_unit.lua`; example stubs in `content/examples/math.lua`.
+ - feat(learning): NM-07 — extend `lurek.learning` with ONNX model loading and inference via `tract-onnx`: `lurek.learning.loadOnnx(path)` → `LOnnxModel`, `lurek.learning.newTensor(shape, data)` → `LTensor`; `LOnnxModel` supports `run(inputs)`, `inputCount()`, `outputCount()`, `type()`, `typeOf()`; `LTensor` supports `shape()`, `data()`, `get(indices...)`, `len()`, `type()`, `typeOf()`; business logic in `src/learning/onnx.rs` (`OnnxModel`, `LurekTensor`); bindings in `src/lua_api/learning_api.rs`; 8 Lua unit tests in `tests/lua_reorg/unit/test_learning_core_unit.lua`; example stubs in `content/examples/learning.lua`.
+ - feat(procgen): NM-09 — extend `lurek.procgen` with LLM-assisted WFC constraint generation: `lurek.procgen.setConstraintsFromLLM(prompt)` → `table` (adjacency map, empty on LLM error); `lurek.procgen.wfcFromPrompt(prompt, config)` → `table` (WFC grid with `.width`, `.height`, `.cells`, `.failed_cells`, gracefully empty when LLM is unavailable); business logic in `src/procgen/wfc_llm.rs` (`parse_llm_constraints`, `parse_llm_wfc_response`); bindings in `src/lua_api/procgen_api.rs`; backed by `crate::agent::chat::{ollama_generate_json, read_global_config}`; 5 Lua smoke tests added to `tests/lua_reorg/unit/test_procgen_core_unit.lua`; example stubs added to `content/examples/procgen.lua`.
+ - feat(learning): NM-08 — extend `lurek.learning` with gym-compatible environment wrappers: `lurek.learning.defineEnv(config)` → `LEnv`, `lurek.learning.frameStack(n)` → `LFrameStack`, `lurek.learning.normalizeEnv(env, mean, std)` → `LEnv`, `lurek.learning.timeLimit(env, max_steps)` → `LEnv`; `LEnv` supports `reset()`, `step(action)`, `obsSpace()`, `actionSpace()`, `type()`, `typeOf()`; `LFrameStack` supports `push(obs)`, `get()`, `reset()`, `capacity()`, `type()`, `typeOf()`; business logic in `src/learning/env.rs` (`FrameStack`, `SpaceSpec`); bindings in `src/lua_api/learning_api.rs`; 19 Lua unit tests in `tests/lua_reorg/unit/test_learning_core_unit.lua`; example stubs in `content/examples/learning.lua`.
+ - feat(asset): NM-05 — add `lurek.asset` module: ref-counted media cache with `lurek.asset.load(path, type)`, `lurek.asset.unload(handle)`, `lurek.asset.get(handle)`, `lurek.asset.preload(paths, callback)`, `lurek.asset.refcount(handle)`, `lurek.asset.isLoaded(handle)`, `lurek.asset.stats()`, `lurek.asset.clear()`; `LAssetHandle` userdata with `type()` and `typeOf()` methods; business logic in `src/asset/cache.rs` (`AssetCache`, `AssetEntry`, `AssetType`); bindings in `src/lua_api/asset_api.rs`; 25 Lua unit tests in `tests/lua_reorg/unit/test_asset_core_unit.lua`; example stubs in `content/examples/asset.lua`; spec in `docs/specs/asset.md`.
  - feat(input): NM-04 — add `lurek.input.define(name, bindings, category?)`, `lurek.input.getAxis(name)`, `lurek.input.getVector(hname, vname)`, `lurek.input.reset(name?)`, `lurek.input.getConflicts()`, `lurek.input.serializeBindings()`, `lurek.input.deserializeBindings(json)`, `lurek.input.getByCategory(cat)`, `lurek.input.onRebind(callback)` — extended action binding system; `ActionDef` business type in `src/input/action_def.rs`; existing `action_map` migrated from `HashMap<String, Vec<String>>` to `HashMap<String, ActionDef>`; JSON round-trip backed by `serde_json`.
 , `lurek.agent.complete()`, `lurek.agent.completeAsync()`, `lurek.agent.newChat()`, `lurek.agent.newTemplate()`, `lurek.agent.completeJson()`, `lurek.agent.embed()`, `lurek.agent.isAvailable()`, `lurek.agent.listModels()` — direct LLM API backed by `src/agent/chat.rs`; `GlobalLlmConfig` is a process-wide default set via `configure()`; `LAgentChat` is a stateful session with history; `LAgentTemplate` renders `{key}` placeholders.
  - feat(agent): add `lurek.agent.newWorkingMemory()`, `lurek.agent.newEpisodicMemory()`, `lurek.agent.newSemanticMemory()`, `lurek.agent.newAgentMemory()` — memory primitives for LLM agents backed by `src/agent/memory.rs`; `LWorkingMemory` is a bounded FIFO key-value store; `LEpisodicMemory` records tick-stamped events; `LSemanticMemory` is an unbounded fact store; `LAgentMemory` bundles all three with optional JSON persistence.
@@ -178,36 +178,36 @@
  - fix(thread): replace `add_type_methods` on `LuaThreadHandle` with explicit `type`/`typeOf`/`__tostring` methods; correct `newThread` `@return` annotation from `LThreadHandle` to `LThread`; rename 4 `LThreadHandle:` stub markers in `content/examples/thread.lua` to `LThread:` and add `LThread:type`/`LThread:typeOf` stubs.
  - fix(examples): add `lurek.scene.depth` and `lurek.scene.update` coverage stubs to `content/examples/scene.lua`.
  - fix(settings): add `read_file` and `write_file` to `Lua.diagnostics.globals` in `.vscode/settings.json` to suppress false `undefined-global` warnings in test evidence files.
- - fix(test): `tests/lua/unit/test_event_core_unit.lua` — access `dialog.newSequencer` via `rawget` guard to suppress `undefined-field` LuaLS warning for optional API.
+ - fix(test): `tests/lua_reorg/unit/test_event_core_unit.lua` — access `dialog.newSequencer` via `rawget` guard to suppress `undefined-field` LuaLS warning for optional API.
  - content(examples): remove same-file duplicate `--@api-stub:` markers from `math.lua`, `patterns.lua`, `pipeline.lua`, `scene.lua`, and `ui.lua`; fix `runtime.lua` header drift; rerun Lua API and example coverage refresh.
  - refactor(audio): extract `src/dsp/` module from `src/audio/` — effects, offline processing, and visualizer now in dedicated module with `lurek.dsp` Lua API.
  - refactor(audio): extract `src/midi/` module from `src/audio/` — MIDI player and SoundFont state now in dedicated module with `lurek.midi` Lua API.
  - feat(dsp): add `src/lua_api/dsp_api.rs` providing `lurek.dsp` namespace (newEffectParams, processOffline, normalize, waveformToPng, spectrogramToPng).
  - feat(midi): add `src/lua_api/midi_api.rs` providing `lurek.midi` namespace (newPlayer, loadSoundFont, hasSoundFont, clearSoundFont).
  - docs(specs): add `docs/specs/dsp.md` and `docs/specs/midi.md`.
- - test(dsp): add `tests/lua/unit/test_dsp_core_unit.lua`.
- - test(midi): add `tests/lua/unit/test_midi_core_unit.lua`.
+ - test(dsp): add `tests/lua_reorg/unit/test_dsp_core_unit.lua`.
+ - test(midi): add `tests/lua_reorg/unit/test_midi_core_unit.lua`.
  - feat(visibility): add `src/visibility/` module — universal fog-of-war system with per-player states, alliance groups, flags, costs, and events.
  - docs(api): extend Lua API doc coverage from 91.3% to 100% — add 14 missing `///` doc comments in `globe_api.rs`, `grep_api.rs`, `layout_api.rs`, `math_api.rs`, `validator_api.rs`, `visibility_api.rs`.
  - docs(rust): extend 148 short Rust `///` summaries to meet 25 visible-char minimum across `src/charts/`, `src/color/`, `src/cursor/`, `src/dialog/`, `src/font/`, `src/globe/`, `src/grep/`, `src/layout/`, `src/mapblock/`, `src/mods/`, `src/physics/`, `src/province/`, `src/raycaster/`, `src/render/`, `src/validator/`, `src/visibility/`.
- - test(validator): add `LValidationEngine:run` and `LMapBlockConfig:removeSlot` Lua test cases; remove orphaned `@covers` markers in `tests/lua/unit/`.
+ - test(validator): add `LValidationEngine:run` and `LMapBlockConfig:removeSlot` Lua test cases; remove orphaned `@covers` markers in `tests/lua_reorg/unit/`.
  - docs(specs): update `docs/specs/globe.md` — add `lurek.globe.MAX_REGIONS` and `lurek.globe.MAX_PROVINCES` module constants to Lua API Reference.
  - feat(visibility): add `lurek.visibility` Lua API with VisibilityGrid userdata.
  - docs(specs): add `docs/specs/visibility.md`.
- - test(visibility): add `tests/lua/unit/test_visibility_core_unit.lua` (13 tests).
+ - test(visibility): add `tests/lua_reorg/unit/test_visibility_core_unit.lua` (13 tests).
  - refactor(effect): extract weather, atmosphere, screen effects, and transitions into `src/overlay/` module.
  - feat(overlay): add `lurek.overlay` Lua API with Overlay controller and ScreenTransition userdata.
  - docs(specs): add `docs/specs/overlay.md`.
- - test(overlay): add `tests/lua/unit/test_overlay_core_unit.lua` (14 tests).
+ - test(overlay): add `tests/lua_reorg/unit/test_overlay_core_unit.lua` (14 tests).
  - refactor(ai): extract dialog/conversation system into `src/dialog/` module; `src/ai/dialogue.rs` deleted.
  - feat(dialog): add `src/dialog/` module — dialog tree, conditions, state machine, speaker registry, events.
  - feat(dialog): add `lurek.dialog` Lua API (newAI, newState, newSpeakerRegistry).
  - docs(specs): add `docs/specs/dialog.md`.
- - test(dialog): add `tests/lua/unit/test_dialog_core_unit.lua` (17 tests).
+ - test(dialog): add `tests/lua_reorg/unit/test_dialog_core_unit.lua` (17 tests).
  - feat(layout): add `src/layout/` module (Foundations tier) — Reingold-Tilford tree, Sugiyama DAG, Fruchterman-Reingold force-directed, grid snap.
  - feat(layout): add `lurek.layout` Lua API (tree, dag, force, snapToGrid, centerInArea).
  - docs(specs): add `docs/specs/layout.md`.
- - test(layout): add `tests/lua/unit/test_layout_core_unit.lua` (8 tests).
+ - test(layout): add `tests/lua_reorg/unit/test_layout_core_unit.lua` (8 tests).
  - feat(province): add generic ProvinceProperties system (setProperty, getProperty, setAttr, getAttr, setFlag, hasFlag, clearProperties).
  - refactor(province): remove hardcoded economy.rs from engine; economy logic moved to `library/province_economy/`.
  - feat(library): add `library/province_economy/` — pure-Lua province economic simulation using generic properties.
@@ -218,8 +218,8 @@
  - refactor(scene): delete `src/scene/easing.rs` (bounce_out now in math/easing.rs).
  - refactor(tween): move `src/math/tween.rs` to `src/tween/interpolator.rs`; Tween/TweenValue now in tween module.
  - refactor(ai): unify Blackboard — `patterns/blackboard.rs` is canonical (parent chain + revision tracking); `ai/blackboard.rs` re-exports.
- - test(province): add `tests/lua/unit/test_province_properties_unit.lua` (10 tests).
- - test(procgen): add `tests/lua/unit/test_procgen_noise_unit.lua` (12 tests).
+ - test(province): add `tests/lua_reorg/unit/test_province_properties_unit.lua` (10 tests).
+ - test(procgen): add `tests/lua_reorg/unit/test_procgen_noise_unit.lua` (12 tests).
  - docs(quality): comprehensive quality sweep — expanded 422 short Lua API `///` docstrings to ≥30 visible characters (whitespace-stripped threshold); added struct-level `///` class descriptions for `LuaCursorManager`, `LuaCustomCursor`, `LuaAnimatedCursor`, `LuaGrepEngine`, `LuaFileFilter`, `LuaValidationEngine`.
  - docs(quality): added 183→14 missing Rust `///` docstrings across cursor, ecs, flownet, globe, grep, mods, province, raycaster, validator, visibility modules (14 missing, below ≤20 threshold).
  - docs(quality): created `logs/docs_overlay.json` (24 entries) providing function descriptions for cursor/font/grep/validator APIs that are unreachable by the doc scanner due to `{` block structure; extended `_apply_overlay` in `tools/docs/gen_lua_api_data.py` to also set `return_description` and `typed_params` from overlay.
@@ -231,13 +231,13 @@
  - test(lua): added 27 missing Lua API test files across ai, layout, camera, charts, color, cursor, font, glob, mapblock, overlay, parallax, procgen, spine, tilemap, timer modules.
  - fix(api): `src/lua_api/effect_api.rs` — expanded 9 `LPostFxEffect` setter docstrings to ≥30 visible characters.
  - fix(examples): added `--@api-stub:` coverage stubs to `content/examples/mapblock.lua` (14 stubs for LMapBlock/LMapGroup/LMapScript) and `content/examples/ui.lua` (3 stubs for LBarChart/LLineChart/LScatterPlot addSeries).
- - test(learning): add `tests/lua/stress/test_learning_stress.lua` (5 stress tests).
- - test(province): add `tests/lua/integration/test_province_integration.lua` (4 integration tests).
+ - test(learning): add `tests/lua_reorg/stress/test_learning_stress.lua` (5 stress tests).
+ - test(province): add `tests/lua_reorg/integration/test_province_integration.lua` (4 integration tests).
  - feat(learning): extract `src/learning/` module from `src/ai/` — neural_net, neuroevolution, genetic, qlearner, bandit now live in dedicated module with `lurek.learning` Lua API.
  - feat(learning): add `src/lua_api/learning_api.rs` providing `lurek.learning` namespace (newQLearner, newNeuralNet, newGeneticAlgorithm, newBandit, newNeuroevolution).
  - refactor(ai): re-export learning types from `crate::ai` for backward compatibility; `lurek.ai.newNeuralNet` etc. continue to work.
  - docs(specs): add `docs/specs/learning.md` module spec; update `docs/specs/ai.md` with cross-reference.
- - test(learning): add `tests/lua/unit/test_learning_core_unit.lua` with 10 constructor tests.
+ - test(learning): add `tests/lua_reorg/unit/test_learning_core_unit.lua` with 10 constructor tests.
 
  - feat(extension): add 4 new MCP tools — `getModuleInfo`, `inspectLuaFile`, `getTestCoverage`, `getProjectStructure` in `extension/vscode/src/mcp/tools.ts`.
  - feat(extension): add `checkMissingLoadCallback` diagnostic rule — warns when main.lua uses lurek.* without lurek.load().
@@ -257,9 +257,9 @@
  - refactor(serial): rename `src/serial/` to `src/serialize/`; Lua namespace `lurek.serial` → `lurek.serialize` (backward-compat alias preserved).
  - refactor(math): move `sphere.rs` from `src/math/` to `src/globe/` (closer to its consumers).
 
- - fix(test): `tests/lua/unit/test_dsp_core_unit.lua` — use `expect_near` for `p.p2 ≈ 0.7` (f32 round-trip gives `0.69999998807907`).
- - fix(test): `tests/lua/unit/test_ui_core_unit.lua` — allow ≤5 pixels in right-margin check for cartesian legend (line endpoint sub-pixel bleed); fix chart data types: series values must be numbers not strings.
- - fix(test): `tests/lua/integration/test_tilemap_physics.lua` — align dynamic ball spawn at x=16 (directly over tile 1 centre) to avoid falling through 16 px gaps between adjacent default-sized static bodies.
+ - fix(test): `tests/lua_reorg/unit/test_dsp_core_unit.lua` — use `expect_near` for `p.p2 ≈ 0.7` (f32 round-trip gives `0.69999998807907`).
+ - fix(test): `tests/lua_reorg/unit/test_ui_core_unit.lua` — allow ≤5 pixels in right-margin check for cartesian legend (line endpoint sub-pixel bleed); fix chart data types: series values must be numbers not strings.
+ - fix(test): `tests/lua_reorg/integration/test_tilemap_physics.lua` — align dynamic ball spawn at x=16 (directly over tile 1 centre) to avoid falling through 16 px gaps between adjacent default-sized static bodies.
  - fix(ui): `src/ui/containers.rs` — layout container `align` default `"center"` → `"stretch"`, `justify` default `"center"` → `"start"` (CSS flexbox defaults).
  - fix(api): `src/lua_api/thread_api.rs` — `newThread` `@return` type corrected from `LThread` to `LThreadHandle` (matches generated docs class name from struct `LuaThreadHandle`).
  - docs(examples): `content/examples/dsp.lua` — add 11 missing `--@api-stub:` markers (`addEffectToBus`, `removeEffectFromBus`, `setEffectParam`, `analyzeFft`, `analyzePeak`, `analyzeRms`, `applyBandpass`, `applyGain`, `applyHighpass`, `applyLowpass`, `newSynthWave` added to audio.lua).
@@ -287,7 +287,7 @@
  - feat(library): add `library/particle_presets` — 12 pre-configured particle presets (fire, smoke, explosion, etc.) with override and custom registration.
  - feat(library): add `library/window_config` — fluent window configuration builder with presets, serialization, and scaling mode helpers.
  - feat(library): upgrade `library/sprite` — add `init.lua` with `AnimController` state machine re-exporting existing `SpriteAnimator`.
- - test(library): add test files for all 7 new/upgraded library modules; register in `harness.rs`.
+ - test(library): add test files for all 7 new/upgraded library modules; register in `tests/lua_reorg_tests.rs`.
  - test(font): add `lurek.font.loadBitmap` coverage tests (4 assertions) to `test_font_core_unit.lua`.
  - test(physics): add 8 describe-based coverage blocks to `test_physics_core_unit.lua`.
  - test(dataframe): add 8 describe-based coverage blocks to `test_dataframe_core_unit.lua`.
@@ -303,7 +303,7 @@
 
  - refactor(lua_api): introduce `LuaModule` trait and `ModuleEntry` registry in `src/lua_api/lua_module.rs`; refactor `register.rs` to use static `MODULES` slice with `always!`/`gated!` macros instead of 50+ explicit function calls.
  - docs(architecture): add `docs/architecture/lua-rust-boundary.md` — Lua-Rust boundary architecture covering module registration, state management, handle pattern, security sandbox, and testing strategy.
- - test(lua_api): add `tests/lua/unit/test_lua_module_registration.lua` — unit tests for always-on modules, config-gated modules, namespace types, and security sandbox.
+ - test(lua_api): add `tests/lua_reorg/unit/test_lua_module_registration.lua` — unit tests for always-on modules, config-gated modules, namespace types, and security sandbox.
  - feat(examples): add `content/examples/handles.lua` — demonstrates handle-based resource management pattern across sprite, physics, and camera modules.
  - docs(specs): update `docs/specs/lua_api.md` with Module Registration Architecture subsection.
 
@@ -311,16 +311,16 @@
  - feat(font): add standalone `src/font/` module (Platform Services tier) with `lurek.font.*` Lua API — bitmap font atlas, glyph metrics, text measurement, word/character wrapping, text shaping with alignment, and font registry with named handles.
  - feat(charts): add standalone `src/charts/` module (Feature Systems tier) with `lurek.charts.*` Lua API — five software-rasterized chart types (line, bar, scatter, pie, area) rendering to RGBA8 pixel buffers; configurable colors, margins, grid, legends; default 8-color palette.
  - docs(specs): add `docs/specs/color.md`, `docs/specs/font.md`, `docs/specs/charts.md`; update README.md index (51 → 54 modules).
- - test(color): add `tests/lua/unit/test_color_core_unit.lua` — 12 describe blocks covering constants, constructors, conversions, blending, utilities, palettes.
- - test(font): add `tests/lua/unit/test_font_core_unit.lua` — 11 describe blocks covering constants, loading, measurement, wrapping, shaping, font methods.
- - test(charts): add `tests/lua/unit/test_charts_core_unit.lua` — 9 describe blocks covering constructors, palette, and all chart type methods.
+ - test(color): add `tests/lua_reorg/unit/test_color_core_unit.lua` — 12 describe blocks covering constants, constructors, conversions, blending, utilities, palettes.
+ - test(font): add `tests/lua_reorg/unit/test_font_core_unit.lua` — 11 describe blocks covering constants, loading, measurement, wrapping, shaping, font methods.
+ - test(charts): add `tests/lua_reorg/unit/test_charts_core_unit.lua` — 9 describe blocks covering constructors, palette, and all chart type methods.
  - refactor(color): delete `src/math/color.rs`; all 15 import sites migrated to `crate::color::Color`. Remove color functions from `lurek.math` API (hslToRgb, colorFromHex, colorToHsl, gammaToLinear, linearToGamma) — now in `lurek.color`.
  - refactor(charts): delete `src/ui/chart.rs` and `src/ui/data_graph_renderer.rs`; all 20 `crate::ui::chart::*` paths in ui_api.rs migrated to `crate::charts::*`. Remove chart/graph types from `src/ui/mod.rs`.
  - refactor(font): `src/font/` module owns CPU-side data layer; `src/render/font.rs` retains GPU font rendering and re-exports shared types from `crate::font`.
  - docs(specs): update `math.md` (remove color), `ui.md` (remove charts), `font.md` (clarify architecture).
 
  - feat(animation): add `LAnimation:setImage(image)` and `LAnimStateMachine:setImage(image)`; make `:draw` polymorphic — `draw(x, y, opts?)` works when an image is pre-stored via `setImage`, `draw(image, x, y, opts?)` remains backward-compatible; raises a clear error when draw is called without a stored image; docs, examples, and tests updated.
- - feat(library): add `library/scene-objects` module — runtime-agnostic game-object container with `add`, `remove`, `clear`, `update` (insertion-order), `draw` (layer-sorted), `count`, `has`, `getByLayer`; 22 unit tests in `tests/lua/library/test_library_scene_objects.lua`; harness registration and library docs generated.
+ - feat(library): add `library/scene-objects` module — runtime-agnostic game-object container with `add`, `remove`, `clear`, `update` (insertion-order), `draw` (layer-sorted), `count`, `has`, `getByLayer`; 22 unit tests in `tests/lua_reorg/library/test_library_scene_objects.lua`; harness registration and library docs generated.
  - feat(examples): add `content/examples/ecs_complete.lua` — full end-to-end headless ECS simulation covering `defineBlueprint`, `extendBlueprint`, `spawnBlueprint`, `addTag`, `addSystem`, `update`, `query`, `kill` across 10 simulation ticks.
  - docs(filesystem): add Core Function Reference subsection with full signatures, param tables, return types, and examples for `read`, `write`, `exists`, `getDirectoryItems`, `mkdir`, and `remove`
  - docs(render): add LShader detail entries for `send(name, value)` and `hasUniform(name)` with param tables, type matrix, and usage example

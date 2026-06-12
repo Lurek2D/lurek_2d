@@ -1483,7 +1483,7 @@ end
 
 #### `LProvinceRegistry:render`
 
-Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
+Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.
 
 ```lua
 LProvinceRegistry:render(opts)
@@ -1501,6 +1501,14 @@ LProvinceRegistry:render(opts)
 do
     local reg = lurek.province.newFromPng("render", "assets/textures/province_map.png")
     local cam_x, cam_y, zoom = reg:fitCamera(800, 600, 1.0)
+    local ids = reg:provinceIds()
+    local tints = {}
+    if ids[1] then
+        tints[ids[1]] = { 0.2, 0.6, 1.0, 1.0 }
+    end
+    if ids[2] then
+        tints[ids[2]] = { 0.9, 0.35, 0.2, 1.0 }
+    end
 
     reg:render({
         map_mode = "political",
@@ -1514,6 +1522,8 @@ do
         draw_borders = true,
         draw_labels = true,
         draw_capitals = true,
+        tint = { 0.92, 0.95, 1.0, 1.0 },
+        province_tints = tints,
         border_width = 1.5,
         hovered_id = 0,
         selected_id = 0,

@@ -28,5 +28,7 @@ pub use collision_helpers::{test_aabb, test_circle_aabb, test_circles, test_poin
 pub use shape::{Shape, StandaloneShape};
 pub use terrain::TerrainMap;
 pub use world::BodyContact as CollisionEvent;
-pub use world::{ContactInfo, PhysicsShapeSnapshot, RaycastHit, World};
+pub use world::{
+    ContactInfo, PhysicsQueryFilter, PhysicsShapeSnapshot, PhysicsWorldStats, RaycastHit, World,
+};
 pub use zone::{PhysicsZone, ZoneBoundary, ZoneEvent, ZoneEventKind, ZoneGravityMode};

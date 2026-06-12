@@ -31,7 +31,9 @@ pub fn pack(value: &NetValue) -> Result<Vec<u8>, NetworkError> {
 
 fn check_nesting(value: &NetValue, depth: usize) -> Result<(), NetworkError> {
     if depth > 32 {
-        return Err(NetworkError::Serialization("maximum nesting depth exceeded".into()));
+        return Err(NetworkError::Serialization(
+            "maximum nesting depth exceeded".into(),
+        ));
     }
     match value {
         NetValue::Array(arr) => {
@@ -54,8 +56,8 @@ pub fn unpack(data: &[u8]) -> Result<NetValue, NetworkError> {
     if data.len() > 65536 {
         return Err(NetworkError::Serialization("payload too large".into()));
     }
-    let val: NetValue = rmp_serde::from_slice(data).map_err(|e| NetworkError::Serialization(e.to_string()))?;
+    let val: NetValue =
+        rmp_serde::from_slice(data).map_err(|e| NetworkError::Serialization(e.to_string()))?;
     check_nesting(&val, 1)?;
     Ok(val)
 }
-

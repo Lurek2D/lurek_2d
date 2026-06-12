@@ -42,6 +42,24 @@ do
     print("saved PNG")
 end
 
+--@api-stub: lurek.image.saveGIF
+do
+    local frames = {}
+
+    local a = lurek.image.newImageData(32, 32)
+    a:fill(20, 30, 60, 255)
+    a:drawCircle(10, 16, 6, 255, 210, 80, 255)
+    frames[1] = a
+
+    local b = lurek.image.newImageData(32, 32)
+    b:fill(20, 30, 60, 255)
+    b:drawCircle(22, 16, 6, 80, 210, 255, 255)
+    frames[2] = b
+
+    lurek.image.saveGIF(frames, "save/two_frame_orb.gif", { delayMs = 120, speed = 10 })
+    print("saved GIF")
+end
+
 --@api-stub: lurek.image.fromScreen
 do
     local capture = lurek.image.fromScreen()

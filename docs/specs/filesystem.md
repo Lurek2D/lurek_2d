@@ -13,7 +13,7 @@
 - Namespace: `lurek.filesystem`
 - Lua API surface: `44` functions, `5` types, `23` methods
 - Rust test path(s): tests/rust/unit/filesystem_tests.rs
-- Lua test path(s): tests/lua/unit/test_filesystem_core_unit.lua, tests/lua/stress/test_filesystem_stress.lua
+- Lua test path(s): tests/lua_reorg/unit/test_filesystem_core_unit.lua, tests/lua_reorg/stress/test_filesystem_stress.lua
 
 ## Summary
 

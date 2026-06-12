@@ -3,12 +3,39 @@
 use super::SharedState;
 use crate::image::serial;
 use crate::image::{
-    CompressedImageData, ImageData, LayeredImage, ProvinceGrid, ProvinceShapeCacheEntry,
+    AnimatedGifOptions, AnimatedGifRepeat, CompressedImageData, ImageData, LayeredImage,
+    ProvinceGrid, ProvinceShapeCacheEntry,
 };
 use crate::render::{DrawMode, RenderCommand};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+fn parse_save_gif_options(opts: Option<LuaTable>) -> LuaResult<AnimatedGifOptions> {
+    let mut out = AnimatedGifOptions::default();
+    let Some(opts) = opts else {
+        return Ok(out);
+    };
+
+    if let Some(delay_ms) = opts.get::<_, Option<u32>>("delayMs")? {
+        out.delay_ms = delay_ms;
+    }
+    if let Some(speed) = opts.get::<_, Option<i32>>("speed")? {
+        out.speed = speed;
+    }
+    if let Some(loop_enabled) = opts.get::<_, Option<bool>>("loop")? {
+        out.repeat = if loop_enabled {
+            AnimatedGifRepeat::Infinite
+        } else {
+            AnimatedGifRepeat::None
+        };
+    }
+    if let Some(loop_count) = opts.get::<_, Option<u16>>("loopCount")? {
+        out.repeat = AnimatedGifRepeat::Finite(loop_count);
+    }
+
+    Ok(out)
+}
 
 /// Lua-side handle for a province id grid decoded from an image.
 pub struct LuaProvinceGrid {
@@ -700,6 +727,34 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             }
             std::fs::write(&path, &bytes).map_err(LuaError::external)
         })?,
+    )?;
+    let s = state.clone();
+    // -- saveGIF --
+    /// Encodes a sequence of equally sized image frames as an animated GIF.
+    /// @param | frames | table | Array of `LImageData` frames in playback order.
+    /// @param | filename | string | Output filename relative to the current game directory.
+    /// @param | opts | table? | Optional GIF settings such as `delayMs`, `speed`, `loop`, or `loopCount`.
+    tbl.set(
+        "saveGIF",
+        lua.create_function(
+            move |_, (frames, filename, opts): (LuaTable, String, Option<LuaTable>)| {
+                let options = parse_save_gif_options(opts)?;
+                let mut collected = Vec::new();
+                for frame_ud in frames.sequence_values::<LuaAnyUserData>() {
+                    let frame_ud = frame_ud?;
+                    let frame = frame_ud.borrow::<ImageData>().map_err(|_| {
+                        LuaError::RuntimeError(
+                            "saveGIF: frames must contain only LImageData values".into(),
+                        )
+                    })?;
+                    collected.push(frame.clone());
+                }
+
+                let path = s.borrow().game_dir.join(&filename);
+                crate::image::animated_gif::save_gif(&collected, &path, options)
+                    .map_err(LuaError::RuntimeError)
+            },
+        )?,
     )?;
     let s = state.clone();
     // -- loadImage --

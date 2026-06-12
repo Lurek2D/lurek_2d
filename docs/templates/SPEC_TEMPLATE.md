@@ -20,7 +20,7 @@
 - Namespace: `lurek.<namespace>` or `None direct`
 - Lua API surface: `<N>` functions, `<N>` types, `<N>` methods
 - Rust test path(s): `tests/rust/unit/<module>_tests.rs`
-- Lua test path(s): `tests/lua/unit/test_<module>_core_unit.lua`
+- Lua test path(s): `tests/lua_reorg/unit/test_<module>_core_unit.lua`
 
 ## Summary
 

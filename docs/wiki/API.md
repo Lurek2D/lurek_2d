@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8849 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (31407 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8876 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (31534 lines)
 
 ## Coverage
 
 - 70 modules
-- 5780 functions and methods
+- 5807 functions and methods
 - 100.0% documented
 
 ## API Module Index
@@ -56,11 +56,11 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.filesystem](Module-filesystem) | 44 | 3 | Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory. |
 | [lurek.flownet](Module-flownet) | 1 | 4 | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react. |
 | [lurek.font](Module-font) | 11 | 1 | CPU-side font loading, glyph metrics, text measurement, and shaping for bitmap fonts. |
-| [lurek.globe](Module-globe) | 11 | 2 | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night. |
+| [lurek.globe](Module-globe) | 12 | 2 | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night. |
 | [lurek.grep](Module-grep) | 7 | 2 | Text search engine for game content: literal, regex, glob, fuzzy, parallel file search. |
 | [lurek.html](Module-html) | 6 | 2 | This module gives users an in-engine HTML/CSS UI layer for menus, HUDs, and tool panels. |
 | [lurek.i18n](Module-i18n) | 36 | 0 | Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*). |
-| [lurek.image](Module-image) | 12 | 5 | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
+| [lurek.image](Module-image) | 13 | 5 | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
 | [lurek.input](Module-input) | 89 | 3 | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
 | [lurek.layout](Module-layout) | 5 | 0 | Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space. |
 | [lurek.learning](Module-learning) | 20 | 18 | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits. |

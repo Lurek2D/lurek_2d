@@ -28,8 +28,19 @@ from typing import Dict, List, Set, Tuple
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
 SRC_DIR = WORKSPACE_ROOT / "src"
 TESTS_DIR = WORKSPACE_ROOT / "tests" / "rust"
-LUA_TESTS_DIR = WORKSPACE_ROOT / "tests" / "lua"
 DEFAULT_JSON_OUTPUT = WORKSPACE_ROOT / "logs" / "data" / "test_coverage.json"
+
+
+def resolve_lua_tests_dir() -> Path:
+    """Prefer canonical reorganized Lua tests, with legacy fallback."""
+    reorg_dir = WORKSPACE_ROOT / "tests" / "lua_reorg"
+    legacy_dir = WORKSPACE_ROOT / "tests" / "lua"
+    if reorg_dir.exists():
+        return reorg_dir
+    return legacy_dir
+
+
+LUA_TESTS_DIR = resolve_lua_tests_dir()
 
 
 def _snake_to_parts(name: str) -> Set[str]:

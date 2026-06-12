@@ -288,7 +288,7 @@ Position: simpler than Godot's GDExtension (no full ABI surface to maintain in v
 4. **`dlopen` paths on Linux.** `LD_LIBRARY_PATH`, `RPATH`, and AppImage layouts surface plugins differently. Needs a documented install layout before M4.
 5. **Steam SDK licensing.** Steamworks SDK is closed and per-publisher licensed. Wrapper plugin must live in a separate repo; Lurek2D core can never link it.
 6. **Lua-candidate evaluation.** `parallax`, `minimap`, `save` could become Lureksome libraries instead of Rust plugins. Decision deferred.
-7. **Plugin testing harness.** Each plugin needs its own `tests/lua/` slice. Open: shared harness or per-plugin?
+7. **Plugin testing harness.** Each plugin needs its own `tests/lua_reorg/` slice. Open: shared harness or per-plugin?
 8. **Spec location.** When a module becomes a plugin, its spec stays in `docs/specs/<name>.md` with a "Plugin: TIER-1" header. Tier is also recorded in `docs/specs/README.md`.
 9. **VS Code extension integration.** The extension needs to know which plugins are present for IntelliSense and run-with-profile commands. Open: emit `plugins.json` at boot, or parse `Cargo.toml` features?
 

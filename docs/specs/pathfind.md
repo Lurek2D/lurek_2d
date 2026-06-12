@@ -14,7 +14,7 @@
 - Namespace: `lurek.pathfind`
 - Lua API surface: `13` functions, `22` types, `104` methods
 - Rust test path(s): tests/rust/unit/pathfinding_tests.rs
-- Lua test path(s): tests/lua/unit/test_pathfind.lua, tests/lua/stress/test_pathfind_stress.lua, tests/lua/golden/test_pathfind_golden_grid.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_pathfind_ecs.lua, tests/lua/integration/test_ai_pathfind.lua
+- Lua test path(s): tests/lua_reorg/unit/test_pathfind.lua, tests/lua_reorg/stress/test_pathfind_stress.lua, tests/lua_reorg/golden/test_pathfind_golden_grid.lua, tests/lua_reorg/integration/test_tilemap_pathfind.lua, tests/lua_reorg/integration/test_pathfind_ecs.lua, tests/lua_reorg/integration/test_ai_pathfind.lua
 
 ## Summary
 

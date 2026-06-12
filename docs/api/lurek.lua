@@ -1476,7 +1476,7 @@ LWorldGetBeginContactEventsResult = {}
 ---@class LWorldGetBodyContactsResult
 ---@field bodyA number BodyA.
 ---@field bodyB number BodyB.
----@field isTouching boolean IsTouching.
+---@field isTouching boolean True while the body pair is currently touching.
 ---@field normalX number NormalX.
 ---@field normalY number NormalY.
 LWorldGetBodyContactsResult = {}
@@ -1489,7 +1489,7 @@ LWorldGetCollisionEventsResult = {}
 ---@class LWorldGetContactsResult
 ---@field bodyA number BodyA.
 ---@field bodyB number BodyB.
----@field isTouching boolean IsTouching.
+---@field isTouching boolean True while the bodies are currently touching.
 ---@field normalX number NormalX.
 ---@field normalY number NormalY.
 LWorldGetContactsResult = {}
@@ -1498,6 +1498,16 @@ LWorldGetContactsResult = {}
 ---@field bodyA number BodyA.
 ---@field bodyB number BodyB.
 LWorldGetEndContactEventsResult = {}
+
+---@class LWorldGetStatsResult
+---@field bodies number Number of active body slots.
+---@field bodySlots number Total allocated body slots, including inactive tombstones.
+---@field colliders number Number of active Rapier colliders.
+---@field jointSlots number Total allocated joint slots, including inactive tombstones.
+---@field joints number Number of active joint slots.
+---@field sleepingBodies number Number of active bodies currently sleeping.
+---@field zones number Number of active physics zones.
+LWorldGetStatsResult = {}
 
 ---@class LWorldGetZoneEventsResult
 ---@field body_id number Body_id.
@@ -12819,6 +12829,10 @@ lurek.globe.loadFromTOMLFile = function(name, path, spec_tbl) end
 ---@return LGlobe New globe handle.
 lurek.globe.new = function(name, spec_tbl) end
 
+--- Creates an empty globe registry handle independent from the module registry.
+---@return LGlobeRegistry New globe registry handle.
+lurek.globe.newRegistry = function() end
+
 --- Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
 ---@param ox number Ray origin x.
 ---@param oy number Ray origin y.
@@ -13881,6 +13895,12 @@ lurek.image.newPaletteLut = function() end
 ---@param filename string Province map image filename relative to game directory.
 ---@return LProvinceGrid New province grid handle.
 lurek.image.newProvinceGrid = function(filename) end
+
+--- Encodes a sequence of equally sized image frames as an animated GIF.
+---@param frames table Array of `LImageData` frames in playback order.
+---@param filename string Output filename relative to the current game directory.
+---@param opts? table Optional GIF settings such as `delayMs`, `speed`, `loop`, or `loopCount`.
+lurek.image.saveGIF = function(frames, filename, opts) end
 
 --- Saves an image data object to a path under the current game directory.
 ---@param img_ud LImageData Image data handle to save.
@@ -19212,12 +19232,12 @@ lurek.parallax.newSet = function(name) end
 function LParticleSystem:addAttractor(x, y, strength, radius) end
 
 --- Configures a death sub-emitter from a config table.
----@param config_tbl table Particle config table.
+---@param config_tbl table Particle config table. Supports `seed` for deterministic sub-emission.
 ---@param burst_count? number Burst count per death.
 function LParticleSystem:addSubEmitter(config_tbl, burst_count) end
 
 --- Adds a particle sub-system from a config table.
----@param config_tbl table Particle config table.
+---@param config_tbl table Particle config table. Supports `seed` for deterministic sub-systems.
 ---@return number One-based sub-system index.
 function LParticleSystem:addSubSystem(config_tbl) end
 
@@ -19697,7 +19717,7 @@ function LTrail:update(dt) end
 lurek.particle.drawLifecycleToImage = function(snapshots, max_particles, w, h) end
 
 --- Creates a particle system from a TOML config file.
----@param path string TOML file path.
+---@param path string TOML file path. The TOML config may include `seed` for deterministic emission.
 ---@return LParticleSystem New particle system handle.
 lurek.particle.fromTOML = function(path) end
 
@@ -19707,7 +19727,7 @@ lurek.particle.fromTOML = function(path) end
 lurek.particle.newPreset = function(name) end
 
 --- Creates a particle system from an optional config table.
----@param config? table Particle config table.
+---@param config? table Particle config table. Supports `seed` for deterministic emission and reset behavior.
 ---@return LParticleSystem New particle system handle.
 lurek.particle.newSystem = function(config) end
 
@@ -21601,6 +21621,10 @@ function LBody:isSleeping() end
 ---@return boolean True if sleeping is allowed.
 function LBody:isSleepingAllowed() end
 
+--- Returns whether this body handle still points to an active body.
+---@return boolean True if the body has not been destroyed.
+function LBody:isValid() end
+
 --- Sets the body's rotation angle directly.
 ---@param angle number New angle in radians.
 function LBody:setAngle(angle) end
@@ -21969,8 +21993,9 @@ function LWorld:getBeginContactEvents() end
 --- Returns the body ID at a specific world point, or nil if no body is there.
 ---@param x number Query point X.
 ---@param y number Query point Y.
+---@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
 ---@return number Body ID at the point, or nil.
-function LWorld:getBodyAtPoint(x, y) end
+function LWorld:getBodyAtPoint(x, y, filter) end
 
 --- Returns whether continuous collision detection is enabled on a body.
 ---@param id number The body ID.
@@ -22062,9 +22087,23 @@ function LWorld:getMeter() end
 ---@return number Iteration count.
 function LWorld:getSolverIterations() end
 
+--- Returns active counts and slot diagnostics for the world.
+---@return LWorldGetStatsResult Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies.
+function LWorld:getStats() end
+
 --- Returns all zone enter/leave events from the last step.
 ---@return LWorldGetZoneEventsResult Array of {zone_id, body_id, kind} tables where kind is "enter" or "leave".
 function LWorld:getZoneEvents() end
+
+--- Returns true when a body ID still refers to a live body slot.
+---@param id number Body ID to check.
+---@return boolean True if the body is active.
+function LWorld:hasBody(id) end
+
+--- Returns true when a joint ID still refers to a live joint slot.
+---@param id number Joint ID to check.
+---@return boolean True if the joint is active.
+function LWorld:hasJoint(id) end
 
 --- Returns whether a body is currently in the sleeping (inactive) state.
 ---@param id number The body ID.
@@ -22128,16 +22167,18 @@ function LWorld:newPolygonBody(x, y, vertices, bodyType) end
 ---@param y number Query rectangle top Y.
 ---@param w number Query rectangle width.
 ---@param h number Query rectangle height.
+---@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
 ---@return number[] Body ID numbers found in the region.
-function LWorld:queryAABB(x, y, w, h) end
+function LWorld:queryAABB(x, y, w, h, filter) end
 
 --- Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
 ---@param x1 number Ray origin X.
 ---@param y1 number Ray origin Y.
 ---@param x2 number Ray end X.
 ---@param y2 number Ray end Y.
+---@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
 ---@return LWorldRaycastResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
-function LWorld:raycast(x1, y1, x2, y2) end
+function LWorld:raycast(x1, y1, x2, y2, filter) end
 
 --- Casts a directional ray and returns all bodies hit within max distance as a table of results.
 ---@param x number Ray origin X.
@@ -22145,8 +22186,9 @@ function LWorld:raycast(x1, y1, x2, y2) end
 ---@param dx number Ray direction X.
 ---@param dy number Ray direction Y.
 ---@param maxDist number Maximum ray travel distance.
+---@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
 ---@return LWorldRaycastAllResult Array of hit tables {bodyId, x, y, normalX, normalY, toi}.
-function LWorld:raycastAll(x, y, dx, dy, maxDist) end
+function LWorld:raycastAll(x, y, dx, dy, maxDist, filter) end
 
 --- Casts a directional ray from a point and returns the closest hit within max distance.
 ---@param x number Ray origin X.
@@ -22154,8 +22196,9 @@ function LWorld:raycastAll(x, y, dx, dy, maxDist) end
 ---@param dx number Ray direction X (does not need to be normalized).
 ---@param dy number Ray direction Y.
 ---@param maxDist number Maximum ray travel distance.
+---@param filter? table Optional query filter: {layer?, mask?, includeSensors?}.
 ---@return LWorldRaycastClosestResult Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
-function LWorld:raycastClosest(x, y, dx, dy, maxDist) end
+function LWorld:raycastClosest(x, y, dx, dy, maxDist, filter) end
 
 --- Registers a callback function invoked whenever two bodies begin touching.
 ---@param callback function Called with (bodyIdA, bodyIdB) on each new contact.
@@ -23379,7 +23422,7 @@ function LProvinceRegistry:registerBorderType(type_id, config) end
 ---@param config table Config: show_labels (bool?), show_borders (bool?), show_roads (bool?), show_capitals (bool?), show_values (bool?), value_property (string?), color_property (string?), fog_intensity (number?), border_filter (integer[]?).
 function LProvinceRegistry:registerMapMode(name, config) end
 
---- Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
+--- Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.
 ---@param opts? table?|Render "tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
 function LProvinceRegistry:render(opts) end
 
@@ -24565,7 +24608,7 @@ lurek.render.arc = function(mode, x, y, radius, angle1, angle2, segments) end
 ---@param id number Group identifier.
 lurek.render.beginSortGroup = function(id) end
 
---- Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
+--- Captures the queued 2D render commands into an ImageData fallback and passes it to a callback.
 ---@param callback function Called with an LImageData argument.
 lurek.render.captureScreenshot = function(callback) end
 
@@ -28972,9 +29015,29 @@ function LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, opts) en
 ---@param target LImageData The image to draw into.
 function LAreaChart:drawToImage(target) end
 
+--- Enables or disables the layer legend for this area chart.
+---@param value boolean True to show the legend.
+function LAreaChart:setShowLegend(value) end
+
+--- Sets the X-axis label for this area chart.
+---@param label string Axis label text.
+function LAreaChart:setXLabel(label) end
+
+--- Sets the number of X-axis tick labels for this area chart.
+---@param count number Tick count, minimum 2.
+function LAreaChart:setXTickCount(count) end
+
+--- Sets the Y-axis label for this area chart.
+---@param label string Axis label text.
+function LAreaChart:setYLabel(label) end
+
 --- Sets the maximum Y-axis value for this area chart.
 ---@param v number The Y-axis maximum.
 function LAreaChart:setYMax(v) end
+
+--- Sets the number of Y-axis tick labels for this area chart.
+---@param count number Tick count, minimum 2.
+function LAreaChart:setYTickCount(count) end
 
 --- Returns the type name of this object.
 ---@return string Always "LAreaChart".
@@ -29020,6 +29083,26 @@ function LBarChart:addSeries(name, r, g, b) end
 --- Renders this bar chart to an image buffer.
 ---@param target LImageData The image to draw into.
 function LBarChart:drawToImage(target) end
+
+--- Enables or disables the series legend for this bar chart.
+---@param value boolean True to show the legend.
+function LBarChart:setShowLegend(value) end
+
+--- Sets the X-axis label for this bar chart.
+---@param label string Axis label text.
+function LBarChart:setXLabel(label) end
+
+--- Sets the number of X-axis tick labels for this bar chart.
+---@param count number Tick count, minimum 2.
+function LBarChart:setXTickCount(count) end
+
+--- Sets the Y-axis label for this bar chart.
+---@param label string Axis label text.
+function LBarChart:setYLabel(label) end
+
+--- Sets the number of Y-axis tick labels for this bar chart.
+---@param count number Tick count, minimum 2.
+function LBarChart:setYTickCount(count) end
 
 --- Returns the type name of this object.
 ---@return string Always "LBarChart".
@@ -29477,13 +29560,33 @@ function LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts
 ---@param target LImageData The image to draw into.
 function LLineChart:drawToImage(target) end
 
+--- Enables or disables the series legend for this line chart.
+---@param value boolean True to show the legend.
+function LLineChart:setShowLegend(value) end
+
+--- Sets the X-axis label for this line chart.
+---@param label string Axis label text.
+function LLineChart:setXLabel(label) end
+
 --- Sets the maximum X-axis value for this line chart.
 ---@param v number The X-axis maximum.
 function LLineChart:setXMax(v) end
 
+--- Sets the number of X-axis tick labels for this line chart.
+---@param count number Tick count, minimum 2.
+function LLineChart:setXTickCount(count) end
+
+--- Sets the Y-axis label for this line chart.
+---@param label string Axis label text.
+function LLineChart:setYLabel(label) end
+
 --- Sets the maximum Y-axis value for this line chart.
 ---@param v number The Y-axis maximum.
 function LLineChart:setYMax(v) end
+
+--- Sets the number of Y-axis tick labels for this line chart.
+---@param count number Tick count, minimum 2.
+function LLineChart:setYTickCount(count) end
 
 --- Returns the type name of this object.
 ---@return string Always "LLineChart".
@@ -29639,6 +29742,10 @@ function LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts) end
 ---@param target LImageData The image to draw into.
 function LPieChart:drawToImage(target) end
 
+--- Enables or disables the segment legend for this pie chart.
+---@param value boolean True to show the legend.
+function LPieChart:setShowLegend(value) end
+
 --- Returns the type name of this object.
 ---@return string Always "LPieChart".
 function LPieChart:type() end
@@ -29725,15 +29832,35 @@ function LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, op
 ---@param target LImageData The image to draw into.
 function LScatterPlot:drawToImage(target) end
 
+--- Enables or disables the series legend for this scatter plot.
+---@param value boolean True to show the legend.
+function LScatterPlot:setShowLegend(value) end
+
+--- Sets the X-axis label for this scatter plot.
+---@param label string Axis label text.
+function LScatterPlot:setXLabel(label) end
+
 --- Sets the X-axis range for this scatter plot.
 ---@param mn number Minimum X value.
 ---@param mx number Maximum X value.
 function LScatterPlot:setXRange(mn, mx) end
 
+--- Sets the number of X-axis tick labels for this scatter plot.
+---@param count number Tick count, minimum 2.
+function LScatterPlot:setXTickCount(count) end
+
+--- Sets the Y-axis label for this scatter plot.
+---@param label string Axis label text.
+function LScatterPlot:setYLabel(label) end
+
 --- Sets the Y-axis range for this scatter plot.
 ---@param mn number Minimum Y value.
 ---@param mx number Maximum Y value.
 function LScatterPlot:setYRange(mn, mx) end
+
+--- Sets the number of Y-axis tick labels for this scatter plot.
+---@param count number Tick count, minimum 2.
+function LScatterPlot:setYTickCount(count) end
 
 --- Returns the type name of this object.
 ---@return string Always "LScatterPlot".

@@ -3,9 +3,9 @@
 //! Methods mirror the image/sprite module patterns: factory, dimension queries,
 //! element state reads/writes/resets, hierarchy navigation, bounds, and GPU canvas caching.
 
+use crate::lua_api::math_api::LuaVec2;
 use crate::runtime::SharedState;
 use crate::vector::SvgImage;
-use crate::lua_api::math_api::LuaVec2;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -50,36 +50,55 @@ impl LuaUserData for LSvgImage {
         /// @param | sy | number? | Scale on Y axis. Defaults to `sx`.
         /// @param | ox | number? | Origin X offset. Defaults to 0.
         /// @param | oy | number? | Origin Y offset. Defaults to 0.
-        methods.add_method("draw", |_, this, (x, y, rotation, sx, sy, ox, oy): (f32, f32, Option<f32>, Option<f32>, Option<f32>, Option<f32>, Option<f32>)| {
-            let rotation = rotation.unwrap_or(0.0);
-            let sx = sx.unwrap_or(1.0);
-            let sy = sy.unwrap_or(sx);
-            let ox = ox.unwrap_or(0.0);
-            let oy = oy.unwrap_or(0.0);
+        methods.add_method(
+            "draw",
+            |_,
+             this,
+             (x, y, rotation, sx, sy, ox, oy): (
+                f32,
+                f32,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
+                let rotation = rotation.unwrap_or(0.0);
+                let sx = sx.unwrap_or(1.0);
+                let sy = sy.unwrap_or(sx);
+                let ox = ox.unwrap_or(0.0);
+                let oy = oy.unwrap_or(0.0);
 
-            let mut st = this.state.borrow_mut();
+                let mut st = this.state.borrow_mut();
 
-            // Push transform matrix
-            st.render_commands.push(crate::render::renderer::RenderCommand::PushTransform);
+                // Push transform matrix
+                st.render_commands
+                    .push(crate::render::renderer::RenderCommand::PushTransform);
 
-            // Apply draw parameters
-            st.render_commands.push(crate::render::renderer::RenderCommand::Translate { x, y });
-            if rotation != 0.0 {
-                st.render_commands.push(crate::render::renderer::RenderCommand::Rotate { angle: rotation });
-            }
-            if sx != 1.0 || sy != 1.0 {
-                st.render_commands.push(crate::render::renderer::RenderCommand::Scale { sx, sy });
-            }
-            if ox != 0.0 || oy != 0.0 {
-                st.render_commands.push(crate::render::renderer::RenderCommand::Translate { x: -ox, y: -oy });
-            }
+                // Apply draw parameters
+                st.render_commands
+                    .push(crate::render::renderer::RenderCommand::Translate { x, y });
+                if rotation != 0.0 {
+                    st.render_commands
+                        .push(crate::render::renderer::RenderCommand::Rotate { angle: rotation });
+                }
+                if sx != 1.0 || sy != 1.0 {
+                    st.render_commands
+                        .push(crate::render::renderer::RenderCommand::Scale { sx, sy });
+                }
+                if ox != 0.0 || oy != 0.0 {
+                    st.render_commands
+                        .push(crate::render::renderer::RenderCommand::Translate { x: -ox, y: -oy });
+                }
 
-            // Draw the SVG image paths
-            this.inner.borrow().render(&mut st);
+                // Draw the SVG image paths
+                this.inner.borrow().render(&mut st);
 
-            st.render_commands.push(crate::render::renderer::RenderCommand::PopTransform);
-            Ok(())
-        });
+                st.render_commands
+                    .push(crate::render::renderer::RenderCommand::PopTransform);
+                Ok(())
+            },
+        );
 
         // -- getElementIds --
         /// Returns a list of all parsed element and group IDs.
@@ -104,15 +123,21 @@ impl LuaUserData for LSvgImage {
         /// Toggles the visibility of a specific element/group by ID.
         /// @param | id | string | Element or group ID.
         /// @param | visible | boolean | New visibility state.
-        methods.add_method("setElementVisible", |_, this, (id, visible): (String, bool)| {
-            let mut svg = this.inner.borrow_mut();
-            if let Some(el) = svg.elements.get_mut(&id) {
-                el.visible = visible;
-                Ok(())
-            } else {
-                Err(LuaError::RuntimeError(format!("SVG element '{}' not found", id)))
-            }
-        });
+        methods.add_method(
+            "setElementVisible",
+            |_, this, (id, visible): (String, bool)| {
+                let mut svg = this.inner.borrow_mut();
+                if let Some(el) = svg.elements.get_mut(&id) {
+                    el.visible = visible;
+                    Ok(())
+                } else {
+                    Err(LuaError::RuntimeError(format!(
+                        "SVG element '{}' not found",
+                        id
+                    )))
+                }
+            },
+        );
 
         // -- getElementVisible --
         /// Returns the current visibility flag for the element.
@@ -130,15 +155,21 @@ impl LuaUserData for LSvgImage {
         /// @param | g | number | Green channel in range 0..1.
         /// @param | b | number | Blue channel in range 0..1.
         /// @param | a | number | Alpha channel in range 0..1.
-        methods.add_method("setElementColor", |_, this, (id, r, g, b, a): (String, f32, f32, f32, f32)| {
-            let mut svg = this.inner.borrow_mut();
-            if let Some(el) = svg.elements.get_mut(&id) {
-                el.color_override = Some([r, g, b, a]);
-                Ok(())
-            } else {
-                Err(LuaError::RuntimeError(format!("SVG element '{}' not found", id)))
-            }
-        });
+        methods.add_method(
+            "setElementColor",
+            |_, this, (id, r, g, b, a): (String, f32, f32, f32, f32)| {
+                let mut svg = this.inner.borrow_mut();
+                if let Some(el) = svg.elements.get_mut(&id) {
+                    el.color_override = Some([r, g, b, a]);
+                    Ok(())
+                } else {
+                    Err(LuaError::RuntimeError(format!(
+                        "SVG element '{}' not found",
+                        id
+                    )))
+                }
+            },
+        );
 
         // -- getElementColor --
         /// Returns the current RGBA color override `{r, g, b, a}` table for the element.
@@ -163,7 +194,8 @@ impl LuaUserData for LSvgImage {
         /// Clears the color override on the element, restoring original SVG path colors.
         /// @param | id | string | Element or group ID.
         methods.add_method("resetElementColor", |_, this, id: String| {
-            this.inner.borrow_mut()
+            this.inner
+                .borrow_mut()
                 .reset_element_color(&id)
                 .map_err(LuaError::RuntimeError)
         });
@@ -176,17 +208,23 @@ impl LuaUserData for LSvgImage {
         /// @param | rotation | number | Rotation in radians.
         /// @param | sx | number | Scale on X axis.
         /// @param | sy | number | Scale on Y axis.
-        methods.add_method("setElementTransform", |_, this, (id, tx, ty, rotation, sx, sy): (String, f32, f32, f32, f32, f32)| {
-            let mut svg = this.inner.borrow_mut();
-            if let Some(el) = svg.elements.get_mut(&id) {
-                el.translation = crate::math::Vec2::new(tx, ty);
-                el.rotation = rotation;
-                el.scale = crate::math::Vec2::new(sx, sy);
-                Ok(())
-            } else {
-                Err(LuaError::RuntimeError(format!("SVG element '{}' not found", id)))
-            }
-        });
+        methods.add_method(
+            "setElementTransform",
+            |_, this, (id, tx, ty, rotation, sx, sy): (String, f32, f32, f32, f32, f32)| {
+                let mut svg = this.inner.borrow_mut();
+                if let Some(el) = svg.elements.get_mut(&id) {
+                    el.translation = crate::math::Vec2::new(tx, ty);
+                    el.rotation = rotation;
+                    el.scale = crate::math::Vec2::new(sx, sy);
+                    Ok(())
+                } else {
+                    Err(LuaError::RuntimeError(format!(
+                        "SVG element '{}' not found",
+                        id
+                    )))
+                }
+            },
+        );
 
         // -- getElementTransform --
         /// Returns the current dynamic TRS state of the element as a table `{tx, ty, rotation, sx, sy}`.
@@ -213,7 +251,8 @@ impl LuaUserData for LSvgImage {
         /// The original SVG-embedded local transform is not affected.
         /// @param | id | string | Element or group ID.
         methods.add_method("resetElementTransform", |_, this, id: String| {
-            this.inner.borrow_mut()
+            this.inner
+                .borrow_mut()
                 .reset_element_transform(&id)
                 .map_err(LuaError::RuntimeError)
         });
@@ -268,51 +307,60 @@ impl LuaUserData for LSvgImage {
         /// @param | id | string | Element or group ID.
         /// @param | step_size | number? | Optional curve sampling step. Lower values increase point density.
         /// @return | table? | Sequential table of `LVec2` points, or `nil`.
-        methods.add_method("getElementPoints", |lua, this, (id, step_size): (String, Option<f32>)| {
-            let svg = this.inner.borrow();
-            if let Some(pts) = svg.get_element_points(&id, step_size) {
-                let tbl = lua.create_table()?;
-                for (i, p) in pts.into_iter().enumerate() {
-                    tbl.set(i + 1, lua.create_userdata(LuaVec2 { inner: p })?)?;
+        methods.add_method(
+            "getElementPoints",
+            |lua, this, (id, step_size): (String, Option<f32>)| {
+                let svg = this.inner.borrow();
+                if let Some(pts) = svg.get_element_points(&id, step_size) {
+                    let tbl = lua.create_table()?;
+                    for (i, p) in pts.into_iter().enumerate() {
+                        tbl.set(i + 1, lua.create_userdata(LuaVec2 { inner: p })?)?;
+                    }
+                    Ok(LuaValue::Table(tbl))
+                } else {
+                    Ok(LuaValue::Nil)
                 }
-                Ok(LuaValue::Table(tbl))
-            } else {
-                Ok(LuaValue::Nil)
-            }
-        });
+            },
+        );
 
         // -- getAdjacencies --
         /// Detects neighboring provinces using point-to-point proximity.
         /// @param | prefix | string | ID prefix used to filter candidate elements.
         /// @param | epsilon | number? | Distance tolerance for adjacency detection.
         /// @return | table | Map table: element ID -> sequential neighbor ID list.
-        methods.add_method("getAdjacencies", |lua, this, (prefix, epsilon): (String, Option<f32>)| {
-            let svg = this.inner.borrow();
-            let adj = svg.get_adjacencies(&prefix, epsilon);
-            let tbl = lua.create_table()?;
-            for (id, neighbors) in adj {
-                let neighbors_tbl = lua.create_table()?;
-                for (i, neighbor) in neighbors.iter().enumerate() {
-                    neighbors_tbl.set(i + 1, neighbor.as_str())?;
+        methods.add_method(
+            "getAdjacencies",
+            |lua, this, (prefix, epsilon): (String, Option<f32>)| {
+                let svg = this.inner.borrow();
+                let adj = svg.get_adjacencies(&prefix, epsilon);
+                let tbl = lua.create_table()?;
+                for (id, neighbors) in adj {
+                    let neighbors_tbl = lua.create_table()?;
+                    for (i, neighbor) in neighbors.iter().enumerate() {
+                        neighbors_tbl.set(i + 1, neighbor.as_str())?;
+                    }
+                    tbl.set(id.as_str(), neighbors_tbl)?;
                 }
-                tbl.set(id.as_str(), neighbors_tbl)?;
-            }
-            Ok(tbl)
-        });
+                Ok(tbl)
+            },
+        );
 
         // -- cacheToCanvas --
         /// Rasterizes a specific SVG element/group onto an off-screen GPU Canvas.
         /// @param | id | string | Element or group ID.
         /// @param | w | integer | Target canvas width in pixels.
         /// @param | h | integer | Target canvas height in pixels.
-        methods.add_method("cacheToCanvas", |_, this, (id, w, h): (String, u32, u32)| {
-            let mut svg = this.inner.borrow_mut();
-            let mut st = this.state.borrow_mut();
-            match svg.cache_to_canvas(&id, w, h, &mut st) {
-                Ok(_) => Ok(()),
-                Err(e) => Err(LuaError::RuntimeError(e)),
-            }
-        });
+        methods.add_method(
+            "cacheToCanvas",
+            |_, this, (id, w, h): (String, u32, u32)| {
+                let mut svg = this.inner.borrow_mut();
+                let mut st = this.state.borrow_mut();
+                match svg.cache_to_canvas(&id, w, h, &mut st) {
+                    Ok(_) => Ok(()),
+                    Err(e) => Err(LuaError::RuntimeError(e)),
+                }
+            },
+        );
 
         // -- getCanvasKey --
         /// Returns the LCanvas handle for a previously cached element/group.
@@ -321,10 +369,12 @@ impl LuaUserData for LSvgImage {
         methods.add_method("getCanvasKey", |lua, this, id: String| {
             let svg = this.inner.borrow();
             if let Some(&key) = svg.cached_canvases.get(&id) {
-                Ok(Some(lua.create_userdata(crate::lua_api::render_api::LuaCanvas {
-                    state: this.state.clone(),
-                    key,
-                })?))
+                Ok(Some(lua.create_userdata(
+                    crate::lua_api::render_api::LuaCanvas {
+                        state: this.state.clone(),
+                        key,
+                    },
+                )?))
             } else {
                 Ok(None)
             }
@@ -337,10 +387,12 @@ impl LuaUserData for LSvgImage {
         methods.add_method("getCanvas", |lua, this, id: String| {
             let svg = this.inner.borrow();
             if let Some(&key) = svg.cached_canvases.get(&id) {
-                Ok(Some(lua.create_userdata(crate::lua_api::render_api::LuaCanvas {
-                    state: this.state.clone(),
-                    key,
-                })?))
+                Ok(Some(lua.create_userdata(
+                    crate::lua_api::render_api::LuaCanvas {
+                        state: this.state.clone(),
+                        key,
+                    },
+                )?))
             } else {
                 Ok(None)
             }
@@ -368,21 +420,24 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     /// Load and parse an SVG file from the game directory.
     /// @param | path | string | Relative path to an SVG file.
-    svg.set("load", lua.create_function(move |lua, path: String| {
-        let st = s.borrow();
-        let full_path = st.game_dir.join(&path);
+    svg.set(
+        "load",
+        lua.create_function(move |lua, path: String| {
+            let st = s.borrow();
+            let full_path = st.game_dir.join(&path);
 
-        let bytes = std::fs::read(&full_path)
-            .map_err(|e| LuaError::RuntimeError(format!("Failed to read SVG file '{}': {}", path, e)))?;
+            let bytes = std::fs::read(&full_path).map_err(|e| {
+                LuaError::RuntimeError(format!("Failed to read SVG file '{}': {}", path, e))
+            })?;
 
-        let svg_image = SvgImage::from_bytes(&bytes, &path)
-            .map_err(LuaError::RuntimeError)?;
+            let svg_image = SvgImage::from_bytes(&bytes, &path).map_err(LuaError::RuntimeError)?;
 
-        lua.create_userdata(LSvgImage {
-            state: s.clone(),
-            inner: Rc::new(RefCell::new(svg_image)),
-        })
-    })?)?;
+            lua.create_userdata(LSvgImage {
+                state: s.clone(),
+                inner: Rc::new(RefCell::new(svg_image)),
+            })
+        })?,
+    )?;
 
     lurek.set("svg", svg)?;
     Ok(())

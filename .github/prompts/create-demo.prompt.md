@@ -37,7 +37,7 @@ description: "Load this skill when creating or modifying runnable Lua demo games
 
 # References
 - skills: `.codex/skills/create-demo/SKILL.md`
-- contracts: content/AGENTS.md, content/games/AGENTS.md, tests/lua/AGENTS.md
+- contracts: content/AGENTS.md, content/games/AGENTS.md, tests/lua_reorg/AGENTS.md
 - tools: tools/python.cmd tools/rag/query.py "content games demo conventions" --profile game --limit 10, tools/python.cmd tools/validate/validate_game.py <demo-dir>, cargo test --test demo_smoke_tests
 - agent: content
 

@@ -145,11 +145,19 @@ impl SyncSnapshot {
                 removals,
             } => {
                 let up_vals = NetValue::Array(updates.iter().map(|e| e.to_netvalue()).collect());
-                let rem_vals = NetValue::Array(removals.iter().map(|&id| NetValue::Integer(id as i64)).collect());
+                let rem_vals = NetValue::Array(
+                    removals
+                        .iter()
+                        .map(|&id| NetValue::Integer(id as i64))
+                        .collect(),
+                );
                 NetValue::Map(vec![
                     ("type".to_string(), NetValue::String("delta".to_string())),
                     ("tick".to_string(), NetValue::Integer(*tick as i64)),
-                    ("base_tick".to_string(), NetValue::Integer(*base_tick as i64)),
+                    (
+                        "base_tick".to_string(),
+                        NetValue::Integer(*base_tick as i64),
+                    ),
                     ("updates".to_string(), up_vals),
                     ("removals".to_string(), rem_vals),
                 ])
@@ -157,7 +165,10 @@ impl SyncSnapshot {
             SyncSnapshot::Corrective { tick, entities } => {
                 let ent_vals = NetValue::Array(entities.iter().map(|e| e.to_netvalue()).collect());
                 NetValue::Map(vec![
-                    ("type".to_string(), NetValue::String("corrective".to_string())),
+                    (
+                        "type".to_string(),
+                        NetValue::String("corrective".to_string()),
+                    ),
                     ("tick".to_string(), NetValue::Integer(*tick as i64)),
                     ("entities".to_string(), ent_vals),
                 ])

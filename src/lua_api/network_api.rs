@@ -176,7 +176,10 @@ fn lua_to_entity_snapshot(t: &LuaTable) -> LuaResult<crate::network::net_sync::E
     })
 }
 /// Converts an EntitySnapshot to a Lua table.
-fn entity_snapshot_to_lua<'lua>(lua: &'lua Lua, es: &crate::network::net_sync::EntitySnapshot) -> LuaResult<LuaTable<'lua>> {
+fn entity_snapshot_to_lua<'lua>(
+    lua: &'lua Lua,
+    es: &crate::network::net_sync::EntitySnapshot,
+) -> LuaResult<LuaTable<'lua>> {
     let t = lua.create_table()?;
     t.set("id", es.id)?;
     t.set("tick", es.tick)?;
@@ -228,11 +231,16 @@ fn lua_to_sync_snapshot(t: &LuaTable) -> LuaResult<crate::network::net_sync::Syn
             }
             Ok(crate::network::net_sync::SyncSnapshot::Corrective { tick, entities })
         }
-        _ => Err(LuaError::RuntimeError(format!("unknown snapshot type: {type_str}"))),
+        _ => Err(LuaError::RuntimeError(format!(
+            "unknown snapshot type: {type_str}"
+        ))),
     }
 }
 /// Converts a SyncSnapshot to a Lua table.
-fn sync_snapshot_to_lua<'lua>(lua: &'lua Lua, snap: &crate::network::net_sync::SyncSnapshot) -> LuaResult<LuaTable<'lua>> {
+fn sync_snapshot_to_lua<'lua>(
+    lua: &'lua Lua,
+    snap: &crate::network::net_sync::SyncSnapshot,
+) -> LuaResult<LuaTable<'lua>> {
     let t = lua.create_table()?;
     match snap {
         crate::network::net_sync::SyncSnapshot::Full { tick, entities } => {
@@ -585,35 +593,34 @@ impl LuaUserData for LuaNetworkHost {
         /// @param | peer_id | integer | Peer ID.
         /// @param | timeout_secs | integer | Lease duration in seconds.
         /// @return | integer | Reconnection token.
-        methods.add_method("registerLease", |_, this, (peer_id, timeout_secs): (usize, u64)| {
-            let token = this
-                .inner
-                .borrow_mut()
-                .register_lease(PeerID(peer_id), timeout_secs);
-            Ok(token)
-        });
+        methods.add_method(
+            "registerLease",
+            |_, this, (peer_id, timeout_secs): (usize, u64)| {
+                let token = this
+                    .inner
+                    .borrow_mut()
+                    .register_lease(PeerID(peer_id), timeout_secs);
+                Ok(token)
+            },
+        );
         // -- getLeasePeer --
         /// Retrieves the peer ID associated with a valid, non-expired lease token.
         /// @param | token | integer | Reconnection token.
         /// @return | integer? | Original Peer ID or nil if invalid/expired.
         methods.add_method("getLeasePeer", |_, this, token: u32| {
-            Ok(this
-                .inner
-                .borrow()
-                .get_lease_peer(token)
-                .map(|p| p.0))
+            Ok(this.inner.borrow().get_lease_peer(token).map(|p| p.0))
         });
         // -- renewLease --
         /// Renews an active lease token with a new duration.
         /// @param | token | integer | Reconnection token.
         /// @param | timeout_secs | integer | New lease duration in seconds.
         /// @return | boolean | True if successfully renewed, false otherwise.
-        methods.add_method("renewLease", |_, this, (token, timeout_secs): (u32, u64)| {
-            Ok(this
-                .inner
-                .borrow_mut()
-                .renew_lease(token, timeout_secs))
-        });
+        methods.add_method(
+            "renewLease",
+            |_, this, (token, timeout_secs): (u32, u64)| {
+                Ok(this.inner.borrow_mut().renew_lease(token, timeout_secs))
+            },
+        );
         // -- clearLease --
         /// Removes a lease token immediately.
         /// @param | token | integer | Reconnection token.
@@ -1079,7 +1086,8 @@ impl LuaUserData for LuaNetworkRuntime {
         /// Returns network runtime metrics.
         /// @return | table | Metrics table with queue_size, reconnect_count, http_active_count, tcp_active_count, ws_active_count.
         methods.add_method("getMetrics", |lua, this, ()| {
-            let (active_reqs, reconnects, http_act, tcp_act, ws_act) = this.inner.borrow().get_metrics();
+            let (active_reqs, reconnects, http_act, tcp_act, ws_act) =
+                this.inner.borrow().get_metrics();
             let t = lua.create_table()?;
             t.set("queue_size", active_reqs)?;
             t.set("reconnect_count", reconnects)?;
@@ -1645,7 +1653,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "unpackSnapshot",
         lua.create_function(|lua, data: LuaString| {
-            let net_val = crate::network::message::unpack(data.as_bytes()).map_err(LuaError::external)?;
+            let net_val =
+                crate::network::message::unpack(data.as_bytes()).map_err(LuaError::external)?;
             let snap = crate::network::net_sync::SyncSnapshot::from_netvalue(&net_val)
                 .ok_or_else(|| LuaError::RuntimeError("invalid snapshot payload".to_string()))?;
             sync_snapshot_to_lua(lua, &snap)
@@ -1669,7 +1678,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 f32,
                 f32,
                 f32,
-             )| {
+            )| {
                 let predicted = lua_to_entity_snapshot(&pred)?;
                 let authoritative = lua_to_entity_snapshot(&auth)?;
                 let out = crate::network::net_sync::reconcile_with_policy(
@@ -1799,9 +1808,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LNetworkRpc | New RPC manager handle.
     tbl.set(
         "newRpc",
-        lua.create_function(|lua, (host, channel, timeout_ms): (LuaValue, Option<u8>, Option<f64>)| {
-            LNetworkRpc::new(lua, host, channel, timeout_ms)
-        })?,
+        lua.create_function(
+            |lua, (host, channel, timeout_ms): (LuaValue, Option<u8>, Option<f64>)| {
+                LNetworkRpc::new(lua, host, channel, timeout_ms)
+            },
+        )?,
     )?;
     /// Performs the 'network' operation.
     lurek.set("network", tbl)?;

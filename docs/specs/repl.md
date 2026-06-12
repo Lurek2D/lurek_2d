@@ -12,7 +12,7 @@
 - Namespace: `lurek.repl`
 - Lua API surface: `1` functions, `1` types, `7` methods
 - Rust test path(s): tests/rust/unit/repl_tests.rs
-- Lua test path(s): tests/lua/unit/test_repl_core_unit.lua
+- Lua test path(s): tests/lua_reorg/unit/test_repl_core_unit.lua
 
 ## Summary
 

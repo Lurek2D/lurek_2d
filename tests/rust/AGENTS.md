@@ -14,7 +14,7 @@ Adds local rules for `tests/rust/`.
 
 ## Rules
 - Keep all unit tests contained under `tests/rust/unit/` using the file suffix `_tests.rs`.
-- Do not add unit tests for functions that can be fully verified in the Lua scripting layer; port those cases into `tests/lua/unit/` instead.
+- Do not add unit tests for functions that can be fully verified in the Lua scripting layer; port those cases into `tests/lua_reorg/unit/` instead.
 - Treat public `lurek.*` behavior as Lua-first coverage. Keep Rust tests for private/internal implementations or wrapper glue that Lua cannot reach.
 - Use golden tests exclusively for deterministic output structures (like coordinate mappings or static TOML layouts).
 - Use local resources inside `tests/rust/fixtures/` or another checked-in Rust test fixture path instead of downloading files or relying on external global resources.

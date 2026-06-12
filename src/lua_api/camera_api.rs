@@ -1,7 +1,7 @@
 //! File: src/lua_api/camera_api.rs
 
 use super::SharedState;
-use crate::camera::{Camera2D, CameraEasing, CameraPath, CameraRig2D, ZoomTween, CameraWalker};
+use crate::camera::{Camera2D, CameraEasing, CameraPath, CameraRig2D, CameraWalker, ZoomTween};
 use crate::render::renderer::RenderCommand;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -925,7 +925,10 @@ impl LuaUserData for LuaCameraWalker {
         /// Returns the associated camera.
         /// @return | LCamera | Camera that follows the walker.
         methods.add_method("getCamera", |lua, this, ()| {
-            lua.create_userdata(make_lua_camera(Rc::clone(&this.camera), Rc::clone(&this.state)))
+            lua.create_userdata(make_lua_camera(
+                Rc::clone(&this.camera),
+                Rc::clone(&this.state),
+            ))
         });
         // -- type --
         /// Returns the type name of this userdata.
@@ -998,58 +1001,80 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     tbl.set(
         "newWalker",
-        lua.create_function(move |lua, (map_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
-            // Get LuaTileMap from userdata
-            let lua_tilemap = map_ud.borrow::<super::tilemap_api::LuaTileMap>()?;
-            let map_ref = Rc::clone(&lua_tilemap.inner);
+        lua.create_function(
+            move |lua, (map_ud, opts): (LuaAnyUserData, Option<LuaTable>)| {
+                // Get LuaTileMap from userdata
+                let lua_tilemap = map_ud.borrow::<super::tilemap_api::LuaTileMap>()?;
+                let map_ref = Rc::clone(&lua_tilemap.inner);
 
-            // Parse options
-            let layer: usize = opts.as_ref().and_then(|t| t.get("layer").ok()).unwrap_or(1);
-            let tile_w: f32 = opts.as_ref().and_then(|t| t.get("tile_w").ok()).unwrap_or(32.0);
-            let tile_h: f32 = opts.as_ref().and_then(|t| t.get("tile_h").ok()).unwrap_or(32.0);
-            let body_w: f32 = opts.as_ref().and_then(|t| t.get("body_w").ok()).unwrap_or(tile_w * 0.8);
-            let body_h: f32 = opts.as_ref().and_then(|t| t.get("body_h").ok()).unwrap_or(tile_h * 0.8);
-            let speed: f32 = opts.as_ref().and_then(|t| t.get("speed").ok()).unwrap_or(tile_w);
-            let start_x: f32 = opts.as_ref().and_then(|t| t.get("x").ok()).unwrap_or(tile_w * 0.5);
-            let start_y: f32 = opts.as_ref().and_then(|t| t.get("y").ok()).unwrap_or(tile_h * 0.5);
+                // Parse options
+                let layer: usize = opts.as_ref().and_then(|t| t.get("layer").ok()).unwrap_or(1);
+                let tile_w: f32 = opts
+                    .as_ref()
+                    .and_then(|t| t.get("tile_w").ok())
+                    .unwrap_or(32.0);
+                let tile_h: f32 = opts
+                    .as_ref()
+                    .and_then(|t| t.get("tile_h").ok())
+                    .unwrap_or(32.0);
+                let body_w: f32 = opts
+                    .as_ref()
+                    .and_then(|t| t.get("body_w").ok())
+                    .unwrap_or(tile_w * 0.8);
+                let body_h: f32 = opts
+                    .as_ref()
+                    .and_then(|t| t.get("body_h").ok())
+                    .unwrap_or(tile_h * 0.8);
+                let speed: f32 = opts
+                    .as_ref()
+                    .and_then(|t| t.get("speed").ok())
+                    .unwrap_or(tile_w);
+                let start_x: f32 = opts
+                    .as_ref()
+                    .and_then(|t| t.get("x").ok())
+                    .unwrap_or(tile_w * 0.5);
+                let start_y: f32 = opts
+                    .as_ref()
+                    .and_then(|t| t.get("y").ok())
+                    .unwrap_or(tile_h * 0.5);
 
-            // Get or create camera
-            let camera = if let Some(opts_table) = opts.as_ref() {
-                if let Ok(cam_ud) = opts_table.get::<_, LuaAnyUserData>("camera") {
-                    if let Ok(lua_cam) = cam_ud.borrow::<LuaCamera2D>() {
-                        Rc::clone(&lua_cam.inner)
+                // Get or create camera
+                let camera = if let Some(opts_table) = opts.as_ref() {
+                    if let Ok(cam_ud) = opts_table.get::<_, LuaAnyUserData>("camera") {
+                        if let Ok(lua_cam) = cam_ud.borrow::<LuaCamera2D>() {
+                            Rc::clone(&lua_cam.inner)
+                        } else {
+                            Rc::new(RefCell::new(Camera2D::new(800.0, 600.0)))
+                        }
                     } else {
                         Rc::new(RefCell::new(Camera2D::new(800.0, 600.0)))
                     }
                 } else {
                     Rc::new(RefCell::new(Camera2D::new(800.0, 600.0)))
-                }
-            } else {
-                Rc::new(RefCell::new(Camera2D::new(800.0, 600.0)))
-            };
+                };
 
-            // Create walker
-            let walker = CameraWalker::new(
-                map_ref,
-                layer - 1, // Convert to 0-based
-                tile_w,
-                tile_h,
-                body_w,
-                body_h,
-                speed,
-                start_x,
-                start_y,
-                Rc::clone(&camera),
-            );
+                // Create walker
+                let walker = CameraWalker::new(
+                    map_ref,
+                    layer - 1, // Convert to 0-based
+                    tile_w,
+                    tile_h,
+                    body_w,
+                    body_h,
+                    speed,
+                    start_x,
+                    start_y,
+                    Rc::clone(&camera),
+                );
 
-            lua.create_userdata(LuaCameraWalker {
-                inner: RefCell::new(walker),
-                camera,
-                state: s.clone(),
-            })
-        })?,
+                lua.create_userdata(LuaCameraWalker {
+                    inner: RefCell::new(walker),
+                    camera,
+                    state: s.clone(),
+                })
+            },
+        )?,
     )?;
-
 
     lurek.set("camera", tbl)?;
     Ok(())

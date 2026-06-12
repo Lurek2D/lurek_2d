@@ -1634,8 +1634,7 @@ fn render_widget(
             if !w.actions.is_empty() {
                 let footer_y = base.y + base.height - 30.0;
                 let button_w = 70.0;
-                let total_w =
-                    w.actions.len() as f32 * (button_w + 6.0) - 6.0;
+                let total_w = w.actions.len() as f32 * (button_w + 6.0) - 6.0;
                 let mut button_x = base.x + base.width - total_w - 8.0;
                 for action in &w.actions {
                     let is_primary = action.role.as_str() == "default";

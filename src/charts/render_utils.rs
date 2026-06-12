@@ -4,7 +4,8 @@
 //! Maintains consistent low-level drawing semantics across all chart renderer implementations enabling uniform image generation behavior.
 //! Clamps coordinates to buffer bounds, handling edge cases like zero-sized ranges and out-of-bounds pixel access silently.
 
-use crate::charts::config::ChartSeries;
+use crate::charts::config::{ChartConfig, ChartSeries};
+use crate::image::ImageData;
 
 /// Set a single pixel in the buffer to the given color.
 ///
@@ -178,4 +179,204 @@ pub fn world_to_screen(value: f32, min: f32, max: f32, screen_size: f32) -> f32 
         return screen_size * 0.5;
     }
     (value - min) / (max - min) * screen_size
+}
+
+fn rgba_to_u8(color: [f32; 4]) -> (u8, u8, u8) {
+    (
+        (color[0].clamp(0.0, 1.0) * 255.0) as u8,
+        (color[1].clamp(0.0, 1.0) * 255.0) as u8,
+        (color[2].clamp(0.0, 1.0) * 255.0) as u8,
+    )
+}
+
+fn chart_label_x(text: &str, center_x: i32) -> i32 {
+    center_x - ((text.len() as i32 * 6) / 2)
+}
+
+fn format_tick(value: f32) -> String {
+    if value.abs() >= 1000.0 {
+        format!("{value:.0}")
+    } else if (value - value.round()).abs() < 0.05 {
+        format!("{:.0}", value.round())
+    } else if value.abs() >= 100.0 {
+        format!("{value:.1}")
+    } else {
+        format!("{value:.2}")
+    }
+}
+
+fn trim_label(label: &str, max_len: usize) -> String {
+    let trimmed: String = label.chars().take(max_len).collect();
+    if label.chars().count() > max_len {
+        format!("{trimmed}.")
+    } else {
+        trimmed
+    }
+}
+
+fn image_from_buffer(buffer: &[u8], width: u32, height: u32) -> ImageData {
+    let mut img = ImageData::new(width, height);
+    let _ = img.set_raw_data(buffer);
+    img
+}
+
+fn write_back_buffer(buffer: &mut [u8], img: &ImageData) {
+    buffer.copy_from_slice(img.as_bytes());
+}
+
+fn draw_color_box(img: &mut ImageData, width: u32, height: u32, x: u32, y: u32, color: [f32; 4]) {
+    for yy in y..y.saturating_add(8).min(height) {
+        for xx in x..x.saturating_add(10).min(width) {
+            let idx = ((yy * width + xx) * 4) as usize;
+            let bytes = img.as_mut_bytes();
+            bytes[idx] = (color[0].clamp(0.0, 1.0) * 255.0) as u8;
+            bytes[idx + 1] = (color[1].clamp(0.0, 1.0) * 255.0) as u8;
+            bytes[idx + 2] = (color[2].clamp(0.0, 1.0) * 255.0) as u8;
+            bytes[idx + 3] = 255;
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn annotate_cartesian_chart(
+    buffer: &mut [u8],
+    width: u32,
+    height: u32,
+    config: &ChartConfig,
+    plot_x: f32,
+    plot_y: f32,
+    plot_w: f32,
+    plot_h: f32,
+    min_x: f32,
+    max_x: f32,
+    min_y: f32,
+    max_y: f32,
+    legend_entries: &[(&str, [f32; 4])],
+    category_labels: Option<&[String]>,
+) {
+    let mut img = image_from_buffer(buffer, width, height);
+    let (lr, lg, lb) = rgba_to_u8(config.label_color);
+
+    if let Some(title) = config.title.as_deref() {
+        img.draw_label(
+            title,
+            chart_label_x(title, (width / 2) as i32),
+            8,
+            lr,
+            lg,
+            lb,
+        );
+    }
+    if let Some(y_label) = config.y_label.as_deref() {
+        img.draw_label(y_label, 6, 20, lr, lg, lb);
+    }
+    if let Some(x_label) = config.x_label.as_deref() {
+        img.draw_label(
+            x_label,
+            chart_label_x(x_label, (plot_x + plot_w * 0.5) as i32),
+            (height as i32 - 16).max(0),
+            lr,
+            lg,
+            lb,
+        );
+    }
+
+    let y_ticks = config.y_tick_count.max(2);
+    for i in 0..=y_ticks {
+        let frac = i as f32 / y_ticks as f32;
+        let value = min_y + (max_y - min_y) * frac;
+        let label = format_tick(value);
+        let py = (plot_y + plot_h - plot_h * frac) as i32 - 3;
+        let px = (plot_x as i32 - (label.len() as i32 * 6) - 6).max(0);
+        img.draw_label(&label, px, py, lr, lg, lb);
+    }
+
+    if let Some(labels) = category_labels {
+        if !labels.is_empty() {
+            let step = plot_w / labels.len() as f32;
+            for (idx, label) in labels.iter().enumerate() {
+                let center_x = plot_x + step * (idx as f32 + 0.5);
+                let short = trim_label(label, 8);
+                img.draw_label(
+                    &short,
+                    chart_label_x(&short, center_x as i32),
+                    (plot_y + plot_h + 8.0) as i32,
+                    lr,
+                    lg,
+                    lb,
+                );
+            }
+        }
+    } else {
+        let x_ticks = config.x_tick_count.max(2);
+        for i in 0..=x_ticks {
+            let frac = i as f32 / x_ticks as f32;
+            let value = min_x + (max_x - min_x) * frac;
+            let label = format_tick(value);
+            let px = (plot_x + plot_w * frac) as i32 - ((label.len() as i32 * 6) / 2);
+            img.draw_label(
+                &label,
+                px.max(0),
+                (plot_y + plot_h + 8.0) as i32,
+                lr,
+                lg,
+                lb,
+            );
+        }
+    }
+
+    if config.show_legend && !legend_entries.is_empty() {
+        let legend_x = (width as f32 - config.legend_width + 8.0).max(plot_x + plot_w + 8.0) as i32;
+        let mut legend_y = (plot_y + 8.0) as i32;
+        img.draw_label("Legend", legend_x, legend_y, lr, lg, lb);
+        legend_y += 14;
+        for (label, color) in legend_entries.iter().take(8) {
+            let box_y = legend_y.max(0) as u32;
+            let box_x = legend_x.max(0) as u32;
+            draw_color_box(&mut img, width, height, box_x, box_y, *color);
+            img.draw_label(&trim_label(label, 12), legend_x + 16, legend_y, lr, lg, lb);
+            legend_y += 12;
+        }
+    }
+
+    write_back_buffer(buffer, &img);
+}
+
+pub fn annotate_pie_chart(
+    buffer: &mut [u8],
+    width: u32,
+    height: u32,
+    config: &ChartConfig,
+    legend_entries: &[(&str, [f32; 4])],
+) {
+    let mut img = image_from_buffer(buffer, width, height);
+    let (lr, lg, lb) = rgba_to_u8(config.label_color);
+
+    if let Some(title) = config.title.as_deref() {
+        img.draw_label(
+            title,
+            chart_label_x(title, (width / 2) as i32),
+            8,
+            lr,
+            lg,
+            lb,
+        );
+    }
+
+    if config.show_legend && !legend_entries.is_empty() {
+        let legend_x =
+            (width as f32 - config.legend_width + 8.0).max((width as f32 * 0.58) + 8.0) as i32;
+        let mut legend_y = 28i32;
+        img.draw_label("Legend", legend_x, legend_y, lr, lg, lb);
+        legend_y += 14;
+        for (label, color) in legend_entries.iter().take(10) {
+            let box_x = legend_x.max(0) as u32;
+            let box_y = legend_y.max(0) as u32;
+            draw_color_box(&mut img, width, height, box_x, box_y, *color);
+            img.draw_label(&trim_label(label, 12), legend_x + 16, legend_y, lr, lg, lb);
+            legend_y += 12;
+        }
+    }
+
+    write_back_buffer(buffer, &img);
 }

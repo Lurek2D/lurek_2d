@@ -3065,6 +3065,7 @@ lurek.globe.loadFromPNG(name: string, png_path: string, [spec_tbl]: table) -> LG
 lurek.globe.loadFromTOML(name: string, toml_src: string, [spec_tbl]: table) -> LGlobe -- Creates a globe and populates provinces from TOML source text.
 lurek.globe.loadFromTOMLFile(name: string, path: string, [spec_tbl]: table) -> LGlobe -- Creates a globe and populates provinces from a TOML file path.
 lurek.globe.new(name: string, [spec_tbl]: table) -> LGlobe -- Creates a named globe with optional specification fields in the module registry.
+lurek.globe.newRegistry() -> LGlobeRegistry -- Creates an empty globe registry handle independent from the module registry.
 lurek.globe.raySphereIntersect(ox: number, oy: number, oz: number, dx: number, dy: number, dz: number, radius: number) -> number -- Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
 lurek.globe.remove(name: string) -> boolean -- Removes a globe from the registry by name.
 ```
@@ -3319,6 +3320,7 @@ lurek.image.newImageDataFromBytes(w: integer, h: integer, bytes: string) -> LIma
 lurek.image.newLayeredImage(width: integer, height: integer) -> LLayeredImage -- Creates a layered image stack with one or more blank layers.
 lurek.image.newPaletteLut() -> LPaletteLUT -- Creates an empty palette lookup table.
 lurek.image.newProvinceGrid(filename: string) -> LProvinceGrid -- Loads a province id grid from an image file under the current game directory.
+lurek.image.saveGIF(frames: table, filename: string, [opts]: table) -- Encodes a sequence of equally sized image frames as an animated GIF.
 lurek.image.saveImage(img_ud: LImageData, filename: string) -- Saves an image data object to a path under the current game directory.
 lurek.image.savePNG(img_ud: LImageData, filename: string) -- Encodes image data as PNG and writes it under the current game directory.
 ```
@@ -5617,6 +5619,7 @@ LBody:isBullet() -> boolean -- Returns whether continuous collision detection (b
 LBody:isFixedRotation() -> boolean -- Returns whether the body's rotation is locked.
 LBody:isSleeping() -> boolean -- Returns whether this body is currently in the sleeping (inactive) state.
 LBody:isSleepingAllowed() -> boolean -- Returns whether the body is allowed to enter sleep state when at rest.
+LBody:isValid() -> boolean -- Returns whether this body handle still points to an active body.
 LBody:setAngle(angle: number) -- Sets the body's rotation angle directly.
 LBody:setAngularDamping(damping: number) -- Sets the angular damping factor (higher = rotation decays faster).
 LBody:setAngularVelocity(omega: number) -- Sets the body's angular velocity directly.
@@ -5700,7 +5703,7 @@ LWorld:destroyJoint(jointId: integer) -- Removes a joint from the world, disconn
 LWorld:drawDebug(target: LImageData, [r]: integer, [g]: integer, [b]: integer, [a]: integer) -- Renders a debug visualization of all physics bodies onto a software ImageData target.
 LWorld:fixtureCount(bodyId: integer) -> integer -- Returns how many fixtures (colliders) are attached to a body.
 LWorld:getBeginContactEvents() -> table -- Returns contact-begin events from the last step (pairs of bodies that started touching).
-LWorld:getBodyAtPoint(x: number, y: number) -> integer -- Returns the body ID at a specific world point, or nil if no body is there.
+LWorld:getBodyAtPoint(x: number, y: number, [filter]: table) -> integer -- Returns the body ID at a specific world point, or nil if no body is there.
 LWorld:getBodyCCD(id: integer) -> boolean -- Returns whether continuous collision detection is enabled on a body.
 LWorld:getBodyContacts(bodyId: integer) -> table -- Returns all contacts involving a specific body.
 LWorld:getBodyCount() -> integer -- Returns the total number of active bodies in the world.
@@ -5720,7 +5723,10 @@ LWorld:getJointMotorSpeed(jointId: integer) -> number -- Returns the current mot
 LWorld:getJointType(jointId: integer) -> string -- Returns the type name of a joint (e.g. "revolute", "distance", "prismatic").
 LWorld:getMeter() -> number -- Returns the current pixels-per-meter scale.
 LWorld:getSolverIterations() -> integer -- Returns the current number of velocity solver iterations.
+LWorld:getStats() -> table -- Returns active counts and slot diagnostics for the world.
 LWorld:getZoneEvents() -> table -- Returns all zone enter/leave events from the last step.
+LWorld:hasBody(id: integer) -> boolean -- Returns true when a body ID still refers to a live body slot.
+LWorld:hasJoint(id: integer) -> boolean -- Returns true when a joint ID still refers to a live joint slot.
 LWorld:isBodySleeping(id: integer) -> boolean -- Returns whether a body is currently in the sleeping (inactive) state.
 LWorld:jointCount() -> integer -- Returns the total number of joints in the world.
 LWorld:newBodies(specs: table) -> integer[] -- Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type} or {x, y, ty...
@@ -5729,10 +5735,10 @@ LWorld:newChainBody(x: number, y: number, vertices: table, closed: boolean, body
 LWorld:newCircleBody(x: number, y: number, radius: number, bodyType: string) -> LBody -- Creates a new body with a circle collider already attached.
 LWorld:newEdgeBody(x: number, y: number, x1: number, y1: number, x2: number, y2: number, bodyType: string) -> LBody -- Creates a new body with an edge (line segment) collider between two local points.
 LWorld:newPolygonBody(x: number, y: number, vertices: table, bodyType: string) -> LBody -- Creates a new body with a convex polygon collider defined by vertex pairs.
-LWorld:queryAABB(x: number, y: number, w: number, h: number) -> integer[] -- Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
-LWorld:raycast(x1: number, y1: number, x2: number, y2: number) -> table -- Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
-LWorld:raycastAll(x: number, y: number, dx: number, dy: number, maxDist: number) -> table -- Casts a directional ray and returns all bodies hit within max distance as a table of results.
-LWorld:raycastClosest(x: number, y: number, dx: number, dy: number, maxDist: number) -> table -- Casts a directional ray from a point and returns the closest hit within max distance.
+LWorld:queryAABB(x: number, y: number, w: number, h: number, [filter]: table) -> integer[] -- Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
+LWorld:raycast(x1: number, y1: number, x2: number, y2: number, [filter]: table) -> table -- Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
+LWorld:raycastAll(x: number, y: number, dx: number, dy: number, maxDist: number, [filter]: table) -> table -- Casts a directional ray and returns all bodies hit within max distance as a table of results.
+LWorld:raycastClosest(x: number, y: number, dx: number, dy: number, maxDist: number, [filter]: table) -> table -- Casts a directional ray from a point and returns the closest hit within max distance.
 LWorld:setBeginContact(callback: function) -- Registers a callback function invoked whenever two bodies begin touching.
 LWorld:setBodyCCD(id: integer, enabled: boolean) -- Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
 LWorld:setBodyData(id: integer, value: any) -- Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
@@ -6005,7 +6011,7 @@ LProvinceRegistry:provinceIds() -> integer[] -- Returns a sequential table of al
 LProvinceRegistry:provinceSpans() -> table -- Returns the raw span data for all provinces. Each span is a horizontal run of cells belonging to one provin...
 LProvinceRegistry:registerBorderType(type_id: integer, config: table) -- Registers a border type config by ID. Defines visual appearance for borders of this type.
 LProvinceRegistry:registerMapMode(name: string, config: table) -- Registers a named map mode with display configuration. Overwrites if name exists.
-LProvinceRegistry:render([opts]: table?|Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode ("auto"|"strategic") -- Renders the province map to the screen using the current camera and style settings. Generates draw commands...
+LProvinceRegistry:render([opts]: table?|Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode ("auto"|"strategic") -- Renders the province map to the screen using the current camera and style settings. Generates draw commands...
 LProvinceRegistry:screenToMap(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, [pixel_size]: number) -> number, number -- Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera tr...
 LProvinceRegistry:screenToProvince(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, [pixel_size]: number) -> integer -- Converts screen-space coordinates directly to a province ID. Returns nil if the cursor is outside the map o...
 LProvinceRegistry:setAttr(id: integer, key: string, value: string) -> boolean -- Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince`...
@@ -6142,7 +6148,7 @@ LSpriteManager:typeOf(name: string) -> boolean -- Checks whether this object mat
 lurek.render.applyTransform(mat: table) -- Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
 lurek.render.arc(mode: string, x: number, y: number, radius: number, angle1: number, angle2: number, [segments]: number) -- Draws a filled or outlined circular arc segment.
 lurek.render.beginSortGroup(id: integer) -- Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
-lurek.render.captureScreenshot(callback: function) -- Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
+lurek.render.captureScreenshot(callback: function) -- Captures the queued 2D render commands into an ImageData fallback and passes it to a callback.
 lurek.render.circle(mode: string, x: number, y: number, radius: number) -- Draws a filled or outlined circle at the given position.
 lurek.render.clear([r]: number, [g]: number, [b]: number) -- Clears all queued render commands for the current frame.
 lurek.render.clearStencil() -- Resets the stencil state to defaults (no stencil operations).
@@ -7538,7 +7544,12 @@ LAccordion:toggleSection(section_idx: integer) -> boolean -- Toggles the expande
 LAreaChart:addLayer(name: string, vals_tbl: table, r: number, g: number, b: number) -- Adds a data layer to this area chart.
 LAreaChart:addLayerFromDataFrame(name: string, df: LDataFrame, value_col: string, r: number, g: number, b: number, [opts]: table) -> integer -- Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
 LAreaChart:drawToImage(target: LImageData) -- Renders this area chart to an image buffer.
+LAreaChart:setShowLegend(value: boolean) -- Enables or disables the layer legend for this area chart.
+LAreaChart:setXLabel(label: string) -- Sets the X-axis label for this area chart.
+LAreaChart:setXTickCount(count: integer) -- Sets the number of X-axis tick labels for this area chart.
+LAreaChart:setYLabel(label: string) -- Sets the Y-axis label for this area chart.
 LAreaChart:setYMax(v: number) -- Sets the maximum Y-axis value for this area chart.
+LAreaChart:setYTickCount(count: integer) -- Sets the number of Y-axis tick labels for this area chart.
 LAreaChart:type() -> string -- Returns the type name of this object.
 LAreaChart:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
@@ -7558,6 +7569,11 @@ LBarChart:addCategoriesFromDataFrame(df: LDataFrame, label_col: string, value_co
 LBarChart:addCategory(label: string, vals_tbl: table) -- Adds a category with values for each series.
 LBarChart:addSeries(name: string, r: number, g: number, b: number) -- Adds a named series to this bar chart.
 LBarChart:drawToImage(target: LImageData) -- Renders this bar chart to an image buffer.
+LBarChart:setShowLegend(value: boolean) -- Enables or disables the series legend for this bar chart.
+LBarChart:setXLabel(label: string) -- Sets the X-axis label for this bar chart.
+LBarChart:setXTickCount(count: integer) -- Sets the number of X-axis tick labels for this bar chart.
+LBarChart:setYLabel(label: string) -- Sets the Y-axis label for this bar chart.
+LBarChart:setYTickCount(count: integer) -- Sets the number of Y-axis tick labels for this bar chart.
 LBarChart:type() -> string -- Returns the type name of this object.
 LBarChart:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
@@ -7722,8 +7738,13 @@ LLayout:setWrap(wrap: boolean) -- Enables or disables wrapping of children to th
 LLineChart:addSeries(name: string, pts_tbl: table, r: number, g: number, b: number) -- Adds a named series of points to this line chart.
 LLineChart:addSeriesFromDataFrame(name: string, df: LDataFrame, x_col: string, y_col: string, r: number, g: number, b: number, [opts]: table) -> integer -- Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
 LLineChart:drawToImage(target: LImageData) -- Renders this line chart to an image buffer.
+LLineChart:setShowLegend(value: boolean) -- Enables or disables the series legend for this line chart.
+LLineChart:setXLabel(label: string) -- Sets the X-axis label for this line chart.
 LLineChart:setXMax(v: number) -- Sets the maximum X-axis value for this line chart.
+LLineChart:setXTickCount(count: integer) -- Sets the number of X-axis tick labels for this line chart.
+LLineChart:setYLabel(label: string) -- Sets the Y-axis label for this line chart.
 LLineChart:setYMax(v: number) -- Sets the maximum Y-axis value for this line chart.
+LLineChart:setYTickCount(count: integer) -- Sets the number of Y-axis tick labels for this line chart.
 LLineChart:type() -> string -- Returns the type name of this object.
 LLineChart:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
@@ -7788,6 +7809,7 @@ LPanel:setTitle(title: string) -- Sets the title text displayed on this panel's 
 LPieChart:addSegment(label: string, value: number, r: number, g: number, b: number) -- Adds a labeled segment to this pie chart widget.
 LPieChart:addSegmentsFromDataFrame(df: LDataFrame, label_col: string, value_col: string, [opts]: table) -> integer -- Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric v...
 LPieChart:drawToImage(target: LImageData) -- Renders this pie chart to an image buffer.
+LPieChart:setShowLegend(value: boolean) -- Enables or disables the segment legend for this pie chart.
 LPieChart:type() -> string -- Returns the type name of this object.
 LPieChart:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
@@ -7821,8 +7843,13 @@ LRadioButton:setText(text: string) -- Sets the label text of this radio button.
 LScatterPlot:addSeries(name: string, pts_tbl: table, r: number, g: number, b: number) -- Adds a data series to this scatter plot.
 LScatterPlot:addSeriesFromDataFrame(name: string, df: LDataFrame, x_col: string, y_col: string, r: number, g: number, b: number, [opts]: table) -> integer -- Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
 LScatterPlot:drawToImage(target: LImageData) -- Renders this scatter plot to an image buffer.
+LScatterPlot:setShowLegend(value: boolean) -- Enables or disables the series legend for this scatter plot.
+LScatterPlot:setXLabel(label: string) -- Sets the X-axis label for this scatter plot.
 LScatterPlot:setXRange(mn: number, mx: number) -- Sets the X-axis range for this scatter plot.
+LScatterPlot:setXTickCount(count: integer) -- Sets the number of X-axis tick labels for this scatter plot.
+LScatterPlot:setYLabel(label: string) -- Sets the Y-axis label for this scatter plot.
 LScatterPlot:setYRange(mn: number, mx: number) -- Sets the Y-axis range for this scatter plot.
+LScatterPlot:setYTickCount(count: integer) -- Sets the number of Y-axis tick labels for this scatter plot.
 LScatterPlot:type() -> string -- Returns the type name of this object.
 LScatterPlot:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```

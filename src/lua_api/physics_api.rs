@@ -2,11 +2,16 @@
 
 use super::SharedState;
 use crate::math::Vec2;
-use crate::physics::{Body, BodyId, BodyType, PhysicsZone, RaycastHit, Shape, TerrainMap, World};
+use crate::physics::world::BodyContact;
+use crate::physics::{
+    Body, BodyId, BodyType, PhysicsQueryFilter, PhysicsWorldStats, PhysicsZone, RaycastHit, Shape,
+    TerrainMap, World,
+};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
+
 /// Parses a strict Lua body type string into the corresponding engine body type.
 fn parse_body_type(s: &str) -> LuaResult<BodyType> {
     match s {
@@ -20,15 +25,7 @@ fn parse_body_type(s: &str) -> LuaResult<BodyType> {
         ))),
     }
 }
-/// Parses a Lua body type string but falls back to `Dynamic` for unknown values.
-fn parse_body_type_lenient(s: &str) -> BodyType {
-    match s {
-        "static" => BodyType::Static,
-        "kinematic" => BodyType::Kinematic,
-        "sensor" => BodyType::Sensor,
-        _ => BodyType::Dynamic,
-    }
-}
+
 /// Converts Lua shape constructor arguments into an engine physics shape definition.
 fn shape_from_lua(lua: &Lua, shape_type: &str, args: LuaMultiValue) -> LuaResult<Shape> {
     let mut float_args: Vec<f32> = Vec::new();
@@ -59,22 +56,235 @@ fn shape_from_lua(lua: &Lua, shape_type: &str, args: LuaMultiValue) -> LuaResult
     }
     Shape::from_parts(shape_type, &float_args, closed).map_err(LuaError::runtime)
 }
+
 /// Serializes a physics raycast hit into the Lua table shape exposed by the bindings.
 fn raycast_hit_to_table<'lua>(lua: &'lua Lua, hit: &RaycastHit) -> LuaResult<LuaTable<'lua>> {
+    // @return table: { bodyId, x, y, normalX, normalY, toi }
     let tbl = lua.create_table()?;
-    /// Performs the 'bodyId' operation.
     tbl.set("bodyId", hit.body_id)?;
-    /// The 'x' field value exposed to Lua scripts.
     tbl.set("x", hit.point.0)?;
-    /// The 'y' field value exposed to Lua scripts.
     tbl.set("y", hit.point.1)?;
-    /// Performs the 'normalX' operation.
     tbl.set("normalX", hit.normal.0)?;
-    /// Performs the 'normalY' operation.
     tbl.set("normalY", hit.normal.1)?;
-    /// The 'toi' field value exposed to Lua scripts.
     tbl.set("toi", hit.toi)?;
     Ok(tbl)
+}
+
+/// Parses an optional Lua query-filter table.
+fn query_filter_from_lua(value: Option<LuaValue>) -> LuaResult<PhysicsQueryFilter> {
+    let mut filter = PhysicsQueryFilter::default();
+    let Some(value) = value else {
+        return Ok(filter);
+    };
+    if matches!(value, LuaValue::Nil) {
+        return Ok(filter);
+    }
+    let LuaValue::Table(tbl) = value else {
+        return Err(LuaError::RuntimeError(
+            "physics query filter expects table or nil".into(),
+        ));
+    };
+    filter.layer = tbl.get::<_, Option<u32>>("layer")?;
+    filter.mask = tbl.get::<_, Option<u32>>("mask")?;
+    if let Some(include_sensors) = tbl.get::<_, Option<bool>>("includeSensors")? {
+        filter.include_sensors = include_sensors;
+    }
+    Ok(filter)
+}
+
+/// Reads a required positional number from a Lua vararg list.
+fn required_f32(lua: &Lua, vals: &[LuaValue], idx: usize, name: &str) -> LuaResult<f32> {
+    let value = vals.get(idx).cloned().ok_or_else(|| {
+        LuaError::RuntimeError(format!("missing required physics argument '{}'", name))
+    })?;
+    f32::from_lua(value, lua)
+}
+
+/// Serializes a physics contact record into Lua.
+fn contact_to_table<'lua>(
+    lua: &'lua Lua,
+    c: &crate::physics::ContactInfo,
+) -> LuaResult<LuaTable<'lua>> {
+    // @return table: { bodyA, bodyB, normalX, normalY, isTouching }
+    let tbl = lua.create_table()?;
+    tbl.set("bodyA", c.body_a)?;
+    tbl.set("bodyB", c.body_b)?;
+    tbl.set("normalX", c.normal_x)?;
+    tbl.set("normalY", c.normal_y)?;
+    tbl.set("isTouching", c.is_touching)?;
+    Ok(tbl)
+}
+
+/// Serializes world diagnostics into a Lua table.
+fn stats_to_table<'lua>(lua: &'lua Lua, stats: PhysicsWorldStats) -> LuaResult<LuaTable<'lua>> {
+    // @return table: { bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies }
+    let tbl = lua.create_table()?;
+    tbl.set("bodies", stats.bodies)?;
+    tbl.set("bodySlots", stats.body_slots)?;
+    tbl.set("colliders", stats.colliders)?;
+    tbl.set("joints", stats.joints)?;
+    tbl.set("jointSlots", stats.joint_slots)?;
+    tbl.set("zones", stats.zones)?;
+    tbl.set("sleepingBodies", stats.sleeping_bodies)?;
+    Ok(tbl)
+}
+
+/// Serializes raw collision event pairs into Lua.
+fn collision_events_to_table<'lua>(
+    lua: &'lua Lua,
+    events: &[BodyContact],
+) -> LuaResult<LuaTable<'lua>> {
+    // @return table: array of { body_a, body_b } collision event rows.
+    let tbl = lua.create_table()?;
+    for (i, contact) in events.iter().enumerate() {
+        let entry = lua.create_table()?;
+        entry.set("body_a", contact.body_a)?;
+        entry.set("body_b", contact.body_b)?;
+        tbl.set(i + 1, entry)?;
+    }
+    Ok(tbl)
+}
+
+/// Parses optional debug-draw GPU configuration.
+fn physics_debug_config_from_lua(
+    config_val: LuaValue,
+) -> crate::render::renderer::PhysicsDebugConfig {
+    let mut cfg = crate::render::renderer::PhysicsDebugConfig::default();
+    let LuaValue::Table(tbl) = config_val else {
+        return cfg;
+    };
+    if let Ok(v) = tbl.get::<_, LuaTable>("bodyColor") {
+        cfg.body_color = [
+            v.get::<_, f32>(1).unwrap_or(cfg.body_color[0]),
+            v.get::<_, f32>(2).unwrap_or(cfg.body_color[1]),
+            v.get::<_, f32>(3).unwrap_or(cfg.body_color[2]),
+            v.get::<_, f32>(4).unwrap_or(cfg.body_color[3]),
+        ];
+    }
+    if let Ok(v) = tbl.get::<_, LuaTable>("staticColor") {
+        cfg.static_color = [
+            v.get::<_, f32>(1).unwrap_or(cfg.static_color[0]),
+            v.get::<_, f32>(2).unwrap_or(cfg.static_color[1]),
+            v.get::<_, f32>(3).unwrap_or(cfg.static_color[2]),
+            v.get::<_, f32>(4).unwrap_or(cfg.static_color[3]),
+        ];
+    }
+    if let Ok(v) = tbl.get::<_, LuaTable>("sleepColor") {
+        cfg.sleep_color = [
+            v.get::<_, f32>(1).unwrap_or(cfg.sleep_color[0]),
+            v.get::<_, f32>(2).unwrap_or(cfg.sleep_color[1]),
+            v.get::<_, f32>(3).unwrap_or(cfg.sleep_color[2]),
+            v.get::<_, f32>(4).unwrap_or(cfg.sleep_color[3]),
+        ];
+    }
+    if let Ok(v) = tbl.get::<_, LuaTable>("sensorColor") {
+        cfg.sensor_color = [
+            v.get::<_, f32>(1).unwrap_or(cfg.sensor_color[0]),
+            v.get::<_, f32>(2).unwrap_or(cfg.sensor_color[1]),
+            v.get::<_, f32>(3).unwrap_or(cfg.sensor_color[2]),
+            v.get::<_, f32>(4).unwrap_or(cfg.sensor_color[3]),
+        ];
+    }
+    if let Ok(w) = tbl.get::<_, f32>("lineWidth") {
+        cfg.line_width = w;
+    }
+    cfg
+}
+
+fn new_body_from_lua_args(lua: &Lua, args: LuaMultiValue) -> LuaResult<LuaBody> {
+    let vals: Vec<LuaValue> = args.into_iter().collect();
+    let (world_ud, x, y, w, h, bt) =
+        match vals.as_slice() {
+            [wud, ax, ay, abt] => (
+                LuaAnyUserData::from_lua(wud.clone(), lua)?,
+                f32::from_lua(ax.clone(), lua)?,
+                f32::from_lua(ay.clone(), lua)?,
+                16.0_f32,
+                16.0_f32,
+                String::from_lua(abt.clone(), lua)?,
+            ),
+            [wud, ax, ay, aw, ah, abt] => (
+                LuaAnyUserData::from_lua(wud.clone(), lua)?,
+                f32::from_lua(ax.clone(), lua)?,
+                f32::from_lua(ay.clone(), lua)?,
+                f32::from_lua(aw.clone(), lua)?,
+                f32::from_lua(ah.clone(), lua)?,
+                String::from_lua(abt.clone(), lua)?,
+            ),
+            _ => return Err(LuaError::RuntimeError(
+                "lurek.physics.newBody expects (world,x,y,bodyType) or (world,x,y,w,h,bodyType)"
+                    .into(),
+            )),
+        };
+
+    let world = world_ud.borrow::<LuaWorld>()?;
+    let body_type = parse_body_type(&bt)?;
+    let body = Body::new(x, y, w, h, body_type);
+    let id = world.world.borrow_mut().add_body(body);
+    Ok(LuaBody {
+        world: Rc::clone(&world.world),
+        id,
+    })
+}
+
+fn set_body_velocity_from_userdata(body_ud: LuaAnyUserData, vx: f32, vy: f32) -> LuaResult<()> {
+    let body = body_ud.borrow::<LuaBody>()?;
+    let mut world = body.world.borrow_mut();
+    if let Some(inner) = world.get_body_mut(body.id.0) {
+        inner.velocity.x = vx;
+        inner.velocity.y = vy;
+    }
+    Ok(())
+}
+
+fn polygon_shape_from_coords(coords: mlua::Variadic<f32>) -> LuaResult<LuaPhysicsShape> {
+    if coords.len() < 6 || !coords.len().is_multiple_of(2) {
+        return Err(LuaError::RuntimeError(
+            "newPolygonShape: requires at least 3 vertex pairs (6 numbers)".to_string(),
+        ));
+    }
+    let vertices: Vec<crate::math::Vec2> = coords
+        .chunks(2)
+        .map(|pair| crate::math::Vec2::new(pair[0], pair[1]))
+        .collect();
+    Ok(LuaPhysicsShape::new(Shape::Polygon { vertices }))
+}
+
+fn chain_shape_from_coords(
+    closed: bool,
+    coords: mlua::Variadic<f32>,
+) -> LuaResult<LuaPhysicsShape> {
+    if coords.len() < 4 || !coords.len().is_multiple_of(2) {
+        return Err(LuaError::RuntimeError(
+            "newChainShape: requires at least 2 vertex pairs (4 numbers)".to_string(),
+        ));
+    }
+    let vertices: Vec<crate::math::Vec2> = coords
+        .chunks(2)
+        .map(|pair| crate::math::Vec2::new(pair[0], pair[1]))
+        .collect();
+    Ok(LuaPhysicsShape::new(Shape::Chain { vertices, closed }))
+}
+
+fn push_physics_debug_draw(
+    state: &Rc<RefCell<SharedState>>,
+    world: &LuaWorld,
+    config_val: LuaValue,
+) {
+    let shapes: Vec<crate::render::renderer::PhysicsDebugShape> = world
+        .world
+        .borrow()
+        .extract_shape_snapshots()
+        .into_iter()
+        .map(Into::into)
+        .collect();
+    let cfg = physics_debug_config_from_lua(config_val);
+    state.borrow_mut().render_commands.push(
+        crate::render::renderer::RenderCommand::DrawPhysicsDebug {
+            shapes,
+            config: cfg,
+        },
+    );
 }
 /// A physics world that manages rigid bodies, joints, collision detection, and simulation stepping.
 /// Created via `lurek.physics.newWorld(gx, gy)` and exposes all world-level operations to Lua.
@@ -111,10 +321,9 @@ impl LuaUserData for LuaWorld {
                 Option<u8>,
                 Option<u8>,
             )| {
-                let mut target_ref =
-                    target.borrow_mut::<crate::lua_api::render_api::LuaImageData>()?;
+                let mut target_ref = target.borrow_mut::<crate::image::ImageData>()?;
                 this.world.borrow().draw_debug_to_image(
-                    &mut target_ref.inner,
+                    &mut target_ref,
                     r.unwrap_or(0),
                     g.unwrap_or(255),
                     b.unwrap_or(0),
@@ -199,11 +408,39 @@ impl LuaUserData for LuaWorld {
         methods.add_method("getBodyCount", |_, this, ()| {
             Ok(this.world.borrow().body_count())
         });
+        // -- hasBody --
+        /// Returns true when a body ID still refers to a live body slot.
+        /// @param | id | integer | Body ID to check.
+        /// @return | boolean | True if the body is active.
+        methods.add_method("hasBody", |_, this, id: usize| {
+            Ok(this.world.borrow().has_body(id))
+        });
         // -- getBodyIds --
         /// Returns a sequential table of all body IDs currently in the world.
         /// @return | integer[] | Body ID numbers.
         methods.add_method("getBodyIds", |_, this, ()| {
             Ok(this.world.borrow().get_body_ids())
+        });
+        // -- hasJoint --
+        /// Returns true when a joint ID still refers to a live joint slot.
+        /// @param | id | integer | Joint ID to check.
+        /// @return | boolean | True if the joint is active.
+        methods.add_method("hasJoint", |_, this, id: usize| {
+            Ok(this.world.borrow().has_joint(id))
+        });
+        // -- getStats --
+        /// Returns active counts and slot diagnostics for the world.
+        /// @return | table | Stats table with bodies, bodySlots, colliders, joints, jointSlots, zones, sleepingBodies.
+        /// @field | bodies | integer | Number of active body slots.
+        /// @field | bodySlots | integer | Total allocated body slots, including inactive tombstones.
+        /// @field | colliders | integer | Number of active Rapier colliders.
+        /// @field | joints | integer | Number of active joint slots.
+        /// @field | jointSlots | integer | Total allocated joint slots, including inactive tombstones.
+        /// @field | zones | integer | Number of active physics zones.
+        /// @field | sleepingBodies | integer | Number of active bodies currently sleeping.
+        methods.add_method("getStats", |lua, this, ()| {
+            let stats = this.world.borrow().get_stats();
+            stats_to_table(lua, stats)
         });
         // -- destroyBody --
         /// Removes a body from the world by its ID, along with all attached fixtures and joints.
@@ -714,6 +951,7 @@ impl LuaUserData for LuaWorld {
         /// @param | y1 | number | Ray origin Y.
         /// @param | x2 | number | Ray end X.
         /// @param | y2 | number | Ray end Y.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, includeSensors?}.
         /// @return | table | Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
         /// @field | bodyId | integer | BodyId.
         /// @field | x | number | X.
@@ -721,17 +959,18 @@ impl LuaUserData for LuaWorld {
         /// @field | normalX | number | NormalX.
         /// @field | normalY | number | NormalY.
         /// @field | toi | number | Toi.
-        methods.add_method(
-            "raycast",
-            |lua, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| match this
-                .world
-                .borrow()
-                .raycast(x1, y1, x2, y2)
-            {
+        methods.add_method("raycast", |lua, this, args: LuaMultiValue| {
+            let vals: Vec<LuaValue> = args.into_iter().collect();
+            let x1 = required_f32(lua, &vals, 0, "x1")?;
+            let y1 = required_f32(lua, &vals, 1, "y1")?;
+            let x2 = required_f32(lua, &vals, 2, "x2")?;
+            let y2 = required_f32(lua, &vals, 3, "y2")?;
+            let filter = query_filter_from_lua(vals.get(4).cloned())?;
+            match this.world.borrow().raycast_filtered(x1, y1, x2, y2, filter) {
                 Some(hit) => Ok(LuaValue::Table(raycast_hit_to_table(lua, &hit)?)),
                 None => Ok(LuaValue::Nil),
-            },
-        );
+            }
+        });
         // -- raycastClosest --
         /// Casts a directional ray from a point and returns the closest hit within max distance.
         /// @param | x | number | Ray origin X.
@@ -739,6 +978,7 @@ impl LuaUserData for LuaWorld {
         /// @param | dx | number | Ray direction X (does not need to be normalized).
         /// @param | dy | number | Ray direction Y.
         /// @param | maxDist | number | Maximum ray travel distance.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, includeSensors?}.
         /// @return | table | Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
         /// @field | bodyId | integer | BodyId.
         /// @field | x | number | X.
@@ -746,17 +986,23 @@ impl LuaUserData for LuaWorld {
         /// @field | normalX | number | NormalX.
         /// @field | normalY | number | NormalY.
         /// @field | toi | number | Toi.
-        methods.add_method(
-            "raycastClosest",
-            |lua, this, (x1, y1, dx, dy, max_dist): (f32, f32, f32, f32, f32)| match this
+        methods.add_method("raycastClosest", |lua, this, args: LuaMultiValue| {
+            let vals: Vec<LuaValue> = args.into_iter().collect();
+            let x1 = required_f32(lua, &vals, 0, "x")?;
+            let y1 = required_f32(lua, &vals, 1, "y")?;
+            let dx = required_f32(lua, &vals, 2, "dx")?;
+            let dy = required_f32(lua, &vals, 3, "dy")?;
+            let max_dist = required_f32(lua, &vals, 4, "maxDist")?;
+            let filter = query_filter_from_lua(vals.get(5).cloned())?;
+            match this
                 .world
                 .borrow()
-                .raycast_closest(x1, y1, dx, dy, max_dist)
+                .raycast_closest_filtered(x1, y1, dx, dy, max_dist, filter)
             {
                 Some(hit) => Ok(LuaValue::Table(raycast_hit_to_table(lua, &hit)?)),
                 None => Ok(LuaValue::Nil),
-            },
-        );
+            }
+        });
         // -- raycastAll --
         /// Casts a directional ray and returns all bodies hit within max distance as a table of results.
         /// @param | x | number | Ray origin X.
@@ -764,6 +1010,7 @@ impl LuaUserData for LuaWorld {
         /// @param | dx | number | Ray direction X.
         /// @param | dy | number | Ray direction Y.
         /// @param | maxDist | number | Maximum ray travel distance.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, includeSensors?}.
         /// @return | table | Array of hit tables {bodyId, x, y, normalX, normalY, toi}.
         /// @field | bodyId | integer | BodyId.
         /// @field | x | number | X.
@@ -771,37 +1018,53 @@ impl LuaUserData for LuaWorld {
         /// @field | normalX | number | NormalX.
         /// @field | normalY | number | NormalY.
         /// @field | toi | number | Toi.
-        methods.add_method(
-            "raycastAll",
-            |lua, this, (x1, y1, dx, dy, max_dist): (f32, f32, f32, f32, f32)| {
-                let hits = this.world.borrow().raycast_all(x1, y1, dx, dy, max_dist);
-                let result = lua.create_table()?;
-                for (i, hit) in hits.iter().enumerate() {
-                    result.set(i + 1, raycast_hit_to_table(lua, hit)?)?;
-                }
-                Ok(result)
-            },
-        );
+        methods.add_method("raycastAll", |lua, this, args: LuaMultiValue| {
+            let vals: Vec<LuaValue> = args.into_iter().collect();
+            let x1 = required_f32(lua, &vals, 0, "x")?;
+            let y1 = required_f32(lua, &vals, 1, "y")?;
+            let dx = required_f32(lua, &vals, 2, "dx")?;
+            let dy = required_f32(lua, &vals, 3, "dy")?;
+            let max_dist = required_f32(lua, &vals, 4, "maxDist")?;
+            let filter = query_filter_from_lua(vals.get(5).cloned())?;
+            let hits = this
+                .world
+                .borrow()
+                .raycast_all_filtered(x1, y1, dx, dy, max_dist, filter);
+            let result = lua.create_table()?;
+            for (i, hit) in hits.iter().enumerate() {
+                result.set(i + 1, raycast_hit_to_table(lua, hit)?)?;
+            }
+            Ok(result)
+        });
         // -- queryAABB --
         /// Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
         /// @param | x | number | Query rectangle left X.
         /// @param | y | number | Query rectangle top Y.
         /// @param | w | number | Query rectangle width.
         /// @param | h | number | Query rectangle height.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, includeSensors?}.
         /// @return | integer[] | Body ID numbers found in the region.
-        methods.add_method(
-            "queryAABB",
-            |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
-                Ok(this.world.borrow().query_aabb(x, y, w, h))
-            },
-        );
+        methods.add_method("queryAABB", |lua, this, args: LuaMultiValue| {
+            let vals: Vec<LuaValue> = args.into_iter().collect();
+            let x = required_f32(lua, &vals, 0, "x")?;
+            let y = required_f32(lua, &vals, 1, "y")?;
+            let w = required_f32(lua, &vals, 2, "w")?;
+            let h = required_f32(lua, &vals, 3, "h")?;
+            let filter = query_filter_from_lua(vals.get(4).cloned())?;
+            Ok(this.world.borrow().query_aabb_filtered(x, y, w, h, filter))
+        });
         // -- getBodyAtPoint --
         /// Returns the body ID at a specific world point, or nil if no body is there.
         /// @param | x | number | Query point X.
         /// @param | y | number | Query point Y.
+        /// @param | filter | table? | Optional query filter: {layer?, mask?, includeSensors?}.
         /// @return | integer | Body ID at the point, or nil.
-        methods.add_method("getBodyAtPoint", |_, this, (x, y): (f32, f32)| {
-            Ok(this.world.borrow().get_body_at_point(x, y))
+        methods.add_method("getBodyAtPoint", |lua, this, args: LuaMultiValue| {
+            let vals: Vec<LuaValue> = args.into_iter().collect();
+            let x = required_f32(lua, &vals, 0, "x")?;
+            let y = required_f32(lua, &vals, 1, "y")?;
+            let filter = query_filter_from_lua(vals.get(2).cloned())?;
+            Ok(this.world.borrow().get_body_at_point_filtered(x, y, filter))
         });
         // -- getCollisionEvents --
         /// Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
@@ -814,9 +1077,7 @@ impl LuaUserData for LuaWorld {
             let result = lua.create_table()?;
             for (i, evt) in events.iter().enumerate() {
                 let tbl = lua.create_table()?;
-                /// Performs the 'bodyA' operation.
                 tbl.set("bodyA", evt.body_a)?;
-                /// Performs the 'bodyB' operation.
                 tbl.set("bodyB", evt.body_b)?;
                 result.set(i + 1, tbl)?;
             }
@@ -833,9 +1094,7 @@ impl LuaUserData for LuaWorld {
             let result = lua.create_table()?;
             for (i, (a, b)) in events.iter().enumerate() {
                 let tbl = lua.create_table()?;
-                /// Performs the 'bodyA' operation.
                 tbl.set("bodyA", *a)?;
-                /// Performs the 'bodyB' operation.
                 tbl.set("bodyB", *b)?;
                 result.set(i + 1, tbl)?;
             }
@@ -852,9 +1111,7 @@ impl LuaUserData for LuaWorld {
             let result = lua.create_table()?;
             for (i, (a, b)) in events.iter().enumerate() {
                 let tbl = lua.create_table()?;
-                /// Performs the 'bodyA' operation.
                 tbl.set("bodyA", *a)?;
-                /// Performs the 'bodyB' operation.
                 tbl.set("bodyB", *b)?;
                 result.set(i + 1, tbl)?;
             }
@@ -867,23 +1124,12 @@ impl LuaUserData for LuaWorld {
         /// @field | bodyB | integer | BodyB.
         /// @field | normalX | number | NormalX.
         /// @field | normalY | number | NormalY.
-        /// @field | isTouching | boolean | IsTouching.
+        /// @field | isTouching | boolean | True while the bodies are currently touching.
         methods.add_method("getContacts", |lua, this, ()| {
             let contacts = this.world.borrow().get_contacts();
             let result = lua.create_table()?;
             for (i, c) in contacts.iter().enumerate() {
-                let tbl = lua.create_table()?;
-                /// Performs the 'bodyA' operation.
-                tbl.set("bodyA", c.body_a)?;
-                /// Performs the 'bodyB' operation.
-                tbl.set("bodyB", c.body_b)?;
-                /// Performs the 'normalX' operation.
-                tbl.set("normalX", c.normal_x)?;
-                /// Performs the 'normalY' operation.
-                tbl.set("normalY", c.normal_y)?;
-                /// Performs the 'isTouching' operation.
-                tbl.set("isTouching", c.is_touching)?;
-                result.set(i + 1, tbl)?;
+                result.set(i + 1, contact_to_table(lua, c)?)?;
             }
             Ok(result)
         });
@@ -895,23 +1141,12 @@ impl LuaUserData for LuaWorld {
         /// @field | bodyB | integer | BodyB.
         /// @field | normalX | number | NormalX.
         /// @field | normalY | number | NormalY.
-        /// @field | isTouching | boolean | IsTouching.
+        /// @field | isTouching | boolean | True while the body pair is currently touching.
         methods.add_method("getBodyContacts", |lua, this, body_id: usize| {
             let contacts = this.world.borrow().get_body_contacts(body_id);
             let result = lua.create_table()?;
             for (i, c) in contacts.iter().enumerate() {
-                let tbl = lua.create_table()?;
-                /// Performs the 'bodyA' operation.
-                tbl.set("bodyA", c.body_a)?;
-                /// Performs the 'bodyB' operation.
-                tbl.set("bodyB", c.body_b)?;
-                /// Performs the 'normalX' operation.
-                tbl.set("normalX", c.normal_x)?;
-                /// Performs the 'normalY' operation.
-                tbl.set("normalY", c.normal_y)?;
-                /// Performs the 'isTouching' operation.
-                tbl.set("isTouching", c.is_touching)?;
-                result.set(i + 1, tbl)?;
+                result.set(i + 1, contact_to_table(lua, c)?)?;
             }
             Ok(result)
         });
@@ -1108,7 +1343,7 @@ impl LuaUserData for LuaWorld {
                         (w, h, bt_str)
                     }
                 };
-                pairs.push((x, y, w, h, parse_body_type_lenient(&bt_str)));
+                pairs.push((x, y, w, h, parse_body_type(&bt_str)?));
             }
             let ids = this.world.borrow_mut().add_bodies(pairs);
             Ok(ids)
@@ -1156,9 +1391,7 @@ impl LuaUserData for LuaWorld {
             let tbl = lua.create_table()?;
             for (i, evt) in events.iter().enumerate() {
                 let row = lua.create_table()?;
-                /// Performs the 'zone_id' operation.
                 row.set("zone_id", evt.zone_id)?;
-                /// Performs the 'body_id' operation.
                 row.set("body_id", evt.body_id)?;
                 row.set(
                     "kind",
@@ -1419,9 +1652,7 @@ impl LuaUserData for LuaTerrain {
             let tbl = lua.create_table()?;
             for (i, (x, y)) in positions.iter().enumerate() {
                 let row = lua.create_table()?;
-                /// The 'x' field value exposed to Lua scripts.
                 row.set("x", *x)?;
-                /// The 'y' field value exposed to Lua scripts.
                 row.set("y", *y)?;
                 tbl.set(i + 1, row)?;
             }
@@ -1513,6 +1744,12 @@ impl LuaUserData for LuaBody {
         /// Returns the unique numeric ID of this body within the world.
         /// @return | integer | Body ID.
         methods.add_method("getId", |_, this, ()| Ok(this.id.0));
+        // -- isValid --
+        /// Returns whether this body handle still points to an active body.
+        /// @return | boolean | True if the body has not been destroyed.
+        methods.add_method("isValid", |_, this, ()| {
+            Ok(this.world.borrow().has_body(this.id.0))
+        });
         // -- getPosition --
         /// Returns the current world-space position of this body.
         /// @return | number | X coordinate.
@@ -2009,6 +2246,7 @@ impl LuaUserData for LuaPhysicsShape {
         });
     }
 }
+
 impl From<crate::physics::PhysicsShapeSnapshot> for crate::render::renderer::PhysicsDebugShape {
     fn from(s: crate::physics::PhysicsShapeSnapshot) -> Self {
         Self {
@@ -2028,6 +2266,7 @@ impl From<crate::physics::PhysicsShapeSnapshot> for crate::render::renderer::Phy
 /// Registers the `lurek.physics` module table and all its free functions onto the given Lua table.
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    // --- Free functions ---
     // -- newWorld --
     /// Creates a new physics world with the given gravity vector.
     /// @param | gx | number | Gravity X component.
@@ -2072,43 +2311,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return | LBody | The newly created body.
     tbl.set(
         "newBody",
-        lua.create_function(|lua, args: LuaMultiValue| {
-            let vals: Vec<LuaValue> = args.into_iter().collect();
-            let (world_ud, x, y, w, h, bt) = match vals.as_slice() {
-                // Legacy form: lurek.physics.newBody(world, x, y, bodyType)
-                [wud, ax, ay, abt] => (
-                    LuaAnyUserData::from_lua(wud.clone(), lua)?,
-                    f32::from_lua(ax.clone(), lua)?,
-                    f32::from_lua(ay.clone(), lua)?,
-                    16.0_f32,
-                    16.0_f32,
-                    String::from_lua(abt.clone(), lua)?,
-                ),
-                // Full form: lurek.physics.newBody(world, x, y, w, h, bodyType)
-                [wud, ax, ay, aw, ah, abt] => (
-                    LuaAnyUserData::from_lua(wud.clone(), lua)?,
-                    f32::from_lua(ax.clone(), lua)?,
-                    f32::from_lua(ay.clone(), lua)?,
-                    f32::from_lua(aw.clone(), lua)?,
-                    f32::from_lua(ah.clone(), lua)?,
-                    String::from_lua(abt.clone(), lua)?,
-                ),
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "lurek.physics.newBody expects (world,x,y,bodyType) or (world,x,y,w,h,bodyType)".into(),
-                    ))
-                }
-            };
-
-                let world = world_ud.borrow::<LuaWorld>()?;
-                let body_type = parse_body_type_lenient(&bt);
-                let body = Body::new(x, y, w, h, body_type);
-                let id = world.world.borrow_mut().add_body(body);
-                Ok(LuaBody {
-                    world: Rc::clone(&world.world),
-                    id,
-                })
-            })?,
+        lua.create_function(|lua, args: LuaMultiValue| new_body_from_lua_args(lua, args))?,
     )?;
     // -- getBody --
     /// Returns position and velocity of a body (free-function variant for quick queries).
@@ -2144,13 +2347,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "setBodyVelocity",
         lua.create_function(
             |_, (_world_ud, body_ud, vx, vy): (LuaAnyUserData, LuaAnyUserData, f32, f32)| {
-                let body = body_ud.borrow::<LuaBody>()?;
-                let mut w = body.world.borrow_mut();
-                if let Some(b) = w.get_body_mut(body.id.0) {
-                    b.velocity.x = vx;
-                    b.velocity.y = vy;
-                }
-                Ok(())
+                set_body_velocity_from_userdata(body_ud, vx, vy)
             },
         )?,
     )?;
@@ -2230,18 +2427,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return | LPhysicsShape | The shape object.
     tbl.set(
         "newPolygonShape",
-        lua.create_function(|_, coords: mlua::Variadic<f32>| {
-            if coords.len() < 6 || !coords.len().is_multiple_of(2) {
-                return Err(LuaError::RuntimeError(
-                    "newPolygonShape: requires at least 3 vertex pairs (6 numbers)".to_string(),
-                ));
-            }
-            let vertices: Vec<crate::math::Vec2> = coords
-                .chunks(2)
-                .map(|c| crate::math::Vec2::new(c[0], c[1]))
-                .collect();
-            Ok(LuaPhysicsShape::new(Shape::Polygon { vertices }))
-        })?,
+        lua.create_function(|_, coords: mlua::Variadic<f32>| polygon_shape_from_coords(coords))?,
     )?;
     // -- newChainShape --
     /// Creates a chain (polyline) collision shape. Useful for terrain outlines.
@@ -2251,16 +2437,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newChainShape",
         lua.create_function(|_, (closed, coords): (bool, mlua::Variadic<f32>)| {
-            if coords.len() < 4 || coords.len() % 2 != 0 {
-                return Err(LuaError::RuntimeError(
-                    "newChainShape: requires at least 2 vertex pairs (4 numbers)".to_string(),
-                ));
-            }
-            let vertices: Vec<crate::math::Vec2> = coords
-                .chunks(2)
-                .map(|c| crate::math::Vec2::new(c[0], c[1]))
-                .collect();
-            Ok(LuaPhysicsShape::new(Shape::Chain { vertices, closed }))
+            chain_shape_from_coords(closed, coords)
         })?,
     )?;
     // -- attachShape --
@@ -2295,17 +2472,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(|lua, world_ud: LuaAnyUserData| {
             let world_lua = world_ud.borrow::<LuaWorld>()?;
             let world = world_lua.world.borrow();
-            let events = world.get_collision_events();
-            let tbl = lua.create_table()?;
-            for (i, contact) in events.iter().enumerate() {
-                let entry = lua.create_table()?;
-                /// Performs the 'body_a' operation.
-                entry.set("body_a", contact.body_a)?;
-                /// Performs the 'body_b' operation.
-                entry.set("body_b", contact.body_b)?;
-                tbl.set(i + 1, entry)?;
-            }
-            Ok(tbl)
+            collision_events_to_table(lua, world.get_collision_events())
         })?,
     )?;
     // -- debugDraw --
@@ -2329,57 +2496,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(
             move |_, (world_ud, config_val): (LuaAnyUserData, LuaValue)| {
                 let world_ref = world_ud.borrow::<LuaWorld>()?;
-                let shapes: Vec<crate::render::renderer::PhysicsDebugShape> = world_ref
-                    .world
-                    .borrow()
-                    .extract_shape_snapshots()
-                    .into_iter()
-                    .map(Into::into)
-                    .collect();
-                let mut cfg = crate::render::renderer::PhysicsDebugConfig::default();
-                if let LuaValue::Table(tbl) = config_val {
-                    if let Ok(v) = tbl.get::<_, LuaTable>("bodyColor") {
-                        cfg.body_color = [
-                            v.get::<_, f32>(1).unwrap_or(cfg.body_color[0]),
-                            v.get::<_, f32>(2).unwrap_or(cfg.body_color[1]),
-                            v.get::<_, f32>(3).unwrap_or(cfg.body_color[2]),
-                            v.get::<_, f32>(4).unwrap_or(cfg.body_color[3]),
-                        ];
-                    }
-                    if let Ok(v) = tbl.get::<_, LuaTable>("staticColor") {
-                        cfg.static_color = [
-                            v.get::<_, f32>(1).unwrap_or(cfg.static_color[0]),
-                            v.get::<_, f32>(2).unwrap_or(cfg.static_color[1]),
-                            v.get::<_, f32>(3).unwrap_or(cfg.static_color[2]),
-                            v.get::<_, f32>(4).unwrap_or(cfg.static_color[3]),
-                        ];
-                    }
-                    if let Ok(v) = tbl.get::<_, LuaTable>("sleepColor") {
-                        cfg.sleep_color = [
-                            v.get::<_, f32>(1).unwrap_or(cfg.sleep_color[0]),
-                            v.get::<_, f32>(2).unwrap_or(cfg.sleep_color[1]),
-                            v.get::<_, f32>(3).unwrap_or(cfg.sleep_color[2]),
-                            v.get::<_, f32>(4).unwrap_or(cfg.sleep_color[3]),
-                        ];
-                    }
-                    if let Ok(v) = tbl.get::<_, LuaTable>("sensorColor") {
-                        cfg.sensor_color = [
-                            v.get::<_, f32>(1).unwrap_or(cfg.sensor_color[0]),
-                            v.get::<_, f32>(2).unwrap_or(cfg.sensor_color[1]),
-                            v.get::<_, f32>(3).unwrap_or(cfg.sensor_color[2]),
-                            v.get::<_, f32>(4).unwrap_or(cfg.sensor_color[3]),
-                        ];
-                    }
-                    if let Ok(w) = tbl.get::<_, f32>("lineWidth") {
-                        cfg.line_width = w;
-                    }
-                }
-                s.borrow_mut().render_commands.push(
-                    crate::render::renderer::RenderCommand::DrawPhysicsDebug {
-                        shapes,
-                        config: cfg,
-                    },
-                );
+                push_physics_debug_draw(&s, &world_ref, config_val);
                 Ok(())
             },
         )?,
@@ -2483,7 +2600,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             },
         )?,
     )?;
-    /// Performs the 'physics' operation.
     luna.set("physics", tbl)?;
     Ok(())
 }

@@ -1,5 +1,0 @@
-SVG Size: 200x100
-Parsed Element IDs: prov_2, prov_1, node_0, group1
-Tesselated Points Count: 4
-Adjacency prov_1 neighbor: prov_2
-Canvas cached successfully: true

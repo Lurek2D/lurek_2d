@@ -5,30 +5,34 @@
 //! Supplies the offset generator used by emitters and presets.
 
 use super::config::{AreaDistribution, EmissionShape, ParticleConfig};
-use super::math::{rand_normal, rand_range};
+use super::math::{rand_f32, rand_normal, rand_range, rand_u32};
 /// Return a random spawn offset `(dx, dy)` sampled from the `ParticleConfig` area distribution and rotated by `area_angle`.
-pub fn emission_offset(config: &ParticleConfig) -> (f32, f32) {
+pub fn emission_offset(config: &ParticleConfig, rng_state: &mut u64) -> (f32, f32) {
     let (dx, dy) = match config.area_distribution {
         AreaDistribution::None => (0.0, 0.0),
         AreaDistribution::Uniform => {
-            let x = rand_range(-config.area_width * 0.5, config.area_width * 0.5);
-            let y = rand_range(-config.area_height * 0.5, config.area_height * 0.5);
+            let x = rand_range(rng_state, -config.area_width * 0.5, config.area_width * 0.5);
+            let y = rand_range(
+                rng_state,
+                -config.area_height * 0.5,
+                config.area_height * 0.5,
+            );
             (x, y)
         }
         AreaDistribution::Normal => {
-            let x = (rand_normal() * 0.25).clamp(-0.5, 0.5) * config.area_width;
-            let y = (rand_normal() * 0.25).clamp(-0.5, 0.5) * config.area_height;
+            let x = (rand_normal(rng_state) * 0.25).clamp(-0.5, 0.5) * config.area_width;
+            let y = (rand_normal(rng_state) * 0.25).clamp(-0.5, 0.5) * config.area_height;
             (x, y)
         }
         AreaDistribution::Ellipse => {
-            let angle = fastrand::f32() * 2.0 * std::f32::consts::PI;
-            let r = fastrand::f32().sqrt();
+            let angle = rand_f32(rng_state) * 2.0 * std::f32::consts::PI;
+            let r = rand_f32(rng_state).sqrt();
             let x = angle.cos() * r * config.area_width * 0.5;
             let y = angle.sin() * r * config.area_height * 0.5;
             (x, y)
         }
         AreaDistribution::BorderEllipse => {
-            let angle = fastrand::f32() * 2.0 * std::f32::consts::PI;
+            let angle = rand_f32(rng_state) * 2.0 * std::f32::consts::PI;
             let x = angle.cos() * config.area_width * 0.5;
             let y = angle.sin() * config.area_height * 0.5;
             (x, y)
@@ -38,7 +42,7 @@ pub fn emission_offset(config: &ParticleConfig) -> (f32, f32) {
             if perimeter < f32::EPSILON {
                 return (0.0, 0.0);
             }
-            let t = fastrand::f32() * perimeter;
+            let t = rand_f32(rng_state) * perimeter;
             let hw = config.area_width * 0.5;
             let hh = config.area_height * 0.5;
             if t < config.area_width {
@@ -61,34 +65,38 @@ pub fn emission_offset(config: &ParticleConfig) -> (f32, f32) {
     }
 }
 /// Return a random spawn offset `(dx, dy)` sampled from an `EmissionShape`; `Custom` always returns `(0, 0)`.
-pub fn emission_shape_offset(shape: &EmissionShape) -> (f32, f32) {
+pub fn emission_shape_offset(shape: &EmissionShape, rng_state: &mut u64) -> (f32, f32) {
     match shape {
         EmissionShape::Point => (0.0, 0.0),
         EmissionShape::Circle { radius, fill } => {
-            let angle = fastrand::f32() * 2.0 * std::f32::consts::PI;
+            let angle = rand_f32(rng_state) * 2.0 * std::f32::consts::PI;
             let r = if *fill {
-                fastrand::f32().sqrt() * radius
+                rand_f32(rng_state).sqrt() * radius
             } else {
                 *radius
             };
             (angle.cos() * r, angle.sin() * r)
         }
         EmissionShape::Rectangle { width, height } => {
-            let x = rand_range(-width * 0.5, *width * 0.5);
-            let y = rand_range(-height * 0.5, *height * 0.5);
+            let x = rand_range(rng_state, -width * 0.5, *width * 0.5);
+            let y = rand_range(rng_state, -height * 0.5, *height * 0.5);
             (x, y)
         }
         EmissionShape::Ring {
             inner_radius,
             outer_radius,
         } => {
-            let angle = fastrand::f32() * 2.0 * std::f32::consts::PI;
-            let r_sq = rand_range(inner_radius * inner_radius, outer_radius * outer_radius);
+            let angle = rand_f32(rng_state) * 2.0 * std::f32::consts::PI;
+            let r_sq = rand_range(
+                rng_state,
+                inner_radius * inner_radius,
+                outer_radius * outer_radius,
+            );
             let r = r_sq.sqrt();
             (angle.cos() * r, angle.sin() * r)
         }
         EmissionShape::Line { length, angle } => {
-            let t = rand_range(-0.5, 0.5);
+            let t = rand_range(rng_state, -0.5, 0.5);
             (t * length * angle.cos(), t * length * angle.sin())
         }
         EmissionShape::Cone {
@@ -96,8 +104,8 @@ pub fn emission_shape_offset(shape: &EmissionShape) -> (f32, f32) {
             angle,
             spread,
         } => {
-            let a = angle + rand_range(-spread, *spread);
-            let r = fastrand::f32().sqrt() * radius;
+            let a = angle + rand_range(rng_state, -*spread, *spread);
+            let r = rand_f32(rng_state).sqrt() * radius;
             (a.cos() * r, a.sin() * r)
         }
         EmissionShape::Star {
@@ -107,16 +115,17 @@ pub fn emission_shape_offset(shape: &EmissionShape) -> (f32, f32) {
         } => {
             let n = (*points).max(3) as f32;
             let step = std::f32::consts::PI / n;
-            let segment = fastrand::u32(0..*points * 2);
-            let t = fastrand::f32();
+            let segment = rand_u32(rng_state, 0, *points * 2);
+            let t = rand_f32(rng_state);
             let a0 = segment as f32 * step;
             let a1 = a0 + step;
-            let r0 = if segment % 2 == 0 {
+            let even_segment = segment.is_multiple_of(2);
+            let r0 = if even_segment {
                 *outer_radius
             } else {
                 *inner_radius
             };
-            let r1 = if segment % 2 == 0 {
+            let r1 = if even_segment {
                 *inner_radius
             } else {
                 *outer_radius
@@ -132,7 +141,7 @@ pub fn emission_shape_offset(shape: &EmissionShape) -> (f32, f32) {
             radius,
         } => {
             let max_angle = *revolutions * 2.0 * std::f32::consts::PI;
-            let t = fastrand::f32();
+            let t = rand_f32(rng_state);
             let angle = t * max_angle;
             let r = t * radius;
             (angle.cos() * r, angle.sin() * r)

@@ -12,7 +12,7 @@
 - Namespace: `lurek.dsp`
 - Lua API surface: `29` functions, `7` types, `27` methods
 - Rust test path(s): tests/rust/unit/audio_tests.rs (shared with audio)
-- Lua test path(s): tests/lua/unit/test_dsp_core_unit.lua
+- Lua test path(s): tests/lua_reorg/unit/test_dsp_core_unit.lua
 
 ## Summary
 

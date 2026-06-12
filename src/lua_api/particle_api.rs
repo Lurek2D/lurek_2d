@@ -1202,7 +1202,7 @@ impl LuaUserData for LuaParticleSystem {
         });
         // -- addSubEmitter --
         /// Configures a death sub-emitter from a config table.
-        /// @param | config_tbl | table | Particle config table.
+        /// @param | config_tbl | table | Particle config table. Supports `seed` for deterministic sub-emission.
         /// @param | burst_count | integer? | Burst count per death.
         methods.add_method_mut(
             "addSubEmitter",
@@ -1274,7 +1274,7 @@ impl LuaUserData for LuaParticleSystem {
         });
         // -- addSubSystem --
         /// Adds a particle sub-system from a config table.
-        /// @param | config_tbl | table | Particle config table.
+        /// @param | config_tbl | table | Particle config table. Supports `seed` for deterministic sub-systems.
         /// @return | integer | One-based sub-system index.
         methods.add_method_mut("addSubSystem", |_, this, config_tbl: LuaTable| {
             let config = ParticleConfig::from_lua_opts(&config_tbl)?;
@@ -1442,7 +1442,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- newSystem --
     /// Creates a particle system from an optional config table.
-    /// @param | config | table? | Particle config table.
+    /// @param | config | table? | Particle config table. Supports `seed` for deterministic emission and reset behavior.
     /// @return | LParticleSystem | New particle system handle.
     tbl.set(
         "newSystem",
@@ -1482,7 +1482,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s_toml = state.clone();
     // -- fromTOML --
     /// Creates a particle system from a TOML config file.
-    /// @param | path | string | TOML file path.
+    /// @param | path | string | TOML file path. The TOML config may include `seed` for deterministic emission.
     /// @return | LParticleSystem | New particle system handle.
     tbl.set(
         "fromTOML",
@@ -1728,6 +1728,9 @@ impl ParticleConfig {
         }
         if let Ok(v) = t.get::<_, f32>("emitterLifetime") {
             c.emitter_lifetime = v;
+        }
+        if let Ok(v) = t.get::<_, u64>("seed") {
+            c.seed = Some(v);
         }
         if let Ok(v) = t.get::<_, f32>("linearAccelXMin") {
             c.linear_accel_x_min = v;

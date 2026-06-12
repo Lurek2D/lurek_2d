@@ -375,12 +375,12 @@ def extract_tests(verbose: bool = False) -> list:
     return tests
 
 
-# ── Lua integration tests (tests/lua/) ─────────────────────────────────────────
+# ── Lua integration tests (tests/lua_reorg/) ─────────────────────────────────────────
 
 def extract_lua_tests() -> list:
-    """Scan tests/lua/**/*.lua for test scripts."""
+    """Scan tests/lua_reorg/**/*.lua for test scripts."""
     lua_tests = []
-    lua_dir = TESTS_DIR / "lua"
+    lua_dir = TESTS_DIR / "lua_reorg"
     if not lua_dir.exists():
         return lua_tests
 

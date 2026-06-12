@@ -59,20 +59,20 @@ Constraints **TST-01** through **TST-06** from [philosophy.md Â§ Testing Const
 | **TST-02** | Rust unit tests live in `tests/rust/unit/<module>_tests.rs`. Inline `#[cfg(test)]` blocks in `src/**/*.rs` are **banned**. |
 | **TST-03** | `src/lua_api/<module>_api.rs` holds only `impl LuaUserData`, registration, and type conversions. No business logic. |
 | **TST-04** | Every `mod.rs` holds only `pub mod`, `pub use`, attributes, and doc comments. No definitions. |
-| **TST-05** | Demo tests: headless Lua tests in `tests/lua/demos/test_<name>.lua`; screenshot tests in `tests/demo_smoke_tests.rs` with `#[ignore]`. Never put demo tests in `tests/lua/unit/`. |
+| **TST-05** | Demo tests: headless Lua tests in `tests/lua_reorg/demos/test_<name>.lua`; screenshot tests in `tests/demo_smoke_tests.rs` with `#[ignore]`. Never put demo tests in `tests/lua_reorg/unit/`. |
 | **TST-06** | One file per module per layer. No split per-sub-feature files. Name: `test_<module>_<layer>.lua`. |
 
 > **Migration note (2026-04-20).** Existing inline `#[cfg(test)]` blocks are tracked for relocation under session `testing-cleanup-20260420`. No new inline blocks are accepted.
 
 ### Decision Tree
 
-1. **Reachable via any `lurek.*` function, userdata, or callback?** â†’ Lua test in `tests/lua/unit/test_<module>.lua` (single module) or `tests/lua/integration/test_<a>_<b>.lua` (â‰Ą2 namespaces). This is TST-01 â€” the default path.
+1. **Reachable via any `lurek.*` function, userdata, or callback?** â†’ Lua test in `tests/lua_reorg/unit/test_<module>.lua` (single module) or `tests/lua_reorg/integration/test_<a>_<b>.lua` (â‰Ą2 namespaces). This is TST-01 â€” the default path.
 
 2. **Private internal helper** â€” no Lua exposure? â†’ Rust unit test in `tests/rust/unit/<module>_tests.rs`. Register binary in `Cargo.toml`. TST-02.
 
-3. **Test for a game demo in `content/games/`?** â†’ Headless Lua test in `tests/lua/demos/test_<name>.lua` (TST-05) + `#[ignore]` screenshot test in `tests/demo_smoke_tests.rs`.
+3. **Test for a game demo in `content/games/`?** â†’ Headless Lua test in `tests/lua_reorg/demos/test_<name>.lua` (TST-05) + `#[ignore]` screenshot test in `tests/demo_smoke_tests.rs`.
 
-4. **Anything else** (integration, golden, stress, evidence, config, security) â†’ choose the matching subfolder in `tests/rust/` or `tests/lua/`.
+4. **Anything else** (integration, golden, stress, evidence, config, security) â†’ choose the matching subfolder in `tests/rust/` or `tests/lua_reorg/`.
 
 When both 1 and 2 apply, choose 1 (Lua-first). Promote private helpers to `pub(crate)` and cover through the Lua surface.
 
@@ -84,7 +84,7 @@ When both 1 and 2 apply, choose 1 (Lua-first). Promote private helpers to `pub(c
 | Business logic in `src/lua_api/*_api.rs` | TST-03 | Move logic to `src/<module>/`, call from thin wrapper |
 | `fn`, `struct`, `enum`, or `impl` in any `mod.rs` | TST-04 | Move to sibling file; keep `mod.rs` as re-export switchboard |
 | Duplicating `lurek.*`-reachable test in Rust | TST-01 | Delete Rust duplicate, keep Lua test |
-| Demo tests in `tests/lua/unit/` | TST-05 | Move to `tests/lua/demos/` |
+| Demo tests in `tests/lua_reorg/unit/` | TST-05 | Move to `tests/lua_reorg/demos/` |
 | Split per-sub-feature test files | TST-06 | Merge into single canonical `test_<module>_<layer>.lua` |
 
 ### Enforcement â€” Audit Scripts
@@ -105,7 +105,7 @@ Under `tools/audit/`:
 
 ### Harness Registration
 
-Lua tests are registered **manually** in `tests/lua/harness.rs`. Auto-discovery is intentionally not used. An unregistered `.lua` file will never be executed by `cargo test`.
+Lua tests are registered **manually** in `tests/lua_reorg_tests.rs`. Auto-discovery is intentionally not used. An unregistered `.lua` file will never be executed by `cargo test`.
 
 ---
 
@@ -123,7 +123,7 @@ cargo test
   â”‚   tests/rust/ext/           Cross-module Rust smoke tests
   â”‚
   â””â”€â”€ Lua BDD harness â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-      tests/lua/harness.rs
+      tests/lua_reorg_tests.rs
       â”śâ”€â”€ unit/         One file per engine module (API surface)
       â”śâ”€â”€ library/      One file per Lureksome library
       â”śâ”€â”€ integration/  Tests between â‰Ą2 modules
@@ -137,7 +137,7 @@ cargo test
 **Why two layers:**
 - Rust tests cover internal engine contracts: struct invariants, error handling, resource lifecycle, mathematical correctness.
 - Lua tests cover the public `lurek.*` API surface from the user's perspective â€” the same VM game scripts use.
-- Library tests (`tests/lua/library/`) exclusively test Lureksome pure-Lua libraries.
+- Library tests (`tests/lua_reorg/library/`) exclusively test Lureksome pure-Lua libraries.
 
 ---
 
@@ -156,13 +156,13 @@ tests/
 â”‚   â”‚   â”śâ”€â”€ render_tests.rs
 â”‚   â”‚   â””â”€â”€ ...
 â”‚   â”śâ”€â”€ stress/          Raw Rust-level throughput tests
-â”‚   â”śâ”€â”€ golden/          Snapshot tests (harness.rs + expected/)
+â”‚   â”śâ”€â”€ golden/          Snapshot tests (tests/lua_reorg_tests.rs + expected/)
 â”‚   â”śâ”€â”€ config/          TOML config loading + validation
 â”‚   â”śâ”€â”€ security/        Sandbox + path-traversal audits
 â”‚   â””â”€â”€ ext/             Cross-module Rust smoke tests
 â”‚
-â””â”€â”€ lua/
-    â”śâ”€â”€ harness.rs       Rust harness â€” one #[test] per .lua file
+â””â”€â”€ lua_reorg/
+    â”śâ”€â”€ ../lua_reorg_tests.rs       Rust harness â€” one #[test] per .lua file
     â”śâ”€â”€ init.lua         BDD framework (describe/it/expect_*)
     â”śâ”€â”€ unit/            One file per lurek.* namespace
     â”śâ”€â”€ library/         One file per Lureksome library
@@ -180,7 +180,7 @@ All Rust test binaries are **explicitly registered** in `Cargo.toml` under `[[te
 
 ### tests/rust/game/ â€” Retired
 
-`tests/rust/game/` previously held Rust tests for game systems (battle, cardgame, combat, crafting, inventory, quest, stats). Those systems are now pure-Lua libraries in `library/`. Their tests live in `tests/lua/library/`. Do not add new files there.
+`tests/rust/game/` previously held Rust tests for game systems (battle, cardgame, combat, crafting, inventory, quest, stats). Those systems are now pure-Lua libraries in `library/`. Their tests live in `tests/lua_reorg/library/`. Do not add new files there.
 
 ---
 
@@ -203,20 +203,20 @@ All Rust test binaries are **explicitly registered** in `Cargo.toml` under `[[te
 
 ## Lua BDD Test Framework
 
-All Lua tests use the custom BDD framework in `tests/lua/init.lua`, loaded automatically by `create_test_vm()`.
+All Lua tests use the custom BDD framework in `tests/lua_reorg/init.lua`, loaded automatically by `create_test_vm()`.
 
 ### Categories
 
 | Category | Path | Scope | Naming |
 |---|---|---|---|
-| Unit | `tests/lua/unit/` | One module per file | `test_<module>.lua` |
-| Library | `tests/lua/library/` | One Lureksome library | `test_library_<name>.lua` |
-| Integration | `tests/lua/integration/` | â‰Ą2 modules | `test_<modA>_<modB>.lua` |
-| Stress | `tests/lua/stress/` | Throughput + allocation | `test_<module>_stress.lua` |
-| Security | `tests/lua/security/` | Sandboxing + input validation | â€” |
-| Golden | `tests/lua/golden/` | Deterministic output | `test_<module>_golden.lua` |
-| Config | `tests/lua/config/` | Configuration loading | â€” |
-| Demos | `tests/lua/demos/` | One per `content/games/` demo | `test_<name>.lua` |
+| Unit | `tests/lua_reorg/unit/` | One module per file | `test_<module>_unit.lua` |
+| Library | `tests/lua_reorg/library/` | One Lureksome library | `test_<name>_library.lua` |
+| Integration | `tests/lua_reorg/integration/` | â‰Ą2 modules | `test_<modules>_integration.lua` |
+| Stress | `tests/lua_reorg/stress/` | Throughput + allocation | `test_<module>_stress.lua` |
+| Security | `tests/lua_reorg/security/` | Sandboxing + input validation | â€” |
+| Golden | `tests/lua_reorg/golden/` | Deterministic output | `test_<module>_golden.lua` |
+| Config | `tests/lua_reorg/config/` | Configuration loading | â€” |
+| Demos | `tests/lua_reorg/demos/` | One per `content/games/` demo | `test_<name>.lua` |
 
 ### Assertion Rules (BDD Layer)
 
@@ -268,17 +268,17 @@ Three comment layers â€” do not mix them:
 - `test_summary()` must be the last non-empty line in every file.
 - `return test_summary()` is forbidden â€” use bare `test_summary()`.
 - Marker annotations belong on `it()` blocks and are folder-specific:
-    - `tests/lua/unit/` -> `@covers`
-    - `tests/lua/security/` -> `@security`
-    - `tests/lua/integration/` -> `@integration`
-    - `tests/lua/stress/` -> `@stress`
-    - `tests/lua/evidence/` -> `@evidence`
+    - `tests/lua_reorg/unit/` -> `@covers`
+    - `tests/lua_reorg/security/` -> `@security`
+    - `tests/lua_reorg/integration/` -> `@integration`
+    - `tests/lua_reorg/stress/` -> `@stress`
+    - `tests/lua_reorg/evidence/` -> `@evidence`
 - Max two levels of nested `describe()`.
 
 **Standard template:**
 
 ```lua
--- tests/lua/unit/test_modulename.lua
+-- tests/lua_reorg/unit/test_modulename.lua
 -- Exercises lurek.modulename constructors, error handling, and edge cases.
 -- Headless-safe: no window, GPU, or audio required.
 
@@ -313,21 +313,22 @@ Golden tests compare evidence output against committed baseline samples.
 **Rules:**
 1. **Golden tests ONLY compare.** They read an evidence file and a golden sample, then assert they match. No content creation.
 2. **Evidence tests must run first.** If the evidence file does not exist, the golden test fails with a clear message.
-3. **Golden samples live in `tests/lua/golden/samples/<module>/`** â€” committed to git, human-reviewed.
+3. **Golden samples live in `tests/artifacts/baselines/<module>/`** â€” committed to git, human-reviewed.
 4. **Golden tests must not call `lurek.*` APIs, `savePNG`, `saveWAV`, or write files.** Content creation belongs in the evidence layer.
 5. **Every golden test uses BDD structure** and the `-- @golden` marker.
 6. Use `expect_golden_file_match()` for binary (PNG, WAV) or `expect_golden_text_match()` for text (normalises whitespace/line endings).
 
 **Directory structure:**
 ```
-tests/lua/golden/
-â”śâ”€â”€ test_<module>_golden.lua          Golden test script
-â””â”€â”€ samples/                          Committed baseline files
-    â”śâ”€â”€ math/constants.txt
-    â”śâ”€â”€ physics/draw_debug.png
-    â””â”€â”€ audio/sine_440hz.wav
+tests/lua_reorg/golden/
+â””â”€â”€ test_<module>_golden.lua          Golden test script
 
-tests/lua/evidence/output/            Generated at test run (git-ignored)
+tests/artifacts/baselines/                             Committed baseline files
+â”śâ”€â”€ math/constants.txt
+â”śâ”€â”€ physics/draw_debug.png
+â””â”€â”€ audio/sine_440hz.wav
+
+tests/artifacts/current/                              Generated at test run
 â””â”€â”€ math/constants.txt
 ```
 
@@ -339,7 +340,7 @@ tests/lua/evidence/output/            Generated at test run (git-ignored)
 describe("golden: <module> <description>", function()
     it("matches golden sample for <artifact>", function()
         local evidence = evidence_output_dir("<module>") .. "<filename>"
-        local golden = "tests/lua/golden/samples/<module>/<filename>"
+        local golden = "tests/artifacts/baselines/<module>/<filename>"
         expect_golden_file_match(evidence, golden)
     end)
 end)
@@ -442,7 +443,7 @@ CI workflow:
 
 ## Evidence-Based Testing
 
-Evidence tests produce **artefacts** (images, text files, audio) from actual engine output. They are in `tests/lua/evidence/` and write to `tests/lua/evidence/output/` (git-ignored). Golden tests then compare those artefacts against committed samples in `tests/lua/golden/samples/`.
+Evidence tests produce **artefacts** (images, text files, audio) from actual engine output. They are in `tests/lua_reorg/evidence/` and write to `tests/artifacts/current/`. Golden tests then compare those artefacts against committed samples in `tests/artifacts/baselines/`.
 
 **Two-step pattern:**
 1. Evidence test runs, calls `lurek.*`, saves output to `output/<module>/`.
@@ -454,9 +455,9 @@ Never mix steps â€” an `it()` block must do either production or comparison
 
 ## Demo Tests
 
-### Headless Demo Tests (`tests/lua/demos/`)
+### Headless Demo Tests (`tests/lua_reorg/demos/`)
 
-Every folder in `content/games/` must have exactly one `test_<name>.lua` in `tests/lua/demos/`. Each test:
+Every folder in `content/games/` must have exactly one `test_<name>.lua` in `tests/lua_reorg/demos/`. Each test:
 - Loads the demo's `main.lua` via `dofile()` or static analysis
 - Verifies the demo initialises without error
 - Runs at least one frame cycle headlessly

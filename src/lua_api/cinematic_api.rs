@@ -14,12 +14,12 @@
 //! - `type()` → `"LCinematic"`.
 //! - `typeOf(name)` → boolean.
 
-use crate::cinematic::{Cinematic, CinematicTimeline, CinematicClip, ClipType};
+use crate::cinematic::{Cinematic, CinematicClip, CinematicTimeline, ClipType};
 use crate::runtime::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
-use std::rc::Rc;
 use std::collections::HashMap;
+use std::rc::Rc;
 
 /// Lua userdata handle wrapping a [`Cinematic`] timeline.
 struct LuaCinematic {
@@ -50,42 +50,60 @@ impl LuaUserData for LuaCinematicTimeline {
         /// @param | at | number | Start time in seconds.
         /// @param | duration | number | Clip duration in seconds.
         /// @param | clip_table | table | Clip definition with type-specific data.
-        methods.add_method_mut("addClip", |_lua, this, (track_name, at, duration, clip_table): (String, f32, f32, LuaTable)| {
-            let clip_type_str: String = clip_table.get("type")?;
-            let clip_type = match clip_type_str.as_str() {
-                "tween" => {
-                    let target = clip_table.get("target")?;
-                    let props_tbl: LuaTable = clip_table.get("properties").unwrap_or_else(|_| _lua.create_table().unwrap());
-                    let mut props = HashMap::new();
-                    for (k, v) in props_tbl.pairs::<String, f32>().flatten() {
-                        props.insert(k, v);
+        methods.add_method_mut(
+            "addClip",
+            |_lua, this, (track_name, at, duration, clip_table): (String, f32, f32, LuaTable)| {
+                let clip_type_str: String = clip_table.get("type")?;
+                let clip_type = match clip_type_str.as_str() {
+                    "tween" => {
+                        let target = clip_table.get("target")?;
+                        let props_tbl: LuaTable = clip_table
+                            .get("properties")
+                            .unwrap_or_else(|_| _lua.create_table().unwrap());
+                        let mut props = HashMap::new();
+                        for (k, v) in props_tbl.pairs::<String, f32>().flatten() {
+                            props.insert(k, v);
+                        }
+                        let easing = clip_table.get("easing").ok();
+                        ClipType::Tween {
+                            target,
+                            properties: props,
+                            easing,
+                        }
                     }
-                    let easing = clip_table.get("easing").ok();
-                    ClipType::Tween { target, properties: props, easing }
-                }
-                "camera" => {
-                    let x = clip_table.get("x").unwrap_or(0.0);
-                    let y = clip_table.get("y").unwrap_or(0.0);
-                    let zoom = clip_table.get("zoom").unwrap_or(1.0);
-                    let easing = clip_table.get("easing").ok();
-                    ClipType::Camera { x, y, zoom, easing }
-                }
-                "audio" => {
-                    let path = clip_table.get("path")?;
-                    ClipType::Audio { path }
-                }
-                "signal" => {
-                    let name = clip_table.get("name")?;
-                    let data = clip_table.get("data").ok();
-                    ClipType::Signal { name, data }
-                }
-                _ => return Err(LuaError::RuntimeError(format!("Unknown clip type: {}", clip_type_str))),
-            };
+                    "camera" => {
+                        let x = clip_table.get("x").unwrap_or(0.0);
+                        let y = clip_table.get("y").unwrap_or(0.0);
+                        let zoom = clip_table.get("zoom").unwrap_or(1.0);
+                        let easing = clip_table.get("easing").ok();
+                        ClipType::Camera { x, y, zoom, easing }
+                    }
+                    "audio" => {
+                        let path = clip_table.get("path")?;
+                        ClipType::Audio { path }
+                    }
+                    "signal" => {
+                        let name = clip_table.get("name")?;
+                        let data = clip_table.get("data").ok();
+                        ClipType::Signal { name, data }
+                    }
+                    _ => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "Unknown clip type: {}",
+                            clip_type_str
+                        )))
+                    }
+                };
 
-            let clip = CinematicClip { at, duration, clip_type };
-            this.inner.borrow_mut().add_clip_to_track(&track_name, clip);
-            Ok(())
-        });
+                let clip = CinematicClip {
+                    at,
+                    duration,
+                    clip_type,
+                };
+                this.inner.borrow_mut().add_clip_to_track(&track_name, clip);
+                Ok(())
+            },
+        );
 
         // -- play --
         /// Starts playback from the current time.
@@ -134,9 +152,7 @@ impl LuaUserData for LuaCinematicTimeline {
         // -- getTime --
         /// Returns the current playback time.
         /// @return | number | Current time in seconds.
-        methods.add_method("getTime", |_, this, ()| {
-            Ok(this.inner.borrow().get_time())
-        });
+        methods.add_method("getTime", |_, this, ()| Ok(this.inner.borrow().get_time()));
 
         // -- getDuration --
         /// Returns the total duration of the timeline.

@@ -95,7 +95,7 @@ def fix_file(file_path):
 
 def main():
     """Fix all test files with missing it() markers."""
-    base_path = Path('tests/lua/unit')
+    base_path = Path('tests/lua_reorg/unit')
     fixed_count = 0
 
     for test_file in sorted(base_path.glob('*.lua')):

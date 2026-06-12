@@ -40,6 +40,13 @@ Usage:
     python tools/audit/unit_test_api_coverage.py --suggest
     python tools/audit/unit_test_api_coverage.py --threshold 30
 
+Canonical owner tree:
+    tests/lua_reorg/unit/
+
+Canonical ownership rule:
+    public lurek.<module> APIs belong in one module unit file only
+    public module functions first, then userdata/object methods
+
 Exit codes:
     0 - success (or coverage >= threshold)
     1 - coverage below threshold
@@ -69,7 +76,7 @@ def _configure_stdout_utf8() -> None:
 
 ROOT = Path(__file__).resolve().parents[2]
 API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
-LUA_UNIT_TESTS = ROOT / "tests" / "lua" / "unit"
+LUA_UNIT_TESTS = ROOT / "tests" / "lua_reorg" / "unit"
 OUTPUT_JSON = ROOT / "logs" / "data" / "unit_test_coverage.json"
 OUTPUT_MD = ROOT / "logs" / "reports" / "unit_test_coverage.md"
 
@@ -723,7 +730,8 @@ def format_suggest(data: dict) -> str:
     """Render suggested it() stubs for uncovered APIs."""
     lines = [
         "-- Lurek2D - suggested unit test stubs for APIs missing explicit @covers coverage",
-        "-- Add these to the appropriate tests/lua/unit/test_<module>.lua file",
+        "-- Add these to the appropriate tests/lua_reorg/unit/test_<module>_unit.lua file",
+        "-- Keep module functions before userdata/object methods in the canonical module file",
         "",
     ]
     for module_name, module_data in sorted(data["modules"].items()):

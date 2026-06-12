@@ -268,9 +268,7 @@ impl LuaUserData for LSceneObjectContainer {
 
         /// Get the type name of this userdata.
         /// @return | string | The literal `"LSceneObjectContainer"`.
-        methods.add_method("type", |_lua, _this, ()| {
-            Ok("LSceneObjectContainer")
-        });
+        methods.add_method("type", |_lua, _this, ()| Ok("LSceneObjectContainer"));
 
         /// Check type by name.
         /// @param | name | string | Type name to compare against.
@@ -1561,9 +1559,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | LSceneObjectContainer | New container handle.
     tbl.set(
         "newObjectContainer",
-        lua.create_function(|lua, ()| {
-            LSceneObjectContainer::new(lua)
-        })?,
+        lua.create_function(|lua, ()| LSceneObjectContainer::new(lua))?,
     )?;
     // transitions: subtable of built-in transition descriptor constructor functions.
     /// Performs the 'transitions' operation.

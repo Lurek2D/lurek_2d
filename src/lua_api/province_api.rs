@@ -112,6 +112,86 @@ fn parse_zoom_mode_from_lua(value: Option<String>) -> Option<ProvinceZoomMode> {
         _ => None,
     }
 }
+
+fn clamp_unit(v: f32) -> LuaResult<f32> {
+    if !v.is_finite() {
+        return Err(LuaError::RuntimeError(
+            "LProvinceRegistry:render color components must be finite numbers".to_string(),
+        ));
+    }
+    Ok(v.clamp(0.0, 1.0))
+}
+
+fn parse_render_color_table(t: LuaTable, field: &str) -> LuaResult<[f32; 4]> {
+    let r = t.get::<_, Option<f32>>(1)?.ok_or_else(|| {
+        LuaError::RuntimeError(format!(
+            "LProvinceRegistry:render {} must contain r,g,b components",
+            field
+        ))
+    })?;
+    let g = t.get::<_, Option<f32>>(2)?.ok_or_else(|| {
+        LuaError::RuntimeError(format!(
+            "LProvinceRegistry:render {} must contain r,g,b components",
+            field
+        ))
+    })?;
+    let b = t.get::<_, Option<f32>>(3)?.ok_or_else(|| {
+        LuaError::RuntimeError(format!(
+            "LProvinceRegistry:render {} must contain r,g,b components",
+            field
+        ))
+    })?;
+    let a = t.get::<_, Option<f32>>(4)?.unwrap_or(1.0);
+    Ok([
+        clamp_unit(r)?,
+        clamp_unit(g)?,
+        clamp_unit(b)?,
+        clamp_unit(a)?,
+    ])
+}
+
+fn parse_province_tint_key(key: LuaValue) -> LuaResult<ProvinceId> {
+    match key {
+        LuaValue::Integer(id) if id > 0 && id <= u32::MAX as i64 => Ok(ProvinceId(id as u32)),
+        LuaValue::Number(id) if id.is_finite() && id.fract() == 0.0 && id > 0.0 => {
+            if id > u32::MAX as f64 {
+                Err(LuaError::RuntimeError(
+                    "LProvinceRegistry:render province_tints keys must fit u32".to_string(),
+                ))
+            } else {
+                Ok(ProvinceId(id as u32))
+            }
+        }
+        _ => Err(LuaError::RuntimeError(
+            "LProvinceRegistry:render province_tints keys must be positive province ids"
+                .to_string(),
+        )),
+    }
+}
+
+fn parse_province_tints_from_lua(
+    value: Option<LuaTable>,
+) -> LuaResult<HashMap<ProvinceId, [f32; 4]>> {
+    let mut out = HashMap::new();
+    let Some(tints) = value else {
+        return Ok(out);
+    };
+    for pair in tints.pairs::<LuaValue, LuaValue>() {
+        let (key, value) = pair?;
+        let id = parse_province_tint_key(key)?;
+        let LuaValue::Table(color_table) = value else {
+            return Err(LuaError::RuntimeError(
+                "LProvinceRegistry:render province_tints values must be {r,g,b,a?} tables"
+                    .to_string(),
+            ));
+        };
+        out.insert(
+            id,
+            parse_render_color_table(color_table, "province_tints[id]")?,
+        );
+    }
+    Ok(out)
+}
 /// Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
 #[derive(Clone)]
 pub struct LuaProvinceRegistry {
@@ -959,8 +1039,8 @@ impl LuaUserData for LuaProvinceRegistry {
             Ok(out)
         });
         // -- render --
-        /// Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
-        /// @param | opts | table? | Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode ("auto"|"strategic"|"tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
+        /// Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.
+        /// @param | opts | table? | Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), tint ({r,g,b,a?}?), province_tints (table<integer,{r,g,b,a?}>?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode ("auto"|"strategic"|"tactical"), tactical_zoom_threshold (number?), hovered_id/selected_id (integer?).
         methods.add_method("render", |_, this, opts: Option<LuaTable>| {
             let opts = opts;
             let mode = if let Some(ref t) = opts {
@@ -968,6 +1048,18 @@ impl LuaUserData for LuaProvinceRegistry {
                     .unwrap_or_else(|| "political".to_string())
             } else {
                 "political".to_string()
+            };
+            let tint = if let Some(ref t) = opts {
+                t.get::<_, Option<LuaTable>>("tint")?
+                    .map(|t| parse_render_color_table(t, "tint"))
+                    .transpose()?
+            } else {
+                None
+            };
+            let province_tints = if let Some(ref t) = opts {
+                parse_province_tints_from_lua(t.get::<_, Option<LuaTable>>("province_tints")?)?
+            } else {
+                HashMap::new()
             };
             let options = ProvinceRenderOptions {
                 x: opts
@@ -995,6 +1087,8 @@ impl LuaUserData for LuaProvinceRegistry {
                     .and_then(|t| t.get::<_, Option<f32>>("screen_h").ok().flatten())
                     .unwrap_or(720.0),
                 map_mode: mode,
+                tint,
+                province_tints,
                 draw_fills: opts
                     .as_ref()
                     .and_then(|t| t.get::<_, Option<bool>>("draw_fills").ok().flatten())

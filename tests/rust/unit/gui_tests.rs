@@ -1,6 +1,6 @@
 //! File: tests/rust/unit/gui_tests.rs
 
-// TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
+// TODO(lua-first): public Rust API coverage in this file should live in tests/lua_reorg/unit/; keep only private/internal seams here.
 
 use lurek2d::ui::context::GuiContext;
 use lurek2d::ui::controls::Switch;
@@ -336,13 +336,11 @@ fn dialog_footer_action_click_can_close_dialog() {
         dialog.base.width = 180.0;
         dialog.base.height = 100.0;
         dialog.base.z_order = 1200;
-        dialog
-            .actions
-            .push(lurek2d::ui::extras::DialogAction::new(
-                "Close",
-                lurek2d::ui::extras::DialogActionRole::Custom,
-                true,
-            ));
+        dialog.actions.push(lurek2d::ui::extras::DialogAction::new(
+            "Close",
+            lurek2d::ui::extras::DialogActionRole::Custom,
+            true,
+        ));
     }
 
     assert!(ctx.mouse_pressed(630.0, 914.0, 1));
@@ -351,7 +349,10 @@ fn dialog_footer_action_click_can_close_dialog() {
         lurek2d::ui::context::WidgetKind::Dialog(dialog) => dialog,
         _ => panic!("expected Dialog"),
     };
-    assert!(!dialog.open, "footer action should close dialog on activation");
+    assert!(
+        !dialog.open,
+        "footer action should close dialog on activation"
+    );
 }
 
 #[test]

@@ -404,13 +404,13 @@ impl NetworkHost {
     /// Register a reconnection lease for the given peer ID, returning the generated u32 token.
     pub fn register_lease(&mut self, peer_id: PeerID, timeout_secs: u64) -> u32 {
         self.clean_expired_leases();
-        
+
         // Generate a non-zero unique u32 token (0 is reserved for default/no-token connection)
         let mut token = fastrand::u32(1..u32::MAX);
         while self.leases.contains_key(&token) {
             token = fastrand::u32(1..u32::MAX);
         }
-        
+
         let expiry = Instant::now() + Duration::from_secs(timeout_secs);
         self.leases.insert(token, EnetLease { peer_id, expiry });
         token

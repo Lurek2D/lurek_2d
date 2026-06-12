@@ -4,6 +4,21 @@
 //! Supports the numeric shaping layer used by emitter animation.
 
 pub use crate::math::lerp;
+
+/// Advances a small deterministic PRNG state and returns the next `u64` sample.
+pub(crate) fn next_u64(state: &mut u64) -> u64 {
+    *state = state.wrapping_add(0x9E37_79B9_7F4A_7C15);
+    let mut z = *state;
+    z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+    z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
+    z ^ (z >> 31)
+}
+
+/// Returns a deterministic random `f32` in `[0.0, 1.0)`.
+pub(crate) fn rand_f32(state: &mut u64) -> f32 {
+    const SCALE: f32 = 1.0 / ((1u32 << 24) as f32);
+    ((next_u64(state) >> 40) as u32 as f32) * SCALE
+}
 /// Evaluate the particle size at normalised lifetime `t` with optional per-particle `variation` in `[0.0, 1.0]`.
 pub fn interpolate_sizes(sizes: &[f32], t: f32, variation: f32) -> f32 {
     if sizes.is_empty() {
@@ -56,15 +71,32 @@ pub fn interpolate_alphas(alphas: &[f32], t: f32) -> f32 {
     lerp(alphas[idx], alphas[idx + 1], local_t)
 }
 /// Return a uniform random `f32` in `[min, max]`; returns `min` when the range is degenerate.
-pub(crate) fn rand_range(min: f32, max: f32) -> f32 {
+pub(crate) fn rand_range(state: &mut u64, min: f32, max: f32) -> f32 {
     if (max - min).abs() < f32::EPSILON {
         return min;
     }
-    min + fastrand::f32() * (max - min)
+    min + rand_f32(state) * (max - min)
 }
 /// Return a Box-Muller normal sample with mean 0 and std 1.
-pub(crate) fn rand_normal() -> f32 {
-    let u1 = fastrand::f32().max(f32::EPSILON);
-    let u2 = fastrand::f32();
+pub(crate) fn rand_normal(state: &mut u64) -> f32 {
+    let u1 = rand_f32(state).max(f32::EPSILON);
+    let u2 = rand_f32(state);
     (-2.0 * u1.ln()).sqrt() * (2.0 * std::f32::consts::PI * u2).cos()
+}
+
+/// Returns a deterministic random `u32` in `[start, end)`.
+pub(crate) fn rand_u32(state: &mut u64, start: u32, end: u32) -> u32 {
+    if start >= end {
+        return start;
+    }
+    let span = (end - start) as u64;
+    start + (next_u64(state) % span) as u32
+}
+
+/// Returns a deterministic random `usize` in `[0, max_inclusive]`.
+pub(crate) fn rand_usize_inclusive(state: &mut u64, max_inclusive: usize) -> usize {
+    if max_inclusive == 0 {
+        return 0;
+    }
+    (next_u64(state) % ((max_inclusive + 1) as u64)) as usize
 }

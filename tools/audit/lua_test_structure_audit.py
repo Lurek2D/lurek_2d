@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit and normalize Lua BDD test structure under tests/lua.
+"""Audit and normalize Lua BDD test structure under tests/lua_reorg_reorg.
 
 This tool standardizes the repository rules for Lua test file headers,
 suite/case descriptions, and test_summary placement.
@@ -9,11 +9,11 @@ Audited rules:
 - Every describe() must have a preceding -- @describe line.
 - Every describe() docstring block may contain only -- @describe.
 - Primary marker is folder-specific and must be used above each it() block:
-    - tests/lua/unit -> -- @covers
-    - tests/lua/security -> -- @security
-    - tests/lua/integration -> -- @integration
-    - tests/lua/stress -> -- @stress
-    - tests/lua/evidence -> -- @evidence
+    - tests/lua_reorg_reorg/unit -> -- @covers
+    - tests/lua_reorg_reorg/security -> -- @security
+    - tests/lua_reorg_reorg/integration -> -- @integration
+    - tests/lua_reorg_reorg/stress -> -- @stress
+    - tests/lua_reorg_reorg/evidence -> -- @evidence
 - Primary marker lines must be indented to the same level as the it() they precede.
     Example: if it() is indented 4 spaces, the marker must also be indented 4 spaces.
 - For unit tests only, -- @covers symbols may be validated against calls inside it().

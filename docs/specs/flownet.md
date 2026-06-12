@@ -13,7 +13,7 @@
 - Namespace: `lurek.graph`
 - Lua API surface: `1` functions, `7` types, `130` methods
 - Rust test path(s): tests/rust/unit/flownet_tests.rs plus inline flownet module tests
-- Lua test path(s): tests/lua/unit/test_flownet.lua and related flownet stress and golden suites
+- Lua test path(s): tests/lua_reorg/unit/test_flownet.lua and related flownet stress and golden suites
 
 ## Summary
 

@@ -13,7 +13,7 @@
 - Namespace: `lurek.devtools`
 - Lua API surface: `50` functions, `9` types, `12` methods
 - Rust test path(s): tests/rust/unit/devtools_tests.rs
-- Lua test path(s): tests/lua/unit/test_devtools.lua; tests/lua/integration/test_devtools.lua
+- Lua test path(s): tests/lua_reorg/unit/test_devtools.lua; tests/lua_reorg/integration/test_devtools.lua
 
 ## Summary
 

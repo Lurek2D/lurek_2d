@@ -46,7 +46,7 @@ description: "Load this skill when creating or modifying API examples under cont
 
 ## Common RAG Queries
 - Start with: `content examples API coverage`, `example coverage content examples API`, `keyboard input lua API examples tests`
-- Focus areas first: `content/examples/`, `docs/`, `tests/lua/`, `content/snippets/`
+- Focus areas first: `content/examples/`, `docs/`, `tests/lua_reorg/`, `content/snippets/`
 - Append the API or module name such as `input`, `render`, `tilemap`, `math` when narrowing
 
 ## References

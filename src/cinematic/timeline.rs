@@ -22,9 +22,9 @@ pub struct CinematicClip {
 pub enum ClipType {
     /// Animate a Lua object's properties with tween.
     Tween {
-        target: String,           // Lua object reference key
+        target: String, // Lua object reference key
         properties: HashMap<String, f32>,
-        easing: Option<String>,   // easing function name
+        easing: Option<String>, // easing function name
     },
     /// Move and zoom a camera.
     Camera {
@@ -34,14 +34,9 @@ pub enum ClipType {
         easing: Option<String>,
     },
     /// Play audio from a file.
-    Audio {
-        path: String,
-    },
+    Audio { path: String },
     /// Fire a named signal event.
-    Signal {
-        name: String,
-        data: Option<String>,
-    },
+    Signal { name: String, data: Option<String> },
 }
 
 impl CinematicClip {
@@ -71,7 +66,8 @@ impl Track {
     /// Adds a clip to this track and maintains time order.
     pub fn add_clip(&mut self, clip: CinematicClip) {
         self.clips.push(clip);
-        self.clips.sort_by(|a, b| a.at.partial_cmp(&b.at).unwrap_or(std::cmp::Ordering::Equal));
+        self.clips
+            .sort_by(|a, b| a.at.partial_cmp(&b.at).unwrap_or(std::cmp::Ordering::Equal));
     }
 
     /// Finds clips active at the given time.
@@ -107,7 +103,7 @@ pub struct CinematicTimeline {
     tracks: Vec<Track>,
     current_time: f32,
     state: TimelineState,
-    duration: f32, // max end time across all tracks
+    duration: f32,                // max end time across all tracks
     labels: HashMap<String, f32>, // named time positions for branching
     on_complete_fired: bool,
 }

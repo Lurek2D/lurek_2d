@@ -2,10 +2,13 @@
 """Audit Lua evidence and golden test contract compliance.
 
 Rules enforced:
-- In tests/lua/evidence, it() blocks that save files should carry -- @evidence file.
+- In tests/lua_reorg/evidence, it() blocks that save files should carry -- @evidence file.
 - In mixed evidence suites, non-evidence it() blocks are forbidden.
+- In tests/lua_reorg/golden, generation logic is forbidden; golden tests compare only.
+- Golden sample references must point at committed files.
+
+Optional strict mode:
 - Evidence block descriptions should be expanded, not one-line stubs.
-- In tests/lua/golden, generation logic is forbidden; golden tests compare only.
 
 Safe autofix currently supports:
 - add missing -- @evidence file markers to it() blocks that clearly write files.
@@ -13,7 +16,7 @@ Safe autofix currently supports:
 Usage:
 ```
 usage: lua_evidence_golden_contract_audit.py [-h] [--path PATH] [--fix]
-                                             [--json]
+                                             [--json] [--require-descriptions]
 
 Audit Lua evidence/golden contract compliance.
 
@@ -23,6 +26,8 @@ options:
   --fix        Add missing -- @evidence file markers where file-writing logic
                is obvious.
   --json       Emit JSON findings.
+  --require-descriptions
+               Treat missing/thin @description lines as contract failures.
 
 Examples:
   # Default execution
@@ -43,14 +48,18 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, List
 
+from lua_artifact_lock import lua_artifact_lock
 
 ROOT = Path(__file__).resolve().parents[2]
-EVIDENCE_DIR = ROOT / "tests" / "lua" / "evidence"
-GOLDEN_DIR = ROOT / "tests" / "lua" / "golden"
+CANONICAL_EVIDENCE_DIR = ROOT / "tests" / "lua_reorg" / "evidence"
+CANONICAL_GOLDEN_DIR = ROOT / "tests" / "lua_reorg" / "golden"
+LEGACY_EVIDENCE_DIR = ROOT / "tests" / "lua" / "evidence"
+LEGACY_GOLDEN_DIR = ROOT / "tests" / "lua" / "golden"
 
 IT_RE = re.compile(r'^(?P<indent>\s*)it\(\s*["\'](?P<label>.*?)["\']\s*,\s*function\s*\(')
 DESCRIPTION_RE = re.compile(r'^\s*--\s*@description\s+(?P<text>.+?)\s*$')
-EVIDENCE_RE = re.compile(r'^\s*--\s*@evidence\s+(?P<kind>\w+)\s*$')
+EVIDENCE_RE = re.compile(r'^\s*--\s*@evidence\s+(?P<kind>.+?)\s*$')
+SAMPLE_PATH_RE = re.compile(r'["\'](?P<path>tests/artifacts/baselines/[^"\']+)["\']')
 
 SAVE_HINTS = (
     "savePNG(",
@@ -101,7 +110,14 @@ class ItBlock:
         return any(token in self.body for token in SAVE_HINTS)
 
 
+def default_dirs() -> tuple[Path, Path]:
+    if CANONICAL_EVIDENCE_DIR.exists() and CANONICAL_GOLDEN_DIR.exists():
+        return CANONICAL_EVIDENCE_DIR, CANONICAL_GOLDEN_DIR
+    return LEGACY_EVIDENCE_DIR, LEGACY_GOLDEN_DIR
+
+
 def iter_files(path_filter: str | None) -> Iterable[Path]:
+    evidence_dir, golden_dir = default_dirs()
     if path_filter:
         target = (ROOT / path_filter).resolve()
         if target.is_file():
@@ -112,8 +128,8 @@ def iter_files(path_filter: str | None) -> Iterable[Path]:
             return
         raise FileNotFoundError(path_filter)
 
-    yield from sorted(EVIDENCE_DIR.glob("*.lua"))
-    yield from sorted(GOLDEN_DIR.glob("*.lua"))
+    yield from sorted(evidence_dir.glob("*.lua"))
+    yield from sorted(golden_dir.glob("*.lua"))
 
 
 def collect_it_blocks(lines: List[str]) -> List[ItBlock]:
@@ -166,7 +182,9 @@ def collect_it_blocks(lines: List[str]) -> List[ItBlock]:
     return blocks
 
 
-def audit_evidence_file(path: Path, lines: List[str]) -> List[Finding]:
+def audit_evidence_file(
+    path: Path, lines: List[str], require_descriptions: bool = False
+) -> List[Finding]:
     findings: List[Finding] = []
     blocks = collect_it_blocks(lines)
     has_any_evidence = any(block.has_evidence or block.writes_file for block in blocks)
@@ -176,7 +194,7 @@ def audit_evidence_file(path: Path, lines: List[str]) -> List[Finding]:
         if block.writes_file and not block.has_evidence:
             findings.append(Finding(path, line_no, "missing-evidence-marker", "Add '-- @evidence file' above this evidence-producing it() block."))
 
-        if block.has_evidence:
+        if require_descriptions and block.has_evidence:
             if not block.description_text:
                 findings.append(Finding(path, line_no, "missing-evidence-description", "Add an expanded -- @description line above this evidence block."))
             elif len(block.description_text.strip()) < 60:
@@ -190,6 +208,7 @@ def audit_evidence_file(path: Path, lines: List[str]) -> List[Finding]:
 
 def audit_golden_file(path: Path, lines: List[str]) -> List[Finding]:
     findings: List[Finding] = []
+    text = "\n".join(lines)
     for idx, line in enumerate(lines, start=1):
         stripped = line.lstrip()
         if stripped.startswith("--"):
@@ -198,6 +217,20 @@ def audit_golden_file(path: Path, lines: List[str]) -> List[Finding]:
             if token in line:
                 findings.append(Finding(path, idx, "golden-generation-logic", f"Golden tests must not generate content; remove '{token}' logic and compare evidence only."))
                 break
+    for match in SAMPLE_PATH_RE.finditer(text):
+        sample_rel = match.group("path")
+        sample_path = ROOT / sample_rel
+        if sample_path.exists():
+            continue
+        line_no = text[: match.start()].count("\n") + 1
+        findings.append(
+            Finding(
+                path,
+                line_no,
+                "missing-golden-sample",
+                f"Golden sample path does not exist: '{sample_rel}'",
+            )
+        )
     return findings
 
 
@@ -263,45 +296,56 @@ Examples:
     parser.add_argument("--path", help="Optional file or directory relative to repo root.")
     parser.add_argument("--fix", action="store_true", help="Add missing -- @evidence file markers where file-writing logic is obvious.")
     parser.add_argument("--json", action="store_true", help="Emit JSON findings.")
+    parser.add_argument(
+        "--require-descriptions",
+        action="store_true",
+        help="Treat missing or thin @description lines as contract failures.",
+    )
     args = parser.parse_args()
+    with lua_artifact_lock("lua_evidence_golden_contract_audit.py"):
+        evidence_dir, golden_dir = default_dirs()
 
-    try:
-        files = list(iter_files(args.path))
-    except FileNotFoundError as exc:
-        print(f"ERROR: path not found: {exc}", file=sys.stderr)
-        return 2
+        try:
+            files = list(iter_files(args.path))
+        except FileNotFoundError as exc:
+            print(f"ERROR: path not found: {exc}", file=sys.stderr)
+            return 2
 
-    changed = 0
-    findings: List[Finding] = []
-    for path in files:
-        lines = path.read_text(encoding="utf-8").splitlines()
-        if args.fix and str(path).startswith(str(EVIDENCE_DIR)):
-            if fix_evidence_markers(path, lines):
-                changed += 1
-                lines = path.read_text(encoding="utf-8").splitlines()
-            if strip_mixed_prechecks(path, lines):
-                changed += 1
-                lines = path.read_text(encoding="utf-8").splitlines()
+        changed = 0
+        findings: List[Finding] = []
+        for path in files:
+            lines = path.read_text(encoding="utf-8").splitlines()
+            if args.fix and str(path).startswith(str(evidence_dir)):
+                if fix_evidence_markers(path, lines):
+                    changed += 1
+                    lines = path.read_text(encoding="utf-8").splitlines()
+                if strip_mixed_prechecks(path, lines):
+                    changed += 1
+                    lines = path.read_text(encoding="utf-8").splitlines()
 
-        if str(path).startswith(str(EVIDENCE_DIR)):
-            findings.extend(audit_evidence_file(path, lines))
-        elif str(path).startswith(str(GOLDEN_DIR)) and path.name != "README.md":
-            findings.extend(audit_golden_file(path, lines))
+            if str(path).startswith(str(evidence_dir)):
+                findings.extend(
+                    audit_evidence_file(
+                        path, lines, require_descriptions=args.require_descriptions
+                    )
+                )
+            elif str(path).startswith(str(golden_dir)) and path.name != "README.md":
+                findings.extend(audit_golden_file(path, lines))
 
-    if args.json:
-        print(json.dumps({"changed_files": changed, "issue_count": len(findings), "issues": [f.as_dict() for f in findings]}, indent=2))
-    else:
-        if args.fix:
-            print(f"Fixed {changed} file(s)")
-        if findings:
-            print("FAIL: Lua evidence/golden contract issues found")
-            for finding in findings:
-                rel = finding.path.relative_to(ROOT).as_posix()
-                print(f"{rel}:{finding.line}: {finding.code}: {finding.message}")
+        if args.json:
+            print(json.dumps({"changed_files": changed, "issue_count": len(findings), "issues": [f.as_dict() for f in findings]}, indent=2))
         else:
-            print("PASS: Lua evidence/golden contract audit passed")
+            if args.fix:
+                print(f"Fixed {changed} file(s)")
+            if findings:
+                print("FAIL: Lua evidence/golden contract issues found")
+                for finding in findings:
+                    rel = finding.path.relative_to(ROOT).as_posix()
+                    print(f"{rel}:{finding.line}: {finding.code}: {finding.message}")
+            else:
+                print("PASS: Lua evidence/golden contract audit passed")
 
-    return 1 if findings else 0
+        return 1 if findings else 0
 
 
 if __name__ == "__main__":

@@ -889,6 +889,11 @@ def main() -> int:
     if args.markdown:
         export_markdown(bk, entries, markdown_path, examples_dir)
         print(f"Exported Markdown report to {markdown_path}")
+        if not args.report:
+            return 0
+        lint_count = print_lint(examples_dir, filt=args.module)
+        if lint_count:
+            has_lint = True
     elif args.json:
         print(json.dumps({
             k: {

@@ -37,7 +37,7 @@ description: "Load this skill when creating or modifying pure Lua library module
 
 # References
 - skills: `.codex/skills/create-library/SKILL.md`
-- contracts: library/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md
+- contracts: library/AGENTS.md, tests/lua_reorg/AGENTS.md, content/AGENTS.md
 - tools: tools/python.cmd tools/rag/query.py "library Lua module conventions" --profile game --limit 10, tools/python.cmd tools/audit/library_coverage.py, tools/python.cmd tools/validate/validate_library.py --lib <name>
 - agent: content
 

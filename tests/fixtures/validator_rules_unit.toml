@@ -1,0 +1,5 @@
+[[rule]]
+id = "toml-no-print"
+pattern = "print("
+message = "Use lurek.log instead of print()"
+severity = "warning"

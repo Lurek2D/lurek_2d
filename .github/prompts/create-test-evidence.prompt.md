@@ -37,7 +37,7 @@ description: "Load this skill when creating or modifying Lua tests that produce 
 
 # References
 - skills: `.codex/skills/create-test-evidence/SKILL.md`
-- contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/games/AGENTS.md
+- contracts: tests/AGENTS.md, tests/lua_reorg/AGENTS.md, content/games/AGENTS.md
 - tools: tools/python.cmd tools/rag/query.py "Lua evidence tests golden artifacts" --profile game --limit 10, tools/python.cmd tools/audit/lua_evidence_golden_contract_audit.py, tools/python.cmd tools/audit/golden_test.py
 - agent: tester
 

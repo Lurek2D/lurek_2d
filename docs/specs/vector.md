@@ -12,7 +12,7 @@
 - Namespace: `lurek.svg`
 - Lua API surface: `1` functions, `1` types, `24` methods
 - Rust test path(s): None
-- Lua test path(s): tests/lua/unit/test_svg_unit.lua
+- Lua test path(s): tests/lua_reorg/unit/test_svg_unit.lua
 
 ## Summary
 

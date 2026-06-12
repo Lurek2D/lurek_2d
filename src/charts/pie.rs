@@ -5,7 +5,7 @@
 //! Serves as the circular-segment rendering backend behind the charts pie API.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions};
-use crate::charts::render_utils::{fill_buffer, set_pixel};
+use crate::charts::render_utils::{annotate_pie_chart, fill_buffer, set_pixel};
 use crate::color::Color;
 use crate::dataframe::frame::DataFrame;
 use crate::image::ImageData;
@@ -144,7 +144,12 @@ impl PieChart {
         }
 
         let margin = &self.config.margin;
-        let plot_w = w as f32 - margin.left - margin.right;
+        let legend_reserve = if self.config.show_legend {
+            self.config.legend_width
+        } else {
+            0.0
+        };
+        let plot_w = w as f32 - margin.left - margin.right - legend_reserve;
         let plot_h = h as f32 - margin.top - margin.bottom;
         let cx = margin.left + plot_w * 0.5;
         let cy = margin.top + plot_h * 0.5;
@@ -173,5 +178,12 @@ impl PieChart {
                 }
             }
         }
+
+        let legend_entries: Vec<(&str, [f32; 4])> = self
+            .slices
+            .iter()
+            .map(|slice| (slice.label.as_str(), slice.color))
+            .collect();
+        annotate_pie_chart(buffer, w, h, &self.config, &legend_entries);
     }
 }

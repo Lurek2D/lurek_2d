@@ -14,7 +14,7 @@
 - Namespace: `lurek.dataframe`
 - Lua API surface: `15` functions, `6` types, `143` methods
 - Rust test path(s): tests/rust/unit/dataframe_tests.rs
-- Lua test path(s): tests/lua/unit/test_dataframe.lua; tests/lua/stress/test_dataframe_stress.lua; tests/lua/integration/test_compute_dataframe.lua; tests/lua/golden/test_dataframe_golden.lua
+- Lua test path(s): tests/lua_reorg/unit/test_dataframe.lua; tests/lua_reorg/stress/test_dataframe_stress.lua; tests/lua_reorg/integration/test_compute_dataframe.lua; tests/lua_reorg/golden/test_dataframe_golden.lua
 
 ## Summary
 

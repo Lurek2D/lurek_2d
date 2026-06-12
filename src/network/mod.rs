@@ -20,10 +20,10 @@ pub mod net_sync;
 pub mod net_thread;
 /// Network state synchronization manager for replicated state across peers.
 pub mod netstate;
-/// Remote Procedure Call (RPC) manager for networked function invocation.
-pub mod rpc;
 /// Relay server client: punch-through, forwarding, and relay session lifecycle.
 pub mod relay;
+/// Remote Procedure Call (RPC) manager for networked function invocation.
+pub mod rpc;
 /// Server-Sent Events (SSE) stream reader backed by a background thread.
 pub mod sse;
 /// Raw TCP transport: connect, send, receive, and graceful close.

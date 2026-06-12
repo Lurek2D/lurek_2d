@@ -1,0 +1,4 @@
+frame_count=0
+clip_count=2
+current_frame=0
+blend_active=false

@@ -14,7 +14,7 @@
 - Namespace: `lurek.agent`
 - Lua API surface: `17` functions, `10` types, `85` methods
 - Rust test path(s): tests/rust/unit/agent_tests.rs
-- Lua test path(s): tests/lua/unit/test_agent_core_unit.lua
+- Lua test path(s): tests/lua_reorg/unit/test_agent_core_unit.lua
 
 ## Summary
 

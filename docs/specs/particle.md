@@ -13,7 +13,7 @@
 - Namespace: `lurek.particle`
 - Lua API surface: `5` functions, `3` types, `105` methods
 - Rust test path(s): tests/rust/unit/particle_tests.rs
-- Lua test path(s): tests/lua/unit/test_particle.lua, tests/lua/stress/test_particle_stress.lua, tests/lua/integration/test_particle_timer.lua, tests/lua/evidence/test_evidence_particle.lua
+- Lua test path(s): tests/lua_reorg/unit/test_particle.lua, tests/lua_reorg/stress/test_particle_stress.lua, tests/lua_reorg/integration/test_particle_timer.lua, tests/lua_reorg/evidence/test_evidence_particle.lua
 
 ## Summary
 
@@ -31,6 +31,7 @@
 - Render paths support textured and non-textured particle output.
 - Debug draw-to-image tools help tune effects and capture evidence artifacts.
 - Lifecycle chart output improves observability of spawn and decay dynamics.
+- Optional emitter seeds make particle playback deterministic for tests, evidence, and replay capture.
 - The module is useful for combat impacts, weather, ambient motion, and UI accents.
 - For users, it centralizes particle behavior rather than scattering custom emitter logic.
 - It balances artistic flexibility with deterministic, test-friendly controls.
@@ -149,9 +150,9 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 ### Functions
 
 - `lurek.particle.drawLifecycleToImage(snapshots, max_particles, w, h) -> LImageData`: Draws a lifecycle chart image from `(step, count)` snapshot tables.
-- `lurek.particle.fromTOML(path) -> LParticleSystem`: Creates a particle system from a TOML config file.
+- `lurek.particle.fromTOML(path) -> LParticleSystem`: Creates a particle system from a TOML config file, including optional deterministic `seed`.
 - `lurek.particle.newPreset(name) -> LParticleSystem`: Creates a particle system from a named preset.
-- `lurek.particle.newSystem(config?) -> LParticleSystem`: Creates a particle system from an optional config table.
+- `lurek.particle.newSystem(config?) -> LParticleSystem`: Creates a particle system from an optional config table; `config.seed` fixes the emitter RNG sequence.
 - `lurek.particle.newTrail(lifetime, start_width) -> LTrail`: Creates a trail effect. This function is exposed to Lua scripts.
 
 ### Callbacks

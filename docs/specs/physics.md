@@ -13,9 +13,9 @@
 - Source path: `src/physics/`
 - Binding: `src/lua_api/physics_api.rs`
 - Namespace: `lurek.physics`
-- Lua API surface: `22` functions, `16` types, `168` methods
+- Lua API surface: `22` functions, `17` types, `172` methods
 - Rust test path(s): src/physics/world_tests.rs, inline #[cfg(test)] in body.rs, shape.rs, zone.rs, cellular.rs, terrain.rs, render.rs, collision_helpers.rs
-- Lua test path(s): none found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_physics_unit.lua
 
 ## Summary
 
@@ -62,13 +62,6 @@
 - Physics is a core technical pillar for interactive 2D experiences.
 
 This module primarily collaborates with `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
-
-## Imports
-
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -159,7 +152,195 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Enter and leave tracking turns zones into event sources as well as force fields, which is important for scripting and gameplay transitions.
 - Functionally this file delivers area-driven physics behavior for environmental control, special spaces, and location-sensitive simulation rules.
 
-## Lua API Ref
+## Types
+
+- `BodyType` (`enum`, `body.rs`): Simulation role of a physics body. Details: variants: Static, Dynamic, Kinematic, Sensor
+- `BodyShape` (`enum`, `body.rs`): Primitive collision shape baked into the body descriptor. Details: variants: Rect, Circle
+- `Body` (`struct`, `body.rs`): Data-only description of a physics body passed to `World` for simulation. Details: fields: position: Vec2, velocity: Vec2, mass: f32, body_type: BodyType, shape: BodyShape, restitution: f32, layer: u32, mask: u32, width: f32, height: f32, friction: f32, angle: f32, angular_velocity: f32, shape_ext: Option<Shape> | methods: bounding_box (Return the axis-aligned bounding box of this body in world space.); collides_with_layer (Return true when this body's layer and mask are compatible with `other`.); get_bounding_box (Return the bounding box as `(x, y, width, height)` tuple.); get_local_point (Convert a world-space position to a local-space offset accounting for body rotation.); get_type (Return the body type as a static string slice.); get_world_point (Convert a local-space offset to world-space position accounting for body rotation.); new (Create a rectangular body at `(x,y)` with explicit `(w,h)` dimensions.); new_chain (Create a chain (open or closed polyline) body anchored at `(x,y)`.); new_circle (Create a circular body at `(x,y)` with the given `radius`.); new_edge (Create an edge (line segment) body from `v1` to `v2` anchored at `(x,y)`.); new_polygon (Create a polygon body at `(x,y)` from a vertex list; AABB derived from vertex bounds.)
+- `CollisionInfo` (`struct`, `collision.rs`): Result of a collision detection query. Details: fields: penetration: f32, normal: Vec2
+- `Shape` (`enum`, `shape.rs`): Physics primitive shape used in `Body` and `StandaloneShape`. Details: variants: Rect, Circle, Polygon, Edge, Chain | methods: from_parts (Parse a shape from a string type tag and flat argument list; `closed` applies to chains.); regular_polygon (Create a regular convex polygon with `sides` (clamped 3–8) inscribed in `radius`.); to_rapier_collider (Convert this shape to a rapier `ColliderBuilder`; return `None` for degenerate inputs.)
+- `StandaloneShape` (`struct`, `shape.rs`): A `Shape` combined with material properties for standalone collision testing. Details: fields: shape: Shape, density: f32, friction: f32, restitution: f32, sensor: bool | methods: get_bounding_box (Return the local-space AABB as `(min_x, min_y, max_x, max_y)`.); get_radius (Return the circle radius when the inner shape is a `Circle`; otherwise `None`.); get_type (Return a static string label for the shape type.); new (Create a standalone shape with default material values.)
+- `ChunkId` (`struct`, `terrain.rs`): Key identifying a chunk by its chunk-grid coordinates. Details: fields: cx: u32, cy: u32
+- `TerrainMap` (`struct`, `terrain.rs`): Tile-based terrain map that synchronises static physics bodies with a `World`. Details: fields: width: u32, height: u32, cell_size: f32, offset_x: f32, offset_y: f32 | methods: collapse_columns (Remove isolated single-cell pillars with no support; return the count removed.); fill_all (Set every cell to `solid` and mark all chunks dirty.); fill_circle (Set all cells within `radius` world units of `(wx,wy)` to `solid`.); fill_rect (Set all cells overlapping the world-space rectangle to `solid`.); flush (Rebuild bodies in all dirty chunks and sync them into `world`.); from_bytes (Deserialise from a byte buffer produced by `to_bytes`; marks all chunks dirty; return `None` on error.); get_cell (Return whether cell `(cx,cy)` is solid; false when out of bounds.); is_dirty (Return true when any chunks are pending a `flush`.); load_from_bytes (Load bytes into this map if dimensions match; return false on mismatch or parse error.); new (Create an empty terrain map of `width`×`height` cells with `cell_size` world units each.); set_cell (Set the solid state of cell `(cx,cy)`; marks the owning chunk dirty when the value changes.); solid_cell_positions (Return the world-space centres of all solid cells.); spawn_debris_at (Spawn a dynamic debris body in `world` for each position in `positions`; return body ids.); to_bytes (Serialise to a compact byte buffer: `width u32 LE` + `height u32 LE` + `cell_size f32 LE` + bitpacked cells.); to_image_data (Encode the terrain as RGBA pixel data using `solid_rgba` and `empty_rgba`.)
+- `BodyId` (`struct`, `types.rs`): Unique identifier for a physics body. Details: methods: new (Creates a new BodyId from a raw usize.); raw (Returns the raw usize underlying value.)
+- `BodyContact` (`struct`, `world.rs`): A pair of body ids that have started or are overlapping. Details: fields: body_a: BodyId, body_b: BodyId
+- `RaycastHit` (`struct`, `world.rs`): The closest raycast intersection result. Details: fields: body_id: BodyId, point: (f32, normal: (f32, toi: f32
+- `ContactInfo` (`struct`, `world.rs`): Contact information between two bodies. Details: fields: body_a: BodyId, body_b: BodyId, normal_x: f32, normal_y: f32, is_touching: bool
+- `PhysicsShapeSnapshot` (`struct`, `world.rs`): Snapshot of a physics shape used for debug rendering. Details: fields: x: f32, y: f32, half_w: f32, half_h: f32, angle: f32, is_static: bool, is_sleeping: bool, is_sensor: bool, is_circle: bool, hull_verts: Vec<[f32; 2]>
+- `PhysicsQueryFilter` (`struct`, `world.rs`): Optional filters applied to physics spatial queries. Details: fields: layer: Option<u32>, mask: Option<u32>, include_sensors: bool
+- `PhysicsWorldStats` (`struct`, `world.rs`): Lightweight world diagnostics for Lua/editor tooling. Details: fields: bodies: usize, body_slots: usize, colliders: usize, joints: usize, joint_slots: usize, zones: usize, sleeping_bodies: usize
+- `World` (`struct`, `world.rs`): Full rapier2d-backed simulation world. Details: methods: add_bodies (Batch-create bodies from a list of `(x, y, w, h, BodyType)` tuples; return their ids.); add_body (Insert a body into the world and return its id.); add_distance_joint (Add a distance (rope) joint between two bodies; return joint id.); add_fixture (Add an extra collider shape to an existing body; returns the fixture index.); add_friction_joint (Add a friction joint limiting linear and angular impulses; return joint id.); add_gear_joint (Add a gear joint (falls back to weld; logs a warning); return joint id.); add_motor_joint (Add a spring-motor joint for position correction; return joint id.); add_mouse_joint (Create a kinematic anchor and a spring joint targeting `(target_x, target_y)`; return joint id.); add_prismatic_joint (Add a prismatic (slide-axis) joint between two bodies; return joint id.); add_pulley_joint (Add a pulley joint (falls back to weld; logs a warning); return joint id.); add_revolute_joint (Add a revolute joint between two bodies at the given local anchor; return joint id.); add_rope_joint (Add a rope joint with a maximum length; return joint id.); add_weld_joint (Add a weld (fixed) joint between two bodies; return joint id.); add_wheel_joint (Add a wheel-style prismatic joint; return joint id.); add_zone (Register a trigger zone and return its id.); apply_angular_impulse (Apply an angular impulse to body `id`.); apply_force (Apply a continuous force `(fx, fy)` to body `id` this step.); apply_force_at_point (Apply force `(fx, fy)` at world point `(px, py)` on body `id`.); apply_impulse (Apply a linear impulse `(ix, iy)` to body `id`.); apply_torque (Apply a torque to body `id` this step.); apply_zone_forces (Apply per-zone gravity/damping overrides to all bodies; updates zone enter/exit events.); body_count (Return the total number of bodies in the world.); clear (Remove all bodies, joints, and zones; reset rapier sets.); clear_body_one_way (Remove the one-way constraint from body `id`.); destroy_body (Disable body `id`; it will no longer participate in simulation.); destroy_joint (Remove joint `joint_id` from the simulation.); draw_debug_to_image (Draw all body outlines onto an RGBA `ImageData` using the given colour.); draw_to_image (Rasterise all bodies onto a `width`×`height` `ImageData` centered at the origin.); extract_shape_snapshots (Return a snapshot of all body shapes suitable for debug rendering.); fixture_count (Return the number of colliders attached to `body_id`.); generate_render_commands (Build a list of `RenderCommand`s drawing outlines and velocity arrows for all bodies.); get_angular_damping (Return angular damping of body `id`; returns 0 if out of range.); get_angular_velocity (Return angular velocity of body `id` in radians/second; returns 0 if out of range.); get_begin_contact_events (Return body-pair ids that began touching during the last `step`.); get_body (Return a shared reference to body `id`, or `None` if out of range.); get_body_angle (Return rotation angle of body `id` in radians; returns 0 if out of range.); get_body_at_point (Return the first body id whose AABB contains point `(x, y)`, or `None`.); get_body_at_point_filtered (Return the first filtered body id whose AABB contains point `(x, y)`, or `None`.); get_body_contacts (Return contacts involving body `body_id` filtered from `get_contacts`.); get_body_ids (Return all valid body ids as a `Vec`.); get_body_mass (Return the mass of body `id`; returns 0 if out of range.); get_body_mut (Return a mutable reference to body `id`, or `None` if out of range.); get_body_one_way (Return the one-way normal for body `id`, or `None` if not set.); get_body_type_str (Return the body-type string of `id`; returns "dynamic" if out of range.); get_collision_events (Return overlap events collected during the last `step`.); get_contacts (Return all active contact pairs with normals and touch state.); get_end_contact_events (Return body-pair ids that stopped touching during the last `step`.); get_gravity (Return world gravity as `(gx, gy)`.); get_gravity_scale (Return gravity scale of body `id`; returns 1.0 if out of range.); get_joint_bodies (Return the two body ids connected by `joint_id`, or `None` if not found.); get_joint_break_force (Return the break-force threshold for joint `jid`, or `None` if not set.); get_joint_ids (Return all valid joint ids as a `Vec`.); get_joint_limits (Return `(lower, upper)` angular limits on joint `joint_id`; returns `(0,0)` if not set.); get_joint_motor_speed (Return angular motor target speed on joint `joint_id`; returns 0 if not set.); get_joint_type (Return the type string of joint `joint_id`; returns "unknown" if out of range.); get_linear_damping (Return linear damping of body `id`; returns 0 if out of range.); get_meter (Return the current pixels-per-meter ratio.); get_solver_iterations (Return the current number of solver iterations.); get_stats (Return current world diagnostics for tooling and scripts.); get_zone_events (Return zone enter/exit events from the last `step`.); has_body (Return true when a body id names a live body slot.); has_joint (Return true when a joint id names a live joint slot.); is_body_sleeping (Return true if body `id` is currently asleep.); is_bullet (Return true if CCD is enabled on body `id`.); is_fixed_rotation (Return true if rotation is locked on body `id`.); is_sleeping_allowed (Return true if body `id` is permitted to sleep.); joint_count (Return the number of registered joints.); new (Create a world with gravity `(gx, gy)` in pixels/s².); query_aabb (Return all body ids whose AABB overlaps the query rectangle.); query_aabb_filtered (Return all filtered body ids whose AABB overlaps the query rectangle.); raycast (Cast a ray from `(x1,y1)` to `(x2,y2)` and return the first hit, or `None`.); raycast_all (Cast a ray from `(x1,y1)` in direction `(dx,dy)` and return all hits up to `max_dist`.); raycast_all_filtered (Cast a filtered ray and return at most one closest hit per body.); raycast_closest (Cast a ray from `(x1,y1)` in direction `(dx,dy)` up to `max_dist`; return closest hit.); raycast_closest_filtered (Cast a filtered directional ray and return the closest hit.); raycast_filtered (Cast a filtered ray from `(x1,y1)` to `(x2,y2)` and return the first hit, or `None`.); remove_zone (Remove the zone with the given id.); set_angular_damping (Set angular damping coefficient on body `id`.); set_angular_velocity (Set angular velocity of body `id` in radians/second.); set_body_angle (Set the rotation angle of body `id` in radians.); set_body_mass (Override mass of body `id`.); set_body_one_way (Enable one-way platform behaviour: only accept collisions with a normal aligned to `(nx,ny)`.); set_body_position (Teleport body `id` to world position `(x, y)`.); set_body_type (Change the body type of `id` and rebuild its collider.); set_bullet (Enable or disable CCD (continuous collision detection) on body `id`.); set_fixed_rotation (Lock or unlock rotation for body `id`.); set_fixture_friction (Set friction on a specific fixture of `body_id`.); set_fixture_restitution (Set restitution (bounciness) on a specific fixture of `body_id`.); set_fixture_sensor (Enable or disable the sensor flag on a specific fixture of `body_id`.); set_gravity (Set world gravity to `(gx, gy)`.); set_gravity_scale (Set gravity scale multiplier on body `id`.); set_joint_break_force (Register a break force threshold for joint `jid`.); set_joint_limits (Set `[lower, upper]` angular limits on joint `joint_id`.); set_joint_limits_enabled (Enable or disable angular limits on joint `joint_id`.); set_joint_motor_speed (Set angular motor target speed on joint `joint_id`.); set_linear_damping (Set linear damping coefficient on body `id`.); set_meter (Set the pixels-per-meter conversion ratio.); set_mouse_joint_target (Reposition the kinematic anchor of mouse joint `joint_id` to `(x, y)`.); set_sleeping_allowed (Allow or permanently prevent sleeping for body `id`.); set_solver_iterations (Set the number of solver iterations (minimum 1).); sleep_body (Force body `id` to sleep immediately.); step (Step the simulation by `dt` seconds; synchronises body state with rapier.); step_fixed (Run up to `max_steps` fixed substeps using `step_dt`; return steps taken and leftover dt.); to_physics (Convert a pixel distance to physics-space metres.); to_pixels (Convert a physics-space metre distance to pixels.); wake_up_body (Wake up body `id` from sleep.); zone_mut (Return a mutable reference to zone `id`, or `None` if not found.)
+- `ZoneId` (`type`, `zone.rs`): Alias for a zone's numeric identifier.
+- `ZonePriority` (`type`, `zone.rs`): Alias for zone processing priority (higher wins).
+- `ZoneGravityMode` (`enum`, `zone.rs`): Gravity behaviour applied to bodies inside the zone. Details: variants: Directional, Point, Repulsor, Zero
+- `ZoneBoundary` (`enum`, `zone.rs`): Spatial boundary shape for a zone. Details: variants: Rect, Circle | methods: contains (Return true if point `(px, py)` is inside this boundary.)
+- `ZoneEventKind` (`enum`, `zone.rs`): Zone enter/exit event discriminant. Details: variants: Enter, Leave
+- `ZoneEvent` (`struct`, `zone.rs`): A zone crossing event emitted by `ZoneTracker::update`. Details: fields: zone_id: ZoneId, body_id: usize, kind: ZoneEventKind
+- `PhysicsZone` (`struct`, `zone.rs`): A trigger zone that applies gravity and damping overrides to bodies inside it. Details: fields: id: ZoneId, boundary: ZoneBoundary, gravity_mode: ZoneGravityMode, priority: ZonePriority, linear_damping_override: Option<f32>, angular_damping_override: Option<f32>, layer_mask: u32, enabled: bool | methods: contains (Return true if the zone is enabled and the point `(px, py)` is inside its boundary.); new_rect (Create a rectangular zone with zero gravity and default layer mask.); set_circle (Replace the boundary with a circle centred at `(cx, cy)` with given `radius`.); set_gravity_directional (Set constant directional gravity `(gx, gy)` for this zone.); set_gravity_point (Set point-attractor gravity centred at `(cx, cy)` with given `strength`.); set_gravity_repulsor (Set repulsor gravity pushing away from `(cx, cy)` with given `strength`.); set_gravity_zero (Set zero gravity for this zone.)
+- `ZoneTracker` (`struct`, `zone.rs`): Tracks which bodies are inside which zones to generate enter/exit events. Details: methods: clear (Clear all per-body zone state.); new (Create an empty tracker.); remove_body (Remove all zone tracking state for `body_id`.); update (Diff `new_zones` against stored state for `body_id`; emit enter/leave events and update.)
+
+## Functions
+
+- `Body::new` (`body.rs`): Create a rectangular body at `(x,y)` with explicit `(w,h)` dimensions.
+- `Body::new_circle` (`body.rs`): Create a circular body at `(x,y)` with the given `radius`.
+- `Body::new_polygon` (`body.rs`): Create a polygon body at `(x,y)` from a vertex list; AABB derived from vertex bounds.
+- `Body::new_edge` (`body.rs`): Create an edge (line segment) body from `v1` to `v2` anchored at `(x,y)`.
+- `Body::new_chain` (`body.rs`): Create a chain (open or closed polyline) body anchored at `(x,y)`.
+- `Body::bounding_box` (`body.rs`): Return the axis-aligned bounding box of this body in world space.
+- `Body::collides_with_layer` (`body.rs`): Return true when this body's layer and mask are compatible with `other`.
+- `Body::get_bounding_box` (`body.rs`): Return the bounding box as `(x, y, width, height)` tuple.
+- `Body::get_type` (`body.rs`): Return the body type as a static string slice.
+- `Body::get_world_point` (`body.rs`): Convert a local-space offset to world-space position accounting for body rotation.
+- `Body::get_local_point` (`body.rs`): Convert a world-space position to a local-space offset accounting for body rotation.
+- `test_aabb` (`collision_helpers.rs`): Return true when two AABBs overlap (axes: x-right, y-down).
+- `test_circles` (`collision_helpers.rs`): Return true when two circles overlap given center positions and radii.
+- `test_point_aabb` (`collision_helpers.rs`): Return true when point `(px,py)` lies inside the AABB.
+- `test_circle_aabb` (`collision_helpers.rs`): Return true when circle `(cx,cy,cr)` overlaps the AABB.
+- `World::generate_render_commands` (`render.rs`): Build a list of `RenderCommand`s drawing outlines and velocity arrows for all bodies.
+- `World::draw_to_image` (`render.rs`): Rasterise all bodies onto a `width`×`height` `ImageData` centered at the origin.
+- `Shape::to_rapier_collider` (`shape.rs`): Convert this shape to a rapier `ColliderBuilder`; return `None` for degenerate inputs.
+- `Shape::from_parts` (`shape.rs`): Parse a shape from a string type tag and flat argument list; `closed` applies to chains.
+- `Shape::regular_polygon` (`shape.rs`): Create a regular convex polygon with `sides` (clamped 3–8) inscribed in `radius`.
+- `StandaloneShape::new` (`shape.rs`): Create a standalone shape with default material values.
+- `StandaloneShape::get_type` (`shape.rs`): Return a static string label for the shape type.
+- `StandaloneShape::get_radius` (`shape.rs`): Return the circle radius when the inner shape is a `Circle`; otherwise `None`.
+- `StandaloneShape::get_bounding_box` (`shape.rs`): Return the local-space AABB as `(min_x, min_y, max_x, max_y)`.
+- `TerrainMap::new` (`terrain.rs`): Create an empty terrain map of `width`×`height` cells with `cell_size` world units each.
+- `TerrainMap::set_cell` (`terrain.rs`): Set the solid state of cell `(cx,cy)`; marks the owning chunk dirty when the value changes.
+- `TerrainMap::get_cell` (`terrain.rs`): Return whether cell `(cx,cy)` is solid; false when out of bounds.
+- `TerrainMap::fill_circle` (`terrain.rs`): Set all cells within `radius` world units of `(wx,wy)` to `solid`.
+- `TerrainMap::fill_rect` (`terrain.rs`): Set all cells overlapping the world-space rectangle to `solid`.
+- `TerrainMap::fill_all` (`terrain.rs`): Set every cell to `solid` and mark all chunks dirty.
+- `TerrainMap::is_dirty` (`terrain.rs`): Return true when any chunks are pending a `flush`.
+- `TerrainMap::flush` (`terrain.rs`): Rebuild bodies in all dirty chunks and sync them into `world`.
+- `TerrainMap::collapse_columns` (`terrain.rs`): Remove isolated single-cell pillars with no support; return the count removed.
+- `TerrainMap::solid_cell_positions` (`terrain.rs`): Return the world-space centres of all solid cells.
+- `TerrainMap::spawn_debris_at` (`terrain.rs`): Spawn a dynamic debris body in `world` for each position in `positions`; return body ids.
+- `TerrainMap::to_image_data` (`terrain.rs`): Encode the terrain as RGBA pixel data using `solid_rgba` and `empty_rgba`.
+- `TerrainMap::to_bytes` (`terrain.rs`): Serialise to a compact byte buffer: `width u32 LE` + `height u32 LE` + `cell_size f32 LE` + bitpacked cells.
+- `TerrainMap::from_bytes` (`terrain.rs`): Deserialise from a byte buffer produced by `to_bytes`; marks all chunks dirty; return `None` on error.
+- `TerrainMap::load_from_bytes` (`terrain.rs`): Load bytes into this map if dimensions match; return false on mismatch or parse error.
+- `BodyId::new` (`types.rs`): Creates a new BodyId from a raw usize.
+- `BodyId::raw` (`types.rs`): Returns the raw usize underlying value.
+- `World::draw_debug_to_image` (`world.rs`): Draw all body outlines onto an RGBA `ImageData` using the given colour.
+- `World::extract_shape_snapshots` (`world.rs`): Return a snapshot of all body shapes suitable for debug rendering.
+- `World::new` (`world.rs`): Create a world with gravity `(gx, gy)` in pixels/s².
+- `World::has_body` (`world.rs`): Return true when a body id names a live body slot.
+- `World::has_joint` (`world.rs`): Return true when a joint id names a live joint slot.
+- `World::add_body` (`world.rs`): Insert a body into the world and return its id.
+- `World::add_fixture` (`world.rs`): Add an extra collider shape to an existing body; returns the fixture index.
+- `World::fixture_count` (`world.rs`): Return the number of colliders attached to `body_id`.
+- `World::set_fixture_friction` (`world.rs`): Set friction on a specific fixture of `body_id`.
+- `World::set_fixture_restitution` (`world.rs`): Set restitution (bounciness) on a specific fixture of `body_id`.
+- `World::set_fixture_sensor` (`world.rs`): Enable or disable the sensor flag on a specific fixture of `body_id`.
+- `World::get_body` (`world.rs`): Return a shared reference to body `id`, or `None` if out of range.
+- `World::get_body_mut` (`world.rs`): Return a mutable reference to body `id`, or `None` if out of range.
+- `World::body_count` (`world.rs`): Return the total number of bodies in the world.
+- `World::add_revolute_joint` (`world.rs`): Add a revolute joint between two bodies at the given local anchor; return joint id.
+- `World::raycast` (`world.rs`): Cast a ray from `(x1,y1)` to `(x2,y2)` and return the first hit, or `None`.
+- `World::raycast_filtered` (`world.rs`): Cast a filtered ray from `(x1,y1)` to `(x2,y2)` and return the first hit, or `None`.
+- `World::step` (`world.rs`): Step the simulation by `dt` seconds; synchronises body state with rapier.
+- `World::apply_impulse` (`world.rs`): Apply a linear impulse `(ix, iy)` to body `id`.
+- `World::get_collision_events` (`world.rs`): Return overlap events collected during the last `step`.
+- `World::get_begin_contact_events` (`world.rs`): Return body-pair ids that began touching during the last `step`.
+- `World::get_end_contact_events` (`world.rs`): Return body-pair ids that stopped touching during the last `step`.
+- `World::add_zone` (`world.rs`): Register a trigger zone and return its id.
+- `World::remove_zone` (`world.rs`): Remove the zone with the given id.
+- `World::zone_mut` (`world.rs`): Return a mutable reference to zone `id`, or `None` if not found.
+- `World::get_zone_events` (`world.rs`): Return zone enter/exit events from the last `step`.
+- `World::apply_zone_forces` (`world.rs`): Apply per-zone gravity/damping overrides to all bodies; updates zone enter/exit events.
+- `World::step_fixed` (`world.rs`): Run up to `max_steps` fixed substeps using `step_dt`; return steps taken and leftover dt.
+- `World::set_body_position` (`world.rs`): Teleport body `id` to world position `(x, y)`.
+- `World::apply_force` (`world.rs`): Apply a continuous force `(fx, fy)` to body `id` this step.
+- `World::apply_torque` (`world.rs`): Apply a torque to body `id` this step.
+- `World::set_angular_velocity` (`world.rs`): Set angular velocity of body `id` in radians/second.
+- `World::get_angular_velocity` (`world.rs`): Return angular velocity of body `id` in radians/second; returns 0 if out of range.
+- `World::get_body_angle` (`world.rs`): Return rotation angle of body `id` in radians; returns 0 if out of range.
+- `World::set_body_angle` (`world.rs`): Set the rotation angle of body `id` in radians.
+- `World::get_body_mass` (`world.rs`): Return the mass of body `id`; returns 0 if out of range.
+- `World::set_body_mass` (`world.rs`): Override mass of body `id`.
+- `World::set_gravity_scale` (`world.rs`): Set gravity scale multiplier on body `id`.
+- `World::set_fixed_rotation` (`world.rs`): Lock or unlock rotation for body `id`.
+- `World::set_linear_damping` (`world.rs`): Set linear damping coefficient on body `id`.
+- `World::set_angular_damping` (`world.rs`): Set angular damping coefficient on body `id`.
+- `World::get_gravity_scale` (`world.rs`): Return gravity scale of body `id`; returns 1.0 if out of range.
+- `World::is_fixed_rotation` (`world.rs`): Return true if rotation is locked on body `id`.
+- `World::get_linear_damping` (`world.rs`): Return linear damping of body `id`; returns 0 if out of range.
+- `World::get_angular_damping` (`world.rs`): Return angular damping of body `id`; returns 0 if out of range.
+- `World::set_bullet` (`world.rs`): Enable or disable CCD (continuous collision detection) on body `id`.
+- `World::is_bullet` (`world.rs`): Return true if CCD is enabled on body `id`.
+- `World::apply_force_at_point` (`world.rs`): Apply force `(fx, fy)` at world point `(px, py)` on body `id`.
+- `World::apply_angular_impulse` (`world.rs`): Apply an angular impulse to body `id`.
+- `World::get_body_ids` (`world.rs`): Return all valid body ids as a `Vec`.
+- `World::get_joint_ids` (`world.rs`): Return all valid joint ids as a `Vec`.
+- `World::get_body_type_str` (`world.rs`): Return the body-type string of `id`; returns "dynamic" if out of range.
+- `World::set_body_type` (`world.rs`): Change the body type of `id` and rebuild its collider.
+- `World::get_gravity` (`world.rs`): Return world gravity as `(gx, gy)`.
+- `World::set_gravity` (`world.rs`): Set world gravity to `(gx, gy)`.
+- `World::clear` (`world.rs`): Remove all bodies, joints, and zones; reset rapier sets.
+- `World::set_sleeping_allowed` (`world.rs`): Allow or permanently prevent sleeping for body `id`.
+- `World::is_sleeping_allowed` (`world.rs`): Return true if body `id` is permitted to sleep.
+- `World::destroy_body` (`world.rs`): Disable body `id`; it will no longer participate in simulation.
+- `World::joint_count` (`world.rs`): Return the number of registered joints.
+- `World::add_distance_joint` (`world.rs`): Add a distance (rope) joint between two bodies; return joint id.
+- `World::add_prismatic_joint` (`world.rs`): Add a prismatic (slide-axis) joint between two bodies; return joint id.
+- `World::add_weld_joint` (`world.rs`): Add a weld (fixed) joint between two bodies; return joint id.
+- `World::add_rope_joint` (`world.rs`): Add a rope joint with a maximum length; return joint id.
+- `World::get_joint_bodies` (`world.rs`): Return the two body ids connected by `joint_id`, or `None` if not found.
+- `World::destroy_joint` (`world.rs`): Remove joint `joint_id` from the simulation.
+- `World::raycast_closest` (`world.rs`): Cast a ray from `(x1,y1)` in direction `(dx,dy)` up to `max_dist`; return closest hit.
+- `World::raycast_closest_filtered` (`world.rs`): Cast a filtered directional ray and return the closest hit.
+- `World::raycast_all` (`world.rs`): Cast a ray from `(x1,y1)` in direction `(dx,dy)` and return all hits up to `max_dist`.
+- `World::raycast_all_filtered` (`world.rs`): Cast a filtered ray and return at most one closest hit per body.
+- `World::query_aabb` (`world.rs`): Return all body ids whose AABB overlaps the query rectangle.
+- `World::query_aabb_filtered` (`world.rs`): Return all filtered body ids whose AABB overlaps the query rectangle.
+- `World::get_body_at_point` (`world.rs`): Return the first body id whose AABB contains point `(x, y)`, or `None`.
+- `World::get_body_at_point_filtered` (`world.rs`): Return the first filtered body id whose AABB contains point `(x, y)`, or `None`.
+- `World::add_wheel_joint` (`world.rs`): Add a wheel-style prismatic joint; return joint id.
+- `World::add_friction_joint` (`world.rs`): Add a friction joint limiting linear and angular impulses; return joint id.
+- `World::add_motor_joint` (`world.rs`): Add a spring-motor joint for position correction; return joint id.
+- `World::add_mouse_joint` (`world.rs`): Create a kinematic anchor and a spring joint targeting `(target_x, target_y)`; return joint id.
+- `World::set_mouse_joint_target` (`world.rs`): Reposition the kinematic anchor of mouse joint `joint_id` to `(x, y)`.
+- `World::add_pulley_joint` (`world.rs`): Add a pulley joint (falls back to weld; logs a warning); return joint id.
+- `World::add_gear_joint` (`world.rs`): Add a gear joint (falls back to weld; logs a warning); return joint id.
+- `World::set_joint_motor_speed` (`world.rs`): Set angular motor target speed on joint `joint_id`.
+- `World::get_joint_motor_speed` (`world.rs`): Return angular motor target speed on joint `joint_id`; returns 0 if not set.
+- `World::set_joint_limits_enabled` (`world.rs`): Enable or disable angular limits on joint `joint_id`.
+- `World::set_joint_limits` (`world.rs`): Set `[lower, upper]` angular limits on joint `joint_id`.
+- `World::get_joint_limits` (`world.rs`): Return `(lower, upper)` angular limits on joint `joint_id`; returns `(0,0)` if not set.
+- `World::get_joint_type` (`world.rs`): Return the type string of joint `joint_id`; returns "unknown" if out of range.
+- `World::set_meter` (`world.rs`): Set the pixels-per-meter conversion ratio.
+- `World::get_meter` (`world.rs`): Return the current pixels-per-meter ratio.
+- `World::to_physics` (`world.rs`): Convert a pixel distance to physics-space metres.
+- `World::to_pixels` (`world.rs`): Convert a physics-space metre distance to pixels.
+- `World::get_contacts` (`world.rs`): Return all active contact pairs with normals and touch state.
+- `World::get_body_contacts` (`world.rs`): Return contacts involving body `body_id` filtered from `get_contacts`.
+- `World::set_body_one_way` (`world.rs`): Enable one-way platform behaviour: only accept collisions with a normal aligned to `(nx,ny)`.
+- `World::clear_body_one_way` (`world.rs`): Remove the one-way constraint from body `id`.
+- `World::get_body_one_way` (`world.rs`): Return the one-way normal for body `id`, or `None` if not set.
+- `World::set_joint_break_force` (`world.rs`): Register a break force threshold for joint `jid`.
+- `World::get_joint_break_force` (`world.rs`): Return the break-force threshold for joint `jid`, or `None` if not set.
+- `World::is_body_sleeping` (`world.rs`): Return true if body `id` is currently asleep.
+- `World::wake_up_body` (`world.rs`): Wake up body `id` from sleep.
+- `World::sleep_body` (`world.rs`): Force body `id` to sleep immediately.
+- `World::set_solver_iterations` (`world.rs`): Set the number of solver iterations (minimum 1).
+- `World::get_solver_iterations` (`world.rs`): Return the current number of solver iterations.
+- `World::get_stats` (`world.rs`): Return current world diagnostics for tooling and scripts.
+- `World::add_bodies` (`world.rs`): Batch-create bodies from a list of `(x, y, w, h, BodyType)` tuples; return their ids.
+- `ZoneBoundary::contains` (`zone.rs`): Return true if point `(px, py)` is inside this boundary.
+- `PhysicsZone::new_rect` (`zone.rs`): Create a rectangular zone with zero gravity and default layer mask.
+- `PhysicsZone::set_circle` (`zone.rs`): Replace the boundary with a circle centred at `(cx, cy)` with given `radius`.
+- `PhysicsZone::set_gravity_directional` (`zone.rs`): Set constant directional gravity `(gx, gy)` for this zone.
+- `PhysicsZone::set_gravity_point` (`zone.rs`): Set point-attractor gravity centred at `(cx, cy)` with given `strength`.
+- `PhysicsZone::set_gravity_repulsor` (`zone.rs`): Set repulsor gravity pushing away from `(cx, cy)` with given `strength`.
+- `PhysicsZone::set_gravity_zero` (`zone.rs`): Set zero gravity for this zone.
+- `PhysicsZone::contains` (`zone.rs`): Return true if the zone is enabled and the point `(px, py)` is inside its boundary.
+- `ZoneTracker::new` (`zone.rs`): Create an empty tracker.
+- `ZoneTracker::update` (`zone.rs`): Diff `new_zones` against stored state for `body_id`; emit enter/leave events and update.
+- `ZoneTracker::remove_body` (`zone.rs`): Remove all zone tracking state for `body_id`.
+- `ZoneTracker::clear` (`zone.rs`): Clear all per-body zone state.
+
+## Lua API Reference
 
 ### Functions
 
@@ -235,6 +416,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LBody:isFixedRotation() -> boolean`: Returns whether the body's rotation is locked.
 - `LBody:isSleeping() -> boolean`: Returns whether this body is currently in the sleeping (inactive) state.
 - `LBody:isSleepingAllowed() -> boolean`: Returns whether the body is allowed to enter sleep state when at rest.
+- `LBody:isValid() -> boolean`: Returns whether this body handle still points to an active body.
 - `LBody:setAngle(angle) -> nil`: Sets the body's rotation angle directly.
 - `LBody:setAngularDamping(damping) -> nil`: Sets the angular damping factor (higher = rotation decays faster).
 - `LBody:setAngularVelocity(omega) -> nil`: Sets the body's angular velocity directly.
@@ -362,7 +544,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:drawDebug(target, r?, g?, b?, a?) -> nil`: Renders a debug visualization of all physics bodies onto a software ImageData target.
 - `LWorld:fixtureCount(bodyId) -> integer`: Returns how many fixtures (colliders) are attached to a body.
 - `LWorld:getBeginContactEvents() -> table`: Returns contact-begin events from the last step (pairs of bodies that started touching).
-- `LWorld:getBodyAtPoint(x, y) -> integer`: Returns the body ID at a specific world point, or nil if no body is there.
+- `LWorld:getBodyAtPoint(x, y, filter?) -> integer`: Returns the body ID at a specific world point, or nil if no body is there.
 - `LWorld:getBodyCCD(id) -> boolean`: Returns whether continuous collision detection is enabled on a body.
 - `LWorld:getBodyContacts(bodyId) -> table`: Returns all contacts involving a specific body.
 - `LWorld:getBodyCount() -> integer`: Returns the total number of active bodies in the world.
@@ -382,7 +564,10 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:getJointType(jointId) -> string`: Returns the type name of a joint (e.g. "revolute", "distance", "prismatic").
 - `LWorld:getMeter() -> number`: Returns the current pixels-per-meter scale.
 - `LWorld:getSolverIterations() -> integer`: Returns the current number of velocity solver iterations.
+- `LWorld:getStats() -> table`: Returns active counts and slot diagnostics for the world.
 - `LWorld:getZoneEvents() -> table`: Returns all zone enter/leave events from the last step.
+- `LWorld:hasBody(id) -> boolean`: Returns true when a body ID still refers to a live body slot.
+- `LWorld:hasJoint(id) -> boolean`: Returns true when a joint ID still refers to a live joint slot.
 - `LWorld:isBodySleeping(id) -> boolean`: Returns whether a body is currently in the sleeping (inactive) state.
 - `LWorld:jointCount() -> integer`: Returns the total number of joints in the world.
 - `LWorld:newBodies(specs) -> integer[]`: Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type} or {x, y, type}.
@@ -391,10 +576,10 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LWorld:newCircleBody(x, y, radius, bodyType) -> LBody`: Creates a new body with a circle collider already attached.
 - `LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType) -> LBody`: Creates a new body with an edge (line segment) collider between two local points.
 - `LWorld:newPolygonBody(x, y, vertices, bodyType) -> LBody`: Creates a new body with a convex polygon collider defined by vertex pairs.
-- `LWorld:queryAABB(x, y, w, h) -> integer[]`: Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
-- `LWorld:raycast(x1, y1, x2, y2) -> table`: Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
-- `LWorld:raycastAll(x, y, dx, dy, maxDist) -> table`: Casts a directional ray and returns all bodies hit within max distance as a table of results.
-- `LWorld:raycastClosest(x, y, dx, dy, maxDist) -> table`: Casts a directional ray from a point and returns the closest hit within max distance.
+- `LWorld:queryAABB(x, y, w, h, filter?) -> integer[]`: Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
+- `LWorld:raycast(x1, y1, x2, y2, filter?) -> table`: Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
+- `LWorld:raycastAll(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray and returns all bodies hit within max distance as a table of results.
+- `LWorld:raycastClosest(x, y, dx, dy, maxDist, filter?) -> table`: Casts a directional ray from a point and returns the closest hit within max distance.
 - `LWorld:setBeginContact(callback) -> nil`: Registers a callback function invoked whenever two bodies begin touching.
 - `LWorld:setBodyCCD(id, enabled) -> nil`: Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
 - `LWorld:setBodyData(id, value) -> nil`: Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
@@ -442,7 +627,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 - `bodyA` (`integer`): BodyA.
 - `bodyB` (`integer`): BodyB.
-- `isTouching` (`boolean`): IsTouching.
+- `isTouching` (`boolean`): True while the body pair is currently touching.
 - `normalX` (`number`): NormalX.
 - `normalY` (`number`): NormalY.
 
@@ -471,7 +656,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 - `bodyA` (`integer`): BodyA.
 - `bodyB` (`integer`): BodyB.
-- `isTouching` (`boolean`): IsTouching.
+- `isTouching` (`boolean`): True while the bodies are currently touching.
 - `normalX` (`number`): NormalX.
 - `normalY` (`number`): NormalY.
 
@@ -487,6 +672,24 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 - `bodyA` (`integer`): BodyA.
 - `bodyB` (`integer`): BodyB.
+
+##### Methods
+
+- No documented methods.
+
+#### LWorldGetStatsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodies` (`integer`): Number of active body slots.
+- `bodySlots` (`integer`): Total allocated body slots, including inactive tombstones.
+- `colliders` (`integer`): Number of active Rapier colliders.
+- `jointSlots` (`integer`): Total allocated joint slots, including inactive tombstones.
+- `joints` (`integer`): Number of active joint slots.
+- `sleepingBodies` (`integer`): Number of active bodies currently sleeping.
+- `zones` (`integer`): Number of active physics zones.
 
 ##### Methods
 
@@ -581,3 +784,14 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LZone:setPriority(priority) -> nil`: Sets the priority of this zone. Higher-priority zones take precedence when overlapping.
 - `LZone:type() -> string`: Returns the type name of this object ("LZone").
 - `LZone:typeOf(name) -> boolean`: Checks if this object is of a given type name.
+
+## References
+
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

@@ -16,7 +16,7 @@
 - Namespace: `lurek.ai`
 - Lua API surface: `36` functions, `24` types, `237` methods
 - Rust test path(s): tests/rust/unit/ai_tests.rs, tests/rust/game/ai_tests.rs
-- Lua test path(s): tests/lua/unit/test_ai.lua, tests/lua/golden/test_ai_golden.lua, tests/lua/integration/test_ecs_ai.lua, tests/lua/integration/test_ai_physics.lua, tests/lua/integration/test_ai_pathfind.lua, tests/lua/integration/test_ai_ecs_scene.lua, tests/lua/stress/test_ai_stress.lua
+- Lua test path(s): tests/lua_reorg/unit/test_ai.lua, tests/lua_reorg/golden/test_ai_golden.lua, tests/lua_reorg/integration/test_ecs_ai.lua, tests/lua_reorg/integration/test_ai_physics.lua, tests/lua_reorg/integration/test_ai_pathfind.lua, tests/lua_reorg/integration/test_ai_ecs_scene.lua, tests/lua_reorg/stress/test_ai_stress.lua
 
 ## Summary
 

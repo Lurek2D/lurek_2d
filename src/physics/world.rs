@@ -22,8 +22,10 @@ use super::zone::{PhysicsZone, ZoneEvent, ZoneGravityMode, ZoneTracker};
 use crate::log_msg;
 use crate::runtime::log_messages::{P001_PULLEY_JOINT_FALLBACK, P002_GEAR_JOINT_FALLBACK};
 use rapier2d::prelude::*;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
+
+type BodySyncState = (f32, f32, f32, f32, f32, f32, BodyType);
 
 /// Internal rapier event sink forwarding collision events through a mutex.
 struct LocalEventCollector {
@@ -74,6 +76,9 @@ impl EventHandler for LocalEventCollector {
     }
 }
 /// A pair of body ids that have started or are overlapping.
+/// # Fields
+/// - `body_a`: first body id.
+/// - `body_b`: second body id.
 pub struct BodyContact {
     /// First body id.
     pub body_a: BodyId,
@@ -81,6 +86,11 @@ pub struct BodyContact {
     pub body_b: BodyId,
 }
 /// The closest raycast intersection result.
+/// # Fields
+/// - `body_id`: body hit by the ray.
+/// - `point`: world-space hit point.
+/// - `normal`: outward hit normal.
+/// - `toi`: parametric distance along the cast.
 #[derive(Debug, Clone, Copy)]
 pub struct RaycastHit {
     /// Body id that was hit.
@@ -93,6 +103,12 @@ pub struct RaycastHit {
     pub toi: f32,
 }
 /// Contact information between two bodies.
+/// # Fields
+/// - `body_a`: first body id.
+/// - `body_b`: second body id.
+/// - `normal_x`: contact normal x component.
+/// - `normal_y`: contact normal y component.
+/// - `is_touching`: whether the bodies are currently touching.
 #[derive(Debug, Clone)]
 pub struct ContactInfo {
     /// First body id.
@@ -107,6 +123,17 @@ pub struct ContactInfo {
     pub is_touching: bool,
 }
 /// Snapshot of a physics shape used for debug rendering.
+/// # Fields
+/// - `x`: world-space x center.
+/// - `y`: world-space y center.
+/// - `half_w`: half-width for box-like shapes.
+/// - `half_h`: half-height for box-like shapes.
+/// - `angle`: rotation in radians.
+/// - `is_static`: whether the source body is static.
+/// - `is_sleeping`: whether the source body is sleeping.
+/// - `is_sensor`: whether the source collider is a sensor.
+/// - `is_circle`: whether the shape should be rendered as a circle.
+/// - `hull_verts`: polygon hull vertices for non-rectangular shapes.
 pub struct PhysicsShapeSnapshot {
     /// World-space x centre.
     pub x: f32,
@@ -129,12 +156,103 @@ pub struct PhysicsShapeSnapshot {
     /// Convex hull vertices for polygon shapes.
     pub hull_verts: Vec<[f32; 2]>,
 }
+/// Optional filters applied to physics spatial queries.
+/// # Fields
+/// - `layer`: optional query-side collision layer mask.
+/// - `mask`: optional query-side collision mask.
+/// - `include_sensors`: whether sensor colliders should be returned.
+#[derive(Debug, Clone, Copy)]
+pub struct PhysicsQueryFilter {
+    /// Query collision layer membership. `None` leaves groups unrestricted.
+    pub layer: Option<u32>,
+    /// Query collision mask. `None` leaves groups unrestricted.
+    pub mask: Option<u32>,
+    /// Include sensor colliders in query results.
+    pub include_sensors: bool,
+}
+/// Default query filters preserve the historical "hit everything" behavior.
+impl Default for PhysicsQueryFilter {
+    fn default() -> Self {
+        Self {
+            layer: None,
+            mask: None,
+            include_sensors: true,
+        }
+    }
+}
+/// Lightweight world diagnostics for Lua/editor tooling.
+/// # Fields
+/// - `bodies`: active body count.
+/// - `body_slots`: total allocated body slots.
+/// - `colliders`: active collider count.
+/// - `joints`: active joint count.
+/// - `joint_slots`: total allocated joint slots.
+/// - `zones`: active zone count.
+/// - `sleeping_bodies`: active bodies currently sleeping.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct PhysicsWorldStats {
+    /// Active body count.
+    pub bodies: usize,
+    /// Total body slots, including tombstoned ids.
+    pub body_slots: usize,
+    /// Active collider count.
+    pub colliders: usize,
+    /// Active joint count.
+    pub joints: usize,
+    /// Total joint slots, including tombstoned ids.
+    pub joint_slots: usize,
+    /// Active zone count.
+    pub zones: usize,
+    /// Active bodies currently sleeping.
+    pub sleeping_bodies: usize,
+}
 /// Full rapier2d-backed simulation world.
+/// # Fields
+/// - `bodies`: Lua-visible body mirrors.
+/// - `body_handles`: rapier rigid body handles for each slot.
+/// - `body_active`: active/tombstoned body slot state.
+/// - `collider_handles`: primary collider per body.
+/// - `extra_collider_handles`: additional colliders per body.
+/// - `collider_to_body`: reverse collider-to-body lookup.
+/// - `cached_shapes`: cached shape descriptors for rebuild detection.
+/// - `cached_restitutions`: cached restitution values per body.
+/// - `cached_layers`: cached layer/mask pairs per body.
+/// - `cached_frictions`: cached friction values per body.
+/// - `pipeline`: rapier simulation pipeline.
+/// - `gravity`: world gravity vector.
+/// - `params`: integration parameters.
+/// - `islands`: rapier island manager.
+/// - `broad_phase`: rapier broad phase.
+/// - `narrow_phase`: rapier narrow phase.
+/// - `rbodies`: rapier rigid body storage.
+/// - `rcolliders`: rapier collider storage.
+/// - `impulse_joints`: rapier impulse joint storage.
+/// - `multibody_joints`: rapier multibody joint storage.
+/// - `ccd_solver`: rapier CCD solver.
+/// - `joint_handles`: rapier impulse joint handles by slot.
+/// - `joint_active`: active/tombstoned joint slot state.
+/// - `collision_events`: buffered overlap/contact events.
+/// - `begin_contact_events`: body pairs that started touching this step.
+/// - `end_contact_events`: body pairs that stopped touching this step.
+/// - `event_handler`: local rapier event collector.
+/// - `joint_types`: joint type labels by stable joint id.
+/// - `mouse_joint_anchors`: mouse-joint anchor body lookup.
+/// - `pixels_per_meter`: pixels-to-meter conversion ratio.
+/// - `joint_break_forces`: optional joint break thresholds.
+/// - `one_way_normals`: one-way platform normals by body id.
+/// - `zones`: registered physics zones.
+/// - `zone_id_counter`: next stable zone id.
+/// - `zone_tracker`: body/zone membership tracker.
+/// - `zone_events`: buffered zone enter/leave events.
+/// # Fields
+/// See inline field docs below for the authoritative per-field details.
 pub struct World {
     /// Mirror of rapier rigid bodies for Lua-readable state.
     bodies: Vec<Body>,
     /// Rapier handles corresponding to each `bodies` entry.
     body_handles: Vec<RigidBodyHandle>,
+    /// True for body slots that are still active.
+    body_active: Vec<bool>,
     /// Primary collider handle per body.
     collider_handles: Vec<ColliderHandle>,
     /// Additional collider handles per body (multi-fixture).
@@ -173,6 +291,8 @@ pub struct World {
     ccd_solver: CCDSolver,
     /// rapier joint handles indexed by joint id.
     joint_handles: Vec<ImpulseJointHandle>,
+    /// True for joint slots that are still active.
+    joint_active: Vec<bool>,
     /// Overlap/touching events emitted last step.
     collision_events: Vec<BodyContact>,
     /// Pairs that started touching last step.
@@ -209,7 +329,10 @@ impl World {
         b: u8,
         a: u8,
     ) {
-        for body in self.bodies.iter() {
+        for (idx, body) in self.bodies.iter().enumerate() {
+            if !self.has_body(idx) {
+                continue;
+            }
             let cx = body.position.x as i32;
             let cy = body.position.y as i32;
             let angle = body.angle;
@@ -395,6 +518,9 @@ impl World {
     pub fn extract_shape_snapshots(&self) -> Vec<PhysicsShapeSnapshot> {
         let mut out = Vec::with_capacity(self.bodies.len());
         for (idx, body) in self.bodies.iter().enumerate() {
+            if !self.has_body(idx) {
+                continue;
+            }
             let is_sleeping = self
                 .body_handles
                 .get(idx)
@@ -465,6 +591,7 @@ impl World {
         World {
             bodies: Vec::new(),
             body_handles: Vec::new(),
+            body_active: Vec::new(),
             collider_handles: Vec::new(),
             extra_collider_handles: Vec::new(),
             collider_to_body: HashMap::new(),
@@ -484,6 +611,7 @@ impl World {
             multibody_joints: MultibodyJointSet::new(),
             ccd_solver: CCDSolver::new(),
             joint_handles: Vec::new(),
+            joint_active: Vec::new(),
             collision_events: Vec::new(),
             begin_contact_events: Vec::new(),
             end_contact_events: Vec::new(),
@@ -506,12 +634,66 @@ impl World {
             BodyType::Kinematic => RigidBodyType::KinematicPositionBased,
         }
     }
+    /// Build rapier collision groups from lurek layer/mask values.
+    fn collision_groups(layer: u32, mask: u32) -> InteractionGroups {
+        InteractionGroups::new(
+            Group::from_bits_truncate(layer),
+            Group::from_bits_truncate(mask),
+            InteractionTestMode::And,
+        )
+    }
+    /// Build rapier query filter from optional layer/mask and sensor settings.
+    fn query_filter(filter: PhysicsQueryFilter) -> QueryFilter<'static> {
+        let mut flags = QueryFilterFlags::empty();
+        if !filter.include_sensors {
+            flags |= QueryFilterFlags::EXCLUDE_SENSORS;
+        }
+        let groups = if filter.layer.is_some() || filter.mask.is_some() {
+            Some(Self::collision_groups(
+                filter.layer.unwrap_or(u32::MAX),
+                filter.mask.unwrap_or(u32::MAX),
+            ))
+        } else {
+            None
+        };
+        QueryFilter {
+            flags,
+            groups,
+            ..QueryFilter::default()
+        }
+    }
+    /// Return true when a body id names a live body slot.
+    pub fn has_body(&self, id: usize) -> bool {
+        self.body_active.get(id).copied().unwrap_or(false)
+    }
+    /// Return true when a joint id names a live joint slot.
+    pub fn has_joint(&self, id: usize) -> bool {
+        self.joint_active.get(id).copied().unwrap_or(false)
+    }
+    /// Return a live rigid-body handle for `id`.
+    fn active_body_handle(&self, id: usize) -> Option<RigidBodyHandle> {
+        self.has_body(id)
+            .then(|| self.body_handles.get(id).copied())
+            .flatten()
+    }
+    /// Return a live impulse-joint handle for `id`.
+    fn active_joint_handle(&self, id: usize) -> Option<ImpulseJointHandle> {
+        self.has_joint(id)
+            .then(|| self.joint_handles.get(id).copied())
+            .flatten()
+    }
+    /// Record a newly inserted joint and return its stable id.
+    fn register_joint(&mut self, handle: ImpulseJointHandle, joint_type: &'static str) -> usize {
+        let jid = self.joint_handles.len();
+        self.joint_handles.push(handle);
+        self.joint_active.push(true);
+        self.joint_types.push(joint_type);
+        jid
+    }
     /// Build a rapier `Collider` from a body's shape and filter settings.
     fn make_collider(body: &Body) -> Collider {
         let is_sensor = body.body_type == BodyType::Sensor;
-        let memberships = Group::from_bits_truncate(body.layer);
-        let filters = Group::from_bits_truncate(body.mask);
-        let groups = InteractionGroups::new(memberships, filters, InteractionTestMode::And);
+        let groups = Self::collision_groups(body.layer, body.mask);
         let builder = if let Some(ref shape_ext) = body.shape_ext {
             shape_ext
                 .to_rapier_collider()
@@ -555,9 +737,7 @@ impl World {
         };
         self.rcolliders
             .remove(old_handle, &mut self.islands, &mut self.rbodies, true);
-        let memberships = Group::from_bits_truncate(layer);
-        let filters = Group::from_bits_truncate(mask);
-        let groups = InteractionGroups::new(memberships, filters, InteractionTestMode::And);
+        let groups = Self::collision_groups(layer, mask);
         let builder = if let Some(ref ext) = shape_ext {
             ext.to_rapier_collider().unwrap_or_else(|| match shape {
                 BodyShape::Rect { width, height } => {
@@ -590,10 +770,29 @@ impl World {
         self.cached_restitutions[id] = restitution;
         self.cached_frictions[id] = friction;
         self.cached_layers[id] = (layer, mask);
+        self.sync_extra_fixture_groups(id);
     }
     /// Look up the body id that owns `handle`.
     fn body_for_collider(&self, handle: ColliderHandle) -> Option<usize> {
-        self.collider_to_body.get(&handle).copied()
+        let id = self.collider_to_body.get(&handle).copied()?;
+        self.has_body(id).then_some(id)
+    }
+    /// Apply the current body's collision groups to every extra fixture.
+    fn sync_extra_fixture_groups(&mut self, id: usize) {
+        if !self.has_body(id) {
+            return;
+        }
+        let Some(body) = self.bodies.get(id) else {
+            return;
+        };
+        let groups = Self::collision_groups(body.layer, body.mask);
+        if let Some(extras) = self.extra_collider_handles.get(id) {
+            for &handle in extras {
+                if let Some(collider) = self.rcolliders.get_mut(handle) {
+                    collider.set_collision_groups(groups);
+                }
+            }
+        }
     }
     /// Insert a body into the world and return its id.
     pub fn add_body(&mut self, body: Body) -> BodyId {
@@ -612,6 +811,7 @@ impl World {
         self.cached_frictions.push(body.friction);
         self.cached_layers.push((body.layer, body.mask));
         self.body_handles.push(body_handle);
+        self.body_active.push(true);
         self.collider_handles.push(collider_handle);
         self.extra_collider_handles.push(Vec::new());
         self.collider_to_body.insert(collider_handle, id);
@@ -629,8 +829,12 @@ impl World {
         restitution: f32,
         sensor: bool,
     ) -> usize {
-        let body_handle = match self.body_handles.get(body_id).copied() {
+        let body_handle = match self.active_body_handle(body_id) {
             Some(h) => h,
+            None => return 0,
+        };
+        let (layer, mask) = match self.bodies.get(body_id) {
+            Some(body) => (body.layer, body.mask),
             None => return 0,
         };
         let builder = shape
@@ -641,6 +845,7 @@ impl World {
             .friction(friction)
             .restitution(restitution)
             .sensor(sensor)
+            .collision_groups(Self::collision_groups(layer, mask))
             .active_events(ActiveEvents::COLLISION_EVENTS)
             .build();
         let handle = self
@@ -653,13 +858,16 @@ impl World {
     }
     /// Return the number of colliders attached to `body_id`.
     pub fn fixture_count(&self, body_id: usize) -> usize {
-        if body_id >= self.bodies.len() {
+        if !self.has_body(body_id) {
             return 0;
         }
         1 + self.extra_collider_handles[body_id].len()
     }
     /// Set friction on a specific fixture of `body_id`.
     pub fn set_fixture_friction(&mut self, body_id: usize, fixture_idx: usize, friction: f32) {
+        if !self.has_body(body_id) {
+            return;
+        }
         let handle = if fixture_idx == 0 {
             self.collider_handles.get(body_id).copied()
         } else {
@@ -681,6 +889,9 @@ impl World {
         fixture_idx: usize,
         restitution: f32,
     ) {
+        if !self.has_body(body_id) {
+            return;
+        }
         let handle = if fixture_idx == 0 {
             self.collider_handles.get(body_id).copied()
         } else {
@@ -697,6 +908,9 @@ impl World {
     }
     /// Enable or disable the sensor flag on a specific fixture of `body_id`.
     pub fn set_fixture_sensor(&mut self, body_id: usize, fixture_idx: usize, sensor: bool) {
+        if !self.has_body(body_id) {
+            return;
+        }
         let handle = if fixture_idx == 0 {
             self.collider_handles.get(body_id).copied()
         } else {
@@ -713,15 +927,19 @@ impl World {
     }
     /// Return a shared reference to body `id`, or `None` if out of range.
     pub fn get_body(&self, id: usize) -> Option<&Body> {
-        self.bodies.get(id)
+        self.has_body(id).then(|| self.bodies.get(id)).flatten()
     }
     /// Return a mutable reference to body `id`, or `None` if out of range.
     pub fn get_body_mut(&mut self, id: usize) -> Option<&mut Body> {
-        self.bodies.get_mut(id)
+        if self.has_body(id) {
+            self.bodies.get_mut(id)
+        } else {
+            None
+        }
     }
     /// Return the total number of bodies in the world.
     pub fn body_count(&self) -> usize {
-        self.bodies.len()
+        self.body_active.iter().filter(|&&active| active).count()
     }
     /// Add a revolute joint between two bodies at the given local anchor; return joint id.
     pub fn add_revolute_joint(
@@ -731,11 +949,11 @@ impl World {
         anchor_x: f32,
         anchor_y: f32,
     ) -> usize {
-        let ha = match self.body_handles.get(body_a).copied() {
+        let ha = match self.active_body_handle(body_a) {
             Some(h) => h,
             None => return 0,
         };
-        let hb = match self.body_handles.get(body_b).copied() {
+        let hb = match self.active_body_handle(body_b) {
             Some(h) => h,
             None => return 0,
         };
@@ -744,13 +962,21 @@ impl World {
             .local_anchor2(Vector::new(0.0_f32, 0.0_f32))
             .build();
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        let id = self.joint_handles.len();
-        self.joint_handles.push(handle);
-        self.joint_types.push("revolute");
-        id
+        self.register_joint(handle, "revolute")
     }
     /// Cast a ray from `(x1,y1)` to `(x2,y2)` and return the first hit, or `None`.
     pub fn raycast(&self, x1: f32, y1: f32, x2: f32, y2: f32) -> Option<RaycastHit> {
+        self.raycast_filtered(x1, y1, x2, y2, PhysicsQueryFilter::default())
+    }
+    /// Cast a filtered ray from `(x1,y1)` to `(x2,y2)` and return the first hit, or `None`.
+    pub fn raycast_filtered(
+        &self,
+        x1: f32,
+        y1: f32,
+        x2: f32,
+        y2: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Option<RaycastHit> {
         let dir = Vector::new(x2 - x1, y2 - y1);
         let max_toi = dir.length();
         if max_toi < 1e-6 {
@@ -758,28 +984,20 @@ impl World {
         }
         let unit_dir = dir / max_toi;
         let ray = Ray::new(Vector::new(x1, y1), unit_dir);
-        let mut best_toi = max_toi;
-        let mut best_hit: Option<RaycastHit> = None;
-        for (i, &col_handle) in self.collider_handles.iter().enumerate() {
-            if let Some(col) = self.rcolliders.get(col_handle) {
-                if let Some(ri) =
-                    col.shape()
-                        .cast_ray_and_get_normal(col.position(), &ray, best_toi, true)
-                {
-                    let toi = ri.time_of_impact;
-                    let pt_x = ray.origin.x + ray.dir.x * toi;
-                    let pt_y = ray.origin.y + ray.dir.y * toi;
-                    best_toi = toi;
-                    best_hit = Some(RaycastHit {
-                        body_id: BodyId(i),
-                        point: (pt_x, pt_y),
-                        normal: (ri.normal.x, ri.normal.y),
-                        toi,
-                    });
-                }
-            }
+        let qp = self.query_pipeline(filter);
+        let (col_handle, ri) = qp.cast_ray_and_get_normal(&ray, max_toi, true)?;
+        let body_id = self.body_for_collider(col_handle)?;
+        if !self.has_body(body_id) {
+            return None;
         }
-        best_hit
+        let pt_x = ray.origin.x + ray.dir.x * ri.time_of_impact;
+        let pt_y = ray.origin.y + ray.dir.y * ri.time_of_impact;
+        Some(RaycastHit {
+            body_id: BodyId(body_id),
+            point: (pt_x, pt_y),
+            normal: (ri.normal.x, ri.normal.y),
+            toi: ri.time_of_impact,
+        })
     }
     /// Step the simulation by `dt` seconds; synchronises body state with rapier.
     pub fn step(&mut self, dt: f32) {
@@ -790,6 +1008,9 @@ impl World {
         let n = self.bodies.len();
         let rebuild_ids: Vec<usize> = (0..n)
             .filter(|&i| {
+                if !self.has_body(i) {
+                    return false;
+                }
                 let b = &self.bodies[i];
                 b.shape != self.cached_shapes[i]
                     || (b.restitution - self.cached_restitutions[i]).abs() > 1e-6
@@ -800,11 +1021,15 @@ impl World {
         for i in rebuild_ids {
             self.rebuild_collider(i);
         }
-        let sync: Vec<(f32, f32, f32, f32, f32, f32, BodyType)> = self
+        let sync: Vec<Option<BodySyncState>> = self
             .bodies
             .iter()
-            .map(|b| {
-                (
+            .enumerate()
+            .map(|(idx, b)| {
+                if !self.has_body(idx) {
+                    return None;
+                }
+                Some((
                     b.position.x,
                     b.position.y,
                     b.velocity.x,
@@ -812,10 +1037,13 @@ impl World {
                     b.angle,
                     b.angular_velocity,
                     b.body_type,
-                )
+                ))
             })
             .collect();
-        for (i, &(px, py, vx, vy, angle, angvel, bt)) in sync.iter().enumerate() {
+        for (i, item) in sync.iter().enumerate() {
+            let Some((px, py, vx, vy, angle, angvel, bt)) = *item else {
+                continue;
+            };
             let handle = self.body_handles[i];
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 match bt {
@@ -853,6 +1081,9 @@ impl World {
             &event_col,
         );
         for i in 0..n {
+            if !self.has_body(i) {
+                continue;
+            }
             let bt = self.bodies[i].body_type;
             if bt != BodyType::Dynamic && bt != BodyType::Kinematic {
                 continue;
@@ -896,6 +1127,9 @@ impl World {
                 .iter()
                 .enumerate()
                 .filter_map(|(jid, &handle)| {
+                    if !self.has_joint(jid) {
+                        return None;
+                    }
                     let &limit = self.joint_break_forces.get(&jid)?;
                     Some((jid, handle, limit))
                 })
@@ -919,17 +1153,14 @@ impl World {
                 })
                 .collect();
             for jid in to_break {
-                if let Some(&handle) = self.joint_handles.get(jid) {
-                    self.impulse_joints.remove(handle, true);
-                }
-                self.joint_break_forces.remove(&jid);
+                self.destroy_joint(jid);
             }
         }
         let contact_pairs: Vec<(usize, usize)> = self.begin_contact_events.clone();
         for (a, b) in contact_pairs {
             for (platform_id, mover_id) in [(a, b), (b, a)] {
                 if let Some(&Some((nx, ny))) = self.one_way_normals.get(platform_id) {
-                    if let Some(&handle) = self.body_handles.get(mover_id) {
+                    if let Some(handle) = self.active_body_handle(mover_id) {
                         if let Some(rb) = self.rbodies.get_mut(handle) {
                             let cv = rb.linvel();
                             let cdot = cv.x * nx + cv.y * ny;
@@ -954,7 +1185,7 @@ impl World {
     }
     /// Apply a linear impulse `(ix, iy)` to body `id`.
     pub fn apply_impulse(&mut self, id: usize, ix: f32, iy: f32) {
-        if let Some(body) = self.bodies.get_mut(id) {
+        if let Some(body) = self.get_body_mut(id) {
             if body.body_type == BodyType::Dynamic {
                 let inv_mass = if body.mass > 0.0 {
                     1.0 / body.mass
@@ -965,7 +1196,7 @@ impl World {
                 body.velocity.y += iy * inv_mass;
             }
         }
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.apply_impulse(Vector::new(ix, iy), true);
             }
@@ -1005,14 +1236,17 @@ impl World {
     }
     /// Apply per-zone gravity/damping overrides to all bodies; updates zone enter/exit events.
     pub fn apply_zone_forces(&mut self, dt: f32) {
+        self.zone_events.clear();
         if self.zones.is_empty() {
             return;
         }
-        self.zone_events.clear();
         let mut sorted_indices: Vec<usize> = (0..self.zones.len()).collect();
         sorted_indices.sort_by(|&a, &b| self.zones[b].priority.cmp(&self.zones[a].priority));
         let n = self.bodies.len();
         for body_id in 0..n {
+            if !self.has_body(body_id) {
+                continue;
+            }
             let body = &self.bodies[body_id];
             if body.body_type != BodyType::Dynamic {
                 continue;
@@ -1118,11 +1352,11 @@ impl World {
     }
     /// Teleport body `id` to world position `(x, y)`.
     pub fn set_body_position(&mut self, id: usize, x: f32, y: f32) {
-        if let Some(body) = self.bodies.get_mut(id) {
+        if let Some(body) = self.get_body_mut(id) {
             body.position.x = x;
             body.position.y = y;
         }
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_translation(Vector::new(x, y), true);
             }
@@ -1130,7 +1364,7 @@ impl World {
     }
     /// Apply a continuous force `(fx, fy)` to body `id` this step.
     pub fn apply_force(&mut self, id: usize, fx: f32, fy: f32) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.add_force(Vector::new(fx, fy), true);
             }
@@ -1138,7 +1372,7 @@ impl World {
     }
     /// Apply a torque to body `id` this step.
     pub fn apply_torque(&mut self, id: usize, torque: f32) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.add_torque(torque, true);
             }
@@ -1146,10 +1380,10 @@ impl World {
     }
     /// Set angular velocity of body `id` in radians/second.
     pub fn set_angular_velocity(&mut self, id: usize, omega: f32) {
-        if let Some(body) = self.bodies.get_mut(id) {
+        if let Some(body) = self.get_body_mut(id) {
             body.angular_velocity = omega;
         }
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_angvel(omega, true);
             }
@@ -1157,18 +1391,18 @@ impl World {
     }
     /// Return angular velocity of body `id` in radians/second; returns 0 if out of range.
     pub fn get_angular_velocity(&self, id: usize) -> f32 {
-        self.bodies.get(id).map_or(0.0, |b| b.angular_velocity)
+        self.get_body(id).map_or(0.0, |b| b.angular_velocity)
     }
     /// Return rotation angle of body `id` in radians; returns 0 if out of range.
     pub fn get_body_angle(&self, id: usize) -> f32 {
-        self.bodies.get(id).map_or(0.0, |b| b.angle)
+        self.get_body(id).map_or(0.0, |b| b.angle)
     }
     /// Set the rotation angle of body `id` in radians.
     pub fn set_body_angle(&mut self, id: usize, angle: f32) {
-        if let Some(body) = self.bodies.get_mut(id) {
+        if let Some(body) = self.get_body_mut(id) {
             body.angle = angle;
         }
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_rotation(Rotation::new(angle), true);
             }
@@ -1176,14 +1410,14 @@ impl World {
     }
     /// Return the mass of body `id`; returns 0 if out of range.
     pub fn get_body_mass(&self, id: usize) -> f32 {
-        self.bodies.get(id).map_or(0.0, |b| b.mass)
+        self.get_body(id).map_or(0.0, |b| b.mass)
     }
     /// Override mass of body `id`. This function is part of the public API.
     pub fn set_body_mass(&mut self, id: usize, mass: f32) {
-        if let Some(body) = self.bodies.get_mut(id) {
+        if let Some(body) = self.get_body_mut(id) {
             body.mass = mass;
         }
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 let props = rb.mass_properties();
                 rb.set_additional_mass(mass - props.local_mprops.mass(), true);
@@ -1192,7 +1426,7 @@ impl World {
     }
     /// Set gravity scale multiplier on body `id`.
     pub fn set_gravity_scale(&mut self, id: usize, scale: f32) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_gravity_scale(scale, true);
             }
@@ -1200,7 +1434,7 @@ impl World {
     }
     /// Lock or unlock rotation for body `id`.
     pub fn set_fixed_rotation(&mut self, id: usize, fixed: bool) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_enabled_rotations(false, false, !fixed, true);
             }
@@ -1208,7 +1442,7 @@ impl World {
     }
     /// Set linear damping coefficient on body `id`.
     pub fn set_linear_damping(&mut self, id: usize, damping: f32) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_linear_damping(damping);
             }
@@ -1216,7 +1450,7 @@ impl World {
     }
     /// Set angular damping coefficient on body `id`.
     pub fn set_angular_damping(&mut self, id: usize, damping: f32) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_angular_damping(damping);
             }
@@ -1224,7 +1458,7 @@ impl World {
     }
     /// Return gravity scale of body `id`; returns 1.0 if out of range.
     pub fn get_gravity_scale(&self, id: usize) -> f32 {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get(handle) {
                 return rb.gravity_scale();
             }
@@ -1233,7 +1467,7 @@ impl World {
     }
     /// Return true if rotation is locked on body `id`.
     pub fn is_fixed_rotation(&self, id: usize) -> bool {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get(handle) {
                 return rb.is_rotation_locked();
             }
@@ -1242,7 +1476,7 @@ impl World {
     }
     /// Return linear damping of body `id`; returns 0 if out of range.
     pub fn get_linear_damping(&self, id: usize) -> f32 {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get(handle) {
                 return rb.linear_damping();
             }
@@ -1251,7 +1485,7 @@ impl World {
     }
     /// Return angular damping of body `id`; returns 0 if out of range.
     pub fn get_angular_damping(&self, id: usize) -> f32 {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get(handle) {
                 return rb.angular_damping();
             }
@@ -1260,7 +1494,7 @@ impl World {
     }
     /// Enable or disable CCD (continuous collision detection) on body `id`.
     pub fn set_bullet(&mut self, id: usize, bullet: bool) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.enable_ccd(bullet);
             }
@@ -1268,7 +1502,7 @@ impl World {
     }
     /// Return true if CCD is enabled on body `id`.
     pub fn is_bullet(&self, id: usize) -> bool {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get(handle) {
                 return rb.is_ccd_enabled();
             }
@@ -1277,7 +1511,7 @@ impl World {
     }
     /// Apply force `(fx, fy)` at world point `(px, py)` on body `id`.
     pub fn apply_force_at_point(&mut self, id: usize, fx: f32, fy: f32, px: f32, py: f32) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.add_force_at_point(Vector::new(fx, fy), Vector::new(px, py), true);
             }
@@ -1285,26 +1519,43 @@ impl World {
     }
     /// Apply an angular impulse to body `id`.
     pub fn apply_angular_impulse(&mut self, id: usize, impulse: f32) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        let new_angvel = if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.apply_torque_impulse(impulse, true);
-                let new_angvel = rb.angvel();
-                if let Some(body) = self.bodies.get_mut(id) {
-                    body.angular_velocity = new_angvel;
-                }
+                Some(rb.angvel())
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        if let Some(new_angvel) = new_angvel {
+            if let Some(body) = self.get_body_mut(id) {
+                body.angular_velocity = new_angvel;
             }
         }
     }
     /// Return all valid body ids as a `Vec`.
     pub fn get_body_ids(&self) -> Vec<usize> {
-        (0..self.bodies.len()).collect()
+        self.body_active
+            .iter()
+            .enumerate()
+            .filter_map(|(id, &active)| active.then_some(id))
+            .collect()
     }
     /// Return all valid joint ids as a `Vec`.
     pub fn get_joint_ids(&self) -> Vec<usize> {
-        (0..self.joint_handles.len()).collect()
+        self.joint_active
+            .iter()
+            .enumerate()
+            .filter_map(|(id, &active)| active.then_some(id))
+            .collect()
     }
     /// Return the body-type string of `id`; returns "dynamic" if out of range.
     pub fn get_body_type_str(&self, id: usize) -> &'static str {
+        if !self.has_body(id) {
+            return "dynamic";
+        }
         self.bodies
             .get(id)
             .map_or("dynamic", |b| match b.body_type {
@@ -1316,10 +1567,13 @@ impl World {
     }
     /// Change the body type of `id` and rebuild its collider.
     pub fn set_body_type(&mut self, id: usize, bt: BodyType) {
+        if !self.has_body(id) {
+            return;
+        }
         if let Some(body) = self.bodies.get_mut(id) {
             body.body_type = bt;
         }
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_body_type(Self::rapier_body_type(bt), true);
             }
@@ -1340,6 +1594,7 @@ impl World {
     pub fn clear(&mut self) {
         self.bodies.clear();
         self.body_handles.clear();
+        self.body_active.clear();
         self.collider_handles.clear();
         self.extra_collider_handles.clear();
         self.collider_to_body.clear();
@@ -1348,6 +1603,7 @@ impl World {
         self.cached_layers.clear();
         self.cached_frictions.clear();
         self.joint_handles.clear();
+        self.joint_active.clear();
         self.joint_types.clear();
         self.mouse_joint_anchors.clear();
         self.collision_events.clear();
@@ -1362,10 +1618,14 @@ impl World {
         self.narrow_phase = NarrowPhase::new();
         self.joint_break_forces.clear();
         self.one_way_normals.clear();
+        self.zones.clear();
+        self.zone_id_counter = 0;
+        self.zone_tracker.clear();
+        self.zone_events.clear();
     }
     /// Allow or permanently prevent sleeping for body `id`.
     pub fn set_sleeping_allowed(&mut self, id: usize, allowed: bool) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 if allowed {
                     *rb.activation_mut() = RigidBodyActivation::default();
@@ -1378,15 +1638,14 @@ impl World {
     }
     /// Return true if body `id` is permitted to sleep.
     pub fn is_sleeping_allowed(&self, id: usize) -> bool {
-        self.body_handles
-            .get(id)
-            .and_then(|&h| self.rbodies.get(h))
+        self.active_body_handle(id)
+            .and_then(|h| self.rbodies.get(h))
             .map(|rb| rb.activation().angular_threshold >= 0.0)
             .unwrap_or(true)
     }
     /// Disable body `id`; it will no longer participate in simulation.
     pub fn destroy_body(&mut self, id: usize) {
-        if id >= self.bodies.len() {
+        if !self.has_body(id) {
             return;
         }
         if let Some(extras) = self.extra_collider_handles.get(id) {
@@ -1400,19 +1659,42 @@ impl World {
         if id < self.extra_collider_handles.len() {
             self.extra_collider_handles[id].clear();
         }
+        let body_handle = self.active_body_handle(id);
+        if let Some(handle) = body_handle {
+            let joints_to_destroy: Vec<usize> = self
+                .joint_handles
+                .iter()
+                .enumerate()
+                .filter_map(|(jid, &joint_handle)| {
+                    if !self.has_joint(jid) {
+                        return None;
+                    }
+                    let joint = self.impulse_joints.get(joint_handle)?;
+                    (joint.body1 == handle || joint.body2 == handle).then_some(jid)
+                })
+                .collect();
+            for jid in joints_to_destroy {
+                self.destroy_joint(jid);
+            }
+        }
         if let Some(&primary) = self.collider_handles.get(id) {
+            self.rcolliders
+                .remove(primary, &mut self.islands, &mut self.rbodies, true);
             self.collider_to_body.remove(&primary);
         }
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = body_handle {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.set_enabled(false);
             }
         }
         self.bodies[id].body_type = BodyType::Static;
+        self.body_active[id] = false;
+        self.zone_tracker.remove_body(id);
+        self.one_way_normals[id] = None;
     }
     /// Return the number of registered joints.
     pub fn joint_count(&self) -> usize {
-        self.joint_handles.len()
+        self.joint_active.iter().filter(|&&active| active).count()
     }
     /// Add a distance (rope) joint between two bodies; return joint id.
     #[allow(clippy::too_many_arguments)]
@@ -1426,11 +1708,11 @@ impl World {
         ay2: f32,
         length: f32,
     ) -> usize {
-        let ha = match self.body_handles.get(body_a).copied() {
+        let ha = match self.active_body_handle(body_a) {
             Some(h) => h,
             None => return 0,
         };
-        let hb = match self.body_handles.get(body_b).copied() {
+        let hb = match self.active_body_handle(body_b) {
             Some(h) => h,
             None => return 0,
         };
@@ -1439,10 +1721,7 @@ impl World {
             .local_anchor2(Vector::new(ax2, ay2))
             .build();
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        let jid = self.joint_handles.len();
-        self.joint_handles.push(handle);
-        self.joint_types.push("distance");
-        jid
+        self.register_joint(handle, "distance")
     }
     /// Add a prismatic (slide-axis) joint between two bodies; return joint id.
     pub fn add_prismatic_joint(
@@ -1454,11 +1733,11 @@ impl World {
         axis_x: f32,
         axis_y: f32,
     ) -> usize {
-        let ha = match self.body_handles.get(body_a).copied() {
+        let ha = match self.active_body_handle(body_a) {
             Some(h) => h,
             None => return 0,
         };
-        let hb = match self.body_handles.get(body_b).copied() {
+        let hb = match self.active_body_handle(body_b) {
             Some(h) => h,
             None => return 0,
         };
@@ -1468,10 +1747,7 @@ impl World {
             .local_anchor2(Vector::new(0.0, 0.0))
             .build();
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        let jid = self.joint_handles.len();
-        self.joint_handles.push(handle);
-        self.joint_types.push("prismatic");
-        jid
+        self.register_joint(handle, "prismatic")
     }
     /// Add a weld (fixed) joint between two bodies; return joint id.
     pub fn add_weld_joint(
@@ -1481,11 +1757,11 @@ impl World {
         anchor_x: f32,
         anchor_y: f32,
     ) -> usize {
-        let ha = match self.body_handles.get(body_a).copied() {
+        let ha = match self.active_body_handle(body_a) {
             Some(h) => h,
             None => return 0,
         };
-        let hb = match self.body_handles.get(body_b).copied() {
+        let hb = match self.active_body_handle(body_b) {
             Some(h) => h,
             None => return 0,
         };
@@ -1494,10 +1770,7 @@ impl World {
             .local_anchor2(Vector::new(0.0, 0.0))
             .build();
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        let jid = self.joint_handles.len();
-        self.joint_handles.push(handle);
-        self.joint_types.push("weld");
-        jid
+        self.register_joint(handle, "weld")
     }
     /// Add a rope joint with a maximum length; return joint id.
     #[allow(clippy::too_many_arguments)]
@@ -1511,11 +1784,11 @@ impl World {
         ay2: f32,
         max_length: f32,
     ) -> usize {
-        let ha = match self.body_handles.get(body_a).copied() {
+        let ha = match self.active_body_handle(body_a) {
             Some(h) => h,
             None => return 0,
         };
-        let hb = match self.body_handles.get(body_b).copied() {
+        let hb = match self.active_body_handle(body_b) {
             Some(h) => h,
             None => return 0,
         };
@@ -1524,14 +1797,11 @@ impl World {
             .local_anchor2(Vector::new(ax2, ay2))
             .build();
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        let jid = self.joint_handles.len();
-        self.joint_handles.push(handle);
-        self.joint_types.push("rope");
-        jid
+        self.register_joint(handle, "rope")
     }
     /// Return the two body ids connected by `joint_id`, or `None` if not found.
     pub fn get_joint_bodies(&self, joint_id: usize) -> Option<(usize, usize)> {
-        let &handle = self.joint_handles.get(joint_id)?;
+        let handle = self.active_joint_handle(joint_id)?;
         let joint = self.impulse_joints.get(handle)?;
         let id_a = self.body_handles.iter().position(|&h| h == joint.body1)?;
         let id_b = self.body_handles.iter().position(|&h| h == joint.body2)?;
@@ -1539,18 +1809,22 @@ impl World {
     }
     /// Remove joint `joint_id` from the simulation.
     pub fn destroy_joint(&mut self, joint_id: usize) {
-        if let Some(&handle) = self.joint_handles.get(joint_id) {
+        if let Some(handle) = self.active_joint_handle(joint_id) {
             self.impulse_joints.remove(handle, true);
+            if let Some(active) = self.joint_active.get_mut(joint_id) {
+                *active = false;
+            }
         }
         self.joint_break_forces.remove(&joint_id);
+        self.mouse_joint_anchors.remove(&joint_id);
     }
     /// Build a `QueryPipeline` view over the current broad+narrow phase.
-    fn query_pipeline(&self) -> QueryPipeline<'_> {
+    fn query_pipeline(&self, filter: PhysicsQueryFilter) -> QueryPipeline<'_> {
         self.broad_phase.as_query_pipeline(
             self.narrow_phase.query_dispatcher(),
             &self.rbodies,
             &self.rcolliders,
-            QueryFilter::default(),
+            Self::query_filter(filter),
         )
     }
     /// Cast a ray from `(x1,y1)` in direction `(dx,dy)` up to `max_dist`; return closest hit.
@@ -1562,18 +1836,30 @@ impl World {
         dy: f32,
         max_dist: f32,
     ) -> Option<RaycastHit> {
+        self.raycast_closest_filtered(x1, y1, dx, dy, max_dist, PhysicsQueryFilter::default())
+    }
+    /// Cast a filtered directional ray and return the closest hit.
+    pub fn raycast_closest_filtered(
+        &self,
+        x1: f32,
+        y1: f32,
+        dx: f32,
+        dy: f32,
+        max_dist: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Option<RaycastHit> {
         let dir_len = (dx * dx + dy * dy).sqrt();
         if dir_len < 1e-6 {
             return None;
         }
         let unit_dir = Vector::new(dx / dir_len, dy / dir_len);
         let ray = Ray::new(Vector::new(x1, y1), unit_dir);
-        let qp = self.query_pipeline();
+        let qp = self.query_pipeline(filter);
         let (col_handle, toi_result) = qp.cast_ray_and_get_normal(&ray, max_dist, true)?;
-        let body_id = self
-            .collider_handles
-            .iter()
-            .position(|&h| h == col_handle)?;
+        let body_id = self.body_for_collider(col_handle)?;
+        if !self.has_body(body_id) {
+            return None;
+        }
         let pt_x = x1 + unit_dir.x * toi_result.time_of_impact;
         let pt_y = y1 + unit_dir.y * toi_result.time_of_impact;
         Some(RaycastHit {
@@ -1592,54 +1878,103 @@ impl World {
         dy: f32,
         max_dist: f32,
     ) -> Vec<RaycastHit> {
+        self.raycast_all_filtered(x1, y1, dx, dy, max_dist, PhysicsQueryFilter::default())
+    }
+    /// Cast a filtered ray and return at most one closest hit per body.
+    pub fn raycast_all_filtered(
+        &self,
+        x1: f32,
+        y1: f32,
+        dx: f32,
+        dy: f32,
+        max_dist: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Vec<RaycastHit> {
         let dir_len = (dx * dx + dy * dy).sqrt();
         if dir_len < 1e-6 {
             return Vec::new();
         }
         let unit_dir = Vector::new(dx / dir_len, dy / dir_len);
         let ray = Ray::new(Vector::new(x1, y1), unit_dir);
-        let qp = self.query_pipeline();
-        let mut hits = Vec::new();
+        let qp = self.query_pipeline(filter);
+        let mut best_by_body: HashMap<usize, RaycastHit> = HashMap::new();
         for (col_handle, _co, ri) in qp.intersect_ray(ray, max_dist, true) {
             if let Some(body_id) = self.body_for_collider(col_handle) {
+                if !self.has_body(body_id) {
+                    continue;
+                }
                 let pt_x = x1 + unit_dir.x * ri.time_of_impact;
                 let pt_y = y1 + unit_dir.y * ri.time_of_impact;
-                hits.push(RaycastHit {
+                let hit = RaycastHit {
                     body_id: BodyId(body_id),
                     point: (pt_x, pt_y),
                     normal: (ri.normal.x, ri.normal.y),
                     toi: ri.time_of_impact,
-                });
+                };
+                match best_by_body.get(&body_id) {
+                    Some(old) if old.toi <= hit.toi => {}
+                    _ => {
+                        best_by_body.insert(body_id, hit);
+                    }
+                }
             }
         }
+        let mut hits: Vec<_> = best_by_body.into_values().collect();
+        hits.sort_by(|a, b| a.toi.total_cmp(&b.toi).then(a.body_id.0.cmp(&b.body_id.0)));
         hits
     }
     /// Return all body ids whose AABB overlaps the query rectangle.
     pub fn query_aabb(&self, x: f32, y: f32, w: f32, h: f32) -> Vec<usize> {
+        self.query_aabb_filtered(x, y, w, h, PhysicsQueryFilter::default())
+    }
+    /// Return all filtered body ids whose AABB overlaps the query rectangle.
+    pub fn query_aabb_filtered(
+        &self,
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Vec<usize> {
         let aabb = Aabb {
             mins: Vector::new(x, y),
             maxs: Vector::new(x + w, y + h),
         };
-        let qp = self.query_pipeline();
+        let qp = self.query_pipeline(filter);
+        let mut seen = HashSet::new();
         let mut results = Vec::new();
         for (col_handle, _co) in qp.intersect_aabb_conservative(aabb) {
             if let Some(body_id) = self.body_for_collider(col_handle) {
-                results.push(body_id);
+                if self.has_body(body_id) && seen.insert(body_id) {
+                    results.push(body_id);
+                }
             }
         }
+        results.sort_unstable();
         results
     }
     /// Return the first body id whose AABB contains point `(x, y)`, or `None`.
     pub fn get_body_at_point(&self, x: f32, y: f32) -> Option<usize> {
+        self.get_body_at_point_filtered(x, y, PhysicsQueryFilter::default())
+    }
+    /// Return the first filtered body id whose AABB contains point `(x, y)`, or `None`.
+    pub fn get_body_at_point_filtered(
+        &self,
+        x: f32,
+        y: f32,
+        filter: PhysicsQueryFilter,
+    ) -> Option<usize> {
         let epsilon = 0.01;
         let aabb = Aabb {
             mins: Vector::new(x - epsilon, y - epsilon),
             maxs: Vector::new(x + epsilon, y + epsilon),
         };
-        let qp = self.query_pipeline();
+        let qp = self.query_pipeline(filter);
         for (col_handle, _co) in qp.intersect_aabb_conservative(aabb) {
             if let Some(body_id) = self.body_for_collider(col_handle) {
-                return Some(body_id);
+                if self.has_body(body_id) {
+                    return Some(body_id);
+                }
             }
         }
         None
@@ -1655,11 +1990,11 @@ impl World {
         axis_x: f32,
         axis_y: f32,
     ) -> usize {
-        let ha = match self.body_handles.get(body_a).copied() {
+        let ha = match self.active_body_handle(body_a) {
             Some(h) => h,
             None => return 0,
         };
-        let hb = match self.body_handles.get(body_b).copied() {
+        let hb = match self.active_body_handle(body_b) {
             Some(h) => h,
             None => return 0,
         };
@@ -1670,10 +2005,7 @@ impl World {
             .build();
         joint.data.locked_axes = JointAxesMask::LIN_Y;
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        let jid = self.joint_handles.len();
-        self.joint_handles.push(handle);
-        self.joint_types.push("wheel");
-        jid
+        self.register_joint(handle, "wheel")
     }
     /// Add a friction joint limiting linear and angular impulses; return joint id.
     #[allow(clippy::too_many_arguments)]
@@ -1686,11 +2018,11 @@ impl World {
         max_force: f32,
         max_torque: f32,
     ) -> usize {
-        let ha = match self.body_handles.get(body_a).copied() {
+        let ha = match self.active_body_handle(body_a) {
             Some(h) => h,
             None => return 0,
         };
-        let hb = match self.body_handles.get(body_b).copied() {
+        let hb = match self.active_body_handle(body_b) {
             Some(h) => h,
             None => return 0,
         };
@@ -1708,10 +2040,7 @@ impl World {
             .data
             .set_motor(JointAxis::AngX, 0.0, 0.0, 0.0, max_torque);
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        let jid = self.joint_handles.len();
-        self.joint_handles.push(handle);
-        self.joint_types.push("friction");
-        jid
+        self.register_joint(handle, "friction")
     }
     /// Add a spring-motor joint for position correction; return joint id.
     pub fn add_motor_joint(
@@ -1720,11 +2049,11 @@ impl World {
         body_b: usize,
         correction_factor: f32,
     ) -> usize {
-        let ha = match self.body_handles.get(body_a).copied() {
+        let ha = match self.active_body_handle(body_a) {
             Some(h) => h,
             None => return 0,
         };
-        let hb = match self.body_handles.get(body_b).copied() {
+        let hb = match self.active_body_handle(body_b) {
             Some(h) => h,
             None => return 0,
         };
@@ -1742,10 +2071,7 @@ impl World {
             .data
             .set_motor(JointAxis::AngX, 0.0, 0.0, correction_factor, 1.0);
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        let jid = self.joint_handles.len();
-        self.joint_handles.push(handle);
-        self.joint_types.push("motor");
-        jid
+        self.register_joint(handle, "motor")
     }
     /// Create a kinematic anchor and a spring joint targeting `(target_x, target_y)`; return joint id.
     pub fn add_mouse_joint(
@@ -1767,14 +2093,15 @@ impl World {
             .local_anchor2(Vector::new(0.0, 0.0))
             .build();
         let handle = self.impulse_joints.insert(ha, hb, joint, true);
-        let jid = self.joint_handles.len();
-        self.joint_handles.push(handle);
-        self.joint_types.push("mouse");
+        let jid = self.register_joint(handle, "mouse");
         self.mouse_joint_anchors.insert(jid, anchor_id.0);
         jid
     }
     /// Reposition the kinematic anchor of mouse joint `joint_id` to `(x, y)`.
     pub fn set_mouse_joint_target(&mut self, joint_id: usize, x: f32, y: f32) {
+        if !self.has_joint(joint_id) {
+            return;
+        }
         if let Some(&anchor_id) = self.mouse_joint_anchors.get(&joint_id) {
             self.set_body_position(anchor_id, x, y);
         }
@@ -1803,7 +2130,7 @@ impl World {
     }
     /// Set angular motor target speed on joint `joint_id`.
     pub fn set_joint_motor_speed(&mut self, joint_id: usize, speed: f32) {
-        if let Some(&handle) = self.joint_handles.get(joint_id) {
+        if let Some(handle) = self.active_joint_handle(joint_id) {
             if let Some(joint) = self.impulse_joints.get_mut(handle, true) {
                 joint.data.set_motor(JointAxis::AngX, 0.0, speed, 0.0, 1e6);
             }
@@ -1811,7 +2138,7 @@ impl World {
     }
     /// Return angular motor target speed on joint `joint_id`; returns 0 if not set.
     pub fn get_joint_motor_speed(&self, joint_id: usize) -> f32 {
-        if let Some(&handle) = self.joint_handles.get(joint_id) {
+        if let Some(handle) = self.active_joint_handle(joint_id) {
             if let Some(joint) = self.impulse_joints.get(handle) {
                 if let Some(motor) = joint.data.motor(JointAxis::AngX) {
                     return motor.target_vel;
@@ -1822,7 +2149,7 @@ impl World {
     }
     /// Enable or disable angular limits on joint `joint_id`.
     pub fn set_joint_limits_enabled(&mut self, joint_id: usize, enabled: bool) {
-        if let Some(&handle) = self.joint_handles.get(joint_id) {
+        if let Some(handle) = self.active_joint_handle(joint_id) {
             if let Some(joint) = self.impulse_joints.get_mut(handle, true) {
                 if enabled {
                     let limits = joint
@@ -1840,7 +2167,7 @@ impl World {
     }
     /// Set `[lower, upper]` angular limits on joint `joint_id`.
     pub fn set_joint_limits(&mut self, joint_id: usize, lower: f32, upper: f32) {
-        if let Some(&handle) = self.joint_handles.get(joint_id) {
+        if let Some(handle) = self.active_joint_handle(joint_id) {
             if let Some(joint) = self.impulse_joints.get_mut(handle, true) {
                 joint.data.set_limits(JointAxis::AngX, [lower, upper]);
             }
@@ -1848,7 +2175,7 @@ impl World {
     }
     /// Return `(lower, upper)` angular limits on joint `joint_id`; returns `(0,0)` if not set.
     pub fn get_joint_limits(&self, joint_id: usize) -> (f32, f32) {
-        if let Some(&handle) = self.joint_handles.get(joint_id) {
+        if let Some(handle) = self.active_joint_handle(joint_id) {
             if let Some(joint) = self.impulse_joints.get(handle) {
                 if let Some(limits) = joint.data.limits(JointAxis::AngX) {
                     return (limits.min, limits.max);
@@ -1859,6 +2186,9 @@ impl World {
     }
     /// Return the type string of joint `joint_id`; returns "unknown" if out of range.
     pub fn get_joint_type(&self, joint_id: usize) -> &'static str {
+        if !self.has_joint(joint_id) {
+            return "unknown";
+        }
         self.joint_types.get(joint_id).copied().unwrap_or("unknown")
     }
     /// Set the pixels-per-meter conversion ratio.
@@ -1884,16 +2214,18 @@ impl World {
     /// Return all active contact pairs with normals and touch state.
     pub fn get_contacts(&self) -> Vec<ContactInfo> {
         let mut contacts = Vec::new();
+        let mut seen = HashSet::new();
         for pair in self.narrow_phase.contact_pairs() {
-            let id_a = self
-                .collider_handles
-                .iter()
-                .position(|&h| h == pair.collider1);
-            let id_b = self
-                .collider_handles
-                .iter()
-                .position(|&h| h == pair.collider2);
+            let id_a = self.body_for_collider(pair.collider1);
+            let id_b = self.body_for_collider(pair.collider2);
             if let (Some(a), Some(b)) = (id_a, id_b) {
+                if a == b {
+                    continue;
+                }
+                let key = if a <= b { (a, b) } else { (b, a) };
+                if !seen.insert(key) {
+                    continue;
+                }
                 let is_touching = pair.has_any_active_contact();
                 let (nx, ny) = pair
                     .manifolds
@@ -1920,6 +2252,9 @@ impl World {
     }
     /// Enable one-way platform behaviour: only accept collisions with a normal aligned to `(nx,ny)`.
     pub fn set_body_one_way(&mut self, id: usize, nx: f32, ny: f32) {
+        if !self.has_body(id) {
+            return;
+        }
         if let Some(v) = self.one_way_normals.get_mut(id) {
             *v = Some((nx, ny));
         }
@@ -1932,19 +2267,27 @@ impl World {
     }
     /// Return the one-way normal for body `id`, or `None` if not set.
     pub fn get_body_one_way(&self, id: usize) -> Option<(f32, f32)> {
+        if !self.has_body(id) {
+            return None;
+        }
         self.one_way_normals.get(id).copied().flatten()
     }
     /// Register a break force threshold for joint `jid`.
     pub fn set_joint_break_force(&mut self, jid: usize, max_force: f32) {
-        self.joint_break_forces.insert(jid, max_force);
+        if self.has_joint(jid) {
+            self.joint_break_forces.insert(jid, max_force);
+        }
     }
     /// Return the break-force threshold for joint `jid`, or `None` if not set.
     pub fn get_joint_break_force(&self, jid: usize) -> Option<f32> {
+        if !self.has_joint(jid) {
+            return None;
+        }
         self.joint_break_forces.get(&jid).copied()
     }
     /// Return true if body `id` is currently asleep.
     pub fn is_body_sleeping(&self, id: usize) -> bool {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get(handle) {
                 return rb.is_sleeping();
             }
@@ -1953,7 +2296,7 @@ impl World {
     }
     /// Wake up body `id` from sleep. This function is part of the public API.
     pub fn wake_up_body(&mut self, id: usize) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.wake_up(true);
             }
@@ -1961,7 +2304,7 @@ impl World {
     }
     /// Force body `id` to sleep immediately.
     pub fn sleep_body(&mut self, id: usize) {
-        if let Some(&handle) = self.body_handles.get(id) {
+        if let Some(handle) = self.active_body_handle(id) {
             if let Some(rb) = self.rbodies.get_mut(handle) {
                 rb.sleep();
             }
@@ -1974,6 +2317,23 @@ impl World {
     /// Return the current number of solver iterations.
     pub fn get_solver_iterations(&self) -> usize {
         self.params.num_solver_iterations
+    }
+    /// Return current world diagnostics for tooling and scripts.
+    pub fn get_stats(&self) -> PhysicsWorldStats {
+        let sleeping_bodies = self
+            .get_body_ids()
+            .into_iter()
+            .filter(|&id| self.is_body_sleeping(id))
+            .count();
+        PhysicsWorldStats {
+            bodies: self.body_count(),
+            body_slots: self.bodies.len(),
+            colliders: self.collider_to_body.len(),
+            joints: self.joint_count(),
+            joint_slots: self.joint_handles.len(),
+            zones: self.zones.len(),
+            sleeping_bodies,
+        }
     }
     /// Batch-create bodies from a list of `(x, y, w, h, BodyType)` tuples; return their ids.
     pub fn add_bodies(&mut self, specs: Vec<(f32, f32, f32, f32, BodyType)>) -> Vec<usize> {

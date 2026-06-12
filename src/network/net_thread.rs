@@ -336,32 +336,30 @@ impl NetworkRuntime {
                     }
                 }
                 NetworkResponse::MatchmakeEvent { event, .. } => {
-                    if (event.as_str() == "matched" || event.as_str() == "error" || event.as_str() == "cancelled")
+                    if (event.as_str() == "matched"
+                        || event.as_str() == "error"
+                        || event.as_str() == "cancelled")
                         && self.http_active_count > 0
                     {
                         self.http_active_count -= 1;
                     }
                 }
-                NetworkResponse::TcpEvent { event, .. } => {
-                    match event {
-                        TcpEvent::Disconnected(_) | TcpEvent::Error(_) => {
-                            if self.tcp_active_count > 0 {
-                                self.tcp_active_count -= 1;
-                            }
+                NetworkResponse::TcpEvent { event, .. } => match event {
+                    TcpEvent::Disconnected(_) | TcpEvent::Error(_) => {
+                        if self.tcp_active_count > 0 {
+                            self.tcp_active_count -= 1;
                         }
-                        _ => {}
                     }
-                }
-                NetworkResponse::WebSocketEvent { event, .. } => {
-                    match event {
-                        WsEvent::Close { .. } | WsEvent::Error(_) => {
-                            if self.ws_active_count > 0 {
-                                self.ws_active_count -= 1;
-                            }
+                    _ => {}
+                },
+                NetworkResponse::WebSocketEvent { event, .. } => match event {
+                    WsEvent::Close { .. } | WsEvent::Error(_) => {
+                        if self.ws_active_count > 0 {
+                            self.ws_active_count -= 1;
                         }
-                        _ => {}
                     }
-                }
+                    _ => {}
+                },
             }
             responses.push(resp);
         }
@@ -575,18 +573,29 @@ impl NetworkRuntime {
 
             // Handle background auth token auto-refresh
             if let Some(ref mut auth) = auth_session {
-                if !auth.refreshing && std::time::Instant::now() + std::time::Duration::from_secs(30) >= auth.expiry {
+                if !auth.refreshing
+                    && std::time::Instant::now() + std::time::Duration::from_secs(30) >= auth.expiry
+                {
                     auth.refreshing = true;
                     let req_tx = req_tx.clone();
                     let resp_tx = resp_tx.clone();
                     let url = auth.refresh_url.clone();
                     let token = auth.refresh_token.clone();
                     thread::spawn(move || {
-                        let headers = vec![("Content-Type".to_string(), "application/json".to_string())];
+                        let headers =
+                            vec![("Content-Type".to_string(), "application/json".to_string())];
                         let payload = format!("{{\"refresh_token\":\"{}\"}}", token);
-                        let resp = super::http::execute_request("POST", &url, &headers, Some(payload.as_bytes()), 10);
+                        let resp = super::http::execute_request(
+                            "POST",
+                            &url,
+                            &headers,
+                            Some(payload.as_bytes()),
+                            10,
+                        );
                         if resp.status == 200 || resp.status == 201 {
-                            if let Ok(json) = serde_json::from_slice::<serde_json::Value>(&resp.body) {
+                            if let Ok(json) =
+                                serde_json::from_slice::<serde_json::Value>(&resp.body)
+                            {
                                 if let (Some(access), Some(refresh), Some(expires)) = (
                                     json.get("access_token").and_then(|v| v.as_str()),
                                     json.get("refresh_token").and_then(|v| v.as_str()),
@@ -611,7 +620,10 @@ impl NetworkRuntime {
                             }
                         }
                         let err = resp.error.unwrap_or_else(|| "refresh failed".to_string());
-                        let _ = req_tx.send(NetworkRequest::AuthFailure { id: 0, error: err.clone() });
+                        let _ = req_tx.send(NetworkRequest::AuthFailure {
+                            id: 0,
+                            error: err.clone(),
+                        });
                         let _ = resp_tx.send(NetworkResponse::AuthEvent {
                             id: 0,
                             event: "failed".to_string(),
@@ -635,11 +647,17 @@ impl NetworkRuntime {
                     thread::spawn(move || {
                         let resp = super::http::execute_request("GET", &poll_url, &[], None, 5);
                         if resp.status == 200 {
-                            if let Ok(json) = serde_json::from_slice::<serde_json::Value>(&resp.body) {
+                            if let Ok(json) =
+                                serde_json::from_slice::<serde_json::Value>(&resp.body)
+                            {
                                 if let Some(status) = json.get("status").and_then(|v| v.as_str()) {
                                     if status == "matched" {
-                                        let host = json.get("host").and_then(|v| v.as_str()).unwrap_or("");
-                                        let room_id = json.get("room_id").and_then(|v| v.as_str()).unwrap_or("");
+                                        let host =
+                                            json.get("host").and_then(|v| v.as_str()).unwrap_or("");
+                                        let room_id = json
+                                            .get("room_id")
+                                            .and_then(|v| v.as_str())
+                                            .unwrap_or("");
                                         let _ = resp_tx.send(NetworkResponse::MatchmakeEvent {
                                             id,
                                             event: "matched".to_string(),
@@ -648,7 +666,8 @@ impl NetworkRuntime {
                                             room_id: Some(room_id.to_string()),
                                             error: None,
                                         });
-                                        let _ = req_tx.send(NetworkRequest::MatchmakeComplete { id });
+                                        let _ =
+                                            req_tx.send(NetworkRequest::MatchmakeComplete { id });
                                         return;
                                     } else if status == "queued" {
                                         let _ = req_tx.send(NetworkRequest::MatchmakeQueued {
@@ -734,8 +753,15 @@ impl NetworkRuntime {
                 let req_tx = req_tx.clone();
                 let resp_tx = resp_tx.clone();
                 thread::spawn(move || {
-                    let headers = vec![("Content-Type".to_string(), "application/json".to_string())];
-                    let resp = super::http::execute_request("POST", &auth_url, &headers, Some(payload.as_bytes()), 15);
+                    let headers =
+                        vec![("Content-Type".to_string(), "application/json".to_string())];
+                    let resp = super::http::execute_request(
+                        "POST",
+                        &auth_url,
+                        &headers,
+                        Some(payload.as_bytes()),
+                        15,
+                    );
                     if resp.status == 200 || resp.status == 201 {
                         if let Ok(json) = serde_json::from_slice::<serde_json::Value>(&resp.body) {
                             if let (Some(access), Some(refresh), Some(expires)) = (
@@ -761,8 +787,13 @@ impl NetworkRuntime {
                             }
                         }
                     }
-                    let err = resp.error.unwrap_or_else(|| "authentication failed".to_string());
-                    let _ = req_tx.send(NetworkRequest::AuthFailure { id, error: err.clone() });
+                    let err = resp
+                        .error
+                        .unwrap_or_else(|| "authentication failed".to_string());
+                    let _ = req_tx.send(NetworkRequest::AuthFailure {
+                        id,
+                        error: err.clone(),
+                    });
                     let _ = resp_tx.send(NetworkResponse::AuthEvent {
                         id,
                         event: "failed".to_string(),
@@ -804,14 +835,23 @@ impl NetworkRuntime {
                 let req_tx = req_tx.clone();
                 let resp_tx = resp_tx.clone();
                 thread::spawn(move || {
-                    let headers = vec![("Content-Type".to_string(), "application/json".to_string())];
-                    let resp = super::http::execute_request("POST", &url, &headers, Some(payload.as_bytes()), 15);
+                    let headers =
+                        vec![("Content-Type".to_string(), "application/json".to_string())];
+                    let resp = super::http::execute_request(
+                        "POST",
+                        &url,
+                        &headers,
+                        Some(payload.as_bytes()),
+                        15,
+                    );
                     if resp.status == 200 || resp.status == 201 {
                         if let Ok(json) = serde_json::from_slice::<serde_json::Value>(&resp.body) {
                             if let Some(status) = json.get("status").and_then(|v| v.as_str()) {
                                 if status == "matched" {
-                                    let host = json.get("host").and_then(|v| v.as_str()).unwrap_or("");
-                                    let room_id = json.get("room_id").and_then(|v| v.as_str()).unwrap_or("");
+                                    let host =
+                                        json.get("host").and_then(|v| v.as_str()).unwrap_or("");
+                                    let room_id =
+                                        json.get("room_id").and_then(|v| v.as_str()).unwrap_or("");
                                     let _ = resp_tx.send(NetworkResponse::MatchmakeEvent {
                                         id,
                                         event: "matched".to_string(),
@@ -823,7 +863,10 @@ impl NetworkRuntime {
                                     let _ = req_tx.send(NetworkRequest::MatchmakeComplete { id });
                                     return;
                                 } else if status == "queued" {
-                                    let ticket_id = json.get("ticket_id").and_then(|v| v.as_str()).unwrap_or("");
+                                    let ticket_id = json
+                                        .get("ticket_id")
+                                        .and_then(|v| v.as_str())
+                                        .unwrap_or("");
                                     let _ = resp_tx.send(NetworkResponse::MatchmakeEvent {
                                         id,
                                         event: "queued".to_string(),
@@ -842,7 +885,9 @@ impl NetworkRuntime {
                             }
                         }
                     }
-                    let err = resp.error.unwrap_or_else(|| "matchmaking failed".to_string());
+                    let err = resp
+                        .error
+                        .unwrap_or_else(|| "matchmaking failed".to_string());
                     let _ = resp_tx.send(NetworkResponse::MatchmakeEvent {
                         id,
                         event: "error".to_string(),
@@ -859,7 +904,8 @@ impl NetworkRuntime {
                     if m.id == id {
                         let cancel_url = format!("{}/{}", m.url, m.ticket_id);
                         thread::spawn(move || {
-                            let _ = super::http::execute_request("DELETE", &cancel_url, &[], None, 5);
+                            let _ =
+                                super::http::execute_request("DELETE", &cancel_url, &[], None, 5);
                         });
                     }
                 }
@@ -954,4 +1000,3 @@ impl Drop for NetworkRuntime {
         self.shutdown();
     }
 }
-

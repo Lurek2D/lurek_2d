@@ -2584,36 +2584,51 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | opts | table? | Options with keys: solid_terrain (default 2), empty_terrain (default 1).
     tbl.set(
         "syncMinimap",
-        lua.create_function(|_lua, (map_ud, layer, minimap_ud, opts): (LuaAnyUserData, usize, LuaAnyUserData, Option<LuaTable>)| {
-            // Get LuaTileMap
-            let lua_map = map_ud.borrow::<LuaTileMap>()?;
+        lua.create_function(
+            |_lua,
+             (map_ud, layer, minimap_ud, opts): (
+                LuaAnyUserData,
+                usize,
+                LuaAnyUserData,
+                Option<LuaTable>,
+            )| {
+                // Get LuaTileMap
+                let lua_map = map_ud.borrow::<LuaTileMap>()?;
 
-            // Parse options
-            let solid_terrain: u32 = opts.as_ref().and_then(|t| t.get("solid_terrain").ok()).unwrap_or(2);
-            let empty_terrain: u32 = opts.as_ref().and_then(|t| t.get("empty_terrain").ok()).unwrap_or(1);
+                // Parse options
+                let solid_terrain: u32 = opts
+                    .as_ref()
+                    .and_then(|t| t.get("solid_terrain").ok())
+                    .unwrap_or(2);
+                let empty_terrain: u32 = opts
+                    .as_ref()
+                    .and_then(|t| t.get("empty_terrain").ok())
+                    .unwrap_or(1);
 
-            // Get mutable borrow of minimap to call set_terrain
-            let mut lua_minimap = minimap_ud.borrow_mut::<super::minimap_api::LuaMinimap>()?;
+                // Get mutable borrow of minimap to call set_terrain
+                let mut lua_minimap = minimap_ud.borrow_mut::<super::minimap_api::LuaMinimap>()?;
 
-            // Get minimap grid dimensions
-            let grid_w = lua_minimap.inner.grid_width();
-            let grid_h = lua_minimap.inner.grid_height();
+                // Get minimap grid dimensions
+                let grid_w = lua_minimap.inner.grid_width();
+                let grid_h = lua_minimap.inner.grid_height();
 
-            // Sync terrain: iterate through all minimap cells and set based on tilemap solidity
-            for y in 1..=grid_h {
-                for x in 1..=grid_w {
-                    let terrain_value = if lua_map.inner.borrow().is_solid(layer - 1, x - 1, y - 1) {
-                        solid_terrain
-                    } else {
-                        empty_terrain
-                    };
-                    // Call set_terrain on the minimap inner object
-                    lua_minimap.inner.set_terrain(x - 1, y - 1, terrain_value);
+                // Sync terrain: iterate through all minimap cells and set based on tilemap solidity
+                for y in 1..=grid_h {
+                    for x in 1..=grid_w {
+                        let terrain_value =
+                            if lua_map.inner.borrow().is_solid(layer - 1, x - 1, y - 1) {
+                                solid_terrain
+                            } else {
+                                empty_terrain
+                            };
+                        // Call set_terrain on the minimap inner object
+                        lua_minimap.inner.set_terrain(x - 1, y - 1, terrain_value);
+                    }
                 }
-            }
 
-            Ok(())
-        })?,
+                Ok(())
+            },
+        )?,
     )?;
     /// Performs the 'tilemap' operation.
     lurek.set("tilemap", tbl)?;

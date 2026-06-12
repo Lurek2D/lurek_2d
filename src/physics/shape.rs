@@ -9,6 +9,12 @@ use crate::math::Vec2;
 use rapier2d::prelude::*;
 
 /// Physics primitive shape used in `Body` and `StandaloneShape`.
+/// # Variants
+/// - `Rect`: axis-aligned box with width and height.
+/// - `Circle`: circle with a radius.
+/// - `Polygon`: convex polygon vertex list.
+/// - `Edge`: single line segment.
+/// - `Chain`: open or closed polyline.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Shape {
     /// Axis-aligned box.
@@ -127,6 +133,12 @@ impl Shape {
     }
 }
 /// A `Shape` combined with material properties for standalone collision testing.
+/// # Fields
+/// - `shape`: underlying geometry.
+/// - `density`: mass per area unit.
+/// - `friction`: friction coefficient.
+/// - `restitution`: bounce coefficient.
+/// - `sensor`: whether overlap-only sensor behavior is enabled.
 #[derive(Debug, Clone)]
 pub struct StandaloneShape {
     /// Underlying geometry.

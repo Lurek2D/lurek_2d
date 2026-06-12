@@ -20,9 +20,9 @@ use super::{
     grep_api, html_api, i18n_api, image_api, input_api, layout_api, learning_api, light_api,
     log_api, mapblock_api, math_api, midi_api, minimap_api, mods_api, network_api, overlay_api,
     parallax_api, particle_api, pathfind_api, patterns_api, physics_api, procgen_api, province_api,
-    raycaster_api, render_api, repl_api, save_api, scene_api, serialize_api, sprite_api,
-    svg_api, system_api, terminal_api, thread_api, tilemap_api, timer_api, tween_api, ui_api,
-    validator_api, visibility_api, window_api,
+    raycaster_api, render_api, repl_api, save_api, scene_api, serialize_api, sprite_api, svg_api,
+    system_api, terminal_api, thread_api, tilemap_api, timer_api, tween_api, ui_api, validator_api,
+    visibility_api, window_api,
 };
 use crate::runtime::config::ModulesConfig;
 use crate::runtime::SharedState;
@@ -168,8 +168,8 @@ pub fn create_headless_vm(
 
 /// Creates a default test Lua VM with default module configuration.
 pub fn create_test_vm() -> LuaResult<Lua> {
-    use crate::runtime::RuntimeMode;
     use crate::runtime::config::Config;
+    use crate::runtime::RuntimeMode;
     use std::path::PathBuf;
     let mut shared = SharedState::new(800, 600, "Test", PathBuf::from("."));
     shared.runtime_mode = RuntimeMode::Headless;

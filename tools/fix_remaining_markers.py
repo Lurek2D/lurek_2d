@@ -6,7 +6,7 @@ from pathlib import Path
 
 def fix_agent_core_test():
     """Fix test_agent_core_unit.lua by adding missing @covers markers."""
-    file = Path('tests/lua/unit/test_agent_core_unit.lua')
+    file = Path('tests/lua_reorg/unit/test_agent_core_unit.lua')
     content = file.read_text(encoding='utf-8')
 
     # Map of line numbers (approx) -> @covers markers to add
@@ -45,7 +45,7 @@ def fix_agent_core_test():
 
 def fix_camera_walker_test():
     """Fix test_camera_walker.lua by adding missing @covers markers."""
-    file = Path('tests/lua/unit/test_camera_walker.lua')
+    file = Path('tests/lua_reorg/unit/test_camera_walker.lua')
     content = file.read_text(encoding='utf-8')
 
     # These blocks need @covers lurek.camera.newWalker or similar
@@ -68,7 +68,7 @@ def fix_camera_walker_test():
 
 def fix_cinematic_test():
     """Fix test_cinematic_timeline_unit.lua by adding missing @covers markers."""
-    file = Path('tests/lua/unit/test_cinematic_timeline_unit.lua')
+    file = Path('tests/lua_reorg/unit/test_cinematic_timeline_unit.lua')
     content = file.read_text(encoding='utf-8')
 
     lines = content.split('\n')

@@ -7,15 +7,17 @@
 //! Supports rounded rectangles through adaptive arc segment tessellation, linear gradients through proportional vertex color interpolation.
 //! Generates flattened index lists and primitive batches ready for direct graphics API consumption without additional GPU processing.
 
+use super::GpuRenderer;
 use crate::math::{Mat3, Vec2};
-use crate::render::gpu_types::{ColorVertex, TexVertex, TexRef, ScissorRect, RenderTargetId, PreparedDraw};
 use crate::render::gpu_pipeline::{GeometryKind, GpuStencilMode};
 use crate::render::gpu_shaders::ShaderUniformKind;
+use crate::render::gpu_types::{
+    ColorVertex, PreparedDraw, RenderTargetId, ScissorRect, TexRef, TexVertex,
+};
 use crate::render::renderer::{BlendMode, DrawMode};
 use crate::render::shader::UniformValue;
 use crate::runtime::resource_keys::ShaderKey;
 use std::f32::consts::PI;
-use super::GpuRenderer;
 
 impl GpuRenderer {
     /// Tessellate a rectangle into flat-color vertices and indices.
@@ -367,7 +369,11 @@ pub(crate) fn append_tex_draw(
     });
 }
 /// Clamp and convert a float scissor rect to integer pixel bounds clamped to `[0, width/height]`.
-pub fn normalize_scissor(rect: Option<(f32, f32, f32, f32)>, width: u32, height: u32) -> ScissorRect {
+pub fn normalize_scissor(
+    rect: Option<(f32, f32, f32, f32)>,
+    width: u32,
+    height: u32,
+) -> ScissorRect {
     rect.and_then(|(x, y, w, h)| {
         let left = x.max(0.0).floor() as u32;
         let top = y.max(0.0).floor() as u32;

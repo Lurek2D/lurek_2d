@@ -16,6 +16,7 @@
 - Render paths support textured and non-textured particle output.
 - Debug draw-to-image tools help tune effects and capture evidence artifacts.
 - Lifecycle chart output improves observability of spawn and decay dynamics.
+- Optional emitter seeds make particle playback deterministic for tests, evidence, and replay capture.
 - The module is useful for combat impacts, weather, ambient motion, and UI accents.
 - For users, it centralizes particle behavior rather than scattering custom emitter logic.
 - It balances artistic flexibility with deterministic, test-friendly controls.
@@ -78,7 +79,7 @@ lurek.particle.fromTOML(path)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | string | TOML file path. |
+| `path` | string | TOML file path. The TOML config may include `seed` for deterministic emission. |
 
 **Returns**
 
@@ -91,7 +92,7 @@ lurek.particle.fromTOML(path)
 ```lua
 do
     local path = "save/particle_example.toml"
-    lurek.filesystem.write(path, "max_particles = 96\nemission_rate = 18.0\nlifetime_min = 0.2\nlifetime_max = 0.8\n")
+    lurek.filesystem.write(path, "seed = 42\nmax_particles = 96\nemission_rate = 18.0\nlifetime_min = 0.2\nlifetime_max = 0.8\n")
 
     local ps = lurek.particle.fromTOML(path)
     print("type = " .. ps:type())
@@ -147,7 +148,7 @@ lurek.particle.newSystem(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | table | Particle config table. |
+| `config?` | table | Particle config table. Supports `seed` for deterministic emission and reset behavior. |
 
 **Returns**
 
@@ -160,6 +161,7 @@ lurek.particle.newSystem(config)
 ```lua
 do
     local ps = lurek.particle.newSystem({
+        seed = 42,
         maxParticles = 128,
         emissionRate = 24,
         lifetimeMin = 0.25,
@@ -1086,7 +1088,7 @@ LParticleSystem:addSubEmitter(config_tbl, burst_count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config_tbl` | table | Particle config table. |
+| `config_tbl` | table | Particle config table. Supports `seed` for deterministic sub-emission. |
 | `burst_count?` | number | Burst count per death. |
 
 **Example**
@@ -1122,7 +1124,7 @@ LParticleSystem:addSubSystem(config_tbl)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config_tbl` | table | Particle config table. |
+| `config_tbl` | table | Particle config table. Supports `seed` for deterministic sub-systems. |
 
 **Returns**
 

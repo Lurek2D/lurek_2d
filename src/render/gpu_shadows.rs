@@ -15,18 +15,18 @@
 //! - Cooperates with the central GPU renderer to map pipeline configurations.
 //! - Enables retro 2D dynamic shadowing effects using hardware distance field shaders.
 
-use crate::render::gpu_types::{ShadowEdgeGpu, ShadowComputeParams, ShadowDispatchInput};
+use crate::math::Mat3;
 use crate::render::gpu_light::MAX_SHADOW_LIGHTS;
 use crate::render::gpu_renderer::{LIGHT_SHADER, SHADOW_COMPUTE_SHADER};
 use crate::render::gpu_types::{LightVertex, MAX_LIGHT_QUADS};
-use crate::math::Mat3;
+use crate::render::gpu_types::{ShadowComputeParams, ShadowDispatchInput, ShadowEdgeGpu};
 
 use crate::render::gpu_pipeline::{blend_state_for, depth_stencil_state, GpuStencilMode};
 use crate::render::renderer::BlendMode;
 
-use crate::render::gpu_light::{LightGpuState, SHADOW_MAP_RES, SHADOW_COMPUTE_WORKGROUP_SIZE};
-use crate::light::occluder::Occluder;
 use super::GpuRenderer;
+use crate::light::occluder::Occluder;
+use crate::render::gpu_light::{LightGpuState, SHADOW_COMPUTE_WORKGROUP_SIZE, SHADOW_MAP_RES};
 
 pub(crate) fn collect_shadow_edges(
     light_x: f32,

@@ -20,6 +20,8 @@ pub use palette_lut::PaletteLUT;
 pub mod layers;
 /// Single image layer and layered image types.
 pub use layers::{ImageLayer, LayeredImage};
+/// Animated GIF encoding helpers.
+pub mod animated_gif;
 /// Online rectangle bin-packing algorithm for texture atlases.
 pub mod rect_packing;
 /// Image-to-render-command bridge helpers.
@@ -34,6 +36,8 @@ pub mod texture_atlas;
 pub mod visualization;
 /// Backward-compat re-export: province_grid moved to `crate::province::province_grid`.
 pub use crate::province::province_grid::{AdjacencyPair, ProvinceGrid, ProvinceShapeCacheEntry};
+/// Animated GIF export types.
+pub use animated_gif::{AnimatedGifOptions, AnimatedGifRepeat};
 /// Rectangle packing types.
 pub use rect_packing::{PackedRect, RectPacker};
 /// Texture upload helpers and texture metadata types.

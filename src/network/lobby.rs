@@ -217,21 +217,29 @@ fn extended_rooms() -> &'static Mutex<ExtendedRoomRegistry> {
 
 /// Mark a player as ready or not ready in a room. Creates room if it doesn't exist.
 pub fn set_player_ready(room_name: &str, peer_id: u32, ready: bool) {
-    let mut reg = extended_rooms().lock().expect("extended room registry poisoned");
-    let room = reg.rooms.entry(room_name.to_string()).or_insert_with(|| RoomState {
-        name: room_name.to_string(),
-        host_peer: peer_id,
-        players: HashMap::new(),
-        max_players: 8,
-    });
+    let mut reg = extended_rooms()
+        .lock()
+        .expect("extended room registry poisoned");
+    let room = reg
+        .rooms
+        .entry(room_name.to_string())
+        .or_insert_with(|| RoomState {
+            name: room_name.to_string(),
+            host_peer: peer_id,
+            players: HashMap::new(),
+            max_players: 8,
+        });
 
     if let Some(player) = room.players.get_mut(&peer_id) {
         player.ready = ready;
     } else {
-        room.players.insert(peer_id, PlayerState {
-            name: format!("Player{}", peer_id),
-            ready,
-        });
+        room.players.insert(
+            peer_id,
+            PlayerState {
+                name: format!("Player{}", peer_id),
+                ready,
+            },
+        );
         // Re-elect host: earliest peer_id becomes host if current host is gone
         if !room.players.contains_key(&room.host_peer) {
             if let Some(&min_peer) = room.players.keys().min() {
@@ -243,7 +251,9 @@ pub fn set_player_ready(room_name: &str, peer_id: u32, ready: bool) {
 
 /// Check if all players in a room are ready. Requires at least 2 players.
 pub fn is_all_ready(room_name: &str) -> bool {
-    let reg = extended_rooms().lock().expect("extended room registry poisoned");
+    let reg = extended_rooms()
+        .lock()
+        .expect("extended room registry poisoned");
     if let Some(room) = reg.rooms.get(room_name) {
         if room.players.len() < 2 {
             return false;
@@ -256,13 +266,17 @@ pub fn is_all_ready(room_name: &str) -> bool {
 
 /// Get room state as a cloned RoomState; returns None if room doesn't exist.
 pub fn get_room_state(room_name: &str) -> Option<RoomState> {
-    let reg = extended_rooms().lock().expect("extended room registry poisoned");
+    let reg = extended_rooms()
+        .lock()
+        .expect("extended room registry poisoned");
     reg.rooms.get(room_name).cloned()
 }
 
 /// Get list of player peer_ids in a room.
 pub fn get_player_list(room_name: &str) -> Vec<u32> {
-    let reg = extended_rooms().lock().expect("extended room registry poisoned");
+    let reg = extended_rooms()
+        .lock()
+        .expect("extended room registry poisoned");
     if let Some(room) = reg.rooms.get(room_name) {
         let mut peers: Vec<u32> = room.players.keys().copied().collect();
         peers.sort();

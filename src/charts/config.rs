@@ -56,8 +56,16 @@ pub struct ChartConfig {
     pub label_color: [f32; 4],
     /// Optional chart title.
     pub title: Option<String>,
+    /// Optional X-axis label.
+    pub x_label: Option<String>,
+    /// Optional Y-axis label.
+    pub y_label: Option<String>,
     /// Margins around the plot area.
     pub margin: ChartMargin,
+    /// Number of X-axis ticks to annotate for cartesian charts.
+    pub x_tick_count: u32,
+    /// Number of Y-axis ticks to annotate for cartesian charts.
+    pub y_tick_count: u32,
     /// Whether to draw background grid lines.
     pub show_grid: bool,
     /// Whether to draw a legend panel.
@@ -76,7 +84,11 @@ impl Default for ChartConfig {
             grid_color: [0.85, 0.85, 0.85, 1.0],
             label_color: [0.0, 0.0, 0.0, 1.0],
             title: None,
+            x_label: None,
+            y_label: None,
             margin: ChartMargin::default(),
+            x_tick_count: 5,
+            y_tick_count: 5,
             show_grid: true,
             show_legend: false,
             legend_width: 80.0,

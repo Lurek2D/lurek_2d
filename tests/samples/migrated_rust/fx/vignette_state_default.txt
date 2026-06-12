@@ -1,1 +1,0 @@
-VignetteState { enabled: false, strength: 0.5 }

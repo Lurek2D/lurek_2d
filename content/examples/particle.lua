@@ -7,6 +7,7 @@
 --@api-stub: lurek.particle.newSystem
 do
     local ps = lurek.particle.newSystem({
+        seed = 42,
         maxParticles = 128,
         emissionRate = 24,
         lifetimeMin = 0.25,
@@ -29,7 +30,7 @@ end
 --@api-stub: lurek.particle.fromTOML
 do
     local path = "save/particle_example.toml"
-    lurek.filesystem.write(path, "max_particles = 96\nemission_rate = 18.0\nlifetime_min = 0.2\nlifetime_max = 0.8\n")
+    lurek.filesystem.write(path, "seed = 42\nmax_particles = 96\nemission_rate = 18.0\nlifetime_min = 0.2\nlifetime_max = 0.8\n")
 
     local ps = lurek.particle.fromTOML(path)
     print("type = " .. ps:type())

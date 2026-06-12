@@ -15,7 +15,7 @@
 - Namespace: `lurek.audio`
 - Lua API surface: `94` functions, `7` types, `157` methods
 - Rust test path(s): tests/rust/unit/audio_tests.rs, tests/rust/unit/audio_sound_tests.rs
-- Lua test path(s): tests/lua/unit/test_audio.lua, tests/lua/unit/test_audio_bus.lua, tests/lua/unit/test_audio_dsp.lua, tests/lua/integration/test_audio_timer.lua, tests/lua/integration/test_audio_event.lua, tests/lua/evidence/test_evidence_audio.lua, tests/lua/evidence/test_evidence_audio_bus.lua
+- Lua test path(s): tests/lua_reorg/unit/test_audio.lua, tests/lua_reorg/unit/test_audio_bus.lua, tests/lua_reorg/unit/test_audio_dsp.lua, tests/lua_reorg/integration/test_audio_timer.lua, tests/lua_reorg/integration/test_audio_event.lua, tests/lua_reorg/evidence/test_evidence_audio.lua, tests/lua_reorg/evidence/test_evidence_audio_bus.lua
 
 ## Summary
 

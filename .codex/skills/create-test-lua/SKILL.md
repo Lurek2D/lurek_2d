@@ -1,14 +1,20 @@
 ---
 name: create-test-lua
-description: "Load this skill when creating or modifying Lua tests for public lurek APIs under tests/lua. Skip it for Rust-only internals, integration-only coverage, or visual evidence tests."
+description: "Load this skill when creating or modifying Lua tests for public lurek APIs under tests/lua_reorg. Skip it for Rust-only internals, integration-only coverage, or visual evidence tests."
 ---
 # create-test-lua
 
 ## Mission
 - Create or modify Lua tests that are canonical coverage for public `lurek.*` APIs.
+- Keep canonical owners in `tests/lua_reorg/unit/` with `1 API = 1 unit it() = 1 directly-adjacent @covers`.
+- For canonical non-unit suites, keep:
+  - `stress/security`: `1 API = 1 family marker = 1 it()`
+  - `evidence`: one `it()` may carry multiple `@evidence` markers if the artifact genuinely demonstrates each marked API; this category is for producing proof artifacts
+  - `golden`: compare current artifacts against stored reference artifacts or baselines
+  - `integration`: markers aligned with the APIs actually exercised by the scenario
 
 ## When To Load
-- Creating or modifying Lua tests for public lurek APIs under tests/lua.
+- Creating or modifying Lua tests for public lurek APIs under tests/lua_reorg.
 
 ## When To Skip
 - Rust-only internals, integration-only coverage, or visual evidence tests.
@@ -24,10 +30,12 @@ description: "Load this skill when creating or modifying Lua tests for public lu
 ## Workflow
 - Inspect existing test files, harness registration, and coverage output before writing.
 - Start from `tools/python.cmd tools/audit/unit_test_api_coverage.py` so the target module is framed by exact counts: total APIs, exactly-one-owner APIs, missing-owner APIs, and duplicated-owner APIs.
-- Modify the matching `tests/lua/` file when present; create a new file only for uncovered module coverage.
+- When editing non-unit canonical suites, also read `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py` for category-specific marker debt before changing files.
+- Modify the matching canonical `tests/lua_reorg/unit/test_<module>_unit.lua` file when present; create a new file only for uncovered module coverage.
 - Use directly-adjacent `@covers` markers, specific assertions, and `test_summary()`.
 - For canonical unit coverage, keep `1 API = 1 unit it() = 1 @covers` unless fixture/setup constraints force a temporary shared block.
-- Register new files in `tests/lua/harness.rs`.
+- Keep module functions first in the file, then userdata/object method coverage for that same module.
+- Register new files in `tests/lua_reorg_tests.rs`; that file is the canonical Lua test target registration.
 - Run Lua test target, structure audit, coverage audit, and CAG validation when needed.
 - Finish by reporting changed files and validation evidence.
 
@@ -42,16 +50,16 @@ description: "Load this skill when creating or modifying Lua tests for public lu
 - Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
 ## Companion File Index
-- Contracts: `tests/AGENTS.md`, `tests/lua/AGENTS.md`, `content/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "Lua unit tests public API coverage" --profile game --limit 10`, `tools/python.cmd tools/audit/unit_test_api_coverage.py`, `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/`, `cargo test --test lua_tests`, `tools/python.cmd tools/validate/cag_validate.py`
+- Contracts: `tests/AGENTS.md`, `tests/lua_reorg/AGENTS.md`, `content/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "Lua unit tests public API coverage" --profile game --limit 10`, `tools/python.cmd tools/audit/unit_test_api_coverage.py`, `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua_reorg/unit`, `cargo test --test lua_reorg_tests`, `tools/python.cmd tools/validate/cag_validate.py`
 - Owner profile: `tester`
 
 ## Common RAG Queries
 - Start with: `Lua unit tests public API coverage`, `Lua test coverage structure harness public API`, `tests contract Lua API coverage harness`
-- Focus areas first: `tests/lua/unit/`, `tests/lua/`, `content/examples/`, `docs/specs/`
+- Focus areas first: `tests/lua_reorg/unit/`, `tests/lua_reorg/`, `content/examples/`, `docs/specs/`
 - Append the target API or module name such as `input`, `render`, `physics`, `scene`
 
 ## References
-- `contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "Lua unit tests public API coverage" --profile game --limit 10, tools/python.cmd tools/audit/unit_test_api_coverage.py, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/, cargo test --test lua_tests, tools/python.cmd tools/validate/cag_validate.py`
+- `contracts: tests/AGENTS.md, tests/lua_reorg/AGENTS.md, content/AGENTS.md`
+- `tools: tools/python.cmd tools/rag/query.py "Lua unit tests public API coverage" --profile game --limit 10, tools/python.cmd tools/audit/unit_test_api_coverage.py, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua_reorg/unit, cargo test --test lua_reorg_tests, tools/python.cmd tools/validate/cag_validate.py`
 - `agent: tester`

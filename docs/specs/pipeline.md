@@ -14,7 +14,7 @@
 - Namespace: `lurek.pipeline`
 - Lua API surface: `3` functions, `5` types, `63` methods
 - Rust test path(s): tests/rust/unit/pipeline_tests.rs
-- Lua test path(s): tests/lua/unit/test_pipeline_core_unit.lua
+- Lua test path(s): tests/lua_reorg/unit/test_pipeline_core_unit.lua
 
 ## Summary
 

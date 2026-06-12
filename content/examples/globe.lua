@@ -34,6 +34,13 @@ do
     print("globe type = " .. g:type())
 end
 
+--@api-stub: lurek.globe.newRegistry
+do
+    local reg = lurek.globe.newRegistry()
+    print("registry created = " .. tostring(reg ~= nil))
+    print("registry type = " .. reg:type())
+end
+
 --@api-stub: lurek.globe.get
 do
     lurek.globe.new("my_globe")
@@ -596,44 +603,42 @@ end
 
 --@api-stub: LGlobeRegistry:get
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry get = " .. tostring(reg and reg:get("earth") or nil))
+    local reg = lurek.globe.newRegistry()
+    reg:new("earth")
+    print("registry get = " .. tostring(reg:get("earth")))
 end
 
 --@api-stub: LGlobeRegistry:names
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry names = " .. tostring(reg and reg:names() or nil))
+    local reg = lurek.globe.newRegistry()
+    reg:new("earth")
+    reg:new("mars")
+    print("registry names count = " .. #reg:names())
 end
 
 --@api-stub: LGlobeRegistry:new
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry new = " .. tostring(reg and reg:new("mars", { radius = 1.0 }) or nil))
+    local reg = lurek.globe.newRegistry()
+    print("registry new = " .. tostring(reg:new("mars", { radius = 1.0 })))
 end
 
 --@api-stub: LGlobeRegistry:remove
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry remove = " .. tostring(reg and reg:remove("mars") or nil))
+    local reg = lurek.globe.newRegistry()
+    reg:new("mars")
+    print("registry remove = " .. tostring(reg:remove("mars")))
 end
 
 --@api-stub: LGlobeRegistry:type
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry type = " .. tostring(reg and reg:type() or nil))
+    local reg = lurek.globe.newRegistry()
+    print("registry type = " .. tostring(reg:type()))
 end
 
 --@api-stub: LGlobeRegistry:typeOf
 do
-    local reg = nil
-    print("registry handle available = " .. tostring(reg ~= nil))
-    print("registry typeOf = " .. tostring(reg and reg:typeOf("LGlobeRegistry") or nil))
+    local reg = lurek.globe.newRegistry()
+    print("registry typeOf = " .. tostring(reg:typeOf("LGlobeRegistry")))
 end
 
 --@api-stub: lurek.globe.remove

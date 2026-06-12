@@ -6,7 +6,8 @@
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
 use crate::charts::render_utils::{
-    auto_range, draw_circle_filled, draw_line, fill_buffer, world_to_screen,
+    annotate_cartesian_chart, auto_range, draw_circle_filled, draw_line, fill_buffer,
+    world_to_screen,
 };
 use crate::color::Color;
 use crate::dataframe::frame::DataFrame;
@@ -111,16 +112,31 @@ impl ScatterPlot {
         fill_buffer(buffer, self.config.bg_color);
 
         let margin = &self.config.margin;
+        let legend_reserve = if self.config.show_legend {
+            self.config.legend_width
+        } else {
+            0.0
+        };
         let plot_x = margin.left;
         let plot_y = margin.top;
-        let plot_w = w as f32 - margin.left - margin.right;
+        let plot_w = w as f32 - margin.left - margin.right - legend_reserve;
         let plot_h = h as f32 - margin.top - margin.bottom;
 
         if plot_w <= 0.0 || plot_h <= 0.0 {
             return;
         }
 
-        let (min_x, max_x, min_y, max_y) = auto_range(&self.series);
+        let (auto_min_x, auto_max_x, auto_min_y, auto_max_y) = auto_range(&self.series);
+        let (min_x, max_x) = if self.x_range.1 > self.x_range.0 {
+            self.x_range
+        } else {
+            (auto_min_x, auto_max_x)
+        };
+        let (min_y, max_y) = if self.y_range.1 > self.y_range.0 {
+            self.y_range
+        } else {
+            (auto_min_y, auto_max_y)
+        };
 
         // Draw grid lines.
         if self.config.show_grid {
@@ -182,5 +198,27 @@ impl ScatterPlot {
                 draw_circle_filled(buffer, w, h, sx, sy, self.dot_radius, s.color);
             }
         }
+
+        let legend_entries: Vec<(&str, [f32; 4])> = self
+            .series
+            .iter()
+            .map(|series| (series.name.as_str(), series.color))
+            .collect();
+        annotate_cartesian_chart(
+            buffer,
+            w,
+            h,
+            &self.config,
+            plot_x,
+            plot_y,
+            plot_w,
+            plot_h,
+            min_x,
+            max_x,
+            min_y,
+            max_y,
+            &legend_entries,
+            None,
+        );
     }
 }

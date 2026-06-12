@@ -14,7 +14,8 @@ use super::config::{
 };
 use super::emission::{emission_offset, emission_shape_offset};
 use super::math::{
-    interpolate_alphas, interpolate_colors, interpolate_sizes, rand_normal, rand_range,
+    interpolate_alphas, interpolate_colors, interpolate_sizes, rand_f32, rand_normal, rand_range,
+    rand_u32, rand_usize_inclusive,
 };
 use super::particle::Particle;
 use crate::log_msg;
@@ -48,6 +49,10 @@ pub struct ParticleSystem {
     pub bounce_bounds: Option<BounceBounds>,
     /// Child sub-systems spawned on particle death.
     pub sub_systems: Vec<ParticleSystem>,
+    /// Initial deterministic RNG state used to reset repeatable systems.
+    pub rng_initial_state: u64,
+    /// Current deterministic RNG state used for emission and per-frame noise.
+    pub rng_state: u64,
     /// Particle pool indices waiting for a custom spawn-offset callback.
     pub pending_custom_offsets: Vec<usize>,
     /// `(world_x, world_y, vx, vy)` entries for particles that died this frame.
@@ -57,6 +62,7 @@ impl ParticleSystem {
     /// Create a new system from `config`; allocates the particle pool upfront.
     pub fn new(config: ParticleConfig) -> Self {
         log_msg!(debug, PE01, "max {} particles", config.max_particles);
+        let rng_initial_state = config.seed.unwrap_or_else(|| fastrand::u64(..));
         Self {
             particles: Vec::with_capacity(config.max_particles as usize),
             config,
@@ -70,6 +76,8 @@ impl ParticleSystem {
             attractors: Vec::new(),
             bounce_bounds: None,
             sub_systems: Vec::new(),
+            rng_initial_state,
+            rng_state: rng_initial_state,
             pending_custom_offsets: Vec::new(),
             pending_deaths: Vec::new(),
         }
@@ -125,8 +133,8 @@ impl ParticleSystem {
                 p.vy = new_vy;
             }
             if self.config.turbulence > f32::EPSILON {
-                p.vx += rand_normal() * self.config.turbulence * dt;
-                p.vy += rand_normal() * self.config.turbulence * dt;
+                p.vx += rand_normal(&mut self.rng_state) * self.config.turbulence * dt;
+                p.vy += rand_normal(&mut self.rng_state) * self.config.turbulence * dt;
             }
             let wx = p.x + self.emitter_x;
             let wy = p.y + self.emitter_y;
@@ -227,26 +235,49 @@ impl ParticleSystem {
     }
     /// Spawn a single particle using the current config; inserts according to `insert_mode`.
     fn emit_one(&mut self) {
-        let lifetime = rand_range(self.config.lifetime_min, self.config.lifetime_max);
-        let speed = rand_range(self.config.speed_min, self.config.speed_max);
-        let angle = self.config.direction + rand_range(-self.config.spread, self.config.spread);
-        let base_spin = rand_range(self.config.spin_min, self.config.spin_max);
-        let spin = base_spin * (1.0 - self.config.spin_variation * fastrand::f32());
-        let rotation = rand_range(self.config.rotation_min, self.config.rotation_max);
-        let radial_accel = rand_range(self.config.radial_accel_min, self.config.radial_accel_max);
+        let lifetime = rand_range(
+            &mut self.rng_state,
+            self.config.lifetime_min,
+            self.config.lifetime_max,
+        );
+        let speed = rand_range(
+            &mut self.rng_state,
+            self.config.speed_min,
+            self.config.speed_max,
+        );
+        let angle = self.config.direction
+            + rand_range(&mut self.rng_state, -self.config.spread, self.config.spread);
+        let base_spin = rand_range(
+            &mut self.rng_state,
+            self.config.spin_min,
+            self.config.spin_max,
+        );
+        let spin = base_spin * (1.0 - self.config.spin_variation * rand_f32(&mut self.rng_state));
+        let rotation = rand_range(
+            &mut self.rng_state,
+            self.config.rotation_min,
+            self.config.rotation_max,
+        );
+        let radial_accel = rand_range(
+            &mut self.rng_state,
+            self.config.radial_accel_min,
+            self.config.radial_accel_max,
+        );
         let tangential_accel = rand_range(
+            &mut self.rng_state,
             self.config.tangential_accel_min,
             self.config.tangential_accel_max,
         );
         let linear_damping = rand_range(
+            &mut self.rng_state,
             self.config.linear_damping_min,
             self.config.linear_damping_max,
         );
-        let size_variation = self.config.size_variation * fastrand::f32();
+        let size_variation = self.config.size_variation * rand_f32(&mut self.rng_state);
         let (offset_x, offset_y) = if self.config.emission_shape != EmissionShape::Point {
-            emission_shape_offset(&self.config.emission_shape)
+            emission_shape_offset(&self.config.emission_shape, &mut self.rng_state)
         } else {
-            emission_offset(&self.config)
+            emission_offset(&self.config, &mut self.rng_state)
         };
         let particle = Particle {
             x: offset_x,
@@ -263,7 +294,7 @@ impl ParticleSystem {
             size_variation,
             origin_x: offset_x,
             origin_y: offset_y,
-            shape_seed: fastrand::u32(..),
+            shape_seed: rand_u32(&mut self.rng_state, 0, u32::MAX),
         };
         let new_idx = match self.config.insert_mode {
             InsertMode::Top => {
@@ -279,7 +310,7 @@ impl ParticleSystem {
                 let idx = if self.particles.is_empty() {
                     0
                 } else {
-                    fastrand::usize(..=self.particles.len())
+                    rand_usize_inclusive(&mut self.rng_state, self.particles.len())
                 };
                 self.particles.insert(idx, particle);
                 idx
@@ -308,6 +339,7 @@ impl ParticleSystem {
         self.particles.clear();
         self.emit_accumulator = 0.0;
         self.emitter_age = 0.0;
+        self.rng_state = self.rng_initial_state;
         self.pending_custom_offsets.clear();
         self.pending_deaths.clear();
     }

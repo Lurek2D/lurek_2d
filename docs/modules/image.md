@@ -350,6 +350,45 @@ end
 
 ---
 
+### `lurek.image.saveGIF`
+
+Encodes a sequence of equally sized image frames as an animated GIF.
+
+```lua
+lurek.image.saveGIF(frames, filename, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `frames` | table | Array of `[LImageData](#limagedata)` frames in playback order. |
+| `filename` | string | Output filename relative to the current game directory. |
+| `opts?` | table | Optional GIF settings such as `delayMs`, `speed`, `loop`, or `loopCount`. |
+
+**Example**
+
+```lua
+do
+    local frames = {}
+
+    local a = lurek.image.newImageData(32, 32)
+    a:fill(20, 30, 60, 255)
+    a:drawCircle(10, 16, 6, 255, 210, 80, 255)
+    frames[1] = a
+
+    local b = lurek.image.newImageData(32, 32)
+    b:fill(20, 30, 60, 255)
+    b:drawCircle(22, 16, 6, 80, 210, 255, 255)
+    frames[2] = b
+
+    lurek.image.saveGIF(frames, "save/two_frame_orb.gif", { delayMs = 120, speed = 10 })
+    print("saved GIF")
+end
+```
+
+---
+
 ### `lurek.image.saveImage`
 
 Saves an image data object to a path under the current game directory.

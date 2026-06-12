@@ -4062,16 +4062,14 @@ impl GpuRenderer {
                 .default_texture_pipelines
                 .get(&key)
                 .expect("default texture pipeline should exist after ensure"),
-            GeometryKind::ColorInstanced => {
-                self.default_color_instanced_pipelines
-                    .get(&key)
-                    .expect("default instanced color pipeline should exist after ensure")
-            }
-            GeometryKind::TextureInstanced => {
-                self.default_texture_instanced_pipelines
-                    .get(&key)
-                    .expect("default instanced texture pipeline should exist after ensure")
-            }
+            GeometryKind::ColorInstanced => self
+                .default_color_instanced_pipelines
+                .get(&key)
+                .expect("default instanced color pipeline should exist after ensure"),
+            GeometryKind::TextureInstanced => self
+                .default_texture_instanced_pipelines
+                .get(&key)
+                .expect("default instanced texture pipeline should exist after ensure"),
         }
     }
     /// Compile and cache a user shader if its source or uniform signature changed.
@@ -4278,18 +4276,14 @@ impl GpuRenderer {
             .get(shader_key)
             .expect("shader cache should exist after ensure");
         match geometry {
-            GeometryKind::Color | GeometryKind::ColorInstanced => {
-                cache
-                    .color_pipelines
-                    .get(&key)
-                    .expect("custom color pipeline should exist after ensure")
-            }
-            GeometryKind::Texture | GeometryKind::TextureInstanced => {
-                cache
-                    .texture_pipelines
-                    .get(&key)
-                    .expect("custom texture pipeline should exist after ensure")
-            }
+            GeometryKind::Color | GeometryKind::ColorInstanced => cache
+                .color_pipelines
+                .get(&key)
+                .expect("custom color pipeline should exist after ensure"),
+            GeometryKind::Texture | GeometryKind::TextureInstanced => cache
+                .texture_pipelines
+                .get(&key)
+                .expect("custom texture pipeline should exist after ensure"),
         }
     }
     /// Return the uniform bind group for a cached user shader, if present.

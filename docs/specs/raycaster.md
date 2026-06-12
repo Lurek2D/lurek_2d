@@ -15,7 +15,7 @@
 - Namespace: `lurek.raycaster`
 - Lua API surface: `9` functions, `14` types, `67` methods
 - Rust test path(s): tests/rust/unit/raycaster_tests.rs
-- Lua test path(s): tests/lua/unit/test_raycaster_core_unit.lua, tests/lua/evidence/test_raycaster_evidence.lua
+- Lua test path(s): tests/lua_reorg/unit/test_raycaster_core_unit.lua, tests/lua_reorg/evidence/test_raycaster_evidence.lua
 
 ## Summary
 

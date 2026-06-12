@@ -13,4 +13,4 @@ pub mod timeline;
 
 // Re-export legacy API for backward compat
 pub use cinematic_legacy::{Cinematic, Cut};
-pub use timeline::{CinematicTimeline, Track, CinematicClip, ClipType, TimelineState};
+pub use timeline::{CinematicClip, CinematicTimeline, ClipType, TimelineState, Track};
