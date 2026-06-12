@@ -5,6 +5,10 @@
 //! Serves as the mutable write surface for format-driven serialization workflows.
 
 /// Hold buffer and cursor for binary writes.
+///
+/// # Fields
+/// - `buffer`: Growable output bytes.
+/// - `position`: Current write cursor.
 pub struct DataWriter {
     /// Store written bytes.
     buffer: Vec<u8>,

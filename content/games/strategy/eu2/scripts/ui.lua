@@ -13,6 +13,7 @@ local minimap = nil
 local minimap_revision = -1
 local owner_terrain_types = {}
 local army_object_type = 1
+local viewport_initialized = false
 
 local function country_name(state, tag)
     local c = state.countries[tag]
@@ -209,8 +210,9 @@ local function update_layout(state, view, hovered_gid, selected_gid)
     if lurek.ui.setViewport then
         lurek.ui.setViewport(ww, hh)
     end
-    if lurek.ui.updateResolution then
-        lurek.ui.updateResolution(ww, hh)
+    if not viewport_initialized and lurek.ui.setBaseResolution then
+        lurek.ui.setBaseResolution(ww, hh)
+        viewport_initialized = true
     end
 
     local player = state.countries[state.player_tag]

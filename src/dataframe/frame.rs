@@ -16,6 +16,12 @@ use std::cmp::Ordering;
 use std::collections::HashMap;
 #[derive(Debug, Clone, PartialEq)]
 /// Hold typed value stored in one dataframe cell.
+///
+/// # Variants
+/// - `Nil`: Missing value.
+/// - `Number`: Numeric value stored as `f64`.
+/// - `Text`: UTF-8 string value.
+/// - `Bool`: Boolean value.
 pub enum CellValue {
     /// Represent missing value.
     Nil,
@@ -90,14 +96,40 @@ impl std::fmt::Display for CellValue {
 }
 #[derive(Debug, Clone)]
 /// Select column by name or one-based index.
+///
+/// # Variants
+/// - `Name`: Resolve a column by exact string name.
+/// - `Index`: Resolve a column by one-based position.
 pub enum ColRef {
     /// Select column by exact name.
     Name(String),
     /// Select column by one-based position.
     Index(usize),
 }
+#[derive(Debug, Clone, PartialEq)]
+/// Describe one dataframe column for schema/introspection APIs.
+///
+/// # Fields
+/// - `name`: Column name in dataframe order.
+/// - `dtype`: Inferred logical type: `nil`, `number`, `text`, `bool`, or `mixed`.
+/// - `nullable`: True when at least one row contains `nil`.
+/// - `count`: Number of rows in the column.
+pub struct ColumnSchema {
+    /// Column name in dataframe order.
+    pub name: String,
+    /// Inferred logical type name.
+    pub dtype: String,
+    /// Whether this column has at least one nil cell.
+    pub nullable: bool,
+    /// Number of rows in the column.
+    pub count: usize,
+}
 #[derive(Clone)]
 /// Hold columnar dataframe storage.
+///
+/// # Fields
+/// - `column_names`: Ordered column names.
+/// - `data`: Column-major cell storage.
 pub struct DataFrame {
     /// Store ordered column names.
     pub(crate) column_names: Vec<String>,
@@ -105,6 +137,10 @@ pub struct DataFrame {
     pub(crate) data: Vec<Vec<CellValue>>,
 }
 /// Iterate rows as vectors of column-name and cell references.
+///
+/// # Fields
+/// - `df`: Source dataframe.
+/// - `next_row`: Next zero-based row index to emit.
 pub struct DataFrameRowIter<'a> {
     /// Store source dataframe reference.
     df: &'a DataFrame,
@@ -132,6 +168,9 @@ impl<'a> Iterator for DataFrameRowIter<'a> {
     }
 }
 /// Hold named tables for SQL-like database queries.
+///
+/// # Fields
+/// - `tables`: Dataframes keyed by SQL table name.
 pub struct Database {
     /// Store table map keyed by table name.
     tables: HashMap<String, DataFrame>,
@@ -164,6 +203,68 @@ impl DataFrame {
     /// Return row count alias. This function is part of the public API.
     pub fn count(&self) -> usize {
         self.nrows()
+    }
+    /// Return inferred schema metadata for every column.
+    pub fn schema(&self) -> Vec<ColumnSchema> {
+        self.column_names
+            .iter()
+            .enumerate()
+            .map(|(ci, name)| {
+                let mut dtype: Option<&'static str> = None;
+                let mut mixed = false;
+                let mut nullable = false;
+                for cell in &self.data[ci] {
+                    let current = match cell {
+                        CellValue::Nil => {
+                            nullable = true;
+                            continue;
+                        }
+                        CellValue::Number(_) => "number",
+                        CellValue::Text(_) => "text",
+                        CellValue::Bool(_) => "bool",
+                    };
+                    match dtype {
+                        Some(existing) if existing != current => mixed = true,
+                        None => dtype = Some(current),
+                        _ => {}
+                    }
+                }
+                ColumnSchema {
+                    name: name.clone(),
+                    dtype: if mixed {
+                        "mixed".to_string()
+                    } else {
+                        dtype.unwrap_or("nil").to_string()
+                    },
+                    nullable,
+                    count: self.nrows(),
+                }
+            })
+            .collect()
+    }
+    /// Return a compact textual dataframe or SQL query plan summary.
+    pub fn explain(&self, sql: Option<&str>) -> Result<String, String> {
+        if let Some(sql) = sql {
+            crate::dataframe::sql::explain_sql(self, sql)
+        } else {
+            let mut lines = vec![format!(
+                "DataFrame: rows={}, columns={}",
+                self.nrows(),
+                self.ncols()
+            )];
+            for column in self.schema() {
+                let nullable = if column.nullable {
+                    "nullable"
+                } else {
+                    "not-null"
+                };
+                lines.push(format!(
+                    "- {}: {} {}, count={}",
+                    column.name, column.dtype, nullable, column.count
+                ));
+            }
+            Ok(lines.join("\n"))
+        }
     }
     /// Resolve column selector to zero-based index.
     pub fn resolve_col(&self, col: ColRef) -> Result<usize, String> {
@@ -895,6 +996,15 @@ impl Default for Database {
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Select aggregation mode for grouped operations.
+///
+/// # Variants
+/// - `Mean`: Arithmetic mean over numeric values.
+/// - `Sum`: Numeric sum.
+/// - `Min`: Smallest numeric value.
+/// - `Max`: Largest numeric value.
+/// - `Count`: Number of non-nil values.
+/// - `First`: First value in group order.
+/// - `Last`: Last value in group order.
 pub enum AggFn {
     /// Compute arithmetic mean.
     Mean,

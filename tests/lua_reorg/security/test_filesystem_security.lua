@@ -34,7 +34,7 @@ describe("sandbox: blocked globals", function()
     -- @security sandbox.dofile
     it("dofile is unavailable or denied", function()
         if dofile == nil then
-            expect_true(true)
+            expect_nil(dofile)
             return
         end
 
@@ -65,8 +65,12 @@ describe("sandbox: restricted require", function()
 
     -- @security sandbox.package.loadlib
     it("package.loadlib is unavailable or denied", function()
-        if package == nil or package.loadlib == nil then
-            expect_true(true)
+        if package == nil then
+            expect_nil(package)
+            return
+        end
+        if package.loadlib == nil then
+            expect_nil(package.loadlib)
             return
         end
 

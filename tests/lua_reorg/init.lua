@@ -12,6 +12,11 @@
 --   end)
 --   test_summary() -- prints summary and returns true if all passed
 
+if package and package.loaded then
+    package.loaded["tests/lua_reorg/init"] = true
+    package.loaded["tests.lua_reorg.init"] = true
+end
+
 _G._test_results = {
     total   = 0,
     passed  = 0,

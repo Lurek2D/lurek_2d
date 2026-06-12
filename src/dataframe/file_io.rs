@@ -34,6 +34,10 @@ pub trait DataFrameFileStore {
 }
 
 /// Error category for dataframe persistence over an external storage layer.
+///
+/// # Variants
+/// - `Storage`: External storage layer failed while reading or writing.
+/// - `Format`: Dataframe serialization or parsing failed.
 #[derive(Debug)]
 pub enum DataFrameFileError<E> {
     /// Storage layer failed while reading or writing the target path.

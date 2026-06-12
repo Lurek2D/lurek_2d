@@ -477,7 +477,7 @@ pub struct LuaSpriteAnimator {
 impl LuaUserData for LuaSpriteAnimator {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- play --
-        /// Play or restart a named clip.
+        /// Plays or restarts a named animation clip.
         /// @param | name | string | Clip name.
         /// @param | restart | boolean? | Whether to restart when already playing this clip. Defaults to true.
         methods.add_method_mut(

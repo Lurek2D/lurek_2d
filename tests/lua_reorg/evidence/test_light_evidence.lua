@@ -6,6 +6,15 @@
 
 local OUT = evidence_output_dir("light")
 
+local function write_text(path, text)
+    if write_file then
+        write_file(path, text)
+    else
+        lurek.filesystem.write(path, text)
+    end
+    expect_evidence_created(path)
+end
+
 -- Helper: clamp to [0, 255]
 local function clamp255(v)
     return math.max(0, math.min(255, math.floor(v)))
@@ -17,6 +26,13 @@ local function radial_att(lx, ly, lr, px, py, intensity)
     local dy = py - ly
     local dist = math.sqrt(dx * dx + dy * dy)
     return math.max(0.0, 1.0 - dist / lr) * intensity
+end
+
+local function draw_outline(img, x, y, w, h, r, g, b, a)
+    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
 end
 
 -- @describe Evidence: lurek.light scenarios
@@ -77,6 +93,9 @@ describe("Evidence: lurek.light scenarios", function()
                     clamp255(8 + cb * att * 250),
                     255)
             end
+        end
+        for ring = 20, 80, 20 do
+            img:drawCircle(lx, ly, ring, 255, 214, 150, 96)
         end
 
         lurek.image.savePNG(img, path)
@@ -277,6 +296,92 @@ describe("Evidence: lurek.light scenarios", function()
         expect_evidence_created(path)
 
         for _, lo in ipairs(l_objects) do lo:remove() end
+        lurek.light.clear()
+    end)
+
+    -- @evidence lurek.light.drawToImage
+    -- @evidence lurek.image.savePNG
+    it("PNG: light contact sheet", function()
+        ensure_evidence_dir("light")
+        local files = {
+            "light_falloff.png",
+            "light_shadow_occlusion.png",
+            "light_color_mix.png",
+            "light_normal_map.png",
+        }
+
+        local canvas = lurek.image.newImageData(456, 456)
+        canvas:fill(12, 14, 20, 255)
+        local positions = {
+            { 16, 16 }, { 232, 16 }, { 16, 232 }, { 232, 232 },
+        }
+        for i, name in ipairs(files) do
+            local src = lurek.image.newImageData(OUT .. name)
+            local x, y = positions[i][1], positions[i][2]
+            canvas:paste(src, x, y)
+            draw_outline(canvas, x, y, 200, 200, 232, 236, 244, 255)
+        end
+
+        local path = OUT .. "light_contact_sheet.png"
+        lurek.image.savePNG(canvas, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @evidence lurek.light.getAmbient
+    -- @evidence lurek.light.setGroupEnabled
+    -- @evidence lurek.light.setGroupIntensity
+    -- @evidence lurek.light.setGroupColor
+    -- @evidence lurek.light.advanceFlickers
+    -- @evidence lurek.light.syncAmbient
+    -- @evidence lurek.light.getGodRayHints
+    -- @evidence lurek.light.getNormalMapHints
+    -- @evidence LLight:setGroupId
+    -- @evidence LLight:setFlicker
+    -- @evidence LLight:setFlickerEnabled
+    -- @evidence LLight:transitionTo
+    -- @evidence LLight:updateTransition
+    -- @evidence LLight:transitionProgress
+    -- @evidence LLight:stopTransition
+    it("TXT: light grouping, flicker, and transition trace", function()
+        ensure_evidence_dir("light")
+        lurek.light.clear()
+        lurek.light.setAmbient(0.08, 0.10, 0.14, 1.0)
+
+        local left = lurek.light.newLight(42, 64, 56, { intensity = 1.0 })
+        local right = lurek.light.newLight(124, 64, 56, { intensity = 0.8 })
+        left:setGroupId(7)
+        right:setGroupId(7)
+        lurek.light.setGroupColor(7, 0.92, 0.64, 0.28, 1.0)
+        lurek.light.setGroupIntensity(7, 0.55)
+        lurek.light.setGroupEnabled(7, true)
+
+        left:setFlicker(9.0, 0.18)
+        left:setFlickerEnabled(true)
+        lurek.light.advanceFlickers(0.12)
+
+        left:transitionTo({ radius = 88.0, intensity = 0.35 }, 1.0)
+        local active_mid = left:updateTransition(0.5)
+        local progress_mid = left:transitionProgress()
+        left:stopTransition()
+        local active_after_stop = left:updateTransition(0.1)
+
+        local ar, ag, ab, aa = lurek.light.getAmbient()
+        local sr, sg, sb, sa = lurek.light.syncAmbient()
+        local god_rays = lurek.light.getGodRayHints()
+        local normals = lurek.light.getNormalMapHints()
+        local lines = {
+            string.format("ambient=%.3f,%.3f,%.3f,%.3f", ar, ag, ab, aa),
+            string.format("synced=%.3f,%.3f,%.3f,%.3f", sr, sg, sb, sa),
+            "transition_active_mid=" .. tostring(active_mid),
+            "transition_progress_mid=" .. tostring(progress_mid),
+            "transition_active_after_stop=" .. tostring(active_after_stop),
+            "god_ray_hint_count=" .. tostring(#god_rays),
+            "normal_map_hint_count=" .. tostring(#normals),
+        }
+
+        write_text(OUT .. "light_group_transition_flicker_trace.txt", table.concat(lines, "\n") .. "\n")
+        left:remove()
+        right:remove()
         lurek.light.clear()
     end)
 

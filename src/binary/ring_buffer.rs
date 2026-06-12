@@ -5,6 +5,12 @@
 //! Serves as a compact buffering primitive for streaming and rolling-window scenarios.
 
 /// Hold circular queue storage with overwrite semantics.
+///
+/// # Fields
+/// - `data`: Ring storage slots.
+/// - `capacity`: Maximum number of buffered elements.
+/// - `head`: Index of the oldest element.
+/// - `len`: Current number of elements.
 pub struct RingBuffer<T: Clone> {
     /// Store slots for buffered values.
     data: Vec<Option<T>>,
@@ -102,17 +108,17 @@ impl<T: Clone> RingBuffer<T> {
     }
     /// Iterate elements from oldest to newest.
     pub fn iter(&self) -> impl Iterator<Item = &T> {
-        (0..self.len).map(move |i| {
+        (0..self.len).filter_map(move |i| {
             let physical = (self.head + i) % self.capacity;
-            self.data[physical].as_ref().unwrap()
+            self.data[physical].as_ref()
         })
     }
     /// Clone elements into Vec from oldest to newest.
     pub fn to_vec(&self) -> Vec<T> {
         (0..self.len)
-            .map(|i| {
+            .filter_map(|i| {
                 let physical = (self.head + i) % self.capacity;
-                self.data[physical].clone().unwrap()
+                self.data[physical].clone()
             })
             .collect()
     }
@@ -125,9 +131,9 @@ impl<T: Clone + Copy> RingBuffer<T> {
     /// Copy elements into Vec from oldest to newest.
     pub fn collect_copy(&self) -> Vec<T> {
         (0..self.len)
-            .map(|i| {
+            .filter_map(|i| {
                 let physical = (self.head + i) % self.capacity;
-                *self.data[physical].as_ref().unwrap()
+                self.data[physical].as_ref().copied()
             })
             .collect()
     }

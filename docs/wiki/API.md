@@ -17,20 +17,20 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8876 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (31534 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8909 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (31670 lines)
 
 ## Coverage
 
 - 70 modules
-- 5807 functions and methods
+- 5833 functions and methods
 - 100.0% documented
 
 ## API Module Index
 
 | API | Functions | Types | Purpose |
 |---|---:|---:|---|
-| [lurek.agent](Module-agent) | 17 | 10 | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. |
+| [lurek.agent](Module-agent) | 20 | 10 | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. |
 | [lurek.ai](Module-ai) | 36 | 23 | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
 | [lurek.animation](Module-animation) | 7 | 5 | Sprite animation: source-rect changes over time. Imports only math; headless-testable. |
 | [lurek.asset](Module-asset) | 23 | 1 | Ref-counted media cache: load images, fonts, audio, and text assets by path; hold LAssetHandle values to keep them alive. |
@@ -63,7 +63,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.image](Module-image) | 13 | 5 | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
 | [lurek.input](Module-input) | 89 | 3 | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
 | [lurek.layout](Module-layout) | 5 | 0 | Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space. |
-| [lurek.learning](Module-learning) | 20 | 18 | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits. |
+| [lurek.learning](Module-learning) | 21 | 19 | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits. |
 | [lurek.light](Module-light) | 20 | 2 | 2D point-light data model. Pure container; renderer owns all GPU work. |
 | [lurek.log](Module-log) | 18 | 0 | Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG. |
 | [lurek.mapblock](Module-mapblock) | 10 | 9 | Procedural map block generation: configurable tiles, constraints, multi-level, scripted pipelines. |
@@ -96,7 +96,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.tilemap](Module-tilemap) | 29 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [lurek.timer](Module-timer) | 21 | 1 | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |
 | [lurek.tween](Module-tween) | 15 | 6 | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
-| [lurek.ui](Module-ui) | 91 | 41 | Retained-mode widget system; rendering deferred through RenderCommand. |
+| [lurek.ui](Module-ui) | 95 | 41 | Retained-mode widget system; rendering deferred through RenderCommand. |
 | [lurek.validator](Module-validator) | 3 | 1 | Content validation engine: asset checks, import resolution, API compliance, custom rules. |
 | [lurek.visibility](Module-visibility) | 2 | 2 | Universal fog-of-war / discovery / line-of-sight system; geometry-agnostic, consumed by province/globe/minimap. |
 | [lurek.window](Module-window) | 55 | 0 | Window control via deferred WindowState writes; winit ops applied at frame start on the main thread. |

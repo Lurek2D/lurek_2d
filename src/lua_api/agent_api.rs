@@ -1048,6 +1048,7 @@ impl UserData for LuaAgentMemory {
 /// Registers the `lurek.agent` API in the global environment.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let agent_table = lua.create_table()?;
+    let module_runtime = Rc::new(RefCell::new(runtime::LuaModuleAgentRuntime::new()));
 
     // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ new Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates a new configurable LLM Agent runtime instance.
@@ -1148,45 +1149,48 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
 
     // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ completeAsync Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
+    let complete_async_runtime = Rc::clone(&module_runtime);
     /// Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
     /// @param | prompt | string | Prompt text.
     /// @param | callback | function | Called with `(text, err)` on completion (`err` is `nil` on success).
-    /// @return | nil | No value is returned.
+    /// @return | integer | Callback ID used to cancel or track the request.
     agent_table.set(
         "completeAsync",
         lua.create_function(move |lua, (prompt, callback): (String, mlua::Function)| {
             let cfg = read_global_config();
-            let timeout_secs = (cfg.timeout_ms / 1000).max(1);
-            let base_url = cfg.base_url.clone();
-            let model = cfg.model.clone();
+            complete_async_runtime
+                .borrow_mut()
+                .complete_async(lua, prompt, callback, cfg)
+        })?,
+    )?;
 
-            // Capture callback in registry so it can cross the thread boundary safely.
-            let key = lua.create_registry_value(callback)?;
-            // We cannot move a RegistryKey into std::thread::spawn directly because Lua is not Send.
-            // Use a shared result channel instead.
-            let (tx, rx) = std::sync::mpsc::channel::<Result<String, String>>();
-            std::thread::spawn(move || {
-                let result = ollama_generate(&base_url, &model, &prompt, "", timeout_secs);
-                let _ = tx.send(result);
-            });
+    // --- update ---
+    let update_runtime = Rc::clone(&module_runtime);
+    /// Polls module-level asynchronous completions and dispatches callbacks.
+    /// @return | nil | No value is returned.
+    agent_table.set(
+        "update",
+        lua.create_function(move |lua, ()| update_runtime.borrow_mut().update(lua))?,
+    )?;
 
-            // Poll results in current Lua state context.
-            match rx.recv() {
-                Ok(Ok(text)) => {
-                    let cb: mlua::Function = lua.registry_value(&key)?;
-                    lua.remove_registry_value(key)?;
-                    cb.call::<_, ()>((text, mlua::Value::Nil))?;
-                }
-                Ok(Err(err)) => {
-                    let cb: mlua::Function = lua.registry_value(&key)?;
-                    lua.remove_registry_value(key)?;
-                    cb.call::<_, ()>((mlua::Value::Nil, err))?;
-                }
-                Err(_) => {
-                    lua.remove_registry_value(key)?;
-                }
-            }
-            Ok(())
+    // --- pendingCount ---
+    let pending_runtime = Rc::clone(&module_runtime);
+    /// Returns the number of module-level asynchronous completions still in flight.
+    /// @return | integer | Number of pending requests.
+    agent_table.set(
+        "pendingCount",
+        lua.create_function(move |_, ()| Ok(pending_runtime.borrow().pending_count()))?,
+    )?;
+
+    // --- cancel ---
+    let cancel_runtime = Rc::clone(&module_runtime);
+    /// Cancels a module-level asynchronous completion by callback ID.
+    /// @param | callback_id | integer | ID returned by `completeAsync`.
+    /// @return | nil | No value is returned.
+    agent_table.set(
+        "cancel",
+        lua.create_function(move |lua, callback_id: usize| {
+            cancel_runtime.borrow_mut().cancel(lua, callback_id)
         })?,
     )?;
 
@@ -1348,14 +1352,16 @@ mod runtime {
     //! - `BatchDispatcher` packs multi-agent batch IDs into a single `usize` callback, collects partial results, and fires the Lua callback once all responses arrive.
     //! - `lua_to_json` converts arbitrary Lua values â€” primitives, arrays, and mixed tables â€” to `serde_json::Value` for model option serialization.
 
+    use super::HashMap;
     use crate::agent::orchestration::{
         build_system_context, make_system_task as build_system_task, pack_batch_callback_id,
         unpack_batch_callback_id,
     };
-    use crate::agent::{AISystemState, AgentClient, AgentError, AgentRequest, AgentState};
+    use crate::agent::{
+        AISystemState, AgentClient, AgentError, AgentRequest, AgentState, GlobalLlmConfig,
+    };
     use mlua::prelude::*;
     use mlua::{Function, Lua, RegistryKey, Table, Value};
-    use std::collections::HashMap;
     use std::rc::Rc;
 
     // â”€â”€â”€ BatchDispatcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -1382,6 +1388,88 @@ mod runtime {
     }
 
     pub(crate) use crate::agent::AgentBatchTask;
+
+    /// Module-level async runtime backing `lurek.agent.completeAsync`.
+    pub(crate) struct LuaModuleAgentRuntime {
+        client: Rc<AgentClient>,
+        callback_registry: HashMap<usize, RegistryKey>,
+        next_callback_id: usize,
+    }
+
+    impl LuaModuleAgentRuntime {
+        /// Creates an empty runtime with its own background client.
+        pub(crate) fn new() -> Self {
+            Self {
+                client: Rc::new(AgentClient::new()),
+                callback_registry: HashMap::new(),
+                next_callback_id: 1,
+            }
+        }
+
+        /// Queues a module-level completion and returns its callback ID immediately.
+        pub(crate) fn complete_async(
+            &mut self,
+            lua: &Lua,
+            prompt: String,
+            callback: Function,
+            cfg: GlobalLlmConfig,
+        ) -> LuaResult<usize> {
+            let callback_id = self.next_callback_id;
+            self.next_callback_id += 1;
+
+            let callback_key = lua.create_registry_value(callback)?;
+            self.callback_registry.insert(callback_id, callback_key);
+
+            let request = AgentRequest {
+                url: format!("{}/api/generate", cfg.base_url.trim_end_matches('/')),
+                model: cfg.model,
+                prompt,
+                system: String::new(),
+                format: "text".to_string(),
+                options: serde_json::Value::Null,
+                callback_id,
+                max_retries: 0,
+                timeout_secs: (cfg.timeout_ms / 1000).max(1),
+            };
+
+            self.client
+                .send_prompt(request)
+                .map_err(LuaError::runtime)?;
+            Ok(callback_id)
+        }
+
+        /// Polls completed module-level completions and dispatches `(text, err)` callbacks.
+        pub(crate) fn update(&mut self, lua: &Lua) -> LuaResult<()> {
+            for response in self.client.poll() {
+                let Some(callback_key) = self.callback_registry.remove(&response.callback_id)
+                else {
+                    continue;
+                };
+
+                let callback: Function = lua.registry_value(&callback_key)?;
+                lua.remove_registry_value(callback_key)?;
+                match response.body {
+                    Ok(text) => callback.call::<_, ()>((text, Value::Nil))?,
+                    Err(err) => callback.call::<_, ()>((Value::Nil, err.to_string()))?,
+                }
+            }
+            Ok(())
+        }
+
+        /// Cancels a queued request and drops its callback.
+        pub(crate) fn cancel(&mut self, lua: &Lua, callback_id: usize) -> LuaResult<()> {
+            self.client.cancel(callback_id);
+            if let Some(callback_key) = self.callback_registry.remove(&callback_id) {
+                lua.remove_registry_value(callback_key)?;
+            }
+            Ok(())
+        }
+
+        /// Returns the number of in-flight module-level requests.
+        pub(crate) fn pending_count(&self) -> usize {
+            self.client.in_flight_count()
+        }
+    }
 
     impl BatchDispatcher {
         /// Creates an empty [`BatchDispatcher`] with the ID counter starting at 1.
@@ -1732,6 +1820,7 @@ mod runtime {
 
         /// Executes Lua code inside the active VM and returns `true` on success.
         pub(crate) fn eval_code(&self, lua: &Lua, code: String) -> LuaResult<bool> {
+            // LUA-EVAL-JUSTIFIED: evalCode is an explicit debug/introspection API.
             let chunk = lua.load(&code);
             match chunk.exec() {
                 Ok(_) => Ok(true),

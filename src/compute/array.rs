@@ -11,6 +11,11 @@ const MAX_ELEMENTS: usize = 268_435_456;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Selects scalar storage type used by an NdArray instance.
+///
+/// # Variants
+/// - `Float32`: Store values as IEEE-754 32-bit floats.
+/// - `Float64`: Store values as IEEE-754 64-bit floats.
+/// - `Int32`: Store values as signed 32-bit integers.
 pub enum DataType {
     /// Stores values as IEEE-754 32-bit floats.
     Float32,
@@ -51,6 +56,12 @@ impl DataType {
 
 #[derive(Debug, Clone)]
 /// Stores dense n-dimensional array metadata and raw typed element bytes.
+///
+/// # Fields
+/// - `shape`: Axis lengths in row-major order.
+/// - `strides`: Row-major strides in elements.
+/// - `dtype`: Scalar storage type.
+/// - `data`: Contiguous typed element bytes.
 pub struct NdArray {
     /// Stores axis lengths in row-major order.
     shape: Vec<usize>,

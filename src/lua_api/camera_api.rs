@@ -922,7 +922,7 @@ impl LuaUserData for LuaCameraWalker {
             Ok(())
         });
         // -- getCamera --
-        /// Returns the associated camera.
+        /// Returns the camera associated with this walker.
         /// @return | LCamera | Camera that follows the walker.
         methods.add_method("getCamera", |lua, this, ()| {
             lua.create_userdata(make_lua_camera(

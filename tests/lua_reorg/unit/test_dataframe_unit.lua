@@ -156,6 +156,26 @@ describe("dataframe shape and mutation", function()
         expect_equal("score", cols[3])
     end)
 
+    -- @covers LDataFrame:schema
+    it("schema returns inferred column metadata", function()
+        local schema = make_test_df():schema()
+        expect_equal("name", schema[1].name)
+        expect_equal("text", schema[1].dtype)
+        expect_equal(false, schema[1].nullable)
+        expect_equal(3, schema[1].count)
+        expect_equal("number", schema[2].dtype)
+    end)
+
+    -- @covers LDataFrame:explain
+    it("explain returns dataframe and sql plan summaries", function()
+        local df = make_test_df()
+        local frame_plan = df:explain()
+        expect_true(string.find(frame_plan, "DataFrame: rows=3", 1, true) ~= nil)
+        local sql_plan = df:explain("SELECT name FROM self WHERE age > 28 ORDER BY score DESC LIMIT 2")
+        expect_true(string.find(sql_plan, "SQL DataFrame Plan", 1, true) ~= nil)
+        expect_true(string.find(sql_plan, "order_by: score DESC", 1, true) ~= nil)
+    end)
+
     -- @covers LDataFrame:getValue
     it("getValue reads a single cell", function()
         expect_near(92, make_test_df():getValue(3, "score"), 1e-5)

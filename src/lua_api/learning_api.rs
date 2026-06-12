@@ -3,9 +3,9 @@
 use super::SharedState;
 use crate::learning::{
     Activation, Bandit, BanditStrategy, Conv2D, EvolutionaryLayer, FrameStack, GeneticAlgorithm,
-    GruLayer, LstmLayer, LurekTensor, MaxPool2D, MultiHeadAttention, NeuralNet, Neuroevolution,
-    OnnxModel, PositionalEncoding, QLearner, SpaceSpec, TransformerDecoderBlock,
-    TransformerEncoderBlock,
+    GruLayer, LstmLayer, LurekNeuralEngine, LurekTensor, MaxPool2D, MultiHeadAttention,
+    NeuralBlock, NeuralLayer, NeuralNet, Neuroevolution, OnnxModel, PositionalEncoding, QLearner,
+    SpaceSpec, TransformerDecoderBlock, TransformerEncoderBlock,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -492,6 +492,148 @@ impl LuaUserData for LuaNeuroevolution {
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LNeuroevolution" || name == "LObject")
+        });
+    }
+}
+
+/// Lua wrapper over a heterogeneous neural engine with flat parameter packing.
+#[derive(Clone)]
+pub(crate) struct LuaNeuralEngine {
+    /// Shared block engine assembled from Lua.
+    pub(crate) inner: Rc<RefCell<LurekNeuralEngine>>,
+}
+
+type LuaEngineConv2DArgs = (
+    usize,
+    usize,
+    usize,
+    usize,
+    Option<usize>,
+    Option<usize>,
+    Option<usize>,
+    Option<usize>,
+);
+
+impl LuaUserData for LuaNeuralEngine {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addDense --
+        /// Appends a dense neural layer block.
+        /// @param | inputs | integer | Input vector size.
+        /// @param | outputs | integer | Output vector size.
+        /// @param | activation | string? | Activation name; defaults to `relu`.
+        methods.add_method_mut(
+            "addDense",
+            |_, this, (inputs, outputs, activation): (usize, usize, Option<String>)| {
+                let act = activation
+                    .as_deref()
+                    .map(Activation::from_str)
+                    .unwrap_or(Activation::ReLU);
+                this.inner
+                    .borrow_mut()
+                    .add_block(NeuralBlock::Dense(NeuralLayer::new(inputs, outputs, act)));
+                Ok(())
+            },
+        );
+        // -- addConv2D --
+        /// Appends a convolutional 2D block to this engine.
+        /// @param | args | table | Tuple arguments: in_channels, out_channels, kernel_h, kernel_w, optional stride_h, stride_w, pad_h, pad_w.
+        methods.add_method_mut("addConv2D", |_, this, args: LuaEngineConv2DArgs| {
+            let (in_channels, out_channels, kernel_h, kernel_w, stride_h, stride_w, pad_h, pad_w) =
+                args;
+            this.inner
+                .borrow_mut()
+                .add_block(NeuralBlock::Conv2D(Conv2D::new(
+                    in_channels,
+                    out_channels,
+                    (kernel_h, kernel_w),
+                    (stride_h.unwrap_or(1), stride_w.unwrap_or(1)),
+                    (pad_h.unwrap_or(0), pad_w.unwrap_or(0)),
+                )));
+            Ok(())
+        });
+        // -- addMaxPool2D --
+        /// Appends a non-trainable MaxPool2D block.
+        /// @param | kernel_h | integer | Kernel height.
+        /// @param | kernel_w | integer | Kernel width.
+        /// @param | stride_h | integer? | Vertical stride; defaults to kernel_h.
+        /// @param | stride_w | integer? | Horizontal stride; defaults to kernel_w.
+        methods.add_method_mut(
+            "addMaxPool2D",
+            |_,
+             this,
+             (kernel_h, kernel_w, stride_h, stride_w): (
+                usize,
+                usize,
+                Option<usize>,
+                Option<usize>,
+            )| {
+                this.inner
+                    .borrow_mut()
+                    .add_block(NeuralBlock::MaxPool2D(MaxPool2D::new(
+                        (kernel_h, kernel_w),
+                        (stride_h.unwrap_or(kernel_h), stride_w.unwrap_or(kernel_w)),
+                    )));
+                Ok(())
+            },
+        );
+        // -- addTransformerEncoder --
+        /// Appends a transformer encoder block.
+        /// @param | d_model | integer | Model width.
+        /// @param | heads | integer | Number of attention heads.
+        /// @param | ff_hidden | integer | Feed-forward hidden width.
+        methods.add_method_mut(
+            "addTransformerEncoder",
+            |_, this, (d_model, heads, ff_hidden): (usize, usize, usize)| {
+                let block =
+                    TransformerEncoderBlock::new(d_model, heads, ff_hidden).map_err(|e| {
+                        LuaError::RuntimeError(format!("LNeuralEngine:addTransformerEncoder: {e}"))
+                    })?;
+                this.inner
+                    .borrow_mut()
+                    .add_block(NeuralBlock::TransformerEncoder(Box::new(block)));
+                Ok(())
+            },
+        );
+        // -- blockCount --
+        /// Returns the number of blocks in this engine.
+        /// @return | integer | Block count.
+        methods.add_method("blockCount", |_, this, ()| {
+            Ok(this.inner.borrow().block_count() as i64)
+        });
+        // -- paramCount --
+        /// Returns the total trainable parameter count.
+        /// @return | integer | Parameter count.
+        methods.add_method("paramCount", |_, this, ()| {
+            Ok(this.inner.borrow().param_count() as i64)
+        });
+        // -- setWeights --
+        /// Replaces all trainable parameters from a flat numeric array.
+        /// @param | weights | table | Flat parameter array in block insertion order.
+        /// @return | boolean | True when the supplied weight count matches the engine shape.
+        methods.add_method_mut("setWeights", |_, this, weights: Vec<f32>| {
+            Ok(this.inner.borrow_mut().set_weights(&weights))
+        });
+        // -- getWeights --
+        /// Returns all trainable parameters in block insertion order.
+        /// @return | number[] | Flat parameter array.
+        methods.add_method("getWeights", |lua, this, ()| {
+            let weights = this.inner.borrow().get_weights();
+            let tbl = lua.create_table()?;
+            for (i, value) in weights.into_iter().enumerate() {
+                tbl.raw_set(i + 1, value)?;
+            }
+            Ok(tbl)
+        });
+        // -- type --
+        /// Returns the Lua-visible type name for this neural engine handle.
+        /// @return | string | The string `LNeuralEngine`.
+        methods.add_method("type", |_, _, ()| Ok("LNeuralEngine"));
+        // -- typeOf --
+        /// Returns whether this neural engine handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LNeuralEngine` and `Object`.
+        /// @return | boolean | True when the supplied type name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LNeuralEngine" || name == "LObject")
         });
     }
 }
@@ -1373,6 +1515,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|_, ()| {
             Ok(LuaNeuralNet {
                 inner: Rc::new(RefCell::new(NeuralNet::new())),
+            })
+        })?,
+    )?;
+    // -- newEngine --
+    /// Creates an empty heterogeneous neural engine.
+    /// @return | LNeuralEngine | New neural engine handle.
+    tbl.set(
+        "newEngine",
+        lua.create_function(|_, ()| {
+            Ok(LuaNeuralEngine {
+                inner: Rc::new(RefCell::new(LurekNeuralEngine::new())),
             })
         })?,
     )?;

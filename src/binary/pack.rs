@@ -10,6 +10,14 @@
 use super::byte_data::ByteData;
 #[derive(Debug, Clone)]
 /// Hold value variants used by pack and unpack formats.
+///
+/// # Variants
+/// - `Int`: Signed integer value.
+/// - `UInt`: Unsigned integer value.
+/// - `Float`: 32-bit floating-point value.
+/// - `Double`: 64-bit floating-point value.
+/// - `Str`: UTF-8 string value.
+/// - `Bytes`: Raw byte payload.
 pub enum PackValue {
     /// Store signed integer value.
     Int(i64),

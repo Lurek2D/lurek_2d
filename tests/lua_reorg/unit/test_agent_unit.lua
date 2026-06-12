@@ -20,6 +20,19 @@ local function configure_dead_agent_backend()
     })
 end
 
+local function poll_module_agent_until(predicate)
+    for _ = 1, 80 do
+        lurek.agent.update()
+        if predicate() then
+            return true
+        end
+        if lurek.timer and lurek.timer.sleep then
+            lurek.timer.sleep(0.02)
+        end
+    end
+    return predicate()
+end
+
 -- @describe lurek.agent module
 describe("lurek.agent module", function()
 
@@ -590,16 +603,39 @@ describe("lurek.agent module", function()
         expect_not_nil(err)
     end)
     -- @covers lurek.agent.completeAsync
-    it("lurek.agent.completeAsync reports an error through the callback when the backend is unreachable", function()
+    it("lurek.agent.completeAsync returns immediately and reports through polling", function()
         configure_dead_agent_backend()
         local seen_text = nil
         local seen_err = nil
-        lurek.agent.completeAsync("what is lua?", function(text, err)
+        local id = lurek.agent.completeAsync("what is lua?", function(text, err)
             seen_text = text
             seen_err = err
         end)
+        expect_type("number", id)
         expect_true(seen_text == nil, "unreachable backend should not produce text")
+        local delivered = poll_module_agent_until(function()
+            return seen_err ~= nil
+        end)
+        expect_true(delivered, "async callback should be delivered by update")
         expect_type("string", seen_err)
+    end)
+    -- @covers lurek.agent.update
+    it("lurek.agent.update polls module-level async completions", function()
+        expect_no_error(function()
+            lurek.agent.update()
+        end)
+    end)
+    -- @covers lurek.agent.pendingCount
+    it("lurek.agent.pendingCount returns a non-negative integer", function()
+        local n = lurek.agent.pendingCount()
+        expect_type("number", n)
+        expect_true(n >= 0, "pendingCount must be non-negative")
+    end)
+    -- @covers lurek.agent.cancel
+    it("lurek.agent.cancel accepts a module-level callback ID", function()
+        expect_no_error(function()
+            lurek.agent.cancel(999999)
+        end)
     end)
     -- @covers lurek.agent.completeJson
     it("lurek.agent.completeJson raises a Lua error when the backend is unreachable", function()

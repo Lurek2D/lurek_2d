@@ -16,6 +16,13 @@ local function draw_rect_native(img, x0, y0, w, h, r, g, b)
     img:drawRect(x0, y0, w, h, r, g, b, 255)
 end
 
+local function draw_outline(img, x, y, w, h, r, g, b, a)
+    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
+end
+
 -- @describe Evidence: lurek.minimap API + PNG visualization
 describe("Evidence: lurek.minimap API + PNG visualization", function()
 
@@ -98,24 +105,43 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_blips.png"
 
-        local GRID = 16
-        local CELL = 8
+        local GRID = 12
+        local CELL = 16
         local W, H = GRID * CELL, GRID * CELL
 
         local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
+        mm:setTerrainColor(0, 28 / 255, 54 / 255, 30 / 255, 1.0)
+        mm:setTerrainColor(1, 46 / 255, 76 / 255, 110 / 255, 1.0)
+        mm:setTerrainColor(2, 96 / 255, 82 / 255, 48 / 255, 1.0)
+        for y = 1, GRID do
+            for x = 1, GRID do
+                local tid = 0
+                if x >= 6 and x <= 7 then
+                    tid = 1
+                elseif y == 3 or y == 9 then
+                    tid = 2
+                end
+                mm:setTerrain(x, y, tid)
+            end
+        end
 
         -- Add object types (Green, Red)
         local t_player = mm:addObjectType("Player", 0.0, 1.0, 0.0, 1.0)
         local t_enemy  = mm:addObjectType("Enemy", 1.0, 0.0, 0.0, 1.0)
+        local t_ally   = mm:addObjectType("Ally", 0.2, 0.8, 1.0, 1.0)
 
         -- Add objects at grid coordinates
-        mm:setObject(1, 5.0, 5.0, t_player, 1)   -- Player at (5, 5)
-        mm:setObject(2, 10.0, 7.5, t_enemy, 2)  -- Enemy at (10, 7.5)
+        mm:setObject(1, 3.0, 4.0, t_player, 1)
+        mm:setObject(2, 9.5, 5.5, t_enemy, 2)
+        mm:setObject(3, 4.5, 9.0, t_ally, 1)
+        mm:setObject(4, 8.0, 9.5, t_enemy, 2)
 
         -- Add persistent marker
-        mm:addMarker(2.5, 12.5, "Quest", 1.0, 0.9, 0.0, 1.0) -- Gold quest marker at (2.5, 12.5)
+        mm:addMarker(2.5, 10.5, "Quest", 1.0, 0.9, 0.0, 1.0)
+        mm:addMarker(10.5, 2.5, "Exit", 0.9, 0.8, 1.0, 1.0)
 
         local img = mm:drawToImage(CELL)
+        draw_outline(img, 0, 0, W, H, 220, 224, 232, 255)
         save_png(img, path)
     end)
 
@@ -291,24 +317,32 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         ensure_evidence_dir("minimap")
         local path = OUT .. "minimap_multi_floor_overview.png"
 
-        local W, H = 260, 120
+        local W, H = 300, 156
         local img = lurek.image.newImageData(W, H)
         img:fill(10, 10, 15, 255)
         
-        local function draw_floor(ox, oy, w, h, base_color, outline_color, label_mockup_color)
-            draw_rect_native(img, ox, oy, w, h, base_color[1], base_color[2], base_color[3])
-            img:drawLine(ox, oy, ox + w, oy, outline_color[1], outline_color[2], outline_color[3], 255)
-            img:drawLine(ox + w, oy, ox + w, oy + h, outline_color[1], outline_color[2], outline_color[3], 255)
-            img:drawLine(ox + w, oy + h, ox, oy + h, outline_color[1], outline_color[2], outline_color[3], 255)
-            img:drawLine(ox, oy + h, ox, oy, outline_color[1], outline_color[2], outline_color[3], 255)
-            -- mock label box
-            draw_rect_native(img, ox + 4, oy + 4, 16, 6, label_mockup_color[1], label_mockup_color[2], label_mockup_color[3])
+        local function draw_floor(ox, oy, active)
+            local base = active and { 34, 48, 34 } or { 28, 28, 36 }
+            local edge = active and { 126, 220, 154 } or { 118, 124, 150 }
+            draw_rect_native(img, ox, oy, 84, 96, base[1], base[2], base[3])
+            draw_outline(img, ox, oy, 84, 96, edge[1], edge[2], edge[3], 255)
+            for gy = 0, 4 do
+                for gx = 0, 3 do
+                    local rx = ox + 8 + gx * 18
+                    local ry = oy + 10 + gy * 16
+                    img:drawRect(rx, ry, 12, 10, 62 + gy * 8, 70 + gx * 10, 82, 255)
+                end
+            end
+            img:drawLine(ox + 18, oy + 22, ox + 64, oy + 22, 210, 214, 224, 255)
+            img:drawLine(ox + 64, oy + 22, ox + 64, oy + 68, 210, 214, 224, 255)
+            img:drawLine(ox + 18, oy + 52, ox + 64, oy + 52, 210, 214, 224, 255)
+            img:drawRect(ox + 58, oy + 58, 10, 12, 255, 198, 82, 255)
+            img:drawRect(ox + 16, oy + 76, 16, 8, active and 120 or 82, 220, 154, 255)
         end
 
-        -- draw three floors side by side
-        draw_floor(10, 30, 70, 60, {30, 30, 40}, {80, 80, 100}, {200, 200, 200})
-        draw_floor(90, 30, 70, 60, {40, 50, 40}, {100, 150, 100}, {200, 255, 200}) -- active
-        draw_floor(170, 30, 70, 60, {40, 30, 30}, {100, 80, 80}, {255, 200, 200})
+        draw_floor(16, 30, false)
+        draw_floor(108, 30, true)
+        draw_floor(200, 30, false)
 
         save_png(img, path)
     end)
@@ -377,6 +411,86 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
         img:drawCircle(cx, cy, R + 2, 200, 200, 180, 255)
         img:drawCircle(cx, cy, R, 100, 100, 90, 255)
 
+        save_png(img, path)
+    end)
+
+    -- @evidence LMinimap:drawToImage
+    -- @evidence lurek.image.savePNG
+    it("PNG: minimap contact sheet", function()
+        ensure_evidence_dir("minimap")
+        local files = {
+            "minimap_terrain.png",
+            "minimap_blips.png",
+            "minimap_viewport_bounds.png",
+            "minimap_multi_floor_overview.png",
+            "minimap_radar_sweep.png",
+            "minimap_circular_border.png",
+        }
+        local canvas = lurek.image.newImageData(744, 504)
+        canvas:fill(12, 14, 20, 255)
+        for i, name in ipairs(files) do
+            local src = lurek.image.newImageData(OUT .. name)
+            local thumb = src:resize(224, 152, "bilinear")
+            local col = (i - 1) % 3
+            local row = math.floor((i - 1) / 3)
+            local x = 16 + col * 240
+            local y = 16 + row * 168
+            canvas:paste(thumb, x, y)
+            draw_outline(canvas, x, y, 224, 152, 232, 236, 244, 255)
+        end
+        save_png(canvas, OUT .. "minimap_contact_sheet.png")
+    end)
+
+    -- @evidence LMinimap:setViewportColor
+    -- @evidence LMinimap:addPing
+    -- @evidence LMinimap:update
+    -- @evidence LMinimap:addMarker
+    -- @evidence LMinimap:setMarkerAnimation
+    -- @evidence LMinimap:drawLine
+    -- @evidence LMinimap:drawRect
+    -- @evidence LMinimap:showPath
+    -- @evidence lurek.image.savePNG
+    it("PNG: command overlay with pings and route", function()
+        ensure_evidence_dir("minimap")
+        local path = OUT .. "minimap_command_overlay_route.png"
+
+        local GRID = 14
+        local CELL = 12
+        local W, H = GRID * CELL, GRID * CELL
+        local mm = lurek.minimap.newMinimap(GRID, GRID, W, H)
+
+        mm:setTerrainColor(0, 26 / 255, 48 / 255, 34 / 255, 1.0)
+        mm:setTerrainColor(1, 52 / 255, 82 / 255, 118 / 255, 1.0)
+        for y = 1, GRID do
+            for x = 1, GRID do
+                local t = 0
+                if x == 7 or y == 8 then
+                    t = 1
+                end
+                mm:setTerrain(x, y, t)
+            end
+        end
+
+        mm:setViewportRect(42, 36, 62, 48)
+        mm:setViewportVisible(true)
+        mm:setViewportColor(1.0, 0.85, 0.25, 0.55)
+
+        local marker = mm:addMarker(10.5, 4.5, "Rally Point")
+        mm:setMarkerAnimation(marker, "pulse", 1.4)
+        mm:addPing(7, 7, 1.5, 1.0, 0.85, 0.25, 1.0)
+        mm:update(0.35)
+
+        mm:showPath({
+            { 22, 140 },
+            { 48, 118 },
+            { 90, 92 },
+            { 132, 60 },
+        }, { 255, 132, 78, 255 })
+        mm:drawLine(18, 24, 148, 138, { 86, 214, 255, 255 })
+        mm:drawRect(30, 30, 38, 26, { 255, 236, 120, 255 })
+
+        local img = mm:drawToImage(CELL)
+        draw_outline(img, 0, 0, W, H, 232, 236, 244, 255)
         save_png(img, path)
     end)
 

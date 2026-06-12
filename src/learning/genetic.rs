@@ -78,7 +78,7 @@ impl GeneticAlgorithm {
     pub fn best(&self) -> Option<&Chromosome> {
         self.population
             .iter()
-            .max_by(|a, b| a.fitness.partial_cmp(&b.fitness).unwrap())
+            .max_by(|a, b| a.fitness.total_cmp(&b.fitness))
     }
     /// Build the next generation using elitism, tournament selection, crossover, and mutation.
     pub fn evolve(&mut self) {
@@ -88,8 +88,7 @@ impl GeneticAlgorithm {
         sorted.sort_by(|&a, &b| {
             self.population[b]
                 .fitness
-                .partial_cmp(&self.population[a].fitness)
-                .unwrap()
+                .total_cmp(&self.population[a].fitness)
         });
         for &i in sorted.iter().take(self.elitism) {
             next_gen.push(self.population[i].clone());

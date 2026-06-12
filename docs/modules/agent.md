@@ -30,6 +30,37 @@ This module primarily collaborates with `network`. Its responsibility should sta
 
 ## Functions
 
+### `lurek.agent.cancel`
+
+Cancels a module-level asynchronous completion by callback ID.
+
+```lua
+lurek.agent.cancel(callback_id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `callback_id` | number | ID returned by `completeAsync`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | No value is returned. |
+
+**Example**
+
+```lua
+do
+    lurek.agent.cancel(999999)
+    print("lurek.agent.cancel: accepted")
+end
+```
+
+---
+
 ### `lurek.agent.complete`
 
 Sends a single prompt to the global LLM and returns the response text.
@@ -83,20 +114,22 @@ lurek.agent.completeAsync(prompt, callback)
 
 | Type | Description |
 |------|-------------|
-| nil | No value is returned. |
+| number | Callback ID used to cancel or track the request. |
 
 **Example**
 
 ```lua
 do
     local ok, err = pcall(function()
-        lurek.agent.completeAsync("What is Lua?", function(text, async_err)
+        local id = lurek.agent.completeAsync("What is Lua?", function(text, async_err)
             if async_err then
                 print("Error:", async_err)
             else
                 print("Async reply:", text)
             end
         end)
+        print("completeAsync id:", id)
+        lurek.agent.update()
     end)
     print("completeAsync ok:", ok)
     if not ok then print("completeAsync error:", err) end
@@ -562,6 +595,56 @@ do
     ---@type LWorkingMemory
     local wm = lurek.agent.newWorkingMemory(16)
     print("Working memory capacity:", wm:capacity())
+end
+```
+
+---
+
+### `lurek.agent.pendingCount`
+
+Returns the number of module-level asynchronous completions still in flight.
+
+```lua
+lurek.agent.pendingCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of pending requests. |
+
+**Example**
+
+```lua
+do
+    local pending = lurek.agent.pendingCount()
+    print("lurek.agent.pendingCount:", pending)
+end
+```
+
+---
+
+### `lurek.agent.update`
+
+Polls module-level asynchronous completions and dispatches callbacks.
+
+```lua
+lurek.agent.update()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | No value is returned. |
+
+**Example**
+
+```lua
+do
+    lurek.agent.update()
+    print("lurek.agent.update: polled")
 end
 ```
 

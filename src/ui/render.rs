@@ -401,6 +401,11 @@ fn emit_text(
     cmds.push(RenderCommand::SetColor(fr, fg, fb, fa));
     let scale = text_scale(style, font);
     let rect = Rect::new(base.x, base.y, base.width, base.height);
+    let text_align = if base.text_align.is_empty() {
+        style.text_align.as_str()
+    } else {
+        base.text_align.as_str()
+    };
     let lines = layout_text(
         text,
         rect,
@@ -410,7 +415,7 @@ fn emit_text(
         base.text_ellipsis,
         base.text_v_align,
         base.padding,
-        style.text_align.as_str(),
+        text_align,
     );
     if lines.is_empty() {
         return;

@@ -1,0 +1,10 @@
+clip_count=2
+manual_mode=forward
+speed=1.25
+current_frame=2
+paused_playing=false
+resumed_playing=true
+manual_looping=false
+event_count=1
+clip_present=true
+after_stop_playing=false

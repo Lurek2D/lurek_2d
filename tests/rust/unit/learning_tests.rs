@@ -10,6 +10,13 @@ use lurek2d::learning::{
     TransformerDecoderBlock, TransformerEncoderBlock,
 };
 
+fn assert_slice_near(actual: &[f32], expected: &[f32]) {
+    assert_eq!(actual.len(), expected.len());
+    for (idx, (a, e)) in actual.iter().zip(expected.iter()).enumerate() {
+        assert!((*a - *e).abs() < 1e-6, "index {idx}: expected {a} near {e}");
+    }
+}
+
 mod tensor_tests {
     use super::*;
 
@@ -34,7 +41,7 @@ mod tensor_tests {
         let tensor = LurekTensor::new(vec![2, 2], vec![1.0, 2.0, 3.0, 4.0]);
         let flat = tensor.flatten();
         assert_eq!(flat.shape, vec![4]);
-        assert_eq!(flat.data, vec![1.0, 2.0, 3.0, 4.0]);
+        assert_slice_near(&flat.data, &[1.0, 2.0, 3.0, 4.0]);
     }
 
     #[test]
@@ -43,7 +50,7 @@ mod tensor_tests {
         let b = vec![5.0, 6.0, 7.0, 8.0]; // [2 x 2]
         let out = gemm(2, 2, 2, &a, &b, Some(&[1.0, -1.0]));
         // A*B = [19,22,43,50], bias => [20,21,44,49]
-        assert_eq!(out, vec![20.0, 21.0, 44.0, 49.0]);
+        assert_slice_near(&out, &[20.0, 21.0, 44.0, 49.0]);
     }
 }
 
@@ -59,7 +66,7 @@ mod evolutionary_trait_tests {
         ];
 
         assert!(layer.set_weights(&payload));
-        assert_eq!(layer.get_weights(), payload);
+        assert_slice_near(&layer.get_weights(), &payload);
         assert_eq!(layer.param_count(), 9);
     }
 
@@ -78,7 +85,7 @@ mod conv_tests {
         let mut conv = Conv2D::new(1, 2, (2, 2), (1, 1), (0, 0));
         let payload: Vec<f32> = (0..conv.param_count()).map(|v| v as f32 * 0.1).collect();
         assert!(conv.set_weights(&payload));
-        assert_eq!(conv.get_weights(), payload);
+        assert_slice_near(&conv.get_weights(), &payload);
     }
 
     #[test]
@@ -88,7 +95,7 @@ mod conv_tests {
         let input = LurekTensor::new(vec![1, 2, 2], vec![1.0, 2.0, 3.0, 4.0]);
         let out = conv.forward(&input).expect("conv forward should succeed");
         assert_eq!(out.shape, vec![1, 2, 2]);
-        assert_eq!(out.data, vec![3.0, 5.0, 7.0, 9.0]);
+        assert_slice_near(&out.data, &[3.0, 5.0, 7.0, 9.0]);
     }
 
     #[test]
@@ -102,7 +109,7 @@ mod conv_tests {
         );
         let out = pool.forward(&input).expect("pool forward should succeed");
         assert_eq!(out.shape, vec![1, 2, 2]);
-        assert_eq!(out.data, vec![7.0, 6.0, 9.0, 8.0]);
+        assert_slice_near(&out.data, &[7.0, 6.0, 9.0, 8.0]);
     }
 }
 
@@ -114,7 +121,7 @@ mod recurrent_tests {
         let mut lstm = LstmLayer::new(3, 2);
         let payload: Vec<f32> = (0..lstm.param_count()).map(|v| v as f32 * 0.01).collect();
         assert!(lstm.set_weights(&payload));
-        assert_eq!(lstm.get_weights(), payload);
+        assert_slice_near(&lstm.get_weights(), &payload);
     }
 
     #[test]
@@ -122,7 +129,7 @@ mod recurrent_tests {
         let mut gru = GruLayer::new(3, 2);
         let payload: Vec<f32> = (0..gru.param_count()).map(|v| v as f32 * 0.01).collect();
         assert!(gru.set_weights(&payload));
-        assert_eq!(gru.get_weights(), payload);
+        assert_slice_near(&gru.get_weights(), &payload);
     }
 
     #[test]
@@ -165,7 +172,7 @@ mod attention_transformer_tests {
         let mut mha = MultiHeadAttention::new(4, 2).expect("valid MHA config");
         let payload: Vec<f32> = (0..mha.param_count()).map(|v| v as f32 * 0.01).collect();
         assert!(mha.set_weights(&payload));
-        assert_eq!(mha.get_weights(), payload);
+        assert_slice_near(&mha.get_weights(), &payload);
     }
 
     #[test]
@@ -173,7 +180,7 @@ mod attention_transformer_tests {
         let mut ln = LayerNorm::new(4);
         let payload = vec![1.0, 2.0, 3.0, 4.0, -1.0, -2.0, -3.0, -4.0];
         assert!(ln.set_weights(&payload));
-        assert_eq!(ln.get_weights(), payload);
+        assert_slice_near(&ln.get_weights(), &payload);
     }
 
     #[test]
@@ -181,7 +188,7 @@ mod attention_transformer_tests {
         let mut enc = TransformerEncoderBlock::new(4, 2, 8).expect("valid encoder config");
         let payload: Vec<f32> = (0..enc.param_count()).map(|v| v as f32 * 0.001).collect();
         assert!(enc.set_weights(&payload));
-        assert_eq!(enc.get_weights(), payload);
+        assert_slice_near(&enc.get_weights(), &payload);
     }
 
     #[test]
@@ -189,7 +196,7 @@ mod attention_transformer_tests {
         let mut dec = TransformerDecoderBlock::new(4, 2, 8).expect("valid decoder config");
         let payload: Vec<f32> = (0..dec.param_count()).map(|v| v as f32 * 0.001).collect();
         assert!(dec.set_weights(&payload));
-        assert_eq!(dec.get_weights(), payload);
+        assert_slice_near(&dec.get_weights(), &payload);
     }
 }
 
@@ -217,7 +224,7 @@ mod engine_tests {
 
         let payload: Vec<f32> = (0..engine.param_count()).map(|v| v as f32 * 0.01).collect();
         assert!(engine.set_weights(&payload));
-        assert_eq!(engine.get_weights(), payload);
+        assert_slice_near(&engine.get_weights(), &payload);
         assert_eq!(engine.block_count(), 5);
     }
 }

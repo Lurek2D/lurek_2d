@@ -2,7 +2,9 @@
 -- The runtime test runner is implemented in Rust; this file exposes the legacy
 -- assertion aliases and keeps the Lua-side require path resolvable.
 
-require("tests/lua_reorg/init")
+if rawget(_G, "describe") == nil or rawget(_G, "_test_results") == nil then
+    require("tests/lua_reorg/init")
+end
 
 local harness = {}
 

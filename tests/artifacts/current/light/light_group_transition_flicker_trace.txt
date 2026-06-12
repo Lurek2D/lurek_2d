@@ -1,0 +1,7 @@
+ambient=0.080,0.100,0.140,1.000
+synced=0.080,0.100,0.140,1.000
+transition_active_mid=true
+transition_progress_mid=0.5
+transition_active_after_stop=false
+god_ray_hint_count=0
+normal_map_hint_count=0

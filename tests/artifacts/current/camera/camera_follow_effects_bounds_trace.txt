@@ -1,0 +1,10 @@
+bounds=true,10.00,20.00,420.00,260.00
+target=true,140.00,88.00
+deadzone=true,52.00,36.00
+look_ahead=14.00
+zoom_active_mid=false
+effective_zoom=1.7660
+effect_offset=0.0000,0.0000
+sway_active=false
+breathing_active=false
+target_cleared=true

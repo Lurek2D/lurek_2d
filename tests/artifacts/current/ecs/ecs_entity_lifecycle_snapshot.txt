@@ -1,3 +1,6 @@
-entity_id=1
-alive=true
+spawned_a=1
+spawned_b=2
+alive_a=false
+alive_b=true
 entity_count=1
+contains_b=true

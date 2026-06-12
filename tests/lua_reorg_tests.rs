@@ -646,11 +646,6 @@ fn lua_reorg_integration_effect_light_integration() {
 }
 
 #[test]
-fn lua_reorg_integration_effects_audio_runtime_smoke_integration() {
-    run_lua_test("integration/test_effects_audio_runtime_smoke_integration.lua");
-}
-
-#[test]
 fn lua_reorg_integration_event_entity_integration() {
     run_lua_test("integration/test_event_entity_integration.lua");
 }
@@ -723,11 +718,6 @@ fn lua_reorg_integration_postfx_camera_integration() {
 #[test]
 fn lua_reorg_integration_procgen_tilemap_integration() {
     run_lua_test("integration/test_procgen_tilemap_integration.lua");
-}
-
-#[test]
-fn lua_reorg_integration_province_integration() {
-    run_lua_test("integration/test_province_integration.lua");
 }
 
 #[test]

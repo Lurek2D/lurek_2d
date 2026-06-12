@@ -2270,6 +2270,10 @@ LModel = {}
 ---@class LMultiHeadAttention
 LMultiHeadAttention = {}
 
+--- Lua wrapper over a heterogeneous neural engine with flat parameter packing.
+---@class LNeuralEngine
+LNeuralEngine = {}
+
 --- Lua handle for a feed-forward neural network.
 ---@class LNeuralNet
 LNeuralNet = {}
@@ -3425,6 +3429,11 @@ function LWorkingMemory:len() end
 ---@return nil No value is returned.
 function LWorkingMemory:push(key, value) end
 
+--- Cancels a module-level asynchronous completion by callback ID.
+---@param callback_id number ID returned by `completeAsync`.
+---@return nil No value is returned.
+lurek.agent.cancel = function(callback_id) end
+
 --- Sends a single prompt to the global LLM and returns the response text.
 ---@param prompt string Prompt text.
 ---@return string Response text, or raises an error on failure.
@@ -3433,7 +3442,7 @@ lurek.agent.complete = function(prompt) end
 --- Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
 ---@param prompt string Prompt text.
 ---@param callback function Called with `(text, err)` on completion (`err` is `nil` on success).
----@return nil No value is returned.
+---@return number Callback ID used to cancel or track the request.
 lurek.agent.completeAsync = function(prompt, callback) end
 
 --- Sends a prompt requesting a JSON-format response and returns a parsed Lua table.
@@ -3504,6 +3513,14 @@ lurek.agent.newTemplate = function(pattern) end
 ---@param capacity number Maximum number of key-value slots (0 = unlimited).
 ---@return LWorkingMemory A new working memory object.
 lurek.agent.newWorkingMemory = function(capacity) end
+
+--- Returns the number of module-level asynchronous completions still in flight.
+---@return number Number of pending requests.
+lurek.agent.pendingCount = function() end
+
+--- Polls module-level asynchronous completions and dispatches callbacks.
+---@return nil No value is returned.
+lurek.agent.update = function() end
 
 --- Removes every local entry from this blackboard.
 function LAIBlackboard:clear() end
@@ -4430,12 +4447,19 @@ function LSteeringManager:applyCustomSteering(agent, dt) end
 ---@return number X and Y steering force. (value 2).
 function LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt) end
 
+--- Clears all steering-context entities.
+function LSteeringManager:clearEntities() end
+
 --- Clears the active waypoint path behavior.
 function LSteeringManager:clearPath() end
 
 --- Enables or disables spatial hash acceleration for neighbor queries.
 ---@param enabled boolean True to use spatial hashing, false to use direct scans.
 function LSteeringManager:enableSpatialHash(enabled) end
+
+--- Returns the number of steering-context entities.
+---@return number Entity count.
+function LSteeringManager:entityCount() end
 
 --- Returns the number of steering behaviors configured on this manager.
 ---@return number Current steering behavior count.
@@ -4459,9 +4483,22 @@ function LSteeringManager:getPathProgress() end
 ---@return boolean True when a path is configured and not complete.
 function LSteeringManager:hasPath() end
 
+--- Removes one named steering-context entity.
+---@param name string Entity name to remove.
+---@return boolean True when an entity was removed.
+function LSteeringManager:removeEntity(name) end
+
 --- Sets how steering behavior forces are combined.
 ---@param mode string Combine mode string parsed by the steering manager.
 function LSteeringManager:setCombineMode(mode) end
+
+--- Sets or replaces one named steering-context entity.
+---@param name string Entity name used by pursue, evade, and flock behaviors.
+---@param x number Current entity X position.
+---@param y number Current entity Y position.
+---@param vx? number Current entity X velocity; defaults to 0.
+---@param vy? number Current entity Y velocity; defaults to 0.
+function LSteeringManager:setEntity(name, x, y, vx, vy) end
 
 --- Sets a waypoint path behavior from an array of `{x, y}` tables.
 ---@param waypoints table Array of waypoint tables, each containing numeric `x` and `y` fields.
@@ -6244,7 +6281,7 @@ lurek.audio.pause = function(source) end
 --- Pauses all currently playing audio sources.
 lurek.audio.pauseAll = function() end
 
---- Pauses all active audio sources.
+--- Pauses every currently active audio source.
 lurek.audio.manager.pauseAll = function() end
 
 --- Starts playback of a source by handle, optionally routing through a named bus.
@@ -6284,7 +6321,7 @@ lurek.audio.resume = function(source) end
 --- Resumes all paused audio sources. This function is exposed to Lua scripts.
 lurek.audio.resumeAll = function() end
 
---- Resumes all paused audio sources.
+--- Resumes every currently paused audio source.
 lurek.audio.manager.resumeAll = function() end
 
 --- Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
@@ -7327,7 +7364,7 @@ function LCameraRig:typeOf(name) end
 ---@param dt number Elapsed time in seconds.
 function LCameraRig:updateAll(dt) end
 
---- Returns the associated camera.
+--- Returns the camera associated with this walker.
 ---@return LCamera Camera that follows the walker.
 function LCameraWalker:getCamera() end
 
@@ -7615,11 +7652,12 @@ function LCinematicTimeline:addClip(track_name, at, duration, clip_table) end
 ---@param time number Time in seconds.
 function LCinematicTimeline:addLabel(name, time) end
 
---- Adds a new track to the timeline.
+--- Adds a named track to this cinematic timeline.
 ---@param name string Track name for identification.
+---@return nil No value is returned.
 function LCinematicTimeline:addTrack(name) end
 
---- Jumps to a named label position.
+--- Jumps playback to a named label position.
 ---@param label string Label name to jump to.
 ---@return boolean True if label was found and jumped to.
 function LCinematicTimeline:branch(label) end
@@ -7650,7 +7688,7 @@ function LCinematicTimeline:pause() end
 --- Starts playback from the current time.
 function LCinematicTimeline:play() end
 
---- Jumps to a specific time.
+--- Jumps playback to a specific timeline time.
 ---@param time number Time in seconds.
 function LCinematicTimeline:seek(time) end
 
@@ -8509,6 +8547,11 @@ function LDataFrame:duplicateRows(cols) end
 ---@return number Entropy value.
 function LDataFrame:entropy(col) end
 
+--- Returns a compact dataframe or SQL query execution plan summary.
+---@param sql_str? string Optional SQL query text to parse and summarize.
+---@return string Human-readable schema or query plan summary.
+function LDataFrame:explain(sql_str) end
+
 --- Replaces nil cells in a column with a value.
 ---@param col string Column name string or one-based column index.
 ---@param val any Replacement cell value.
@@ -8713,6 +8756,10 @@ function LDataFrame:rows() end
 ---@param seed? number Optional random seed.
 ---@return LDataFrame New sampled dataframe.
 function LDataFrame:sample(n, seed) end
+
+--- Returns inferred column schema metadata.
+---@return table Array of `{name, dtype, nullable, count}` column schema records.
+function LDataFrame:schema() end
 
 --- Returns a dataframe with selected columns.
 ---@param ... any Column name strings or one-based column indices to keep.
@@ -14715,6 +14762,55 @@ function LMultiHeadAttention:type() end
 ---@return boolean True when name is `LMultiHeadAttention` or `LObject`.
 function LMultiHeadAttention:typeOf(name) end
 
+--- Appends a convolutional 2D block to this engine.
+---@param args table Tuple arguments: in_channels, out_channels, kernel_h, kernel_w, optional stride_h, stride_w, pad_h, pad_w.
+function LNeuralEngine:addConv2D(args) end
+
+--- Appends a dense neural layer block.
+---@param inputs number Input vector size.
+---@param outputs number Output vector size.
+---@param activation? string Activation name; defaults to `relu`.
+function LNeuralEngine:addDense(inputs, outputs, activation) end
+
+--- Appends a non-trainable MaxPool2D block.
+---@param kernel_h number Kernel height.
+---@param kernel_w number Kernel width.
+---@param stride_h? number Vertical stride; defaults to kernel_h.
+---@param stride_w? number Horizontal stride; defaults to kernel_w.
+function LNeuralEngine:addMaxPool2D(kernel_h, kernel_w, stride_h, stride_w) end
+
+--- Appends a transformer encoder block.
+---@param d_model number Model width.
+---@param heads number Number of attention heads.
+---@param ff_hidden number Feed-forward hidden width.
+function LNeuralEngine:addTransformerEncoder(d_model, heads, ff_hidden) end
+
+--- Returns the number of blocks in this engine.
+---@return number Block count.
+function LNeuralEngine:blockCount() end
+
+--- Returns all trainable parameters in block insertion order.
+---@return number[] Flat parameter array.
+function LNeuralEngine:getWeights() end
+
+--- Returns the total trainable parameter count.
+---@return number Parameter count.
+function LNeuralEngine:paramCount() end
+
+--- Replaces all trainable parameters from a flat numeric array.
+---@param weights table Flat parameter array in block insertion order.
+---@return boolean True when the supplied weight count matches the engine shape.
+function LNeuralEngine:setWeights(weights) end
+
+--- Returns the Lua-visible type name for this neural engine handle.
+---@return string The string `LNeuralEngine`.
+function LNeuralEngine:type() end
+
+--- Returns whether this neural engine handle matches a supported type name.
+---@param name string Type name to compare against `LNeuralEngine` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LNeuralEngine:typeOf(name) end
+
 --- Adds a neural network layer with an activation function.
 ---@param inputs number Input count for the layer.
 ---@param outputs number Output count for the layer.
@@ -15044,6 +15140,10 @@ lurek.learning.newBandit = function(arm_count, strategy, epsilon, seed) end
 ---@param pad_w number Horizontal zero-padding.
 ---@return LConv2D New Conv2D layer handle.
 lurek.learning.newConv2D = function(in_channels, out_channels, kernel_h, kernel_w, stride_h, stride_w, pad_h, pad_w) end
+
+--- Creates an empty heterogeneous neural engine.
+---@return LNeuralEngine New neural engine handle.
+lurek.learning.newEngine = function() end
 
 --- Creates a genetic algorithm population with fixed chromosome length.
 ---@param pop_size number Number of chromosomes in the population.
@@ -18190,7 +18290,7 @@ function LNetworkHost:getConnectedPeerIds() end
 
 --- Retrieves the peer ID associated with a valid, non-expired lease token.
 ---@param token number Reconnection token.
----@return number? Original Peer ID or nil if invalid/expired.
+---@return number Original Peer ID, or nil if invalid or expired.
 function LNetworkHost:getLeasePeer(token) end
 
 --- Returns global network host metrics.
@@ -18293,7 +18393,7 @@ function LNetworkHost:typeOf(name) end
 ---@return number Request id.
 function LNetworkRuntime:authBootstrap(auth_url, payload, refresh_url) end
 
---- Cancels active authentication.
+--- Cancels the currently active authentication request.
 function LNetworkRuntime:authCancel() end
 
 --- Returns the current active authentication status.
@@ -18301,10 +18401,10 @@ function LNetworkRuntime:authCancel() end
 function LNetworkRuntime:getAuthStatus() end
 
 --- Returns the current active access token.
----@return string? Access token or nil if unauthenticated.
+---@return string Access token, or nil if unauthenticated.
 function LNetworkRuntime:getAuthToken() end
 
---- Returns network runtime metrics.
+--- Returns current network runtime metrics.
 ---@return table Metrics table with queue_size, reconnect_count, http_active_count, tcp_active_count, ws_active_count.
 function LNetworkRuntime:getMetrics() end
 
@@ -18340,11 +18440,11 @@ function LNetworkRuntime:httpRequest(opts) end
 ---@return number Request id.
 function LNetworkRuntime:httpStream(url, headers, timeout_secs) end
 
---- Cancel matchmaking request.
+--- Cancels a previously started matchmaking request.
 ---@param id number Request id.
 function LNetworkRuntime:matchmakeCancel(id) end
 
---- Start matchmaking request.
+--- Starts a matchmaking request against the backend.
 ---@param url string Matchmaker URL.
 ---@param payload string JSON payload.
 ---@return number Request id.
@@ -25456,7 +25556,7 @@ function LDepthSorter:type() end
 ---@return boolean True if the name matches.
 function LDepthSorter:typeOf(name) end
 
---- Add an object to the container.
+--- Adds an object table to the scene container.
 ---@param obj table Object table to append to the scene container.
 function LSceneObjectContainer:add(obj) end
 
@@ -25487,11 +25587,11 @@ function LSceneObjectContainer:has(obj) end
 ---@param obj table Object table reference to remove.
 function LSceneObjectContainer:remove(obj) end
 
---- Get the type name of this userdata.
+--- Gets the Lua-visible type name of this userdata.
 ---@return string The literal `"LSceneObjectContainer"`.
 function LSceneObjectContainer:type() end
 
---- Check type by name.
+--- Checks whether this container matches a type name.
 ---@param name string Type name to compare against.
 ---@return boolean True when `name` matches `"LSceneObjectContainer"`.
 function LSceneObjectContainer:typeOf(name) end
@@ -26190,7 +26290,7 @@ function LSpriteAnimator:onLoop(fn) end
 --- Pause playback without resetting frame state.
 function LSpriteAnimator:pause() end
 
---- Play or restart a named clip.
+--- Plays or restarts a named animation clip.
 ---@param name string Clip name.
 ---@param restart? boolean Whether to restart when already playing this clip. Defaults to true.
 function LSpriteAnimator:play(name, restart) end
@@ -26379,14 +26479,14 @@ function LSvgImage:draw(x, y, rotation, sx, sy, ox, oy) end
 ---@return table Map table: element ID -> sequential neighbor ID list.
 function LSvgImage:getAdjacencies(prefix, epsilon) end
 
---- Alias for getCanvasKey.
+--- Returns the cached canvas handle for an element.
 ---@param id string Element or group ID.
----@return LCanvas? Cached canvas handle, or `nil` if not cached.
+---@return LCanvas Cached canvas handle, or `nil` if not cached.
 function LSvgImage:getCanvas(id) end
 
 --- Returns the LCanvas handle for a previously cached element/group.
 ---@param id string Element or group ID.
----@return LCanvas? Cached canvas handle, or `nil` if not cached.
+---@return LCanvas Cached canvas handle, or `nil` if not cached.
 function LSvgImage:getCanvasKey(id) end
 
 --- Returns both the document width and height as two values: `width, height`.
@@ -26396,17 +26496,17 @@ function LSvgImage:getDimensions() end
 
 --- Returns the axis-aligned bounding box `{min_x, min_y, max_x, max_y}` of the element.
 ---@param id string Element or group ID.
----@return table? Bounds table with keys `min_x`, `min_y`, `max_x`, `max_y`, or `nil`.
+---@return table Bounds table with keys `min_x`, `min_y`, `max_x`, `max_y`, or `nil`.
 function LSvgImage:getElementBounds(id) end
 
 --- Returns a sequential table of direct child element IDs for the given group element.
 ---@param id string Element or group ID.
----@return table? Sequential table of child IDs, or `nil`.
+---@return table Sequential table of child IDs, or `nil`.
 function LSvgImage:getElementChildren(id) end
 
 --- Returns the current RGBA color override `{r, g, b, a}` table for the element.
 ---@param id string Element or group ID.
----@return table? RGBA array table, or `nil`.
+---@return table RGBA array table, or `nil`.
 function LSvgImage:getElementColor(id) end
 
 --- Returns the total number of parsed elements (paths and groups) in this SVG document.
@@ -26419,23 +26519,23 @@ function LSvgImage:getElementIds() end
 
 --- Returns the parent element ID string, or `nil` when the element is the root or not found.
 ---@param id string Element or group ID.
----@return string? Parent ID, or `nil`.
+---@return string Parent ID, or `nil`.
 function LSvgImage:getElementParent(id) end
 
 --- Flattens the element path into a polygon array of LVec2 userdata.
 ---@param id string Element or group ID.
 ---@param step_size? number Optional curve sampling step. Lower values increase point density.
----@return table? Sequential table of `LVec2` points, or `nil`.
+---@return table Sequential table of `LVec2` points, or `nil`.
 function LSvgImage:getElementPoints(id, step_size) end
 
 --- Returns the current dynamic TRS state of the element as a table `{tx, ty, rotation, sx, sy}`.
 ---@param id string Element or group ID.
----@return table? Transform table `{tx, ty, rotation, sx, sy}`, or `nil`.
+---@return table Transform table `{tx, ty, rotation, sx, sy}`, or `nil`.
 function LSvgImage:getElementTransform(id) end
 
 --- Returns the current visibility flag for the element.
 ---@param id string Element or group ID.
----@return boolean? Visibility flag, or `nil` when ID is unknown.
+---@return boolean Visibility flag, or `nil` when ID is unknown.
 function LSvgImage:getElementVisible(id) end
 
 --- Returns the document height in points/pixels.
@@ -29212,30 +29312,33 @@ function LComboBox:setSelectedIndex(index) end
 ---@return number The new 1-based action index.
 function LDialog:addAction(text, cb, role, close_on_activate) end
 
---- /// Returns a value for addButton (auto-generated).
----@param text any
----@param cb? any
+--- Adds a custom action button to this dialog.
+---@param text string Button label.
+---@param cb? function Optional callback invoked when the action is activated.
+---@return number One-based action index, or 0 if this widget is not a dialog.
 function LDialog:addButton(text, cb) end
 
 --- Repositions this dialog to the center of the active viewport immediately.
 function LDialog:centerInViewport() end
 
---- /// Returns a value for close (auto-generated).
+--- Closes this dialog and dispatches close handling.
+---@return nil No value is returned.
 function LDialog:close() end
 
 --- Returns the 1-based action index triggered by Escape, if any.
----@return number? The cancel action index.
+---@return number The cancel action index, or nil when unset.
 function LDialog:getCancelAction() end
 
 --- Returns whether opening this dialog recenters it in the viewport.
 ---@return boolean True if the dialog recenters when opened.
 function LDialog:getCenterOnOpen() end
 
---- /// Returns a value for getContent (auto-generated).
+--- Returns the widget index currently assigned to this dialog's content slot.
+---@return number Content widget index, or nil when no content is assigned.
 function LDialog:getContent() end
 
 --- Returns the 1-based action index triggered by Enter, if any.
----@return number? The default action index.
+---@return number The default action index, or nil when unset.
 function LDialog:getDefaultAction() end
 
 --- Returns whether outside clicks dismiss this non-modal dialog.
@@ -29243,12 +29346,12 @@ function LDialog:getDefaultAction() end
 function LDialog:getDismissOnOutsideClick() end
 
 --- Returns the optional footer content widget index.
----@return number? Footer widget index if one is assigned.
+---@return number Footer widget index if one is assigned, or nil.
 function LDialog:getFooter() end
 
 --- Returns the optional maximum popup dimensions for this dialog.
----@return number? Maximum width and height; or nil when unbounded. (value 1).
----@return number? Maximum width and height; or nil when unbounded. (value 2).
+---@return number Maximum width and height; or nil values when unbounded. (value 1).
+---@return number Maximum width and height; or nil values when unbounded. (value 2).
 function LDialog:getMaxSize() end
 
 --- Returns the minimum popup size for this dialog.
@@ -29256,7 +29359,8 @@ function LDialog:getMaxSize() end
 ---@return number Minimum width and height in pixels. (value 2).
 function LDialog:getMinSize() end
 
---- /// Returns a value for getTitle (auto-generated).
+--- Returns the current title text for this dialog.
+---@return string The current dialog title, or an empty string when the widget is unavailable.
 function LDialog:getTitle() end
 
 --- Returns whether this dialog exposes user-driven close affordances.
@@ -29267,17 +29371,20 @@ function LDialog:isCloseable() end
 ---@return boolean True if title-bar dragging is enabled.
 function LDialog:isDraggable() end
 
---- /// Returns a value for isModal (auto-generated).
+--- Returns whether this dialog is modal.
+---@return boolean True when the dialog blocks outside interaction.
 function LDialog:isModal() end
 
---- /// Returns a value for isOpen (auto-generated).
+--- Returns whether this dialog is currently open.
+---@return boolean True when the dialog is open.
 function LDialog:isOpen() end
 
 --- Returns whether this dialog can be resized from its edges or corners.
 ---@return boolean True if resize handles are active.
 function LDialog:isResizable() end
 
---- /// Returns a value for open (auto-generated).
+--- Opens this dialog and marks it visible.
+---@return nil No value is returned.
 function LDialog:open() end
 
 --- Sets the action triggered by Escape, using a 1-based action index.
@@ -29292,8 +29399,9 @@ function LDialog:setCenterOnOpen(value) end
 ---@param value boolean True to allow user dismissal.
 function LDialog:setCloseable(value) end
 
---- /// Returns a value for setContent (auto-generated).
----@param content_idx? any
+--- Sets the widget index rendered as this dialog's content.
+---@param content_idx? number Optional widget index for the content slot.
+---@return nil No value is returned.
 function LDialog:setContent(content_idx) end
 
 --- Sets the action triggered by Enter, using a 1-based action index.
@@ -29322,20 +29430,23 @@ function LDialog:setMaxSize(width, height) end
 ---@param height number Minimum height in pixels.
 function LDialog:setMinSize(width, height) end
 
---- /// Returns a value for setModal (auto-generated).
----@param v any
+--- Sets whether this dialog blocks outside interaction.
+---@param v boolean True to make the dialog modal.
+---@return nil No value is returned.
 function LDialog:setModal(v) end
 
---- /// Returns a value for setOnClose (auto-generated).
----@param f any
+--- Registers a callback fired when this dialog closes.
+---@param f function Callback invoked by the UI event dispatcher.
+---@return nil No value is returned.
 function LDialog:setOnClose(f) end
 
 --- Enables or disables edge and corner resizing for this dialog.
 ---@param value boolean True to allow resizing.
 function LDialog:setResizable(value) end
 
---- /// Returns a value for setTitle (auto-generated).
----@param title any
+--- Sets the current title text for this dialog.
+---@param title string New title text.
+---@return nil No value is returned.
 function LDialog:setTitle(title) end
 
 --- Docks a child widget to the specified side of this dock panel.
@@ -30464,6 +30575,10 @@ function LUiWidget:getState() end
 ---@return string The style class name, or an empty string if none is set.
 function LUiWidget:getStyleClass() end
 
+--- Returns this widget's horizontal text alignment.
+---@return string Horizontal alignment: "left", "center", or "right".
+function LUiWidget:getTextAlign() end
+
 --- Returns the tooltip text of this widget.
 ---@return string The tooltip text, or an empty string if none is set.
 function LUiWidget:getTooltip() end
@@ -30610,6 +30725,11 @@ function LUiWidget:setStyleClass(class) end
 --- Sets the tab-order index for this widget.
 ---@param value number Tab-order index.
 function LUiWidget:setTabIndex(value) end
+
+--- Sets the horizontal alignment of text inside this widget.
+---@param align string Horizontal alignment: "left", "center", or "right".
+---@return boolean True when the alignment string is recognised; false leaves the previous value unchanged.
+function LUiWidget:setTextAlign(align) end
 
 --- Enables or disables ellipsis clipping for overflowing single-line text.
 ---@param ellipsis boolean True to enable ellipsis on overflow.
@@ -30788,6 +30908,14 @@ lurek.ui.getWidgetCount = function() end
 ---@param widget LUiWidget Widget handle to query.
 ---@return LFont Font override assigned to the widget.
 lurek.ui.getWidgetFont = function(widget) end
+
+--- Returns whether platform input is automatically forwarded to `lurek.ui`.
+---@return boolean True when automatic UI input forwarding is enabled.
+lurek.ui.hasAutoInput = function() end
+
+--- Returns whether `lurek.ui.update(dt)` is called automatically each frame.
+---@return boolean True when automatic UI updates are enabled.
+lurek.ui.hasAutoUpdate = function() end
 
 --- Delivers a key press event to the UI.
 ---@param key string The key name.
@@ -31039,6 +31167,14 @@ lurek.ui.parseWidgetState = function(state) end
 ---@param widthOrHeight number Image width for path-first calls, or image height for canonical calls.
 ---@param heightOrPath any Image height for path-first calls, or output file path for canonical calls.
 lurek.ui.renderToImage = function(pathOrWidth, widthOrHeight, heightOrPath) end
+
+--- Enables or disables automatic forwarding of platform mouse, wheel, key, and text input to `lurek.ui`.
+---@param enabled boolean True to forward platform input to the UI automatically.
+lurek.ui.setAutoInput = function(enabled) end
+
+--- Enables or disables automatic `lurek.ui.update(dt)` calls during the frame update.
+---@param enabled boolean True to update retained UI state automatically each frame.
+lurek.ui.setAutoUpdate = function(enabled) end
 
 --- Set the logical base resolution the UI was designed for.
 ---@param width number Base width (default 1920).

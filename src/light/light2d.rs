@@ -16,6 +16,70 @@ use crate::light::shadow::ShadowFilter;
 use crate::log_msg;
 use crate::runtime::log_messages::{LT01, LT02, LT03};
 
+/// Optional attenuation coefficient updates for a light option patch.
+#[derive(Clone, Copy, Debug, Default)]
+pub struct Light2DAttenuationPatch {
+    /// Constant attenuation term.
+    pub constant: Option<f32>,
+    /// Linear attenuation term.
+    pub linear: Option<f32>,
+    /// Quadratic attenuation term.
+    pub quadratic: Option<f32>,
+}
+
+/// Optional field updates applied to an existing `Light2D`.
+#[derive(Clone, Debug, Default)]
+pub struct Light2DOptionsPatch {
+    /// RGBA tint color applied to the light contribution.
+    pub color: Option<Color>,
+    /// Intensity multiplier applied on top of energy.
+    pub intensity: Option<f32>,
+    /// Energy scale combined with intensity.
+    pub energy: Option<f32>,
+    /// Blend mode for light compositing.
+    pub blend_mode: Option<LightBlendMode>,
+    /// Radial falloff curve shape.
+    pub falloff: Option<FalloffMode>,
+    /// Whether the light is active.
+    pub enabled: Option<bool>,
+    /// Whether shadow casting is enabled.
+    pub shadow_enabled: Option<bool>,
+    /// Color used to tint shadowed regions.
+    pub shadow_color: Option<Color>,
+    /// Shadow filter quality preset.
+    pub shadow_filter: Option<ShadowFilter>,
+    /// Smooth factor for shadow edge blending.
+    pub shadow_smooth: Option<f32>,
+    /// Overall shadow softness scale.
+    pub shadow_softness: Option<f32>,
+    /// Bitmask selecting illuminated geometry layers.
+    pub light_mask: Option<u16>,
+    /// Bitmask selecting shadow-casting geometry layers.
+    pub shadow_mask: Option<u16>,
+    /// Discriminant between point, spot, and area variants.
+    pub light_type: Option<LightType>,
+    /// Direction angle in radians for spot lights.
+    pub direction: Option<f32>,
+    /// Inner cone half-angle in radians.
+    pub inner_angle: Option<f32>,
+    /// Outer cone half-angle in radians.
+    pub outer_angle: Option<f32>,
+    /// Optional group id used to batch lights.
+    pub group_id: Option<u16>,
+    /// Whether volumetric scattering is enabled.
+    pub volumetric: Option<bool>,
+    /// Sine-wave flicker speed.
+    pub flicker_speed: Option<f32>,
+    /// Sine-wave flicker strength.
+    pub flicker_strength: Option<f32>,
+    /// Normal map texture path.
+    pub normal_map_path: Option<String>,
+    /// Normal map contribution strength.
+    pub normal_strength: Option<f32>,
+    /// Partial attenuation coefficient updates.
+    pub attenuation: Light2DAttenuationPatch,
+}
+
 /// Complete 2D light definition: position, color, radius, type, shadow, masks, flicker, and attenuation.
 pub struct Light2D {
     /// World-space X position of the light source.
@@ -310,6 +374,93 @@ impl Light2D {
     /// Return the normal map contribution strength.
     pub fn get_normal_strength(&self) -> f32 {
         self.normal_strength
+    }
+
+    /// Apply optional light field updates without changing omitted properties.
+    pub fn apply_options_patch(&mut self, patch: Light2DOptionsPatch) {
+        if let Some(color) = patch.color {
+            self.set_color(color);
+        }
+        if let Some(intensity) = patch.intensity {
+            self.set_intensity(intensity);
+        }
+        if let Some(energy) = patch.energy {
+            self.set_energy(energy);
+        }
+        if let Some(blend_mode) = patch.blend_mode {
+            self.set_blend_mode(blend_mode);
+        }
+        if let Some(falloff) = patch.falloff {
+            self.set_falloff(falloff);
+        }
+        if let Some(enabled) = patch.enabled {
+            self.set_enabled(enabled);
+        }
+        if let Some(shadow_enabled) = patch.shadow_enabled {
+            self.set_shadow_enabled(shadow_enabled);
+        }
+        if let Some(shadow_color) = patch.shadow_color {
+            self.set_shadow_color(shadow_color);
+        }
+        if let Some(shadow_filter) = patch.shadow_filter {
+            self.set_shadow_filter(shadow_filter);
+        }
+        if let Some(shadow_smooth) = patch.shadow_smooth {
+            self.set_shadow_smooth(shadow_smooth);
+        }
+        if let Some(shadow_softness) = patch.shadow_softness {
+            self.set_shadow_softness(shadow_softness);
+        }
+        if let Some(light_mask) = patch.light_mask {
+            self.set_light_mask(light_mask);
+        }
+        if let Some(shadow_mask) = patch.shadow_mask {
+            self.set_shadow_mask(shadow_mask);
+        }
+        if let Some(light_type) = patch.light_type {
+            self.set_light_type(light_type);
+        }
+        if let Some(direction) = patch.direction {
+            self.set_direction(direction);
+        }
+        if let Some(inner_angle) = patch.inner_angle {
+            self.set_inner_angle(inner_angle);
+        }
+        if let Some(outer_angle) = patch.outer_angle {
+            self.set_outer_angle(outer_angle);
+        }
+        if let Some(group_id) = patch.group_id {
+            self.set_group_id(group_id);
+        }
+        if let Some(volumetric) = patch.volumetric {
+            self.set_volumetric(volumetric);
+        }
+        if let Some(speed) = patch.flicker_speed {
+            self.flicker.speed = speed;
+            self.flicker.enabled = true;
+        }
+        if let Some(strength) = patch.flicker_strength {
+            self.flicker.strength = strength;
+            self.flicker.enabled = true;
+        }
+        if let Some(path) = patch.normal_map_path {
+            self.set_normal_map_path(path);
+        }
+        if let Some(strength) = patch.normal_strength {
+            self.set_normal_strength(strength);
+        }
+
+        let attenuation = patch.attenuation;
+        if attenuation.constant.is_some()
+            || attenuation.linear.is_some()
+            || attenuation.quadratic.is_some()
+        {
+            self.set_attenuation(Attenuation::new(
+                attenuation.constant.unwrap_or(self.attenuation.constant),
+                attenuation.linear.unwrap_or(self.attenuation.linear),
+                attenuation.quadratic.unwrap_or(self.attenuation.quadratic),
+            ));
+        }
     }
 }
 impl Light2D {

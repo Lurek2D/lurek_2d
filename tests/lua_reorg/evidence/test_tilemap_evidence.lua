@@ -413,5 +413,178 @@ describe("Evidence: lurek.tilemap scenarios", function()
         save_png(img, path)
     end)
 
+    -- @evidence lurek.tilemap.hexSpiral
+    -- @evidence lurek.tilemap.hexDistance
+    -- @evidence lurek.tilemap.hexRotate
+    -- @evidence lurek.tilemap.hexReflect
+    -- @evidence lurek.image.savePNG
+    it("PNG: tilemap hex operations frontier map", function()
+        ensure_evidence_dir("tilemap")
+        local path = OUT .. "tilemap_hex_operations_frontier.png"
+        local img = lurek.image.newImageData(520, 360)
+        img:fill(14, 18, 24, 255)
+
+        local hex_size = 18
+        local origin_x, origin_y = 180, 178
+        local spiral = lurek.tilemap.hexSpiral(0, 0, 4)
+        local mirrored_q, mirrored_r = lurek.tilemap.hexReflect(2, -1, 0, 0, "q")
+        local rotated_q, rotated_r = lurek.tilemap.hexRotate(3, -2, 0, 0, 2)
+
+        for _, cell in ipairs(spiral) do
+            local sx, sy = lurek.tilemap.toScreenHex(cell.q, cell.r, hex_size)
+            local cx = origin_x + sx
+            local cy = origin_y + sy
+            local dist = lurek.tilemap.hexDistance(0, 0, cell.q, cell.r)
+            local rr = 62 + dist * 22
+            local gg = 92 + dist * 14
+            local bb = 110 + dist * 10
+            draw_hex_fill(img, cx, cy, hex_size - 3, rr, gg, bb)
+            draw_hex_outline(img, cx, cy, hex_size - 2, 232, 236, 244)
+        end
+
+        local route = {
+            { q = 0, r = 0 },
+            { q = 1, r = -1 },
+            { q = 2, r = -1 },
+            { q = rotated_q, r = rotated_r },
+            { q = mirrored_q, r = mirrored_r },
+        }
+        for i = 2, #route do
+            local a = route[i - 1]
+            local b = route[i]
+            local ax, ay = lurek.tilemap.toScreenHex(a.q, a.r, hex_size)
+            local bx, by = lurek.tilemap.toScreenHex(b.q, b.r, hex_size)
+            img:drawLine(origin_x + ax, origin_y + ay, origin_x + bx, origin_y + by, 255, 220, 132, 255)
+        end
+
+        local marker_cells = {
+            { q = 0, r = 0, color = { 120, 238, 160 } },
+            { q = rotated_q, r = rotated_r, color = { 120, 184, 255 } },
+            { q = mirrored_q, r = mirrored_r, color = { 255, 132, 132 } },
+        }
+        for _, cell in ipairs(marker_cells) do
+            local sx, sy = lurek.tilemap.toScreenHex(cell.q, cell.r, hex_size)
+            img:drawCircle(origin_x + sx, origin_y + sy, 7, cell.color[1], cell.color[2], cell.color[3], 255)
+        end
+
+        save_png(img, path)
+    end)
+
+    -- @evidence lurek.tilemap.newChunkMap
+    -- @evidence LChunkMap:setTile
+    -- @evidence LChunkMap:loadChunk
+    -- @evidence LChunkMap:getLoadedChunks
+    -- @evidence LChunkMap:getChunksInView
+    -- @evidence LChunkMap:chunkTileRange
+    -- @evidence lurek.image.savePNG
+    it("PNG: tilemap chunk streaming window", function()
+        ensure_evidence_dir("tilemap")
+        local path = OUT .. "tilemap_chunk_streaming_window.png"
+        local cm = lurek.tilemap.newChunkMap(8)
+
+        for cy = 0, 2 do
+            for cx = 0, 3 do
+                cm:loadChunk(cx, cy)
+                for ty = 0, 7 do
+                    for tx = 0, 7 do
+                        local wx = cx * 8 + tx
+                        local wy = cy * 8 + ty
+                        cm:setTile(wx, wy, ((wx + wy) % 6) + 1)
+                    end
+                end
+            end
+        end
+
+        local visible = cm:getChunksInView(6 * 16, 4 * 16, 12 * 16, 10 * 16, 16, 16)
+        local loaded = cm:getLoadedChunks()
+        local visible_lookup = {}
+        for _, chunk in ipairs(visible) do
+            visible_lookup[chunk.cx .. ":" .. chunk.cy] = true
+        end
+
+        local img = lurek.image.newImageData(420, 280)
+        img:fill(16, 18, 24, 255)
+        local cell = 14
+        local ox, oy = 30, 30
+
+        for _, chunk in ipairs(loaded) do
+            local min_tx, min_ty, max_tx, max_ty = cm:chunkTileRange(chunk.cx, chunk.cy)
+            local key = chunk.cx .. ":" .. chunk.cy
+            local border_r, border_g, border_b = 110, 118, 138
+            if visible_lookup[key] then
+                border_r, border_g, border_b = 255, 212, 120
+            end
+            for ty = min_ty, max_ty do
+                for tx = min_tx, max_tx do
+                    local gid = cm:getTile(tx, ty)
+                    local r, g, b = gid_color(gid)
+                    img:drawRect(ox + tx * cell, oy + ty * cell, cell - 1, cell - 1, r, g, b, 255)
+                end
+            end
+            img:drawLine(ox + min_tx * cell, oy + min_ty * cell, ox + (max_tx + 1) * cell, oy + min_ty * cell, border_r, border_g, border_b, 255)
+            img:drawLine(ox + (max_tx + 1) * cell, oy + min_ty * cell, ox + (max_tx + 1) * cell, oy + (max_ty + 1) * cell, border_r, border_g, border_b, 255)
+            img:drawLine(ox + (max_tx + 1) * cell, oy + (max_ty + 1) * cell, ox + min_tx * cell, oy + (max_ty + 1) * cell, border_r, border_g, border_b, 255)
+            img:drawLine(ox + min_tx * cell, oy + (max_ty + 1) * cell, ox + min_tx * cell, oy + min_ty * cell, border_r, border_g, border_b, 255)
+        end
+
+        save_png(img, path)
+    end)
+
+    -- @evidence lurek.tilemap.newIsoMap
+    -- @evidence LIsoMap:addLevel
+    -- @evidence LIsoMap:fillLevel
+    -- @evidence LIsoMap:setTilePart
+    -- @evidence LIsoMap:setOrigin
+    -- @evidence LIsoMap:tileToScreen
+    -- @evidence lurek.image.savePNG
+    it("PNG: tilemap isometric stacked settlement", function()
+        ensure_evidence_dir("tilemap")
+        local path = OUT .. "tilemap_isometric_stacked_settlement.png"
+        local iso = lurek.tilemap.newIsoMap(6, 6, 48, 24, 14, 3)
+        iso:addLevel("ground")
+        iso:addLevel("roofs")
+        iso:setOrigin(180, 48)
+        iso:fillLevel(1, lurek.tilemap.FLOOR, 1)
+
+        for y = 1, 6 do
+            for x = 1, 6 do
+                local edge = x == 1 or y == 1 or x == 6 or y == 6
+                if edge then
+                    iso:setTilePart(1, x, y, 1, 4)
+                end
+            end
+        end
+        iso:setTilePart(2, 3, 3, 1, 7)
+        iso:setTilePart(2, 4, 3, 1, 7)
+        iso:setTilePart(2, 3, 4, 1, 7)
+        iso:setTilePart(2, 4, 4, 1, 7)
+
+        local img = lurek.image.newImageData(420, 260)
+        img:fill(16, 18, 24, 255)
+
+        for y = 1, 6 do
+            for x = 1, 6 do
+                local sx, sy = iso:tileToScreen(x, y, 1)
+                local base = ((x + y) % 2 == 0) and { 90, 140, 96 } or { 122, 126, 82 }
+                img:drawLine(sx, sy, sx + 24, sy + 12, base[1], base[2], base[3], 255)
+                img:drawLine(sx + 24, sy + 12, sx, sy + 24, base[1], base[2], base[3], 255)
+                img:drawLine(sx, sy + 24, sx - 24, sy + 12, base[1], base[2], base[3], 255)
+                img:drawLine(sx - 24, sy + 12, sx, sy, base[1], base[2], base[3], 255)
+            end
+        end
+
+        for _, cell in ipairs({
+            { 3, 3 }, { 4, 3 }, { 3, 4 }, { 4, 4 },
+        }) do
+            local sx, sy = iso:tileToScreen(cell[1], cell[2], 2)
+            img:drawLine(sx, sy - 14, sx + 24, sy - 2, 186, 96, 82, 255)
+            img:drawLine(sx + 24, sy - 2, sx, sy + 10, 186, 96, 82, 255)
+            img:drawLine(sx, sy + 10, sx - 24, sy - 2, 186, 96, 82, 255)
+            img:drawLine(sx - 24, sy - 2, sx, sy - 14, 186, 96, 82, 255)
+        end
+
+        save_png(img, path)
+    end)
+
 end)
 test_summary()

@@ -109,6 +109,13 @@ local function attach(parent, child)
     return child
 end
 
+local function draw_outline(img, x, y, w, h, r, g, b, a)
+    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
+end
+
 -- @describe Evidence: lurek.ui layouts, widgets, and native charts
 describe("Evidence: lurek.ui layouts, widgets, and native charts", function()
     before_each(function()
@@ -368,6 +375,91 @@ describe("Evidence: lurek.ui layouts, widgets, and native charts", function()
         chart:addLayer("L4", { 12, 15, 19, 21, 24, 28, 31, 35 }, 0.85, 0.75, 0.35)
 
         save_chart(chart, 560, 320, "area_chart_stacked_capacity.png")
+    end)
+
+    -- @evidence lurek.ui.newLineChart
+    -- @evidence lurek.ui.newBarChart
+    -- @evidence lurek.ui.newPieChart
+    -- @evidence lurek.ui.newScatterPlot
+    -- @evidence lurek.image.savePNG
+    it("PNG: analytics chart contact sheet", function()
+        local canvas = lurek.image.newImageData(1080, 760)
+        canvas:fill(14, 18, 24, 255)
+
+        local line = lurek.ui.newLineChart({
+            width = 500, height = 320, title = "Retention Cohorts",
+            xLabel = "Week", yLabel = "Users", showLegend = true, legendWidth = 120,
+            xTickCount = 6, yTickCount = 5,
+        })
+        line:setYMax(160)
+        line:setXMax(12)
+        line:addSeries("cohort_a", {
+            {0, 148}, {2, 132}, {4, 118}, {6, 106}, {8, 94}, {10, 86}, {12, 80},
+        }, 0.30, 0.70, 0.98)
+        line:addSeries("cohort_b", {
+            {0, 126}, {2, 110}, {4, 96}, {6, 88}, {8, 78}, {10, 70}, {12, 64},
+        }, 0.95, 0.58, 0.24)
+        local line_img = lurek.image.newImageData(500, 320)
+        line_img:fill(18, 20, 28, 255)
+        line:drawToImage(line_img)
+
+        local bar = lurek.ui.newBarChart({
+            width = 500, height = 320, title = "Region Orders",
+            xLabel = "Region", yLabel = "Orders", showLegend = true, legendWidth = 130,
+            yTickCount = 5,
+        })
+        bar:addSeries("fulfilled", 0.26, 0.78, 0.52)
+        bar:addSeries("returned", 0.92, 0.42, 0.42)
+        bar:addCategory("North", { 84, 8 })
+        bar:addCategory("South", { 72, 12 })
+        bar:addCategory("East", { 93, 6 })
+        bar:addCategory("West", { 68, 10 })
+        local bar_img = lurek.image.newImageData(500, 320)
+        bar_img:fill(18, 20, 28, 255)
+        bar:drawToImage(bar_img)
+
+        local pie = lurek.ui.newPieChart({
+            width = 300, height = 220, title = "Channel Mix",
+            showLegend = true, legendWidth = 120,
+        })
+        pie:addSegment("Search", 35, 0.34, 0.74, 0.96)
+        pie:addSegment("Email", 22, 0.34, 0.82, 0.46)
+        pie:addSegment("Ads", 18, 0.94, 0.56, 0.24)
+        pie:addSegment("Direct", 15, 0.86, 0.38, 0.84)
+        pie:addSegment("Social", 10, 0.92, 0.38, 0.42)
+        local pie_img = lurek.image.newImageData(300, 220)
+        pie_img:fill(18, 20, 28, 255)
+        pie:drawToImage(pie_img)
+
+        local scatter = lurek.ui.newScatterPlot({
+            width = 300, height = 220, title = "Latency Clusters",
+            xLabel = "CPU ms", yLabel = "GPU ms", showLegend = true, legendWidth = 110,
+            xTickCount = 5, yTickCount = 5,
+        })
+        local fast, slow = {}, {}
+        for i = 1, 18 do
+            fast[i] = { 2.0 + i * 0.18, 1.6 + (i % 5) * 0.35 }
+            slow[i] = { 4.4 + i * 0.12, 3.0 + (i % 4) * 0.42 }
+        end
+        scatter:addSeries("fast", fast, 0.28, 0.78, 0.52)
+        scatter:addSeries("slow", slow, 0.94, 0.48, 0.26)
+        scatter:setXRange(0, 8.0)
+        scatter:setYRange(0, 6.0)
+        local scatter_img = lurek.image.newImageData(300, 220)
+        scatter_img:fill(18, 20, 28, 255)
+        scatter:drawToImage(scatter_img)
+
+        canvas:paste(line_img, 24, 24)
+        canvas:paste(bar_img, 556, 24)
+        canvas:paste(pie_img, 120, 430)
+        canvas:paste(scatter_img, 660, 430)
+        draw_outline(canvas, 24, 24, 500, 320, 230, 234, 242, 255)
+        draw_outline(canvas, 556, 24, 500, 320, 230, 234, 242, 255)
+        draw_outline(canvas, 120, 430, 300, 220, 230, 234, 242, 255)
+        draw_outline(canvas, 660, 430, 300, 220, 230, 234, 242, 255)
+
+        local path = OUT .. "chart_analytics_contact_sheet.png"
+        save_png(canvas, path)
     end)
 
     -- @evidence lurek.ui.newButton
@@ -671,6 +763,84 @@ describe("Evidence: lurek.ui layouts, widgets, and native charts", function()
     end)
 end)
 
+-- @describe Evidence: lurek.ui runtime input, drag, and binding flow
+describe("Evidence: lurek.ui runtime input, drag, and binding flow", function()
+    before_each(function()
+        ensure_evidence_dir("ui")
+        lurek.ui.clear()
+    end)
+
+    -- @evidence lurek.ui.mousepressed
+    -- @evidence lurek.ui.mousereleased
+    -- @evidence lurek.ui.mousemoved
+    -- @evidence lurek.ui.keypressed
+    -- @evidence lurek.ui.textinput
+    -- @evidence lurek.ui.wheelmoved
+    -- @evidence lurek.ui.beginDrag
+    -- @evidence lurek.ui.getActiveDrag
+    -- @evidence lurek.ui.dropOn
+    -- @evidence lurek.ui.endDrag
+    -- @evidence lurek.ui.update_bindings
+    -- @evidence lurek.ui.updateBindings
+    -- @evidence lurek.ui.loadLayoutGameFile
+    -- @evidence lurek.ui.getStyleToken
+    it("TXT: runtime input, drag, binding, and layout trace", function()
+        lurek.ui.setDefaultTheme()
+        lurek.ui.setViewport(640, 360)
+
+        local source = lurek.ui.newCustomWidget({
+            x = 24,
+            y = 24,
+            width = 120,
+            height = 36,
+            id = "ui_evidence_drag_source",
+        })
+        local target = lurek.ui.newPanel()
+        target:setPosition(220, 18)
+        target:setSize(180, 96)
+
+        source:bind("hp")
+
+        lurek.ui.beginDrag(source)
+        local drag_state = lurek.ui.getActiveDrag()
+        expect_not_nil(drag_state)
+        expect_no_error(function()
+            lurek.ui.dropOn(target)
+        end)
+
+        expect_no_error(function() lurek.ui.mousemoved(48, 52) end)
+        expect_no_error(function() lurek.ui.mousepressed(48, 52, 1) end)
+        expect_no_error(function() lurek.ui.mousereleased(48, 52, 1) end)
+        expect_no_error(function() lurek.ui.keypressed("tab") end)
+        expect_no_error(function() lurek.ui.textinput("alpha") end)
+        expect_no_error(function() lurek.ui.wheelmoved(0, 1) end)
+
+        local bound_update_count = lurek.ui.update_bindings({ hp = 10 })
+        local camel_update_count = lurek.ui.updateBindings({ hp = 15 })
+
+        lurek.ui.endDrag()
+        expect_nil(lurek.ui.getActiveDrag())
+
+        expect_no_error(function()
+            lurek.ui.loadLayoutGameFile("content/examples/assets/layouts/sample_main_menu.toml")
+        end)
+
+        local spacing = lurek.ui.getStyleToken("spacing_md")
+        local style_type = spacing == nil and "nil" or type(spacing)
+        local lines = {
+            "drag_started=true",
+            "drag_state_present=" .. tostring(drag_state ~= nil),
+            "bound_update_count=" .. tostring(bound_update_count),
+            "camel_update_count=" .. tostring(camel_update_count),
+            "style_token_type=" .. style_type,
+            "layout_loaded=content/examples/assets/layouts/sample_main_menu.toml",
+            "drag_cleared=" .. tostring(lurek.ui.getActiveDrag() == nil),
+        }
+
+        write_text(OUT .. "runtime_input_binding_layout_trace.txt", table.concat(lines, "\n") .. "\n")
+    end)
+end)
+
 -- @describe Evidence: lurek.ui layout batch rendering
 describe("Evidence: lurek.ui layout batch rendering", function()
     before_each(function()
@@ -717,7 +887,7 @@ describe("Evidence: lurek.ui layout batch rendering", function()
             local col = (i - 1) % 2
             local row = math.floor((i - 1) / 2)
             canvas:paste(thumb, col * thumb_w, row * thumb_h)
-            canvas:drawRect(col * thumb_w, row * thumb_h, thumb_w, thumb_h, 220, 220, 230, 255)
+            draw_outline(canvas, col * thumb_w, row * thumb_h, thumb_w, thumb_h, 220, 220, 230, 255)
         end
 
         local contact_path = OUT .. "layout_gallery_contact_sheet.png"

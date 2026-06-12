@@ -1,0 +1,4 @@
+supports_basic=false
+render_ok=true
+doc_type=LHtmlDocument
+doc_typeof=true

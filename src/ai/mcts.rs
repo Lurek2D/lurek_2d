@@ -137,17 +137,16 @@ impl MCTSEngine {
             }
             let parent_visits = node.visits;
             let c = self.config.uct_c;
-            let best_child = *node
-                .children
-                .iter()
-                .max_by(|&&a, &&b| {
-                    self.arena[a]
-                        .uct(parent_visits, c)
-                        .partial_cmp(&self.arena[b].uct(parent_visits, c))
-                        .unwrap()
-                })
-                .unwrap();
-            let action = self.arena[best_child].action.unwrap();
+            let Some(&best_child) = node.children.iter().max_by(|&&a, &&b| {
+                self.arena[a]
+                    .uct(parent_visits, c)
+                    .total_cmp(&self.arena[b].uct(parent_visits, c))
+            }) else {
+                return (idx, state);
+            };
+            let Some(action) = self.arena[best_child].action else {
+                return (idx, state);
+            };
             state = apply_action(&state, action);
             idx = best_child;
         }

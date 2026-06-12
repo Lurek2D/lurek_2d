@@ -64,15 +64,15 @@ UNTIL_LINE_RE = re.compile(r'^until\b')
 
 # filename = module name exactly (src/render/ -> render.lua, src/ecs/ -> ecs.lua)
 # JSON key = src/ folder name; example file = content/examples/<src_folder>.lua
-# When Lua API namespace differs from src folder (e.g. src/binary/ -> lurek.data),
-# the example file keeps the src folder name and NAMESPACE_MAP handles the namespace.
+# When Lua API namespace differs from src folder, the example file keeps the src
+# folder name and NAMESPACE_MAP handles the namespace.
 MODULE_TO_EXAMPLE: dict[str, str] = {
     'ai':          'ai.lua',
     'animation':   'animation.lua',
     'audio':       'audio.lua',
     'automation':  'automation.lua',
     'charts':      'charts.lua',
-    'binary':      'binary.lua',    # lurek.data API, example file matches src/ folder
+    'binary':      'binary.lua',
     'camera':      'camera.lua',
     'compute':     'compute.lua',
     'dataframe':   'dataframe.lua',
@@ -128,7 +128,7 @@ NAMESPACE_MAP: dict[str, str] = {
     'audio':       'audio',
     'automation':  'automation',
     'charts':      'charts',
-    'binary':      'data',        # src/binary/ -> lurek.data
+    'binary':      'binary',
     'camera':      'camera',
     'compute':     'compute',
     'dataframe':   'dataframe',

@@ -1968,7 +1968,7 @@ LNetworkHost:getLeasePeer(token)
 
 | Type | Description |
 |------|-------------|
-| number? | Original Peer ID or nil if invalid/expired. |
+| number | Original Peer ID, or nil if invalid or expired. |
 
 **Example**
 
@@ -3014,7 +3014,7 @@ end
 
 #### `LNetworkRuntime:authCancel`
 
-Cancels active authentication.
+Cancels the currently active authentication request.
 
 ```lua
 LNetworkRuntime:authCancel()
@@ -3071,7 +3071,7 @@ LNetworkRuntime:getAuthToken()
 
 | Type | Description |
 |------|-------------|
-| string? | Access token or nil if unauthenticated. |
+| string | Access token, or nil if unauthenticated. |
 
 **Example**
 
@@ -3088,7 +3088,7 @@ end
 
 #### `LNetworkRuntime:getMetrics`
 
-Returns network runtime metrics.
+Returns current network runtime metrics.
 
 ```lua
 LNetworkRuntime:getMetrics()
@@ -3296,7 +3296,7 @@ end
 
 #### `LNetworkRuntime:matchmakeCancel`
 
-Cancel matchmaking request.
+Cancels a previously started matchmaking request.
 
 ```lua
 LNetworkRuntime:matchmakeCancel(id)
@@ -3322,7 +3322,7 @@ end
 
 #### `LNetworkRuntime:matchmakeStart`
 
-Start matchmaking request.
+Starts a matchmaking request against the backend.
 
 ```lua
 LNetworkRuntime:matchmakeStart(url, payload)

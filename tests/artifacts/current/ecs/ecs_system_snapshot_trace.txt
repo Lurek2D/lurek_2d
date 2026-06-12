@@ -1,0 +1,8 @@
+system_count=0
+update_runs=1
+event_payload=42
+serialized_entities=1
+snapshot_entities=1
+diff_dirty=1
+after_deserialize=1
+after_apply_snapshot=1

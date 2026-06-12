@@ -34,7 +34,7 @@ pub struct AILod {
 impl AILod {
     /// Sort tiers by distance and build an `AILod`.
     pub fn new(mut tiers: Vec<LodTier>) -> Self {
-        tiers.sort_by(|a, b| a.max_distance.partial_cmp(&b.max_distance).unwrap());
+        tiers.sort_by(|a, b| a.max_distance.total_cmp(&b.max_distance));
         Self { tiers }
     }
     /// Return tier `i` if it exists. This function is part of the public API.

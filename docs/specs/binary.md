@@ -38,10 +38,6 @@
 
 This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
-## Imports
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
-
 ## Files
 
 ### bin_pack.rs
@@ -127,7 +123,99 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 - Provides copy-optimized extraction helpers for compatible element type constraints.
 - Serves as a compact buffering primitive for streaming and rolling-window scenarios.
 
-## Lua API Ref
+## Types
+
+- `BinValue` (`enum`, `bin_pack.rs`): Hold typed values used by token-based binary packing. Details: variants: U8, U16, U32, U64, I8, I16, I32, I64, F32, F64, Bool, Str, Bytes
+- `ByteData` (`struct`, `byte_data.rs`): Hold owned raw bytes with convenience conversion helpers. Details: methods: as_bytes (Return immutable byte slice view.); as_bytes_mut (Return mutable byte slice view.); clone_data (Clone internal bytes and return copied buffer.); from_bytes (Wrap existing bytes and return new value.); from_string (Encode UTF-8 text bytes and return new value.); get_byte (Read byte at offset and return optional value.); get_string (Decode bytes as UTF-8 lossily and return string.); is_empty (Return true when buffer has no bytes.); len (Return buffer length in bytes.); new (Create zero-filled buffer and return new value.); set_byte (Write byte at offset and return success flag.)
+- `CompressFormat` (`enum`, `compress.rs`): Select compression codec. Details: variants: Deflate, Gzip, Lz4, Zlib | methods: parse_str (Parse codec label and return variant or error.)
+- `DataWriter` (`struct`, `data_writer.rs`): Hold buffer and cursor for binary writes. Details: methods: as_bytes (Return immutable bytes view.); into_bytes (Consume writer and return owned bytes.); is_empty (Return true when buffer is empty.); len (Return current buffer length.); new (Create empty writer and return value.); seek (Move cursor to position and grow buffer when needed.); tell (Return current cursor position.); with_capacity (Create writer with reserved capacity and return value.); write_bytes (Write raw bytes at cursor.); write_f32_le (Write f32 in little-endian order.); write_f64_le (Write f64 in little-endian order.); write_i16_le (Write i16 in little-endian order.); write_i32_le (Write i32 in little-endian order.); write_i8 (Write one i8 value at cursor.); write_string (Write length-prefixed UTF-8 string.); write_u16_be (Write u16 in big-endian order.); write_u16_le (Write u16 in little-endian order.); write_u32_le (Write u32 in little-endian order.); write_u8 (Write one u8 value at cursor.)
+- `DataView` (`struct`, `dataview.rs`): Hold shared byte slice window with offset and size. Details: fields: data: Arc<Vec<u8>>, offset: usize, size: usize | methods: get_f32 (Read little-endian f32 at index and return value or error.); get_f64 (Read little-endian f64 at index and return value or error.); get_i16 (Read little-endian i16 at index and return value or error.); get_i32 (Read little-endian i32 at index and return value or error.); get_i8 (Read i8 at index and return value or error.); get_size (Return view size in bytes.); get_u16 (Read little-endian u16 at index and return value or error.); get_u32 (Read little-endian u32 at index and return value or error.); get_u8 (Read u8 at index and return value or error.); new (Create full-buffer view and return value.); new_slice (Create sub-slice view and return value or bounds error.)
+- `LuaDataView` (`struct`, `dataview.rs`): Wrap DataView for Lua-facing ownership patterns. Details: fields: inner: DataView | methods: new (Wrap DataView and return LuaDataView.)
+- `EncodeFormat` (`enum`, `encode.rs`): Select textual encoding algorithm. Details: variants: Base64, Hex | methods: parse_str (Parse format label and return encoding variant or error.)
+- `HashAlgorithm` (`enum`, `hash.rs`): Select hash algorithm used for digest computation. Details: variants: Md5, Sha1, Sha256, Sha512 | methods: parse_str (Parse algorithm label and return hash variant or error.)
+- `PackValue` (`enum`, `pack.rs`): Hold value variants used by pack and unpack formats. Details: variants: Int, UInt, Float, Double, Str, Bytes
+- `RingBuffer` (`struct`, `ring_buffer.rs`): Hold circular queue storage with overwrite semantics. Details: methods: capacity (Return configured capacity.); clear (Clear all elements and reset indices.); collect_copy (Copy elements into Vec from oldest to newest.); get (Return element by logical index from oldest.); is_empty (Return true when element count is zero.); is_full (Return true when element count equals capacity.); iter (Iterate elements from oldest to newest.); len (Return current element count.); new (Create ring buffer with capacity clamped to at least one.); peek (Return oldest element reference.); peek_newest (Return newest element reference.); pop (Pop oldest value and return optional element.); push (Push value and return true when buffer was not full.); to_refs (Collect references into Vec from oldest to newest.); to_vec (Clone elements into Vec from oldest to newest.)
+
+## Functions
+
+- `write` (`bin_pack.rs`): Write values by token format and return ByteData or error.
+- `read` (`bin_pack.rs`): Read values by token format and return values with next offset.
+- `measure_size` (`bin_pack.rs`): Measure static size for token format without variable-width tokens.
+- `ByteData::new` (`byte_data.rs`): Create zero-filled buffer and return new value.
+- `ByteData::from_bytes` (`byte_data.rs`): Wrap existing bytes and return new value.
+- `ByteData::from_string` (`byte_data.rs`): Encode UTF-8 text bytes and return new value.
+- `ByteData::len` (`byte_data.rs`): Return buffer length in bytes.
+- `ByteData::is_empty` (`byte_data.rs`): Return true when buffer has no bytes.
+- `ByteData::get_byte` (`byte_data.rs`): Read byte at offset and return optional value.
+- `ByteData::set_byte` (`byte_data.rs`): Write byte at offset and return success flag.
+- `ByteData::get_string` (`byte_data.rs`): Decode bytes as UTF-8 lossily and return string.
+- `ByteData::as_bytes` (`byte_data.rs`): Return immutable byte slice view.
+- `ByteData::as_bytes_mut` (`byte_data.rs`): Return mutable byte slice view.
+- `ByteData::clone_data` (`byte_data.rs`): Clone internal bytes and return copied buffer.
+- `CompressFormat::parse_str` (`compress.rs`): Parse codec label and return variant or error.
+- `compress` (`compress.rs`): Compress full byte slice and return compressed bytes.
+- `decompress` (`compress.rs`): Decompress full byte slice and return decoded bytes.
+- `compress_chunks` (`compress.rs`): Compress concatenated chunks and return compressed bytes.
+- `decompress_chunks` (`compress.rs`): Decompress concatenated chunks and return decoded bytes.
+- `compress_stream` (`compress.rs`): Compress bytes from reader into writer using selected codec.
+- `decompress_stream` (`compress.rs`): Decompress bytes from reader into writer using selected codec.
+- `DataWriter::new` (`data_writer.rs`): Create empty writer and return value.
+- `DataWriter::with_capacity` (`data_writer.rs`): Create writer with reserved capacity and return value.
+- `DataWriter::tell` (`data_writer.rs`): Return current cursor position.
+- `DataWriter::len` (`data_writer.rs`): Return current buffer length.
+- `DataWriter::is_empty` (`data_writer.rs`): Return true when buffer is empty.
+- `DataWriter::seek` (`data_writer.rs`): Move cursor to position and grow buffer when needed.
+- `DataWriter::into_bytes` (`data_writer.rs`): Consume writer and return owned bytes.
+- `DataWriter::as_bytes` (`data_writer.rs`): Return immutable bytes view.
+- `DataWriter::write_u8` (`data_writer.rs`): Write one u8 value at cursor.
+- `DataWriter::write_i8` (`data_writer.rs`): Write one i8 value at cursor.
+- `DataWriter::write_u16_le` (`data_writer.rs`): Write u16 in little-endian order.
+- `DataWriter::write_u16_be` (`data_writer.rs`): Write u16 in big-endian order.
+- `DataWriter::write_i16_le` (`data_writer.rs`): Write i16 in little-endian order.
+- `DataWriter::write_u32_le` (`data_writer.rs`): Write u32 in little-endian order.
+- `DataWriter::write_i32_le` (`data_writer.rs`): Write i32 in little-endian order.
+- `DataWriter::write_f32_le` (`data_writer.rs`): Write f32 in little-endian order.
+- `DataWriter::write_f64_le` (`data_writer.rs`): Write f64 in little-endian order.
+- `DataWriter::write_string` (`data_writer.rs`): Write length-prefixed UTF-8 string.
+- `DataWriter::write_bytes` (`data_writer.rs`): Write raw bytes at cursor.
+- `DataView::new` (`dataview.rs`): Create full-buffer view and return value.
+- `DataView::new_slice` (`dataview.rs`): Create sub-slice view and return value or bounds error.
+- `DataView::get_size` (`dataview.rs`): Return view size in bytes.
+- `DataView::get_u8` (`dataview.rs`): Read u8 at index and return value or error.
+- `DataView::get_i8` (`dataview.rs`): Read i8 at index and return value or error.
+- `DataView::get_u16` (`dataview.rs`): Read little-endian u16 at index and return value or error.
+- `DataView::get_i16` (`dataview.rs`): Read little-endian i16 at index and return value or error.
+- `DataView::get_u32` (`dataview.rs`): Read little-endian u32 at index and return value or error.
+- `DataView::get_i32` (`dataview.rs`): Read little-endian i32 at index and return value or error.
+- `DataView::get_f32` (`dataview.rs`): Read little-endian f32 at index and return value or error.
+- `DataView::get_f64` (`dataview.rs`): Read little-endian f64 at index and return value or error.
+- `LuaDataView::new` (`dataview.rs`): Wrap DataView and return LuaDataView.
+- `EncodeFormat::parse_str` (`encode.rs`): Parse format label and return encoding variant or error.
+- `encode` (`encode.rs`): Encode bytes with selected format and return text.
+- `decode` (`encode.rs`): Decode text with selected format and return bytes or error.
+- `HashAlgorithm::parse_str` (`hash.rs`): Parse algorithm label and return hash variant or error.
+- `hash` (`hash.rs`): Hash bytes with selected algorithm and return hex digest.
+- `crc32` (`hash.rs`): Compute CRC32 checksum and return value as u64.
+- `pack` (`pack.rs`): Pack values by format string and return ByteData or error.
+- `unpack` (`pack.rs`): Unpack values by format string and return values with next offset.
+- `get_packed_size` (`pack.rs`): Compute packed byte size for format and provided values.
+- `RingBuffer::new` (`ring_buffer.rs`): Create ring buffer with capacity clamped to at least one.
+- `RingBuffer::push` (`ring_buffer.rs`): Push value and return true when buffer was not full.
+- `RingBuffer::pop` (`ring_buffer.rs`): Pop oldest value and return optional element.
+- `RingBuffer::peek` (`ring_buffer.rs`): Return oldest element reference.
+- `RingBuffer::peek_newest` (`ring_buffer.rs`): Return newest element reference.
+- `RingBuffer::get` (`ring_buffer.rs`): Return element by logical index from oldest.
+- `RingBuffer::capacity` (`ring_buffer.rs`): Return configured capacity.
+- `RingBuffer::len` (`ring_buffer.rs`): Return current element count.
+- `RingBuffer::is_empty` (`ring_buffer.rs`): Return true when element count is zero.
+- `RingBuffer::is_full` (`ring_buffer.rs`): Return true when element count equals capacity.
+- `RingBuffer::clear` (`ring_buffer.rs`): Clear all elements and reset indices.
+- `RingBuffer::iter` (`ring_buffer.rs`): Iterate elements from oldest to newest.
+- `RingBuffer::to_vec` (`ring_buffer.rs`): Clone elements into Vec from oldest to newest.
+- `RingBuffer::to_refs` (`ring_buffer.rs`): Collect references into Vec from oldest to newest.
+- `RingBuffer::collect_copy` (`ring_buffer.rs`): Copy elements into Vec from oldest to newest.
+
+## Lua API Reference
 
 ### Functions
 
@@ -257,3 +345,11 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 - `LRingBuffer:toTable() -> number[]`: Returns stored values in oldest-to-newest order.
 - `LRingBuffer:type() -> string`: Returns the Lua-visible type name for this ring buffer handle.
 - `LRingBuffer:typeOf(name) -> boolean`: Returns whether this ring buffer handle matches a supported type name.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

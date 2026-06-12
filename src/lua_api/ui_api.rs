@@ -160,10 +160,16 @@ fn create_widget_table<'a>(
         "setPosition",
         lua.create_function(move |_, (_self, x, y): (LuaValue, f32, f32)| {
             let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
                 let b = w.base_mut();
                 b.x = x;
                 b.y = y;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, false, false, true);
             }
             Ok(())
         })?,
@@ -195,10 +201,16 @@ fn create_widget_table<'a>(
         "setSize",
         lua.create_function(move |_, (_self, w, h): (LuaValue, f32, f32)| {
             let mut g = c.borrow_mut();
-            if let Some(wgt) = g.widgets.get_mut(idx) {
+            let changed = if let Some(wgt) = g.widgets.get_mut(idx) {
                 let b = wgt.base_mut();
                 b.width = w;
                 b.height = h;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, false, false, true);
             }
             Ok(())
         })?,
@@ -238,8 +250,14 @@ fn create_widget_table<'a>(
                 ));
             }
             let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
                 w.base_mut().font_key = Some(key);
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, true, true, true);
             }
             Ok(())
         })?,
@@ -252,8 +270,14 @@ fn create_widget_table<'a>(
         "clearFont",
         lua.create_function(move |_, _self: LuaValue| {
             let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
                 w.base_mut().font_key = None;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, true, true, true);
             }
             Ok(())
         })?,
@@ -286,11 +310,16 @@ fn create_widget_table<'a>(
         "setStyleClass",
         lua.create_function(move |_, (_self, class): (LuaValue, String)| {
             let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
                 w.base_mut().style_class = Some(class);
-                return Ok(true);
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(false, true, true, true);
             }
-            Ok(false)
+            Ok(changed)
         })?,
     )?;
 
@@ -321,13 +350,15 @@ fn create_widget_table<'a>(
         lua.create_function(move |_, (_self, filter): (LuaValue, String)| {
             let mut g = c.borrow_mut();
             if let Some(w) = g.widgets.get_mut(idx) {
-                if let Some(f) = MouseFilter::parse_str(&filter) {
+                let valid = if let Some(f) = MouseFilter::parse_str(&filter) {
                     w.base_mut().mouse_filter = f;
-                    Ok(true)
+                    true
                 } else {
                     w.base_mut().mouse_filter = MouseFilter::Stop;
-                    Ok(false)
-                }
+                    false
+                };
+                g.mark_widget_dirty(false, false, false, true);
+                Ok(valid)
             } else {
                 Ok(false)
             }
@@ -344,8 +375,14 @@ fn create_widget_table<'a>(
         "setTextWrap",
         lua.create_function(move |_, (_self, wrap): (LuaValue, bool)| {
             let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
                 w.base_mut().text_wrap = wrap;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, false, true, true);
             }
             Ok(())
         })?,
@@ -361,8 +398,14 @@ fn create_widget_table<'a>(
         "setTextEllipsis",
         lua.create_function(move |_, (_self, ellipsis): (LuaValue, bool)| {
             let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
                 w.base_mut().text_ellipsis = ellipsis;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(false, false, true, true);
             }
             Ok(())
         })?,
@@ -382,10 +425,54 @@ fn create_widget_table<'a>(
             if let Some(w) = g.widgets.get_mut(idx) {
                 if let Some(va) = crate::ui::widget::TextVAlign::parse_str(&align) {
                     w.base_mut().text_v_align = va;
+                    g.mark_widget_dirty(false, false, true, true);
                     return Ok(true);
                 }
             }
             Ok(false)
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- setTextAlign --
+    /// Sets the horizontal alignment of text inside this widget.
+    /// @summary Overrides the theme text alignment for this widget.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @param | align | string | Horizontal alignment: "left", "center", or "right".
+    /// @return | boolean | True when the alignment string is recognised; false leaves the previous value unchanged.
+    t.set(
+        "setTextAlign",
+        lua.create_function(move |_, (_self, align): (LuaValue, String)| {
+            if !matches!(align.as_str(), "left" | "center" | "right") {
+                return Ok(false);
+            }
+            let mut g = c.borrow_mut();
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
+                w.base_mut().text_align = align;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(false, false, true, true);
+            }
+            Ok(changed)
+        })?,
+    )?;
+
+    let c = ctx.clone();
+    // -- getTextAlign --
+    /// Returns this widget's horizontal text alignment.
+    /// @param | self | LUiWidget | The widget instance.
+    /// @return | string | Horizontal alignment: "left", "center", or "right".
+    t.set(
+        "getTextAlign",
+        lua.create_function(move |_, _self: LuaValue| {
+            let g = c.borrow();
+            Ok(g.widgets
+                .get(idx)
+                .map_or("left", |w| w.base().text_align.as_str())
+                .to_string())
         })?,
     )?;
 
@@ -529,8 +616,14 @@ fn create_widget_table<'a>(
         "setVisible",
         lua.create_function(move |_, (_self, v): (LuaValue, bool)| {
             let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
                 w.base_mut().visible = v;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, false, false, true);
             }
             Ok(())
         })?,
@@ -556,7 +649,7 @@ fn create_widget_table<'a>(
         "setEnabled",
         lua.create_function(move |_, (_self, v): (LuaValue, bool)| {
             let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
                 let b = w.base_mut();
                 b.enabled = v;
                 if !v {
@@ -564,6 +657,12 @@ fn create_widget_table<'a>(
                 } else if b.state == WidgetState::Disabled {
                     b.state = WidgetState::Normal;
                 }
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(false, false, false, true);
             }
             Ok(())
         })?,
@@ -834,11 +933,17 @@ fn create_widget_table<'a>(
                 Option<f32>,
             )| {
                 let mut g = c.borrow_mut();
-                if let Some(w) = g.widgets.get_mut(idx) {
+                let changed = if let Some(w) = g.widgets.get_mut(idx) {
                     let r = right.unwrap_or(top);
                     let bo = bottom.unwrap_or(top);
                     let l = left.unwrap_or(r);
                     w.base_mut().padding = [top, r, bo, l];
+                    true
+                } else {
+                    false
+                };
+                if changed {
+                    g.mark_widget_dirty(true, false, true, true);
                 }
                 Ok(())
             },
@@ -881,11 +986,17 @@ fn create_widget_table<'a>(
                 Option<f32>,
             )| {
                 let mut g = c.borrow_mut();
-                if let Some(w) = g.widgets.get_mut(idx) {
+                let changed = if let Some(w) = g.widgets.get_mut(idx) {
                     let r = right.unwrap_or(top);
                     let bo = bottom.unwrap_or(top);
                     let l = left.unwrap_or(r);
                     w.base_mut().margin = [top, r, bo, l];
+                    true
+                } else {
+                    false
+                };
+                if changed {
+                    g.mark_widget_dirty(true, false, false, true);
                 }
                 Ok(())
             },
@@ -945,10 +1056,16 @@ fn create_widget_table<'a>(
         "setMinSize",
         lua.create_function(move |_, (_self, w, h): (LuaValue, f32, f32)| {
             let mut g = c.borrow_mut();
-            if let Some(wgt) = g.widgets.get_mut(idx) {
+            let changed = if let Some(wgt) = g.widgets.get_mut(idx) {
                 let b = wgt.base_mut();
                 b.min_width = w;
                 b.min_height = h;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, false, false, true);
             }
             Ok(())
         })?,
@@ -979,10 +1096,16 @@ fn create_widget_table<'a>(
         "setMaxSize",
         lua.create_function(move |_, (_self, w, h): (LuaValue, f32, f32)| {
             let mut g = c.borrow_mut();
-            if let Some(wgt) = g.widgets.get_mut(idx) {
+            let changed = if let Some(wgt) = g.widgets.get_mut(idx) {
                 let b = wgt.base_mut();
                 b.max_width = w;
                 b.max_height = h;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, false, false, true);
             }
             Ok(())
         })?,
@@ -1023,12 +1146,18 @@ fn create_widget_table<'a>(
                 Option<f32>,
             )| {
                 let mut g = c.borrow_mut();
-                if let Some(w) = g.widgets.get_mut(idx) {
+                let changed = if let Some(w) = g.widgets.get_mut(idx) {
                     let b = w.base_mut();
                     b.anchor_left = left;
                     b.anchor_top = top;
                     b.anchor_right = right;
                     b.anchor_bottom = bottom;
+                    true
+                } else {
+                    false
+                };
+                if changed {
+                    g.mark_widget_dirty(true, false, false, true);
                 }
                 Ok(())
             },
@@ -1045,10 +1174,16 @@ fn create_widget_table<'a>(
         lua.create_function(
             move |_, (_self, cx, cy): (LuaValue, Option<f32>, Option<f32>)| {
                 let mut g = c.borrow_mut();
-                if let Some(w) = g.widgets.get_mut(idx) {
+                let changed = if let Some(w) = g.widgets.get_mut(idx) {
                     let b = w.base_mut();
                     b.anchor_center_x = cx;
                     b.anchor_center_y = cy;
+                    true
+                } else {
+                    false
+                };
+                if changed {
+                    g.mark_widget_dirty(true, false, false, true);
                 }
                 Ok(())
             },
@@ -1062,8 +1197,14 @@ fn create_widget_table<'a>(
         "clearAnchor",
         lua.create_function(move |_, _self: LuaValue| {
             let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
                 w.base_mut().clear_anchors();
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, false, false, true);
             }
             Ok(())
         })?,
@@ -1077,8 +1218,14 @@ fn create_widget_table<'a>(
         "setFlexGrow",
         lua.create_function(move |_, (_self, grow): (LuaValue, f32)| {
             let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
                 w.base_mut().flex_grow = grow;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, false, false, true);
             }
             Ok(())
         })?,
@@ -1104,8 +1251,14 @@ fn create_widget_table<'a>(
         "setFlexShrink",
         lua.create_function(move |_, (_self, shrink): (LuaValue, f32)| {
             let mut g = c.borrow_mut();
-            if let Some(w) = g.widgets.get_mut(idx) {
+            let changed = if let Some(w) = g.widgets.get_mut(idx) {
                 w.base_mut().flex_shrink = shrink;
+                true
+            } else {
+                false
+            };
+            if changed {
+                g.mark_widget_dirty(true, false, false, true);
             }
             Ok(())
         })?,
@@ -1362,63 +1515,72 @@ fn create_typed_widget_table<'a>(
     idx: usize,
     cbs: &Rc<RefCell<GuiCallbacks>>,
 ) -> LuaResult<LuaTable<'a>> {
-    let kind_tag = {
-        let g = ctx.borrow();
-        match g.widgets.get(idx) {
-            Some(WidgetKind::TabBar(_)) => "tabbar",
-            Some(WidgetKind::ComboBox(_)) => "combobox",
-            Some(WidgetKind::Slider(_)) => "slider",
-            Some(WidgetKind::Switch(_)) => "switch",
-            Some(WidgetKind::Button(_)) => "button",
-            Some(WidgetKind::StatusBar(_)) => "statusbar",
-            Some(WidgetKind::GUITable(_)) => "guitable",
-            Some(WidgetKind::Label(_)) => "label",
-            _ => "widget",
-        }
-    };
+    let kind = typed_widget_kind(ctx, idx);
+    let table = create_widget_table(lua, ctx, idx, cbs, typed_widget_type_name(kind))?;
+    add_typed_widget_methods(lua, &table, ctx, idx, cbs, kind)?;
+    Ok(table)
+}
 
-    match kind_tag {
-        "tabbar" => {
-            let t = create_widget_table(lua, ctx, idx, cbs, "LTabBar")?;
-            add_tab_bar_methods(lua, &t, ctx, idx)?;
-            Ok(t)
-        }
-        "combobox" => {
-            let t = create_widget_table(lua, ctx, idx, cbs, "LComboBox")?;
-            add_combo_box_methods(lua, &t, ctx, idx)?;
-            Ok(t)
-        }
-        "slider" => {
-            let t = create_widget_table(lua, ctx, idx, cbs, "LSlider")?;
-            add_slider_methods(lua, &t, ctx, idx)?;
-            Ok(t)
-        }
-        "switch" => {
-            let t = create_widget_table(lua, ctx, idx, cbs, "LSwitch")?;
-            add_switch_methods(lua, &t, ctx, idx)?;
-            Ok(t)
-        }
-        "button" => {
-            let t = create_widget_table(lua, ctx, idx, cbs, "LButton")?;
-            add_button_methods(lua, &t, ctx, idx)?;
-            Ok(t)
-        }
-        "statusbar" => {
-            let t = create_widget_table(lua, ctx, idx, cbs, "LStatusBar")?;
-            add_status_bar_methods(lua, &t, ctx, idx)?;
-            Ok(t)
-        }
-        "guitable" => {
-            let t = create_widget_table(lua, ctx, idx, cbs, "LGuiTable")?;
-            add_gui_table_methods(lua, &t, ctx, idx, cbs)?;
-            Ok(t)
-        }
-        "label" => {
-            let t = create_widget_table(lua, ctx, idx, cbs, "LLabel")?;
-            add_label_methods(lua, &t, ctx, idx)?;
-            Ok(t)
-        }
-        _ => create_widget_table(lua, ctx, idx, cbs, "LWidget"),
+#[derive(Clone, Copy)]
+enum TypedWidgetKind {
+    TabBar,
+    ComboBox,
+    Slider,
+    Switch,
+    Button,
+    StatusBar,
+    GuiTable,
+    Label,
+    Widget,
+}
+
+fn typed_widget_kind(ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> TypedWidgetKind {
+    let g = ctx.borrow();
+    match g.widgets.get(idx) {
+        Some(WidgetKind::TabBar(_)) => TypedWidgetKind::TabBar,
+        Some(WidgetKind::ComboBox(_)) => TypedWidgetKind::ComboBox,
+        Some(WidgetKind::Slider(_)) => TypedWidgetKind::Slider,
+        Some(WidgetKind::Switch(_)) => TypedWidgetKind::Switch,
+        Some(WidgetKind::Button(_)) => TypedWidgetKind::Button,
+        Some(WidgetKind::StatusBar(_)) => TypedWidgetKind::StatusBar,
+        Some(WidgetKind::GUITable(_)) => TypedWidgetKind::GuiTable,
+        Some(WidgetKind::Label(_)) => TypedWidgetKind::Label,
+        _ => TypedWidgetKind::Widget,
+    }
+}
+
+fn typed_widget_type_name(kind: TypedWidgetKind) -> &'static str {
+    match kind {
+        TypedWidgetKind::TabBar => "LTabBar",
+        TypedWidgetKind::ComboBox => "LComboBox",
+        TypedWidgetKind::Slider => "LSlider",
+        TypedWidgetKind::Switch => "LSwitch",
+        TypedWidgetKind::Button => "LButton",
+        TypedWidgetKind::StatusBar => "LStatusBar",
+        TypedWidgetKind::GuiTable => "LGuiTable",
+        TypedWidgetKind::Label => "LLabel",
+        TypedWidgetKind::Widget => "LWidget",
+    }
+}
+
+fn add_typed_widget_methods(
+    lua: &Lua,
+    table: &LuaTable,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+    cbs: &Rc<RefCell<GuiCallbacks>>,
+    kind: TypedWidgetKind,
+) -> LuaResult<()> {
+    match kind {
+        TypedWidgetKind::TabBar => add_tab_bar_methods(lua, table, ctx, idx),
+        TypedWidgetKind::ComboBox => add_combo_box_methods(lua, table, ctx, idx),
+        TypedWidgetKind::Slider => add_slider_methods(lua, table, ctx, idx),
+        TypedWidgetKind::Switch => add_switch_methods(lua, table, ctx, idx),
+        TypedWidgetKind::Button => add_button_methods(lua, table, ctx, idx),
+        TypedWidgetKind::StatusBar => add_status_bar_methods(lua, table, ctx, idx),
+        TypedWidgetKind::GuiTable => add_gui_table_methods(lua, table, ctx, idx, cbs),
+        TypedWidgetKind::Label => add_label_methods(lua, table, ctx, idx),
+        TypedWidgetKind::Widget => Ok(()),
     }
 }
 /// Adds button-specific methods (setText, getText) to a button widget table.
@@ -4500,6 +4662,10 @@ fn add_dialog_methods(
     cbs: &Rc<RefCell<GuiCallbacks>>,
 ) -> LuaResult<()> {
     let c = ctx.clone();
+    // -- getTitle --
+    /// Returns the current title text for this dialog.
+    /// @param | self | LDialog | The dialog widget instance.
+    /// @return | string | The current dialog title, or an empty string when the widget is unavailable.
     t.set(
         "getTitle",
         lua.create_function(move |_, _self: LuaValue| {
@@ -4511,6 +4677,11 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
+    // -- setTitle --
+    /// Sets the current title text for this dialog.
+    /// @param | self | LDialog | The dialog widget instance.
+    /// @param | title | string | New title text.
+    /// @return | nil | No value is returned.
     t.set(
         "setTitle",
         lua.create_function(move |_, (_self, title): (LuaValue, String)| {
@@ -4522,6 +4693,10 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
+    // -- isModal --
+    /// Returns whether this dialog is modal.
+    /// @param | self | LDialog | The dialog widget instance.
+    /// @return | boolean | True when the dialog blocks outside interaction.
     t.set(
         "isModal",
         lua.create_function(move |_, _self: LuaValue| {
@@ -4530,6 +4705,11 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
+    // -- setModal --
+    /// Sets whether this dialog blocks outside interaction.
+    /// @param | self | LDialog | The dialog widget instance.
+    /// @param | v | boolean | True to make the dialog modal.
+    /// @return | nil | No value is returned.
     t.set(
         "setModal",
         lua.create_function(move |_, (_self, v): (LuaValue, bool)| {
@@ -4541,6 +4721,10 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
+    // -- isOpen --
+    /// Returns whether this dialog is currently open.
+    /// @param | self | LDialog | The dialog widget instance.
+    /// @return | boolean | True when the dialog is open.
     t.set(
         "isOpen",
         lua.create_function(move |_, _self: LuaValue| {
@@ -4549,6 +4733,10 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
+    // -- open --
+    /// Opens this dialog and marks it visible.
+    /// @param | self | LDialog | The dialog widget instance.
+    /// @return | nil | No value is returned.
     t.set(
         "open",
         lua.create_function(move |_, _self: LuaValue| {
@@ -4557,6 +4745,10 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
+    // -- close --
+    /// Closes this dialog and dispatches close handling.
+    /// @param | self | LDialog | The dialog widget instance.
+    /// @return | nil | No value is returned.
     t.set(
         "close",
         lua.create_function(move |_, _self: LuaValue| {
@@ -4565,6 +4757,11 @@ fn add_dialog_methods(
         })?,
     )?;
     let cbs2 = cbs.clone();
+    // -- setOnClose --
+    /// Registers a callback fired when this dialog closes.
+    /// @param | self | LDialog | The dialog widget instance.
+    /// @param | f | function | Callback invoked by the UI event dispatcher.
+    /// @return | nil | No value is returned.
     t.set(
         "setOnClose",
         lua.create_function(move |lua, (_self, f): (LuaValue, LuaFunction)| {
@@ -4574,6 +4771,11 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
+    // -- setContent --
+    /// Sets the widget index rendered as this dialog's content.
+    /// @param | self | LDialog | The dialog widget instance.
+    /// @param | content_idx | integer? | Optional widget index for the content slot.
+    /// @return | nil | No value is returned.
     t.set(
         "setContent",
         lua.create_function(move |_, (_self, content_idx): (LuaValue, Option<usize>)| {
@@ -4585,6 +4787,10 @@ fn add_dialog_methods(
         })?,
     )?;
     let c = ctx.clone();
+    // -- getContent --
+    /// Returns the widget index currently assigned to this dialog's content slot.
+    /// @param | self | LDialog | The dialog widget instance.
+    /// @return | integer | Content widget index, or nil when no content is assigned.
     t.set(
         "getContent",
         lua.create_function(move |_, _self: LuaValue| {
@@ -4614,7 +4820,7 @@ fn add_dialog_methods(
     // -- getFooter --
     /// Returns the optional footer content widget index.
     /// @param | self | LDialog | The widget instance.
-    /// @return | integer? | Footer widget index if one is assigned.
+    /// @return | integer | Footer widget index if one is assigned, or nil.
     t.set(
         "getFooter",
         lua.create_function(move |_, _self: LuaValue| {
@@ -4767,7 +4973,7 @@ fn add_dialog_methods(
     // -- getMaxSize --
     /// Returns the optional maximum popup dimensions for this dialog.
     /// @param | self | LDialog | The widget instance.
-    /// @return | number?, number? | Maximum width and height, or nil when unbounded.
+    /// @return | number, number | Maximum width and height, or nil values when unbounded.
     t.set(
         "getMaxSize",
         lua.create_function(move |_, _self: LuaValue| {
@@ -4919,6 +5125,12 @@ fn add_dialog_methods(
     )?;
     let c = ctx.clone();
     let cbs_add_button = cbs.clone();
+    // -- addButton --
+    /// Adds a custom action button to this dialog.
+    /// @param | self | LDialog | The dialog widget instance.
+    /// @param | text | string | Button label.
+    /// @param | cb | function? | Optional callback invoked when the action is activated.
+    /// @return | integer | One-based action index, or 0 if this widget is not a dialog.
     t.set(
         "addButton",
         lua.create_function(
@@ -4978,7 +5190,7 @@ fn add_dialog_methods(
     // -- getDefaultAction --
     /// Returns the 1-based action index triggered by Enter, if any.
     /// @param | self | LDialog | The widget instance.
-    /// @return | integer? | The default action index.
+    /// @return | integer | The default action index, or nil when unset.
     t.set(
         "getDefaultAction",
         lua.create_function(move |_, _self: LuaValue| {
@@ -5020,7 +5232,7 @@ fn add_dialog_methods(
     // -- getCancelAction --
     /// Returns the 1-based action index triggered by Escape, if any.
     /// @param | self | LDialog | The widget instance.
-    /// @return | integer? | The cancel action index.
+    /// @return | integer | The cancel action index, or nil when unset.
     t.set(
         "getCancelAction",
         lua.create_function(move |_, _self: LuaValue| {
@@ -5991,6 +6203,45 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let ctx = Rc::new(RefCell::new(GuiContext::new()));
     let callbacks = Rc::new(RefCell::new(GuiCallbacks::default()));
     state.borrow_mut().auto_ui_ctx = Some(Rc::downgrade(&ctx));
+    let s = state.clone();
+    // -- setAutoInput --
+    /// Enables or disables automatic forwarding of platform mouse, wheel, key, and text input to `lurek.ui`.
+    /// @summary When enabled, the runtime gives UI widgets first chance to consume input before game callbacks run.
+    /// @param | enabled | boolean | True to forward platform input to the UI automatically.
+    tbl.set(
+        "setAutoInput",
+        lua.create_function(move |_, enabled: bool| {
+            s.borrow_mut().auto_ui_input = enabled;
+            Ok(())
+        })?,
+    )?;
+    let s = state.clone();
+    // -- hasAutoInput --
+    /// Returns whether platform input is automatically forwarded to `lurek.ui`.
+    /// @return | boolean | True when automatic UI input forwarding is enabled.
+    tbl.set(
+        "hasAutoInput",
+        lua.create_function(move |_, ()| Ok(s.borrow().auto_ui_input))?,
+    )?;
+    let s = state.clone();
+    // -- setAutoUpdate --
+    /// Enables or disables automatic `lurek.ui.update(dt)` calls during the frame update.
+    /// @param | enabled | boolean | True to update retained UI state automatically each frame.
+    tbl.set(
+        "setAutoUpdate",
+        lua.create_function(move |_, enabled: bool| {
+            s.borrow_mut().auto_ui_update = enabled;
+            Ok(())
+        })?,
+    )?;
+    let s = state.clone();
+    // -- hasAutoUpdate --
+    /// Returns whether `lurek.ui.update(dt)` is called automatically each frame.
+    /// @return | boolean | True when automatic UI updates are enabled.
+    tbl.set(
+        "hasAutoUpdate",
+        lua.create_function(move |_, ()| Ok(s.borrow().auto_ui_update))?,
+    )?;
     let c = ctx.clone();
     let cbs = callbacks.clone();
     // -- newButton --
@@ -7495,77 +7746,129 @@ fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::Widge
         .get::<_, String>("type")
         .or_else(|_| table.get::<_, String>("widget_type"))
         .unwrap_or_else(|_| "panel".to_string());
-    let children_table: Option<mlua::Table> = table.get("children").ok();
-    let children = if let Some(ct) = children_table {
-        let len = ct.raw_len();
-        let mut result = Vec::with_capacity(len);
-        for i in 1..=len {
-            let child_table: mlua::Table = ct.get(i)?;
-            result.push(lua_table_to_widget_def(&child_table)?);
-        }
-        Some(result)
-    } else {
-        None
-    };
-    let actions_table: Option<mlua::Table> = table.get("actions").ok();
-    let actions = if let Some(at) = actions_table {
-        let len = at.raw_len();
-        let mut result = Vec::with_capacity(len);
-        for i in 1..=len {
-            let action_table: mlua::Table = at.get(i)?;
-            result.push(crate::ui::layout_loader::DialogActionDef {
-                text: action_table.get("text").unwrap_or_default(),
-                role: action_table.get("role").ok(),
-                close_on_activate: action_table
-                    .get("close_on_activate")
-                    .or_else(|_| action_table.get("closeOnActivate"))
-                    .ok(),
-            });
-        }
-        Some(result)
-    } else {
-        None
-    };
-    Ok(crate::ui::WidgetDef {
+    let mut def = crate::ui::WidgetDef {
         widget_type,
-        id: table.get("id").ok(),
-        x: table.get("x").ok(),
-        y: table.get("y").ok(),
-        w: table.get("w").ok(),
-        h: table.get("h").ok(),
-        text: table.get("text").ok(),
-        min: table.get("min").ok(),
-        max: table.get("max").ok(),
-        value: table.get("value").ok(),
-        checked: table.get("checked").ok(),
-        on: table.get("on").ok(),
-        visible: table.get("visible").ok(),
-        enabled: table.get("enabled").ok(),
-        placeholder: table.get("placeholder").ok(),
-        tooltip: table.get("tooltip").ok(),
-        direction: table.get("direction").ok(),
-        spacing: table.get("spacing").ok(),
-        orientation: table.get("orientation").ok(),
-        group: table.get("group").ok(),
-        modal: table.get("modal").ok(),
-        open: table.get("open").ok(),
-        closeable: table.get("closeable").ok(),
-        draggable: table.get("draggable").ok(),
-        resizable: table.get("resizable").ok(),
-        dismiss_on_outside_click: table
-            .get("dismiss_on_outside_click")
-            .or_else(|_| table.get("dismissOnOutsideClick"))
-            .ok(),
-        center_on_open: table
-            .get("center_on_open")
-            .or_else(|_| table.get("centerOnOpen"))
-            .ok(),
-        min_size: table.get("min_size").or_else(|_| table.get("minSize")).ok(),
-        max_size: table.get("max_size").or_else(|_| table.get("maxSize")).ok(),
-        slot: table.get("slot").ok(),
-        actions,
-        children,
-    })
+        actions: lua_dialog_actions(table)?,
+        children: lua_widget_children(table)?,
+        ..Default::default()
+    };
+    apply_widget_scalar_fields(&mut def, table);
+    apply_widget_text_layout_fields(&mut def, table);
+    apply_widget_container_fields(&mut def, table);
+    apply_widget_dialog_fields(&mut def, table);
+    Ok(def)
+}
+
+fn lua_widget_children(table: &mlua::Table) -> mlua::Result<Option<Vec<crate::ui::WidgetDef>>> {
+    let Some(children_table) = table.get::<_, Option<mlua::Table>>("children")? else {
+        return Ok(None);
+    };
+    let len = children_table.raw_len();
+    let mut result = Vec::with_capacity(len);
+    for i in 1..=len {
+        let child_table: mlua::Table = children_table.get(i)?;
+        result.push(lua_table_to_widget_def(&child_table)?);
+    }
+    Ok(Some(result))
+}
+
+fn lua_dialog_actions(
+    table: &mlua::Table,
+) -> mlua::Result<Option<Vec<crate::ui::layout_loader::DialogActionDef>>> {
+    let Some(actions_table) = table.get::<_, Option<mlua::Table>>("actions")? else {
+        return Ok(None);
+    };
+    let len = actions_table.raw_len();
+    let mut result = Vec::with_capacity(len);
+    for i in 1..=len {
+        let action_table: mlua::Table = actions_table.get(i)?;
+        result.push(crate::ui::layout_loader::DialogActionDef {
+            text: action_table.get("text").unwrap_or_default(),
+            role: action_table.get("role").ok(),
+            close_on_activate: action_table
+                .get("close_on_activate")
+                .or_else(|_| action_table.get("closeOnActivate"))
+                .ok(),
+        });
+    }
+    Ok(Some(result))
+}
+
+fn apply_widget_scalar_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
+    def.id = table.get("id").ok();
+    def.x = table.get("x").ok();
+    def.y = table.get("y").ok();
+    def.w = table.get("w").ok();
+    def.h = table.get("h").ok();
+    def.text = table.get("text").ok();
+    def.min = table.get("min").ok();
+    def.max = table.get("max").ok();
+    def.value = table.get("value").ok();
+    def.checked = table.get("checked").ok();
+    def.on = table.get("on").ok();
+    def.visible = table.get("visible").ok();
+    def.enabled = table.get("enabled").ok();
+    def.placeholder = table.get("placeholder").ok();
+    def.tooltip = table.get("tooltip").ok();
+}
+
+fn apply_widget_text_layout_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
+    def.padding = table.get("padding").ok();
+    def.margin = table.get("margin").ok();
+    def.text_align = table
+        .get("text_align")
+        .or_else(|_| table.get("textAlign"))
+        .ok();
+    def.text_v_align = table
+        .get("text_v_align")
+        .or_else(|_| table.get("textVAlign"))
+        .ok();
+    def.text_wrap = table
+        .get("text_wrap")
+        .or_else(|_| table.get("textWrap"))
+        .ok();
+    def.text_ellipsis = table
+        .get("text_ellipsis")
+        .or_else(|_| table.get("textEllipsis"))
+        .ok();
+    def.flex_grow = table
+        .get("flex_grow")
+        .or_else(|_| table.get("flexGrow"))
+        .ok();
+    def.flex_shrink = table
+        .get("flex_shrink")
+        .or_else(|_| table.get("flexShrink"))
+        .ok();
+}
+
+fn apply_widget_container_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
+    def.direction = table.get("direction").ok();
+    def.spacing = table.get("spacing").ok();
+    def.align = table.get("align").ok();
+    def.justify = table.get("justify").ok();
+    def.columns = table.get("columns").ok();
+    def.wrap = table.get("wrap").ok();
+    def.orientation = table.get("orientation").ok();
+    def.group = table.get("group").ok();
+    def.slot = table.get("slot").ok();
+}
+
+fn apply_widget_dialog_fields(def: &mut crate::ui::WidgetDef, table: &mlua::Table) {
+    def.modal = table.get("modal").ok();
+    def.open = table.get("open").ok();
+    def.closeable = table.get("closeable").ok();
+    def.draggable = table.get("draggable").ok();
+    def.resizable = table.get("resizable").ok();
+    def.dismiss_on_outside_click = table
+        .get("dismiss_on_outside_click")
+        .or_else(|_| table.get("dismissOnOutsideClick"))
+        .ok();
+    def.center_on_open = table
+        .get("center_on_open")
+        .or_else(|_| table.get("centerOnOpen"))
+        .ok();
+    def.min_size = table.get("min_size").or_else(|_| table.get("minSize")).ok();
+    def.max_size = table.get("max_size").or_else(|_| table.get("maxSize")).ok();
 }
 fn scalar_value_to_text(value: LuaValue) -> LuaResult<String> {
     match value {
@@ -7645,7 +7948,14 @@ fn parse_chart_color(tbl: &LuaTable, key: &str) -> LuaResult<Option<[f32; 4]>> {
 }
 
 fn parse_ui_chart_config(opts: &LuaTable) -> LuaResult<crate::charts::ChartConfig> {
-    let mut cfg = crate::charts::ChartConfig {
+    let mut cfg = parse_ui_chart_base_config(opts)?;
+    apply_ui_chart_colors(&mut cfg, opts)?;
+    apply_ui_chart_margin(&mut cfg, opts)?;
+    Ok(cfg)
+}
+
+fn parse_ui_chart_base_config(opts: &LuaTable) -> LuaResult<crate::charts::ChartConfig> {
+    Ok(crate::charts::ChartConfig {
         width: opts.get::<_, Option<u32>>("width")?.unwrap_or(400),
         height: opts.get::<_, Option<u32>>("height")?.unwrap_or(300),
         title: opts.get::<_, Option<String>>("title")?,
@@ -7665,7 +7975,10 @@ fn parse_ui_chart_config(opts: &LuaTable) -> LuaResult<crate::charts::ChartConfi
             .unwrap_or(80.0)
             .max(40.0),
         ..crate::charts::ChartConfig::default()
-    };
+    })
+}
+
+fn apply_ui_chart_colors(cfg: &mut crate::charts::ChartConfig, opts: &LuaTable) -> LuaResult<()> {
     if let Some(bg) = parse_chart_color(opts, "bgColor")? {
         cfg.bg_color = bg;
     }
@@ -7681,6 +7994,10 @@ fn parse_ui_chart_config(opts: &LuaTable) -> LuaResult<crate::charts::ChartConfi
     if let Ok(Some(show_grid)) = opts.get::<_, Option<bool>>("showGrid") {
         cfg.show_grid = show_grid;
     }
+    Ok(())
+}
+
+fn apply_ui_chart_margin(cfg: &mut crate::charts::ChartConfig, opts: &LuaTable) -> LuaResult<()> {
     if let Ok(Some(margin_tbl)) = opts.get::<_, Option<LuaTable>>("margin") {
         cfg.margin.top = margin_tbl
             .get::<_, Option<f32>>("top")?
@@ -7695,7 +8012,7 @@ fn parse_ui_chart_config(opts: &LuaTable) -> LuaResult<crate::charts::ChartConfi
             .get::<_, Option<f32>>("left")?
             .unwrap_or(cfg.margin.left);
     }
-    Ok(cfg)
+    Ok(())
 }
 
 fn rgb_color(r: f32, g: f32, b: f32) -> Color {

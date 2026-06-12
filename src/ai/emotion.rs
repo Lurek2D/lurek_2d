@@ -99,7 +99,7 @@ impl EmotionModel {
         self.emotions
             .iter()
             .filter(|e| e.is_active())
-            .max_by(|a, b| a.value.partial_cmp(&b.value).unwrap())
+            .max_by(|a, b| a.value.total_cmp(&b.value))
             .map(|e| e.name.as_str())
     }
     /// Return `true` when the named emotion exists and is active.

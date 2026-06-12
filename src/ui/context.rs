@@ -356,6 +356,10 @@ impl GuiContext {
         self.text_dirty |= text;
         self.render_dirty |= render;
     }
+    /// Mark cached layout, style, text, or render state as stale after external widget mutation.
+    pub fn mark_widget_dirty(&mut self, layout: bool, style: bool, text: bool, render: bool) {
+        self.mark_dirty_flags(layout, style, text, render);
+    }
     /// Return the total number of widgets including the root panel.
     pub fn widget_count(&self) -> usize {
         self.widgets.len()
@@ -1257,6 +1261,19 @@ impl GuiContext {
             hash = hash.wrapping_mul(1099511628211);
             hash ^= b.id.len() as u64;
             hash = hash.wrapping_mul(1099511628211);
+            for value in b.padding.iter().chain(b.margin.iter()) {
+                hash ^= value.to_bits() as u64;
+                hash = hash.wrapping_mul(1099511628211);
+            }
+            hash ^= (b.text_wrap as u64)
+                | ((b.text_ellipsis as u64) << 1)
+                | ((b.text_v_align as u64) << 2);
+            hash = hash.wrapping_mul(1099511628211);
+            hash ^= b.text_align.len() as u64;
+            for byte in b.text_align.as_bytes() {
+                hash ^= *byte as u64;
+                hash = hash.wrapping_mul(1099511628211);
+            }
             if let Some(children) = w.children() {
                 hash ^= children.len() as u64;
                 hash = hash.wrapping_mul(1099511628211);

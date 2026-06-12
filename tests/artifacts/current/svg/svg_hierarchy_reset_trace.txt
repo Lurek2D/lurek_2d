@@ -1,0 +1,6 @@
+dimensions=200x100
+element_count=4
+prov_1_color_before=nil
+prov_1_color_after=nil
+prov_1_parent=group1
+parent_child_count=2

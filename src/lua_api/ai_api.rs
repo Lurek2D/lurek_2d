@@ -980,6 +980,43 @@ impl LuaUserData for LuaSteeringManager {
             let (idx, total) = this.inner.borrow().path_progress();
             Ok((idx + 1, total))
         });
+        // -- setEntity --
+        /// Sets or replaces one named steering-context entity.
+        /// @param | name | string | Entity name used by pursue, evade, and flock behaviors.
+        /// @param | x | number | Current entity X position.
+        /// @param | y | number | Current entity Y position.
+        /// @param | vx | number? | Current entity X velocity; defaults to 0.
+        /// @param | vy | number? | Current entity Y velocity; defaults to 0.
+        methods.add_method_mut(
+            "setEntity",
+            |_, this, (name, x, y, vx, vy): (String, f32, f32, Option<f32>, Option<f32>)| {
+                this.inner.borrow_mut().set_entity(
+                    name,
+                    (x, y),
+                    (vx.unwrap_or(0.0), vy.unwrap_or(0.0)),
+                );
+                Ok(())
+            },
+        );
+        // -- removeEntity --
+        /// Removes one named steering-context entity.
+        /// @param | name | string | Entity name to remove.
+        /// @return | boolean | True when an entity was removed.
+        methods.add_method_mut("removeEntity", |_, this, name: String| {
+            Ok(this.inner.borrow_mut().remove_entity(&name))
+        });
+        // -- clearEntities --
+        /// Clears all steering-context entities.
+        methods.add_method_mut("clearEntities", |_, this, ()| {
+            this.inner.borrow_mut().clear_entities();
+            Ok(())
+        });
+        // -- entityCount --
+        /// Returns the number of steering-context entities.
+        /// @return | integer | Entity count.
+        methods.add_method("entityCount", |_, this, ()| {
+            Ok(this.inner.borrow().entity_count() as i64)
+        });
         // -- type --
         /// Returns the Lua-visible type name for this steering manager handle.
         /// @return | string | The string `LSteeringManager`.

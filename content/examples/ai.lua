@@ -911,25 +911,60 @@ end
 --@api-stub: LSteeringManager:addPursue
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:setEntity("target_agent", 220, 120, 20, 0)
   steer:addPursue("target_agent", 1.0)
-  local count = steer:getBehaviorCount()
-  print("LSteeringManager:addPursue: behaviors=" .. tostring(count))
+  local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
+  print("LSteeringManager:addPursue: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 
 --@api-stub: LSteeringManager:addEvade
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:setEntity("enemy_agent", 140, 120, -10, 0)
   steer:addEvade("enemy_agent", 1.0)
-  local count = steer:getBehaviorCount()
-  print("LSteeringManager:addEvade: behaviors=" .. tostring(count))
+  local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
+  print("LSteeringManager:addEvade: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 
 --@api-stub: LSteeringManager:addFlock
 do
   local steer = lurek.ai.newSteeringManager()
+  steer:setEntity("ally_1", 110, 100, 20, 0)
+  steer:setEntity("ally_2", 95, 140, 10, 5)
   steer:addFlock(80, 1.5, 1.0, 1.0, 1.0)
-  local count = steer:getBehaviorCount()
-  print("LSteeringManager:addFlock: behaviors=" .. tostring(count))
+  local fx, fy = steer:calculate(100, 120, 0, 0, 120, 250, 1 / 60)
+  print("LSteeringManager:addFlock: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
+end
+
+--@api-stub: LSteeringManager:setEntity
+do
+  local steer = lurek.ai.newSteeringManager()
+  steer:setEntity("scout", 100, 80, 12, 0)
+  print("LSteeringManager:setEntity: count=" .. tostring(steer:entityCount()))
+end
+
+--@api-stub: LSteeringManager:removeEntity
+do
+  local steer = lurek.ai.newSteeringManager()
+  steer:setEntity("scout", 100, 80, 12, 0)
+  local removed = steer:removeEntity("scout")
+  print("LSteeringManager:removeEntity: removed=" .. tostring(removed))
+end
+
+--@api-stub: LSteeringManager:clearEntities
+do
+  local steer = lurek.ai.newSteeringManager()
+  steer:setEntity("a", 0, 0)
+  steer:setEntity("b", 16, 0)
+  steer:clearEntities()
+  print("LSteeringManager:clearEntities: count=" .. tostring(steer:entityCount()))
+end
+
+--@api-stub: LSteeringManager:entityCount
+do
+  local steer = lurek.ai.newSteeringManager()
+  steer:setEntity("a", 0, 0)
+  print("LSteeringManager:entityCount: " .. tostring(steer:entityCount()))
 end
 
 --@api-stub: LSteeringManager:getBehaviorCount

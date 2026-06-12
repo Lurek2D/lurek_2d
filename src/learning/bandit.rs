@@ -97,7 +97,7 @@ impl Bandit {
                         let ucb = |arm: &BanditArm| {
                             arm.mean_reward() + (2.0 * total.ln() / arm.pulls as f64).sqrt()
                         };
-                        ucb(&self.arms[a]).partial_cmp(&ucb(&self.arms[b])).unwrap()
+                        ucb(&self.arms[a]).total_cmp(&ucb(&self.arms[b]))
                     })
                     .unwrap_or(0)
             }
@@ -111,7 +111,7 @@ impl Bandit {
                 samples
                     .iter()
                     .enumerate()
-                    .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
+                    .max_by(|a, b| a.1.total_cmp(b.1))
                     .map(|(i, _)| i)
                     .unwrap_or(0)
             }
@@ -135,8 +135,7 @@ impl Bandit {
             .max_by(|&a, &b| {
                 self.arms[a]
                     .mean_reward()
-                    .partial_cmp(&self.arms[b].mean_reward())
-                    .unwrap()
+                    .total_cmp(&self.arms[b].mean_reward())
             })
             .unwrap_or(0)
     }

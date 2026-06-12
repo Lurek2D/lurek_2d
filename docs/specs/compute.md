@@ -41,10 +41,6 @@
 
 This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
-## Imports
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
-
 ## Files
 
 ### analytics.rs
@@ -114,7 +110,134 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - Exposes matrix multiplication and dot-product helpers for core spatial-numeric composition.
 - Serves as the spatial-processing utility layer built on top of NdArray primitives.
 
-## Lua API Ref
+## Types
+
+- `DataType` (`enum`, `array.rs`): Selects scalar storage type used by an NdArray instance. Details: variants: Float32, Float64, Int32 | methods: byte_size (Return byte width of dtype element representation.); name (Return canonical dtype name string.); parse (Parse dtype string and return matching DataType or parse error.)
+- `NdArray` (`struct`, `array.rs`): Stores dense n-dimensional array metadata and raw typed element bytes. Details: methods: compute_strides (Compute row-major strides and return stride vector for provided shape.); data (Read immutable byte buffer and return raw data slice.); data_mut (Read mutable byte buffer and return raw mutable data slice.); display_string (Format array summary and return short display string.); dtype (Read scalar dtype and return DataType value.); fill (Fill all elements with scalar value and return after mutation.); flat_index (Convert multidimensional indices to flat index and return offset.); from_slice (Build array from f64 slice and return typed array with requested shape.); get_by_indices (Read element by multidimensional indices and return f64 value.); get_f64 (Read element by flat index and return value converted to f64.); get_i32 (Read element as i32 by flat index and return integer value.); iter_f64 (Iterate elements as f64 values and return lazy iterator.); map (Map function over elements and return new array with mapped values.); ndim (Read number of dimensions and return ndim value.); new (Create zero-initialized array and return it for shape and dtype.); ones (Allocate one-filled array and return initialized values.); range (Build 1D range array and return values from start to stop with step.); set_by_indices (Write element by multidimensional indices and return success status.); set_f64 (Write f64 value by flat index and return after dtype conversion.); set_i32 (Write i32 value by flat index and return after byte update.); set_shape (Replace shape and stride metadata and return after metadata update.); shape (Read shape slice and return axis lengths.); size (Read element count and return total number of elements.); strides (Read stride slice and return per-axis element strides.); to_f64_vec (Convert all elements to f64 and return copied vector.); zeros (Allocate zero-filled array and return it after validating shape limits.)
+- `LuDecomp` (`struct`, `linalg.rs`): Stores compact LU decomposition with row permutation metadata. Details: fields: lu_data: Vec<f64>, perm: Vec<usize>, n: usize, det_sign: i32
+
+## Functions
+
+- `cumsum` (`analytics.rs`): Compute cumulative sum and return a 1D array with running totals.
+- `diff` (`analytics.rs`): Compute finite difference of requested order and return derived 1D array.
+- `histogram` (`analytics.rs`): Compute histogram bins and return (lo, hi, count) tuples for each bin.
+- `percentile` (`analytics.rs`): Compute percentile value and return interpolated sample at p in [0, 100].
+- `covariance` (`analytics.rs`): Compute population covariance and return scalar covariance between arrays.
+- `pearson_corr` (`analytics.rs`): Compute Pearson correlation and return normalized linear correlation coefficient.
+- `normalize_range` (`analytics.rs`): Normalize values to output range and return scaled 1D array.
+- `zscore` (`analytics.rs`): Normalize values to z-scores and return array with mean-zero unit variance.
+- `convolve1d` (`analytics.rs`): Compute full 1D convolution and return output signal array.
+- `correlate1d` (`analytics.rs`): Compute valid 1D correlation and return sliding dot-product array.
+- `DataType::parse` (`array.rs`): Parse dtype string and return matching DataType or parse error.
+- `DataType::byte_size` (`array.rs`): Return byte width of dtype element representation.
+- `DataType::name` (`array.rs`): Return canonical dtype name string.
+- `NdArray::new` (`array.rs`): Create zero-initialized array and return it for shape and dtype.
+- `NdArray::zeros` (`array.rs`): Allocate zero-filled array and return it after validating shape limits.
+- `NdArray::ones` (`array.rs`): Allocate one-filled array and return initialized values.
+- `NdArray::range` (`array.rs`): Build 1D range array and return values from start to stop with step.
+- `NdArray::from_slice` (`array.rs`): Build array from f64 slice and return typed array with requested shape.
+- `NdArray::get_f64` (`array.rs`): Read element by flat index and return value converted to f64.
+- `NdArray::set_f64` (`array.rs`): Write f64 value by flat index and return after dtype conversion.
+- `NdArray::get_i32` (`array.rs`): Read element as i32 by flat index and return integer value.
+- `NdArray::set_i32` (`array.rs`): Write i32 value by flat index and return after byte update.
+- `NdArray::flat_index` (`array.rs`): Convert multidimensional indices to flat index and return offset.
+- `NdArray::shape` (`array.rs`): Read shape slice and return axis lengths.
+- `NdArray::dtype` (`array.rs`): Read scalar dtype and return DataType value.
+- `NdArray::size` (`array.rs`): Read element count and return total number of elements.
+- `NdArray::ndim` (`array.rs`): Read number of dimensions and return ndim value.
+- `NdArray::strides` (`array.rs`): Read stride slice and return per-axis element strides.
+- `NdArray::data` (`array.rs`): Read immutable byte buffer and return raw data slice.
+- `NdArray::data_mut` (`array.rs`): Read mutable byte buffer and return raw mutable data slice.
+- `NdArray::set_shape` (`array.rs`): Replace shape and stride metadata and return after metadata update.
+- `NdArray::compute_strides` (`array.rs`): Compute row-major strides and return stride vector for provided shape.
+- `NdArray::get_by_indices` (`array.rs`): Read element by multidimensional indices and return f64 value.
+- `NdArray::set_by_indices` (`array.rs`): Write element by multidimensional indices and return success status.
+- `NdArray::to_f64_vec` (`array.rs`): Convert all elements to f64 and return copied vector.
+- `NdArray::fill` (`array.rs`): Fill all elements with scalar value and return after mutation.
+- `NdArray::map` (`array.rs`): Map function over elements and return new array with mapped values.
+- `NdArray::iter_f64` (`array.rs`): Iterate elements as f64 values and return lazy iterator.
+- `NdArray::display_string` (`array.rs`): Format array summary and return short display string.
+- `next_power_of_two` (`fft.rs`): Compute next power-of-two length and return unchanged value when already aligned.
+- `fft` (`fft.rs`): Compute FFT for real input and return padded complex spectrum pairs.
+- `ifft` (`fft.rs`): Compute inverse FFT from complex bins and return reconstructed real samples.
+- `fft_magnitude` (`fft.rs`): Compute FFT magnitude spectrum and return absolute value per complex bin.
+- `normalize_vec` (`linalg.rs`): Normalize 1D vector and return unit-length vector with same dtype.
+- `cross2d` (`linalg.rs`): Compute 2D cross product scalar and return signed area component.
+- `outer` (`linalg.rs`): Compute outer product of two vectors and return `[m,n]` matrix.
+- `rotate2d_matrix` (`linalg.rs`): Build 2D rotation matrix and return `[2,2]` Float64 matrix.
+- `affine2d` (`linalg.rs`): Build 2D affine matrix and return `[3,3]` Float64 transform matrix.
+- `transform_points` (`linalg.rs`): Transform `[N,2]` points and return transformed `[N,2]` points array.
+- `gaussian_kernel` (`linalg.rs`): Build normalized odd-sized Gaussian kernel and return `[size,size]` matrix.
+- `sobel` (`linalg.rs`): Compute Sobel gradients and return (gx, gy) filtered arrays.
+- `linsolve` (`linalg.rs`): Solve linear system and return solution vector using Gaussian elimination.
+- `lu_decompose` (`linalg.rs`): Compute LU decomposition and return packed factors with pivot metadata.
+- `eigenvalue_power` (`linalg.rs`): Estimate dominant eigenpair and return (eigenvalue, eigenvector).
+- `get_par_threshold` (`ops.rs`): Read current parallel threshold and return minimum size for parallel dispatch.
+- `set_par_threshold` (`ops.rs`): Set parallel threshold and return previous threshold value.
+- `add` (`ops.rs`): Add arrays element-wise and return result with broadcast support.
+- `add_scalar` (`ops.rs`): Add scalar to array and return element-wise result.
+- `sub` (`ops.rs`): Subtract arrays element-wise and return result with broadcast support.
+- `sub_scalar` (`ops.rs`): Subtract scalar from array and return element-wise result.
+- `mul` (`ops.rs`): Multiply arrays element-wise and return result with broadcast support.
+- `mul_scalar` (`ops.rs`): Multiply array by scalar and return element-wise result.
+- `div` (`ops.rs`): Divide arrays element-wise and return result with broadcast support.
+- `div_scalar` (`ops.rs`): Divide array by scalar and return element-wise result.
+- `pow_scalar` (`ops.rs`): Raise each element to exponent and return transformed array.
+- `sqrt` (`ops.rs`): Compute square root per element and return transformed array.
+- `abs` (`ops.rs`): Compute absolute value per element and return transformed array.
+- `neg` (`ops.rs`): Negate each element and return transformed array.
+- `clamp` (`ops.rs`): Clamp each element to range and return transformed array.
+- `eq` (`ops.rs`): Compare arrays for equality and return float mask array.
+- `eq_scalar` (`ops.rs`): Compare array to scalar for equality and return float mask array.
+- `neq` (`ops.rs`): Compare arrays for inequality and return float mask array.
+- `neq_scalar` (`ops.rs`): Compare array to scalar for inequality and return float mask array.
+- `gt` (`ops.rs`): Compare arrays for greater-than and return float mask array.
+- `gt_scalar` (`ops.rs`): Compare array to scalar for greater-than and return float mask array.
+- `lt` (`ops.rs`): Compare arrays for less-than and return float mask array.
+- `lt_scalar` (`ops.rs`): Compare array to scalar for less-than and return float mask array.
+- `gte` (`ops.rs`): Compare arrays for greater-or-equal and return float mask array.
+- `gte_scalar` (`ops.rs`): Compare array to scalar for greater-or-equal and return float mask array.
+- `lte` (`ops.rs`): Compare arrays for less-or-equal and return float mask array.
+- `lte_scalar` (`ops.rs`): Compare array to scalar for less-or-equal and return float mask array.
+- `threshold` (`ops.rs`): Build threshold mask and return elements greater-or-equal to threshold as ones.
+- `where_mask` (`ops.rs`): Select values by mask and return merged output array.
+- `count_nonzero` (`ops.rs`): Count non-zero elements and return total count.
+- `argmin` (`ops.rs`): Return flat index of minimum element.
+- `argmax` (`ops.rs`): Return flat index of maximum element.
+- `any` (`ops.rs`): Return true when any element is non-zero.
+- `all` (`ops.rs`): Return true when all elements are non-zero.
+- `sum` (`ops.rs`): Sum elements and return scalar total.
+- `mean` (`ops.rs`): Compute mean value and return scalar average.
+- `min_val` (`ops.rs`): Compute minimum element value and return scalar minimum.
+- `max_val` (`ops.rs`): Compute maximum element value and return scalar maximum.
+- `sum_axis` (`ops.rs`): Sum elements along axis and return reduced array.
+- `mean_axis` (`ops.rs`): Compute mean along axis and return reduced array.
+- `min_axis` (`ops.rs`): Compute minimum along axis and return reduced array.
+- `max_axis` (`ops.rs`): Compute maximum along axis and return reduced array.
+- `reshape` (`ops.rs`): Reshape array metadata and return cloned array with new shape.
+- `transpose_2d` (`ops.rs`): Transpose 2D array and return array with swapped axes.
+- `fill` (`ops.rs`): Fill array in place and return after mutation.
+- `add_inplace` (`ops.rs`): Add second array into first array in place and return success status.
+- `sub_inplace` (`ops.rs`): Subtract second array from first array in place and return success status.
+- `mul_inplace` (`ops.rs`): Multiply first array by second array in place and return success status.
+- `div_inplace` (`ops.rs`): Divide first array by second array in place and return success status.
+- `clone_array` (`ops.rs`): Clone array and return independent copy.
+- `bitwise_and` (`ops.rs`): Compute bitwise AND and return int32 output array.
+- `bitwise_or` (`ops.rs`): Compute bitwise OR and return int32 output array.
+- `bitwise_xor` (`ops.rs`): Compute bitwise XOR and return int32 output array.
+- `bitwise_not` (`ops.rs`): Compute bitwise NOT and return int32 output array.
+- `bitwise_lshift` (`ops.rs`): Shift int32 elements left and return shifted output array.
+- `bitwise_rshift` (`ops.rs`): Shift int32 elements right and return shifted output array.
+- `convolve2d` (`spatial.rs`): Convolve 2D input with 2D kernel and return same-sized output array.
+- `dilate` (`spatial.rs`): Apply binary dilation with Manhattan radius and return dilated mask array.
+- `erode` (`spatial.rs`): Apply binary erosion with Manhattan radius and return eroded mask array.
+- `flood_fill` (`spatial.rs`): Flood fill from seed coordinate and return array with replaced connected region.
+- `get_region` (`spatial.rs`): Copy a 2D sub-region and return extracted array of requested size.
+- `set_region` (`spatial.rs`): Write source 2D region into target array and return success or bounds error.
+- `matmul` (`spatial.rs`): Multiply two 2D matrices and return matrix product array.
+- `dot` (`spatial.rs`): Compute dot product of two 1D vectors and return scalar sum.
+
+## Lua API Reference
 
 ### Functions
 
@@ -302,3 +425,11 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

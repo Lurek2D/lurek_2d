@@ -570,7 +570,9 @@ describe("Missing API Coverage", function()
     -- @covers lurek.devtools.fatal
     it("covers lurek.devtools.fatal", function()
         expect_type("function", lurek.devtools.fatal)
+        lurek.devtools.setLogConsole(false)
         lurek.devtools.fatal("unit_test_fatal_probe")
+        lurek.devtools.setLogConsole(true)
     end)
 
 end)
@@ -612,25 +614,33 @@ end)
 describe("devtools strict: trace / debug / warn / error", function()
     -- @covers lurek.devtools.trace
     it("lurek.devtools.trace is callable", function()
+        lurek.devtools.setLogConsole(false)
         local ok = pcall(function() lurek.devtools.trace("trace_probe") end)
+        lurek.devtools.setLogConsole(true)
         expect_true(ok)
     end)
 
     -- @covers lurek.devtools.debug
     it("lurek.devtools.debug is callable", function()
+        lurek.devtools.setLogConsole(false)
         local ok = pcall(function() lurek.devtools.debug("debug_probe") end)
+        lurek.devtools.setLogConsole(true)
         expect_true(ok)
     end)
 
     -- @covers lurek.devtools.warn
     it("lurek.devtools.warn is callable", function()
+        lurek.devtools.setLogConsole(false)
         local ok = pcall(function() lurek.devtools.warn("warn_probe") end)
+        lurek.devtools.setLogConsole(true)
         expect_true(ok)
     end)
 
     -- @covers lurek.devtools.error
     it("lurek.devtools.error is callable", function()
+        lurek.devtools.setLogConsole(false)
         local ok = pcall(function() lurek.devtools.error("error_probe") end)
+        lurek.devtools.setLogConsole(true)
         expect_true(ok)
     end)
 end)

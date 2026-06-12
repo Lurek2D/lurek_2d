@@ -193,48 +193,53 @@ fn entity_snapshot_to_lua<'lua>(
 fn lua_to_sync_snapshot(t: &LuaTable) -> LuaResult<crate::network::net_sync::SyncSnapshot> {
     let type_str: String = t.get("type")?;
     match type_str.as_str() {
-        "full" => {
-            let tick: u32 = t.get("tick")?;
-            let entities_table: LuaTable = t.get("entities")?;
-            let mut entities = Vec::new();
-            for ent in entities_table.sequence_values::<LuaTable>() {
-                entities.push(lua_to_entity_snapshot(&ent?)?);
-            }
-            Ok(crate::network::net_sync::SyncSnapshot::Full { tick, entities })
-        }
-        "delta" => {
-            let tick: u32 = t.get("tick")?;
-            let base_tick: u32 = t.get("base_tick")?;
-            let updates_table: LuaTable = t.get("updates")?;
-            let mut updates = Vec::new();
-            for ent in updates_table.sequence_values::<LuaTable>() {
-                updates.push(lua_to_entity_snapshot(&ent?)?);
-            }
-            let removals_table: LuaTable = t.get("removals")?;
-            let mut removals = Vec::new();
-            for id in removals_table.sequence_values::<u32>() {
-                removals.push(id?);
-            }
-            Ok(crate::network::net_sync::SyncSnapshot::Delta {
-                tick,
-                base_tick,
-                updates,
-                removals,
-            })
-        }
-        "corrective" => {
-            let tick: u32 = t.get("tick")?;
-            let entities_table: LuaTable = t.get("entities")?;
-            let mut entities = Vec::new();
-            for ent in entities_table.sequence_values::<LuaTable>() {
-                entities.push(lua_to_entity_snapshot(&ent?)?);
-            }
-            Ok(crate::network::net_sync::SyncSnapshot::Corrective { tick, entities })
-        }
+        "full" => lua_to_full_sync_snapshot(t),
+        "delta" => lua_to_delta_sync_snapshot(t),
+        "corrective" => lua_to_corrective_sync_snapshot(t),
         _ => Err(LuaError::RuntimeError(format!(
             "unknown snapshot type: {type_str}"
         ))),
     }
+}
+
+fn lua_entity_snapshot_vec(
+    t: LuaTable,
+) -> LuaResult<Vec<crate::network::net_sync::EntitySnapshot>> {
+    let mut entities = Vec::new();
+    for ent in t.sequence_values::<LuaTable>() {
+        entities.push(lua_to_entity_snapshot(&ent?)?);
+    }
+    Ok(entities)
+}
+
+fn lua_to_full_sync_snapshot(t: &LuaTable) -> LuaResult<crate::network::net_sync::SyncSnapshot> {
+    Ok(crate::network::net_sync::SyncSnapshot::Full {
+        tick: t.get("tick")?,
+        entities: lua_entity_snapshot_vec(t.get("entities")?)?,
+    })
+}
+
+fn lua_to_corrective_sync_snapshot(
+    t: &LuaTable,
+) -> LuaResult<crate::network::net_sync::SyncSnapshot> {
+    Ok(crate::network::net_sync::SyncSnapshot::Corrective {
+        tick: t.get("tick")?,
+        entities: lua_entity_snapshot_vec(t.get("entities")?)?,
+    })
+}
+
+fn lua_to_delta_sync_snapshot(t: &LuaTable) -> LuaResult<crate::network::net_sync::SyncSnapshot> {
+    let removals_table: LuaTable = t.get("removals")?;
+    let mut removals = Vec::new();
+    for id in removals_table.sequence_values::<u32>() {
+        removals.push(id?);
+    }
+    Ok(crate::network::net_sync::SyncSnapshot::Delta {
+        tick: t.get("tick")?,
+        base_tick: t.get("base_tick")?,
+        updates: lua_entity_snapshot_vec(t.get("updates")?)?,
+        removals,
+    })
 }
 /// Converts a SyncSnapshot to a Lua table.
 fn sync_snapshot_to_lua<'lua>(
@@ -606,7 +611,7 @@ impl LuaUserData for LuaNetworkHost {
         // -- getLeasePeer --
         /// Retrieves the peer ID associated with a valid, non-expired lease token.
         /// @param | token | integer | Reconnection token.
-        /// @return | integer? | Original Peer ID or nil if invalid/expired.
+        /// @return | integer | Original Peer ID, or nil if invalid or expired.
         methods.add_method("getLeasePeer", |_, this, token: u32| {
             Ok(this.inner.borrow().get_lease_peer(token).map(|p| p.0))
         });
@@ -815,7 +820,7 @@ impl LuaUserData for LuaNetworkRuntime {
         );
         // -- getAuthToken --
         /// Returns the current active access token.
-        /// @return | string? | Access token or nil if unauthenticated.
+        /// @return | string | Access token, or nil if unauthenticated.
         methods.add_method("getAuthToken", |_, this, ()| {
             Ok(this.inner.borrow().get_auth_token())
         });
@@ -826,7 +831,7 @@ impl LuaUserData for LuaNetworkRuntime {
             Ok(this.inner.borrow().get_auth_status())
         });
         // -- authCancel --
-        /// Cancels active authentication.
+        /// Cancels the currently active authentication request.
         methods.add_method("authCancel", |_, this, ()| {
             this.inner
                 .borrow_mut()
@@ -834,7 +839,7 @@ impl LuaUserData for LuaNetworkRuntime {
                 .map_err(LuaError::external)
         });
         // -- matchmakeStart --
-        /// Start matchmaking request.
+        /// Starts a matchmaking request against the backend.
         /// @param | url | string | Matchmaker URL.
         /// @param | payload | string | JSON payload.
         /// @return | integer | Request id.
@@ -850,7 +855,7 @@ impl LuaUserData for LuaNetworkRuntime {
             },
         );
         // -- matchmakeCancel --
-        /// Cancel matchmaking request.
+        /// Cancels a previously started matchmaking request.
         /// @param | id | integer | Request id.
         methods.add_method("matchmakeCancel", |_, this, id: u64| {
             this.inner
@@ -1083,7 +1088,7 @@ impl LuaUserData for LuaNetworkRuntime {
             Ok(results)
         });
         // -- getMetrics --
-        /// Returns network runtime metrics.
+        /// Returns current network runtime metrics.
         /// @return | table | Metrics table with queue_size, reconnect_count, http_active_count, tcp_active_count, ws_active_count.
         methods.add_method("getMetrics", |lua, this, ()| {
             let (active_reqs, reconnects, http_act, tcp_act, ws_act) =

@@ -24,11 +24,37 @@ describe("lurek.ui module", function()
             type = "panel",
             id = "hud_root",
             children = {
-                { type = "label", id = "hp_label", text = "HP" },
+                {
+                    type = "label",
+                    id = "hp_label",
+                    text = "HP",
+                    padding = { 1, 2, 3, 4 },
+                    margin = { 5, 6, 7, 8 },
+                    textAlign = "center",
+                    textVAlign = "bottom",
+                    textWrap = true,
+                    textEllipsis = false,
+                    flexGrow = 1,
+                    flexShrink = 2,
+                },
             },
         })
         expect_type("number", idx)
         expect_true(lurek.ui.getWidgetCount() > before)
+        local label = lurek.ui.getRoot():findById("hp_label")
+        expect_equal("center", label:getTextAlign())
+        local pt, pr, pb, pl = label:getPadding()
+        expect_equal(1, pt)
+        expect_equal(2, pr)
+        expect_equal(3, pb)
+        expect_equal(4, pl)
+        local mt, mr, mb, ml = label:getMargin()
+        expect_equal(5, mt)
+        expect_equal(6, mr)
+        expect_equal(7, mb)
+        expect_equal(8, ml)
+        expect_equal(1, label:getFlexGrow())
+        expect_equal(2, label:getFlexShrink())
     end)
 
     -- @covers lurek.ui.loadLayoutFile
@@ -109,6 +135,32 @@ describe("lurek.ui module", function()
     -- @covers lurek.ui.flushCache
     it("flushCache returns a boolean", function()
         expect_type("boolean", lurek.ui.flushCache())
+    end)
+
+    -- @covers lurek.ui.setAutoInput
+    it("setAutoInput toggles automatic UI input forwarding", function()
+        lurek.ui.setAutoInput(false)
+        expect_false(lurek.ui.hasAutoInput())
+        lurek.ui.setAutoInput(true)
+    end)
+
+    -- @covers lurek.ui.hasAutoInput
+    it("hasAutoInput reports automatic UI input forwarding", function()
+        lurek.ui.setAutoInput(true)
+        expect_true(lurek.ui.hasAutoInput())
+    end)
+
+    -- @covers lurek.ui.setAutoUpdate
+    it("setAutoUpdate toggles automatic UI updates", function()
+        lurek.ui.setAutoUpdate(false)
+        expect_false(lurek.ui.hasAutoUpdate())
+        lurek.ui.setAutoUpdate(true)
+    end)
+
+    -- @covers lurek.ui.hasAutoUpdate
+    it("hasAutoUpdate reports automatic UI updates", function()
+        lurek.ui.setAutoUpdate(true)
+        expect_true(lurek.ui.hasAutoUpdate())
     end)
 
     -- @covers lurek.ui.addToast
@@ -1648,45 +1700,71 @@ describe("supplementary ui module coverage", function()
     end)
 
     -- @covers lurek.ui.mousepressed
-    it("mousepressed is callable", function()
-        expect_no_error(function()
-            lurek.ui.mousepressed(25, 25, 1)
-        end)
+    it("mousepressed presses a hit widget and consumes input", function()
+        lurek.ui.clear()
+        local button = lurek.ui.newButton("Hit")
+        button:setPosition(20, 20)
+        button:setSize(80, 30)
+        expect_true(lurek.ui.mousepressed(25, 25, 1))
+        expect_equal("pressed", button:getState())
     end)
 
     -- @covers lurek.ui.mousereleased
-    it("mousereleased is callable", function()
-        expect_no_error(function()
-            lurek.ui.mousereleased(25, 25, 1)
+    it("mousereleased activates a pressed button", function()
+        lurek.ui.clear()
+        local clicked = false
+        local button = lurek.ui.newButton("Release")
+        button:setPosition(20, 20)
+        button:setSize(100, 30)
+        button:setOnClick(function()
+            clicked = true
         end)
+        expect_true(lurek.ui.mousepressed(25, 25, 1))
+        expect_true(lurek.ui.mousereleased(25, 25, 1))
+        lurek.ui.update(0)
+        expect_true(clicked)
     end)
 
     -- @covers lurek.ui.mousemoved
-    it("mousemoved is callable", function()
-        expect_no_error(function()
-            lurek.ui.mousemoved(32, 48)
-        end)
+    it("mousemoved updates hover state for hit widgets", function()
+        lurek.ui.clear()
+        local button = lurek.ui.newButton("Hover")
+        button:setPosition(30, 40)
+        button:setSize(100, 30)
+        expect_true(lurek.ui.mousemoved(32, 48))
+        expect_equal("hovered", button:getState())
     end)
 
     -- @covers lurek.ui.keypressed
-    it("keypressed is callable", function()
-        expect_no_error(function()
-            lurek.ui.keypressed("escape")
-        end)
+    it("keypressed handles text editing keys for focused inputs", function()
+        lurek.ui.clear()
+        local input = lurek.ui.newTextInput()
+        lurek.ui.setFocus(input)
+        expect_true(lurek.ui.textinput("ab"))
+        expect_true(lurek.ui.keypressed("backspace"))
+        expect_equal("a", input:getText())
     end)
 
     -- @covers lurek.ui.textinput
-    it("textinput is callable", function()
-        expect_no_error(function()
-            lurek.ui.textinput("hello")
-        end)
+    it("textinput inserts text into the focused text input", function()
+        lurek.ui.clear()
+        local input = lurek.ui.newTextInput()
+        lurek.ui.setFocus(input)
+        expect_true(lurek.ui.textinput("hello"))
+        expect_equal("hello", input:getText())
     end)
 
     -- @covers lurek.ui.wheelmoved
-    it("wheelmoved is callable", function()
-        expect_no_error(function()
-            lurek.ui.wheelmoved(0, 1)
-        end)
+    it("wheelmoved scrolls the focused scroll panel", function()
+        lurek.ui.clear()
+        local panel = lurek.ui.newScrollPanel()
+        panel:setSize(100, 50)
+        panel:setContentSize(100, 250)
+        panel:setScrollSpeed(10)
+        lurek.ui.setFocus(panel)
+        expect_true(lurek.ui.wheelmoved(0, -1))
+        local _x, y = panel:getScrollPosition()
+        expect_equal(10, y)
     end)
 
     -- @covers lurek.ui.beginDrag
@@ -1808,6 +1886,20 @@ describe("supplemental widget coverage", function()
         expect_no_error(function()
             basic_widget():setTextVAlign("center")
         end)
+    end)
+
+    -- @covers LUiWidget:setTextAlign
+    it("setTextAlign updates horizontal text alignment", function()
+        local widget = basic_widget()
+        expect_true(widget:setTextAlign("right"))
+        expect_equal("right", widget:getTextAlign())
+        expect_false(widget:setTextAlign("invalid"))
+        expect_equal("right", widget:getTextAlign())
+    end)
+
+    -- @covers LUiWidget:getTextAlign
+    it("getTextAlign returns the default horizontal text alignment", function()
+        expect_equal("left", basic_widget():getTextAlign())
     end)
 
     -- @covers LUiWidget:setFocusable

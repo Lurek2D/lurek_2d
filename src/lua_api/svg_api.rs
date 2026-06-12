@@ -143,7 +143,7 @@ impl LuaUserData for LSvgImage {
         /// Returns the current visibility flag for the element.
         /// Returns `nil` when the element ID is not found.
         /// @param | id | string | Element or group ID.
-        /// @return | boolean? | Visibility flag, or `nil` when ID is unknown.
+        /// @return | boolean | Visibility flag, or `nil` when ID is unknown.
         methods.add_method("getElementVisible", |_, this, id: String| {
             Ok(this.inner.borrow().get_element_visible(&id))
         });
@@ -175,7 +175,7 @@ impl LuaUserData for LSvgImage {
         /// Returns the current RGBA color override `{r, g, b, a}` table for the element.
         /// Returns `nil` when the element has no color override or is not found.
         /// @param | id | string | Element or group ID.
-        /// @return | table? | RGBA array table, or `nil`.
+        /// @return | table | RGBA array table, or `nil`.
         methods.add_method("getElementColor", |lua, this, id: String| {
             let svg = this.inner.borrow();
             if let Some(col) = svg.get_element_color(&id) {
@@ -230,7 +230,7 @@ impl LuaUserData for LSvgImage {
         /// Returns the current dynamic TRS state of the element as a table `{tx, ty, rotation, sx, sy}`.
         /// Returns `nil` when the element is not found.
         /// @param | id | string | Element or group ID.
-        /// @return | table? | Transform table `{tx, ty, rotation, sx, sy}`, or `nil`.
+        /// @return | table | Transform table `{tx, ty, rotation, sx, sy}`, or `nil`.
         methods.add_method("getElementTransform", |lua, this, id: String| {
             let svg = this.inner.borrow();
             if let Some((tx, ty, r, sx, sy)) = svg.get_element_transform(&id) {
@@ -261,7 +261,7 @@ impl LuaUserData for LSvgImage {
         /// Returns the axis-aligned bounding box `{min_x, min_y, max_x, max_y}` of the element.
         /// Returns `nil` when the element is not found or has no geometry.
         /// @param | id | string | Element or group ID.
-        /// @return | table? | Bounds table with keys `min_x`, `min_y`, `max_x`, `max_y`, or `nil`.
+        /// @return | table | Bounds table with keys `min_x`, `min_y`, `max_x`, `max_y`, or `nil`.
         methods.add_method("getElementBounds", |lua, this, id: String| {
             let svg = this.inner.borrow();
             if let Some((min_x, min_y, max_x, max_y)) = svg.get_element_bounds(&id) {
@@ -279,7 +279,7 @@ impl LuaUserData for LSvgImage {
         // -- getElementParent --
         /// Returns the parent element ID string, or `nil` when the element is the root or not found.
         /// @param | id | string | Element or group ID.
-        /// @return | string? | Parent ID, or `nil`.
+        /// @return | string | Parent ID, or `nil`.
         methods.add_method("getElementParent", |_, this, id: String| {
             Ok(this.inner.borrow().get_element_parent(&id))
         });
@@ -288,7 +288,7 @@ impl LuaUserData for LSvgImage {
         /// Returns a sequential table of direct child element IDs for the given group element.
         /// Returns `nil` when the element is not found. Returns an empty table for leaf elements.
         /// @param | id | string | Element or group ID.
-        /// @return | table? | Sequential table of child IDs, or `nil`.
+        /// @return | table | Sequential table of child IDs, or `nil`.
         methods.add_method("getElementChildren", |lua, this, id: String| {
             let svg = this.inner.borrow();
             if let Some(children) = svg.get_element_children(&id) {
@@ -306,7 +306,7 @@ impl LuaUserData for LSvgImage {
         /// Flattens the element path into a polygon array of LVec2 userdata.
         /// @param | id | string | Element or group ID.
         /// @param | step_size | number? | Optional curve sampling step. Lower values increase point density.
-        /// @return | table? | Sequential table of `LVec2` points, or `nil`.
+        /// @return | table | Sequential table of `LVec2` points, or `nil`.
         methods.add_method(
             "getElementPoints",
             |lua, this, (id, step_size): (String, Option<f32>)| {
@@ -365,7 +365,7 @@ impl LuaUserData for LSvgImage {
         // -- getCanvasKey --
         /// Returns the LCanvas handle for a previously cached element/group.
         /// @param | id | string | Element or group ID.
-        /// @return | LCanvas? | Cached canvas handle, or `nil` if not cached.
+        /// @return | LCanvas | Cached canvas handle, or `nil` if not cached.
         methods.add_method("getCanvasKey", |lua, this, id: String| {
             let svg = this.inner.borrow();
             if let Some(&key) = svg.cached_canvases.get(&id) {
@@ -381,9 +381,9 @@ impl LuaUserData for LSvgImage {
         });
 
         // -- getCanvas --
-        /// Alias for getCanvasKey.
+        /// Returns the cached canvas handle for an element.
         /// @param | id | string | Element or group ID.
-        /// @return | LCanvas? | Cached canvas handle, or `nil` if not cached.
+        /// @return | LCanvas | Cached canvas handle, or `nil` if not cached.
         methods.add_method("getCanvas", |lua, this, id: String| {
             let svg = this.inner.borrow();
             if let Some(&key) = svg.cached_canvases.get(&id) {

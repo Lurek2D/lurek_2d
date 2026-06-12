@@ -10,6 +10,13 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function draw_outline(img, x, y, w, h, r, g, b, a)
+    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
+end
+
 local function reset_particle_outputs()
     local names = {
         "particle_attractor.png",
@@ -62,7 +69,18 @@ describe("Evidence: lurek.particle API", function()
         ps:emit(80)
         ps:update(0.35)
 
-        local img = ps:toImage(200, 200)
+        local raw = ps:toImage(200, 200)
+        local img = lurek.image.newImageData(240, 240)
+        img:fill(14, 16, 22, 255)
+        for x = 0, 239, 20 do
+            img:drawLine(x, 0, x, 239, 24, 28, 36, 255)
+        end
+        for y = 0, 239, 20 do
+            img:drawLine(0, y, 239, y, 24, 28, 36, 255)
+        end
+        img:paste(raw, 20, 20)
+        draw_outline(img, 20, 20, 200, 200, 232, 236, 244, 255)
+        img:drawCircle(120, 120, 5, 255, 208, 118, 255)
         local path = OUT .. "particle_emitter_cluster_snapshot.png"
         save_png(img, path)
 
@@ -183,7 +201,7 @@ describe("Evidence: lurek.particle API", function()
     -- @evidence lurek.particle.drawLifecycleToImage
     -- @evidence lurek.image.savePNG
     it("PNG: lifecycle chart snapshot", function()
-        local img = lurek.particle.drawLifecycleToImage({
+        local chart = lurek.particle.drawLifecycleToImage({
             { 0, 0 },
             { 1, 6 },
             { 2, 12 },
@@ -196,9 +214,88 @@ describe("Evidence: lurek.particle API", function()
             { 9, 0 },
         }, 24, 256, 96)
 
+        local img = lurek.image.newImageData(320, 180)
+        img:fill(14, 16, 22, 255)
+        img:drawRect(18, 24, 284, 132, 24, 28, 36, 255)
+        img:paste(chart, 32, 42)
+        draw_outline(img, 32, 42, 256, 96, 232, 236, 244, 255)
+        img:drawLine(32, 152, 288, 152, 96, 110, 132, 255)
+
         local path = OUT .. "particle_lifecycle_chart.png"
         lurek.image.savePNG(img, path)
         expect_evidence_created(path)
+    end)
+
+    -- @evidence LParticleSystem:drawToImage
+    -- @evidence lurek.particle.drawLifecycleToImage
+    -- @evidence lurek.image.savePNG
+    it("PNG: particle contact sheet", function()
+        local cluster = lurek.image.newImageData(OUT .. "particle_emitter_cluster_snapshot.png")
+        local burst = lurek.image.newImageData(OUT .. "particle_emitter_burst.png")
+        local trail = lurek.image.newImageData(OUT .. "particle_trail_wave_ribbon.png")
+        local lifecycle = lurek.image.newImageData(OUT .. "particle_lifecycle_chart.png")
+
+        local canvas = lurek.image.newImageData(540, 360)
+        canvas:fill(12, 14, 20, 255)
+        local cards = {
+            { cluster:resize(220, 220, "bilinear"), 24, 24, 220, 220 },
+            { burst:resize(220, 220, "bilinear"), 296, 24, 220, 220 },
+            { trail:resize(220, 88, "bilinear"), 24, 252, 220, 88 },
+            { lifecycle:resize(272, 88, "bilinear"), 244, 252, 272, 88 },
+        }
+        for _, card in ipairs(cards) do
+            canvas:paste(card[1], card[2], card[3])
+            draw_outline(canvas, card[2], card[3], card[4], card[5], 232, 236, 244, 255)
+        end
+
+        local path = OUT .. "particle_contact_sheet.png"
+        save_png(canvas, path)
+    end)
+
+    -- @evidence LParticleSystem:drawExplosionToImage
+    -- @evidence LParticleSystem:drawRainToImage
+    -- @evidence LParticleSystem:drawSparkTrailToImage
+    -- @evidence LParticleSystem:drawOverImage
+    -- @evidence LParticleSystem:paintOnto
+    -- @evidence lurek.image.savePNG
+    it("PNG: specialized renderer strip", function()
+        local explosion = lurek.particle.newSystem({ seed = 1201, maxParticles = 32 })
+        explosion:setPosition(60, 60)
+        local img_explosion = explosion:drawExplosionToImage(120, 120)
+
+        local rain = lurek.particle.newSystem({ seed = 1202, maxParticles = 64 })
+        rain:setPosition(60, 60)
+        local img_rain = rain:drawRainToImage(120, 120)
+
+        local spark = lurek.particle.newSystem({ seed = 1203, maxParticles = 48 })
+        spark:setPosition(60, 60)
+        local img_spark = spark:drawSparkTrailToImage(120, 120)
+
+        local over = lurek.particle.newSystem({ seed = 1204, maxParticles = 24 })
+        over:setPosition(60, 60)
+        local composite = lurek.image.newImageData(120, 120)
+        composite:fill(20, 24, 30, 255)
+        over:drawOverImage(composite)
+        over:paintOnto(composite)
+
+        local canvas = lurek.image.newImageData(268, 268)
+        canvas:fill(12, 14, 20, 255)
+        local cards = {
+            { img_explosion, 16, 16 },
+            { img_rain, 132, 16 },
+            { img_spark, 16, 132 },
+            { composite, 132, 132 },
+        }
+        for _, card in ipairs(cards) do
+            canvas:paste(card[1], card[2], card[3])
+            draw_outline(canvas, card[2], card[3], 120, 120, 232, 236, 244, 255)
+        end
+
+        save_png(canvas, OUT .. "particle_specialized_renderer_strip.png")
+        lurek.particle.release(explosion)
+        lurek.particle.release(rain)
+        lurek.particle.release(spark)
+        lurek.particle.release(over)
     end)
 end)
 test_summary()

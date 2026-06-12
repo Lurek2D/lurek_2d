@@ -1068,6 +1068,39 @@ end
 
 ---
 
+#### `LDataFrame:explain`
+
+Returns a compact dataframe or SQL query execution plan summary.
+
+```lua
+LDataFrame:explain(sql_str)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sql_str?` | string | Optional SQL query text to parse and summarize. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Human-readable schema or query plan summary. |
+
+**Example**
+
+```lua
+do
+-- Preview dataframe shape or SQL query structure for debugging.
+  local df = lurek.dataframe.fromTable({ { item = "Sword", gold = 150 }, { item = "Stick", gold = 5 } })
+  print(df:explain())
+  print(df:explain("SELECT item FROM self WHERE gold > 100 LIMIT 1"))
+end
+```
+
+---
+
 #### `LDataFrame:fillNil`
 
 Replaces nil cells in a column with a value.
@@ -2315,6 +2348,34 @@ do
   local src = lurek.dataframe.random({{"id","id"}}, 100, 1)
   local subset = src:sample(10, 42)
   lurek.log.info("sampled rows: " .. subset:nrows())
+end
+```
+
+---
+
+#### `LDataFrame:schema`
+
+Returns inferred column schema metadata.
+
+```lua
+LDataFrame:schema()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of `{name, dtype, nullable, count}` column schema records. |
+
+**Example**
+
+```lua
+do
+-- Inspect inferred column types and nullability before running a data pipeline.
+  local df = lurek.dataframe.fromTable({ { name = "Alice", score = 10 }, { name = "Bob", score = nil } })
+  local schema = df:schema()
+  print("first column", schema[1].name, schema[1].dtype)
+  print("score nullable", schema[2].nullable)
 end
 ```
 

@@ -77,7 +77,7 @@ KNOWN_PROPERTIES = {
     "lurek.timer", "lurek.filesystem", "lurek.math", "lurek.window",
     "lurek.runtime", "lurek.event", "lurek.input.keyboard", "lurek.input.mouse",
     "lurek.joystick", "lurek.input.gamepad", "lurek.input.touch", "lurek.sound",
-    "lurek.data", "lurek.data", "lurek.image", "lurek.thread", "lurek.compute",
+    "lurek.binary", "lurek.image", "lurek.thread", "lurek.compute",
     "lurek.dataframe", "lurek.ai", "lurek.graph", "lurek.particle",
     "lurek.tilemap",
 }

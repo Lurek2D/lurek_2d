@@ -1367,7 +1367,7 @@ A compact RTS-style demo with a sand-swept desert map, spice harvesting, unit se
 
 Playable grand-strategy province slice with semi-historical countries, campaign time, economy, armies, map modes, and AI movement.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [filesystem](Module-filesystem), [input](Module-input), [log](Module-log), [province](Module-province), [render](Module-render), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [filesystem](Module-filesystem), [input](Module-input), [log](Module-log), [province](Module-province), [render](Module-render), [ui](Module-ui), +1
 
 ### [frontier_tactics](../tree/main/content/games/strategy/frontier_tactics)
 

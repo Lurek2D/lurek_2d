@@ -399,6 +399,10 @@ pub struct SharedState {
     pub auto_tilemaps: Vec<Weak<RefCell<TileMap>>>,
     /// Stores auto_ui_ctx state.
     pub auto_ui_ctx: Option<Weak<RefCell<GuiContext>>>,
+    /// Whether platform input is forwarded to `lurek.ui` before game callbacks.
+    pub auto_ui_input: bool,
+    /// Whether `lurek.ui.update(dt)` is called during the normal frame update.
+    pub auto_ui_update: bool,
     /// Stores raycaster_output state.
     pub raycaster_output: Option<RaycasterScene>,
     /// Stores resource_budget_bytes state.
@@ -507,6 +511,8 @@ impl SharedState {
             auto_parallax_layers: Vec::new(),
             auto_tilemaps: Vec::new(),
             auto_ui_ctx: None,
+            auto_ui_input: true,
+            auto_ui_update: true,
             raycaster_output: None,
             resource_budget_bytes: 0,
             frame_profile: FrameProfile::default(),

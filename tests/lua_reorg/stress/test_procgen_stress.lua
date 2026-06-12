@@ -2,6 +2,17 @@
 -- Stress tests for lurek.procgen     throughput and allocation under load.
 -- Validates that generators don't crash, memory-leak, or hang under large inputs.
 
+local function new_hex_grid_with_path(width, height, start_x, start_y, end_x, end_y)
+    local grid = lurek.pathfind.newHexGrid(width, height)
+    local path = grid:findPath(start_x, start_y, end_x, end_y)
+    return grid, path
+end
+
+local function hex_grid_field_of_view(width, height, origin_x, origin_y, radius)
+    local grid = lurek.pathfind.newHexGrid(width, height)
+    return grid:fieldOfView(origin_x, origin_y, radius)
+end
+
 
 --                                                                                                                                        
 -- Repeated dungeon generation
@@ -161,16 +172,14 @@ describe("pathfinding stress: hexGrid large map", function()
 
     -- @stress lurek.pathfind.newHexGrid
     it("hexGrid 100  100 findPath completes", function()
-        local g = lurek.pathfind.newHexGrid(100, 100)
+        local g, path = new_hex_grid_with_path(100, 100, 1, 1, 100, 100)
         expect_type("userdata", g)
-        local path = g:findPath(1, 1, 100, 100)
         expect_true(path == nil or #path > 0, "should find path or return nil")
     end)
 
     -- @stress LHexGrid:fieldOfView
     it("hexGrid 50  50 fieldOfView radius=20 completes", function()
-        local g = lurek.pathfind.newHexGrid(50, 50)
-        local fov = g:fieldOfView(25, 25, 20)
+        local fov = hex_grid_field_of_view(50, 50, 25, 25, 20)
         expect_type("table", fov)
         expect_true(#fov > 0, "FOV should cover some cells")
     end)

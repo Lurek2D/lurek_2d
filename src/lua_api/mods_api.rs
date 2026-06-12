@@ -6,21 +6,15 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
-/// Converts a Lua mod metadata table into a Rust `ModInfo` value.
-fn mod_info_from_table(tbl: &LuaTable) -> LuaResult<ModInfo> {
-    let id: String = tbl
-        .get::<_, String>("id")
-        .map_err(|_| LuaError::RuntimeError("newMod requires 'id' field".into()))?;
-    let dependencies = tbl
-        .get::<_, LuaTable>("dependencies")
-        .map(|deps| deps.sequence_values::<String>().flatten().collect())
-        .unwrap_or_default();
-    let capabilities = tbl
-        .get::<_, LuaTable>("capabilities")
-        .map(|caps| caps.sequence_values::<String>().flatten().collect())
-        .unwrap_or_default();
-    let config_schema = tbl
-        .get::<_, LuaTable>("config_schema")
+
+fn lua_string_sequence(tbl: &LuaTable, field: &str) -> Vec<String> {
+    tbl.get::<_, LuaTable>(field)
+        .map(|values| values.sequence_values::<String>().flatten().collect())
+        .unwrap_or_default()
+}
+
+fn lua_config_schema(tbl: &LuaTable) -> Vec<(String, String, String)> {
+    tbl.get::<_, LuaTable>("config_schema")
         .map(|schema| {
             schema
                 .sequence_values::<LuaTable>()
@@ -33,11 +27,18 @@ fn mod_info_from_table(tbl: &LuaTable) -> LuaResult<ModInfo> {
                 })
                 .collect()
         })
-        .unwrap_or_default();
-    let asset_paths = tbl
-        .get::<_, LuaTable>("assets")
-        .map(|assets| assets.sequence_values::<String>().flatten().collect())
-        .unwrap_or_default();
+        .unwrap_or_default()
+}
+
+/// Converts a Lua mod metadata table into a Rust `ModInfo` value.
+fn mod_info_from_table(tbl: &LuaTable) -> LuaResult<ModInfo> {
+    let id: String = tbl
+        .get::<_, String>("id")
+        .map_err(|_| LuaError::RuntimeError("newMod requires 'id' field".into()))?;
+    let dependencies = lua_string_sequence(tbl, "dependencies");
+    let capabilities = lua_string_sequence(tbl, "capabilities");
+    let config_schema = lua_config_schema(tbl);
+    let asset_paths = lua_string_sequence(tbl, "assets");
     let mut info = ModInfo::from_parts(
         id,
         tbl.get::<_, String>("name").ok(),

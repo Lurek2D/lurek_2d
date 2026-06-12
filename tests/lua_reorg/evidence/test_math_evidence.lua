@@ -22,6 +22,13 @@ local function to_px(x, y, w, h, scale)
     return math.floor(cx + x * scale + 0.5), math.floor(cy - y * scale + 0.5)
 end
 
+local function draw_outline(img, x, y, w, h, r, g, b, a)
+    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
+end
+
 local function draw_curve(img, curve, steps, r, g, b)
     local px, py = curve:evaluate(0)
     for i = 1, steps do
@@ -173,7 +180,16 @@ describe("Evidence: lurek.math visual scenarios", function()
         local w, h = 300, 200
         local img = lurek.image.newImageData(w, h)
         img:fill(242, 244, 248, 255)
-        img:drawRect(20, 20, 260, 160, 220, 224, 232, 255)
+        img:drawRect(20, 20, 260, 160, 228, 232, 240, 255)
+        draw_outline(img, 20, 20, 260, 160, 210, 214, 224, 255)
+        for gx = 0, 5 do
+            local x = 30 + gx * 44
+            img:drawLine(x, 30, x, 170, 214, 218, 228, 255)
+        end
+        for gy = 0, 4 do
+            local y = 30 + gy * 35
+            img:drawLine(30, y, 250, y, 214, 218, 228, 255)
+        end
 
         local easings = {
             { "linear", 230, 80, 80 },
@@ -412,6 +428,7 @@ describe("Evidence: lurek.math curves and geometry reports", function()
     it("PNG: math_easing_cubic_bounce.png -- cubic and bounce comparison", function()
         local img = lurek.image.newImageData(420, 220)
         img:fill(250, 250, 250, 255)
+        draw_outline(img, 18, 18, 384, 184, 218, 222, 230, 255)
 
         plot_curve(img, lurek.math.inCubic, 200, 80, 80)
         plot_curve(img, lurek.math.outCubic, 80, 180, 80)
@@ -443,6 +460,31 @@ describe("Evidence: lurek.math curves and geometry reports", function()
         )
         write_text(path, text)
         expect_evidence_created(path)
+    end)
+
+    -- @evidence lurek.math.applyEasing
+    -- @evidence lurek.math.newBezierCurve
+    -- @evidence lurek.image.savePNG
+    it("PNG: math contact sheet", function()
+        local files = {
+            "math_easing_curves.png",
+            "math_polygon_metrics.png",
+            "math_bezier_cubic_showcase.png",
+            "math_distance_heatmap.png",
+        }
+        local canvas = lurek.image.newImageData(620, 452)
+        canvas:fill(12, 14, 20, 255)
+        local positions = {
+            { 16, 16 }, { 318, 16 }, { 16, 234 }, { 318, 234 },
+        }
+        for i, name in ipairs(files) do
+            local src = lurek.image.newImageData(OUT .. name)
+            local thumb = src:resize(286, 202, "bilinear")
+            local x, y = positions[i][1], positions[i][2]
+            canvas:paste(thumb, x, y)
+            draw_outline(canvas, x, y, 286, 202, 232, 236, 244, 255)
+        end
+        save_png(canvas, OUT .. "math_contact_sheet.png")
     end)
 end)
 test_summary()

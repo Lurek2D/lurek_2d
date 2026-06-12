@@ -8,6 +8,12 @@
 use std::io::{Cursor, Read, Write};
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Select compression codec. This item is part of the public API.
+///
+/// # Variants
+/// - `Deflate`: Raw DEFLATE stream.
+/// - `Gzip`: Gzip container with DEFLATE payload.
+/// - `Lz4`: LZ4 frame with prepended size helper.
+/// - `Zlib`: Zlib container with DEFLATE payload.
 pub enum CompressFormat {
     /// Use raw DEFLATE stream.
     Deflate,

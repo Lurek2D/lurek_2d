@@ -4,9 +4,7 @@ use crate::lua_api::lua_types::{add_type_methods, LurekType};
 use crate::runtime::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::collections::VecDeque;
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::rc::Rc;
 /// Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
 #[derive(Clone)]

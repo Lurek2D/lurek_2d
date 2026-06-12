@@ -10,6 +10,22 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function write_text(path, text)
+    if write_file then
+        write_file(path, text)
+    else
+        lurek.filesystem.write(path, text)
+    end
+    expect_evidence_created(path)
+end
+
+local function draw_outline(img, x, y, w, h, r, g, b, a)
+    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
+end
+
 --- Helper: equirectangular projection of (lat, lon) → pixel (x, y).
 local function latlon_to_px(lat, lon, W, H)
     local x = math.floor((lon + 180) / 360 * (W - 1))
@@ -350,7 +366,7 @@ describe("Evidence: lurek.globe visual scenarios", function()
 
         local W, H = 360, 180
         local img = lurek.image.newImageData(W, H)
-        img:fill(5, 5, 10, 255) -- Dark night ocean
+        img:fill(5, 5, 10, 255)
 
         local cities = {
             {lat = 40.7, lon = -74.0, pop = 1.0},
@@ -367,6 +383,8 @@ describe("Evidence: lurek.globe visual scenarios", function()
             local lat = 90 - (y / (H - 1)) * 180
             for x = 0, W - 1 do
                 local lon = (x / (W - 1)) * 360 - 180
+                local ocean = 6 + math.max(0, math.cos(math.rad(lat)) * 10)
+                img:setPixel(x, y, ocean, ocean, ocean + 6, 255)
                 local intensity = 0
                 for _, city in ipairs(cities) do
                     local dlat = lat - city.lat
@@ -382,6 +400,16 @@ describe("Evidence: lurek.globe visual scenarios", function()
                 end
             end
         end
+
+        for lon = -180, 180, 60 do
+            local gx = math.floor((lon + 180) / 360 * (W - 1))
+            img:drawLine(gx, 0, gx, H - 1, 18, 20, 28, 255)
+        end
+        for lat = -60, 60, 30 do
+            local gy = math.floor((90 - lat) / 180 * (H - 1))
+            img:drawLine(0, gy, W - 1, gy, 18, 20, 28, 255)
+        end
+        draw_outline(img, 0, 0, W, H, 232, 236, 244, 255)
 
         save_png(img, path)
     end)
@@ -467,5 +495,108 @@ describe("Evidence: lurek.globe visual scenarios", function()
         save_png(img, path)
     end)
 
+    -- @evidence lurek.globe.new
+    -- @evidence lurek.globe.greatCirclePath
+    -- @evidence lurek.image.savePNG
+    it("PNG: globe contact sheet", function()
+        ensure_evidence_dir("globe")
+        local files = {
+            "globe_province_projection.png",
+            "globe_great_circle_route.png",
+            "globe_day_night_terminator.png",
+            "globe_city_night_lights.png",
+            "globe_latitude_longitude_grid.png",
+            "globe_topography_palette.png",
+        }
+        local canvas = lurek.image.newImageData(744, 504)
+        canvas:fill(12, 14, 20, 255)
+        for i, name in ipairs(files) do
+            local src = lurek.image.newImageData(OUT .. name)
+            local thumb = src:resize(224, 152, "bilinear")
+            local col = (i - 1) % 3
+            local row = math.floor((i - 1) / 3)
+            local x = 16 + col * 240
+            local y = 16 + row * 168
+            canvas:paste(thumb, x, y)
+            draw_outline(canvas, x, y, 224, 152, 232, 236, 244, 255)
+        end
+        save_png(canvas, OUT .. "globe_contact_sheet.png")
+    end)
+
+end)
+
+describe("Evidence: lurek.globe camera, fog, and registry trace", function()
+    before_each(function()
+        ensure_evidence_dir("globe")
+    end)
+
+    -- @evidence LGlobe:setCamera
+    -- @evidence LGlobe:getCamera
+    -- @evidence LGlobe:pickLatLon
+    -- @evidence LGlobe:addMarker
+    -- @evidence LGlobe:addLabel
+    -- @evidence LGlobe:addArc
+    -- @evidence LGlobe:addRegion
+    -- @evidence LGlobe:setFogState
+    -- @evidence LGlobe:getFogState
+    -- @evidence LGlobe:encodeFogBase64
+    -- @evidence LGlobe:decodeFogBase64
+    -- @evidence lurek.globe.greatCircleDistance
+    -- @evidence lurek.globe.latLonToUnit
+    -- @evidence lurek.globe.raySphereIntersect
+    it("TXT: camera, fog, geometry, and registry trace", function()
+        local g = lurek.globe.new("globe_evidence_trace")
+
+        g:setCamera(18.0, 22.0, 1.8)
+        local lat, lon, zoom = g:getCamera()
+        expect_near(18.0, lat, 0.001)
+        expect_near(22.0, lon, 0.001)
+        expect_near(1.8, zoom, 0.001)
+
+        local pick = g:pickLatLon(640, 360)
+        local marker_id = g:addMarker("city", 51.5, -0.1, "London")
+        local label_id = g:addLabel("region", 48.8, 2.3, "Western Europe")
+        local arc_id = g:addArc(51.5, -0.1, 40.7, -74.0)
+        local region_ok = g:addRegion({
+            id = 1,
+            centroid = { 45.0, 10.0 },
+            vertices = {
+                { 44.0, 9.0 },
+                { 44.0, 11.0 },
+                { 46.0, 11.0 },
+                { 46.0, 9.0 },
+            },
+            neighbors = {},
+        })
+        expect_true(region_ok)
+
+        g:setFogState("viewer_trace", 1, "explored")
+        local fog_before = g:getFogState("viewer_trace", 1)
+        local fog_payload = g:encodeFogBase64("viewer_trace")
+        expect_true(type(fog_payload) == "string" and #fog_payload > 0)
+        g:setFogState("viewer_trace", 1, "hidden")
+        expect_true(g:decodeFogBase64("viewer_trace", fog_payload))
+        local fog_after = g:getFogState("viewer_trace", 1)
+
+        local distance = lurek.globe.greatCircleDistance(51.5, -0.1, 40.7, -74.0)
+        local unit = lurek.globe.latLonToUnit(0.0, 0.0)
+        local hit = lurek.globe.raySphereIntersect(0, 0, -5, 0, 0, 1, 1)
+
+        local lines = {
+            string.format("camera=%.2f,%.2f,%.2f", lat, lon, zoom),
+            "pick_type=" .. (pick == nil and "nil" or type(pick)),
+            "marker_id=" .. tostring(marker_id),
+            "label_id=" .. tostring(label_id),
+            "arc_id=" .. tostring(arc_id),
+            "fog_before=" .. tostring(fog_before),
+            "fog_after=" .. tostring(fog_after),
+            "distance=" .. tostring(distance),
+            string.format("unit_basis=%.3f,%.3f,%.3f", unit[1], unit[2], unit[3]),
+            "ray_hit=" .. tostring(hit),
+        }
+
+        write_text(OUT .. "globe_camera_fog_geometry_trace.txt", table.concat(lines, "\n") .. "\n")
+        lurek.globe.remove("globe_evidence_trace")
+    end)
 end)
 test_summary()

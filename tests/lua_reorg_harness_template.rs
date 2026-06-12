@@ -1330,12 +1330,7 @@ fn lua_integration_raycaster_tilemap() {
 }
 
 #[test]
-fn lua_integration_province_integration() {
-    run_lua_test("integration/test_province_integration.lua");
-}
-
 // Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬ library layer Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬
-
 #[test]
 fn lua_unit_engine_unit() {
     run_lua_test("unit/test_engine_core_unit.lua");

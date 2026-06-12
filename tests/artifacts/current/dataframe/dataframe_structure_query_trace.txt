@@ -1,0 +1,11 @@
+empty_rows=0
+columns=name,score
+schema=table: 0x019e89039810
+count_score_15=4
+head_first=A
+tail_last=D
+slice_rows=2
+select_cols=1
+rows_len=4
+table_len=4
+to_string_len=136

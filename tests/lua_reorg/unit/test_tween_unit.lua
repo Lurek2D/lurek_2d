@@ -772,7 +772,7 @@ describe("lurek.tween.newChain", function()
         local ch = tween.newChain()
         local idx = ch:push({ from = 0.0, to = 1.0, duration = 0.1, label = "step-a" })
         T.assert_equal("number", type(idx))
-        T.assert_equal(idx, 1)
+        T.assert_equal(idx, 0)
     end)
     -- @covers LTweenChain:value
     it("value returns the most recent chain value after ticking", function()

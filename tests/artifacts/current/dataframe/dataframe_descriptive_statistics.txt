@@ -1,0 +1,7 @@
+describe_rows=8
+describe_cols=2
+min=10.000000
+max=40.000000
+median=25.000000
+stddev=11.180340
+variance=125.000000

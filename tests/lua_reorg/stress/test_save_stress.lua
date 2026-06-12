@@ -1,6 +1,28 @@
 -- Lurek2D Stress Test: Savegame Collect/Restore Cycles
 -- Measures serialization throughput for large game state.
 
+local function new_save_manager()
+    return lurek.save.newSaveManager()
+end
+
+local function measure_save_summary_set(count)
+    local save_manager = new_save_manager()
+    return measure("savegame:setSummary x" .. count, count, function()
+        save_manager:setSummary(tostring(math.random()))
+    end)
+end
+
+local function measure_save_summary_get(count, summary)
+    local save_manager = new_save_manager()
+    save_manager:setSummary(summary)
+
+    local elapsed = measure("savegame:getSummary x" .. count, count, function()
+        local _ = save_manager:getSummary()
+    end)
+
+    return elapsed, save_manager:getSummary()
+end
+
 -- @describe stress: savegame collect cycles
 describe("stress: savegame collect cycles", function()
     -- @stress LSaveManager:collect
@@ -37,28 +59,17 @@ describe("stress: savegame collect cycles", function()
 
     -- @stress LSaveManager:setSummary
     it("summary set 1000 times in <5s", function()
-        local COUNT = 1000
-        local sm    = lurek.save.newSaveManager()
-
-        local elapsed = measure("savegame:setSummary x" .. COUNT, COUNT, function()
-            sm:setSummary(tostring(math.random()))
-        end)
+        local count = 1000
+        local elapsed = measure_save_summary_set(count)
 
         expect_true(elapsed < 5.0, "summary set budget: " .. elapsed .. "s")
     end)
 
     -- @stress LSaveManager:getSummary
     it("summary get 1000 times in <5s", function()
-        local COUNT = 1000
-        local sm    = lurek.save.newSaveManager()
-
-        sm:setSummary("stress-summary")
-
-        local elapsed = measure("savegame:getSummary x" .. COUNT, COUNT, function()
-            local _ = sm:getSummary()
-        end)
-
-        expect_equal("stress-summary", sm:getSummary(), "summary remains readable after repeated access")
+        local count = 1000
+        local elapsed, summary = measure_save_summary_get(count, "stress-summary")
+        expect_equal("stress-summary", summary, "summary remains readable after repeated access")
         expect_true(elapsed < 5.0, "summary get budget: " .. elapsed .. "s")
     end)
 end)

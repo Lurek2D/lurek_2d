@@ -1,0 +1,4 @@
+region_size=64x64
+diff_value=45090
+encoded_bytes=1765
+raw_bytes=16384

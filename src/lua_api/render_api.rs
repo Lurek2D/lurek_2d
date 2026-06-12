@@ -861,36 +861,7 @@ fn queue_draw_many(st: &mut SharedState, list: LuaTable) -> LuaResult<()> {
             _ => continue,
         };
         let img_val: LuaValue = entry.raw_get(1).unwrap_or(LuaValue::Nil);
-        let transform = RenderDrawTransform {
-            x: entry
-                .raw_get::<_, Option<f32>>(2)
-                .unwrap_or(None)
-                .unwrap_or(0.0),
-            y: entry
-                .raw_get::<_, Option<f32>>(3)
-                .unwrap_or(None)
-                .unwrap_or(0.0),
-            rotation: entry
-                .raw_get::<_, Option<f32>>(4)
-                .unwrap_or(None)
-                .unwrap_or(0.0),
-            sx: entry
-                .raw_get::<_, Option<f32>>(5)
-                .unwrap_or(None)
-                .unwrap_or(1.0),
-            sy: entry
-                .raw_get::<_, Option<f32>>(6)
-                .unwrap_or(None)
-                .unwrap_or(1.0),
-            ox: entry
-                .raw_get::<_, Option<f32>>(7)
-                .unwrap_or(None)
-                .unwrap_or(0.0),
-            oy: entry
-                .raw_get::<_, Option<f32>>(8)
-                .unwrap_or(None)
-                .unwrap_or(0.0),
-        };
+        let transform = draw_many_transform(&entry);
         if let LuaValue::UserData(ud) = img_val {
             if let Ok(img) = ud.borrow::<LuaImage>() {
                 let key = img.key;
@@ -902,6 +873,25 @@ fn queue_draw_many(st: &mut SharedState, list: LuaTable) -> LuaResult<()> {
         }
     }
     Ok(())
+}
+
+fn draw_many_number(entry: &LuaTable, index: i64, default: f32) -> f32 {
+    entry
+        .raw_get::<_, Option<f32>>(index)
+        .unwrap_or(None)
+        .unwrap_or(default)
+}
+
+fn draw_many_transform(entry: &LuaTable) -> RenderDrawTransform {
+    RenderDrawTransform {
+        x: draw_many_number(entry, 2, 0.0),
+        y: draw_many_number(entry, 3, 0.0),
+        rotation: draw_many_number(entry, 4, 0.0),
+        sx: draw_many_number(entry, 5, 1.0),
+        sy: draw_many_number(entry, 6, 1.0),
+        ox: draw_many_number(entry, 7, 0.0),
+        oy: draw_many_number(entry, 8, 0.0),
+    }
 }
 
 fn centered_text_origin(

@@ -1,0 +1,5 @@
+province_count=3
+adjacency_pairs=3
+border_segments=3
+shape_blob_bytes=176
+draw_count=3

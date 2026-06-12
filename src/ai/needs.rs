@@ -149,7 +149,7 @@ impl NeedSystem {
         self.needs
             .iter()
             .filter(|n| n.enabled)
-            .max_by(|a, b| a.urgency_score().partial_cmp(&b.urgency_score()).unwrap())
+            .max_by(|a, b| a.urgency_score().total_cmp(&b.urgency_score()))
             .map(|n| n.name.as_str())
     }
     /// Increase the named need when present.
@@ -183,7 +183,7 @@ impl NeedSystem {
                 (i, ad.score(agent_pos, urgency))
             })
             .filter(|(_, score)| *score > 0.0)
-            .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+            .max_by(|a, b| a.1.total_cmp(&b.1))
             .map(|(i, _)| i)
     }
 }

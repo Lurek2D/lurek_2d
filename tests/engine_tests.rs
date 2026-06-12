@@ -13,10 +13,10 @@ mod animation_tests;
 mod app_tests;
 #[path = "rust/unit/audio_tests.rs"]
 mod audio_tests;
+#[path = "rust/unit/binary_tests.rs"]
+mod binary_tests;
 #[path = "rust/unit/compute_tests.rs"]
 mod compute_tests;
-#[path = "rust/unit/data_tests.rs"]
-mod data_tests;
 #[path = "rust/unit/dataframe_tests.rs"]
 mod dataframe_tests;
 #[path = "rust/unit/debugbridge_tests.rs"]

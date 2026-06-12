@@ -217,6 +217,31 @@ end
 
 ---
 
+### `lurek.learning.newEngine`
+
+Creates an empty heterogeneous neural engine.
+
+```lua
+lurek.learning.newEngine()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LNeuralEngine](#lneuralengine) | New neural engine handle. |
+
+**Example**
+
+```lua
+do
+    local engine = lurek.learning.newEngine()
+    print("lurek.learning.newEngine blocks", engine:blockCount())
+end
+```
+
+---
+
 ### `lurek.learning.newGeneticAlgorithm`
 
 Creates a genetic algorithm population with fixed chromosome length.
@@ -765,6 +790,7 @@ end
 - [LMaxPool2D](#lmaxpool2d)
 - [LModel](#lmodel)
 - [LMultiHeadAttention](#lmultiheadattention)
+- [LNeuralEngine](#lneuralengine)
 - [LNeuralNet](#lneuralnet)
 - [LNeuroevolution](#lneuroevolution)
 - [LOnnxModel](#lonnxmodel)
@@ -2651,6 +2677,296 @@ LMultiHeadAttention:typeOf(name)
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     print("LMultiHeadAttention:typeOf", tostring(mha:typeOf("LObject")))
+end
+```
+
+---
+
+## LNeuralEngine
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LNeuralEngine:addConv2D`
+
+Appends a convolutional 2D block to this engine.
+
+```lua
+LNeuralEngine:addConv2D(args)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `args` | table | Tuple arguments: in_channels, out_channels, kernel_h, kernel_w, optional stride_h, stride_w, pad_h, pad_w. |
+
+**Example**
+
+```lua
+do
+    local engine = lurek.learning.newEngine()
+    engine:addConv2D(1, 2, 3, 3, 1, 1, 1, 1)
+    print("LNeuralEngine:addConv2D blocks", engine:blockCount())
+end
+```
+
+---
+
+#### `LNeuralEngine:addDense`
+
+Appends a dense neural layer block.
+
+```lua
+LNeuralEngine:addDense(inputs, outputs, activation)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `inputs` | number | Input vector size. |
+| `outputs` | number | Output vector size. |
+| `activation?` | string | Activation name; defaults to `relu`. |
+
+**Example**
+
+```lua
+do
+    local engine = lurek.learning.newEngine()
+    engine:addDense(3, 4, "relu")
+    print("LNeuralEngine:addDense params", engine:paramCount())
+end
+```
+
+---
+
+#### `LNeuralEngine:addMaxPool2D`
+
+Appends a non-trainable MaxPool2D block.
+
+```lua
+LNeuralEngine:addMaxPool2D(kernel_h, kernel_w, stride_h, stride_w)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `kernel_h` | number | Kernel height. |
+| `kernel_w` | number | Kernel width. |
+| `stride_h?` | number | Vertical stride; defaults to kernel_h. |
+| `stride_w?` | number | Horizontal stride; defaults to kernel_w. |
+
+**Example**
+
+```lua
+do
+    local engine = lurek.learning.newEngine()
+    engine:addMaxPool2D(2, 2)
+    print("LNeuralEngine:addMaxPool2D params", engine:paramCount())
+end
+```
+
+---
+
+#### `LNeuralEngine:addTransformerEncoder`
+
+Appends a transformer encoder block.
+
+```lua
+LNeuralEngine:addTransformerEncoder(d_model, heads, ff_hidden)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `d_model` | number | Model width. |
+| `heads` | number | Number of attention heads. |
+| `ff_hidden` | number | Feed-forward hidden width. |
+
+**Example**
+
+```lua
+do
+    local engine = lurek.learning.newEngine()
+    engine:addTransformerEncoder(4, 2, 8)
+    print("LNeuralEngine:addTransformerEncoder blocks", engine:blockCount())
+end
+```
+
+---
+
+#### `LNeuralEngine:blockCount`
+
+Returns the number of blocks in this engine.
+
+```lua
+LNeuralEngine:blockCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Block count. |
+
+**Example**
+
+```lua
+do
+    local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    print("LNeuralEngine:blockCount", engine:blockCount())
+end
+```
+
+---
+
+#### `LNeuralEngine:getWeights`
+
+Returns all trainable parameters in block insertion order.
+
+```lua
+LNeuralEngine:getWeights()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Flat parameter array. |
+
+**Example**
+
+```lua
+do
+    local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    engine:setWeights({ 0.1, 0.2, 0.3, 0.4, 0.0, 0.0 })
+    print("LNeuralEngine:getWeights count", #engine:getWeights())
+end
+```
+
+---
+
+#### `LNeuralEngine:paramCount`
+
+Returns the total trainable parameter count.
+
+```lua
+LNeuralEngine:paramCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Parameter count. |
+
+**Example**
+
+```lua
+do
+    local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    print("LNeuralEngine:paramCount", engine:paramCount())
+end
+```
+
+---
+
+#### `LNeuralEngine:setWeights`
+
+Replaces all trainable parameters from a flat numeric array.
+
+```lua
+LNeuralEngine:setWeights(weights)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `weights` | table | Flat parameter array in block insertion order. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied weight count matches the engine shape. |
+
+**Example**
+
+```lua
+do
+    local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    local weights = {}
+    for i = 1, engine:paramCount() do
+        weights[i] = 0.05 * i
+    end
+    print("LNeuralEngine:setWeights", engine:setWeights(weights))
+end
+```
+
+---
+
+#### `LNeuralEngine:type`
+
+Returns the Lua-visible type name for this neural engine handle.
+
+```lua
+LNeuralEngine:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LNeuralEngine](#lneuralengine)`. |
+
+**Example**
+
+```lua
+do
+    local engine = lurek.learning.newEngine()
+    print("LNeuralEngine:type", engine:type())
+end
+```
+
+---
+
+#### `LNeuralEngine:typeOf`
+
+Returns whether this neural engine handle matches a supported type name.
+
+```lua
+LNeuralEngine:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LNeuralEngine](#lneuralengine)` and `Object`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+**Example**
+
+```lua
+do
+    local engine = lurek.learning.newEngine()
+    print("LNeuralEngine:typeOf", engine:typeOf("LNeuralEngine"))
 end
 ```
 

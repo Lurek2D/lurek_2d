@@ -768,16 +768,36 @@ end
 --@api-stub: lurek.agent.completeAsync
 do
     local ok, err = pcall(function()
-        lurek.agent.completeAsync("What is Lua?", function(text, async_err)
+        local id = lurek.agent.completeAsync("What is Lua?", function(text, async_err)
             if async_err then
                 print("Error:", async_err)
             else
                 print("Async reply:", text)
             end
         end)
+        print("completeAsync id:", id)
+        lurek.agent.update()
     end)
     print("completeAsync ok:", ok)
     if not ok then print("completeAsync error:", err) end
+end
+
+--@api-stub: lurek.agent.update
+do
+    lurek.agent.update()
+    print("lurek.agent.update: polled")
+end
+
+--@api-stub: lurek.agent.pendingCount
+do
+    local pending = lurek.agent.pendingCount()
+    print("lurek.agent.pendingCount:", pending)
+end
+
+--@api-stub: lurek.agent.cancel
+do
+    lurek.agent.cancel(999999)
+    print("lurek.agent.cancel: accepted")
 end
 
 -- ─── lurek.agent.newChat ─────────────────────────────────────────────────────

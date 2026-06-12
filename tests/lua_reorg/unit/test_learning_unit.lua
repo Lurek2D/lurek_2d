@@ -16,6 +16,10 @@ local function new_two_layer_net()
     return net
 end
 
+local function new_engine()
+    return lurek.learning.newEngine()
+end
+
 local function new_bandit()
     return lurek.learning.newBandit(3, "epsilon_greedy", 0.0, 99)
 end
@@ -89,6 +93,93 @@ describe("lurek.learning", function()
         local net = lurek.learning.newNeuralNet()
         expect_true(net ~= nil, "network should be created")
         expect_equal(net:layerCount(), 0)
+    end)
+
+    -- @covers lurek.learning.newEngine
+    it("creates a heterogeneous neural engine", function()
+        local engine = new_engine()
+        expect_true(engine ~= nil, "engine should be created")
+        expect_equal(0, engine:blockCount())
+    end)
+
+    -- @covers LNeuralEngine:addDense
+    it("addDense appends a dense block", function()
+        local engine = new_engine()
+        engine:addDense(2, 3, "relu")
+        expect_equal(1, engine:blockCount())
+        expect_equal(9, engine:paramCount())
+    end)
+
+    -- @covers LNeuralEngine:addConv2D
+    it("addConv2D appends a convolution block", function()
+        local engine = new_engine()
+        engine:addConv2D(1, 2, 2, 2, 1, 1, 0, 0)
+        expect_equal(1, engine:blockCount())
+        expect_equal(10, engine:paramCount())
+    end)
+
+    -- @covers LNeuralEngine:addMaxPool2D
+    it("addMaxPool2D appends a non-trainable pooling block", function()
+        local engine = new_engine()
+        engine:addMaxPool2D(2, 2)
+        expect_equal(1, engine:blockCount())
+        expect_equal(0, engine:paramCount())
+    end)
+
+    -- @covers LNeuralEngine:addTransformerEncoder
+    it("addTransformerEncoder appends a transformer block", function()
+        local engine = new_engine()
+        engine:addTransformerEncoder(4, 2, 8)
+        expect_equal(1, engine:blockCount())
+        expect_true(engine:paramCount() > 0)
+    end)
+
+    -- @covers LNeuralEngine:blockCount
+    it("blockCount reports the number of engine blocks", function()
+        local engine = new_engine()
+        engine:addDense(2, 2)
+        engine:addMaxPool2D(2, 2)
+        expect_equal(2, engine:blockCount())
+    end)
+
+    -- @covers LNeuralEngine:paramCount
+    it("paramCount sums trainable engine parameters", function()
+        local engine = new_engine()
+        engine:addDense(2, 2, "linear")
+        expect_equal(6, engine:paramCount())
+    end)
+
+    -- @covers LNeuralEngine:setWeights
+    it("setWeights accepts exact flat engine parameters", function()
+        local engine = new_engine()
+        engine:addDense(2, 2, "linear")
+        expect_true(engine:setWeights(zeros(engine:paramCount())))
+        expect_false(engine:setWeights({ 1.0 }))
+    end)
+
+    -- @covers LNeuralEngine:getWeights
+    it("getWeights returns flat engine parameters", function()
+        local engine = new_engine()
+        engine:addDense(2, 2, "linear")
+        local weights = {}
+        for i = 1, engine:paramCount() do
+            weights[i] = i * 0.1
+        end
+        expect_true(engine:setWeights(weights))
+        expect_vector_close(weights, engine:getWeights(), 1e-6)
+    end)
+
+    -- @covers LNeuralEngine:type
+    it("type returns LNeuralEngine", function()
+        expect_equal("LNeuralEngine", new_engine():type())
+    end)
+
+    -- @covers LNeuralEngine:typeOf
+    it("typeOf recognizes neural engine wrappers and objects", function()
+        local engine = new_engine()
+        expect_true(engine:typeOf("LNeuralEngine"))
+        expect_true(engine:typeOf("LObject"))
+        expect_false(engine:typeOf("LNeuralNet"))
     end)
 
     -- @covers LNeuralNet:forward

@@ -1,0 +1,4 @@
+enemy_count=1
+bitmap_any_count=2
+sorted_first=2
+sorted_last=1

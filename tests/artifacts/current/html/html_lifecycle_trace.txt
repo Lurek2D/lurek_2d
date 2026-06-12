@@ -1,0 +1,7 @@
+dirty_after_add_css=true
+panel_tag=section
+panel_id=main-panel
+row_count_before_remove=2
+rows_initial=1
+panel_html_len=50
+root_tag=body

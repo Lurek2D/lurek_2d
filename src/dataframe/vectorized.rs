@@ -16,6 +16,12 @@ use rayon::prelude::*;
 use std::collections::HashMap;
 #[derive(Debug, Clone)]
 /// Hold typed columnar storage with optional validity mask.
+///
+/// # Variants
+/// - `Float64`: Floating-point column values with optional validity mask.
+/// - `Int64`: Integer column values with optional validity mask.
+/// - `Bool`: Boolean column values with optional validity mask.
+/// - `Text`: UTF-8 text column values with optional validity mask.
 pub enum ColumnStore {
     /// Store 64-bit floating point values.
     Float64 {
@@ -173,6 +179,17 @@ impl ColumnStore {
 }
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Select element-wise scalar operation applied to a column.
+///
+/// # Variants
+/// - `Add`: Add a scalar.
+/// - `Sub`: Subtract a scalar.
+/// - `Mul`: Multiply by a scalar.
+/// - `Div`: Divide by a scalar.
+/// - `Abs`: Absolute value.
+/// - `Sqrt`: Square root.
+/// - `Floor`: Floor.
+/// - `Ceil`: Ceiling.
+/// - `Neg`: Negation.
 pub enum ScalarOp {
     /// Add scalar value to each element.
     Add,
@@ -212,6 +229,14 @@ impl ScalarOp {
 }
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Select element-wise binary operation between two columns.
+///
+/// # Variants
+/// - `Add`: Add left and right values.
+/// - `Sub`: Subtract right values from left values.
+/// - `Mul`: Multiply left and right values.
+/// - `Div`: Divide left values by right values.
+/// - `Min`: Keep the smaller value.
+/// - `Max`: Keep the larger value.
 pub enum BinaryOp {
     /// Add left and right values.
     Add,
@@ -242,6 +267,15 @@ impl BinaryOp {
 }
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Select aggregation operation over a column.
+///
+/// # Variants
+/// - `Sum`: Sum valid values.
+/// - `Mean`: Arithmetic mean of valid values.
+/// - `Min`: Smallest valid value.
+/// - `Max`: Largest valid value.
+/// - `Std`: Standard deviation.
+/// - `Var`: Variance.
+/// - `Count`: Count valid values.
 pub enum ReduceOp {
     /// Sum all valid values.
     Sum,
@@ -275,6 +309,14 @@ impl ReduceOp {
 }
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Select comparison operation for mask generation.
+///
+/// # Variants
+/// - `Lt`: Less than.
+/// - `Le`: Less than or equal.
+/// - `Gt`: Greater than.
+/// - `Ge`: Greater than or equal.
+/// - `Eq`: Equal.
+/// - `Ne`: Not equal.
 pub enum CmpOp {
     /// Less than.
     Lt,
@@ -305,6 +347,10 @@ impl CmpOp {
 }
 #[derive(Debug, Clone)]
 /// Hold typed columnar frame used for vectorized and parallel operations.
+///
+/// # Fields
+/// - `column_names`: Ordered names for each stored column.
+/// - `columns`: Typed column payloads matching `column_names` order.
 pub struct VecFrame {
     /// Store ordered column names.
     column_names: Vec<String>,
@@ -538,10 +584,7 @@ impl VecFrame {
                     BinaryOp::Div => {
                         if r == 0.0 {
                             out_data.push(f64::NAN);
-                            if out_validity.is_none() {
-                                out_validity = Some(vec![true; nrows]);
-                            }
-                            out_validity.as_mut().unwrap()[i] = false;
+                            out_validity.get_or_insert_with(|| vec![true; nrows])[i] = false;
                             continue;
                         }
                         l / r

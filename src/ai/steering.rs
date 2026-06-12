@@ -9,8 +9,30 @@
 //! Maintains lightweight state for runtime-safe updates under dense multi-agent simulation loads.
 //! Serves as the tactical locomotion bridge between decision outputs and physics-facing motion updates.
 
+use std::collections::HashMap;
+
 /// Force vector used by steering systems.
 pub type Force = (f32, f32);
+
+/// Named entity state used by pursue, evade, and flock steering.
+#[derive(Debug, Clone)]
+pub struct SteeringEntity {
+    /// Stable entity name used by named steering behaviors.
+    pub name: String,
+    /// Current world position.
+    pub position: (f32, f32),
+    /// Current world velocity.
+    pub velocity: (f32, f32),
+}
+
+struct FlockParams<'a> {
+    neighbor_radius: f32,
+    sep_weight: f32,
+    align_weight: f32,
+    coh_weight: f32,
+    neighbor_names: &'a [String],
+}
+
 /// How multiple steering behaviors are blended.
 #[derive(Debug, Clone, PartialEq)]
 pub enum CombineMode {
@@ -281,6 +303,8 @@ pub struct SteeringManager {
     pub path_reach_radius: f32,
     /// Weight applied to path following.
     pub path_weight: f32,
+    /// Named entities available to context-aware steering behaviors.
+    pub entities: HashMap<String, SteeringEntity>,
 }
 impl SteeringManager {
     /// Create a steering manager with default parameters.
@@ -295,6 +319,7 @@ impl SteeringManager {
             path_index: 0,
             path_reach_radius: 12.0,
             path_weight: 1.0,
+            entities: HashMap::new(),
         }
     }
     /// Combine all enabled behaviors and clamp the result to `max_force`.
@@ -313,7 +338,7 @@ impl SteeringManager {
                 combined.0 += path_force.0 * self.path_weight;
                 combined.1 += path_force.1 * self.path_weight;
                 for b in &self.behaviors {
-                    let f = b.calculate(agent_pos, agent_vel, max_speed, dt);
+                    let f = self.calculate_behavior(b, agent_pos, agent_vel, max_speed, dt);
                     let w = b.base().weight;
                     combined.0 += f.0 * w;
                     combined.1 += f.1 * w;
@@ -328,7 +353,7 @@ impl SteeringManager {
                     );
                 } else {
                     for b in &self.behaviors {
-                        let f = b.calculate(agent_pos, agent_vel, max_speed, dt);
+                        let f = self.calculate_behavior(b, agent_pos, agent_vel, max_speed, dt);
                         let mag = (f.0 * f.0 + f.1 * f.1).sqrt();
                         if mag > 0.001 {
                             combined = (f.0 * b.base().weight, f.1 * b.base().weight);
@@ -346,6 +371,29 @@ impl SteeringManager {
         }
         self.last_force = combined;
         combined
+    }
+    /// Set or replace one named entity in the steering context.
+    pub fn set_entity(&mut self, name: String, position: (f32, f32), velocity: (f32, f32)) {
+        self.entities.insert(
+            name.clone(),
+            SteeringEntity {
+                name,
+                position,
+                velocity,
+            },
+        );
+    }
+    /// Remove one named entity from the steering context.
+    pub fn remove_entity(&mut self, name: &str) -> bool {
+        self.entities.remove(name).is_some()
+    }
+    /// Clear all steering-context entities.
+    pub fn clear_entities(&mut self) {
+        self.entities.clear();
+    }
+    /// Return the number of steering-context entities.
+    pub fn entity_count(&self) -> usize {
+        self.entities.len()
     }
     /// Add a seek behavior. This function is part of the public API.
     pub fn add_seek(&mut self, tx: f32, ty: f32, weight: f32) {
@@ -505,6 +553,242 @@ impl SteeringManager {
         let desired_y = (dy / dist) * desired_speed;
         (desired_x - agent_vel.0, desired_y - agent_vel.1)
     }
+
+    /// Calculate one behavior, including context-aware named-entity behaviors.
+    fn calculate_behavior(
+        &self,
+        behavior: &SteeringBehaviorType,
+        agent_pos: (f32, f32),
+        agent_vel: (f32, f32),
+        max_speed: f32,
+        dt: f32,
+    ) -> Force {
+        if !behavior.base().enabled {
+            return (0.0, 0.0);
+        }
+        match behavior {
+            SteeringBehaviorType::Pursue { target_name, .. } => {
+                let Some(target) = self.resolve_target(target_name.as_deref(), agent_pos) else {
+                    return (0.0, 0.0);
+                };
+                let target = predicted_position(target, agent_pos, max_speed);
+                seek_force(agent_pos, agent_vel, target, max_speed)
+            }
+            SteeringBehaviorType::Evade { threat_name, .. } => {
+                let Some(threat) = self.resolve_target(threat_name.as_deref(), agent_pos) else {
+                    return (0.0, 0.0);
+                };
+                let threat = predicted_position(threat, agent_pos, max_speed);
+                flee_force(agent_pos, agent_vel, threat, max_speed)
+            }
+            SteeringBehaviorType::Flock {
+                neighbor_radius,
+                sep_weight,
+                align_weight,
+                coh_weight,
+                neighbor_names,
+                ..
+            } => self.calculate_flock(
+                agent_pos,
+                agent_vel,
+                max_speed,
+                FlockParams {
+                    neighbor_radius: *neighbor_radius,
+                    sep_weight: *sep_weight,
+                    align_weight: *align_weight,
+                    coh_weight: *coh_weight,
+                    neighbor_names,
+                },
+            ),
+            _ => behavior.calculate(agent_pos, agent_vel, max_speed, dt),
+        }
+    }
+
+    /// Resolve a named target or the nearest available entity when no name is supplied.
+    fn resolve_target(&self, name: Option<&str>, agent_pos: (f32, f32)) -> Option<&SteeringEntity> {
+        if let Some(name) = name {
+            return self.entities.get(name);
+        }
+        self.entities.values().min_by(|a, b| {
+            distance_sq(agent_pos, a.position).total_cmp(&distance_sq(agent_pos, b.position))
+        })
+    }
+
+    /// Calculate flocking from nearby named entities.
+    fn calculate_flock(
+        &self,
+        agent_pos: (f32, f32),
+        agent_vel: (f32, f32),
+        max_speed: f32,
+        params: FlockParams<'_>,
+    ) -> Force {
+        let radius = params.neighbor_radius.max(0.0);
+        if radius <= 0.0 || self.entities.is_empty() {
+            return (0.0, 0.0);
+        }
+
+        let neighbors = self.neighbors(agent_pos, radius, params.neighbor_names);
+        if neighbors.is_empty() {
+            return (0.0, 0.0);
+        }
+
+        let mut separation = (0.0f32, 0.0f32);
+        let mut avg_velocity = (0.0f32, 0.0f32);
+        let mut avg_position = (0.0f32, 0.0f32);
+
+        for entity in &neighbors {
+            let dx = agent_pos.0 - entity.position.0;
+            let dy = agent_pos.1 - entity.position.1;
+            let dist_sq = (dx * dx + dy * dy).max(0.0001);
+            separation.0 += dx / dist_sq;
+            separation.1 += dy / dist_sq;
+            avg_velocity.0 += entity.velocity.0;
+            avg_velocity.1 += entity.velocity.1;
+            avg_position.0 += entity.position.0;
+            avg_position.1 += entity.position.1;
+        }
+
+        let count = neighbors.len() as f32;
+        avg_velocity.0 /= count;
+        avg_velocity.1 /= count;
+        avg_position.0 /= count;
+        avg_position.1 /= count;
+
+        let separation = normalize_to_speed(separation, max_speed);
+        let alignment = (avg_velocity.0 - agent_vel.0, avg_velocity.1 - agent_vel.1);
+        let cohesion = seek_force(agent_pos, agent_vel, avg_position, max_speed);
+
+        (
+            separation.0 * params.sep_weight
+                + alignment.0 * params.align_weight
+                + cohesion.0 * params.coh_weight,
+            separation.1 * params.sep_weight
+                + alignment.1 * params.align_weight
+                + cohesion.1 * params.coh_weight,
+        )
+    }
+
+    /// Return nearby entities, using a transient spatial hash when enabled.
+    fn neighbors(
+        &self,
+        agent_pos: (f32, f32),
+        radius: f32,
+        neighbor_names: &[String],
+    ) -> Vec<&SteeringEntity> {
+        if !neighbor_names.is_empty() {
+            return neighbor_names
+                .iter()
+                .filter_map(|name| self.entities.get(name))
+                .filter(|entity| distance_sq(agent_pos, entity.position) <= radius * radius)
+                .collect();
+        }
+
+        if !self.use_spatial_hash {
+            return self
+                .entities
+                .values()
+                .filter(|entity| distance_sq(agent_pos, entity.position) <= radius * radius)
+                .collect();
+        }
+
+        let cell_size = self.cell_size.max(0.1);
+        let agent_cell = cell_for(agent_pos, cell_size);
+        let span = (radius / cell_size).ceil() as i32;
+        let mut buckets: HashMap<(i32, i32), Vec<&SteeringEntity>> = HashMap::new();
+        for entity in self.entities.values() {
+            buckets
+                .entry(cell_for(entity.position, cell_size))
+                .or_default()
+                .push(entity);
+        }
+
+        let mut out = Vec::new();
+        for cy in agent_cell.1 - span..=agent_cell.1 + span {
+            for cx in agent_cell.0 - span..=agent_cell.0 + span {
+                if let Some(bucket) = buckets.get(&(cx, cy)) {
+                    for entity in bucket {
+                        if distance_sq(agent_pos, entity.position) <= radius * radius {
+                            out.push(*entity);
+                        }
+                    }
+                }
+            }
+        }
+        out
+    }
+}
+
+fn seek_force(
+    agent_pos: (f32, f32),
+    agent_vel: (f32, f32),
+    target: (f32, f32),
+    max_speed: f32,
+) -> Force {
+    let dx = target.0 - agent_pos.0;
+    let dy = target.1 - agent_pos.1;
+    let dist = (dx * dx + dy * dy).sqrt();
+    if dist < 0.001 {
+        return (0.0, 0.0);
+    }
+    let desired_x = (dx / dist) * max_speed;
+    let desired_y = (dy / dist) * max_speed;
+    (desired_x - agent_vel.0, desired_y - agent_vel.1)
+}
+
+fn flee_force(
+    agent_pos: (f32, f32),
+    agent_vel: (f32, f32),
+    threat: (f32, f32),
+    max_speed: f32,
+) -> Force {
+    let dx = agent_pos.0 - threat.0;
+    let dy = agent_pos.1 - threat.1;
+    let dist = (dx * dx + dy * dy).sqrt();
+    if dist < 0.001 {
+        return (0.0, 0.0);
+    }
+    let desired_x = (dx / dist) * max_speed;
+    let desired_y = (dy / dist) * max_speed;
+    (desired_x - agent_vel.0, desired_y - agent_vel.1)
+}
+
+fn predicted_position(
+    entity: &SteeringEntity,
+    agent_pos: (f32, f32),
+    max_speed: f32,
+) -> (f32, f32) {
+    let distance = distance_sq(agent_pos, entity.position).sqrt();
+    let lookahead = if max_speed > 0.001 {
+        (distance / max_speed).min(1.0)
+    } else {
+        0.0
+    };
+    (
+        entity.position.0 + entity.velocity.0 * lookahead,
+        entity.position.1 + entity.velocity.1 * lookahead,
+    )
+}
+
+fn normalize_to_speed(force: Force, max_speed: f32) -> Force {
+    let mag = (force.0 * force.0 + force.1 * force.1).sqrt();
+    if mag < 0.001 {
+        (0.0, 0.0)
+    } else {
+        ((force.0 / mag) * max_speed, (force.1 / mag) * max_speed)
+    }
+}
+
+fn distance_sq(a: (f32, f32), b: (f32, f32)) -> f32 {
+    let dx = a.0 - b.0;
+    let dy = a.1 - b.1;
+    dx * dx + dy * dy
+}
+
+fn cell_for(pos: (f32, f32), cell_size: f32) -> (i32, i32) {
+    (
+        (pos.0 / cell_size).floor() as i32,
+        (pos.1 / cell_size).floor() as i32,
+    )
 }
 /// `Default` delegates to `SteeringManager::new`.
 impl Default for SteeringManager {

@@ -723,28 +723,57 @@ fn emit_html_event(
     let flags = Rc::new(RefCell::new(HtmlEventFlags::default()));
     let mut called = false;
     if let Some(target_id) = target {
-        let chain = document.inner.borrow().ancestors_inclusive(target_id);
-        for current_target in chain {
-            let listeners = collect_element_listeners(lua, document, current_target, event_name)?;
-            for listener in listeners {
-                called = true;
-                let event = create_html_event_table(
-                    lua,
-                    document,
-                    event_name,
-                    target,
-                    Some(current_target),
-                    &payload,
-                    flags.clone(),
-                )?;
-                listener.call::<_, ()>(event)?;
-                if flags.borrow().propagation_stopped {
-                    return Ok(true);
-                }
+        called = emit_html_target_event(lua, document, event_name, target_id, &payload, &flags)?;
+        if flags.borrow().propagation_stopped {
+            return Ok(true);
+        }
+    }
+    called |= emit_html_document_event(lua, document, event_name, target, &payload, &flags)?;
+    Ok(called || flags.borrow().default_prevented)
+}
+
+fn emit_html_target_event(
+    lua: &Lua,
+    document: &LuaHtmlDocument,
+    event_name: &str,
+    target_id: HtmlElementId,
+    payload: &HtmlEventPayload,
+    flags: &Rc<RefCell<HtmlEventFlags>>,
+) -> LuaResult<bool> {
+    let chain = document.inner.borrow().ancestors_inclusive(target_id);
+    let mut called = false;
+    for current_target in chain {
+        let listeners = collect_element_listeners(lua, document, current_target, event_name)?;
+        for listener in listeners {
+            called = true;
+            let event = create_html_event_table(
+                lua,
+                document,
+                event_name,
+                Some(target_id),
+                Some(current_target),
+                payload,
+                flags.clone(),
+            )?;
+            listener.call::<_, ()>(event)?;
+            if flags.borrow().propagation_stopped {
+                return Ok(called);
             }
         }
     }
+    Ok(called)
+}
+
+fn emit_html_document_event(
+    lua: &Lua,
+    document: &LuaHtmlDocument,
+    event_name: &str,
+    target: Option<HtmlElementId>,
+    payload: &HtmlEventPayload,
+    flags: &Rc<RefCell<HtmlEventFlags>>,
+) -> LuaResult<bool> {
     let listeners = collect_document_listeners(lua, document, event_name)?;
+    let mut called = false;
     for listener in listeners {
         called = true;
         let event = create_html_event_table(
@@ -753,7 +782,7 @@ fn emit_html_event(
             event_name,
             target,
             None,
-            &payload,
+            payload,
             flags.clone(),
         )?;
         listener.call::<_, ()>(event)?;
@@ -761,7 +790,7 @@ fn emit_html_event(
             break;
         }
     }
-    Ok(called || flags.borrow().default_prevented)
+    Ok(called)
 }
 /// Collects Lua callbacks for one element and event name.
 fn collect_element_listeners<'lua>(
@@ -884,63 +913,65 @@ fn enqueue_html_draw_commands(
             continue;
         }
         match command.kind.as_str() {
-            "box" => {
-                if let Some(bg) = command
-                    .background_color
-                    .as_deref()
-                    .and_then(parse_css_color)
-                {
-                    state
-                        .render_commands
-                        .push(RenderCommand::SetColor(bg[0], bg[1], bg[2], bg[3]));
-                    state.render_commands.push(RenderCommand::Rectangle {
-                        mode: DrawMode::Fill,
-                        x: command.rect.x,
-                        y: command.rect.y,
-                        w: command.rect.w,
-                        h: command.rect.h,
-                    });
-                }
-                if let Some(border) = command.color.as_deref().and_then(parse_css_color) {
-                    state.render_commands.push(RenderCommand::SetColor(
-                        border[0], border[1], border[2], border[3],
-                    ));
-                    state.render_commands.push(RenderCommand::Rectangle {
-                        mode: DrawMode::Line,
-                        x: command.rect.x,
-                        y: command.rect.y,
-                        w: command.rect.w,
-                        h: command.rect.h,
-                    });
-                }
-            }
-            "text" => {
-                let text = command.text.trim();
-                if text.is_empty() {
-                    continue;
-                }
-                let Some(font_key) = state.active_font.or(state.default_font) else {
-                    continue;
-                };
-                let fg = command
-                    .color
-                    .as_deref()
-                    .and_then(parse_css_color)
-                    .unwrap_or([1.0, 1.0, 1.0, 1.0]);
-                state
-                    .render_commands
-                    .push(RenderCommand::SetColor(fg[0], fg[1], fg[2], fg[3]));
-                state.render_commands.push(RenderCommand::Print {
-                    font_key,
-                    text: text.to_string(),
-                    x: command.rect.x + 4.0,
-                    y: command.rect.y + 4.0,
-                    scale: 1.0,
-                });
-            }
+            "box" => enqueue_html_box_command(state, &command),
+            "text" => enqueue_html_text_command(state, &command),
             _ => {}
         }
     }
+}
+
+fn enqueue_html_box_command(state: &mut SharedState, command: &crate::html::HtmlDrawCommand) {
+    if let Some(bg) = command
+        .background_color
+        .as_deref()
+        .and_then(parse_css_color)
+    {
+        state
+            .render_commands
+            .push(RenderCommand::SetColor(bg[0], bg[1], bg[2], bg[3]));
+        push_html_rect(state, command, DrawMode::Fill);
+    }
+    if let Some(border) = command.color.as_deref().and_then(parse_css_color) {
+        state.render_commands.push(RenderCommand::SetColor(
+            border[0], border[1], border[2], border[3],
+        ));
+        push_html_rect(state, command, DrawMode::Line);
+    }
+}
+
+fn enqueue_html_text_command(state: &mut SharedState, command: &crate::html::HtmlDrawCommand) {
+    let text = command.text.trim();
+    let Some(font_key) = state.active_font.or(state.default_font) else {
+        return;
+    };
+    if text.is_empty() {
+        return;
+    }
+    let fg = command
+        .color
+        .as_deref()
+        .and_then(parse_css_color)
+        .unwrap_or([1.0, 1.0, 1.0, 1.0]);
+    state
+        .render_commands
+        .push(RenderCommand::SetColor(fg[0], fg[1], fg[2], fg[3]));
+    state.render_commands.push(RenderCommand::Print {
+        font_key,
+        text: text.to_string(),
+        x: command.rect.x + 4.0,
+        y: command.rect.y + 4.0,
+        scale: 1.0,
+    });
+}
+
+fn push_html_rect(state: &mut SharedState, command: &crate::html::HtmlDrawCommand, mode: DrawMode) {
+    state.render_commands.push(RenderCommand::Rectangle {
+        mode,
+        x: command.rect.x,
+        y: command.rect.y,
+        w: command.rect.w,
+        h: command.rect.h,
+    });
 }
 /// Parses a CSS color string into normalized RGBA channels.
 fn parse_css_color(raw: &str) -> Option<[f32; 4]> {

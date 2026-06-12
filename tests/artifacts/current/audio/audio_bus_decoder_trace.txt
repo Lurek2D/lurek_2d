@@ -1,0 +1,7 @@
+music_peak_before=0
+music_peak_after=0
+pool_voices=3
+decoder_seekable=true
+decoder_duration=0.1
+decoded_chunk_type=userdata
+decoded_chunk_present=true

@@ -13,6 +13,85 @@ do
     print("lurek.learning.newNeuralNet firstOutput", output[1])
 end
 
+--@api-stub: lurek.learning.newEngine
+do
+    local engine = lurek.learning.newEngine()
+    print("lurek.learning.newEngine blocks", engine:blockCount())
+end
+
+--@api-stub: LNeuralEngine:addDense
+do
+    local engine = lurek.learning.newEngine()
+    engine:addDense(3, 4, "relu")
+    print("LNeuralEngine:addDense params", engine:paramCount())
+end
+
+--@api-stub: LNeuralEngine:addConv2D
+do
+    local engine = lurek.learning.newEngine()
+    engine:addConv2D(1, 2, 3, 3, 1, 1, 1, 1)
+    print("LNeuralEngine:addConv2D blocks", engine:blockCount())
+end
+
+--@api-stub: LNeuralEngine:addMaxPool2D
+do
+    local engine = lurek.learning.newEngine()
+    engine:addMaxPool2D(2, 2)
+    print("LNeuralEngine:addMaxPool2D params", engine:paramCount())
+end
+
+--@api-stub: LNeuralEngine:addTransformerEncoder
+do
+    local engine = lurek.learning.newEngine()
+    engine:addTransformerEncoder(4, 2, 8)
+    print("LNeuralEngine:addTransformerEncoder blocks", engine:blockCount())
+end
+
+--@api-stub: LNeuralEngine:blockCount
+do
+    local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    print("LNeuralEngine:blockCount", engine:blockCount())
+end
+
+--@api-stub: LNeuralEngine:paramCount
+do
+    local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    print("LNeuralEngine:paramCount", engine:paramCount())
+end
+
+--@api-stub: LNeuralEngine:setWeights
+do
+    local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    local weights = {}
+    for i = 1, engine:paramCount() do
+        weights[i] = 0.05 * i
+    end
+    print("LNeuralEngine:setWeights", engine:setWeights(weights))
+end
+
+--@api-stub: LNeuralEngine:getWeights
+do
+    local engine = lurek.learning.newEngine()
+    engine:addDense(2, 2, "linear")
+    engine:setWeights({ 0.1, 0.2, 0.3, 0.4, 0.0, 0.0 })
+    print("LNeuralEngine:getWeights count", #engine:getWeights())
+end
+
+--@api-stub: LNeuralEngine:type
+do
+    local engine = lurek.learning.newEngine()
+    print("LNeuralEngine:type", engine:type())
+end
+
+--@api-stub: LNeuralEngine:typeOf
+do
+    local engine = lurek.learning.newEngine()
+    print("LNeuralEngine:typeOf", engine:typeOf("LNeuralEngine"))
+end
+
 --@api-stub: lurek.learning.newGeneticAlgorithm
 do
     local ga = lurek.learning.newGeneticAlgorithm(6, 4, 42)

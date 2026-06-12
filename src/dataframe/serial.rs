@@ -50,62 +50,14 @@ fn auto_detect_type(s: &str) -> CellValue {
 }
 /// Parse CSV text into row and field records with quote escaping.
 fn parse_csv_records(s: &str) -> Result<Vec<Vec<String>>, String> {
-    let mut records: Vec<Vec<String>> = Vec::new();
-    let mut current_record: Vec<String> = Vec::new();
-    let mut current_field = String::new();
-    let mut in_quotes = false;
-    let chars: Vec<char> = s.chars().collect();
-    let len = chars.len();
-    let mut i = 0;
-    while i < len {
-        let c = chars[i];
-        if in_quotes {
-            if c == '"' {
-                if i + 1 < len && chars[i + 1] == '"' {
-                    current_field.push('"');
-                    i += 2;
-                    continue;
-                }
-                in_quotes = false;
-                i += 1;
-                continue;
-            }
-            current_field.push(c);
-            i += 1;
-        } else {
-            match c {
-                '"' => {
-                    in_quotes = true;
-                    i += 1;
-                }
-                ',' => {
-                    current_record.push(std::mem::take(&mut current_field));
-                    i += 1;
-                }
-                '\r' => {
-                    current_record.push(std::mem::take(&mut current_field));
-                    records.push(std::mem::take(&mut current_record));
-                    if i + 1 < len && chars[i + 1] == '\n' {
-                        i += 2;
-                    } else {
-                        i += 1;
-                    }
-                }
-                '\n' => {
-                    current_record.push(std::mem::take(&mut current_field));
-                    records.push(std::mem::take(&mut current_record));
-                    i += 1;
-                }
-                _ => {
-                    current_field.push(c);
-                    i += 1;
-                }
-            }
-        }
-    }
-    if !current_field.is_empty() || !current_record.is_empty() {
-        current_record.push(current_field);
-        records.push(current_record);
+    let mut reader = csv::ReaderBuilder::new()
+        .has_headers(false)
+        .flexible(true)
+        .from_reader(s.as_bytes());
+    let mut records = Vec::new();
+    for result in reader.records() {
+        let record = result.map_err(|error| format!("CSV parse error: {error}"))?;
+        records.push(record.iter().map(ToString::to_string).collect());
     }
     Ok(records)
 }

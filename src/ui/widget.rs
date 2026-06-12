@@ -613,6 +613,8 @@ pub struct WidgetBase {
     pub style_class: Option<String>,
     /// Mouse filter strategy controlling event interception.
     pub mouse_filter: MouseFilter,
+    /// Horizontal text alignment override for this widget (`left`, `center`, or `right`).
+    pub text_align: String,
     /// Whether text content wraps at word boundaries when it exceeds the widget width.
     pub text_wrap: bool,
     /// Whether overflowing single-line text is clipped with a trailing "…" ellipsis.
@@ -699,6 +701,7 @@ impl WidgetBase {
             is_visible: true,
             style_class: None,
             mouse_filter,
+            text_align: "left".to_string(),
             text_wrap: false,
             text_ellipsis: true,
             text_v_align: TextVAlign::Middle,

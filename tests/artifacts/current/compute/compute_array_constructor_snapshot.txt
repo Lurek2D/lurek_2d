@@ -1,0 +1,4 @@
+zeros_size=4
+zeros_first=0.000000
+ones_size=4
+ones_diag=1.000000,1.000000

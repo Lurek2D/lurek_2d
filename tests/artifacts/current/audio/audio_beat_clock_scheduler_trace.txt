@@ -1,0 +1,8 @@
+beat=2.200
+bar=0.55
+phase8=0.664
+scheduled_fired=1
+callbacks=9
+callback_preview=every:1, every:2, every:3, every:4, pattern:1, pattern:3, pattern:1, pattern:3, at:1.00
+judge_verdict=perfect
+judge_error=-0.021

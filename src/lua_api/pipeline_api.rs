@@ -467,6 +467,19 @@ pub(crate) fn fire_step_callbacks<'lua>(
     wrapper: &LuaStep,
 ) -> LuaResult<()> {
     let step_status = wrapper.inner.borrow().status;
+    fire_step_status_callback(lua, this, step_name, ctx, wrapper, step_status)?;
+    fire_step_progress_callback(lua, this, step_name, step_status)?;
+    fire_step_finished_event(lua, this, step_name, wrapper, step_status)
+}
+
+fn fire_step_status_callback<'lua>(
+    lua: &'lua Lua,
+    this: &LuaPipeline,
+    step_name: &str,
+    ctx: &LuaTable<'lua>,
+    wrapper: &LuaStep,
+    step_status: StepStatus,
+) -> LuaResult<()> {
     if step_status == StepStatus::Completed {
         if let Some(key) = this.on_step_complete_key.borrow().as_ref() {
             let f: LuaFunction = lua.registry_value(key)?;
@@ -483,6 +496,15 @@ pub(crate) fn fire_step_callbacks<'lua>(
             }
         }
     }
+    Ok(())
+}
+
+fn fire_step_progress_callback(
+    lua: &Lua,
+    this: &LuaPipeline,
+    step_name: &str,
+    step_status: StepStatus,
+) -> LuaResult<()> {
     if let Some(key) = this.on_progress_key.borrow().as_ref() {
         let status_str = format!("{:?}", step_status).to_lowercase();
         let f: LuaFunction = lua.registry_value(key)?;
@@ -490,6 +512,16 @@ pub(crate) fn fire_step_callbacks<'lua>(
             log_msg!(warn, LA02_PIPELINE_CALLBACK_FAIL, "on_progress: {e}");
         }
     }
+    Ok(())
+}
+
+fn fire_step_finished_event(
+    lua: &Lua,
+    this: &LuaPipeline,
+    step_name: &str,
+    wrapper: &LuaStep,
+    step_status: StepStatus,
+) -> LuaResult<()> {
     let detail: LuaValue = if step_status == StepStatus::Failed {
         LuaValue::String(
             lua.create_string(wrapper.inner.borrow().error_msg.clone().unwrap_or_default())?,

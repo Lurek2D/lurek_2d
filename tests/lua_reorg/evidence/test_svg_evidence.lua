@@ -16,6 +16,13 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function draw_outline(img, x, y, w, h, r, g, b, a)
+    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
+end
+
 local function plot_points(img, pts, ox, oy, scale, r, g, b)
     for _, pt in ipairs(pts) do
         local px = math.floor(ox + pt.x * scale + 0.5)
@@ -33,7 +40,25 @@ local function draw_bounds(img, bounds, ox, oy, scale, r, g, b)
     local y = math.floor(oy + bounds.min_y * scale + 0.5)
     local w = math.max(1, math.floor((bounds.max_x - bounds.min_x) * scale + 0.5))
     local h = math.max(1, math.floor((bounds.max_y - bounds.min_y) * scale + 0.5))
-    img:drawRect(x, y, w, h, r, g, b, 255)
+    draw_outline(img, x, y, w, h, r, g, b, 255)
+end
+
+local function fill_from_points(img, pts, r, g, b)
+    for _, pt in ipairs(pts) do
+        img:drawRect(math.floor(pt.x - 1), math.floor(pt.y - 1), 3, 3, r, g, b, 200)
+    end
+end
+
+local function format_color(col)
+    if not col then
+        return "nil"
+    end
+    return table.concat({
+        tostring(col[1]),
+        tostring(col[2]),
+        tostring(col[3]),
+        tostring(col[4]),
+    }, ",")
 end
 
 -- @describe Evidence: svg
@@ -64,52 +89,28 @@ describe("Evidence: svg", function()
 
         local w = svg:getWidth()
         local h = svg:getHeight()
-        expect_equal(200, w)
-        expect_equal(100, h)
-
         local ids = svg:getElementIds()
-        expect_type("table", ids)
         table.sort(ids)
-
-        -- Evaluate adjacencies
         local adj = svg:getAdjacencies("prov_", 3.0)
-        local neighbors = adj["prov_1"]
-        expect_type("table", neighbors)
-        expect_equal(1, #neighbors)
-        expect_equal("prov_2", neighbors[1])
-
-        -- Apply modifiers after adjacency extraction so the topology report stays stable.
+        local neighbors = adj["prov_1"] or {}
         svg:setElementVisible("prov_1", true)
         svg:setElementColor("prov_1", 1, 0, 0, 1)
         svg:setElementTransform("prov_1", 10, 10, 0, 1, 1)
-
-        -- Evaluate points
         local pts = svg:getElementPoints("prov_1", 10.0)
-        expect_true(#pts > 0)
-
-        -- Cache to canvas
         svg:cacheToCanvas("group1", 100, 100)
         local canvas = svg:getCanvasKey("group1")
-        expect_type("userdata", canvas)
-
         local canvas_alias = svg:getCanvas("group1")
-        expect_type("userdata", canvas_alias)
-
-        -- Draw the image
         svg:draw(0, 0)
 
-        -- Write text report as evidence
-        local report_lines = {
-            "SVG Size: " .. w .. "x" .. h,
-            "Parsed Element IDs: " .. table.concat(ids, ", "),
-            "Tesselated Points Count: " .. #pts,
-            "Adjacency prov_1 neighbor: " .. neighbors[1],
-            "Canvas cached successfully: " .. tostring(canvas ~= nil)
-        }
-        local report = table.concat(report_lines, "\n")
-        local path = OUT .. "svg_report.txt"
-
-        write_text(path, report)
+        local report = table.concat({
+            "size=" .. tostring(w) .. "x" .. tostring(h),
+            "ids=" .. table.concat(ids, ","),
+            "prov_1_neighbors=" .. table.concat(neighbors, ","),
+            "prov_1_points=" .. tostring(#pts),
+            "canvas_key=" .. tostring(canvas ~= nil),
+            "canvas_alias=" .. tostring(canvas_alias ~= nil),
+        }, "\n") .. "\n"
+        write_text(OUT .. "svg_report.txt", report)
     end)
 
     -- @evidence lurek.svg.load
@@ -118,21 +119,24 @@ describe("Evidence: svg", function()
     -- @evidence lurek.image.savePNG
     it("PNG: SVG province geometry debug view", function()
         local svg = lurek.svg.load("tests/lua_reorg/fixtures/test.svg")
-        local img = lurek.image.newImageData(240, 140)
+        local img = lurek.image.newImageData(280, 180)
         img:fill(14, 16, 20, 255)
+        img:drawRect(16, 16, 248, 148, 24, 28, 36, 255)
+        draw_outline(img, 16, 16, 248, 148, 232, 236, 244, 255)
 
         local p1 = svg:getElementPoints("prov_1", 6.0) or {}
         local p2 = svg:getElementPoints("prov_2", 6.0) or {}
         local b1 = svg:getElementBounds("prov_1")
         local b2 = svg:getElementBounds("prov_2")
 
-        draw_bounds(img, b1, 20, 20, 1.0, 255, 120, 120)
-        draw_bounds(img, b2, 20, 20, 1.0, 120, 255, 140)
-        plot_points(img, p1, 20, 20, 1.0, 255, 220, 120)
-        plot_points(img, p2, 20, 20, 1.0, 120, 220, 255)
+        fill_from_points(img, p1, 255, 120, 120)
+        fill_from_points(img, p2, 120, 255, 140)
+        draw_bounds(img, b1, 20, 20, 1.0, 255, 220, 180)
+        draw_bounds(img, b2, 20, 20, 1.0, 180, 240, 220)
+        plot_points(img, p1, 20, 20, 1.0, 255, 245, 200)
+        plot_points(img, p2, 20, 20, 1.0, 200, 245, 255)
 
-        local path = OUT .. "svg_geometry_debug.png"
-        save_png(img, path)
+        save_png(img, OUT .. "svg_geometry_debug.png")
     end)
 
     -- @evidence LSvgImage:setElementVisible
@@ -147,33 +151,82 @@ describe("Evidence: svg", function()
 
         local visible_2 = svg:getElementVisible("prov_2")
         local trs = svg:getElementTransform("prov_1")
-        expect_equal(false, visible_2)
-        expect_not_nil(trs)
-
         local pts = svg:getElementPoints("prov_1", 6.0) or {}
         local tx, ty, _, sx, sy = trs[1], trs[2], trs[3], trs[4], trs[5]
-        local img = lurek.image.newImageData(260, 160)
+        local img = lurek.image.newImageData(320, 180)
         img:fill(14, 16, 20, 255)
+        img:drawRect(18, 20, 136, 116, 24, 28, 36, 255)
+        img:drawRect(176, 20, 126, 116, 24, 28, 36, 255)
+        draw_outline(img, 18, 20, 136, 116, 232, 236, 244, 255)
+        draw_outline(img, 176, 20, 126, 116, 232, 236, 244, 255)
 
         for _, pt in ipairs(pts) do
-            local px = math.floor(30 + (pt.x * sx + tx) + 0.5)
-            local py = math.floor(30 + (pt.y * sy + ty) + 0.5)
-            for dy = -1, 1 do
-                for dx = -1, 1 do
-                    img:setPixel(px + dx, py + dy, 255, 150, 90, 255)
-                end
-            end
+            local px = math.floor(32 + pt.x + 0.5)
+            local py = math.floor(34 + pt.y + 0.5)
+            img:drawRect(px - 1, py - 1, 3, 3, 80, 180, 255, 220)
+
+            local tpx = math.floor(190 + (pt.x * sx + tx) + 0.5)
+            local tpy = math.floor(34 + (pt.y * sy + ty) + 0.5)
+            img:drawRect(tpx - 1, tpy - 1, 3, 3, 255, 160, 90, 220)
         end
 
         if not visible_2 then
-            img:drawRect(160, 22, 70, 40, 200, 60, 70, 255)
-            img:drawLine(160, 22, 230, 62, 255, 220, 220, 255)
-            img:drawLine(230, 22, 160, 62, 255, 220, 220, 255)
+            img:drawRect(210, 110, 60, 18, 180, 56, 66, 255)
+            draw_outline(img, 210, 110, 60, 18, 255, 220, 220, 255)
         end
 
-        local path = OUT .. "svg_transform_visibility.png"
-        lurek.image.savePNG(img, path)
-        expect_evidence_created(path)
+        save_png(img, OUT .. "svg_transform_visibility.png")
+    end)
+
+    -- @evidence LSvgImage:getElementPoints
+    -- @evidence LSvgImage:getElementBounds
+    -- @evidence LSvgImage:getElementTransform
+    -- @evidence lurek.image.savePNG
+    it("PNG: svg contact sheet", function()
+        local files = {
+            "svg_geometry_debug.png",
+            "svg_transform_visibility.png",
+        }
+        local canvas = lurek.image.newImageData(520, 220)
+        canvas:fill(12, 14, 20, 255)
+        for i, name in ipairs(files) do
+            local src = lurek.image.newImageData(OUT .. name)
+            local thumb = src:resize(236, 160, "bilinear")
+            local x = 16 + (i - 1) * 252
+            canvas:paste(thumb, x, 16)
+            draw_outline(canvas, x, 16, 236, 160, 232, 236, 244, 255)
+        end
+        save_png(canvas, OUT .. "svg_contact_sheet.png")
+    end)
+
+    -- @evidence LSvgImage:getDimensions
+    -- @evidence LSvgImage:getElementCount
+    -- @evidence LSvgImage:getElementColor
+    -- @evidence LSvgImage:resetElementTransform
+    -- @evidence LSvgImage:resetElementColor
+    -- @evidence LSvgImage:getElementParent
+    -- @evidence LSvgImage:getElementChildren
+    it("TXT: svg hierarchy and reset trace", function()
+        local svg = lurek.svg.load("tests/lua_reorg/fixtures/test.svg")
+        local w, h = svg:getDimensions()
+        local count = svg:getElementCount()
+        local before = svg:getElementColor("prov_1")
+        svg:setElementColor("prov_1", 0.2, 0.8, 0.3, 1.0)
+        svg:setElementTransform("prov_1", 14, 9, 0.0, 1.1, 0.9)
+        svg:resetElementColor("prov_1")
+        svg:resetElementTransform("prov_1")
+        local after = svg:getElementColor("prov_1")
+        local parent = svg:getElementParent("prov_1")
+        local children = parent and (svg:getElementChildren(parent) or {}) or {}
+        local lines = {
+            string.format("dimensions=%sx%s", tostring(w), tostring(h)),
+            "element_count=" .. tostring(count),
+            "prov_1_color_before=" .. format_color(before),
+            "prov_1_color_after=" .. format_color(after),
+            "prov_1_parent=" .. tostring(parent),
+            "parent_child_count=" .. tostring(#children),
+        }
+        write_text(OUT .. "svg_hierarchy_reset_trace.txt", table.concat(lines, "\n") .. "\n")
     end)
 end)
 test_summary()

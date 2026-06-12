@@ -58,6 +58,11 @@ enum WidgetAttachment {
         index: usize,
     },
 }
+
+enum WidgetAttachSnapshot {
+    AlreadyAttached(usize),
+    Detached(Widget, Vec<Rc<RefCell<WidgetBinding>>>),
+}
 /// Binds a Rust `Widget` to its Lua-side callbacks, pending children, and attachment state.
 struct WidgetBinding {
     widget: Widget,
@@ -299,26 +304,9 @@ fn attach_widget(
     terminal: &Rc<TerminalBinding>,
     binding: &Rc<RefCell<WidgetBinding>>,
 ) -> LuaResult<usize> {
-    let (widget, pending_children) = {
-        let binding_ref = binding.borrow();
-        match &binding_ref.attachment {
-            WidgetAttachment::Detached => (
-                binding_ref.widget.clone(),
-                binding_ref.pending_children.clone(),
-            ),
-            WidgetAttachment::Attached {
-                terminal: attached_terminal,
-                index,
-            } => {
-                if Rc::ptr_eq(attached_terminal, terminal) {
-                    return Ok(*index);
-                }
-                return Err(runtime_error(
-                    "Terminal:addWidget",
-                    "widget is already attached to another terminal",
-                ));
-            }
-        }
+    let (widget, pending_children) = match detached_widget_snapshot(terminal, binding)? {
+        WidgetAttachSnapshot::AlreadyAttached(index) => return Ok(index),
+        WidgetAttachSnapshot::Detached(widget, children) => (widget, children),
     };
     let index = terminal.terminal.borrow_mut().add_widget(widget);
     terminal
@@ -334,13 +322,45 @@ fn attach_widget(
         };
     }
     for child in pending_children {
-        let child_index = attach_widget(terminal, &child)?;
-        let _ = terminal
-            .terminal
-            .borrow_mut()
-            .add_panel_child(index, child_index);
+        attach_child_widget(terminal, index, child)?;
     }
     Ok(index)
+}
+
+fn detached_widget_snapshot(
+    terminal: &Rc<TerminalBinding>,
+    binding: &Rc<RefCell<WidgetBinding>>,
+) -> LuaResult<WidgetAttachSnapshot> {
+    let binding_ref = binding.borrow();
+    match &binding_ref.attachment {
+        WidgetAttachment::Detached => Ok(WidgetAttachSnapshot::Detached(
+            binding_ref.widget.clone(),
+            binding_ref.pending_children.clone(),
+        )),
+        WidgetAttachment::Attached {
+            terminal: attached_terminal,
+            index,
+        } if Rc::ptr_eq(attached_terminal, terminal) => {
+            Ok(WidgetAttachSnapshot::AlreadyAttached(*index))
+        }
+        WidgetAttachment::Attached { .. } => Err(runtime_error(
+            "Terminal:addWidget",
+            "widget is already attached to another terminal",
+        )),
+    }
+}
+
+fn attach_child_widget(
+    terminal: &Rc<TerminalBinding>,
+    parent_index: usize,
+    child: Rc<RefCell<WidgetBinding>>,
+) -> LuaResult<()> {
+    let child_index = attach_widget(terminal, &child)?;
+    let _ = terminal
+        .terminal
+        .borrow_mut()
+        .add_panel_child(parent_index, child_index);
+    Ok(())
 }
 /// Detaches one widget from a terminal and restores its local snapshot state.
 fn remove_attached_widget(

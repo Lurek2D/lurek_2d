@@ -761,6 +761,64 @@ pub fn query_sql(df: &DataFrame, sql: &str) -> Result<DataFrame, String> {
     let stmt = parser.parse_select()?;
     execute_select(df, &stmt)
 }
+/// Parse SQL-like query and return a compact execution-plan summary.
+pub fn explain_sql(df: &DataFrame, sql: &str) -> Result<String, String> {
+    let tokens = tokenize(sql)?;
+    let mut parser = Parser::new(tokens);
+    let stmt = parser.parse_select()?;
+    let mut lines = vec![
+        "SQL DataFrame Plan".to_string(),
+        format!("source: {}", stmt.from.as_deref().unwrap_or("self")),
+        format!("input_rows: {}", df.nrows()),
+        format!("input_columns: {}", df.ncols()),
+        format!("projection: {}", format_select_list(&stmt.columns)),
+    ];
+    lines.push(format!(
+        "filter: {}",
+        if stmt.where_clause.is_some() {
+            "where"
+        } else {
+            "none"
+        }
+    ));
+    lines.push(format!("joins: {}", stmt.joins.len()));
+    if !stmt.joins.is_empty() {
+        for join in &stmt.joins {
+            lines.push(format!(
+                "- join {} on {} = {}",
+                join.table, join.left_col, join.right_col
+            ));
+        }
+    }
+    lines.push(format!(
+        "group_by: {}",
+        stmt.group_by.as_deref().unwrap_or("none")
+    ));
+    lines.push(format!(
+        "having: {}",
+        if stmt.having.is_some() { "yes" } else { "none" }
+    ));
+    lines.push(format!(
+        "order_by: {}",
+        stmt.order_by
+            .as_ref()
+            .map(|(col, ascending)| format!("{} {}", col, if *ascending { "ASC" } else { "DESC" }))
+            .unwrap_or_else(|| "none".to_string())
+    ));
+    lines.push(format!(
+        "limit: {}",
+        stmt.limit
+            .map(|limit| limit.to_string())
+            .unwrap_or_else(|| "none".to_string())
+    ));
+    lines.push(format!(
+        "offset: {}",
+        stmt.offset
+            .map(|offset| offset.to_string())
+            .unwrap_or_else(|| "none".to_string())
+    ));
+    Ok(lines.join("\n"))
+}
 /// Execute SQL-like query against Database table references.
 pub fn query_sql_database(db: &Database, sql: &str) -> Result<DataFrame, String> {
     let tokens = tokenize(sql)?;
@@ -795,6 +853,23 @@ pub fn query_sql_database_params(
 ) -> Result<DataFrame, String> {
     let bound_sql = bind_sql_params(sql, params)?;
     query_sql_database(db, &bound_sql)
+}
+/// Format SELECT list for explain output.
+fn format_select_list(columns: &[SelectExpr]) -> String {
+    columns
+        .iter()
+        .map(|expr| match expr {
+            SelectExpr::Star => "*".to_string(),
+            SelectExpr::Value { expr, alias } => {
+                let name = select_value_expr_name(expr);
+                match alias {
+                    Some(alias) => format!("{name} AS {alias}"),
+                    None => name,
+                }
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(", ")
 }
 /// Replace `?` placeholders outside SQL strings with escaped SQL literals.
 fn bind_sql_params(sql: &str, params: &[CellValue]) -> Result<String, String> {

@@ -39,7 +39,7 @@ local function new_collision_world()
 end
 
 local function new_head_on_collision_world()
-    local world = lurek.physics.newWorld(0, 100)
+    local world = lurek.physics.newWorld(0, 0)
     local a = lurek.physics.newBody(world, 100, 100, "dynamic")
     local b = lurek.physics.newBody(world, 200, 100, "dynamic")
     lurek.physics.setBodyVelocity(world, a, 50, 0)
@@ -60,12 +60,30 @@ end
 
 local function new_circle_body_world(count)
     local world = lurek.physics.newWorld(0, 100)
+    local first_body = nil
     for i = 1, count do
         local x = (i % 20) * 15 + 50
         local y = math.floor(i / 20) * 15
-        world:newCircleBody(x, y, 5, "dynamic")
+        local body = world:newCircleBody(x, y, 5, "dynamic")
+        if first_body == nil then
+            first_body = body
+        end
     end
-    return world
+    return world, first_body
+end
+
+local function new_step_stress_world(count)
+    local world = lurek.physics.newWorld(0, 100)
+    local first_body = nil
+    for i = 1, count do
+        local x = 40 + (i % 25) * 10
+        local y = math.floor(i / 25) * 12
+        local body = world:newCircleBody(x, y, 4, "dynamic")
+        if first_body == nil then
+            first_body = body
+        end
+    end
+    return world, first_body
 end
 
 local function run_drop_simulation(x, frames)
@@ -113,9 +131,11 @@ describe("physics stress: 1000 bodies", function()
 
     -- @stress lurek.physics.step
     it("steps 1000-body world 60 times", function()
-        local world_id = create_world_with_dynamic_bodies(1000, 100)
+        local world_id, sample_body = new_step_stress_world(1000)
+        local _, y_before = sample_body:getPosition()
         step_world_frames(world_id, 60)
-        expect_true(true, "world survived 60 steps with 1000 bodies")
+        local _, y_after = sample_body:getPosition()
+        expect_true(y_after > y_before, "sample body moved under gravity after 60 steps")
     end)
 end)
 
@@ -162,14 +182,16 @@ describe("physics stress: collision storm", function()
     it("detects collisions between moving bodies", function()
         local world = new_head_on_collision_world()
         local collisions_detected = collision_events_observed(world, 120)
-        expect_true(collisions_detected or not collisions_detected, "collision simulation completed without crash")
+        expect_true(collisions_detected, "head-on dynamic bodies should collide")
     end)
 
     -- @stress LWorld:newCircleBody
     it("circle bodies handle mass collision", function()
-        local world = new_circle_body_world(200)
+        local world, sample_body = new_circle_body_world(200)
+        local _, y_before = sample_body:getPosition()
         step_world_frames(world, 180)
-        expect_true(true, "circle collision simulation completed")
+        local _, y_after = sample_body:getPosition()
+        expect_true(y_after > y_before, "sample circle body moved after mass simulation")
     end)
 end)
 

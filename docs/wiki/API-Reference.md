@@ -167,6 +167,7 @@
   - [LMaxPool2D](#lmaxpool2d)
   - [LModel](#lmodel)
   - [LMultiHeadAttention](#lmultiheadattention)
+  - [LNeuralEngine](#lneuralengine)
   - [LNeuralNet](#lneuralnet)
   - [LNeuroevolution](#lneuroevolution)
   - [LOnnxModel](#lonnxmodel)
@@ -397,8 +398,9 @@ Compact index of all functions and methods. Parameter details and examples live 
 [Module page](Module-agent)
 
 ```lua
+lurek.agent.cancel(callback_id: integer) -- Cancels a module-level asynchronous completion by callback ID.
 lurek.agent.complete(prompt: string) -> string -- Sends a single prompt to the global LLM and returns the response text.
-lurek.agent.completeAsync(prompt: string, callback: function) -- Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
+lurek.agent.completeAsync(prompt: string, callback: function) -> integer -- Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
 lurek.agent.completeJson(prompt: string) -> table -- Sends a prompt requesting a JSON-format response and returns a parsed Lua table.
 lurek.agent.configure(config: table) -- Configures the global LLM provider settings used by module-level functions.
 lurek.agent.embed(text: string) -> table -- Returns an embedding vector for `text` from the global LLM.
@@ -414,6 +416,8 @@ lurek.agent.newSemanticMemory() -> LSemanticMemory -- Creates a new semantic mem
 lurek.agent.newSystem(config: table) -> LAISystem -- Creates a new AISystem orchestrator that holds agents, instructions, and keyword-gated skills.
 lurek.agent.newTemplate(pattern: string) -> LAgentTemplate -- Creates a new `{key}` placeholder prompt template.
 lurek.agent.newWorkingMemory(capacity: integer) -> LWorkingMemory -- Creates a new bounded FIFO working memory with the given capacity.
+lurek.agent.pendingCount() -> integer -- Returns the number of module-level asynchronous completions still in flight.
+lurek.agent.update() -- Polls module-level asynchronous completions and dispatches callbacks.
 ```
 
 ### LAgent
@@ -877,14 +881,18 @@ LSteeringManager:addSeek(tx: number, ty: number, [weight]: number) -- Adds a see
 LSteeringManager:addWander([radius]: number, [dist]: number, [jitter]: number, [weight]: number) -- Adds a wander behavior that produces jittered exploratory movement.
 LSteeringManager:applyCustomSteering(agent: LBot, dt: number) -> number, number -- Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
 LSteeringManager:calculate(px: number, py: number, vx: number, vy: number, max_speed: number, max_force: number, dt: number) -> number, number -- Calculates a steering force for the supplied agent movement state.
+LSteeringManager:clearEntities() -- Clears all steering-context entities.
 LSteeringManager:clearPath() -- Clears the active waypoint path behavior.
 LSteeringManager:enableSpatialHash(enabled: boolean) -- Enables or disables spatial hash acceleration for neighbor queries.
+LSteeringManager:entityCount() -> integer -- Returns the number of steering-context entities.
 LSteeringManager:getBehaviorCount() -> integer -- Returns the number of steering behaviors configured on this manager.
 LSteeringManager:getCombineMode() -> string -- Returns the current steering force combination mode.
 LSteeringManager:getLastSteering() -> number, number -- Returns the last steering force calculated by this manager.
 LSteeringManager:getPathProgress() -> integer, integer -- Returns the current one-based waypoint index and total waypoint count.
 LSteeringManager:hasPath() -> boolean -- Returns whether this manager currently has an active waypoint path.
+LSteeringManager:removeEntity(name: string) -> boolean -- Removes one named steering-context entity.
 LSteeringManager:setCombineMode(mode: string) -- Sets how steering behavior forces are combined.
+LSteeringManager:setEntity(name: string, x: number, y: number, [vx]: number, [vy]: number) -- Sets or replaces one named steering-context entity.
 LSteeringManager:setPath(waypoints: table, [reach_radius]: number, [weight]: number) -- Sets a waypoint path behavior from an array of `{x, y}` tables.
 LSteeringManager:setSpatialHashCellSize(size: number) -- Sets the cell size used by the steering manager spatial hash.
 LSteeringManager:type() -> string -- Returns the Lua-visible type name for this steering manager handle.
@@ -1145,7 +1153,7 @@ lurek.audio.newQueueableSource(sample_rate: integer, bit_depth: integer, channel
 lurek.audio.newSoundData(pathOrCount: string|integer, sampleRate: integer, [channels]: integer) -> LSoundData -- Creates a new SoundData object from a file path or blank buffer for procedural audio.
 lurek.audio.newSource(path: string, [sourceType]: string) -> LSource -- Creates a new audio source from a file path, either fully loaded or streaming.
 lurek.audio.pause(source: LSource|integer) -- Pauses playback of a source at its current position.
-lurek.audio.manager.pauseAll() -- Pauses all active audio sources.
+lurek.audio.manager.pauseAll() -- Pauses every currently active audio source.
 lurek.audio.pauseAll() -- Pauses all currently playing audio sources.
 lurek.audio.play(source: LSource|integer, [options]: table) -> integer -- Starts playback of a source by handle, optionally routing through a named bus.
 lurek.audio.playLooping(source: LSource|integer) -- Starts playback of a source with looping enabled in one call.
@@ -1154,7 +1162,7 @@ lurek.audio.playSfx(path: string, [opts]: table) -> LSource -- Plays a one-shot 
 lurek.audio.queueSource(qsource_id: integer, sd: LSoundData) -- Queues a decoded audio chunk for playback on a queueable source.
 lurek.audio.release(source: LSource|integer) -> boolean -- Releases an audio source, freeing its memory and stopping playback.
 lurek.audio.resume(source: LSource|integer) -- Resumes playback of a paused source.
-lurek.audio.manager.resumeAll() -- Resumes all paused audio sources.
+lurek.audio.manager.resumeAll() -- Resumes every currently paused audio source.
 lurek.audio.resumeAll() -- Resumes all paused audio sources. This function is exposed to Lua scripts.
 lurek.audio.saveWAV(sd_ud: LSoundData, filename: string) -- Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
 lurek.audio.seek(source: LSource|integer, pos: number) -- Seeks a source to a specific position in seconds.
@@ -1627,7 +1635,7 @@ LCameraRig:updateAll(dt: number) -- Advances every camera in this rig. This meth
 ### LCameraWalker
 
 ```lua
-LCameraWalker:getCamera() -> LCamera -- Returns the associated camera.
+LCameraWalker:getCamera() -> LCamera -- Returns the camera associated with this walker.
 LCameraWalker:getPosition() -> number, number -- Returns the walker world-space center position.
 LCameraWalker:getTilePosition() -> integer, integer -- Returns current walker tile coordinates (1-based).
 LCameraWalker:moveDown([dt]: number) -- Moves the walker down (positive Y) with collision checking.
@@ -1737,8 +1745,8 @@ LCinematic:typeOf(name: string) -> boolean -- Checks whether this object matches
 ```lua
 LCinematicTimeline:addClip(track_name: string, at: number, duration: number, clip_table: table) -- Adds a clip to a named track (creates track if missing).
 LCinematicTimeline:addLabel(name: string, time: number) -- Registers a named time position for branching.
-LCinematicTimeline:addTrack(name: string) -- Adds a new track to the timeline.
-LCinematicTimeline:branch(label: string) -> boolean -- Jumps to a named label position.
+LCinematicTimeline:addTrack(name: string) -- Adds a named track to this cinematic timeline.
+LCinematicTimeline:branch(label: string) -> boolean -- Jumps playback to a named label position.
 LCinematicTimeline:getDuration() -> number -- Returns the total duration of the timeline.
 LCinematicTimeline:getState() -> string -- Returns the playback state as a string.
 LCinematicTimeline:getTime() -> number -- Returns the current playback time.
@@ -1746,7 +1754,7 @@ LCinematicTimeline:isComplete() -> boolean -- Checks if playback has reached the
 LCinematicTimeline:isPlaying() -> boolean -- Checks if the timeline is currently playing.
 LCinematicTimeline:pause() -- Pauses playback without resetting time.
 LCinematicTimeline:play() -- Starts playback from the current time.
-LCinematicTimeline:seek(time: number) -- Jumps to a specific time.
+LCinematicTimeline:seek(time: number) -- Jumps playback to a specific timeline time.
 LCinematicTimeline:skipToEnd() -- Instantly jumps to the end of the timeline.
 LCinematicTimeline:stop() -- Stops playback and resets to time 0.
 LCinematicTimeline:type() -> string -- Returns the Lua-visible type name.
@@ -2002,6 +2010,7 @@ LDataFrame:describe() -> LDataFrame -- Returns summary statistics for numeric co
 LDataFrame:dropNil(col: string) -> LDataFrame -- Returns rows where the chosen column is not nil.
 LDataFrame:duplicateRows([cols]: table) -> LDataFrame -- Returns rows whose full-row key or selected-column key appears more than once.
 LDataFrame:entropy(col: string) -> number -- Returns entropy for a column. This method is available to Lua scripts.
+LDataFrame:explain([sql_str]: string) -> string -- Returns a compact dataframe or SQL query execution plan summary.
 LDataFrame:fillNil(col: string, val: any) -- Replaces nil cells in a column with a value.
 LDataFrame:filter(col: any, op: string, val: any) -> LDataFrame -- Returns rows whose column value matches a comparison.
 LDataFrame:getColumn(col: any) -> number[] -- Returns a column as an array table. This method is available to Lua scripts.
@@ -2039,6 +2048,7 @@ LDataFrame:rollingMean(col: string, window: integer, [result_col]: string) -> LD
 LDataFrame:rollingSum(col: string, window: integer, [result_col]: string) -> LDataFrame -- Returns a dataframe with a rolling sum column.
 LDataFrame:rows() -> function -- Returns an iterator function over one-based row index and row table pairs.
 LDataFrame:sample(n: integer, [seed]: integer) -> LDataFrame -- Returns a sampled dataframe. This method is available to Lua scripts.
+LDataFrame:schema() -> table -- Returns inferred column schema metadata.
 LDataFrame:select(...: any) -> LDataFrame -- Returns a dataframe with selected columns.
 LDataFrame:setColumnFromF64(col: string, values: table) -- Replaces a numeric column from an array table of numbers.
 LDataFrame:setValue(row: integer, col: any, val: any) -- Sets one cell value by one-based row and column reference.
@@ -3591,6 +3601,7 @@ lurek.learning.frameStack(n: integer) -> LFrameStack -- Creates a frame-stacking
 lurek.learning.loadOnnx(path: string) -> LOnnxModel -- Loads and optimises an ONNX model from a file path.
 lurek.learning.newBandit(arm_count: integer, strategy: string, epsilon: number, seed: integer) -> LBandit -- Creates a multi-armed bandit with a named selection strategy.
 lurek.learning.newConv2D(in_channels: integer, out_channels: integer, kernel_h: integer, kernel_w: integer, stride_h: integer, stride_w: integer, pad_h: integer, pad_w: integer) -> LConv2D -- Creates a Conv2D layer wrapper for deterministic CPU spatial inference.
+lurek.learning.newEngine() -> LNeuralEngine -- Creates an empty heterogeneous neural engine.
 lurek.learning.newGeneticAlgorithm(pop_size: integer, gene_count: integer, seed: integer) -> LGeneticAlgorithm -- Creates a genetic algorithm population with fixed chromosome length.
 lurek.learning.newGru(input_size: integer, hidden_size: integer) -> LGRU -- Creates a stateful GRU layer wrapper.
 lurek.learning.newLstm(input_size: integer, hidden_size: integer) -> LLSTM -- Creates a stateful LSTM layer wrapper.
@@ -3717,6 +3728,21 @@ LMultiHeadAttention:paramCount() -> integer -- Returns trainable parameter count
 LMultiHeadAttention:setWeights(weights: table) -> boolean -- Loads flattened projection weights and biases into this MHA block.
 LMultiHeadAttention:type() -> string -- Returns the Lua-visible type name for this wrapper.
 LMultiHeadAttention:typeOf(name: string) -> boolean -- Returns whether this userdata matches the requested type string.
+```
+
+### LNeuralEngine
+
+```lua
+LNeuralEngine:addConv2D(args: table) -- Appends a convolutional 2D block to this engine.
+LNeuralEngine:addDense(inputs: integer, outputs: integer, [activation]: string) -- Appends a dense neural layer block.
+LNeuralEngine:addMaxPool2D(kernel_h: integer, kernel_w: integer, [stride_h]: integer, [stride_w]: integer) -- Appends a non-trainable MaxPool2D block.
+LNeuralEngine:addTransformerEncoder(d_model: integer, heads: integer, ff_hidden: integer) -- Appends a transformer encoder block.
+LNeuralEngine:blockCount() -> integer -- Returns the number of blocks in this engine.
+LNeuralEngine:getWeights() -> number[] -- Returns all trainable parameters in block insertion order.
+LNeuralEngine:paramCount() -> integer -- Returns the total trainable parameter count.
+LNeuralEngine:setWeights(weights: table) -> boolean -- Replaces all trainable parameters from a flat numeric array.
+LNeuralEngine:type() -> string -- Returns the Lua-visible type name for this neural engine handle.
+LNeuralEngine:typeOf(name: string) -> boolean -- Returns whether this neural engine handle matches a supported type name.
 ```
 
 ### LNeuralNet
@@ -4659,7 +4685,7 @@ LNetworkHost:getBandwidthLimit() -> table -- Returns incoming and outgoing bandw
 LNetworkHost:getChannelLimit() -> integer -- Returns configured channel limit.
 LNetworkHost:getConnectedPeerCount() -> integer -- Returns the number of currently connected peers.
 LNetworkHost:getConnectedPeerIds() -> integer[] -- Returns an array of ids for all connected peers.
-LNetworkHost:getLeasePeer(token: integer) -> integer? -- Retrieves the peer ID associated with a valid, non-expired lease token.
+LNetworkHost:getLeasePeer(token: integer) -> integer -- Retrieves the peer ID associated with a valid, non-expired lease token.
 LNetworkHost:getMetrics() -> table -- Returns global network host metrics.
 LNetworkHost:getPeerAddress(peer_id: integer) -> string -- Returns peer socket address when available.
 LNetworkHost:getPeerLimit() -> integer -- Returns configured peer limit. This method is available to Lua scripts.
@@ -4686,17 +4712,17 @@ LNetworkHost:typeOf(name: string) -> boolean -- Returns whether this network hos
 
 ```lua
 LNetworkRuntime:authBootstrap(auth_url: string, payload: string, refresh_url: string) -> integer -- Start authenticating with a backend.
-LNetworkRuntime:authCancel() -- Cancels active authentication.
+LNetworkRuntime:authCancel() -- Cancels the currently active authentication request.
 LNetworkRuntime:getAuthStatus() -> string -- Returns the current active authentication status.
-LNetworkRuntime:getAuthToken() -> string? -- Returns the current active access token.
-LNetworkRuntime:getMetrics() -> table -- Returns network runtime metrics.
+LNetworkRuntime:getAuthToken() -> string -- Returns the current active access token.
+LNetworkRuntime:getMetrics() -> table -- Returns current network runtime metrics.
 LNetworkRuntime:httpGet(url: string, [headers]: table) -> integer -- Starts an HTTP GET request. This method is available to Lua scripts.
 LNetworkRuntime:httpJson(url: string, body: string, [headers]: table) -> integer -- Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
 LNetworkRuntime:httpPost(url: string, body: string, [headers]: table) -> integer -- Starts an HTTP POST request. This method is available to Lua scripts.
 LNetworkRuntime:httpRequest(opts: table) -> integer -- Starts an HTTP request from an options table and returns its request id.
 LNetworkRuntime:httpStream(url: string, [headers]: table, [timeout_secs]: integer) -> integer -- Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
-LNetworkRuntime:matchmakeCancel(id: integer) -- Cancel matchmaking request.
-LNetworkRuntime:matchmakeStart(url: string, payload: string) -> integer -- Start matchmaking request.
+LNetworkRuntime:matchmakeCancel(id: integer) -- Cancels a previously started matchmaking request.
+LNetworkRuntime:matchmakeStart(url: string, payload: string) -> integer -- Starts a matchmaking request against the backend.
 LNetworkRuntime:poll() -> table -- Polls runtime responses for HTTP, TCP, and WebSocket operations.
 LNetworkRuntime:shutdown() -- Shuts down the network runtime and cancels pending requests.
 LNetworkRuntime:tcpClose(id: integer) -- Closes a TCP connection. This method is available to Lua scripts.
@@ -6557,7 +6583,7 @@ LDepthSorter:typeOf(name: string) -> boolean -- Check whether this object matche
 ### LSceneObjectContainer
 
 ```lua
-LSceneObjectContainer:add(obj: table) -- Add an object to the container.
+LSceneObjectContainer:add(obj: table) -- Adds an object table to the scene container.
 LSceneObjectContainer:clear() -- Remove all objects from the container.
 LSceneObjectContainer:draw() -- Call draw() on all objects that have a draw method, sorted by layer.
 LSceneObjectContainer:getByLayer(n: integer) -> table -- Get all objects whose layer equals `n`.
@@ -6565,8 +6591,8 @@ LSceneObjectContainer:getCount() -- Get the number of objects currently in the c
 LSceneObjectContainer:getObjects() -> table -- Get all objects as an array (layer-sorted).
 LSceneObjectContainer:has(obj: table) -> boolean -- Check whether an object is present in the container.
 LSceneObjectContainer:remove(obj: table) -- Remove an object from the container (identity comparison).
-LSceneObjectContainer:type() -> string -- Get the type name of this userdata.
-LSceneObjectContainer:typeOf(name: string) -> boolean -- Check type by name.
+LSceneObjectContainer:type() -> string -- Gets the Lua-visible type name of this userdata.
+LSceneObjectContainer:typeOf(name: string) -> boolean -- Checks whether this container matches a type name.
 LSceneObjectContainer:update(dt: number) -- Call update(dt) on all objects that have an update method.
 ```
 
@@ -6703,7 +6729,7 @@ LSpriteAnimator:onEnd(fn: function) -- Set callback fired when a non-looping cli
 LSpriteAnimator:onFrame(fn: function) -- Set callback fired on each frame advance.
 LSpriteAnimator:onLoop(fn: function) -- Set callback fired when a looping clip wraps.
 LSpriteAnimator:pause() -- Pause playback without resetting frame state.
-LSpriteAnimator:play(name: string, [restart]: boolean) -- Play or restart a named clip.
+LSpriteAnimator:play(name: string, [restart]: boolean) -- Plays or restarts a named animation clip.
 LSpriteAnimator:resume() -- Resume playback from current frame when a clip is selected.
 LSpriteAnimator:stop() -- Stop playback and reset to the first frame of the current clip.
 LSpriteAnimator:type() -> string -- Returns the type name of this object.
@@ -6754,18 +6780,18 @@ lurek.svg.load(path: string) -- Load and parse an SVG file from the game directo
 LSvgImage:cacheToCanvas(id: string, w: integer, h: integer) -- Rasterizes a specific SVG element/group onto an off-screen GPU Canvas.
 LSvgImage:draw(x: number, y: number, [rotation]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number) -- Renders the SVG document at the given position and transform overrides.
 LSvgImage:getAdjacencies(prefix: string, [epsilon]: number) -> table -- Detects neighboring provinces using point-to-point proximity.
-LSvgImage:getCanvas(id: string) -> LCanvas? -- Alias for getCanvasKey.
-LSvgImage:getCanvasKey(id: string) -> LCanvas? -- Returns the LCanvas handle for a previously cached element/group.
+LSvgImage:getCanvas(id: string) -> LCanvas -- Returns the cached canvas handle for an element.
+LSvgImage:getCanvasKey(id: string) -> LCanvas -- Returns the LCanvas handle for a previously cached element/group.
 LSvgImage:getDimensions() -> number, number -- Returns both the document width and height as two values: `width, height`.
-LSvgImage:getElementBounds(id: string) -> table? -- Returns the axis-aligned bounding box `{min_x, min_y, max_x, max_y}` of the element.
-LSvgImage:getElementChildren(id: string) -> table? -- Returns a sequential table of direct child element IDs for the given group element.
-LSvgImage:getElementColor(id: string) -> table? -- Returns the current RGBA color override `{r, g, b, a}` table for the element.
+LSvgImage:getElementBounds(id: string) -> table -- Returns the axis-aligned bounding box `{min_x, min_y, max_x, max_y}` of the element.
+LSvgImage:getElementChildren(id: string) -> table -- Returns a sequential table of direct child element IDs for the given group element.
+LSvgImage:getElementColor(id: string) -> table -- Returns the current RGBA color override `{r, g, b, a}` table for the element.
 LSvgImage:getElementCount() -> integer -- Returns the total number of parsed elements (paths and groups) in this SVG document.
 LSvgImage:getElementIds() -> table -- Returns a list of all parsed element and group IDs.
-LSvgImage:getElementParent(id: string) -> string? -- Returns the parent element ID string, or `nil` when the element is the root or not found.
-LSvgImage:getElementPoints(id: string, [step_size]: number) -> table? -- Flattens the element path into a polygon array of LVec2 userdata.
-LSvgImage:getElementTransform(id: string) -> table? -- Returns the current dynamic TRS state of the element as a table `{tx, ty, rotation, sx, sy}`.
-LSvgImage:getElementVisible(id: string) -> boolean? -- Returns the current visibility flag for the element.
+LSvgImage:getElementParent(id: string) -> string -- Returns the parent element ID string, or `nil` when the element is the root or not found.
+LSvgImage:getElementPoints(id: string, [step_size]: number) -> table -- Flattens the element path into a polygon array of LVec2 userdata.
+LSvgImage:getElementTransform(id: string) -> table -- Returns the current dynamic TRS state of the element as a table `{tx, ty, rotation, sx, sy}`.
+LSvgImage:getElementVisible(id: string) -> boolean -- Returns the current visibility flag for the element.
 LSvgImage:getHeight() -> number -- Returns the document height in points/pixels.
 LSvgImage:getWidth() -> number -- Returns the document width in points/pixels.
 LSvgImage:resetElementColor(id: string) -- Clears the color override on the element, restoring original SVG path colors.
@@ -7460,6 +7486,8 @@ lurek.ui.getTheme() -> boolean -- Returns whether a theme is currently set.
 lurek.ui.getToastCount() -> integer -- Returns the number of active toast notifications.
 lurek.ui.getWidgetCount() -> integer -- Returns the total number of widgets in the UI context.
 lurek.ui.getWidgetFont(widget: LUiWidget) -> LFont -- Returns the font override assigned to a widget, or nil when the widget inherits its font from a parent.
+lurek.ui.hasAutoInput() -> boolean -- Returns whether platform input is automatically forwarded to `lurek.ui`.
+lurek.ui.hasAutoUpdate() -> boolean -- Returns whether `lurek.ui.update(dt)` is called automatically each frame.
 lurek.ui.keypressed(key: string) -> boolean -- Delivers a key press event to the UI.
 lurek.ui.loadLayout(def: table) -> integer -- Loads a UI layout from a Lua table definition.
 lurek.ui.loadLayoutFile(path: string) -> integer -- Loads a UI layout from a TOML layout file.
@@ -7511,6 +7539,8 @@ lurek.ui.newTreeView() -> LTreeView -- Creates a new tree view widget for hierar
 lurek.ui.newWindow([title]: string) -> LGuiWindow -- Creates a new GUI window widget with an optional title.
 lurek.ui.parseWidgetState(state: string) -> string -- Validates and normalizes a widget state string.
 lurek.ui.renderToImage(pathOrWidth: any, widthOrHeight: integer, heightOrPath: any) -- Renders the entire UI to a PNG image file.
+lurek.ui.setAutoInput(enabled: boolean) -- Enables or disables automatic forwarding of platform mouse, wheel, key, and text input to `lurek.ui`.
+lurek.ui.setAutoUpdate(enabled: boolean) -- Enables or disables automatic `lurek.ui.update(dt)` calls during the frame update.
 lurek.ui.setBaseResolution(width: number, height: number) -- Set the logical base resolution the UI was designed for.
 lurek.ui.setDefaultTheme() -- Applies the built-in default theme to the UI context.
 lurek.ui.setFocus([widget]: table) -- Sets keyboard focus to a widget, or clears focus if nil.
@@ -7623,38 +7653,38 @@ LComboBox:setSelectedIndex(index: integer) -- Sets the selected item by 1-based 
 
 ```lua
 LDialog:addAction(text: string, [cb]: function, [role]: string, [close_on_activate]: boolean) -> integer -- Adds a footer action button and returns its 1-based index.
-LDialog:addButton(text: any, [cb]: any) -- /// Returns a value for addButton (auto-generated).
+LDialog:addButton(text: string, [cb]: function) -> integer -- Adds a custom action button to this dialog.
 LDialog:centerInViewport() -- Repositions this dialog to the center of the active viewport immediately.
-LDialog:close() -- /// Returns a value for close (auto-generated).
-LDialog:getCancelAction() -> integer? -- Returns the 1-based action index triggered by Escape, if any.
+LDialog:close() -- Closes this dialog and dispatches close handling.
+LDialog:getCancelAction() -> integer -- Returns the 1-based action index triggered by Escape, if any.
 LDialog:getCenterOnOpen() -> boolean -- Returns whether opening this dialog recenters it in the viewport.
-LDialog:getContent() -- /// Returns a value for getContent (auto-generated).
-LDialog:getDefaultAction() -> integer? -- Returns the 1-based action index triggered by Enter, if any.
+LDialog:getContent() -> integer -- Returns the widget index currently assigned to this dialog's content slot.
+LDialog:getDefaultAction() -> integer -- Returns the 1-based action index triggered by Enter, if any.
 LDialog:getDismissOnOutsideClick() -> boolean -- Returns whether outside clicks dismiss this non-modal dialog.
-LDialog:getFooter() -> integer? -- Returns the optional footer content widget index.
-LDialog:getMaxSize() -> number?, number? -- Returns the optional maximum popup dimensions for this dialog.
+LDialog:getFooter() -> integer -- Returns the optional footer content widget index.
+LDialog:getMaxSize() -> number, number -- Returns the optional maximum popup dimensions for this dialog.
 LDialog:getMinSize() -> number, number -- Returns the minimum popup size for this dialog.
-LDialog:getTitle() -- /// Returns a value for getTitle (auto-generated).
+LDialog:getTitle() -> string -- Returns the current title text for this dialog.
 LDialog:isCloseable() -> boolean -- Returns whether this dialog exposes user-driven close affordances.
 LDialog:isDraggable() -> boolean -- Returns whether this dialog can be dragged by its title bar.
-LDialog:isModal() -- /// Returns a value for isModal (auto-generated).
-LDialog:isOpen() -- /// Returns a value for isOpen (auto-generated).
+LDialog:isModal() -> boolean -- Returns whether this dialog is modal.
+LDialog:isOpen() -> boolean -- Returns whether this dialog is currently open.
 LDialog:isResizable() -> boolean -- Returns whether this dialog can be resized from its edges or corners.
-LDialog:open() -- /// Returns a value for open (auto-generated).
+LDialog:open() -- Opens this dialog and marks it visible.
 LDialog:setCancelAction([index]: integer) -- Sets the action triggered by Escape, using a 1-based action index.
 LDialog:setCenterOnOpen(value: boolean) -- Controls whether opening this dialog recenters it in the viewport.
 LDialog:setCloseable(value: boolean) -- Sets whether this dialog can be dismissed by close affordances or Escape fallback.
-LDialog:setContent([content_idx]: any) -- /// Returns a value for setContent (auto-generated).
+LDialog:setContent([content_idx]: integer) -- Sets the widget index rendered as this dialog's content.
 LDialog:setDefaultAction([index]: integer) -- Sets the action triggered by Enter, using a 1-based action index.
 LDialog:setDismissOnOutsideClick(value: boolean) -- Controls whether clicking outside a non-modal dialog closes it.
 LDialog:setDraggable(value: boolean) -- Enables or disables title-bar dragging for this dialog.
 LDialog:setFooter([footer_idx]: integer) -- Assigns an optional footer content root for this dialog.
 LDialog:setMaxSize([width]: number, [height]: number) -- Sets optional maximum popup dimensions for this dialog.
 LDialog:setMinSize(width: number, height: number) -- Sets the minimum popup size for this dialog.
-LDialog:setModal(v: any) -- /// Returns a value for setModal (auto-generated).
-LDialog:setOnClose(f: any) -- /// Returns a value for setOnClose (auto-generated).
+LDialog:setModal(v: boolean) -- Sets whether this dialog blocks outside interaction.
+LDialog:setOnClose(f: function) -- Registers a callback fired when this dialog closes.
 LDialog:setResizable(value: boolean) -- Enables or disables edge and corner resizing for this dialog.
-LDialog:setTitle(title: any) -- /// Returns a value for setTitle (auto-generated).
+LDialog:setTitle(title: string) -- Sets the current title text for this dialog.
 ```
 
 ### LDockPanel
@@ -8067,6 +8097,7 @@ LUiWidget:getRect() -> number, number, number, number -- Returns the computed bo
 LUiWidget:getSize() -> number, number -- Returns the width and height of this widget.
 LUiWidget:getState() -> string -- Returns the current interaction state of this widget (e.g. "normal", "hovered", "pressed", "disabled").
 LUiWidget:getStyleClass() -> string -- Returns the style class of this widget.
+LUiWidget:getTextAlign() -> string -- Returns this widget's horizontal text alignment.
 LUiWidget:getTooltip() -> string -- Returns the tooltip text of this widget.
 LUiWidget:getZOrder() -> integer -- Returns the z-order (draw priority) of this widget.
 LUiWidget:isAnimating() -> boolean -- Returns whether this widget currently has an active animation.
@@ -8099,6 +8130,7 @@ LUiWidget:setRole(role: string) -- Sets a semantic role string for this widget.
 LUiWidget:setSize(w: number, h: number) -- Sets the width and height of this widget in pixels.
 LUiWidget:setStyleClass(class: string) -> boolean -- Sets the style class of this widget.
 LUiWidget:setTabIndex(value: integer) -- Sets the tab-order index for this widget.
+LUiWidget:setTextAlign(align: string) -> boolean -- Sets the horizontal alignment of text inside this widget.
 LUiWidget:setTextEllipsis(ellipsis: boolean) -- Enables or disables ellipsis clipping for overflowing single-line text.
 LUiWidget:setTextVAlign(align: string) -> boolean -- Sets the vertical alignment of text inside this widget.
 LUiWidget:setTextWrap(wrap: boolean) -- Enables or disables word-wrap for text inside this widget.

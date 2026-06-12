@@ -1,0 +1,7 @@
+raw_len=200
+compressed_len=22
+restored_matches=true
+chunks_restored=alphabetagamma
+msgpack_len=18
+msgpack_name=test
+msgpack_score=100

@@ -126,6 +126,46 @@
               "optional": false
             }
           ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "update",
+          "fullPath": "lurek.agent.update",
+          "signature": "()",
+          "description": "Polls module-level asynchronous completions and dispatches callbacks.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "pendingCount",
+          "fullPath": "lurek.agent.pendingCount",
+          "signature": "()",
+          "description": "Returns the number of module-level asynchronous completions still in flight.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "cancel",
+          "fullPath": "lurek.agent.cancel",
+          "signature": "(callback_id)",
+          "description": "Cancels a module-level asynchronous completion by callback ID.",
+          "parameters": [
+            {
+              "name": "callback_id",
+              "type": "integer",
+              "description": "ID returned by `completeAsync`.",
+              "optional": false
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": false,
@@ -3281,7 +3321,7 @@
           "name": "pauseAll",
           "fullPath": "lurek.audio.manager.pauseAll",
           "signature": "()",
-          "description": "Pauses all active audio sources.",
+          "description": "Pauses every currently active audio source.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -3292,7 +3332,7 @@
           "name": "resumeAll",
           "fullPath": "lurek.audio.manager.resumeAll",
           "signature": "()",
-          "description": "Resumes all paused audio sources.",
+          "description": "Resumes every currently paused audio source.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -13436,6 +13476,17 @@
           "parameters": [],
           "returns": "LNeuralNet",
           "returnType": "LNeuralNet",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newEngine",
+          "fullPath": "lurek.learning.newEngine",
+          "signature": "()",
+          "description": "Creates an empty heterogeneous neural engine.",
+          "parameters": [],
+          "returns": "LNeuralEngine",
+          "returnType": "LNeuralEngine",
           "isMethod": false,
           "objectType": null
         },
@@ -28969,6 +29020,64 @@
       "description": "File: src/lua_api/ui_api.rs",
       "functions": [
         {
+          "name": "setAutoInput",
+          "fullPath": "lurek.ui.setAutoInput",
+          "signature": "(enabled)",
+          "description": "Enables or disables automatic forwarding of platform mouse, wheel, key, and text input to `lurek.ui`.",
+          "parameters": [
+            {
+              "name": "enabled",
+              "type": "boolean",
+              "description": "True to forward platform input to the UI automatically.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "hasAutoInput",
+          "fullPath": "lurek.ui.hasAutoInput",
+          "signature": "()",
+          "description": "Returns whether platform input is automatically forwarded to `lurek.ui`.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setAutoUpdate",
+          "fullPath": "lurek.ui.setAutoUpdate",
+          "signature": "(enabled)",
+          "description": "Enables or disables automatic `lurek.ui.update(dt)` calls during the frame update.",
+          "parameters": [
+            {
+              "name": "enabled",
+              "type": "boolean",
+              "description": "True to update retained UI state automatically each frame.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "hasAutoUpdate",
+          "fullPath": "lurek.ui.hasAutoUpdate",
+          "signature": "()",
+          "description": "Returns whether `lurek.ui.update(dt)` is called automatically each frame.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newButton",
           "fullPath": "lurek.ui.newButton",
           "signature": "([text])",
@@ -33216,6 +33325,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAccordion"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LAccordion.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LAccordion"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LAccordion.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LAccordion"
         },
@@ -38875,6 +39013,35 @@
           "objectType": "LBadge"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LBadge.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBadge"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LBadge.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LBadge"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LBadge.setFocusable",
           "signature": "(value)",
@@ -43481,6 +43648,35 @@
           "objectType": "LButton"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LButton.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LButton"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LButton.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LButton"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LButton.setFocusable",
           "signature": "(value)",
@@ -46330,7 +46526,7 @@
           "name": "getCamera",
           "fullPath": "LCameraWalker:getCamera",
           "signature": "()",
-          "description": "Returns the associated camera.",
+          "description": "Returns the camera associated with this walker.",
           "parameters": [],
           "returns": "LCamera",
           "returnType": "LCamera",
@@ -47415,6 +47611,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LCheckbox"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LCheckbox.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LCheckbox"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LCheckbox.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LCheckbox"
         },
@@ -48802,7 +49027,7 @@
           "name": "addTrack",
           "fullPath": "LCinematicTimeline:addTrack",
           "signature": "(name)",
-          "description": "Adds a new track to the timeline.",
+          "description": "Adds a named track to this cinematic timeline.",
           "parameters": [
             {
               "name": "name",
@@ -48889,7 +49114,7 @@
           "name": "seek",
           "fullPath": "LCinematicTimeline:seek",
           "signature": "(time)",
-          "description": "Jumps to a specific time.",
+          "description": "Jumps playback to a specific timeline time.",
           "parameters": [
             {
               "name": "time",
@@ -49015,7 +49240,7 @@
           "name": "branch",
           "fullPath": "LCinematicTimeline:branch",
           "signature": "(label)",
-          "description": "Jumps to a named label position.",
+          "description": "Jumps playback to a named label position.",
           "parameters": [
             {
               "name": "label",
@@ -49567,6 +49792,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LColorPicker"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LColorPicker.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LColorPicker"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LColorPicker.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LColorPicker"
         },
@@ -51029,6 +51283,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LComboBox.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LComboBox"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LComboBox.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LComboBox"
         },
@@ -54221,6 +54504,35 @@
           "objectType": "LDataFrame"
         },
         {
+          "name": "schema",
+          "fullPath": "LDataFrame:schema",
+          "signature": "()",
+          "description": "Returns inferred column schema metadata.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LDataFrame"
+        },
+        {
+          "name": "explain",
+          "fullPath": "LDataFrame:explain",
+          "signature": "([sql_str])",
+          "description": "Returns a compact dataframe or SQL query execution plan summary.",
+          "parameters": [
+            {
+              "name": "sql_str",
+              "type": "string",
+              "description": "Optional SQL query text to parse and summarize.",
+              "optional": true
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LDataFrame"
+        },
+        {
           "name": "toBinary",
           "fullPath": "LDataFrame:toBinary",
           "signature": "()",
@@ -56351,10 +56663,10 @@
           "name": "getTitle",
           "fullPath": "LDialog:getTitle",
           "signature": "()",
-          "description": "/// Returns a value for getTitle (auto-generated).",
+          "description": "Returns the current title text for this dialog.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -56362,12 +56674,12 @@
           "name": "setTitle",
           "fullPath": "LDialog:setTitle",
           "signature": "(title)",
-          "description": "/// Returns a value for setTitle (auto-generated).",
+          "description": "Sets the current title text for this dialog.",
           "parameters": [
             {
               "name": "title",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "New title text.",
               "optional": false
             }
           ],
@@ -56380,10 +56692,10 @@
           "name": "isModal",
           "fullPath": "LDialog:isModal",
           "signature": "()",
-          "description": "/// Returns a value for isModal (auto-generated).",
+          "description": "Returns whether this dialog is modal.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -56391,12 +56703,12 @@
           "name": "setModal",
           "fullPath": "LDialog:setModal",
           "signature": "(v)",
-          "description": "/// Returns a value for setModal (auto-generated).",
+          "description": "Sets whether this dialog blocks outside interaction.",
           "parameters": [
             {
               "name": "v",
-              "type": "any",
-              "description": "",
+              "type": "boolean",
+              "description": "True to make the dialog modal.",
               "optional": false
             }
           ],
@@ -56409,10 +56721,10 @@
           "name": "isOpen",
           "fullPath": "LDialog:isOpen",
           "signature": "()",
-          "description": "/// Returns a value for isOpen (auto-generated).",
+          "description": "Returns whether this dialog is currently open.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -56420,7 +56732,7 @@
           "name": "open",
           "fullPath": "LDialog:open",
           "signature": "()",
-          "description": "/// Returns a value for open (auto-generated).",
+          "description": "Opens this dialog and marks it visible.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -56431,7 +56743,7 @@
           "name": "close",
           "fullPath": "LDialog:close",
           "signature": "()",
-          "description": "/// Returns a value for close (auto-generated).",
+          "description": "Closes this dialog and dispatches close handling.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -56442,12 +56754,12 @@
           "name": "setOnClose",
           "fullPath": "LDialog:setOnClose",
           "signature": "(f)",
-          "description": "/// Returns a value for setOnClose (auto-generated).",
+          "description": "Registers a callback fired when this dialog closes.",
           "parameters": [
             {
               "name": "f",
-              "type": "any",
-              "description": "",
+              "type": "function",
+              "description": "Callback invoked by the UI event dispatcher.",
               "optional": false
             }
           ],
@@ -56460,12 +56772,12 @@
           "name": "setContent",
           "fullPath": "LDialog:setContent",
           "signature": "([content_idx])",
-          "description": "/// Returns a value for setContent (auto-generated).",
+          "description": "Sets the widget index rendered as this dialog's content.",
           "parameters": [
             {
               "name": "content_idx",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Optional widget index for the content slot.",
               "optional": true
             }
           ],
@@ -56478,10 +56790,10 @@
           "name": "getContent",
           "fullPath": "LDialog:getContent",
           "signature": "()",
-          "description": "/// Returns a value for getContent (auto-generated).",
+          "description": "Returns the widget index currently assigned to this dialog's content slot.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -56509,8 +56821,8 @@
           "signature": "()",
           "description": "Returns the optional footer content widget index.",
           "parameters": [],
-          "returns": "integer?",
-          "returnType": "integer?",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -56666,8 +56978,8 @@
           "signature": "()",
           "description": "Returns the optional maximum popup dimensions for this dialog.",
           "parameters": [],
-          "returns": "number?, number?",
-          "returnType": "number?, number?",
+          "returns": "number, number",
+          "returnType": "number, number",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -56780,23 +57092,23 @@
           "name": "addButton",
           "fullPath": "LDialog:addButton",
           "signature": "(text, [cb])",
-          "description": "/// Returns a value for addButton (auto-generated).",
+          "description": "Adds a custom action button to this dialog.",
           "parameters": [
             {
               "name": "text",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Button label.",
               "optional": false
             },
             {
               "name": "cb",
-              "type": "any",
-              "description": "",
+              "type": "function",
+              "description": "Optional callback invoked when the action is activated.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -56824,8 +57136,8 @@
           "signature": "()",
           "description": "Returns the 1-based action index triggered by Enter, if any.",
           "parameters": [],
-          "returns": "integer?",
-          "returnType": "integer?",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -56853,8 +57165,8 @@
           "signature": "()",
           "description": "Returns the 1-based action index triggered by Escape, if any.",
           "parameters": [],
-          "returns": "integer?",
-          "returnType": "integer?",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -57095,6 +57407,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LDialog.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDialog"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LDialog.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LDialog"
         },
@@ -59212,6 +59553,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDockPanel"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LDockPanel.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LDockPanel"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LDockPanel.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LDockPanel"
         },
@@ -62315,6 +62685,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LFont"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LFont.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LFont"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LFont.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LFont"
         },
@@ -68824,6 +69223,35 @@
           "objectType": "LGuiTable"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LGuiTable.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGuiTable"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LGuiTable.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGuiTable"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LGuiTable.setFocusable",
           "signature": "(value)",
@@ -70185,6 +70613,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGuiWindow"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LGuiWindow.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGuiWindow"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LGuiWindow.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LGuiWindow"
         },
@@ -74269,6 +74726,35 @@
           "objectType": "LImageData"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LImageData.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LImageData.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LImageData"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LImageData.setFocusable",
           "signature": "(value)",
@@ -75763,6 +76249,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LImageWidget"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LImageWidget.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LImageWidget"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LImageWidget.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LImageWidget"
         },
@@ -78119,6 +78634,35 @@
           "objectType": "LLabel"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LLabel.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLabel"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LLabel.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLabel"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LLabel.setFocusable",
           "signature": "(value)",
@@ -80204,6 +80748,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLayout"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LLayout.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLayout"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LLayout.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LLayout"
         },
@@ -83515,6 +84088,35 @@
           "objectType": "LListBox"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LListBox.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LListBox"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LListBox.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LListBox"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LListBox.setFocusable",
           "signature": "(value)",
@@ -86801,6 +87403,35 @@
           "objectType": "LMenuBar"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LMenuBar.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMenuBar"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LMenuBar.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LMenuBar"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LMenuBar.setFocusable",
           "signature": "(value)",
@@ -88162,6 +88793,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMenuItem"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LMenuItem.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMenuItem"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LMenuItem.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LMenuItem"
         },
@@ -93895,8 +94555,8 @@
               "optional": false
             }
           ],
-          "returns": "integer?",
-          "returnType": "integer?",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LNetworkHost"
         },
@@ -94156,8 +94816,8 @@
           "signature": "()",
           "description": "Returns the current active access token.",
           "parameters": [],
-          "returns": "string?",
-          "returnType": "string?",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LNetworkRuntime"
         },
@@ -94176,7 +94836,7 @@
           "name": "authCancel",
           "fullPath": "LNetworkRuntime:authCancel",
           "signature": "()",
-          "description": "Cancels active authentication.",
+          "description": "Cancels the currently active authentication request.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -94187,7 +94847,7 @@
           "name": "matchmakeStart",
           "fullPath": "LNetworkRuntime:matchmakeStart",
           "signature": "(url, payload)",
-          "description": "Start matchmaking request.",
+          "description": "Starts a matchmaking request against the backend.",
           "parameters": [
             {
               "name": "url",
@@ -94211,7 +94871,7 @@
           "name": "matchmakeCancel",
           "fullPath": "LNetworkRuntime:matchmakeCancel",
           "signature": "(id)",
-          "description": "Cancel matchmaking request.",
+          "description": "Cancels a previously started matchmaking request.",
           "parameters": [
             {
               "name": "id",
@@ -94360,7 +95020,7 @@
           "name": "getMetrics",
           "fullPath": "LNetworkRuntime:getMetrics",
           "signature": "()",
-          "description": "Returns network runtime metrics.",
+          "description": "Returns current network runtime metrics.",
           "parameters": [],
           "returns": "table",
           "returnType": "table",
@@ -94406,6 +95066,206 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LNetworkRuntime"
+        }
+      ]
+    },
+    {
+      "name": "LNeuralEngine",
+      "description": "Lua wrapper over a heterogeneous neural engine with flat parameter packing.",
+      "methods": [
+        {
+          "name": "addDense",
+          "fullPath": "LNeuralEngine:addDense",
+          "signature": "(inputs, outputs, [activation])",
+          "description": "Appends a dense neural layer block.",
+          "parameters": [
+            {
+              "name": "inputs",
+              "type": "integer",
+              "description": "Input vector size.",
+              "optional": false
+            },
+            {
+              "name": "outputs",
+              "type": "integer",
+              "description": "Output vector size.",
+              "optional": false
+            },
+            {
+              "name": "activation",
+              "type": "string",
+              "description": "Activation name; defaults to `relu`.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNeuralEngine"
+        },
+        {
+          "name": "addConv2D",
+          "fullPath": "LNeuralEngine:addConv2D",
+          "signature": "(args)",
+          "description": "Appends a convolutional 2D block to this engine.",
+          "parameters": [
+            {
+              "name": "args",
+              "type": "table",
+              "description": "Tuple arguments: in_channels, out_channels, kernel_h, kernel_w, optional stride_h, stride_w, pad_h, pad_w.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNeuralEngine"
+        },
+        {
+          "name": "addMaxPool2D",
+          "fullPath": "LNeuralEngine:addMaxPool2D",
+          "signature": "LNeuralEngine:addMaxPool2D(kernel_h, kernel_w, [stride_h], [stride_w])",
+          "description": "Appends a non-trainable MaxPool2D block.",
+          "parameters": [
+            {
+              "name": "kernel_h",
+              "type": "integer",
+              "description": "Kernel height.",
+              "optional": false
+            },
+            {
+              "name": "kernel_w",
+              "type": "integer",
+              "description": "Kernel width.",
+              "optional": false
+            },
+            {
+              "name": "stride_h",
+              "type": "integer",
+              "description": "Vertical stride; defaults to kernel_h.",
+              "optional": true
+            },
+            {
+              "name": "stride_w",
+              "type": "integer",
+              "description": "Horizontal stride; defaults to kernel_w.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNeuralEngine"
+        },
+        {
+          "name": "addTransformerEncoder",
+          "fullPath": "LNeuralEngine:addTransformerEncoder",
+          "signature": "(d_model, heads, ff_hidden)",
+          "description": "Appends a transformer encoder block.",
+          "parameters": [
+            {
+              "name": "d_model",
+              "type": "integer",
+              "description": "Model width.",
+              "optional": false
+            },
+            {
+              "name": "heads",
+              "type": "integer",
+              "description": "Number of attention heads.",
+              "optional": false
+            },
+            {
+              "name": "ff_hidden",
+              "type": "integer",
+              "description": "Feed-forward hidden width.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LNeuralEngine"
+        },
+        {
+          "name": "blockCount",
+          "fullPath": "LNeuralEngine:blockCount",
+          "signature": "()",
+          "description": "Returns the number of blocks in this engine.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LNeuralEngine"
+        },
+        {
+          "name": "paramCount",
+          "fullPath": "LNeuralEngine:paramCount",
+          "signature": "()",
+          "description": "Returns the total trainable parameter count.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LNeuralEngine"
+        },
+        {
+          "name": "setWeights",
+          "fullPath": "LNeuralEngine:setWeights",
+          "signature": "(weights)",
+          "description": "Replaces all trainable parameters from a flat numeric array.",
+          "parameters": [
+            {
+              "name": "weights",
+              "type": "table",
+              "description": "Flat parameter array in block insertion order.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LNeuralEngine"
+        },
+        {
+          "name": "getWeights",
+          "fullPath": "LNeuralEngine:getWeights",
+          "signature": "()",
+          "description": "Returns all trainable parameters in block insertion order.",
+          "parameters": [],
+          "returns": "number[]",
+          "returnType": "number[]",
+          "isMethod": true,
+          "objectType": "LNeuralEngine"
+        },
+        {
+          "name": "type",
+          "fullPath": "LNeuralEngine:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this neural engine handle.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LNeuralEngine"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LNeuralEngine:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this neural engine handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare against `LNeuralEngine` and `Object`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LNeuralEngine"
         }
       ]
     },
@@ -95027,6 +95887,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LNinePatch"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LNinePatch.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LNinePatch"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LNinePatch.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LNinePatch"
         },
@@ -99320,6 +100209,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPanel"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LPanel.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPanel"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LPanel.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LPanel"
         },
@@ -106124,6 +107042,35 @@
           "objectType": "LProgressBar"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LProgressBar.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LProgressBar"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LProgressBar.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LProgressBar"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LProgressBar.setFocusable",
           "signature": "(value)",
@@ -109591,6 +110538,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRadioButton"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LRadioButton.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LRadioButton"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LRadioButton.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LRadioButton"
         },
@@ -113873,7 +114849,7 @@
           "name": "add",
           "fullPath": "LSceneObjectContainer:add",
           "signature": "(obj)",
-          "description": "Add an object to the container.",
+          "description": "Adds an object table to the scene container.",
           "parameters": [
             {
               "name": "obj",
@@ -114007,7 +114983,7 @@
           "name": "type",
           "fullPath": "LSceneObjectContainer:type",
           "signature": "()",
-          "description": "Get the type name of this userdata.",
+          "description": "Gets the Lua-visible type name of this userdata.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -114018,7 +114994,7 @@
           "name": "typeOf",
           "fullPath": "LSceneObjectContainer:typeOf",
           "signature": "(name)",
-          "description": "Check type by name.",
+          "description": "Checks whether this container matches a type name.",
           "parameters": [
             {
               "name": "name",
@@ -115190,6 +116166,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LScrollBar.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LScrollBar"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LScrollBar.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LScrollBar"
         },
@@ -116513,6 +117518,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LScrollPanel"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LScrollPanel.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LScrollPanel"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LScrollPanel.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LScrollPanel"
         },
@@ -117897,6 +118931,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSeparator"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LSeparator.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSeparator"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LSeparator.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LSeparator"
         },
@@ -121123,6 +122186,35 @@
           "objectType": "LSlider"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LSlider.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSlider"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LSlider.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSlider"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LSlider.setFocusable",
           "signature": "(value)",
@@ -123055,6 +124147,35 @@
           "objectType": "LSpacer"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LSpacer.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSpacer"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LSpacer.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSpacer"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LSpacer.setFocusable",
           "signature": "(value)",
@@ -124829,6 +125950,35 @@
           "objectType": "LSpinBox"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LSpinBox.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSpinBox"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LSpinBox.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSpinBox"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LSpinBox.setFocusable",
           "signature": "(value)",
@@ -126205,6 +127355,35 @@
           "objectType": "LSplitPanel"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LSplitPanel.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSplitPanel"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LSplitPanel.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSplitPanel"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LSplitPanel.setFocusable",
           "signature": "(value)",
@@ -127507,7 +128686,7 @@
           "name": "play",
           "fullPath": "LSpriteAnimator:play",
           "signature": "(name, [restart])",
-          "description": "Play or restart a named clip.",
+          "description": "Plays or restarts a named animation clip.",
           "parameters": [
             {
               "name": "name",
@@ -129435,6 +130614,35 @@
           "objectType": "LStatusBar"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LStatusBar.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LStatusBar"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LStatusBar.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LStatusBar"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LStatusBar.setFocusable",
           "signature": "(value)",
@@ -130822,6 +132030,88 @@
           "objectType": "LSteeringManager"
         },
         {
+          "name": "setEntity",
+          "fullPath": "LSteeringManager:setEntity",
+          "signature": "(name, x, y, [vx], [vy])",
+          "description": "Sets or replaces one named steering-context entity.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Entity name used by pursue, evade, and flock behaviors.",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "number",
+              "description": "Current entity X position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "Current entity Y position.",
+              "optional": false
+            },
+            {
+              "name": "vx",
+              "type": "number",
+              "description": "Current entity X velocity; defaults to 0.",
+              "optional": true
+            },
+            {
+              "name": "vy",
+              "type": "number",
+              "description": "Current entity Y velocity; defaults to 0.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSteeringManager"
+        },
+        {
+          "name": "removeEntity",
+          "fullPath": "LSteeringManager:removeEntity",
+          "signature": "(name)",
+          "description": "Removes one named steering-context entity.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Entity name to remove.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSteeringManager"
+        },
+        {
+          "name": "clearEntities",
+          "fullPath": "LSteeringManager:clearEntities",
+          "signature": "()",
+          "description": "Clears all steering-context entities.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSteeringManager"
+        },
+        {
+          "name": "entityCount",
+          "fullPath": "LSteeringManager:entityCount",
+          "signature": "()",
+          "description": "Returns the number of steering-context entities.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSteeringManager"
+        },
+        {
           "name": "type",
           "fullPath": "LSteeringManager:type",
           "signature": "()",
@@ -131557,8 +132847,8 @@
               "optional": false
             }
           ],
-          "returns": "boolean?",
-          "returnType": "boolean?",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131617,8 +132907,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131701,8 +132991,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131737,8 +133027,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131755,8 +133045,8 @@
               "optional": false
             }
           ],
-          "returns": "string?",
-          "returnType": "string?",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131773,8 +133063,8 @@
               "optional": false
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131797,8 +133087,8 @@
               "optional": true
             }
           ],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131869,8 +133159,8 @@
               "optional": false
             }
           ],
-          "returns": "LCanvas?",
-          "returnType": "LCanvas?",
+          "returns": "LCanvas",
+          "returnType": "LCanvas",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -131878,7 +133168,7 @@
           "name": "getCanvas",
           "fullPath": "LSvgImage:getCanvas",
           "signature": "(id)",
-          "description": "Alias for getCanvasKey.",
+          "description": "Returns the cached canvas handle for an element.",
           "parameters": [
             {
               "name": "id",
@@ -131887,8 +133177,8 @@
               "optional": false
             }
           ],
-          "returns": "LCanvas?",
-          "returnType": "LCanvas?",
+          "returns": "LCanvas",
+          "returnType": "LCanvas",
           "isMethod": true,
           "objectType": "LSvgImage"
         },
@@ -132204,6 +133494,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSwitch"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LSwitch.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSwitch"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LSwitch.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LSwitch"
         },
@@ -133643,6 +134962,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTabBar"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LTabBar.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTabBar"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LTabBar.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LTabBar"
         },
@@ -135835,6 +137183,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LTextInput.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTextInput"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LTextInput.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LTextInput"
         },
@@ -139086,6 +140463,35 @@
           "objectType": "LToast"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LToast.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LToast"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LToast.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LToast"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LToast.setFocusable",
           "signature": "(value)",
@@ -140483,6 +141889,35 @@
           "objectType": "LToolbar"
         },
         {
+          "name": "setTextAlign",
+          "fullPath": "LToolbar.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LToolbar"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LToolbar.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LToolbar"
+        },
+        {
           "name": "setFocusable",
           "fullPath": "LToolbar.setFocusable",
           "signature": "(value)",
@@ -141797,6 +143232,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTooltipPanel"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LTooltipPanel.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTooltipPanel"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LTooltipPanel.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LTooltipPanel"
         },
@@ -144323,6 +145787,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTreeView"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LTreeView.setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTreeView"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LTreeView.getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LTreeView"
         },
@@ -146878,6 +148371,35 @@
           ],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LUiWidget"
+        },
+        {
+          "name": "setTextAlign",
+          "fullPath": "LUiWidget:setTextAlign",
+          "signature": "(align)",
+          "description": "Sets the horizontal alignment of text inside this widget.",
+          "parameters": [
+            {
+              "name": "align",
+              "type": "string",
+              "description": "Horizontal alignment: \"left\", \"center\", or \"right\".",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LUiWidget"
+        },
+        {
+          "name": "getTextAlign",
+          "fullPath": "LUiWidget:getTextAlign",
+          "signature": "()",
+          "description": "Returns this widget's horizontal text alignment.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LUiWidget"
         },

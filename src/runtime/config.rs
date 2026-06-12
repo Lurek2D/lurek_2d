@@ -138,6 +138,11 @@ pub struct HeadlessConfig {
     /// Delta time passed to headless frame callbacks.
     pub dt: f64,
 }
+
+fn default_true() -> bool {
+    true
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Feature-toggle table for engine modules.
 pub struct ModulesConfig {
@@ -177,6 +182,9 @@ pub struct ModulesConfig {
     pub ecs: bool,
     /// Enable AI module.
     pub ai: bool,
+    /// Enable LLM-backed agent module.
+    #[serde(default = "default_true")]
+    pub agent: bool,
     /// Enable learning module.
     pub learning: bool,
     /// Enable pathfinding module.
@@ -189,6 +197,8 @@ pub struct ModulesConfig {
     #[serde(alias = "graph")]
     /// Flownet.
     pub flownet: bool,
+    /// Enable binary module.
+    pub binary: bool,
     /// Enable compute module.
     pub compute: bool,
     /// Enable minimap module.
@@ -269,6 +279,10 @@ impl ModulesConfig {
         if !self.audio && self.dsp {
             log_msg!(warn, L050_MODULE_DEP_DISABLED, "dsp requires audio");
             self.dsp = false;
+        }
+        if !self.network && self.agent {
+            log_msg!(warn, L050_MODULE_DEP_DISABLED, "agent requires network");
+            self.agent = false;
         }
         if !self.render {
             if self.minimap {
@@ -401,11 +415,13 @@ impl Default for Config {
                 save: true,
                 ecs: true,
                 ai: true,
+                agent: true,
                 learning: true,
                 pathfind: true,
                 layout: true,
                 thread: true,
                 flownet: true,
+                binary: true,
                 compute: true,
                 minimap: true,
                 mods: true,

@@ -31,7 +31,7 @@ pub use falloff::FalloffMode;
 /// Flicker config struct for animated light variation.
 pub use flicker::FlickerConfig;
 /// Core 2D light definition with position, color, and all optional properties.
-pub use light2d::Light2D;
+pub use light2d::{Light2D, Light2DAttenuationPatch, Light2DOptionsPatch};
 /// Light type discriminant for point, spot, and area variants.
 pub use light_type::LightType;
 /// Light world accumulator and normal-map hint types.

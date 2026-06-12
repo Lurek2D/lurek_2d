@@ -1,15 +1,36 @@
 -- Lurek2D Stress Test: Math Operations
 -- Performs thousands of math operations to test throughput
 
+local function sum_sin_cos_pairs(count)
+    local sum = 0
+    for i = 1, count do
+        local angle = i * 0.001
+        sum = sum + lurek.math.sin(angle) + lurek.math.cos(angle)
+    end
+    return sum
+end
+
+local function count_normalized_vectors(count)
+    local normalized = 0
+    for i = 1, count do
+        local x, y = i, i * 2
+        local len = lurek.math.sqrt(x * x + y * y)
+        if len > 0 then
+            local nx, ny = x / len, y / len
+            local check_len = lurek.math.sqrt(nx * nx + ny * ny)
+            if lurek.math.abs(check_len - 1.0) < 0.001 then
+                normalized = normalized + 1
+            end
+        end
+    end
+    return normalized
+end
+
 -- @describe math stress: trigonometry throughput
 describe("math stress: trigonometry throughput", function()
     -- @stress lurek.math.sin
     it("10000 sin/cos pairs", function()
-        local sum = 0
-        for i = 1, 10000 do
-            local angle = i * 0.001
-            sum = sum + lurek.math.sin(angle) + lurek.math.cos(angle)
-        end
+        local sum = sum_sin_cos_pairs(10000)
         expect_true(type(sum) == "number", "computed 10000 sin+cos pairs")
     end)
 
@@ -78,18 +99,7 @@ describe("math stress: vector operations", function()
 
     -- @stress lurek.math.abs
     it("10000 normalize operations", function()
-        local count = 0
-        for i = 1, 10000 do
-            local x, y = i, i * 2
-            local len = lurek.math.sqrt(x * x + y * y)
-            if len > 0 then
-                local nx, ny = x / len, y / len
-                local check_len = lurek.math.sqrt(nx * nx + ny * ny)
-                if lurek.math.abs(check_len - 1.0) < 0.001 then
-                    count = count + 1
-                end
-            end
-        end
+        local count = count_normalized_vectors(10000)
         expect_equal(10000, count, "all vectors normalized correctly")
     end)
 end)

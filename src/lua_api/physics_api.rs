@@ -153,42 +153,26 @@ fn physics_debug_config_from_lua(
     let LuaValue::Table(tbl) = config_val else {
         return cfg;
     };
-    if let Ok(v) = tbl.get::<_, LuaTable>("bodyColor") {
-        cfg.body_color = [
-            v.get::<_, f32>(1).unwrap_or(cfg.body_color[0]),
-            v.get::<_, f32>(2).unwrap_or(cfg.body_color[1]),
-            v.get::<_, f32>(3).unwrap_or(cfg.body_color[2]),
-            v.get::<_, f32>(4).unwrap_or(cfg.body_color[3]),
-        ];
-    }
-    if let Ok(v) = tbl.get::<_, LuaTable>("staticColor") {
-        cfg.static_color = [
-            v.get::<_, f32>(1).unwrap_or(cfg.static_color[0]),
-            v.get::<_, f32>(2).unwrap_or(cfg.static_color[1]),
-            v.get::<_, f32>(3).unwrap_or(cfg.static_color[2]),
-            v.get::<_, f32>(4).unwrap_or(cfg.static_color[3]),
-        ];
-    }
-    if let Ok(v) = tbl.get::<_, LuaTable>("sleepColor") {
-        cfg.sleep_color = [
-            v.get::<_, f32>(1).unwrap_or(cfg.sleep_color[0]),
-            v.get::<_, f32>(2).unwrap_or(cfg.sleep_color[1]),
-            v.get::<_, f32>(3).unwrap_or(cfg.sleep_color[2]),
-            v.get::<_, f32>(4).unwrap_or(cfg.sleep_color[3]),
-        ];
-    }
-    if let Ok(v) = tbl.get::<_, LuaTable>("sensorColor") {
-        cfg.sensor_color = [
-            v.get::<_, f32>(1).unwrap_or(cfg.sensor_color[0]),
-            v.get::<_, f32>(2).unwrap_or(cfg.sensor_color[1]),
-            v.get::<_, f32>(3).unwrap_or(cfg.sensor_color[2]),
-            v.get::<_, f32>(4).unwrap_or(cfg.sensor_color[3]),
-        ];
-    }
+    cfg.body_color = physics_debug_color(&tbl, "bodyColor", cfg.body_color);
+    cfg.static_color = physics_debug_color(&tbl, "staticColor", cfg.static_color);
+    cfg.sleep_color = physics_debug_color(&tbl, "sleepColor", cfg.sleep_color);
+    cfg.sensor_color = physics_debug_color(&tbl, "sensorColor", cfg.sensor_color);
     if let Ok(w) = tbl.get::<_, f32>("lineWidth") {
         cfg.line_width = w;
     }
     cfg
+}
+
+fn physics_debug_color(tbl: &LuaTable, field: &str, default: [f32; 4]) -> [f32; 4] {
+    let Ok(v) = tbl.get::<_, LuaTable>(field) else {
+        return default;
+    };
+    [
+        v.get::<_, f32>(1).unwrap_or(default[0]),
+        v.get::<_, f32>(2).unwrap_or(default[1]),
+        v.get::<_, f32>(3).unwrap_or(default[2]),
+        v.get::<_, f32>(4).unwrap_or(default[3]),
+    ]
 }
 
 fn new_body_from_lua_args(lua: &Lua, args: LuaMultiValue) -> LuaResult<LuaBody> {

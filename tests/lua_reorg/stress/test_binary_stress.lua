@@ -5,6 +5,34 @@ local function make_repeated_payload(chunk, count)
     return string.rep(chunk, count)
 end
 
+local function unpack_sum_via_roundtrip(count)
+    local sum = 0
+    for i = 1, count do
+        local value = lurek.binary.unpack("<I", lurek.binary.pack("<I", i))
+        sum = sum + value
+    end
+    return sum
+end
+
+local function expect_gzip_roundtrip(payload, repeats)
+    local compressed = lurek.binary.compress("gzip", payload, 6)
+    for _ = 1, repeats do
+        expect_equal(payload, lurek.binary.decompress("gzip", compressed))
+    end
+end
+
+local function decode_roundtrip_lengths()
+    local base64_input = make_repeated_payload("Base64 benchmark. ", 2778)
+    local base64_encoded = lurek.binary.encode("base64", base64_input)
+    local base64_decoded = lurek.binary.decode("base64", base64_encoded)
+
+    local hex_input = make_repeated_payload("HexData!", 1250)
+    local hex_encoded = lurek.binary.encode("hex", hex_input)
+    local hex_decoded = lurek.binary.decode("hex", hex_encoded)
+
+    return #base64_input, #base64_decoded, #hex_input, #hex_decoded
+end
+
 -- @describe binary stress: pack and unpack throughput
 describe("binary stress: pack and unpack throughput", function()
     -- @stress lurek.binary.pack
@@ -19,11 +47,7 @@ describe("binary stress: pack and unpack throughput", function()
 
     -- @stress lurek.binary.unpack
     it("unpacks 5000 packed integers without drift", function()
-        local sum = 0
-        for i = 1, 5000 do
-            local value = lurek.binary.unpack("<I", lurek.binary.pack("<I", i))
-            sum = sum + value
-        end
+        local sum = unpack_sum_via_roundtrip(5000)
         expect_equal((5000 * 5001) / 2, sum, "unpacked integers preserve values")
     end)
 end)
@@ -51,11 +75,7 @@ describe("binary stress: compression throughput", function()
     -- @stress lurek.binary.decompress
     it("decompresses repeated gzip payloads back to the original bytes", function()
         local payload = make_repeated_payload("gzip roundtrip payload ", 1500)
-        local compressed = lurek.binary.compress("gzip", payload, 6)
-
-        for _ = 1, 50 do
-            expect_equal(payload, lurek.binary.decompress("gzip", compressed))
-        end
+        expect_gzip_roundtrip(payload, 50)
     end)
 
     -- @stress lurek.binary.compressChunks
@@ -133,15 +153,9 @@ describe("binary stress: text encoding throughput", function()
 
     -- @stress lurek.binary.decode
     it("decodes base64 and hex payloads back to their original size", function()
-        local base64_input = make_repeated_payload("Base64 benchmark. ", 2778)
-        local base64_encoded = lurek.binary.encode("base64", base64_input)
-        local base64_decoded = lurek.binary.decode("base64", base64_encoded)
-        expect_equal(#base64_input, #base64_decoded, "base64 roundtrip preserves length")
-
-        local hex_input = make_repeated_payload("HexData!", 1250)
-        local hex_encoded = lurek.binary.encode("hex", hex_input)
-        local hex_decoded = lurek.binary.decode("hex", hex_encoded)
-        expect_equal(#hex_input, #hex_decoded, "hex roundtrip preserves length")
+        local base64_input_len, base64_decoded_len, hex_input_len, hex_decoded_len = decode_roundtrip_lengths()
+        expect_equal(base64_input_len, base64_decoded_len, "base64 roundtrip preserves length")
+        expect_equal(hex_input_len, hex_decoded_len, "hex roundtrip preserves length")
     end)
 end)
 test_summary()

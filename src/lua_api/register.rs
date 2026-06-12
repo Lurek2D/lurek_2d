@@ -62,7 +62,6 @@ macro_rules! gated {
 /// and do NOT appear as separate entries here.
 static MODULES: &[ModuleEntry] = &[
     // ——— Always-on core modules —————————————————————————————————————————————————
-    always!(agent_api),
     always!(asset_api),
     always!(event_api),
     always!(sprite_api),
@@ -71,7 +70,6 @@ static MODULES: &[ModuleEntry] = &[
     always!(log_api),
     always!(engine_api),
     always!(repl_api),
-    always!(binary_api),
     always!(mods_api),
     always!(serialize_api),
     always!(dataframe_api),
@@ -85,6 +83,7 @@ static MODULES: &[ModuleEntry] = &[
     always!(cinematic_api),
     always!(patterns_api),
     // ——— Config-gated modules ————————————————————————————————————————————————————
+    gated!(agent_api, agent),
     // audio_api registers lurek.audio.* including lurek.audio.manager internally.
     gated!(audio_api, audio),
     // camera_api registers lurek.camera.* including lurek.camera.follow internally.
@@ -100,6 +99,7 @@ static MODULES: &[ModuleEntry] = &[
     gated!(ecs_api, ecs),
     gated!(window_api, window),
     gated!(scene_api, scene),
+    gated!(binary_api, binary),
     gated!(compute_api, compute),
     gated!(raycaster_api, raycaster),
     #[cfg(feature = "spine")]

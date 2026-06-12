@@ -120,17 +120,37 @@ fn parse_beat_clock_opts(opts: Option<LuaTable>) -> LuaResult<BeatClockOpts> {
     Ok(parsed)
 }
 
+fn parse_beat_clock_bpm(value: Option<LuaValue>) -> LuaResult<f64> {
+    match value {
+        Some(LuaValue::Integer(v)) => Ok(v as f64),
+        Some(LuaValue::Number(v)) => Ok(v),
+        _ => Err(LuaError::RuntimeError(
+            "newBeatClock: bpm must be a number".into(),
+        )),
+    }
+}
+
+fn parse_beat_clock_third_arg(value: Option<LuaValue>) -> LuaResult<BeatClockOpts> {
+    match value {
+        Some(LuaValue::Table(t)) => parse_beat_clock_opts(Some(t)),
+        None => Ok(BeatClockOpts::default()),
+        _ => Err(LuaError::RuntimeError(
+            "newBeatClock: third argument must be an options table".into(),
+        )),
+    }
+}
+
+fn parse_beat_clock_opts_arg(table: LuaTable, third: Option<LuaValue>) -> LuaResult<BeatClockOpts> {
+    let parsed = parse_beat_clock_opts(Some(table))?;
+    match third {
+        Some(LuaValue::Table(t3)) => parse_beat_clock_opts(Some(t3)),
+        _ => Ok(parsed),
+    }
+}
+
 fn parse_new_beat_clock_args(args: LuaMultiValue) -> LuaResult<(f64, u32, BeatClockOpts)> {
     let mut it = args.into_iter();
-    let bpm = match it.next() {
-        Some(LuaValue::Integer(v)) => v as f64,
-        Some(LuaValue::Number(v)) => v,
-        _ => {
-            return Err(LuaError::RuntimeError(
-                "newBeatClock: bpm must be a number".into(),
-            ))
-        }
-    };
+    let bpm = parse_beat_clock_bpm(it.next())?;
 
     let second = it.next();
     let third = it.next();
@@ -139,36 +159,13 @@ fn parse_new_beat_clock_args(args: LuaMultiValue) -> LuaResult<(f64, u32, BeatCl
     let opts = match second {
         Some(LuaValue::Integer(v)) => {
             beats_per_bar = (v as u32).max(1);
-            match third {
-                Some(LuaValue::Table(t)) => parse_beat_clock_opts(Some(t))?,
-                None => BeatClockOpts::default(),
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "newBeatClock: third argument must be an options table".into(),
-                    ))
-                }
-            }
+            parse_beat_clock_third_arg(third)?
         }
         Some(LuaValue::Number(v)) => {
             beats_per_bar = (v as u32).max(1);
-            match third {
-                Some(LuaValue::Table(t)) => parse_beat_clock_opts(Some(t))?,
-                None => BeatClockOpts::default(),
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "newBeatClock: third argument must be an options table".into(),
-                    ))
-                }
-            }
+            parse_beat_clock_third_arg(third)?
         }
-        Some(LuaValue::Table(t)) => {
-            let mut parsed = parse_beat_clock_opts(Some(t))?;
-            if let Some(LuaValue::Table(t3)) = third {
-                let override_opts = parse_beat_clock_opts(Some(t3))?;
-                parsed = override_opts;
-            }
-            parsed
-        }
+        Some(LuaValue::Table(t)) => parse_beat_clock_opts_arg(t, third)?,
         None => BeatClockOpts::default(),
         _ => {
             return Err(LuaError::RuntimeError(
@@ -2586,7 +2583,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     //     })?,
     // )?;
     // -- manager.pauseAll() --
-    /// Pauses all active audio sources.
+    /// Pauses every currently active audio source.
     let s = state.clone();
     mgr.set(
         "pauseAll",
@@ -2596,7 +2593,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     // -- manager.resumeAll() --
-    /// Resumes all paused audio sources.
+    /// Resumes every currently paused audio source.
     let s = state.clone();
     mgr.set(
         "resumeAll",

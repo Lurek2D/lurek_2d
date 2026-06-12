@@ -46,6 +46,10 @@ enum Step {
     Limit(usize),
 }
 /// Hold deferred query source frame and queued steps.
+///
+/// # Fields
+/// - `source`: Source dataframe snapshot used when collecting.
+/// - `steps`: Ordered deferred operations applied during collection.
 pub struct LazyQuery {
     /// Store source frame cloned at lazy creation.
     source: DataFrame,

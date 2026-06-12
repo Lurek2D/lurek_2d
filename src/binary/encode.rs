@@ -5,6 +5,10 @@
 use base64::Engine;
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Select textual encoding algorithm.
+///
+/// # Variants
+/// - `Base64`: Standard base64 alphabet.
+/// - `Hex`: Lowercase hexadecimal text.
 pub enum EncodeFormat {
     /// Encode using standard base64 alphabet.
     Base64,

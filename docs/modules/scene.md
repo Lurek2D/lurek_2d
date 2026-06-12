@@ -2156,7 +2156,7 @@ end
 
 #### `LSceneObjectContainer:add`
 
-Add an object to the container.
+Adds an object table to the scene container.
 
 ```lua
 LSceneObjectContainer:add(obj)
@@ -2367,7 +2367,7 @@ end
 
 #### `LSceneObjectContainer:type`
 
-Get the type name of this userdata.
+Gets the Lua-visible type name of this userdata.
 
 ```lua
 LSceneObjectContainer:type()
@@ -2392,7 +2392,7 @@ end
 
 #### `LSceneObjectContainer:typeOf`
 
-Check type by name.
+Checks whether this container matches a type name.
 
 ```lua
 LSceneObjectContainer:typeOf(name)

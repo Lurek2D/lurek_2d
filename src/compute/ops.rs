@@ -25,21 +25,30 @@ fn get_par_threshold_config() -> &'static Arc<Mutex<usize>> {
 }
 /// Read current parallel threshold and return minimum size for parallel dispatch.
 pub fn get_par_threshold() -> usize {
-    *get_par_threshold_config().lock().unwrap()
+    *get_par_threshold_config()
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner())
 }
 /// Set parallel threshold and return previous threshold value.
 pub fn set_par_threshold(threshold: usize) -> usize {
-    let mut config = get_par_threshold_config().lock().unwrap();
+    let mut config = get_par_threshold_config()
+        .lock()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
     let prev = *config;
     *config = threshold.max(1);
     prev
 }
-/// Dispatch element-wise closure and return collected values from serial or parallel path.
-fn dispatch_parallel(size: usize, op: impl Fn(usize) -> f64 + Sync + Send) -> Vec<f64> {
+/// Fill output elements from serial or parallel element-wise dispatch.
+fn fill_dispatched(out: &mut NdArray, size: usize, op: impl Fn(usize) -> f64 + Sync + Send) {
     if size > get_par_threshold() {
-        (0..size).into_par_iter().map(op).collect()
+        let values: Vec<f64> = (0..size).into_par_iter().map(op).collect();
+        for (i, value) in values.into_iter().enumerate() {
+            out.set_f64(i, value);
+        }
     } else {
-        (0..size).map(op).collect()
+        for i in 0..size {
+            out.set_f64(i, op(i));
+        }
     }
 }
 /// Validate equal shape and dtype and return success or mismatch error.
@@ -75,10 +84,7 @@ fn elementwise_binary(
     }
     if a.shape() == b.shape() {
         let mut out = NdArray::zeros(a.shape(), a.dtype())?;
-        let vals = dispatch_parallel(a.size(), |i| op(a.get_f64(i), b.get_f64(i)));
-        for (i, v) in vals.into_iter().enumerate() {
-            out.set_f64(i, v);
-        }
+        fill_dispatched(&mut out, a.size(), |i| op(a.get_f64(i), b.get_f64(i)));
         return Ok(out);
     }
     if a.ndim() == 2 && b.ndim() == 1 && a.shape()[1] == b.shape()[0] {
@@ -116,19 +122,13 @@ fn elementwise_binary(
 /// Apply unary operation element-wise and return computed output array.
 fn elementwise_unary(a: &NdArray, op: fn(f64) -> f64) -> Result<NdArray, String> {
     let mut out = NdArray::zeros(a.shape(), a.dtype())?;
-    let vals = dispatch_parallel(a.size(), |i| op(a.get_f64(i)));
-    for (i, v) in vals.into_iter().enumerate() {
-        out.set_f64(i, v);
-    }
+    fill_dispatched(&mut out, a.size(), |i| op(a.get_f64(i)));
     Ok(out)
 }
 /// Apply scalar binary operation element-wise and return computed output array.
 fn elementwise_scalar(a: &NdArray, s: f64, op: fn(f64, f64) -> f64) -> Result<NdArray, String> {
     let mut out = NdArray::zeros(a.shape(), a.dtype())?;
-    let vals = dispatch_parallel(a.size(), |i| op(a.get_f64(i), s));
-    for (i, v) in vals.into_iter().enumerate() {
-        out.set_f64(i, v);
-    }
+    fill_dispatched(&mut out, a.size(), |i| op(a.get_f64(i), s));
     Ok(out)
 }
 /// Apply binary operation in place and return success or broadcast mismatch error.
@@ -580,8 +580,10 @@ pub fn sum_axis(a: &NdArray, axis: usize) -> Result<NdArray, String> {
                 out_dim += 1;
             }
         }
-        let cur = out.get_f64(out_flat);
-        out.set_f64(out_flat, cur + a.get_f64(a.flat_index(indices).unwrap()));
+        if let Ok(src_flat) = a.flat_index(indices) {
+            let cur = out.get_f64(out_flat);
+            out.set_f64(out_flat, cur + a.get_f64(src_flat));
+        }
     });
     Ok(out)
 }
@@ -613,9 +615,11 @@ pub fn min_axis(a: &NdArray, axis: usize) -> Result<NdArray, String> {
                 out_dim += 1;
             }
         }
-        let val = a.get_f64(a.flat_index(indices).unwrap());
-        if val < out.get_f64(out_flat) {
-            out.set_f64(out_flat, val);
+        if let Ok(src_flat) = a.flat_index(indices) {
+            let val = a.get_f64(src_flat);
+            if val < out.get_f64(out_flat) {
+                out.set_f64(out_flat, val);
+            }
         }
     });
     Ok(out)
@@ -638,9 +642,11 @@ pub fn max_axis(a: &NdArray, axis: usize) -> Result<NdArray, String> {
                 out_dim += 1;
             }
         }
-        let val = a.get_f64(a.flat_index(indices).unwrap());
-        if val > out.get_f64(out_flat) {
-            out.set_f64(out_flat, val);
+        if let Ok(src_flat) = a.flat_index(indices) {
+            let val = a.get_f64(src_flat);
+            if val > out.get_f64(out_flat) {
+                out.set_f64(out_flat, val);
+            }
         }
     });
     Ok(out)
@@ -677,8 +683,8 @@ pub fn transpose_2d(a: &NdArray) -> Result<NdArray, String> {
     let mut out = NdArray::zeros(&[cols, rows], a.dtype())?;
     for r in 0..rows {
         for c in 0..cols {
-            let src = a.flat_index(&[r, c]).unwrap();
-            let dst = out.flat_index(&[c, r]).unwrap();
+            let src = a.flat_index(&[r, c])?;
+            let dst = out.flat_index(&[c, r])?;
             out.set_f64(dst, a.get_f64(src));
         }
     }

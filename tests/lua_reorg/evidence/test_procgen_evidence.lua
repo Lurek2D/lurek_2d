@@ -25,18 +25,30 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function draw_outline(img, x, y, w, h, r, g, b, a)
+    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
+end
+
 local function save_binary_map_png(data, w, h, path)
-    local img = lurek.image.newImageData(w, h)
+    local scale = 4
+    local img = lurek.image.newImageData(w * scale, h * scale)
     for y = 0, h - 1 do
         for x = 0, w - 1 do
             local v = data[y * w + x + 1] or 0
+            local r, g, b
             if v == 1 then
-                img:setPixel(x, y, 24, 24, 26, 255)
+                r, g, b = 24, 24, 26
             else
-                img:setPixel(x, y, 205, 205, 198, 255)
+                r, g, b = 205, 205, 198
             end
+            img:drawRect(x * scale, y * scale, scale, scale, r, g, b, 255)
+            img:setPixel(x * scale, y * scale, clamp255(r - 18), clamp255(g - 18), clamp255(b - 18), 255)
         end
     end
+    draw_outline(img, 0, 0, w * scale, h * scale, 232, 236, 244, 255)
     save_png(img, path)
 end
 
@@ -229,13 +241,19 @@ describe("Evidence: lurek.procgen visual and sampled outputs", function()
     -- @evidence lurek.procgen.lsystemSegments
     -- @evidence lurek.procgen.generateNames
     it("PNG: WFC tiles + L-system segments + generated names", function()
-        local W, H = 320, 220
+        local W, H = 420, 260
         local img = lurek.image.newImageData(W, H)
         img:drawRect(0, 0, W, H, 16, 18, 24, 255)
+        img:drawRect(12, 12, 206, 182, 24, 28, 36, 255)
+        img:drawRect(234, 12, 174, 128, 24, 28, 36, 255)
+        img:drawRect(234, 152, 174, 96, 24, 28, 36, 255)
+        draw_outline(img, 12, 12, 206, 182, 232, 236, 244, 255)
+        draw_outline(img, 234, 12, 174, 128, 232, 236, 244, 255)
+        draw_outline(img, 234, 152, 174, 96, 232, 236, 244, 255)
 
         local grid = lurek.procgen.wfcGenerate({
-            width = 20,
-            height = 14,
+            width = 26,
+            height = 20,
             seed = 12,
             max_attempts = 4,
             tiles = {
@@ -254,29 +272,57 @@ describe("Evidence: lurek.procgen visual and sampled outputs", function()
             for x = 0, grid.width - 1 do
                 local idx = y * grid.width + x + 1
                 local t = grid.cells[idx] or 0
+                local px = 20 + x * 7
+                local py = 20 + y * 7
                 if t == 0 then
-                    img:drawRect(8 + x * 6, 8 + y * 6, 6, 6, 80, 95, 130, 255)
+                    img:drawRect(px, py, 7, 7, 80, 95, 130, 255)
                 elseif t == 1 then
-                    img:drawRect(8 + x * 6, 8 + y * 6, 6, 6, 110, 160, 120, 255)
+                    img:drawRect(px, py, 7, 7, 110, 160, 120, 255)
                 else
-                    img:drawRect(8 + x * 6, 8 + y * 6, 6, 6, 180, 140, 100, 255)
+                    img:drawRect(px, py, 7, 7, 180, 140, 100, 255)
                 end
             end
         end
 
         local segs = lurek.procgen.lsystemSegments(
-            { axiom = "F+F+F+F", rules = {}, iterations = 0 },
-            90,
-            8.0
+            {
+                axiom = "F",
+                iterations = 4,
+                rules = { F = "FF+[+F-F-F]-[-F+F+F]" },
+            },
+            25,
+            5.0
         )
+        local min_x, min_y = math.huge, math.huge
+        local max_x, max_y = -math.huge, -math.huge
         for _, s in ipairs(segs) do
-            img:drawLine(220 + s.x1, 40 + s.y1, 220 + s.x2, 40 + s.y2, 240, 230, 160, 255)
+            min_x = math.min(min_x, s.x1, s.x2)
+            min_y = math.min(min_y, s.y1, s.y2)
+            max_x = math.max(max_x, s.x1, s.x2)
+            max_y = math.max(max_y, s.y1, s.y2)
+        end
+        local span_x = math.max(1, max_x - min_x)
+        local span_y = math.max(1, max_y - min_y)
+        local scale = math.min(132 / span_x, 92 / span_y)
+        for _, s in ipairs(segs) do
+            local x1 = 248 + math.floor((s.x1 - min_x) * scale + 0.5)
+            local y1 = 128 - math.floor((s.y1 - min_y) * scale + 0.5)
+            local x2 = 248 + math.floor((s.x2 - min_x) * scale + 0.5)
+            local y2 = 128 - math.floor((s.y2 - min_y) * scale + 0.5)
+            img:drawLine(x1, y1, x2, y2, 240, 230, 160, 255)
         end
 
         local names = lurek.procgen.generateNames({ "Aldor", "Brenna", "Caelis", "Davor" }, 4, 4, 9, 99)
         for i, n in ipairs(names) do
-            local c = clamp255(70 + i * 40)
-            img:drawRect(210, 140 + (i - 1) * 16, math.min(100, #n * 8), 10, c, 200, 240, 255)
+            local y = 166 + (i - 1) * 18
+            local c = clamp255(80 + i * 34)
+            img:drawRect(248, y, 132, 12, 36, 40, 52, 255)
+            for j = 1, #n do
+                local ch = string.byte(n, j) or 65
+                local h = 4 + (ch % 7)
+                local x = 252 + (j - 1) * 12
+                img:drawRect(x, y + 6 - h, 8, h, c, 200, 240, 255)
+            end
         end
 
         save_png(img, OUT .. "procgen_wfc_lsystem_names.png")
@@ -427,6 +473,79 @@ describe("Evidence: lurek.procgen sampled data exports", function()
 
         local path = OUT .. "procgen_noise_heightmap_colored.png"
         save_png(img, path)
+    end)
+
+    -- @evidence lurek.image.savePNG
+    it("PNG: procgen contact sheet", function()
+        local files = {
+            "procgen_cellular_flood.png",
+            "procgen_poisson_voronoi.png",
+            "procgen_height_worldgraph.png",
+            "procgen_wfc_lsystem_names.png",
+        }
+        local canvas = lurek.image.newImageData(620, 452)
+        canvas:fill(12, 14, 20, 255)
+        local positions = {
+            { 16, 16 }, { 318, 16 }, { 16, 234 }, { 318, 234 },
+        }
+        for i, name in ipairs(files) do
+            local src = lurek.image.newImageData(OUT .. name)
+            local thumb = src:resize(286, 202, "bilinear")
+            local x, y = positions[i][1], positions[i][2]
+            canvas:paste(thumb, x, y)
+            draw_outline(canvas, x, y, 286, 202, 232, 236, 244, 255)
+        end
+        save_png(canvas, OUT .. "procgen_contact_sheet.png")
+    end)
+
+    -- @evidence lurek.procgen.lsystem
+    -- @evidence lurek.procgen.generateName
+    -- @evidence lurek.procgen.biomeColor
+    -- @evidence lurek.procgen.newBiomeClassifier
+    -- @evidence lurek.procgen.bspDungeonWithPrefabs
+    -- @evidence lurek.procgen.roomsDungeonWithPrefabs
+    -- @evidence lurek.procgen.heightmapFromCellular
+    -- @evidence lurek.procgen.noiseMapParallelSeeded
+    -- @evidence lurek.procgen.fbm
+    -- @evidence lurek.procgen.newCellular
+    -- @evidence lurek.procgen.newNoiseGenerator
+    -- @evidence lurek.procgen.perlin2d
+    -- @evidence lurek.procgen.perlin3d
+    -- @evidence lurek.procgen.perlin4d
+    -- @evidence lurek.procgen.simplexNoise
+    it("TXT: procgen extended API trace", function()
+        local lsys = lurek.procgen.lsystem({ axiom = "F", rules = { F = "F+F-F" }, iterations = 2 })
+        local name = lurek.procgen.generateName({ "Kara", "Rune", "Zenith" }, 3, 8, 7)
+        local biome = lurek.procgen.newBiomeClassifier()
+        local br, bg, bb = lurek.procgen.biomeColor("forest")
+        local prefabs = {
+            { name = "altar", width = 3, height = 3 },
+            { name = "vault", width = 4, height = 4 },
+        }
+        local bsp = lurek.procgen.bspDungeonWithPrefabs({ width = 24, height = 18, seed = 4 }, prefabs)
+        local rooms = lurek.procgen.roomsDungeonWithPrefabs({ width = 24, height = 18, seed = 5 }, prefabs)
+        local cell = lurek.procgen.newCellular(16, 16, { fill = 0.45, seed = 11 })
+        local cell_map = lurek.procgen.cellularAutomata(16, 16, { fill = 0.45, seed = 11 })
+        local hm = lurek.procgen.heightmapFromCellular(16, 16, cell_map)
+        local noise_seeded = lurek.procgen.noiseMapParallelSeeded(16, 16, { seed = 21, scale_x = 0.08, scale_y = 0.08 })
+        local noise_gen = lurek.procgen.newNoiseGenerator(9)
+        local lines = {
+            "lsystem_len=" .. tostring(#lsys),
+            "name=" .. tostring(name),
+            "biome_classifier=" .. tostring(biome ~= nil),
+            string.format("forest_color=%.3f,%.3f,%.3f", br or 0, bg or 0, bb or 0),
+            "bsp_prefab_rooms=" .. tostring(#(bsp.rooms or {})),
+            "rooms_prefab_width=" .. tostring(rooms.width or 0),
+            "heightmap_from_cellular=" .. tostring(hm ~= nil),
+            "noise_seeded_len=" .. tostring(#noise_seeded),
+            "fbm=" .. tostring(lurek.procgen.fbm(0.25, 0.5, 9, 4, 2.0, 0.5)),
+            "perlin2d=" .. tostring(lurek.procgen.perlin2d(0.1, 0.2, 9)),
+            "perlin3d=" .. tostring(lurek.procgen.perlin3d(0.1, 0.2, 0.3, 11)),
+            "perlin4d=" .. tostring(lurek.procgen.perlin4d(0.1, 0.2, 0.3, 0.4, 17)),
+            "simplex_noise=" .. tostring(lurek.procgen.simplexNoise(0.15, 0.35)),
+            "noise_generator=" .. tostring(noise_gen ~= nil),
+        }
+        write_text(OUT .. "procgen_extended_api_trace.txt", table.concat(lines, "\n") .. "\n")
     end)
 end)
 test_summary()

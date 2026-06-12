@@ -2557,7 +2557,7 @@ end
 
 #### `LCameraWalker:getCamera`
 
-Returns the associated camera.
+Returns the camera associated with this walker.
 
 ```lua
 LCameraWalker:getCamera()

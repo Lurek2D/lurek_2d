@@ -18,6 +18,16 @@ local function save_png(img, name)
     expect_evidence_created(path)
 end
 
+local function write_text(name, text)
+    local path = OUT .. name
+    if write_file then
+        write_file(path, text)
+    else
+        lurek.filesystem.write(path, text)
+    end
+    expect_evidence_created(path)
+end
+
 -- Helper: draw a 1px outline rectangle using native lines
 local function draw_rect_line_native(img, x, y, w, h, r, g, b, a)
     a = a or 255
@@ -26,6 +36,21 @@ local function draw_rect_line_native(img, x, y, w, h, r, g, b, a)
     img:drawLine(x1, y, x1, y1, r, g, b, a)
     img:drawLine(x1, y1, x, y1, r, g, b, a)
     img:drawLine(x, y1, x, y, r, g, b, a)
+end
+
+local function draw_arrow(img, x1, y1, x2, y2, r, g, b)
+    img:drawLine(x1, y1, x2, y2, r, g, b, 255)
+    local dx = x2 - x1
+    local dy = y2 - y1
+    local len = math.max(1, math.sqrt(dx * dx + dy * dy))
+    local ux = dx / len
+    local uy = dy / len
+    img:drawLine(x2, y2, x2 - math.floor((ux * 10 + uy * 5) + 0.5), y2 - math.floor((uy * 10 - ux * 5) + 0.5), r, g, b, 255)
+    img:drawLine(x2, y2, x2 - math.floor((ux * 10 - uy * 5) + 0.5), y2 - math.floor((uy * 10 + ux * 5) + 0.5), r, g, b, 255)
+end
+
+local function minimal_shader_code()
+    return "@fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); }"
 end
 
 -- @describe Evidence: lurek.render drawing API + PNG output
@@ -133,18 +158,32 @@ describe("Evidence: Canvas lifecycle + PNG visualization", function()
 
     -- @evidence lurek.render.newCanvas
     it("PNG: canvas lifecycle state diagram (created/active/released)", function()
-        local img = lurek.image.newImageData(128, 64)
-        img:fill(30, 30, 40, 255)
+        local img = lurek.image.newImageData(320, 160)
+        img:fill(24, 26, 34, 255)
+        img:drawRect(0, 112, 320, 48, 18, 20, 28, 255)
 
         local c = lurek.render.newCanvas(64, 64)
-        -- Created (green)
-        img:drawRect(4, 4, 36, 56, 0, 200, 0, 255)
-        -- Active (blue)
+        local created_w, created_h = c:getDimensions()
+        img:drawRect(18, 22, 78, 92, 32, 38, 52, 255)
+        img:drawRect(30, 44, created_w, created_h, 54, 196, 90, 255)
+        draw_rect_line_native(img, 30, 44, created_w, created_h, 236, 240, 246, 255)
+
         local _ = c:getWidth()
-        img:drawRect(46, 4, 36, 56, 0, 0, 200, 255)
-        -- Released (red)
+        img:drawRect(122, 22, 78, 92, 32, 38, 52, 255)
+        img:drawRect(134, 44, created_w, created_h, 74, 124, 255, 255)
+        img:drawLine(134, 44, 197, 107, 216, 234, 255, 255)
+        img:drawLine(134, 107, 197, 44, 216, 234, 255, 255)
+        draw_rect_line_native(img, 134, 44, created_w, created_h, 236, 240, 246, 255)
+
         c:release()
-        img:drawRect(88, 4, 36, 56, 200, 0, 0, 255)
+        img:drawRect(226, 22, 78, 92, 32, 38, 52, 255)
+        img:drawRect(238, 44, created_w, created_h, 224, 78, 78, 255)
+        img:drawLine(238, 44, 301, 107, 255, 224, 224, 255)
+        img:drawLine(238, 107, 301, 44, 255, 224, 224, 255)
+        draw_rect_line_native(img, 238, 44, created_w, created_h, 236, 240, 246, 255)
+
+        draw_arrow(img, 98, 76, 120, 76, 246, 214, 122)
+        draw_arrow(img, 202, 76, 224, 76, 246, 214, 122)
 
         save_png(img, "render_canvas_lifecycle.png")
     end)
@@ -356,6 +395,139 @@ describe("Evidence: lurek.render shape and state API", function()
         lurek.render.setColorMask(true, true, true, true)
         capture_png("render_color_mask.png")
     end)
+
+    -- @evidence lurek.render.setBackgroundColor
+    -- @evidence lurek.render.getBackgroundColor
+    -- @evidence lurek.render.setPointSize
+    -- @evidence lurek.render.getPointSize
+    -- @evidence lurek.render.print
+    -- @evidence lurek.render.printf
+    -- @evidence lurek.render.printRich
+    -- @evidence lurek.render.points
+    -- @evidence lurek.render.drawCubicBezier
+    -- @evidence lurek.render.drawQuadBezier
+    -- @evidence lurek.render.drawGradientRect
+    -- @evidence lurek.render.drawColoredPolygon
+    -- @evidence lurek.render.drawHexTile
+    -- @evidence lurek.render.drawIsoCubeTile
+    -- @evidence lurek.render.drawBevelRect
+    it("PNG: text and advanced shape gallery", function()
+        lurek.render.setBackgroundColor(0.06, 0.07, 0.10, 1.0)
+        local br, bg, bb, _ = lurek.render.getBackgroundColor()
+        lurek.render.clear(br, bg, bb)
+
+        lurek.render.setColor(1.0, 1.0, 1.0, 1.0)
+        lurek.render.print("Render typography", 18, 18)
+        lurek.render.printf("Centered labels and vector primitives", 18, 42, 360, "center")
+        lurek.render.printRich({
+            { text = "Bezier ", color = { 1.0, 0.75, 0.35, 1.0 } },
+            { text = "Gradient ", color = { 0.35, 0.85, 1.0, 1.0 } },
+            { text = "Polygon", color = { 0.45, 1.0, 0.55, 1.0 } },
+        }, 18, 70)
+
+        lurek.render.drawGradientRect(18, 100, 140, 36, { 0.92, 0.28, 0.32, 1.0 }, { 0.25, 0.58, 0.96, 1.0 }, "horizontal")
+        lurek.render.drawBevelRect(176, 100, 92, 36, 4, "raised")
+
+        lurek.render.setColor(0.96, 0.72, 0.30, 1.0)
+        lurek.render.drawCubicBezier(18, 180, 72, 132, 138, 228, 196, 178, 24)
+        lurek.render.setColor(0.40, 0.82, 0.98, 1.0)
+        lurek.render.drawQuadBezier(210, 178, 262, 126, 326, 182, 18)
+
+        lurek.render.setColor(0.95, 0.52, 0.45, 1.0)
+        lurek.render.drawHexTile(88, 256, 32, "pointyTop", "fill")
+        lurek.render.drawIsoCubeTile(206, 250, 34, 18, {
+            depth = 18,
+            topColor = { 0.75, 0.88, 1.0, 1.0 },
+            leftColor = { 0.42, 0.60, 0.84, 1.0 },
+            rightColor = { 0.28, 0.42, 0.66, 1.0 },
+        })
+
+        local vertices = {
+            286, 222,
+            338, 206,
+            366, 246,
+            324, 286,
+            274, 264,
+        }
+        local colors = {
+            { 0.98, 0.38, 0.36, 1.0 },
+            { 0.98, 0.84, 0.32, 1.0 },
+            { 0.34, 0.92, 0.52, 1.0 },
+            { 0.28, 0.72, 1.0, 1.0 },
+            { 0.78, 0.46, 0.98, 1.0 },
+        }
+        lurek.render.drawColoredPolygon(vertices, colors, "fill")
+
+        lurek.render.setPointSize(5)
+        expect_near(5, lurek.render.getPointSize(), 0.001)
+        lurek.render.setColor(1.0, 1.0, 1.0, 1.0)
+        lurek.render.points({
+            { 34, 314 }, { 52, 310 }, { 70, 318 }, { 88, 312 }, { 106, 320 },
+            { 124, 314 }, { 142, 322 }, { 160, 316 }, { 178, 324 }, { 196, 318 },
+        })
+        lurek.render.setPointSize(1)
+
+        capture_png("render_text_advanced_shapes_gallery.png")
+    end)
+end)
+
+-- @describe Evidence: lurek.render state and resource trace
+describe("Evidence: lurek.render state and resource trace", function()
+    before_each(function()
+        ensure_evidence_dir("render")
+    end)
+
+    -- @evidence lurek.render.newCanvas
+    -- @evidence lurek.render.setCanvas
+    -- @evidence lurek.render.resetCanvas
+    -- @evidence lurek.render.getCanvas
+    -- @evidence lurek.render.getCanvasSize
+    -- @evidence lurek.render.newShader
+    -- @evidence lurek.render.setShader
+    -- @evidence lurek.render.getShader
+    -- @evidence lurek.render.newLayer
+    -- @evidence lurek.render.setLayer
+    -- @evidence lurek.render.currentLayer
+    -- @evidence lurek.render.pushLayer
+    -- @evidence lurek.render.popLayer
+    -- @evidence lurek.render.beginSortGroup
+    -- @evidence lurek.render.pushSortKey
+    -- @evidence lurek.render.flushSortGroup
+    it("TXT: canvas, shader, layer, and sort-group trace", function()
+        local lines = {}
+
+        local canvas = lurek.render.newCanvas(96, 64)
+        lurek.render.setCanvas(canvas)
+        local active_canvas = lurek.render.getCanvas()
+        local cw, ch = lurek.render.getCanvasSize(canvas)
+        lines[#lines + 1] = "canvas_active=" .. tostring(active_canvas ~= nil)
+        lines[#lines + 1] = string.format("canvas_size=%dx%d", cw, ch)
+        expect_equal(96, cw)
+        expect_equal(64, ch)
+        expect_no_error(function()
+            lurek.render.resetCanvas(canvas)
+        end)
+        lurek.render.setCanvas(nil)
+
+        local shader = lurek.render.newShader(minimal_shader_code())
+        lurek.render.setShader(shader)
+        lines[#lines + 1] = "shader_active=" .. tostring(lurek.render.getShader() ~= nil)
+        lurek.render.setShader(nil)
+        lines[#lines + 1] = "shader_cleared=" .. tostring(lurek.render.getShader() == nil)
+
+        local layer_name = "render_evidence_trace_layer"
+        pcall(lurek.render.newLayer, layer_name, 11)
+        lurek.render.setLayer(layer_name)
+        lines[#lines + 1] = "current_layer=" .. tostring(lurek.render.currentLayer())
+        lurek.render.pushLayer(801, 0.65, "alpha")
+        lurek.render.popLayer(801)
+        lurek.render.beginSortGroup(901)
+        lurek.render.pushSortKey(5)
+        lurek.render.flushSortGroup(901)
+        lurek.render.setLayer("default")
+
+        write_text("render_state_resource_trace.txt", table.concat(lines, "\n") .. "\n")
+    end)
 end)
 
 -- @describe evidence: render summary dashboard
@@ -378,11 +550,44 @@ describe("evidence: render summary dashboard", function()
         end
 
         img:drawRect(16, 16, 88, 48, 180, 70, 70, 255)
+        draw_rect_line_native(img, 16, 16, 88, 48, 236, 240, 246, 255)
         img:drawCircle(160, 42, 22, 70, 170, 230, 255)
         img:drawLine(224, 16, 300, 64, 255, 230, 80, 255)
         img:drawRect(16, 96, 288, 64, 40, 45, 60, 255)
+        draw_rect_line_native(img, 16, 96, 288, 64, 236, 240, 246, 255)
+        img:drawRect(30, 110, 72, 36, 62, 98, 220, 255)
+        img:drawCircle(146, 128, 18, 232, 128, 84, 255)
+        img:drawLine(204, 148, 282, 110, 132, 224, 164, 255)
 
         save_png(img, "render_summary_dashboard.png")
+    end)
+
+    -- @evidence lurek.image.savePNG
+    it("writes render_contact_sheet.png", function()
+        local files = {
+            "graphic_primitives.png",
+            "render_canvas_lifecycle.png",
+            "render_summary_dashboard.png",
+            "render_draw_layer_management.png",
+        }
+        local thumbs = {}
+        for i, name in ipairs(files) do
+            local src = lurek.image.newImageData(OUT .. name)
+            thumbs[i] = src:resize(248, 140, "bilinear")
+        end
+
+        local canvas = lurek.image.newImageData(540, 320)
+        canvas:fill(12, 14, 20, 255)
+        local positions = {
+            { 18, 18 }, { 274, 18 }, { 18, 162 }, { 274, 162 },
+        }
+        for i, thumb in ipairs(thumbs) do
+            local x, y = positions[i][1], positions[i][2]
+            canvas:paste(thumb, x, y)
+            draw_rect_line_native(canvas, x, y, 248, 140, 232, 236, 244, 255)
+        end
+
+        save_png(canvas, "render_contact_sheet.png")
     end)
 end)
 test_summary()

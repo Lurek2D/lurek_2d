@@ -218,7 +218,7 @@ def _extract_library_expectations(gen_lib_docs, library_modules: dict) -> tuple[
             raw_name = fn["name"]
             if ":" in raw_name:
                 class_name, method_name = raw_name.split(":", 1)
-                methods.add((class_name, method_name))
+                methods.add((gen_lib_docs._public_class_name(class_name), method_name))
             else:
                 short_name = gen_lib_docs._strip_module_prefix(raw_name)
                 top_functions.add(f"{stub_prefix}.{short_name}")

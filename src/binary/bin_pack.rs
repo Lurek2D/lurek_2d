@@ -12,6 +12,14 @@
 use super::byte_data::ByteData;
 #[derive(Debug, Clone)]
 /// Hold typed values used by token-based binary packing.
+///
+/// # Variants
+/// - `U8`, `U16`, `U32`, `U64`: Unsigned integer values.
+/// - `I8`, `I16`, `I32`, `I64`: Signed integer values.
+/// - `F32`, `F64`: Floating-point values.
+/// - `Bool`: Boolean value encoded by format token.
+/// - `Str`: UTF-8 string value.
+/// - `Bytes`: Raw byte payload.
 pub enum BinValue {
     /// Store u8 value.
     U8(u8),

@@ -36,9 +36,9 @@ pub(crate) struct LuaCinematicTimeline {
 impl LuaUserData for LuaCinematicTimeline {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- addTrack --
-        /// Adds a new track to the timeline.
+        /// Adds a named track to this cinematic timeline.
         /// @param | name | string | Track name for identification.
-        /// @return | nil
+        /// @return | nil | No value is returned.
         methods.add_method_mut("addTrack", |_, this, name: String| {
             this.inner.borrow_mut().add_track(name);
             Ok(())
@@ -127,7 +127,7 @@ impl LuaUserData for LuaCinematicTimeline {
         });
 
         // -- seek --
-        /// Jumps to a specific time.
+        /// Jumps playback to a specific timeline time.
         /// @param | time | number | Time in seconds.
         methods.add_method_mut("seek", |_, this, time: f32| {
             this.inner.borrow_mut().seek(time);
@@ -192,7 +192,7 @@ impl LuaUserData for LuaCinematicTimeline {
         });
 
         // -- branch --
-        /// Jumps to a named label position.
+        /// Jumps playback to a named label position.
         /// @param | label | string | Label name to jump to.
         /// @return | boolean | True if label was found and jumped to.
         methods.add_method_mut("branch", |_, this, label: String| {

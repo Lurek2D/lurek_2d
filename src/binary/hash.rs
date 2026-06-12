@@ -7,6 +7,12 @@ use md5::Digest;
 use sha1;
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// Select hash algorithm used for digest computation.
+///
+/// # Variants
+/// - `Md5`: MD5 digest.
+/// - `Sha1`: SHA-1 digest.
+/// - `Sha256`: SHA-256 digest.
+/// - `Sha512`: SHA-512 digest.
 pub enum HashAlgorithm {
     /// Compute MD5 digest.
     Md5,

@@ -1113,7 +1113,7 @@ end
 
 #### `LSpriteAnimator:play`
 
-Play or restart a named clip.
+Plays or restarts a named animation clip.
 
 ```lua
 LSpriteAnimator:play(name, restart)

@@ -2,7 +2,7 @@
 
 use super::SharedState;
 use crate::dataframe::file_io::{self, DataFrameFileError};
-use crate::dataframe::frame::{AggFn, CellValue, ColRef, DataFrame, Database};
+use crate::dataframe::frame::{AggFn, CellValue, ColRef, ColumnSchema, DataFrame, Database};
 use crate::dataframe::lazy::LazyQuery;
 use crate::dataframe::serial;
 use crate::dataframe::sql;
@@ -44,6 +44,54 @@ fn lua_table_to_cells(tbl: LuaTable) -> LuaResult<Vec<CellValue>> {
     }
     Ok(values)
 }
+
+fn dataframe_from_lua_rows(rows: LuaTable) -> LuaResult<DataFrame> {
+    let mut df = DataFrame::new();
+    for i in 1..=rows.len()? {
+        let row: LuaTable = rows.get(i)?;
+        if i == 1 {
+            for pair in row.clone().pairs::<String, LuaValue>() {
+                let (key, _) = pair?;
+                df.add_column(&key, CellValue::Nil)
+                    .map_err(LuaError::RuntimeError)?;
+            }
+        }
+        let mut values = Vec::new();
+        for pair in row.pairs::<String, LuaValue>() {
+            let (key, val) = pair?;
+            values.push((key, lua_to_cell(val)));
+        }
+        df.add_row(&values);
+    }
+    Ok(df)
+}
+
+fn dataframe_from_lua_column_rows(
+    columns_tbl: LuaTable,
+    rows_tbl: LuaTable,
+) -> LuaResult<DataFrame> {
+    let mut columns = Vec::new();
+    for name in columns_tbl.sequence_values::<String>() {
+        columns.push(name?);
+    }
+    let mut rows = Vec::new();
+    for row_value in rows_tbl.sequence_values::<LuaTable>() {
+        rows.push(lua_table_to_cells(row_value?)?);
+    }
+    DataFrame::from_rows(columns, rows).map_err(LuaError::RuntimeError)
+}
+
+fn random_defs_from_lua(defs_tbl: LuaTable) -> LuaResult<Vec<(String, String)>> {
+    let mut defs = Vec::new();
+    for i in 1..=defs_tbl.len()? {
+        let pair: LuaTable = defs_tbl.get(i)?;
+        let name: String = pair.get(1)?;
+        let hint: String = pair.get(2)?;
+        defs.push((name, hint));
+    }
+    Ok(defs)
+}
+
 /// Converts a Lua array table into positional column references.
 fn lua_table_to_col_refs(tbl: LuaTable) -> LuaResult<Vec<ColRef>> {
     let len = tbl.raw_len();
@@ -62,6 +110,19 @@ fn cell_to_lua<'lua>(lua: &'lua Lua, cell: &CellValue) -> LuaResult<LuaValue<'lu
         CellValue::Text(s) => Ok(LuaValue::String(lua.create_string(s)?)),
         CellValue::Bool(b) => Ok(LuaValue::Boolean(*b)),
     }
+}
+/// Converts dataframe schema metadata into a Lua array table.
+fn schema_to_lua<'lua>(lua: &'lua Lua, schema: &[ColumnSchema]) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    for (i, column) in schema.iter().enumerate() {
+        let row = lua.create_table()?;
+        row.set("name", column.name.as_str())?;
+        row.set("dtype", column.dtype.as_str())?;
+        row.set("nullable", column.nullable)?;
+        row.set("count", column.count)?;
+        tbl.set(i + 1, row)?;
+    }
+    Ok(tbl)
 }
 /// Converts a one-based Lua row index into a zero-based dataframe row index.
 fn validate_row(row: usize) -> LuaResult<usize> {
@@ -769,6 +830,23 @@ impl LuaUserData for LuaDataFrame {
         /// Serializes this dataframe to JSON text.
         /// @return | string | JSON text.
         methods.add_method("toJSON", |_, this, ()| Ok(this.inner.borrow().to_json()));
+        // -- schema --
+        /// Returns inferred column schema metadata.
+        /// @return | table | Array of `{name, dtype, nullable, count}` column schema records.
+        methods.add_method("schema", |lua, this, ()| {
+            let schema = this.inner.borrow().schema();
+            schema_to_lua(lua, &schema)
+        });
+        // -- explain --
+        /// Returns a compact dataframe or SQL query execution plan summary.
+        /// @param | sql_str | string? | Optional SQL query text to parse and summarize.
+        /// @return | string | Human-readable schema or query plan summary.
+        methods.add_method("explain", |_, this, sql_str: Option<String>| {
+            this.inner
+                .borrow()
+                .explain(sql_str.as_deref())
+                .map_err(LuaError::RuntimeError)
+        });
         // -- toBinary --
         /// Serializes this dataframe to binary data.
         /// @return | string | Binary string containing serialized dataframe data.
@@ -1953,6 +2031,7 @@ impl LuaUserData for LuaVecFrame {
 /// Registers the `lurek.dataframe` API table with the Lua VM.
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    // --- Module functions ---------------------------------------------------
     // -- newDataFrame --
     /// Creates an empty dataframe. This function is exposed to Lua scripts.
     /// @return | LDataFrame | New empty dataframe handle.
@@ -1981,24 +2060,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "fromTable",
         lua.create_function(move |_, rows: LuaTable| {
-            let mut df = DataFrame::new();
-            let len = rows.len()?;
-            for i in 1..=len {
-                let row: LuaTable = rows.get(i)?;
-                if i == 1 {
-                    for pair in row.clone().pairs::<String, LuaValue>() {
-                        let (key, _) = pair?;
-                        df.add_column(&key, CellValue::Nil)
-                            .map_err(LuaError::RuntimeError)?;
-                    }
-                }
-                let mut values = Vec::new();
-                for pair in row.pairs::<String, LuaValue>() {
-                    let (key, val) = pair?;
-                    values.push((key, lua_to_cell(val)));
-                }
-                df.add_row(&values);
-            }
+            let df = dataframe_from_lua_rows(rows)?;
             Ok(LuaDataFrame::new(df, from_table_state.clone()))
         })?,
     )?;
@@ -2011,20 +2073,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "fromRows",
         lua.create_function(move |_, (columns_tbl, rows_tbl): (LuaTable, LuaTable)| {
-            let mut columns: Vec<String> = Vec::new();
-            for name in columns_tbl.sequence_values::<String>() {
-                columns.push(name?);
-            }
-            let mut rows: Vec<Vec<CellValue>> = Vec::new();
-            for row_value in rows_tbl.sequence_values::<LuaTable>() {
-                let row_tbl = row_value?;
-                let mut row_cells: Vec<CellValue> = Vec::new();
-                for cell_value in row_tbl.sequence_values::<LuaValue>() {
-                    row_cells.push(lua_to_cell(cell_value?));
-                }
-                rows.push(row_cells);
-            }
-            let df = DataFrame::from_rows(columns, rows).map_err(LuaError::RuntimeError)?;
+            let df = dataframe_from_lua_column_rows(columns_tbl, rows_tbl)?;
             Ok(LuaDataFrame::new(df, from_rows_state.clone()))
         })?,
     )?;
@@ -2166,13 +2215,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "random",
         lua.create_function(
             move |_, (defs_tbl, n, seed): (LuaTable, usize, Option<u64>)| {
-                let mut defs = Vec::new();
-                for i in 1..=defs_tbl.len()? {
-                    let pair: LuaTable = defs_tbl.get(i)?;
-                    let name: String = pair.get(1)?;
-                    let hint: String = pair.get(2)?;
-                    defs.push((name, hint));
-                }
+                let defs = random_defs_from_lua(defs_tbl)?;
                 Ok(LuaDataFrame::new(
                     DataFrame::random(&defs, n, seed),
                     random_state.clone(),

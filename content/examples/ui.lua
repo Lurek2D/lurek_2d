@@ -1608,6 +1608,153 @@ do
     print("scatter plot type:", chart:type())
 end
 
+--@api-stub: LLineChart:setXLabel
+do
+    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
+    chart:setXLabel("Time")
+    print("line x label set")
+end
+
+--@api-stub: LLineChart:setYLabel
+do
+    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
+    chart:setYLabel("Value")
+    print("line y label set")
+end
+
+--@api-stub: LLineChart:setXTickCount
+do
+    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
+    chart:setXTickCount(6)
+    print("line x ticks set")
+end
+
+--@api-stub: LLineChart:setYTickCount
+do
+    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
+    chart:setYTickCount(4)
+    print("line y ticks set")
+end
+
+--@api-stub: LLineChart:setShowLegend
+do
+    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
+    chart:setShowLegend(true)
+    print("line legend enabled")
+end
+
+--@api-stub: LBarChart:setXLabel
+do
+    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
+    chart:setXLabel("Category")
+    print("bar x label set")
+end
+
+--@api-stub: LBarChart:setYLabel
+do
+    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
+    chart:setYLabel("Amount")
+    print("bar y label set")
+end
+
+--@api-stub: LBarChart:setXTickCount
+do
+    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
+    chart:setXTickCount(5)
+    print("bar x ticks set")
+end
+
+--@api-stub: LBarChart:setYTickCount
+do
+    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
+    chart:setYTickCount(5)
+    print("bar y ticks set")
+end
+
+--@api-stub: LBarChart:setShowLegend
+do
+    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
+    chart:setShowLegend(true)
+    print("bar legend enabled")
+end
+
+--@api-stub: LAreaChart:setXLabel
+do
+    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
+    chart:setXLabel("Frame")
+    print("area x label set")
+end
+
+--@api-stub: LAreaChart:setYLabel
+do
+    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
+    chart:setYLabel("Usage")
+    print("area y label set")
+end
+
+--@api-stub: LAreaChart:setXTickCount
+do
+    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
+    chart:setXTickCount(6)
+    print("area x ticks set")
+end
+
+--@api-stub: LAreaChart:setYTickCount
+do
+    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
+    chart:setYTickCount(4)
+    print("area y ticks set")
+end
+
+--@api-stub: LAreaChart:setShowLegend
+do
+    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
+    chart:setShowLegend(true)
+    print("area legend enabled")
+end
+
+--@api-stub: LPieChart:setShowLegend
+do
+    local chart = lurek.ui.newPieChart({ width = 160, height = 160, title = "Pie" })
+    chart:setShowLegend(true)
+    print("pie legend enabled")
+end
+
+--@api-stub: LScatterPlot:setXLabel
+do
+    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
+    chart:setXLabel("X")
+    print("scatter x label set")
+end
+
+--@api-stub: LScatterPlot:setYLabel
+do
+    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
+    chart:setYLabel("Y")
+    print("scatter y label set")
+end
+
+--@api-stub: LScatterPlot:setXTickCount
+do
+    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
+    chart:setXTickCount(5)
+    print("scatter x ticks set")
+end
+
+--@api-stub: LScatterPlot:setYTickCount
+do
+    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
+    chart:setYTickCount(5)
+    print("scatter y ticks set")
+end
+
+--@api-stub: LScatterPlot:setShowLegend
+do
+    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
+    chart:setShowLegend(true)
+    print("scatter legend enabled")
+end
+
 --@api-stub: lurek.ui.newColorPicker
 do
     local cp = lurek.ui.newColorPicker()
@@ -2090,8 +2237,40 @@ end
 do
     lurek.ui.addToast({ message = "File saved successfully", duration = 3.0, type = "info" })
     print("toast added")
-    local layout = lurek.ui.loadLayout({ type = "panel", children = {} })
+    local layout = lurek.ui.loadLayout({
+        type = "layout",
+        direction = "grid",
+        columns = 2,
+        padding = { 8, 8, 8, 8 },
+        children = {
+            { type = "label", text = "HP", textAlign = "right", margin = { 2, 4, 2, 4 } },
+        },
+    })
     print("layout=" .. tostring(layout ~= nil))
+end
+
+--@api-stub: lurek.ui.setAutoInput
+do
+    lurek.ui.setAutoInput(true)
+    print("auto input=" .. tostring(lurek.ui.hasAutoInput()))
+end
+
+--@api-stub: lurek.ui.hasAutoInput
+do
+    lurek.ui.setAutoInput(true)
+    print("auto input=" .. tostring(lurek.ui.hasAutoInput()))
+end
+
+--@api-stub: lurek.ui.setAutoUpdate
+do
+    lurek.ui.setAutoUpdate(true)
+    print("auto update=" .. tostring(lurek.ui.hasAutoUpdate()))
+end
+
+--@api-stub: lurek.ui.hasAutoUpdate
+do
+    lurek.ui.setAutoUpdate(true)
+    print("auto update=" .. tostring(lurek.ui.hasAutoUpdate()))
 end
 
 --- UI Part 10: LBadge, LDockPanel, LImageWidget, LNinePatch, LRadioButton, LSpinBox, LSplitPanel, LSwitch, LTable, LToast, LTooltipPanel, LTreeView
@@ -7173,6 +7352,19 @@ end
 do
     local lbl = lurek.ui.newLabel("Centered")
     lbl:setTextVAlign("middle")
+end
+
+--@api-stub: LUiWidget:setTextAlign
+do
+    local lbl = lurek.ui.newLabel("Right aligned")
+    lbl:setTextAlign("right")
+end
+
+--@api-stub: LUiWidget:getTextAlign
+do
+    local lbl = lurek.ui.newLabel("Aligned")
+    lbl:setTextAlign("center")
+    print("textAlign=" .. lbl:getTextAlign())
 end
 
 --@api-stub: LUiWidget:setFocusable

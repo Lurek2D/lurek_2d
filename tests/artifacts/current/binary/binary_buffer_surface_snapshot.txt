@@ -1,0 +1,8 @@
+bytedata_size=16
+bytedata_first=0
+dataview_size=8
+dataview_first_u32=42
+ring_len=3
+ring_newest=d
+ring_evicted=false
+writer_type=LDataWriter

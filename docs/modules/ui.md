@@ -905,6 +905,56 @@ end
 
 ---
 
+### `lurek.ui.hasAutoInput`
+
+Returns whether platform input is automatically forwarded to `lurek.ui`.
+
+```lua
+lurek.ui.hasAutoInput()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when automatic UI input forwarding is enabled. |
+
+**Example**
+
+```lua
+do
+    lurek.ui.setAutoInput(true)
+    print("auto input=" .. tostring(lurek.ui.hasAutoInput()))
+end
+```
+
+---
+
+### `lurek.ui.hasAutoUpdate`
+
+Returns whether `lurek.ui.update(dt)` is called automatically each frame.
+
+```lua
+lurek.ui.hasAutoUpdate()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when automatic UI updates are enabled. |
+
+**Example**
+
+```lua
+do
+    lurek.ui.setAutoUpdate(true)
+    print("auto update=" .. tostring(lurek.ui.hasAutoUpdate()))
+end
+```
+
+---
+
 ### `lurek.ui.keypressed`
 
 Delivers a key press event to the UI.
@@ -965,7 +1015,15 @@ lurek.ui.loadLayout(def)
 do
     lurek.ui.addToast({ message = "File saved successfully", duration = 3.0, type = "info" })
     print("toast added")
-    local layout = lurek.ui.loadLayout({ type = "panel", children = {} })
+    local layout = lurek.ui.loadLayout({
+        type = "layout",
+        direction = "grid",
+        columns = 2,
+        padding = { 8, 8, 8, 8 },
+        children = {
+            { type = "label", text = "HP", textAlign = "right", margin = { 2, 4, 2, 4 } },
+        },
+    })
     print("layout=" .. tostring(layout ~= nil))
 end
 ```
@@ -2657,6 +2715,56 @@ end
 
 ---
 
+### `lurek.ui.setAutoInput`
+
+Enables or disables automatic forwarding of platform mouse, wheel, key, and text input to `lurek.ui`.
+
+```lua
+lurek.ui.setAutoInput(enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `enabled` | boolean | True to forward platform input to the UI automatically. |
+
+**Example**
+
+```lua
+do
+    lurek.ui.setAutoInput(true)
+    print("auto input=" .. tostring(lurek.ui.hasAutoInput()))
+end
+```
+
+---
+
+### `lurek.ui.setAutoUpdate`
+
+Enables or disables automatic `lurek.ui.update(dt)` calls during the frame update.
+
+```lua
+lurek.ui.setAutoUpdate(enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `enabled` | boolean | True to update retained UI state automatically each frame. |
+
+**Example**
+
+```lua
+do
+    lurek.ui.setAutoUpdate(true)
+    print("auto update=" .. tostring(lurek.ui.hasAutoUpdate()))
+end
+```
+
+---
+
 ### `lurek.ui.setBaseResolution`
 
 Set the logical base resolution the UI was designed for.
@@ -3571,6 +3679,16 @@ LAreaChart:setShowLegend(value)
 |------|------|-------------|
 | `value` | boolean | True to show the legend. |
 
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
+    chart:setShowLegend(true)
+    print("area legend enabled")
+end
+```
+
 ---
 
 #### `LAreaChart:setTitle`
@@ -3603,6 +3721,16 @@ LAreaChart:setXLabel(label)
 |------|------|-------------|
 | `label` | string | Axis label text. |
 
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
+    chart:setXLabel("Frame")
+    print("area x label set")
+end
+```
+
 ---
 
 #### `LAreaChart:setXTickCount`
@@ -3619,6 +3747,16 @@ LAreaChart:setXTickCount(count)
 |------|------|-------------|
 | `count` | number | Tick count, minimum 2. |
 
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
+    chart:setXTickCount(6)
+    print("area x ticks set")
+end
+```
+
 ---
 
 #### `LAreaChart:setYLabel`
@@ -3634,6 +3772,16 @@ LAreaChart:setYLabel(label)
 | Name | Type | Description |
 |------|------|-------------|
 | `label` | string | Axis label text. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
+    chart:setYLabel("Usage")
+    print("area y label set")
+end
+```
 
 ---
 
@@ -3679,6 +3827,16 @@ LAreaChart:setYTickCount(count)
 | Name | Type | Description |
 |------|------|-------------|
 | `count` | number | Tick count, minimum 2. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
+    chart:setYTickCount(4)
+    print("area y ticks set")
+end
+```
 
 ---
 
@@ -4065,6 +4223,16 @@ LBarChart:setShowLegend(value)
 |------|------|-------------|
 | `value` | boolean | True to show the legend. |
 
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
+    chart:setShowLegend(true)
+    print("bar legend enabled")
+end
+```
+
 ---
 
 #### `LBarChart:setTitle`
@@ -4097,6 +4265,16 @@ LBarChart:setXLabel(label)
 |------|------|-------------|
 | `label` | string | Axis label text. |
 
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
+    chart:setXLabel("Category")
+    print("bar x label set")
+end
+```
+
 ---
 
 #### `LBarChart:setXTickCount`
@@ -4112,6 +4290,16 @@ LBarChart:setXTickCount(count)
 | Name | Type | Description |
 |------|------|-------------|
 | `count` | number | Tick count, minimum 2. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
+    chart:setXTickCount(5)
+    print("bar x ticks set")
+end
+```
 
 ---
 
@@ -4129,6 +4317,16 @@ LBarChart:setYLabel(label)
 |------|------|-------------|
 | `label` | string | Axis label text. |
 
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
+    chart:setYLabel("Amount")
+    print("bar y label set")
+end
+```
+
 ---
 
 #### `LBarChart:setYTickCount`
@@ -4144,6 +4342,16 @@ LBarChart:setYTickCount(count)
 | Name | Type | Description |
 |------|------|-------------|
 | `count` | number | Tick count, minimum 2. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
+    chart:setYTickCount(5)
+    print("bar y ticks set")
+end
+```
 
 ---
 
@@ -4968,7 +5176,7 @@ end
 
 #### `LDialog:addButton`
 
-/// Returns a value for addButton (auto-generated).
+Adds a custom action button to this dialog.
 
 ```lua
 LDialog:addButton(text, cb)
@@ -4978,8 +5186,14 @@ LDialog:addButton(text, cb)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `text` | any |  |
-| `cb?` | any |  |
+| `text` | string | Button label. |
+| `cb?` | function | Optional callback invoked when the action is activated. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | One-based action index, or 0 if this widget is not a dialog. |
 
 **Example**
 
@@ -5019,11 +5233,17 @@ end
 
 #### `LDialog:close`
 
-/// Returns a value for close (auto-generated).
+Closes this dialog and dispatches close handling.
 
 ```lua
 LDialog:close()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | No value is returned. |
 
 **Example**
 
@@ -5052,7 +5272,7 @@ LDialog:getCancelAction()
 
 | Type | Description |
 |------|-------------|
-| number? | The cancel action index. |
+| number | The cancel action index, or nil when unset. |
 
 **Example**
 
@@ -5095,11 +5315,17 @@ end
 
 #### `LDialog:getContent`
 
-/// Returns a value for getContent (auto-generated).
+Returns the widget index currently assigned to this dialog's content slot.
 
 ```lua
 LDialog:getContent()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Content widget index, or nil when no content is assigned. |
 
 **Example**
 
@@ -5128,7 +5354,7 @@ LDialog:getDefaultAction()
 
 | Type | Description |
 |------|-------------|
-| number? | The default action index. |
+| number | The default action index, or nil when unset. |
 
 **Example**
 
@@ -5181,7 +5407,7 @@ LDialog:getFooter()
 
 | Type | Description |
 |------|-------------|
-| number? | Footer widget index if one is assigned. |
+| number | Footer widget index if one is assigned, or nil. |
 
 **Example**
 
@@ -5208,8 +5434,8 @@ LDialog:getMaxSize()
 
 | Type | Description |
 |------|-------------|
-| number? | Maximum width and height; or nil when unbounded. (value 1). |
-| number? | Maximum width and height; or nil when unbounded. (value 2). |
+| number | Maximum width and height; or nil values when unbounded. (value 1). |
+| number | Maximum width and height; or nil values when unbounded. (value 2). |
 
 **Example**
 
@@ -5254,11 +5480,17 @@ end
 
 #### `LDialog:getTitle`
 
-/// Returns a value for getTitle (auto-generated).
+Returns the current title text for this dialog.
 
 ```lua
 LDialog:getTitle()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The current dialog title, or an empty string when the widget is unavailable. |
 
 **Example**
 
@@ -5327,11 +5559,17 @@ end
 
 #### `LDialog:isModal`
 
-/// Returns a value for isModal (auto-generated).
+Returns whether this dialog is modal.
 
 ```lua
 LDialog:isModal()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the dialog blocks outside interaction. |
 
 **Example**
 
@@ -5350,11 +5588,17 @@ end
 
 #### `LDialog:isOpen`
 
-/// Returns a value for isOpen (auto-generated).
+Returns whether this dialog is currently open.
 
 ```lua
 LDialog:isOpen()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the dialog is open. |
 
 **Example**
 
@@ -5398,11 +5642,17 @@ end
 
 #### `LDialog:open`
 
-/// Returns a value for open (auto-generated).
+Opens this dialog and marks it visible.
 
 ```lua
 LDialog:open()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | No value is returned. |
 
 **Example**
 
@@ -5500,7 +5750,7 @@ end
 
 #### `LDialog:setContent`
 
-/// Returns a value for setContent (auto-generated).
+Sets the widget index rendered as this dialog's content.
 
 ```lua
 LDialog:setContent(content_idx)
@@ -5510,7 +5760,13 @@ LDialog:setContent(content_idx)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `content_idx?` | any |  |
+| `content_idx?` | number | Optional widget index for the content slot. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | No value is returned. |
 
 **Example**
 
@@ -5690,7 +5946,7 @@ end
 
 #### `LDialog:setModal`
 
-/// Returns a value for setModal (auto-generated).
+Sets whether this dialog blocks outside interaction.
 
 ```lua
 LDialog:setModal(v)
@@ -5700,7 +5956,13 @@ LDialog:setModal(v)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | any |  |
+| `v` | boolean | True to make the dialog modal. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | No value is returned. |
 
 **Example**
 
@@ -5719,7 +5981,7 @@ end
 
 #### `LDialog:setOnClose`
 
-/// Returns a value for setOnClose (auto-generated).
+Registers a callback fired when this dialog closes.
 
 ```lua
 LDialog:setOnClose(f)
@@ -5729,7 +5991,13 @@ LDialog:setOnClose(f)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `f` | any |  |
+| `f` | function | Callback invoked by the UI event dispatcher. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | No value is returned. |
 
 **Example**
 
@@ -5774,7 +6042,7 @@ end
 
 #### `LDialog:setTitle`
 
-/// Returns a value for setTitle (auto-generated).
+Sets the current title text for this dialog.
 
 ```lua
 LDialog:setTitle(title)
@@ -5784,7 +6052,13 @@ LDialog:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | any |  |
+| `title` | string | New title text. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| nil | No value is returned. |
 
 **Example**
 
@@ -8576,6 +8850,16 @@ LLineChart:setShowLegend(value)
 |------|------|-------------|
 | `value` | boolean | True to show the legend. |
 
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
+    chart:setShowLegend(true)
+    print("line legend enabled")
+end
+```
+
 ---
 
 #### `LLineChart:setTitle`
@@ -8607,6 +8891,16 @@ LLineChart:setXLabel(label)
 | Name | Type | Description |
 |------|------|-------------|
 | `label` | string | Axis label text. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
+    chart:setXLabel("Time")
+    print("line x label set")
+end
+```
 
 ---
 
@@ -8653,6 +8947,16 @@ LLineChart:setXTickCount(count)
 |------|------|-------------|
 | `count` | number | Tick count, minimum 2. |
 
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
+    chart:setXTickCount(6)
+    print("line x ticks set")
+end
+```
+
 ---
 
 #### `LLineChart:setYLabel`
@@ -8668,6 +8972,16 @@ LLineChart:setYLabel(label)
 | Name | Type | Description |
 |------|------|-------------|
 | `label` | string | Axis label text. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
+    chart:setYLabel("Value")
+    print("line y label set")
+end
+```
 
 ---
 
@@ -8713,6 +9027,16 @@ LLineChart:setYTickCount(count)
 | Name | Type | Description |
 |------|------|-------------|
 | `count` | number | Tick count, minimum 2. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
+    chart:setYTickCount(4)
+    print("line y ticks set")
+end
+```
 
 ---
 
@@ -10240,6 +10564,16 @@ LPieChart:setShowLegend(value)
 |------|------|-------------|
 | `value` | boolean | True to show the legend. |
 
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newPieChart({ width = 160, height = 160, title = "Pie" })
+    chart:setShowLegend(true)
+    print("pie legend enabled")
+end
+```
+
 ---
 
 #### `LPieChart:setTitle`
@@ -10931,6 +11265,16 @@ LScatterPlot:setShowLegend(value)
 |------|------|-------------|
 | `value` | boolean | True to show the legend. |
 
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
+    chart:setShowLegend(true)
+    print("scatter legend enabled")
+end
+```
+
 ---
 
 #### `LScatterPlot:setTitle`
@@ -10962,6 +11306,16 @@ LScatterPlot:setXLabel(label)
 | Name | Type | Description |
 |------|------|-------------|
 | `label` | string | Axis label text. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
+    chart:setXLabel("X")
+    print("scatter x label set")
+end
+```
 
 ---
 
@@ -11010,6 +11364,16 @@ LScatterPlot:setXTickCount(count)
 |------|------|-------------|
 | `count` | number | Tick count, minimum 2. |
 
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
+    chart:setXTickCount(5)
+    print("scatter x ticks set")
+end
+```
+
 ---
 
 #### `LScatterPlot:setYLabel`
@@ -11025,6 +11389,16 @@ LScatterPlot:setYLabel(label)
 | Name | Type | Description |
 |------|------|-------------|
 | `label` | string | Axis label text. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
+    chart:setYLabel("Y")
+    print("scatter y label set")
+end
+```
 
 ---
 
@@ -11071,6 +11445,16 @@ LScatterPlot:setYTickCount(count)
 | Name | Type | Description |
 |------|------|-------------|
 | `count` | number | Tick count, minimum 2. |
+
+**Example**
+
+```lua
+do
+    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
+    chart:setYTickCount(5)
+    print("scatter y ticks set")
+end
+```
 
 ---
 
@@ -15440,6 +15824,32 @@ end
 
 ---
 
+#### `LUiWidget:getTextAlign`
+
+Returns this widget's horizontal text alignment.
+
+```lua
+LUiWidget:getTextAlign()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Horizontal alignment: "left", "center", or "right". |
+
+**Example**
+
+```lua
+do
+    local lbl = lurek.ui.newLabel("Aligned")
+    lbl:setTextAlign("center")
+    print("textAlign=" .. lbl:getTextAlign())
+end
+```
+
+---
+
 #### `LUiWidget:getTooltip`
 
 Returns the tooltip text of this widget.
@@ -16380,6 +16790,37 @@ LUiWidget:setTabIndex(value)
 do
     local btn = lurek.ui.newButton("Tab")
     btn:setTabIndex(10)
+end
+```
+
+---
+
+#### `LUiWidget:setTextAlign`
+
+Sets the horizontal alignment of text inside this widget.
+
+```lua
+LUiWidget:setTextAlign(align)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `align` | string | Horizontal alignment: "left", "center", or "right". |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the alignment string is recognised; false leaves the previous value unchanged. |
+
+**Example**
+
+```lua
+do
+    local lbl = lurek.ui.newLabel("Right aligned")
+    lbl:setTextAlign("right")
 end
 ```
 

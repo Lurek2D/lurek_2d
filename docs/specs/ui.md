@@ -280,8 +280,10 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `lurek.ui.getToastCount() -> integer`: Returns the number of active toast notifications.
 - `lurek.ui.getWidgetCount() -> integer`: Returns the total number of widgets in the UI context.
 - `lurek.ui.getWidgetFont(widget) -> LFont`: Returns the font override assigned to a widget, or nil when the widget inherits its font from a parent.
+- `lurek.ui.hasAutoInput() -> boolean`: Returns whether platform input is automatically forwarded to `lurek.ui`.
+- `lurek.ui.hasAutoUpdate() -> boolean`: Returns whether `lurek.ui.update(dt)` is called automatically each frame.
 - `lurek.ui.keypressed(key) -> boolean`: Delivers a key press event to the UI.
-- `lurek.ui.loadLayout(def) -> integer`: Loads a UI layout from a Lua table definition.
+- `lurek.ui.loadLayout(def) -> integer`: Loads a UI layout from a Lua table definition. Base fields include `padding`, `margin`, `textAlign`/`text_align`, `textVAlign`/`text_v_align`, `textWrap`/`text_wrap`, `textEllipsis`/`text_ellipsis`, `flexGrow`/`flex_grow`, and `flexShrink`/`flex_shrink`; layout containers also accept `align`, `justify`, `columns`, and `wrap`.
 - `lurek.ui.loadLayoutFile(path) -> integer`: Loads a UI layout from a TOML layout file.
 - `lurek.ui.loadLayoutGameFile(path) -> integer`: Loads a UI layout from a TOML file resolved through GameFS.
 - `lurek.ui.mousemoved(x, y) -> boolean`: Delivers a mouse move event to the UI.
@@ -333,6 +335,8 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `lurek.ui.renderToImage(pathOrWidth, widthOrHeight, heightOrPath) -> nil`: Renders the entire UI to a PNG image file.
 - `lurek.ui.setBaseResolution(width, height) -> nil`: Set the logical base resolution the UI was designed for.
 - `lurek.ui.setDefaultTheme() -> nil`: Applies the built-in default theme to the UI context.
+- `lurek.ui.setAutoInput(enabled) -> nil`: Enables or disables automatic forwarding of platform mouse, wheel, key, and text input to `lurek.ui`.
+- `lurek.ui.setAutoUpdate(enabled) -> nil`: Enables or disables automatic `lurek.ui.update(dt)` calls during the frame update.
 - `lurek.ui.setFocus(widget?) -> nil`: Sets keyboard focus to a widget, or clears focus if nil.
 - `lurek.ui.setFont(font) -> nil`: Sets the global UI font by applying it to the root widget.
 - `lurek.ui.setTheme(theme_ud) -> nil`: Applies a theme to the entire UI context.
@@ -1165,6 +1169,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LUiWidget:getSize() -> number, number`: Returns the width and height of this widget.
 - `LUiWidget:getState() -> string`: Returns the current interaction state of this widget (e.g. "normal", "hovered", "pressed", "disabled").
 - `LUiWidget:getStyleClass() -> string`: Returns the style class of this widget.
+- `LUiWidget:getTextAlign() -> string`: Returns this widget's horizontal text alignment.
 - `LUiWidget:getTooltip() -> string`: Returns the tooltip text of this widget.
 - `LUiWidget:getZOrder() -> integer`: Returns the z-order (draw priority) of this widget.
 - `LUiWidget:isAnimating() -> boolean`: Returns whether this widget currently has an active animation.
@@ -1197,6 +1202,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LUiWidget:setSize(w, h) -> nil`: Sets the width and height of this widget in pixels.
 - `LUiWidget:setStyleClass(class) -> boolean`: Sets the style class of this widget.
 - `LUiWidget:setTabIndex(value) -> nil`: Sets the tab-order index for this widget.
+- `LUiWidget:setTextAlign(align) -> boolean`: Sets the horizontal alignment of text inside this widget. Accepts `"left"`, `"center"`, or `"right"`.
 - `LUiWidget:setTextEllipsis(ellipsis) -> nil`: Enables or disables ellipsis clipping for overflowing single-line text.
 - `LUiWidget:setTextVAlign(align) -> boolean`: Sets the vertical alignment of text inside this widget.
 - `LUiWidget:setTextWrap(wrap) -> nil`: Enables or disables word-wrap for text inside this widget.

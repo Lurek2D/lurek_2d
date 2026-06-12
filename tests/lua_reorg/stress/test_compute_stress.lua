@@ -9,12 +9,16 @@ local function range(start_value, stop_value)
     return lurek.compute.range(start_value, stop_value, 1, "float32")
 end
 
+local function zero_array_size(shape)
+    local arr = lurek.compute.zeros(shape, "float32")
+    return arr:getSize()
+end
+
 -- @describe compute stress: large array creation
 describe("compute stress: large array creation", function()
     -- @stress lurek.compute.zeros
     it("creates a 1000-element zeroed array without error", function()
-        local arr = lurek.compute.zeros({1000}, "float32")
-        expect_equal(1000, arr:getSize(), "total elements")
+        expect_equal(1000, zero_array_size({1000}), "total elements")
     end)
 
     -- @stress lurek.compute.ones

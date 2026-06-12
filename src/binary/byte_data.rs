@@ -5,6 +5,9 @@
 
 #[derive(Debug, Clone)]
 /// Hold owned raw bytes with convenience conversion helpers.
+///
+/// # Fields
+/// - `data`: Owned byte payload backing all byte operations.
 pub struct ByteData {
     /// Store raw bytes for this buffer.
     data: Vec<u8>,

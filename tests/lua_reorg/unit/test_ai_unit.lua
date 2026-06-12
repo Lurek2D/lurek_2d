@@ -688,24 +688,68 @@ describe("ai steering manager", function()
     end)
 
     -- @covers LSteeringManager:addPursue
-    it("addPursue increases behavior count", function()
+    it("addPursue steers toward a stored target entity", function()
         local sm = lurek.ai.newSteeringManager()
+        sm:setEntity("target", 10, 0, 2, 0)
         sm:addPursue("target")
+        local fx, fy = sm:calculate(0, 0, 0, 0, 100, 200, 1 / 60)
         expect_equal(1, sm:getBehaviorCount())
+        expect_true(fx > 0, "pursue should steer toward target")
+        expect_near(0, fy, 0.01)
     end)
 
     -- @covers LSteeringManager:addEvade
-    it("addEvade increases behavior count", function()
+    it("addEvade steers away from a stored threat entity", function()
         local sm = lurek.ai.newSteeringManager()
+        sm:setEntity("threat", 10, 0, 0, 0)
         sm:addEvade("threat")
+        local fx, fy = sm:calculate(0, 0, 0, 0, 100, 200, 1 / 60)
         expect_equal(1, sm:getBehaviorCount())
+        expect_true(fx < 0, "evade should steer away from threat")
+        expect_near(0, fy, 0.01)
     end)
 
     -- @covers LSteeringManager:addFlock
-    it("addFlock increases behavior count", function()
+    it("addFlock uses stored neighbors", function()
         local sm = lurek.ai.newSteeringManager()
+        sm:setEntity("a", 3, 0, 1, 0)
+        sm:setEntity("b", 0, 4, 0, 1)
         sm:addFlock()
+        local fx, fy = sm:calculate(0, 0, 0, 0, 100, 200, 1 / 60)
         expect_equal(1, sm:getBehaviorCount())
+        expect_true(math.abs(fx) > 0.001 or math.abs(fy) > 0.001, "flock should produce steering")
+    end)
+
+    -- @covers LSteeringManager:setEntity
+    it("setEntity stores named steering context", function()
+        local sm = lurek.ai.newSteeringManager()
+        sm:setEntity("target", 8, 0)
+        expect_equal(1, sm:entityCount())
+    end)
+
+    -- @covers LSteeringManager:removeEntity
+    it("removeEntity returns whether an entity existed", function()
+        local sm = lurek.ai.newSteeringManager()
+        sm:setEntity("target", 8, 0, 0, 0)
+        expect_true(sm:removeEntity("target"))
+        expect_false(sm:removeEntity("target"))
+    end)
+
+    -- @covers LSteeringManager:clearEntities
+    it("clearEntities removes all steering context", function()
+        local sm = lurek.ai.newSteeringManager()
+        sm:setEntity("a", 1, 0)
+        sm:setEntity("b", 2, 0)
+        sm:clearEntities()
+        expect_equal(0, sm:entityCount())
+    end)
+
+    -- @covers LSteeringManager:entityCount
+    it("entityCount reports stored steering entities", function()
+        local sm = lurek.ai.newSteeringManager()
+        expect_equal(0, sm:entityCount())
+        sm:setEntity("a", 1, 0)
+        expect_equal(1, sm:entityCount())
     end)
 
     -- @covers LSteeringManager:getBehaviorCount

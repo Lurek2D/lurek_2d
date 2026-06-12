@@ -23,7 +23,8 @@
 use super::debug_overlay::DebugOverlay;
 use super::error_screen::ErrorScreen;
 use super::lua_callbacks::{
-    call_lua_callback_checked_with_timeout, call_lua_callback_with_timeout, has_lua_callback,
+    call_function_with_optional_timeout, call_lua_callback_checked_with_timeout,
+    call_lua_callback_with_timeout, has_lua_callback,
 };
 use super::splash_screen::{load_splash_branding, make_splash_commands, SplashBranding};
 use crate::event::EventArg;
@@ -105,6 +106,47 @@ pub fn recompute_viewport(ws: &mut WindowState, win_w: u32, win_h: u32) {
             ws.viewport_offset_y = 0.0;
         }
     }
+}
+
+fn shared_flag(
+    state: &Option<Rc<RefCell<SharedState>>>,
+    read: impl FnOnce(&SharedState) -> bool,
+) -> bool {
+    state
+        .as_ref()
+        .map(|state| read(&state.borrow()))
+        .unwrap_or(false)
+}
+
+fn call_lua_ui_bool<'a, A: IntoLuaMulti<'a>>(
+    lua: &'a Lua,
+    method: &str,
+    args: A,
+    timeout_ms: Option<f32>,
+) -> Result<bool, mlua::Error> {
+    let Ok(lurek) = lua.globals().get::<_, LuaTable>("lurek") else {
+        return Ok(false);
+    };
+    let Ok(ui) = lurek.get::<_, LuaTable>("ui") else {
+        return Ok(false);
+    };
+    let Ok(func) = ui.get::<_, LuaFunction>(method) else {
+        return Ok(false);
+    };
+    call_function_with_optional_timeout(lua, &format!("ui.{method}"), func, args, timeout_ms)
+}
+
+fn call_lua_ui_update(lua: &Lua, dt: f32, timeout_ms: Option<f32>) -> Result<(), mlua::Error> {
+    let Ok(lurek) = lua.globals().get::<_, LuaTable>("lurek") else {
+        return Ok(());
+    };
+    let Ok(ui) = lurek.get::<_, LuaTable>("ui") else {
+        return Ok(());
+    };
+    let Ok(func) = ui.get::<_, LuaFunction>("update") else {
+        return Ok(());
+    };
+    call_function_with_optional_timeout(lua, "ui.update", func, dt, timeout_ms)
 }
 /// High-level app runtime state used by the frame/event loop.
 pub enum RunState {
@@ -1005,6 +1047,12 @@ impl LurekApp {
                 return;
             }
             frame_profile.process_late_ms = phase_start.elapsed().as_secs_f64() as f32 * 1000.0;
+        }
+        if shared_flag(&self.state, |st| st.auto_ui_update) {
+            if let Err(e) = call_lua_ui_update(lua, dt as f32, callback_timeout_ms) {
+                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                return;
+            }
         }
         {
             let mut s = state.borrow_mut();
@@ -2450,10 +2498,6 @@ impl ApplicationHandler for LurekApp {
                     }
                     match event.state {
                         ElementState::Pressed => {
-                            if key_str == "escape" {
-                                event_loop.exit();
-                                return;
-                            }
                             if key_str == "f12" {
                                 self.debug_overlay.enabled = !self.debug_overlay.enabled;
                                 if let Some(state) = &self.state {
@@ -2467,7 +2511,30 @@ impl ApplicationHandler for LurekApp {
                                 st.keys_down.insert(key_str.clone());
                                 st.keyboard.set_key_down(&key_str);
                             }
-                            if self.has_game {
+                            let mut ui_consumed = false;
+                            if shared_flag(&self.state, |st| st.auto_ui_input) {
+                                if let Some(lua) = &self.lua {
+                                    match call_lua_ui_bool(
+                                        lua,
+                                        "keypressed",
+                                        key_str.clone(),
+                                        self.callback_timeout_ms(),
+                                    ) {
+                                        Ok(consumed) => ui_consumed = consumed,
+                                        Err(e) => {
+                                            self.run_state = RunState::Error(
+                                                try_errorhandler_or_screen(lua, &e),
+                                            );
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                            if key_str == "escape" && !ui_consumed {
+                                event_loop.exit();
+                                return;
+                            }
+                            if self.has_game && !ui_consumed {
                                 if let Some(lua) = &self.lua {
                                     let sc = scancode_str.clone().unwrap_or_default();
                                     call_lua_callback_with_timeout(
@@ -2524,7 +2591,25 @@ impl ApplicationHandler for LurekApp {
                     if st.keyboard.has_text_input() {
                         st.keyboard.push_text_input(text.clone());
                         drop(st);
-                        if self.has_game {
+                        let mut ui_consumed = false;
+                        if shared_flag(&self.state, |st| st.auto_ui_input) {
+                            if let Some(lua) = &self.lua {
+                                match call_lua_ui_bool(
+                                    lua,
+                                    "textinput",
+                                    text.clone(),
+                                    self.callback_timeout_ms(),
+                                ) {
+                                    Ok(consumed) => ui_consumed = consumed,
+                                    Err(e) => {
+                                        self.run_state =
+                                            RunState::Error(try_errorhandler_or_screen(lua, &e));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        if self.has_game && !ui_consumed {
                             if let Some(lua) = &self.lua {
                                 call_lua_callback_with_timeout(
                                     lua,
@@ -2555,12 +2640,42 @@ impl ApplicationHandler for LurekApp {
                 } else {
                     (position.x as f32, position.y as f32)
                 };
+                let dx = gx - self.mouse_x;
+                let dy = gy - self.mouse_y;
                 self.mouse_x = gx;
                 self.mouse_y = gy;
                 if let Some(state) = &self.state {
                     let mut st = state.borrow_mut();
                     st.mouse.x = gx;
                     st.mouse.y = gy;
+                }
+                let mut ui_consumed = false;
+                if shared_flag(&self.state, |st| st.auto_ui_input) {
+                    if let Some(lua) = &self.lua {
+                        match call_lua_ui_bool(
+                            lua,
+                            "mousemoved",
+                            (gx, gy),
+                            self.callback_timeout_ms(),
+                        ) {
+                            Ok(consumed) => ui_consumed = consumed,
+                            Err(e) => {
+                                self.run_state =
+                                    RunState::Error(try_errorhandler_or_screen(lua, &e));
+                                return;
+                            }
+                        }
+                    }
+                }
+                if self.has_game && !ui_consumed {
+                    if let Some(lua) = &self.lua {
+                        call_lua_callback_with_timeout(
+                            lua,
+                            "mousemoved",
+                            (gx, gy, dx, dy),
+                            self.callback_timeout_ms(),
+                        );
+                    }
                 }
             }
             WindowEvent::MouseWheel { delta, .. } => {
@@ -2571,7 +2686,25 @@ impl ApplicationHandler for LurekApp {
                 if let Some(state) = &self.state {
                     state.borrow_mut().mouse.accumulate_scroll(dx, dy);
                 }
-                if self.has_game {
+                let mut ui_consumed = false;
+                if shared_flag(&self.state, |st| st.auto_ui_input) {
+                    if let Some(lua) = &self.lua {
+                        match call_lua_ui_bool(
+                            lua,
+                            "wheelmoved",
+                            (dx, dy),
+                            self.callback_timeout_ms(),
+                        ) {
+                            Ok(consumed) => ui_consumed = consumed,
+                            Err(e) => {
+                                self.run_state =
+                                    RunState::Error(try_errorhandler_or_screen(lua, &e));
+                                return;
+                            }
+                        }
+                    }
+                }
+                if self.has_game && !ui_consumed {
                     if let Some(lua) = &self.lua {
                         call_lua_callback_with_timeout(
                             lua,
@@ -2600,22 +2733,57 @@ impl ApplicationHandler for LurekApp {
                     if let Some(state) = &self.state {
                         state.borrow_mut().mouse.set_button(i, pressed);
                     }
-                    if self.has_game {
-                        let mx = self.mouse_x;
-                        let my = self.mouse_y;
+                    let mx = self.mouse_x;
+                    let my = self.mouse_y;
+                    let button_index = (i + 1) as u32;
+                    let mut ui_consumed = false;
+                    if shared_flag(&self.state, |st| st.auto_ui_input) {
+                        if let Some(lua) = &self.lua {
+                            if pressed && !self.prev_mouse[i] {
+                                match call_lua_ui_bool(
+                                    lua,
+                                    "mousepressed",
+                                    (mx, my, button_index),
+                                    self.callback_timeout_ms(),
+                                ) {
+                                    Ok(consumed) => ui_consumed = consumed,
+                                    Err(e) => {
+                                        self.run_state =
+                                            RunState::Error(try_errorhandler_or_screen(lua, &e));
+                                        return;
+                                    }
+                                }
+                            } else if !pressed && self.prev_mouse[i] {
+                                match call_lua_ui_bool(
+                                    lua,
+                                    "mousereleased",
+                                    (mx, my, button_index),
+                                    self.callback_timeout_ms(),
+                                ) {
+                                    Ok(consumed) => ui_consumed = consumed,
+                                    Err(e) => {
+                                        self.run_state =
+                                            RunState::Error(try_errorhandler_or_screen(lua, &e));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if self.has_game && !ui_consumed {
                         if let Some(lua) = &self.lua {
                             if pressed && !self.prev_mouse[i] {
                                 call_lua_callback_with_timeout(
                                     lua,
                                     "mousepressed",
-                                    (mx, my, (i + 1) as u32),
+                                    (mx, my, button_index),
                                     self.callback_timeout_ms(),
                                 );
                             } else if !pressed && self.prev_mouse[i] {
                                 call_lua_callback_with_timeout(
                                     lua,
                                     "mousereleased",
-                                    (mx, my, (i + 1) as u32),
+                                    (mx, my, button_index),
                                     self.callback_timeout_ms(),
                                 );
                             }

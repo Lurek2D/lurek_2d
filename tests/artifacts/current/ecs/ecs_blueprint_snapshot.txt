@@ -1,0 +1,6 @@
+blueprint_count=2
+boss_entity=1
+boss_hp=200
+boss_flag=true
+boss_blueprint_hp=200
+bulk_count=3

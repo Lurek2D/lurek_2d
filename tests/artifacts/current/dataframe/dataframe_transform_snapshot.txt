@@ -1,0 +1,4 @@
+filtered_rows=2
+leader_name=Alice
+leader_score=90
+leader_tier=gold

@@ -1,0 +1,7 @@
+hero_health=10
+hero_has_pos=true
+component_count=2
+health_query_count=2
+query_not_count=1
+dirty_count=2
+health_removed=true

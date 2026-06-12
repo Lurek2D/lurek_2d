@@ -34,40 +34,49 @@ fn parse_texture_key_value(
 ) -> LuaResult<Option<(TextureKey, u64)>> {
     match value {
         LuaValue::Nil => Ok(None),
-        LuaValue::Integer(v) => {
-            if *v < 0 {
-                return Err(LuaError::RuntimeError(format!(
-                    "{}: texture id must be >= 0",
-                    api_name
-                )));
-            }
-            Ok(Some(texture_key_from_raw_id(*v as u64)))
-        }
-        LuaValue::Number(v) => {
-            if !v.is_finite() || *v < 0.0 || v.fract() != 0.0 {
-                return Err(LuaError::RuntimeError(format!(
-                    "{}: texture must be an integer id, LImage userdata, or nil",
-                    api_name
-                )));
-            }
-            Ok(Some(texture_key_from_raw_id(*v as u64)))
-        }
-        LuaValue::UserData(ud) => {
-            let img = ud.borrow::<LuaImage>().map_err(|_| {
-                LuaError::RuntimeError(format!(
-                    "{}: texture userdata must be LImage from lurek.render.newImage()",
-                    api_name
-                ))
-            })?;
-            let key = img.key;
-            let raw = key.data().as_ffi();
-            Ok(Some((key, raw)))
-        }
+        LuaValue::Integer(v) => parse_texture_integer(*v, api_name),
+        LuaValue::Number(v) => parse_texture_number(*v, api_name),
+        LuaValue::UserData(ud) => parse_texture_userdata(ud, api_name),
         _ => Err(LuaError::RuntimeError(format!(
             "{}: texture must be an integer id, LImage userdata, or nil",
             api_name
         ))),
     }
+}
+
+fn parse_texture_integer(value: i64, api_name: &str) -> LuaResult<Option<(TextureKey, u64)>> {
+    if value < 0 {
+        return Err(LuaError::RuntimeError(format!(
+            "{}: texture id must be >= 0",
+            api_name
+        )));
+    }
+    Ok(Some(texture_key_from_raw_id(value as u64)))
+}
+
+fn parse_texture_number(value: f64, api_name: &str) -> LuaResult<Option<(TextureKey, u64)>> {
+    if !value.is_finite() || value < 0.0 || value.fract() != 0.0 {
+        return Err(LuaError::RuntimeError(format!(
+            "{}: texture must be an integer id, LImage userdata, or nil",
+            api_name
+        )));
+    }
+    Ok(Some(texture_key_from_raw_id(value as u64)))
+}
+
+fn parse_texture_userdata(
+    userdata: &LuaAnyUserData,
+    api_name: &str,
+) -> LuaResult<Option<(TextureKey, u64)>> {
+    let img = userdata.borrow::<LuaImage>().map_err(|_| {
+        LuaError::RuntimeError(format!(
+            "{}: texture userdata must be LImage from lurek.render.newImage()",
+            api_name
+        ))
+    })?;
+    let key = img.key;
+    let raw = key.data().as_ffi();
+    Ok(Some((key, raw)))
 }
 /// Serializes one raycaster hit result into the Lua table layout returned by cast helpers.
 fn ray_hit_to_table<'lua>(lua: &'lua Lua, hit: &RayHit) -> LuaResult<LuaTable<'lua>> {

@@ -1,0 +1,5 @@
+skin=armor
+events=2
+first_event=windup
+pose_type=table
+timeline_count=1

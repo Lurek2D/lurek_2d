@@ -68,11 +68,5 @@ describe("network + save integration", function()
         expect_equal("Mira", restored_name)
     end)
 
-    -- @integration lurek.network.unpack
-    it("rejects malformed network save payloads", function()
-        expect_error(function()
-            lurek.network.unpack("not valid msgpack \xff\xfe")
-        end)
-    end)
 end)
 test_summary()

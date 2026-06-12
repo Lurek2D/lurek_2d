@@ -4,8 +4,17 @@
 
 use lurek2d::compute::array::{DataType, NdArray};
 use lurek2d::compute::linalg;
+use lurek2d::compute::ops;
 
-// â”€â”€ array â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+fn assert_vec_near(actual: &[f64], expected: &[f64]) {
+    assert_eq!(actual.len(), expected.len());
+    for (index, (actual, expected)) in actual.iter().zip(expected.iter()).enumerate() {
+        assert!(
+            (actual - expected).abs() < 1e-6,
+            "index {index}: expected {expected}, got {actual}"
+        );
+    }
+}
 
 mod array_tests {
     use super::*;
@@ -29,13 +38,30 @@ mod array_tests {
     fn ndarray_fill_map_iter_work() {
         let mut arr = NdArray::zeros(&[4], DataType::Float32).expect("alloc");
         arr.fill(3.0);
-        assert_eq!(arr.to_f64_vec(), vec![3.0, 3.0, 3.0, 3.0]);
+        assert_vec_near(&arr.to_f64_vec(), &[3.0, 3.0, 3.0, 3.0]);
 
         let mapped = arr.map(|x| x * 2.0).expect("map");
-        assert_eq!(mapped.to_f64_vec(), vec![6.0, 6.0, 6.0, 6.0]);
+        assert_vec_near(&mapped.to_f64_vec(), &[6.0, 6.0, 6.0, 6.0]);
 
         let collected: Vec<f64> = mapped.iter_f64().collect();
-        assert_eq!(collected, vec![6.0, 6.0, 6.0, 6.0]);
+        assert_vec_near(&collected, &[6.0, 6.0, 6.0, 6.0]);
+    }
+
+    #[test]
+    fn constructors_reject_invalid_shapes_and_lengths() {
+        let empty = NdArray::zeros(&[], DataType::Float32);
+        assert!(empty.is_err());
+
+        let mismatch = NdArray::from_slice(&[1.0, 2.0], &[3], DataType::Float64);
+        assert!(mismatch.is_err());
+    }
+
+    #[test]
+    fn binary_ops_reject_dtype_mismatch() {
+        let left = NdArray::ones(&[2], DataType::Float32).expect("left");
+        let right = NdArray::ones(&[2], DataType::Float64).expect("right");
+        let err = ops::add(&left, &right).expect_err("dtype mismatch should fail");
+        assert!(err.contains("dtype mismatch"));
     }
 }
 

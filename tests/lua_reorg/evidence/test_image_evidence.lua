@@ -8,6 +8,63 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function write_text(path, text)
+    if write_file then
+        write_file(path, text)
+    else
+        lurek.filesystem.write(path, text)
+    end
+    expect_evidence_created(path)
+end
+
+local function draw_outline(img, x, y, w, h, r, g, b, a)
+    img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, a or 255)
+    img:drawLine(x, y + h - 1, x, y, r, g, b, a or 255)
+end
+
+local function write_small_province_map(path)
+    local img = lurek.image.newImageData(4, 4)
+    img:fill(0, 0, 0, 0)
+
+    for y = 0, 1 do
+        for x = 0, 1 do
+            img:setPixel(x, y, 255, 0, 0, 255)
+        end
+    end
+
+    for y = 0, 1 do
+        for x = 2, 3 do
+            img:setPixel(x, y, 0, 255, 0, 255)
+        end
+    end
+
+    for x = 0, 3 do
+        img:setPixel(x, 2, 0, 0, 255, 255)
+    end
+
+    lurek.image.savePNG(img, path)
+    expect_evidence_created(path)
+    return path
+end
+
+local function build_base_image(w, h)
+    local img = lurek.image.newImageData(w, h)
+    for y = 0, h - 1 do
+        for x = 0, w - 1 do
+            local r = math.floor(x / (w - 1) * 255)
+            local g = math.floor(y / (h - 1) * 255)
+            local b = math.floor((1 - x / (w - 1)) * 220)
+            img:setPixel(x, y, r, g, b, 255)
+        end
+    end
+    img:drawRect(20, 20, 64, 64, 240, 70, 60, 255)
+    img:drawCircle(math.floor(w * 0.7), math.floor(h * 0.6), 38, 70, 220, 90, 255)
+    img:drawLine(0, 0, w - 1, h - 1, 255, 255, 120, 255)
+    return img
+end
+
 -- @describe Evidence: image
 describe("Evidence: image", function()
     before_each(function()
@@ -131,6 +188,129 @@ describe("Evidence: image", function()
 
         local path = OUT .. "resize_threshold_atlas.png"
         save_png(canvas, path)
+    end)
+end)
+
+-- @describe Evidence: lurek.image animated and low-level pipelines
+describe("Evidence: lurek.image animated and low-level pipelines", function()
+    before_each(function()
+        ensure_evidence_dir("image")
+    end)
+
+    -- @evidence lurek.image.saveGIF
+    -- @evidence LImageData:mapPixel
+    -- @evidence LImageData:mapPixels
+    it("GIF: animated pulse sequence", function()
+        local frames = {}
+        local w, h = 120, 80
+
+        for i = 1, 8 do
+            local img = lurek.image.newImageData(w, h)
+            img:fill(14, 18, 26, 255)
+
+            local orb_x = 14 + (i - 1) * 12
+            local orb_y = 40 + math.floor(math.sin((i - 1) * 0.6) * 12)
+            img:drawCircle(orb_x, orb_y, 12, 70, 180, 255, 255)
+            img:drawCircle(orb_x, orb_y, 5, 255, 250, 190, 255)
+
+            img:mapPixel(function(x, y, r, g, b, a)
+                if x < 6 or y < 6 or x > w - 7 or y > h - 7 then
+                    return math.floor(r * 0.45), math.floor(g * 0.45), math.floor(b * 0.55), a
+                end
+                return r, g, b, a
+            end)
+
+            if i % 2 == 0 then
+                img:mapPixels(function(_, _, r, g, b, a)
+                    return r, math.min(255, g + 12), math.min(255, b + 18), a
+                end)
+            end
+
+            frames[#frames + 1] = img
+        end
+
+        local path = OUT .. "image_animated_pulse_sequence.gif"
+        lurek.image.saveGIF(frames, path, { delayMs = 120, speed = 10 })
+        expect_evidence_created(path)
+    end)
+
+    -- @evidence LImageData:getRegion
+    -- @evidence LImageData:convolve
+    -- @evidence LImageData:diff
+    -- @evidence LImageData:blit
+    -- @evidence LImageData:encode
+    -- @evidence LImageData:getRawBytes
+    -- @evidence LImageData:setRawData
+    -- @evidence lurek.image.savePNG
+    it("PNG+TXT: region, convolution, diff, and raw-byte pipeline", function()
+        local base = build_base_image(128, 128)
+        local region = base:getRegion(20, 20, 64, 64)
+        local filtered = region:convolve({
+            0, -1, 0,
+            -1, 5, -1,
+            0, -1, 0,
+        }, 3)
+        local diff_value = region:diff(filtered)
+        local encoded = filtered:encode("png")
+        local raw = filtered:getRawBytes()
+        local clone = lurek.image.newImageData(64, 64)
+        clone:setRawData(raw)
+
+        local atlas = lurek.image.newImageData(64 * 3, 64)
+        atlas:fill(18, 20, 24, 255)
+        atlas:blit(region, 0, 0)
+        atlas:blit(filtered, 64, 0)
+        atlas:blit(clone, 128, 0)
+        draw_outline(atlas, 0, 0, 64, 64, 236, 240, 246, 255)
+        draw_outline(atlas, 64, 0, 64, 64, 236, 240, 246, 255)
+        draw_outline(atlas, 128, 0, 64, 64, 236, 240, 246, 255)
+
+        save_png(atlas, OUT .. "image_low_level_pipeline_triptych.png")
+
+        local lines = {
+            "region_size=64x64",
+            "diff_value=" .. tostring(diff_value),
+            "encoded_bytes=" .. tostring(#encoded),
+            "raw_bytes=" .. tostring(#raw),
+        }
+        write_text(OUT .. "image_low_level_pipeline_trace.txt", table.concat(lines, "\n") .. "\n")
+    end)
+
+    -- @evidence lurek.image.newPaletteLut
+    -- @evidence lurek.image.newProvinceGrid
+    -- @evidence LImageData:applyPaletteLut
+    -- @evidence LProvinceGrid:provinceCount
+    -- @evidence LProvinceGrid:adjacencies
+    -- @evidence LProvinceGrid:borderSegments
+    -- @evidence LProvinceGrid:serializeShapeData
+    -- @evidence LProvinceGrid:drawShapes
+    -- @evidence lurek.image.savePNG
+    it("PNG+TXT: province palette remap and topology trace", function()
+        local province_path = write_small_province_map(OUT .. "image_province_grid_source.png")
+        local grid = lurek.image.newProvinceGrid(province_path)
+        local adj = grid:adjacencies()
+        local segments = grid:borderSegments()
+        local blob = grid:serializeShapeData()
+        local draw_count = grid:drawShapes()
+
+        local img = lurek.image.newImageData(province_path)
+        local lut = lurek.image.newPaletteLut()
+        lut:setColor(255, 0, 0, 255, 246, 184, 72, 255)
+        lut:setColor(0, 255, 0, 255, 92, 210, 184, 255)
+        lut:setColor(0, 0, 255, 255, 120, 142, 255, 255)
+        img:applyPaletteLut(lut)
+        img:resizeNearest(160, 160)
+
+        save_png(img, OUT .. "image_province_palette_topology.png")
+
+        local lines = {
+            "province_count=" .. tostring(grid:provinceCount()),
+            "adjacency_pairs=" .. tostring(#adj),
+            "border_segments=" .. tostring(#segments),
+            "shape_blob_bytes=" .. tostring(#blob),
+            "draw_count=" .. tostring(draw_count),
+        }
+        write_text(OUT .. "image_province_palette_topology_trace.txt", table.concat(lines, "\n") .. "\n")
     end)
 end)
 
@@ -538,16 +718,59 @@ describe("Evidence: lurek.image shape galleries", function()
     -- @evidence lurek.image.savePNG
     it("PNG: image_paste_composite.png -- pasted circle stamp composite", function()
         local path = OUT .. "image_paste_composite.png"
-        local base = lurek.image.newImageData(200, 200)
-        base:fill(60, 100, 160, 255)
-        base:drawRect(10, 10, 180, 180, 80, 120, 200, 255)
+        local base = lurek.image.newImageData(240, 200)
+        for y = 0, 199 do
+            local t = y / 199
+            base:drawLine(0, y, 239, y, 28 + math.floor(t * 24), 52 + math.floor(t * 42), 94 + math.floor(t * 56), 255)
+        end
+        base:drawRect(14, 16, 212, 168, 68, 92, 156, 255)
+        draw_outline(base, 14, 16, 212, 168, 226, 232, 240, 255)
 
         local stamp = lurek.image.newImageData(60, 60)
         stamp:fill(0, 0, 0, 0)
         stamp:drawCircle(30, 30, 28, 220, 80, 50, 255)
+        stamp:drawCircle(22, 24, 8, 255, 188, 154, 255)
+        stamp:drawLine(14, 46, 46, 14, 255, 230, 184, 255)
 
-        base:paste(stamp, 70, 70)
+        local stamp2 = stamp:resizeNearest(42, 42)
+        local stamp3 = stamp:resize(84, 84, "bilinear")
+        stamp3:grayscale()
+
+        base:paste(stamp, 34, 42)
+        base:paste(stamp2, 132, 42)
+        base:paste(stamp3, 118, 96)
+        base:drawLine(44, 156, 194, 156, 246, 214, 118, 255)
+        base:drawRect(38, 148, 12, 12, 92, 214, 255, 255)
+        base:drawRect(188, 148, 12, 12, 255, 146, 118, 255)
         save_png(base, path)
+    end)
+
+    -- @evidence lurek.image.savePNG
+    it("PNG: image_fixture_contact_sheet.png -- enlarged sprite and gradient atlas", function()
+        local assets = {
+            { "sprite_8x8.png", 96, 96 },
+            { "sprite_16x16.png", 96, 96 },
+            { "sprite_32x32.png", 96, 96 },
+            { "gradient_horizontal.png", 192, 48 },
+            { "gradient_vertical.png", 48, 192 },
+        }
+
+        local canvas = lurek.image.newImageData(520, 320)
+        canvas:fill(14, 16, 22, 255)
+
+        local placements = {
+            { 24, 24 }, { 136, 24 }, { 248, 24 }, { 24, 164 }, { 250, 100 },
+        }
+        for i, asset in ipairs(assets) do
+            local src = lurek.image.newImageData(OUT .. asset[1])
+            local thumb = src:resize(asset[2], asset[3], "bilinear")
+            local x, y = placements[i][1], placements[i][2]
+            canvas:paste(thumb, x, y)
+            draw_outline(canvas, x, y, asset[2], asset[3], 232, 236, 244, 255)
+        end
+
+        local path = OUT .. "image_fixture_contact_sheet.png"
+        save_png(canvas, path)
     end)
 end)
 test_summary()

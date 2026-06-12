@@ -1,0 +1,14 @@
+lsystem_len=17
+name=Zenith
+biome_classifier=true
+forest_color=100.000,160.000,70.000
+bsp_prefab_rooms=6
+rooms_prefab_width=24
+heightmap_from_cellular=true
+noise_seeded_len=256
+fbm=-0.14713542163372
+perlin2d=0.032898742705584
+perlin3d=-0.17403675615788
+perlin4d=-0.48484259843826
+simplex_noise=0.63095271587372
+noise_generator=true

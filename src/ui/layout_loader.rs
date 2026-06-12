@@ -7,6 +7,7 @@
 
 use crate::ui::context::{GuiContext, WidgetKind};
 use crate::ui::extras::{DialogAction, DialogActionRole};
+use crate::ui::widget::TextVAlign;
 use serde::Deserialize;
 #[derive(Debug, Clone, Deserialize, Default)]
 pub struct DialogActionDef {
@@ -49,10 +50,34 @@ pub struct WidgetDef {
     pub placeholder: Option<String>,
     /// Hover tooltip text.
     pub tooltip: Option<String>,
+    /// Inner padding `[top, right, bottom, left]` in pixels.
+    pub padding: Option<[f32; 4]>,
+    /// Outer margin `[top, right, bottom, left]` in pixels.
+    pub margin: Option<[f32; 4]>,
+    /// Horizontal text alignment: `"left"`, `"center"`, or `"right"`.
+    pub text_align: Option<String>,
+    /// Vertical text alignment: `"top"`, `"middle"`, or `"bottom"`.
+    pub text_v_align: Option<String>,
+    /// Whether text wraps inside the widget.
+    pub text_wrap: Option<bool>,
+    /// Whether single-line overflowing text is clipped with ellipsis.
+    pub text_ellipsis: Option<bool>,
+    /// Flex growth factor used by flex-like layout containers.
+    pub flex_grow: Option<f32>,
+    /// Flex shrink factor used by flex-like layout containers.
+    pub flex_shrink: Option<f32>,
     /// Layout direction string (`"horizontal"` / `"vertical"`) for layout and split panels.
     pub direction: Option<String>,
     /// Item spacing in pixels for layout widgets.
     pub spacing: Option<f32>,
+    /// Cross-axis alignment token for layout widgets.
+    pub align: Option<String>,
+    /// Main-axis justification token for layout widgets.
+    pub justify: Option<String>,
+    /// Grid column count for layout widgets using `direction = "grid"`.
+    pub columns: Option<usize>,
+    /// Whether layout children wrap when they exceed available space.
+    pub wrap: Option<bool>,
     /// Orientation string (`"horizontal"` / `"vertical"`) for separators, scroll bars, etc.
     pub orientation: Option<String>,
     /// Radio-button group identifier.
@@ -261,6 +286,35 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
         if let Some(ref tt) = def.tooltip {
             base.tooltip = tt.clone();
         }
+        if let Some(padding) = def.padding {
+            base.padding = padding.map(|v| v.max(0.0));
+        }
+        if let Some(margin) = def.margin {
+            base.margin = margin.map(|v| v.max(0.0));
+        }
+        if let Some(ref align) = def.text_align {
+            if matches!(align.as_str(), "left" | "center" | "right") {
+                base.text_align = align.clone();
+            } else {
+                return Err(format!("unsupported text_align value \"{}\"", align));
+            }
+        }
+        if let Some(ref align) = def.text_v_align {
+            base.text_v_align = TextVAlign::parse_str(align)
+                .ok_or_else(|| format!("unsupported text_v_align value \"{}\"", align))?;
+        }
+        if let Some(value) = def.text_wrap {
+            base.text_wrap = value;
+        }
+        if let Some(value) = def.text_ellipsis {
+            base.text_ellipsis = value;
+        }
+        if let Some(value) = def.flex_grow {
+            base.flex_grow = value.max(0.0);
+        }
+        if let Some(value) = def.flex_shrink {
+            base.flex_shrink = value.max(0.0);
+        }
         if let Some([min_w, min_h]) = def.min_size {
             base.min_width = min_w.max(0.0);
             base.min_height = min_h.max(0.0);
@@ -307,6 +361,18 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) -> Result
         Some(WidgetKind::Layout(lay)) => {
             if let Some(sp) = def.spacing {
                 lay.spacing = sp;
+            }
+            if let Some(ref align) = def.align {
+                lay.align = align.clone();
+            }
+            if let Some(ref justify) = def.justify {
+                lay.justify = justify.clone();
+            }
+            if let Some(columns) = def.columns {
+                lay.columns = columns.max(1);
+            }
+            if let Some(wrap) = def.wrap {
+                lay.wrap = wrap;
             }
         }
         Some(WidgetKind::GUIWindow(window)) => {

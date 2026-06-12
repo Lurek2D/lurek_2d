@@ -132,9 +132,10 @@ describe("validation: savegame migration", function()
     -- @security LSaveManager:addMigration
     it("addMigration accepts valid callbacks and rejects invalid ones", function()
         local mgr = new_manager()
+        mgr:setSchemaVersion(3)
         mgr:addMigration(1, function(data) return data end)
         mgr:addMigration(2, function(data) return data end)
-        expect_true(true, "migrations added")
+        expect_equal(3, mgr:getSchemaVersion(), "migrations keep configured schema version")
         ---@type any
         local bad_migration = "not_a_function"
         expect_error(function()

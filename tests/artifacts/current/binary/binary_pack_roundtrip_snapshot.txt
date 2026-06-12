@@ -1,0 +1,7 @@
+packed_len=7
+packed_size=7
+unpacked=255,1000,123456
+fixed_stream_size=4
+fixed_stream_len=4
+stream_flag=true
+stream_text=ok

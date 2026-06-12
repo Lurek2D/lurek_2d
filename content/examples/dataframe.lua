@@ -2554,6 +2554,21 @@ do
   print("expensive items", expensive:nrows())
   print(expensive:toString())
 end
+--@api-stub: LDataFrame:schema
+do
+-- Inspect inferred column types and nullability before running a data pipeline.
+  local df = lurek.dataframe.fromTable({ { name = "Alice", score = 10 }, { name = "Bob", score = nil } })
+  local schema = df:schema()
+  print("first column", schema[1].name, schema[1].dtype)
+  print("score nullable", schema[2].nullable)
+end
+--@api-stub: LDataFrame:explain
+do
+-- Preview dataframe shape or SQL query structure for debugging.
+  local df = lurek.dataframe.fromTable({ { item = "Sword", gold = 150 }, { item = "Stick", gold = 5 } })
+  print(df:explain())
+  print(df:explain("SELECT item FROM self WHERE gold > 100 LIMIT 1"))
+end
 --@api-stub: LDataFrame:type.2
 do
 -- Returns the Lua-visible type name for this dataframe handle.

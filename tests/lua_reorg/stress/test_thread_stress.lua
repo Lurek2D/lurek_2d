@@ -11,6 +11,25 @@ local function pop_msg(ch)
     return nil
 end
 
+local function new_channel_with_messages(count, value_builder)
+    local channel = lurek.thread.newChannel()
+    for i = 1, count do
+        channel:push(value_builder(i))
+    end
+    return channel
+end
+
+local function drain_channel(channel, expected_count)
+    local count = 0
+    for _ = 1, expected_count do
+        local val = pop_msg(channel)
+        if val ~= nil then
+            count = count + 1
+        end
+    end
+    return count
+end
+
 -- @describe thread stress: channel creation
 describe("thread stress: channel creation", function()
     -- @stress lurek.thread.newChannel
@@ -24,24 +43,11 @@ describe("thread stress: channel creation", function()
 
     -- @stress LChannel:getCount
     it("single channel handles 10000 messages", function()
-        local ch = lurek.thread.newChannel()
-
-        -- Push 10000 messages
-        for i = 1, 10000 do
-            ch:push(i)
-        end
-
+        local ch = new_channel_with_messages(10000, function(i)
+            return i
+        end)
         expect_equal(10000, ch:getCount(), "channel reports 10000 queued messages")
-
-        -- Pop all
-        local count = 0
-        for _ = 1, 10000 do
-            local val = pop_msg(ch)
-            if val ~= nil then
-                count = count + 1
-            end
-        end
-
+        local count = drain_channel(ch, 10000)
         expect_equal(10000, count, "10000 messages round-tripped")
     end)
 end)
@@ -50,29 +56,17 @@ end)
 describe("thread stress: mixed message types", function()
     -- @stress LChannel:pop
     it("channel handles mixed types", function()
-        local ch = lurek.thread.newChannel()
-
-        -- Push different types
-        for i = 1, 1000 do
+        local ch = new_channel_with_messages(1000, function(i)
             if i % 4 == 0 then
-                ch:push(i)              -- number
+                return i
             elseif i % 4 == 1 then
-                ch:push("msg_" .. i)    -- string
+                return "msg_" .. i
             elseif i % 4 == 2 then
-                ch:push(true)           -- boolean
-            else
-                ch:push(i * 0.5)        -- float
+                return true
             end
-        end
-
-        local count = 0
-        for _ = 1, 1000 do
-            local val = pop_msg(ch)
-            if val ~= nil then
-                count = count + 1
-            end
-        end
-
+            return i * 0.5
+        end)
+        local count = drain_channel(ch, 1000)
         expect_equal(1000, count, "1000 mixed messages")
     end)
 end)

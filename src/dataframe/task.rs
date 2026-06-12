@@ -15,6 +15,11 @@ use std::thread;
 type DataFrameTaskOutcome = Result<DataFrame, String>;
 
 /// Owns one background dataframe job and its eventual result.
+///
+/// # Fields
+/// - `receiver`: Pending worker result channel while the task is running.
+/// - `outcome`: Completed result cached after polling or waiting.
+/// - `progress`: Coarse completion percentage shared with the worker.
 pub struct DataFrameTask {
     /// Receives the worker result while the task is pending.
     receiver: Option<mpsc::Receiver<DataFrameTaskOutcome>>,

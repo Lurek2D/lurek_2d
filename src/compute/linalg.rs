@@ -49,7 +49,7 @@ pub fn outer(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
     let mut out = NdArray::zeros(&[m, n], a.dtype())?;
     for i in 0..m {
         for j in 0..n {
-            let flat = out.flat_index(&[i, j]).unwrap();
+            let flat = out.flat_index(&[i, j])?;
             out.set_f64(flat, a.get_f64(i) * b.get_f64(j));
         }
     }
@@ -87,24 +87,24 @@ pub fn transform_points(matrix: &NdArray, points: &NdArray) -> Result<NdArray, S
     }
     let mut out = NdArray::zeros(&[n, 2], points.dtype())?;
     for i in 0..n {
-        let px = points.get_f64(points.flat_index(&[i, 0]).unwrap());
-        let py = points.get_f64(points.flat_index(&[i, 1]).unwrap());
+        let px = points.get_f64(points.flat_index(&[i, 0])?);
+        let py = points.get_f64(points.flat_index(&[i, 1])?);
         let (ox, oy) = if is2x2 {
-            let m00 = matrix.get_f64(matrix.flat_index(&[0, 0]).unwrap());
-            let m01 = matrix.get_f64(matrix.flat_index(&[0, 1]).unwrap());
-            let m10 = matrix.get_f64(matrix.flat_index(&[1, 0]).unwrap());
-            let m11 = matrix.get_f64(matrix.flat_index(&[1, 1]).unwrap());
+            let m00 = matrix.get_f64(matrix.flat_index(&[0, 0])?);
+            let m01 = matrix.get_f64(matrix.flat_index(&[0, 1])?);
+            let m10 = matrix.get_f64(matrix.flat_index(&[1, 0])?);
+            let m11 = matrix.get_f64(matrix.flat_index(&[1, 1])?);
             (m00 * px + m01 * py, m10 * px + m11 * py)
         } else {
-            let m00 = matrix.get_f64(matrix.flat_index(&[0, 0]).unwrap());
-            let m01 = matrix.get_f64(matrix.flat_index(&[0, 1]).unwrap());
-            let m02 = matrix.get_f64(matrix.flat_index(&[0, 2]).unwrap());
-            let m10 = matrix.get_f64(matrix.flat_index(&[1, 0]).unwrap());
-            let m11 = matrix.get_f64(matrix.flat_index(&[1, 1]).unwrap());
-            let m12 = matrix.get_f64(matrix.flat_index(&[1, 2]).unwrap());
-            let m20 = matrix.get_f64(matrix.flat_index(&[2, 0]).unwrap());
-            let m21 = matrix.get_f64(matrix.flat_index(&[2, 1]).unwrap());
-            let m22 = matrix.get_f64(matrix.flat_index(&[2, 2]).unwrap());
+            let m00 = matrix.get_f64(matrix.flat_index(&[0, 0])?);
+            let m01 = matrix.get_f64(matrix.flat_index(&[0, 1])?);
+            let m02 = matrix.get_f64(matrix.flat_index(&[0, 2])?);
+            let m10 = matrix.get_f64(matrix.flat_index(&[1, 0])?);
+            let m11 = matrix.get_f64(matrix.flat_index(&[1, 1])?);
+            let m12 = matrix.get_f64(matrix.flat_index(&[1, 2])?);
+            let m20 = matrix.get_f64(matrix.flat_index(&[2, 0])?);
+            let m21 = matrix.get_f64(matrix.flat_index(&[2, 1])?);
+            let m22 = matrix.get_f64(matrix.flat_index(&[2, 2])?);
             let w = m20 * px + m21 * py + m22;
             let w = if w == 0.0 { 1.0 } else { w };
             (
@@ -112,8 +112,10 @@ pub fn transform_points(matrix: &NdArray, points: &NdArray) -> Result<NdArray, S
                 (m10 * px + m11 * py + m12) / w,
             )
         };
-        out.set_f64(out.flat_index(&[i, 0]).unwrap(), ox);
-        out.set_f64(out.flat_index(&[i, 1]).unwrap(), oy);
+        let out_x = out.flat_index(&[i, 0])?;
+        let out_y = out.flat_index(&[i, 1])?;
+        out.set_f64(out_x, ox);
+        out.set_f64(out_y, oy);
     }
     Ok(out)
 }
@@ -181,15 +183,15 @@ pub fn linsolve(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
             b.shape()
         ));
     }
-    let mut mat: Vec<Vec<f64>> = (0..n)
-        .map(|r| {
-            let mut row: Vec<f64> = (0..n)
-                .map(|c| a.get_f64(a.flat_index(&[r, c]).unwrap()))
-                .collect();
-            row.push(b.get_f64(r));
-            row
-        })
-        .collect();
+    let mut mat: Vec<Vec<f64>> = Vec::with_capacity(n);
+    for r in 0..n {
+        let mut row: Vec<f64> = Vec::with_capacity(n + 1);
+        for c in 0..n {
+            row.push(a.get_f64(a.flat_index(&[r, c])?));
+        }
+        row.push(b.get_f64(r));
+        mat.push(row);
+    }
     for col in 0..n {
         let pivot_row = (col..n)
             .max_by(|&i, &j| {
@@ -198,7 +200,7 @@ pub fn linsolve(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
                     .partial_cmp(&mat[j][col].abs())
                     .unwrap_or(std::cmp::Ordering::Equal)
             })
-            .unwrap();
+            .ok_or_else(|| "linsolve: empty pivot range".to_string())?;
         mat.swap(col, pivot_row);
         let pivot = mat[col][col];
         if pivot.abs() < 1e-12 {
@@ -229,6 +231,12 @@ pub fn linsolve(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
 
 #[derive(Debug, Clone)]
 /// Stores compact LU decomposition with row permutation metadata.
+///
+/// # Fields
+/// - `lu_data`: Packed LU matrix data in row-major order.
+/// - `perm`: Row permutation indices used during pivoting.
+/// - `n`: Matrix side length.
+/// - `det_sign`: Determinant sign from row swaps.
 pub struct LuDecomp {
     /// Stores packed LU matrix data in row-major order.
     pub lu_data: Vec<f64>,
@@ -269,7 +277,7 @@ pub fn lu_decompose(a: &NdArray) -> Result<LuDecomp, String> {
                     .partial_cmp(&buf[r2 * n + col].abs())
                     .unwrap_or(std::cmp::Ordering::Equal)
             })
-            .unwrap();
+            .ok_or_else(|| "lu_decompose: empty pivot range".to_string())?;
         if pivot_row != col {
             for k in 0..n {
                 buf.swap(pivot_row * n + k, col * n + k);

@@ -442,6 +442,51 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
         save_png(img, path)
     end)
 
+    -- @evidence LRaycaster:drawView
+    -- @evidence LRaycaster:drawTopDown
+    -- @evidence LRaycaster:extractMinimap
+    -- @evidence LRaycaster:drawCameraSweep
+    -- @evidence lurek.image.savePNG
+    it("PNG: native raycaster render contact sheet", function()
+        ensure_evidence_dir("raycaster")
+
+        local world = build_world()
+        local view = world:drawView(7.5, 8.5, 0.12, math.pi / 3, 256, 160, 24.0)
+        local top_down = world:drawTopDown(7.5, 8.5, 0.12, 12)
+        local minimap = world:extractMinimap(7.5, 8.5, 0.12, 6, 10)
+        local sweep = world:drawCameraSweep(7.5, 8.5, math.pi / 2, 18.0, 6, 96, 64)
+
+        local canvas = lurek.image.newImageData(640, 360)
+        canvas:fill(16, 18, 24, 255)
+        canvas:drawRect(0, 0, 640, 182, 20, 24, 34, 255)
+        canvas:paste(view, 20, 18)
+        canvas:drawLine(20, 18, 275, 18, 230, 234, 242, 255)
+        canvas:drawLine(275, 18, 275, 177, 230, 234, 242, 255)
+        canvas:drawLine(275, 177, 20, 177, 230, 234, 242, 255)
+        canvas:drawLine(20, 177, 20, 18, 230, 234, 242, 255)
+
+        canvas:paste(top_down:resize(168, 168, "bilinear"), 300, 18)
+        canvas:drawLine(300, 18, 467, 18, 230, 234, 242, 255)
+        canvas:drawLine(467, 18, 467, 185, 230, 234, 242, 255)
+        canvas:drawLine(467, 185, 300, 185, 230, 234, 242, 255)
+        canvas:drawLine(300, 185, 300, 18, 230, 234, 242, 255)
+
+        canvas:paste(minimap:resize(132, 132, "bilinear"), 488, 18)
+        canvas:drawLine(488, 18, 619, 18, 230, 234, 242, 255)
+        canvas:drawLine(619, 18, 619, 149, 230, 234, 242, 255)
+        canvas:drawLine(619, 149, 488, 149, 230, 234, 242, 255)
+        canvas:drawLine(488, 149, 488, 18, 230, 234, 242, 255)
+
+        canvas:paste(sweep:resize(600, 132, "bilinear"), 20, 206)
+        canvas:drawLine(20, 206, 619, 206, 230, 234, 242, 255)
+        canvas:drawLine(619, 206, 619, 337, 230, 234, 242, 255)
+        canvas:drawLine(619, 337, 20, 337, 230, 234, 242, 255)
+        canvas:drawLine(20, 337, 20, 206, 230, 234, 242, 255)
+
+        local path = OUT .. "raycaster_native_render_contact_sheet.png"
+        save_png(canvas, path)
+    end)
+
     -- @evidence LRaycaster:castRays
     -- @evidence LRaycaster:castFloorRow
     -- @evidence LRaycaster:projectSprite
@@ -542,6 +587,131 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
 
         local path = OUT .. "raycaster_textured_corridor_view.png"
         save_png(img, path)
+    end)
+
+    -- @evidence lurek.raycaster.newDoorManager
+    -- @evidence LDoorManager:addDoor
+    -- @evidence LDoorManager:openDoor
+    -- @evidence LDoorManager:update
+    -- @evidence lurek.raycaster.newPointLight
+    -- @evidence LPointLight:set
+    -- @evidence LRaycaster:computeTileLight
+    -- @evidence LRaycaster:buildMinimapWindow
+    -- @evidence lurek.image.savePNG
+    it("PNG: door and light minimap study", function()
+        ensure_evidence_dir("raycaster")
+
+        local W, H = 320, 220
+        local img = lurek.image.newImageData(W, H)
+        img:fill(18, 20, 28, 255)
+
+        local map = build_world()
+        local doors = lurek.raycaster.newDoorManager()
+        local door_id = doors:addDoor(7, 8, "vertical", 1.0)
+        doors:openDoor(door_id)
+        doors:update(0.45)
+
+        local torch = lurek.raycaster.newPointLight(7.5, 8.5, 1.0, 0.82, 0.52, 5.0, 2.0)
+        torch:set(7.5, 8.5, 1.0, 0.82, 0.52, 5.0, 2.0)
+        local cold = lurek.raycaster.newPointLight(11.0, 10.5, 0.45, 0.68, 1.0, 4.0, 1.3)
+        local lights = {
+            {
+                x = torch:x(),
+                y = torch:y(),
+                radius = torch:radius(),
+                intensity = torch:intensity(),
+                color = { torch:color() },
+            },
+            {
+                x = cold:x(),
+                y = cold:y(),
+                radius = cold:radius(),
+                intensity = cold:intensity(),
+                color = { cold:color() },
+            },
+        }
+
+        local cell = 16
+        for y = 0, 15 do
+            for x = 0, 15 do
+                local v = map:getCell(x, y)
+                local base_r, base_g, base_b = 34, 38, 50
+                if v ~= 0 then
+                    base_r, base_g, base_b = 84, 92, 118
+                end
+                local lr, lg, lb = map:computeTileLight(x, y, 0.0, lights)
+                local rr = math.min(255, math.floor(base_r + lr * 150))
+                local gg = math.min(255, math.floor(base_g + lg * 150))
+                local bb = math.min(255, math.floor(base_b + lb * 150))
+                img:drawRect(20 + x * cell, 18 + y * cell, cell - 1, cell - 1, rr, gg, bb, 255)
+            end
+        end
+
+        local door = doors:getDoor(door_id)
+        expect_true(door ~= nil)
+        img:drawRect(20 + 7 * cell + 5, 18 + 8 * cell, 6, cell - 1, 255, 224, 116, 255)
+        img:drawCircle(20 + torch:x() * cell, 18 + torch:y() * cell, 6, 255, 210, 120, 255)
+        img:drawCircle(20 + cold:x() * cell, 18 + cold:y() * cell, 5, 120, 180, 255, 255)
+
+        local window = map:buildMinimapWindow(7.5, 8.5, 4, 0.15, lights)
+        for _, sample in ipairs(window) do
+            local px = 20 + sample.x * cell + cell / 2
+            local py = 18 + sample.y * cell + cell / 2
+            local alpha = math.max(60, math.floor(sample.luma * 255))
+            img:drawCircle(px, py, 1, 255, 255, 255, alpha)
+        end
+
+        local path = OUT .. "raycaster_door_light_minimap_study.png"
+        save_png(img, path)
+    end)
+
+    -- @evidence lurek.raycaster.newHeightMap
+    -- @evidence LHeightMap:setFloor
+    -- @evidence LHeightMap:setCeiling
+    -- @evidence LRaycaster:buildScene
+    -- @evidence LRaycaster:buildSceneWithModels
+    -- @evidence LRaycaster:castRayMulti
+    -- @evidence LRaycaster:revealCellsFromRays
+    it("TXT: scene build and layered hit trace", function()
+        ensure_evidence_dir("raycaster")
+
+        local map = build_world()
+        map:setCell(6, 8, 2)
+        map:setCell(9, 8, 3)
+        map:setWallAlpha(2, 0.45)
+
+        local hm = lurek.raycaster.newHeightMap(16, 16)
+        hm:setFloor(8, 8, -0.25)
+        hm:setCeiling(8, 8, 1.35)
+
+        local scene_params = {
+            px = 7.5,
+            py = 8.5,
+            angle = 0.12,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 18,
+            screen_w = 320,
+            screen_h = 180,
+        }
+        local wall = lurek.render.newImage(SAMPLE_TEXTURE)
+        local quad_count = map:buildScene(scene_params, {}, {}, { [1] = wall, [2] = wall, [3] = wall })
+        local model_count = map:buildSceneWithModels(scene_params, nil, nil, nil, nil)
+        local layered = map:castRayMulti(2, 8.5, 0, 20, 4)
+        local revealed = map:revealCellsFromRays(7.5, 8.5, 0.12, math.pi / 2, 16, 12.0, 0.2)
+        local path = OUT .. "raycaster_scene_build_trace.txt"
+        local lines = {
+            "floor_8_8=" .. tostring(hm:floorAt(8, 8)),
+            "ceiling_8_8=" .. tostring(hm:ceilingAt(8, 8)),
+            "buildScene_quads=" .. tostring(quad_count),
+            "buildSceneWithModels_quads=" .. tostring(model_count),
+            "castRayMulti_hits=" .. tostring(#layered),
+            "revealCells_hits=" .. tostring(#revealed),
+            "first_layered_cell=" .. tostring(layered[1] and layered[1].cell_value or "nil"),
+        }
+
+        write_file(path, table.concat(lines, "\n") .. "\n")
+        expect_evidence_created(path)
     end)
 
 end)

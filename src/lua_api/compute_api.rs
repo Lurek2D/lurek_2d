@@ -57,6 +57,60 @@ fn parse_lua_indices(args: &[LuaValue]) -> LuaResult<Vec<usize>> {
         })
         .collect()
 }
+
+fn lua_numeric_sequence(table: LuaTable) -> Vec<f64> {
+    table.sequence_values::<f64>().flatten().collect()
+}
+
+fn lua_complex_sequence(table: LuaTable) -> Vec<(f64, f64)> {
+    table
+        .sequence_values::<LuaTable>()
+        .flatten()
+        .map(|entry| {
+            let re: f64 = entry.get("re").unwrap_or(0.0);
+            let im: f64 = entry.get("im").unwrap_or(0.0);
+            (re, im)
+        })
+        .collect()
+}
+
+fn complex_pairs_to_lua<'lua>(lua: &'lua Lua, output: &[(f64, f64)]) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    for (i, (re, im)) in output.iter().enumerate() {
+        let pair = lua.create_table()?;
+        pair.set("re", *re)?;
+        pair.set("im", *im)?;
+        table.set(i + 1, pair)?;
+    }
+    Ok(table)
+}
+
+fn numbers_to_lua<'lua>(lua: &'lua Lua, values: &[f64]) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    for (i, value) in values.iter().enumerate() {
+        table.set(i + 1, *value)?;
+    }
+    Ok(table)
+}
+
+fn ndarray_from_lua_table(
+    data: LuaTable,
+    shape: Option<LuaValue>,
+    dtype: Option<String>,
+) -> LuaResult<NdArray> {
+    let mut values = Vec::new();
+    for i in 1..=data.len()? {
+        let value: f64 = data.get(i)?;
+        values.push(value);
+    }
+    let dtype = parse_dtype(dtype)?;
+    let shape = match shape {
+        Some(value) => parse_shape(value)?,
+        None => vec![values.len()],
+    };
+    NdArray::from_slice(&values, &shape, dtype).map_err(LuaError::RuntimeError)
+}
+
 macro_rules! dispatch_arith {
     ($methods:ident, $name:expr, $doc:expr, $arr_fn:path, $scalar_fn:path) => {
         $methods.add_method($name, |lua, this, value: LuaValue| {
@@ -898,6 +952,7 @@ impl LuaUserData for LuaArray {
 /// Registers the `lurek.compute` API table with the Lua VM.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    // --- Module functions ---------------------------------------------------
     // -- newArray --
     /// Creates a zero-filled array with the requested shape and data type.
     /// @param | shape | table | Array table of positive dimension sizes.
@@ -968,17 +1023,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "fromTable",
         lua.create_function(
             |lua, (data, shape, dtype): (LuaTable, Option<LuaValue>, Option<String>)| {
-                let mut values = Vec::new();
-                for i in 1..=data.len()? {
-                    let v: f64 = data.get(i)?;
-                    values.push(v);
-                }
-                let dt = parse_dtype(dtype)?;
-                let s = match shape {
-                    Some(sv) => parse_shape(sv)?,
-                    None => vec![values.len()],
-                };
-                let arr = NdArray::from_slice(&values, &s, dt).map_err(LuaError::RuntimeError)?;
+                let arr = ndarray_from_lua_table(data, shape, dtype)?;
                 lua.create_userdata(LuaArray { inner: arr })
             },
         )?,
@@ -1033,18 +1078,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "fft",
         lua.create_function(|lua, samples: LuaTable| {
-            let data: Vec<f64> = samples.sequence_values::<f64>().flatten().collect();
+            let data = lua_numeric_sequence(samples);
             let output = crate::compute::fft::fft(&data);
-            let t = lua.create_table()?;
-            for (i, (re, im)) in output.iter().enumerate() {
-                let pair = lua.create_table()?;
-                /// The 're' field value exposed to Lua scripts.
-                pair.set("re", *re)?;
-                /// The 'im' field value exposed to Lua scripts.
-                pair.set("im", *im)?;
-                t.set(i + 1, pair)?;
-            }
-            Ok(t)
+            complex_pairs_to_lua(lua, &output)
         })?,
     )?;
     // -- ifft --
@@ -1054,21 +1090,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "ifft",
         lua.create_function(|lua, freqs: LuaTable| {
-            let pairs: Vec<(f64, f64)> = freqs
-                .sequence_values::<LuaTable>()
-                .flatten()
-                .map(|entry| {
-                    let re: f64 = entry.get("re").unwrap_or(0.0);
-                    let im: f64 = entry.get("im").unwrap_or(0.0);
-                    (re, im)
-                })
-                .collect();
+            let pairs = lua_complex_sequence(freqs);
             let output = crate::compute::fft::ifft(&pairs);
-            let t = lua.create_table()?;
-            for (i, v) in output.iter().enumerate() {
-                t.set(i + 1, *v)?;
-            }
-            Ok(t)
+            numbers_to_lua(lua, &output)
         })?,
     )?;
     // -- fftMagnitude --
@@ -1078,13 +1102,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "fftMagnitude",
         lua.create_function(|lua, samples: LuaTable| {
-            let data: Vec<f64> = samples.sequence_values::<f64>().flatten().collect();
+            let data = lua_numeric_sequence(samples);
             let mag = crate::compute::fft::fft_magnitude(&data);
-            let t = lua.create_table()?;
-            for (i, v) in mag.iter().enumerate() {
-                t.set(i + 1, *v)?;
-            }
-            Ok(t)
+            numbers_to_lua(lua, &mag)
         })?,
     )?;
     // -- getParThreshold --

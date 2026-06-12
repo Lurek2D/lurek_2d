@@ -1,0 +1,5 @@
+canvas_active=true
+canvas_size=96x64
+shader_active=true
+shader_cleared=true
+current_layer=render_evidence_trace_layer

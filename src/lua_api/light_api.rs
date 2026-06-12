@@ -4,8 +4,8 @@ use super::SharedState;
 use crate::color::Color;
 use crate::light::transition::LightTransition;
 use crate::light::{
-    Attenuation, FalloffMode, FlickerConfig, Light2D, LightBlendMode, LightType, Occluder,
-    ShadowFilter,
+    Attenuation, FalloffMode, FlickerConfig, Light2D, Light2DOptionsPatch, LightBlendMode,
+    LightType, Occluder, ShadowFilter,
 };
 use crate::math::Vec2;
 use crate::runtime::resource_keys::{LightKey, OccluderKey};
@@ -127,99 +127,115 @@ fn parse_opt_color(opts: &LuaTable, field: &str) -> LuaResult<Option<Color>> {
 }
 /// Applies Lua light option fields to a light instance.
 fn apply_light_opts(light: &mut Light2D, opts: &LuaTable) -> LuaResult<()> {
+    light.apply_options_patch(light_options_patch(opts)?);
+    Ok(())
+}
+
+fn light_options_patch(opts: &LuaTable) -> LuaResult<Light2DOptionsPatch> {
+    let mut patch = Light2DOptionsPatch::default();
+    parse_light_basic_opts(&mut patch, opts)?;
+    parse_light_shadow_opts(&mut patch, opts)?;
+    parse_light_shape_opts(&mut patch, opts)?;
+    parse_light_effect_opts(&mut patch, opts)?;
+    parse_light_attenuation_opts(&mut patch, opts);
+    Ok(patch)
+}
+
+fn parse_light_basic_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) -> LuaResult<()> {
     if let Ok(Some(c)) = parse_opt_color(opts, "color") {
-        light.set_color(c);
+        patch.color = Some(c);
     }
     if let Ok(v) = opts.get::<_, f32>("intensity") {
-        light.set_intensity(v);
+        patch.intensity = Some(v);
     }
     if let Ok(v) = opts.get::<_, f32>("energy") {
-        light.set_energy(v);
+        patch.energy = Some(v);
     }
     if let Ok(s) = opts.get::<_, String>("blend") {
-        light.set_blend_mode(parse_blend_mode(&s)?);
+        patch.blend_mode = Some(parse_blend_mode(&s)?);
     }
     if let Ok(s) = opts.get::<_, String>("falloff") {
-        light.set_falloff(parse_falloff(&s)?);
-    }
-    if let Ok(v) = opts.get::<_, bool>("shadowEnabled") {
-        light.set_shadow_enabled(v);
-    }
-    if let Ok(Some(c)) = parse_opt_color(opts, "shadowColor") {
-        light.set_shadow_color(c);
-    }
-    if let Ok(s) = opts.get::<_, String>("shadowFilter") {
-        light.set_shadow_filter(parse_shadow_filter(&s)?);
-    }
-    if let Ok(v) = opts.get::<_, f32>("shadowSmooth") {
-        light.set_shadow_smooth(v);
-    }
-    if let Ok(v) = opts.get::<_, f32>("shadowSoftness") {
-        light.set_shadow_softness(v);
-    }
-    if let Ok(v) = opts.get::<_, u16>("lightMask") {
-        light.set_light_mask(v);
-    }
-    if let Ok(v) = opts.get::<_, u16>("shadowMask") {
-        light.set_shadow_mask(v);
+        patch.falloff = Some(parse_falloff(&s)?);
     }
     if let Ok(v) = opts.get::<_, bool>("enabled") {
-        light.set_enabled(v);
-    }
-    if let Ok(s) = opts.get::<_, String>("type") {
-        light.set_light_type(parse_light_type(&s)?);
-    }
-    if let Ok(v) = opts.get::<_, f32>("direction") {
-        light.set_direction(v);
-    }
-    if let Ok(v) = opts.get::<_, f32>("innerAngle") {
-        light.set_inner_angle(v);
-    }
-    if let Ok(v) = opts.get::<_, f32>("outerAngle") {
-        light.set_outer_angle(v);
-    }
-    if let Ok(v) = opts.get::<_, u16>("groupId") {
-        light.set_group_id(v);
-    }
-    if let Ok(v) = opts.get::<_, bool>("volumetric") {
-        light.set_volumetric(v);
-    }
-    if let Ok(v) = opts.get::<_, f32>("flickerSpeed") {
-        light.flicker_mut().speed = v;
-        light.flicker_mut().enabled = true;
-    }
-    if let Ok(v) = opts.get::<_, f32>("flickerStrength") {
-        light.flicker_mut().strength = v;
-        light.flicker_mut().enabled = true;
-    }
-    if let Ok(path) = opts.get::<_, String>("normalMap") {
-        light.set_normal_map_path(path);
-    }
-    if let Ok(v) = opts.get::<_, f32>("normalStrength") {
-        light.set_normal_strength(v);
-    }
-    if let Ok(v) = opts.get::<_, f32>("attConstant") {
-        light.set_attenuation(Attenuation::new(
-            v,
-            light.get_attenuation().linear,
-            light.get_attenuation().quadratic,
-        ));
-    }
-    if let Ok(v) = opts.get::<_, f32>("attLinear") {
-        light.set_attenuation(Attenuation::new(
-            light.get_attenuation().constant,
-            v,
-            light.get_attenuation().quadratic,
-        ));
-    }
-    if let Ok(v) = opts.get::<_, f32>("attQuadratic") {
-        light.set_attenuation(Attenuation::new(
-            light.get_attenuation().constant,
-            light.get_attenuation().linear,
-            v,
-        ));
+        patch.enabled = Some(v);
     }
     Ok(())
+}
+
+fn parse_light_shadow_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) -> LuaResult<()> {
+    if let Ok(v) = opts.get::<_, bool>("shadowEnabled") {
+        patch.shadow_enabled = Some(v);
+    }
+    if let Ok(Some(c)) = parse_opt_color(opts, "shadowColor") {
+        patch.shadow_color = Some(c);
+    }
+    if let Ok(s) = opts.get::<_, String>("shadowFilter") {
+        patch.shadow_filter = Some(parse_shadow_filter(&s)?);
+    }
+    if let Ok(v) = opts.get::<_, f32>("shadowSmooth") {
+        patch.shadow_smooth = Some(v);
+    }
+    if let Ok(v) = opts.get::<_, f32>("shadowSoftness") {
+        patch.shadow_softness = Some(v);
+    }
+    if let Ok(v) = opts.get::<_, u16>("lightMask") {
+        patch.light_mask = Some(v);
+    }
+    if let Ok(v) = opts.get::<_, u16>("shadowMask") {
+        patch.shadow_mask = Some(v);
+    }
+    Ok(())
+}
+
+fn parse_light_shape_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) -> LuaResult<()> {
+    if let Ok(s) = opts.get::<_, String>("type") {
+        patch.light_type = Some(parse_light_type(&s)?);
+    }
+    if let Ok(v) = opts.get::<_, f32>("direction") {
+        patch.direction = Some(v);
+    }
+    if let Ok(v) = opts.get::<_, f32>("innerAngle") {
+        patch.inner_angle = Some(v);
+    }
+    if let Ok(v) = opts.get::<_, f32>("outerAngle") {
+        patch.outer_angle = Some(v);
+    }
+    if let Ok(v) = opts.get::<_, u16>("groupId") {
+        patch.group_id = Some(v);
+    }
+    if let Ok(v) = opts.get::<_, bool>("volumetric") {
+        patch.volumetric = Some(v);
+    }
+    Ok(())
+}
+
+fn parse_light_effect_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) -> LuaResult<()> {
+    if let Ok(v) = opts.get::<_, f32>("flickerSpeed") {
+        patch.flicker_speed = Some(v);
+    }
+    if let Ok(v) = opts.get::<_, f32>("flickerStrength") {
+        patch.flicker_strength = Some(v);
+    }
+    if let Ok(path) = opts.get::<_, String>("normalMap") {
+        patch.normal_map_path = Some(path);
+    }
+    if let Ok(v) = opts.get::<_, f32>("normalStrength") {
+        patch.normal_strength = Some(v);
+    }
+    Ok(())
+}
+
+fn parse_light_attenuation_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) {
+    if let Ok(v) = opts.get::<_, f32>("attConstant") {
+        patch.attenuation.constant = Some(v);
+    }
+    if let Ok(v) = opts.get::<_, f32>("attLinear") {
+        patch.attenuation.linear = Some(v);
+    }
+    if let Ok(v) = opts.get::<_, f32>("attQuadratic") {
+        patch.attenuation.quadratic = Some(v);
+    }
 }
 /// Applies Lua occluder option fields to an occluder instance.
 fn apply_occluder_opts(occ: &mut Occluder, opts: &LuaTable) -> LuaResult<()> {

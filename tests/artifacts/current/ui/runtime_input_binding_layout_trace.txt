@@ -1,0 +1,7 @@
+drag_started=true
+drag_state_present=true
+bound_update_count=0
+camel_update_count=0
+style_token_type=number
+layout_loaded=content/examples/assets/layouts/sample_main_menu.toml
+drag_cleared=true

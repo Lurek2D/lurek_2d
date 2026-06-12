@@ -49,10 +49,10 @@ impl DataFrame {
                 counts.insert(key.clone(), 0);
             }
             if let Some(v) = data[aci][i].as_number() {
-                groups.get_mut(&key).unwrap().push(v);
+                groups.entry(key.clone()).or_default().push(v);
             }
             if !data[aci][i].is_nil() {
-                *counts.get_mut(&key).unwrap() += 1;
+                *counts.entry(key.clone()).or_insert(0) += 1;
             }
             last_vals.insert(key, data[aci][i].clone());
         }
@@ -146,7 +146,10 @@ impl DataFrame {
                         CellValue::Number(count as f64)
                     }
                     AggFn::First => data[aci][indices[0]].clone(),
-                    AggFn::Last => data[aci][*indices.last().unwrap()].clone(),
+                    AggFn::Last => indices
+                        .last()
+                        .map(|&i| data[aci][i].clone())
+                        .unwrap_or(CellValue::Nil),
                     _ => {
                         let nums: Vec<f64> = indices
                             .iter()

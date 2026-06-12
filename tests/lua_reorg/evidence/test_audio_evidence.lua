@@ -396,4 +396,97 @@ describe("Evidence: lurek.audio golden fixtures", function()
     end)
 end)
 
+-- @describe Evidence: lurek.audio timing and bus traces
+describe("Evidence: lurek.audio timing and bus traces", function()
+    before_each(function()
+        ensure_evidence_dir("audio")
+    end)
+
+    -- @evidence lurek.audio.newBeatClock
+    -- @evidence LBeatClock:every
+    -- @evidence LBeatClock:pattern
+    -- @evidence LBeatClock:at
+    -- @evidence LBeatClock:scheduleAt
+    -- @evidence LBeatClock:update
+    -- @evidence LBeatClock:drainFired
+    -- @evidence LBeatClock:getBeat
+    -- @evidence LBeatClock:getBar
+    -- @evidence LBeatClock:getPhase
+    -- @evidence lurek.audio.judgeBeat
+    it("TXT: beat clock scheduler trace", function()
+        local clock = lurek.audio.newBeatClock(120.0, { subdivision = 8, swing = 0.15, latency_ms = 4 })
+        local callback_hits = {}
+
+        clock:every(2, function(step_index)
+            callback_hits[#callback_hits + 1] = "every:" .. tostring(step_index)
+        end)
+        clock:pattern("x.x.", function(step_index)
+            callback_hits[#callback_hits + 1] = "pattern:" .. tostring(step_index)
+        end)
+        clock:at(1.0, function(beat)
+            callback_hits[#callback_hits + 1] = string.format("at:%.2f", beat)
+        end)
+
+        clock:start()
+        clock:scheduleAt(1.0)
+        clock:update(1.10)
+
+        local fired = clock:drainFired()
+        local verdict, err = lurek.audio.judgeBeat(clock, 8, 0.0)
+        local path = OUT .. "audio_beat_clock_scheduler_trace.txt"
+        local lines = {
+            "beat=" .. string.format("%.3f", clock:getBeat()),
+            "bar=" .. tostring(clock:getBar()),
+            "phase8=" .. tostring(clock:getPhase(8)),
+            "scheduled_fired=" .. tostring(#fired),
+            "callbacks=" .. tostring(#callback_hits),
+            "callback_preview=" .. table.concat(callback_hits, ", "),
+            "judge_verdict=" .. tostring(verdict),
+            "judge_error=" .. tostring(err),
+        }
+
+        write_file(path, table.concat(lines, "\n") .. "\n")
+        expect_evidence_created(path)
+    end)
+
+    -- @evidence LBus:setDuckTarget
+    -- @evidence LBus:clearDuck
+    -- @evidence LBus:getPeak
+    -- @evidence lurek.audio.newPool
+    -- @evidence LSoundPool:getVoiceCount
+    -- @evidence lurek.audio.newDecoder
+    -- @evidence LDecoder:decode
+    -- @evidence LDecoder:getDuration
+    -- @evidence LDecoder:isSeekable
+    it("TXT: bus ducking and decoder trace", function()
+        local music = lurek.audio.newBus("music_bus_trace")
+        local voice = lurek.audio.newBus("voice_bus_trace")
+        voice:setDuckTarget("music_bus_trace", 0.35)
+        local peak_before = music:getPeak()
+        voice:clearDuck()
+        local peak_after = music:getPeak()
+
+        local pool = lurek.audio.newPool(FIXTURE_WAVE, 3)
+        local decoder = lurek.audio.newDecoder(FIXTURE_WAVE, 2048)
+        local chunk = decoder:decode()
+
+        local path = OUT .. "audio_bus_decoder_trace.txt"
+        local lines = {
+            "music_peak_before=" .. tostring(peak_before),
+            "music_peak_after=" .. tostring(peak_after),
+            "pool_voices=" .. tostring(pool:getVoiceCount()),
+            "decoder_seekable=" .. tostring(decoder:isSeekable()),
+            "decoder_duration=" .. tostring(decoder:getDuration()),
+            "decoded_chunk_type=" .. type(chunk),
+            "decoded_chunk_present=" .. tostring(chunk ~= nil),
+        }
+
+        write_file(path, table.concat(lines, "\n") .. "\n")
+        expect_evidence_created(path)
+
+        decoder:release()
+        pool:release()
+    end)
+end)
+
 test_summary()

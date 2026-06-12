@@ -1,0 +1,7 @@
+floor_8_8=-0.25
+ceiling_8_8=1.3500000238419
+buildScene_quads=275
+buildSceneWithModels_quads=275
+castRayMulti_hits=3
+revealCells_hits=11
+first_layered_cell=2

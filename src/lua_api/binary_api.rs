@@ -100,6 +100,35 @@ fn lua_value_to_byte_chunks(value: LuaValue) -> LuaResult<Vec<Vec<u8>>> {
         )),
     }
 }
+
+fn byte_data_from_lua_value(value: LuaValue) -> LuaResult<ByteData> {
+    match value {
+        LuaValue::Integer(n) => Ok(ByteData::new(n.max(0) as usize)),
+        LuaValue::Number(n) => Ok(ByteData::new(n.max(0.0) as usize)),
+        LuaValue::String(s) => {
+            let text = s
+                .to_str()
+                .map_err(|error| LuaError::RuntimeError(error.to_string()))?;
+            Ok(ByteData::from_string(text))
+        }
+        _ => Err(LuaError::RuntimeError(
+            "newByteData expects a number (size) or string".to_string(),
+        )),
+    }
+}
+
+fn new_lua_ring_buffer(capacity: usize) -> LuaResult<LuaRingBuffer> {
+    if capacity == 0 {
+        return Err(LuaError::RuntimeError(
+            "newRingBuffer: capacity must be greater than 0".to_string(),
+        ));
+    }
+    Ok(LuaRingBuffer {
+        inner: VecDeque::with_capacity(capacity),
+        capacity,
+    })
+}
+
 /// Lua-side fixed-capacity FIFO buffer that stores registry-protected Lua values.
 pub struct LuaRingBuffer {
     /// Stored Lua registry keys in oldest-to-newest order.
@@ -271,6 +300,7 @@ fn lua_table_to_toml_value(value: &LuaValue) -> LuaResult<toml::Value> {
 /// Registers the `lurek.binary` API table with the Lua VM.
 pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+    // --- Module functions ---------------------------------------------------
     // -- pack --
     /// Packs Lua values into a binary string using a format string.
     /// @param | fmt | string | Binary pack format string.
@@ -436,20 +466,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "newByteData",
         lua.create_function(|lua, value: LuaValue| {
-            let bd = match value {
-                LuaValue::Integer(n) => ByteData::new(n.max(0) as usize),
-                LuaValue::Number(n) => ByteData::new(n.max(0.0) as usize),
-                LuaValue::String(s) => ByteData::from_string(
-                    s.to_str()
-                        .map_err(|e| LuaError::RuntimeError(e.to_string()))?,
-                ),
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "newByteData expects a number (size) or string".to_string(),
-                    ))
-                }
-            };
-            lua.create_userdata(bd)
+            lua.create_userdata(byte_data_from_lua_value(value)?)
         })?,
     )?;
     // -- newDataView --
@@ -539,17 +556,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return | LRingBuffer | New ring buffer handle.
     tbl.set(
         "newRingBuffer",
-        lua.create_function(|_, capacity: usize| {
-            if capacity == 0 {
-                return Err(LuaError::RuntimeError(
-                    "newRingBuffer: capacity must be greater than 0".to_string(),
-                ));
-            }
-            Ok(LuaRingBuffer {
-                inner: VecDeque::with_capacity(capacity),
-                capacity,
-            })
-        })?,
+        lua.create_function(|_, capacity: usize| new_lua_ring_buffer(capacity))?,
     )?;
     // -- toMsgPack --
     /// Encodes a Lua value into the current structured binary interchange payload.

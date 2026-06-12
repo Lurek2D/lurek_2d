@@ -20,7 +20,7 @@ pub mod sql;
 pub mod task;
 /// Columnar vectorized execution helpers and parallel operators.
 pub mod vectorized;
-pub use frame::{CellValue, ColRef, DataFrame, DataFrameRowIter, Database};
+pub use frame::{CellValue, ColRef, ColumnSchema, DataFrame, DataFrameRowIter, Database};
 pub use lazy::LazyQuery;
 pub use task::DataFrameTask;
 pub use vectorized::{BinaryOp, CmpOp, ColumnStore, ReduceOp, ScalarOp, VecFrame};

@@ -227,6 +227,9 @@ function lurek.init()
 
     ui_font = lurek.render.newFont(7)
     R.setFont(ui_font)
+    if lurek.ui and lurek.ui.setFont then
+        lurek.ui.setFont(ui_font)
+    end
 
     if map_needs_sanitize() then
         log_warn("sanitizing province map cache")

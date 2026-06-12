@@ -1,0 +1,8 @@
+added_count=1
+removed_count=1
+parent_of_child=nil
+children_count=1
+related_count=1
+had_relation=true
+parent_alive_after_recursive_kill=false
+child_alive_after_recursive_kill=false

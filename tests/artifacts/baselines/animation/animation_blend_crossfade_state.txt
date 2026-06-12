@@ -1,4 +1,5 @@
-frame_count=0
+crossfade_started=false
+frame_count=8
 clip_count=2
-current_frame=0
+current_frame=1
 blend_active=false

@@ -190,7 +190,7 @@ impl LuaUserData for LuaDepthSorter {
 
 impl LuaUserData for LSceneObjectContainer {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        /// Add an object to the container.
+        /// Adds an object table to the scene container.
         /// @param | obj | table | Object table to append to the scene container.
         methods.add_method("add", |lua, this, obj: LuaTable| {
             let container = this.get_container(lua)?;
@@ -266,11 +266,11 @@ impl LuaUserData for LSceneObjectContainer {
             has_fn.call::<_, bool>((container.clone(), obj))
         });
 
-        /// Get the type name of this userdata.
+        /// Gets the Lua-visible type name of this userdata.
         /// @return | string | The literal `"LSceneObjectContainer"`.
         methods.add_method("type", |_lua, _this, ()| Ok("LSceneObjectContainer"));
 
-        /// Check type by name.
+        /// Checks whether this container matches a type name.
         /// @param | name | string | Type name to compare against.
         /// @return | boolean | True when `name` matches `"LSceneObjectContainer"`.
         methods.add_method("typeOf", |_lua, _this, name: String| {

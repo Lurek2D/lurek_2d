@@ -283,6 +283,14 @@ name = "app_tests"
 path = "tests/rust/unit/app_tests.rs"
 
 [[test]]
+name = "agent_tests"
+path = "tests/rust/unit/agent_tests.rs"
+
+[[test]]
+name = "ai_tests"
+path = "tests/rust/unit/ai_tests.rs"
+
+[[test]]
 name = "audio_tests"
 path = "tests/rust/unit/audio_tests.rs"
 
@@ -295,8 +303,8 @@ name = "compute_tests"
 path = "tests/rust/unit/compute_tests.rs"
 
 [[test]]
-name = "data_tests"
-path = "tests/rust/unit/data_tests.rs"
+name = "binary_tests"
+path = "tests/rust/unit/binary_tests.rs"
 
 [[test]]
 name = "dataframe_tests"

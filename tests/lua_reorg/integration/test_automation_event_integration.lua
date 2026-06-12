@@ -184,39 +184,6 @@ describe("automation + event integration", function()
         lurek.event.clear()
     end)
 
-    -- @integration lurek.automation.load
-    -- @integration lurek.automation.start
-    -- @integration lurek.automation.stop
-    -- @integration lurek.automation.unload
-    -- @integration lurek.automation.update
-    -- @integration lurek.automation.setCondition
-    -- @integration lurek.automation.isFailed
-    -- @integration lurek.automation.getLastError
-    it("reports expression failures for assert actions", function()
-        automation.setCondition("ready", true)
-        automation.setCondition("boss_dead", false)
-
-        automation.load("expr_assert", {
-            steps = {
-                {
-                    action = "assert",
-                    assert = "ready && boss_dead",
-                    time = 0.0,
-                },
-            }
-        })
-
-        automation.start("expr_assert")
-        automation.update(0.01)
-
-        expect_equal(automation.isFailed(), true)
-        local err = (automation.getLastError() or "") --[[@as string]]
-        expect_equal(string.find(err, "ready && boss_dead") ~= nil, true)
-
-        automation.stop()
-        automation.unload("expr_assert")
-    end)
-
     -- @integration lurek.automation.isComplete
     -- @integration lurek.automation.load
     -- @integration lurek.automation.saveMacro

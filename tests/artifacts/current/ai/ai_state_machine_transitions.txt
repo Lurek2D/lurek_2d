@@ -1,2 +1,4 @@
-fsm_states=idle,patrol,chase
-default_state=idle
+initial=idle
+after_patrol=patrol
+after_chase=chase
+time_in_state=0

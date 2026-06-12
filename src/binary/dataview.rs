@@ -6,6 +6,11 @@
 
 use std::sync::Arc;
 /// Hold shared byte slice window with offset and size.
+///
+/// # Fields
+/// - `data`: Shared backing byte buffer.
+/// - `offset`: Start offset of the view in the backing buffer.
+/// - `size`: Readable byte length of the view.
 pub struct DataView {
     /// Store shared backing bytes.
     pub data: Arc<Vec<u8>>,
@@ -123,6 +128,9 @@ impl DataView {
     }
 }
 /// Wrap DataView for Lua-facing ownership patterns.
+///
+/// # Fields
+/// - `inner`: Wrapped validated data view.
 pub struct LuaDataView {
     /// Store wrapped data view.
     pub(crate) inner: DataView,

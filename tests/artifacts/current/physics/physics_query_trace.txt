@@ -1,0 +1,7 @@
+queryAABB_hits=2
+raycastClosest_distance=nil
+raycastAll_hits=3
+bodyAtPoint=0
+contacts=1
+overlap_a=3
+overlap_b=4

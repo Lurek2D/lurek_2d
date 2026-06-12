@@ -1,0 +1,15 @@
+ring_is_full=false
+ring_evicted=true
+ring_oldest=right
+ring_newest=newest
+ring_popped=right
+ring_remaining=newest
+u8=7
+u16=300
+i32=12345
+float=3.5
+bytes_string_len=4
+bit_0=true
+read_bits=11
+clone_first_byte=171
+writer_type=LDataWriter

@@ -12,7 +12,7 @@
 - Source path: `src/dataframe/`
 - Binding: `src/lua_api/dataframe_api.rs`
 - Namespace: `lurek.dataframe`
-- Lua API surface: `15` functions, `6` types, `143` methods
+- Lua API surface: `15` functions, `6` types, `145` methods
 - Rust test path(s): tests/rust/unit/dataframe_tests.rs
 - Lua test path(s): tests/lua_reorg/unit/test_dataframe.lua; tests/lua_reorg/stress/test_dataframe_stress.lua; tests/lua_reorg/integration/test_compute_dataframe.lua; tests/lua_reorg/golden/test_dataframe_golden.lua
 
@@ -48,10 +48,6 @@
 - The outcome is better observability, cleaner pipelines, and faster balancing decisions.
 
 This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
-
-## Imports
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -204,7 +200,201 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - Balances performance-oriented storage layout with conversion interoperability requirements.
 - Serves as the vectorized acceleration layer above core dataframe contracts.
 
-## Lua API Ref
+## Types
+
+- `DataFrameFileStore` (`trait`, `file_io.rs`): Minimal storage operations required by dataframe file persistence.
+- `DataFrameFileError` (`enum`, `file_io.rs`): Error category for dataframe persistence over an external storage layer. Details: variants: Storage, Format
+- `DataFrameFileResult` (`type`, `file_io.rs`): Result type used by dataframe file persistence helpers.
+- `CellValue` (`enum`, `frame.rs`): Hold typed value stored in one dataframe cell. Details: variants: Nil, Number, Text, Bool | methods: as_bool (Return bool value when cell stores boolean.); as_number (Return numeric value when cell stores number.); as_text (Return text slice when cell stores text.); cmp_for_sort (Compare values for deterministic sort ordering.); is_nil (Return true when cell is nil.)
+- `ColRef` (`enum`, `frame.rs`): Select column by name or one-based index. Details: variants: Name, Index
+- `ColumnSchema` (`struct`, `frame.rs`): Describe one dataframe column for schema/introspection APIs. Details: fields: name: String, dtype: String, nullable: bool, count: usize
+- `DataFrame` (`struct`, `frame.rs`): Hold columnar dataframe storage. Details: fields: column_names: Vec<String>, data: Vec<Vec<CellValue>> | methods: add_column (Add new column filled with default values.); add_row (Append row from sparse key-value input and return row index.); add_row_batch (Append batch of rows to frame and return error on width mismatch.); clone_df (Clone dataframe deeply.); collect_numbers (Collect numeric values from selected column.); column_data_mut (Return mutable column vector for selected column.); columns (Return ordered column names.); corr (Compute Pearson correlation between two numeric columns.); correlation_matrix (Build numeric-column correlation matrix frame.); count (Return row count alias.); count_by (Count occurrences by key column and return two-column frame.); date_parts (Return a new dataframe with ISO date year, month, and day columns appended.); describe (Build descriptive statistics frame for numeric columns.); drop_nil (Drop rows where selected column is nil.); duplicate_rows (Return rows whose full-row or selected-column key appears more than once.); entropy (Compute Shannon entropy over rendered cell values.); explain (Return a compact textual dataframe or SQL query plan summary.); extract_rows (Extract rows by indices and return new frame.); fill_nil (Replace nil values in selected column with provided value.); filter (Filter rows by column predicate and return matching frame.); from_raw (Build dataframe from raw column names and data vectors.); from_rows (Build dataframe from row-major data.); get_column (Return selected column slice.); get_column_as_f64 (Export selected column as f64 vector with nil as NaN.); get_row (Return cloned row values by index.); get_value (Return cloned cell value at row and column.); group_agg (Aggregate values by group key and return grouped result frame.); group_by (Group rows by key column and return grouped frames.); head (Return first n rows as new frame.); iter_rows (Return iterator over row views.); join (Join two frames by key columns and return merged frame.); lazy (Create lazy query from cloned current frame.); max_val (Return maximum numeric value from selected column.); mean (Compute mean of numeric values from selected column.); median (Compute median of numeric values from selected column.); merge (Append columns and rows from other frame into self.); min_val (Return minimum numeric value from selected column.); missing_report (Build a per-column missing-value report.); mode_val (Return most frequent non-nil value in selected column.); ncols (Return number of columns.); new (Create empty dataframe.); normalize_col (Normalize numeric column to output range and write result column.); nrows (Return number of rows.); outliers (Return rows where absolute z-score exceeds threshold.); par_apply_column (Parallel element-wise transform on a column.); par_filter (Parallel filter — uses rayon to scan rows when frame exceeds threshold.); par_group_agg (Parallel group-by aggregation — partitions by group column, aggregates each partition in parallel.); pivot (Pivot row and column keys into cross-tabulated frame.); pivot_table (Build pivot table from row key, column key, and value key.); random (Generate random dataframe from typed column definitions.); rank_column (Compute rank for numeric column and return dataframe with rank column.); raw_data (Return raw column storage reference.); remove_column (Remove selected column.); remove_row (Remove row by index.); rename_column (Rename selected column.); resolve_col (Resolve column selector to zero-based index.); rolling_mean (Compute rolling mean and return dataframe with appended column.); rolling_sum (Compute rolling sum and return dataframe with appended column.); sample (Sample up to n rows using deterministic optional seed.); schema (Return inferred schema metadata for every column.); select_columns (Select subset of columns and return new frame.); set_column_from_f64 (Set selected column from f64 vector with NaN mapped to nil.); set_value (Set cell value at row and column.); slice (Return inclusive row slice as new frame.); sort (Sort rows by column and return sorted frame.); stddev (Compute standard deviation of numeric values from column.); sum (Sum numeric values from selected column.); tail (Return last n rows as new frame.); to_binary (Serialize DataFrame to compact binary format bytes.); to_csv (Serialize DataFrame to CSV string.); to_json (Serialize DataFrame to JSON table string.); to_string_table (Render DataFrame as padded string table.); unique (Return unique values from selected column.); value_counts (Count occurrences of values in one column with optional percentage output.); variance (Compute variance of numeric values from column.); with_cumsum (Compute cumulative sum and append output column.); with_eval (Evaluate arithmetic expression per row and append result column.); with_pct_change (Compute row-to-row percent change and append output column.); with_rank (Compute rank over numeric column and append output column.); with_rolling_max (Compute rolling maximum and append output column.); with_rolling_mean (Compute rolling mean and append output column.); with_rolling_min (Compute rolling minimum and append output column.); with_rolling_sum (Compute rolling sum and append output column.); zscore_col (Compute z-score for numeric column and write result column.)
+- `DataFrameRowIter` (`struct`, `frame.rs`): Iterate rows as vectors of column-name and cell references.
+- `Database` (`struct`, `frame.rs`): Hold named tables for SQL-like database queries. Details: methods: add_table (Insert or replace table by name.); clear (Remove all tables.); clone_db (Clone database deeply.); get_table (Return immutable table reference by name.); get_table_mut (Return mutable table reference by name.); has_table (Return true when table exists.); list_tables (Return sorted list of table names.); merge (Merge another database into self by table name.); new (Create empty database.); remove_table (Remove table by name.); table_count (Return number of tables.); to_json (Serialize Database tables to JSON string.)
+- `AggFn` (`enum`, `frame.rs`): Select aggregation mode for grouped operations. Details: variants: Mean, Sum, Min, Max, Count, First, Last | methods: parse (Parse aggregation label and return mode or error.)
+- `LazyQuery` (`struct`, `lazy.rs`): Hold deferred query source frame and queued steps. Details: methods: collect (Execute deferred steps and return materialized frame.); drop_nil (Append drop-nil step and return updated query.); filter (Append filter step and return updated query.); head (Append head step and return updated query.); limit (Append row limit step and return updated query.); new (Create lazy query from source frame.); select (Append column selection step and return updated query.); slice (Append slice step and return updated query.); sort (Append sort step and return updated query.); tail (Append tail step and return updated query.); tombstone (Create empty sentinel lazy query.)
+- `Xorshift64` (`struct`, `rng.rs`): Hold xorshift64 state used by dataframe-local random helpers. Details: methods: new (Create generator from seed and remap zero seed to one.); next_f64 (Return pseudo-random float in the half-open range [0, 1).); next_u64 (Advance generator and return next 64-bit pseudo-random value.); next_usize (Return pseudo-random index in the half-open range [0, max).)
+- `DataFrameTask` (`struct`, `task.rs`): Owns one background dataframe job and its eventual result. Details: methods: get_error (Return the task error message when the task has failed.); is_done (Return true when the task has completed with success or failure.); progress (Return a coarse completion estimate from 0.0 to 1.0.); result (Return a cloned dataframe result after successful completion.); spawn_csv_file (Spawn a CSV file load task over a worker-owned storage snapshot.); spawn_database_query (Spawn a SQL query task over a database snapshot.); spawn_database_query_params (Spawn a parameterized SQL query task over a database snapshot.); spawn_dataframe_query (Spawn a SQL query task over a dataframe snapshot.); spawn_json_file (Spawn a JSON file load task over a worker-owned storage snapshot.); wait (Block until the task completes and return true only for a successful dataframe result.)
+- `ColumnStore` (`enum`, `vectorized.rs`): Hold typed columnar storage with optional validity mask. Details: variants: Float64, Int64, Bool, Text | methods: dtype_name (Return static type name for this column variant.); filter (Filter rows by boolean mask and return new column.); is_empty (Return true when this column has no rows.); is_valid (Return true when row at index is valid according to validity mask.); len (Return number of rows in this column.); valid_f64s (Return valid f64 values for Float64 columns, skipping nil rows.)
+- `ScalarOp` (`enum`, `vectorized.rs`): Select element-wise scalar operation applied to a column. Details: variants: Add, Sub, Mul, Div, Abs, Sqrt, Floor, Ceil, Neg | methods: parse (Parse operation label and return variant or error.)
+- `BinaryOp` (`enum`, `vectorized.rs`): Select element-wise binary operation between two columns. Details: variants: Add, Sub, Mul, Div, Min, Max | methods: parse (Parse operation label and return variant or error.)
+- `ReduceOp` (`enum`, `vectorized.rs`): Select aggregation operation over a column. Details: variants: Sum, Mean, Min, Max, Std, Var, Count | methods: parse (Parse operation label and return variant or error.)
+- `CmpOp` (`enum`, `vectorized.rs`): Select comparison operation for mask generation. Details: variants: Lt, Le, Gt, Ge, Eq, Ne | methods: parse (Parse comparison operator string and return variant or error.)
+- `VecFrame` (`struct`, `vectorized.rs`): Hold typed columnar frame used for vectorized and parallel operations. Details: methods: apply_mask (Filter all columns by boolean mask and return new VecFrame.); col_binary_op (Compute element-wise binary operation between two numeric columns and write result column.); col_cast (Cast named column to target type in place.); col_clamp (Clamp Float64 column values to inclusive range in place.); col_reduce (Reduce numeric column to single value using selected aggregation.); col_scalar_op (Apply scalar operation to Float64 column in place.); col_type (Return type name for named column.); columns (Return ordered column names.); filter_mask (Build boolean mask by comparing numeric column against scalar value.); from_dataframe (Convert DataFrame to VecFrame by inferring column types.); ncols (Return number of columns.); new (Create empty VecFrame.); nrows (Return number of rows.); par_reduce (Reduce multiple columns in parallel and return name-to-result map.); par_scalar_op (Apply scalar operation across multiple Float64 columns in parallel.); to_dataframe (Convert VecFrame back to DataFrame.)
+
+## Functions
+
+- `read_csv_dataframe` (`file_io.rs`): Read CSV text from storage, parse it, and return a dataframe.
+- `read_json_dataframe` (`file_io.rs`): Read JSON text from storage, parse it, and return a dataframe.
+- `write_csv_dataframe` (`file_io.rs`): Serialize a dataframe to CSV and write it through storage.
+- `write_json_dataframe` (`file_io.rs`): Serialize a dataframe to JSON and write it through storage.
+- `write_binary_dataframe` (`file_io.rs`): Serialize a dataframe to LVDF bytes and write them through storage.
+- `load_json_database` (`file_io.rs`): Read JSON database text from storage, parse it, and return a database.
+- `save_json_database` (`file_io.rs`): Serialize a database to JSON and write it through storage.
+- `CellValue::is_nil` (`frame.rs`): Return true when cell is nil.
+- `CellValue::as_number` (`frame.rs`): Return numeric value when cell stores number.
+- `CellValue::as_text` (`frame.rs`): Return text slice when cell stores text.
+- `CellValue::as_bool` (`frame.rs`): Return bool value when cell stores boolean.
+- `CellValue::cmp_for_sort` (`frame.rs`): Compare values for deterministic sort ordering.
+- `DataFrame::new` (`frame.rs`): Create empty dataframe.
+- `DataFrame::nrows` (`frame.rs`): Return number of rows.
+- `DataFrame::ncols` (`frame.rs`): Return number of columns.
+- `DataFrame::columns` (`frame.rs`): Return ordered column names.
+- `DataFrame::count` (`frame.rs`): Return row count alias.
+- `DataFrame::schema` (`frame.rs`): Return inferred schema metadata for every column.
+- `DataFrame::explain` (`frame.rs`): Return a compact textual dataframe or SQL query plan summary.
+- `DataFrame::resolve_col` (`frame.rs`): Resolve column selector to zero-based index.
+- `DataFrame::add_column` (`frame.rs`): Add new column filled with default values.
+- `DataFrame::remove_column` (`frame.rs`): Remove selected column.
+- `DataFrame::rename_column` (`frame.rs`): Rename selected column.
+- `DataFrame::get_column` (`frame.rs`): Return selected column slice.
+- `DataFrame::add_row` (`frame.rs`): Append row from sparse key-value input and return row index.
+- `DataFrame::remove_row` (`frame.rs`): Remove row by index.
+- `DataFrame::get_row` (`frame.rs`): Return cloned row values by index.
+- `DataFrame::iter_rows` (`frame.rs`): Return iterator over row views.
+- `DataFrame::get_value` (`frame.rs`): Return cloned cell value at row and column.
+- `DataFrame::set_value` (`frame.rs`): Set cell value at row and column.
+- `DataFrame::clone_df` (`frame.rs`): Clone dataframe deeply.
+- `DataFrame::column_data_mut` (`frame.rs`): Return mutable column vector for selected column.
+- `DataFrame::from_raw` (`frame.rs`): Build dataframe from raw column names and data vectors.
+- `DataFrame::from_rows` (`frame.rs`): Build dataframe from row-major data.
+- `DataFrame::raw_data` (`frame.rs`): Return raw column storage reference.
+- `DataFrame::random` (`frame.rs`): Generate random dataframe from typed column definitions.
+- `DataFrame::with_eval` (`frame.rs`): Evaluate arithmetic expression per row and append result column.
+- `DataFrame::pivot_table` (`frame.rs`): Build pivot table from row key, column key, and value key.
+- `DataFrame::rolling_mean` (`frame.rs`): Compute rolling mean and return dataframe with appended column.
+- `DataFrame::rolling_sum` (`frame.rs`): Compute rolling sum and return dataframe with appended column.
+- `DataFrame::rank_column` (`frame.rs`): Compute rank for numeric column and return dataframe with rank column.
+- `Database::new` (`frame.rs`): Create empty database.
+- `Database::add_table` (`frame.rs`): Insert or replace table by name.
+- `Database::get_table` (`frame.rs`): Return immutable table reference by name.
+- `Database::get_table_mut` (`frame.rs`): Return mutable table reference by name.
+- `Database::remove_table` (`frame.rs`): Remove table by name.
+- `Database::has_table` (`frame.rs`): Return true when table exists.
+- `Database::list_tables` (`frame.rs`): Return sorted list of table names.
+- `Database::table_count` (`frame.rs`): Return number of tables.
+- `Database::clear` (`frame.rs`): Remove all tables.
+- `Database::merge` (`frame.rs`): Merge another database into self by table name.
+- `Database::clone_db` (`frame.rs`): Clone database deeply.
+- `AggFn::parse` (`frame.rs`): Parse aggregation label and return mode or error.
+- `LazyQuery::new` (`lazy.rs`): Create lazy query from source frame.
+- `LazyQuery::tombstone` (`lazy.rs`): Create empty sentinel lazy query.
+- `LazyQuery::filter` (`lazy.rs`): Append filter step and return updated query.
+- `LazyQuery::sort` (`lazy.rs`): Append sort step and return updated query.
+- `LazyQuery::select` (`lazy.rs`): Append column selection step and return updated query.
+- `LazyQuery::head` (`lazy.rs`): Append head step and return updated query.
+- `LazyQuery::tail` (`lazy.rs`): Append tail step and return updated query.
+- `LazyQuery::slice` (`lazy.rs`): Append slice step and return updated query.
+- `LazyQuery::drop_nil` (`lazy.rs`): Append drop-nil step and return updated query.
+- `LazyQuery::limit` (`lazy.rs`): Append row limit step and return updated query.
+- `LazyQuery::collect` (`lazy.rs`): Execute deferred steps and return materialized frame.
+- `DataFrame::lazy` (`lazy.rs`): Create lazy query from cloned current frame.
+- `percentile` (`query/analytics.rs`): Compute percentile by linear interpolation over sorted values.
+- `DataFrame::zscore_col` (`query/analytics.rs`): Compute z-score for numeric column and write result column.
+- `DataFrame::normalize_col` (`query/analytics.rs`): Normalize numeric column to output range and write result column.
+- `DataFrame::outliers` (`query/analytics.rs`): Return rows where absolute z-score exceeds threshold.
+- `DataFrame::mode_val` (`query/analytics.rs`): Return most frequent non-nil value in selected column.
+- `DataFrame::entropy` (`query/analytics.rs`): Compute Shannon entropy over rendered cell values.
+- `DataFrame::filter` (`query/filter.rs`): Filter rows by column predicate and return matching frame.
+- `DataFrame::par_filter` (`query/filter.rs`): Parallel filter — uses rayon to scan rows when frame exceeds threshold.
+- `DataFrame::sort` (`query/filter.rs`): Sort rows by column and return sorted frame.
+- `DataFrame::head` (`query/filter.rs`): Return first n rows as new frame.
+- `DataFrame::tail` (`query/filter.rs`): Return last n rows as new frame.
+- `DataFrame::slice` (`query/filter.rs`): Return inclusive row slice as new frame.
+- `DataFrame::select_columns` (`query/filter.rs`): Select subset of columns and return new frame.
+- `DataFrame::unique` (`query/filter.rs`): Return unique values from selected column.
+- `DataFrame::group_by` (`query/filter.rs`): Group rows by key column and return grouped frames.
+- `DataFrame::join` (`query/filter.rs`): Join two frames by key columns and return merged frame.
+- `DataFrame::merge` (`query/filter.rs`): Append columns and rows from other frame into self.
+- `DataFrame::count_by` (`query/filter.rs`): Count occurrences by key column and return two-column frame.
+- `DataFrame::drop_nil` (`query/filter.rs`): Drop rows where selected column is nil.
+- `DataFrame::sample` (`query/filter.rs`): Sample up to n rows using deterministic optional seed.
+- `DataFrame::sum` (`query/filter.rs`): Sum numeric values from selected column.
+- `DataFrame::mean` (`query/filter.rs`): Compute mean of numeric values from selected column.
+- `DataFrame::min_val` (`query/filter.rs`): Return minimum numeric value from selected column.
+- `DataFrame::max_val` (`query/filter.rs`): Return maximum numeric value from selected column.
+- `DataFrame::median` (`query/filter.rs`): Compute median of numeric values from selected column.
+- `DataFrame::stddev` (`query/filter.rs`): Compute standard deviation of numeric values from column.
+- `DataFrame::variance` (`query/filter.rs`): Compute variance of numeric values from column.
+- `DataFrame::describe` (`query/filter.rs`): Build descriptive statistics frame for numeric columns.
+- `DataFrame::fill_nil` (`query/filter.rs`): Replace nil values in selected column with provided value.
+- `DataFrame::extract_rows` (`query/filter.rs`): Extract rows by indices and return new frame.
+- `DataFrame::collect_numbers` (`query/filter.rs`): Collect numeric values from selected column.
+- `DataFrame::add_row_batch` (`query/filter.rs`): Append batch of rows to frame and return error on width mismatch.
+- `DataFrame::get_column_as_f64` (`query/filter.rs`): Export selected column as f64 vector with nil as NaN.
+- `DataFrame::set_column_from_f64` (`query/filter.rs`): Set selected column from f64 vector with NaN mapped to nil.
+- `DataFrame::group_agg` (`query/grouping.rs`): Aggregate values by group key and return grouped result frame.
+- `DataFrame::par_group_agg` (`query/grouping.rs`): Parallel group-by aggregation — partitions by group column, aggregates each partition in parallel.
+- `DataFrame::pivot` (`query/grouping.rs`): Pivot row and column keys into cross-tabulated frame.
+- `DataFrame::corr` (`query/grouping.rs`): Compute Pearson correlation between two numeric columns.
+- `DataFrame::correlation_matrix` (`query/grouping.rs`): Build numeric-column correlation matrix frame.
+- `DataFrame::value_counts` (`query/processing.rs`): Count occurrences of values in one column with optional percentage output.
+- `DataFrame::missing_report` (`query/processing.rs`): Build a per-column missing-value report.
+- `DataFrame::duplicate_rows` (`query/processing.rs`): Return rows whose full-row or selected-column key appears more than once.
+- `DataFrame::date_parts` (`query/processing.rs`): Return a new dataframe with ISO date year, month, and day columns appended.
+- `DataFrame::with_rolling_mean` (`query/window.rs`): Compute rolling mean and append output column.
+- `DataFrame::with_rolling_sum` (`query/window.rs`): Compute rolling sum and append output column.
+- `DataFrame::with_rolling_min` (`query/window.rs`): Compute rolling minimum and append output column.
+- `DataFrame::with_rolling_max` (`query/window.rs`): Compute rolling maximum and append output column.
+- `DataFrame::with_rank` (`query/window.rs`): Compute rank over numeric column and append output column.
+- `DataFrame::with_pct_change` (`query/window.rs`): Compute row-to-row percent change and append output column.
+- `DataFrame::with_cumsum` (`query/window.rs`): Compute cumulative sum and append output column.
+- `Xorshift64::new` (`rng.rs`): Create generator from seed and remap zero seed to one.
+- `Xorshift64::next_u64` (`rng.rs`): Advance generator and return next 64-bit pseudo-random value.
+- `Xorshift64::next_f64` (`rng.rs`): Return pseudo-random float in the half-open range [0, 1).
+- `Xorshift64::next_usize` (`rng.rs`): Return pseudo-random index in the half-open range [0, max).
+- `from_csv` (`serial.rs`): Parse CSV text and return DataFrame or validation error.
+- `DataFrame::to_csv` (`serial.rs`): Serialize DataFrame to CSV string.
+- `from_json` (`serial.rs`): Parse JSON table payload and return DataFrame.
+- `DataFrame::to_json` (`serial.rs`): Serialize DataFrame to JSON table string.
+- `DataFrame::to_binary` (`serial.rs`): Serialize DataFrame to compact binary format bytes.
+- `from_binary` (`serial.rs`): Parse compact binary payload and return DataFrame.
+- `DataFrame::to_string_table` (`serial.rs`): Render DataFrame as padded string table.
+- `database_from_json` (`serial.rs`): Parse Database JSON produced by `Database::to_json`.
+- `Database::to_json` (`serial.rs`): Serialize Database tables to JSON string.
+- `query_sql` (`sql.rs`): Execute SQL-like query over one DataFrame and return result frame.
+- `explain_sql` (`sql.rs`): Parse SQL-like query and return a compact execution-plan summary.
+- `query_sql_database` (`sql.rs`): Execute SQL-like query against Database table references.
+- `query_sql_database_params` (`sql.rs`): Execute SQL-like database query after binding positional parameters.
+- `DataFrameTask::spawn_csv_file` (`task.rs`): Spawn a CSV file load task over a worker-owned storage snapshot.
+- `DataFrameTask::spawn_json_file` (`task.rs`): Spawn a JSON file load task over a worker-owned storage snapshot.
+- `DataFrameTask::spawn_dataframe_query` (`task.rs`): Spawn a SQL query task over a dataframe snapshot.
+- `DataFrameTask::spawn_database_query` (`task.rs`): Spawn a SQL query task over a database snapshot.
+- `DataFrameTask::spawn_database_query_params` (`task.rs`): Spawn a parameterized SQL query task over a database snapshot.
+- `DataFrameTask::is_done` (`task.rs`): Return true when the task has completed with success or failure.
+- `DataFrameTask::wait` (`task.rs`): Block until the task completes and return true only for a successful dataframe result.
+- `DataFrameTask::result` (`task.rs`): Return a cloned dataframe result after successful completion.
+- `DataFrameTask::get_error` (`task.rs`): Return the task error message when the task has failed.
+- `DataFrameTask::progress` (`task.rs`): Return a coarse completion estimate from 0.0 to 1.0.
+- `ColumnStore::dtype_name` (`vectorized.rs`): Return static type name for this column variant.
+- `ColumnStore::len` (`vectorized.rs`): Return number of rows in this column.
+- `ColumnStore::is_empty` (`vectorized.rs`): Return true when this column has no rows.
+- `ColumnStore::is_valid` (`vectorized.rs`): Return true when row at index is valid according to validity mask.
+- `ColumnStore::valid_f64s` (`vectorized.rs`): Return valid f64 values for Float64 columns, skipping nil rows.
+- `ColumnStore::filter` (`vectorized.rs`): Filter rows by boolean mask and return new column.
+- `ScalarOp::parse` (`vectorized.rs`): Parse operation label and return variant or error.
+- `BinaryOp::parse` (`vectorized.rs`): Parse operation label and return variant or error.
+- `ReduceOp::parse` (`vectorized.rs`): Parse operation label and return variant or error.
+- `CmpOp::parse` (`vectorized.rs`): Parse comparison operator string and return variant or error.
+- `VecFrame::new` (`vectorized.rs`): Create empty VecFrame.
+- `VecFrame::nrows` (`vectorized.rs`): Return number of rows.
+- `VecFrame::ncols` (`vectorized.rs`): Return number of columns.
+- `VecFrame::columns` (`vectorized.rs`): Return ordered column names.
+- `VecFrame::col_type` (`vectorized.rs`): Return type name for named column.
+- `VecFrame::from_dataframe` (`vectorized.rs`): Convert DataFrame to VecFrame by inferring column types.
+- `VecFrame::to_dataframe` (`vectorized.rs`): Convert VecFrame back to DataFrame.
+- `VecFrame::col_scalar_op` (`vectorized.rs`): Apply scalar operation to Float64 column in place.
+- `VecFrame::col_clamp` (`vectorized.rs`): Clamp Float64 column values to inclusive range in place.
+- `VecFrame::col_binary_op` (`vectorized.rs`): Compute element-wise binary operation between two numeric columns and write result column.
+- `VecFrame::col_reduce` (`vectorized.rs`): Reduce numeric column to single value using selected aggregation.
+- `VecFrame::filter_mask` (`vectorized.rs`): Build boolean mask by comparing numeric column against scalar value.
+- `VecFrame::apply_mask` (`vectorized.rs`): Filter all columns by boolean mask and return new VecFrame.
+- `VecFrame::col_cast` (`vectorized.rs`): Cast named column to target type in place.
+- `VecFrame::par_reduce` (`vectorized.rs`): Reduce multiple columns in parallel and return name-to-result map.
+- `VecFrame::par_scalar_op` (`vectorized.rs`): Apply scalar operation across multiple Float64 columns in parallel.
+- `DataFrame::par_apply_column` (`vectorized.rs`): Parallel element-wise transform on a column.
+
+## Lua API Reference
 
 ### Functions
 
@@ -260,6 +450,7 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LDataFrame:dropNil(col) -> LDataFrame`: Returns rows where the chosen column is not nil.
 - `LDataFrame:duplicateRows(cols?) -> LDataFrame`: Returns rows whose full-row key or selected-column key appears more than once.
 - `LDataFrame:entropy(col) -> number`: Returns entropy for a column. This method is available to Lua scripts.
+- `LDataFrame:explain(sql_str?) -> string`: Returns a compact dataframe or SQL query execution plan summary.
 - `LDataFrame:fillNil(col, val) -> nil`: Replaces nil cells in a column with a value.
 - `LDataFrame:filter(col, op, val) -> LDataFrame`: Returns rows whose column value matches a comparison.
 - `LDataFrame:getColumn(col) -> number[]`: Returns a column as an array table. This method is available to Lua scripts.
@@ -297,6 +488,7 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LDataFrame:rollingSum(col, window, result_col?) -> LDataFrame`: Returns a dataframe with a rolling sum column.
 - `LDataFrame:rows() -> function`: Returns an iterator function over one-based row index and row table pairs.
 - `LDataFrame:sample(n, seed?) -> LDataFrame`: Returns a sampled dataframe. This method is available to Lua scripts.
+- `LDataFrame:schema() -> table`: Returns inferred column schema metadata.
 - `LDataFrame:select(...) -> LDataFrame`: Returns a dataframe with selected columns.
 - `LDataFrame:setColumnFromF64(col, values) -> nil`: Replaces a numeric column from an array table of numbers.
 - `LDataFrame:setValue(row, col, val) -> nil`: Sets one cell value by one-based row and column reference.
@@ -443,3 +635,11 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - `LVecFrame:toDataFrame() -> LDataFrame`: Converts this vectorized frame to a dataframe.
 - `LVecFrame:type() -> string`: Returns the Lua-visible type name for this vectorized frame handle.
 - `LVecFrame:typeOf(name) -> boolean`: Returns whether this vectorized frame handle matches a supported type name.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.
