@@ -252,6 +252,8 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - Exposes octile heuristic and Bresenham LOS helpers for local decisions.
 - Gives each unit its own path search facade without duplicating grid data.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -652,3 +654,14 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `flownet`: Imports or references `src/flownet/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `image` from `src/image/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

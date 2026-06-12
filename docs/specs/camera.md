@@ -120,6 +120,8 @@ This module primarily collaborates with `math`, `render`, `tilemap`. Its respons
 - integrates camera following behavior. The walker tracks both world-space and tile-space positions,
 - supports directional movement with tile collision checks, and smoothly updates an associated camera.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -256,7 +258,7 @@ This module primarily collaborates with `math`, `render`, `tilemap`. Its respons
 
 ##### Methods
 
-- `LCameraWalker:getCamera() -> LCamera`: Returns the associated camera.
+- `LCameraWalker:getCamera() -> LCamera`: Returns the camera associated with this walker.
 - `LCameraWalker:getPosition() -> number, number`: Returns the walker world-space center position.
 - `LCameraWalker:getTilePosition() -> integer, integer`: Returns current walker tile coordinates (1-based).
 - `LCameraWalker:moveDown(dt?) -> nil`: Moves the walker down (positive Y) with collision checking.
@@ -268,3 +270,13 @@ This module primarily collaborates with `math`, `render`, `tilemap`. Its respons
 - `LCameraWalker:type() -> string`: Returns the type name of this userdata.
 - `LCameraWalker:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LCameraWalker:update(dt?) -> nil`: Updates camera state and advances smooth interpolation.
+
+## References
+
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `tilemap`: Imports or references `src/tilemap/`. Cross-group dependency from `Platform Services` into `Feature Systems`.
+
+## Notes
+
+- No additional module-specific notes.

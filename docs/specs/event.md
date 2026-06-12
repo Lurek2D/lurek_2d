@@ -57,6 +57,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Exposes snapshot-friendly query helpers that aid runtime diagnostics and tooling inspection.
 - Delivers the subscription registry used by event publishers to find active listeners efficiently.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -127,3 +129,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LSignal:remove(handle) -> boolean`: Removes a signal callback by subscription handle.
 - `LSignal:type() -> string`: Returns the Lua-visible type name for this signal handle.
 - `LSignal:typeOf(name) -> boolean`: Returns whether this signal handle matches a supported type name.
+
+## References
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

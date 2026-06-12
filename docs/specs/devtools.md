@@ -102,6 +102,8 @@ This module primarily collaborates with `filesystem`, `repl`. Its responsibility
 - Supports path registration, stale marking, and complete watch-state reset operations.
 - Deduplicates and orders change reports for stable hot-reload consumption.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -322,3 +324,12 @@ This module primarily collaborates with `filesystem`, `repl`. Its responsibility
 - `LReplConsole:len() -> integer`: Returns the number of entries stored in this REPL console history.
 - `LReplConsole:type() -> string`: Returns the Lua-visible type name for this REPL console handle.
 - `LReplConsole:typeOf(name) -> boolean`: Returns whether this REPL console handle matches a supported type name.
+
+## References
+
+- `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `repl`: Imports or references `src/repl/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
+
+## Notes
+
+- No additional module-specific notes.

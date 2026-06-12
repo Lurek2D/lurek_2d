@@ -49,6 +49,8 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 - Serialization and compression are part of the same flow so slot files remain structured, compact, and easy to validate on load.
 - The file is therefore the operational core of persistence for games built on the engine.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -136,3 +138,12 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `binary`: Imports or references `src/binary/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

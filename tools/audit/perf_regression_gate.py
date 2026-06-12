@@ -31,16 +31,43 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from pathlib import Path
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
 ANALYTICS_PATH = WORKSPACE_ROOT / "logs" / "data" / "test_analytics.json"
 BASELINE_PATH = WORKSPACE_ROOT / "logs" / "data" / "perf_baseline.json"
+ANALYTICS_SCRIPT = WORKSPACE_ROOT / "tools" / "audit" / "test_analytics.py"
 
 
 def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def ensure_analytics_file() -> bool:
+    if ANALYTICS_PATH.exists():
+        return True
+    if not ANALYTICS_SCRIPT.exists():
+        print(f"[FAIL] Missing analytics generator: {ANALYTICS_SCRIPT}")
+        return False
+
+    print(f"[INFO] Generating analytics: {ANALYTICS_PATH}")
+    result = subprocess.run(
+        [sys.executable, str(ANALYTICS_SCRIPT), "--json"],
+        cwd=WORKSPACE_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    if result.returncode != 0:
+        if result.stderr.strip():
+            print(result.stderr.strip())
+        print(f"[FAIL] Failed to generate analytics file: {ANALYTICS_PATH}")
+        return False
+    return ANALYTICS_PATH.exists()
 
 
 def _module_list(analytics: dict) -> list[dict]:
@@ -90,7 +117,7 @@ Examples:
     parser.add_argument("--update-baseline", action="store_true")
     args = parser.parse_args()
 
-    if not ANALYTICS_PATH.exists():
+    if not ensure_analytics_file():
         print(f"[FAIL] Missing analytics file: {ANALYTICS_PATH}")
         return 1
 

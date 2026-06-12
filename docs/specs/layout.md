@@ -12,7 +12,7 @@
 - Namespace: `lurek.layout`
 - Lua API surface: `5` functions, `0` types, `0` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_layout_unit.lua
 
 ## Summary
 
@@ -75,6 +75,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - Packages algorithm outputs into a uniform result container for renderer and tooling consumption.
 - Keeps configuration and result semantics stable so backends can evolve without breaking caller expectations.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -96,3 +98,11 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 ### Types
 
 - No documented module types.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

@@ -13,7 +13,7 @@
 - Namespace: `lurek.overlay`
 - Lua API surface: `2` functions, `3` types, `88` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_overlay_unit.lua
 
 ## Summary
 
@@ -107,6 +107,8 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - Tracks particle pools, wind parameters, and an internal PRNG.
 - Keeps weather spawning and motion separated from the main scene model.
 - Provides reusable state for long-lived atmospheric weather effects.
+
+
 
 ## Lua API Ref
 
@@ -258,3 +260,14 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LScreenTransition:type() -> string`: Returns the Lua-visible type name for this transition handle.
 - `LScreenTransition:typeOf(name) -> boolean`: Returns whether this transition handle matches a supported type name.
 - `LScreenTransition:update(dt) -> boolean`: Advances this transition timer and returns whether it remains active.
+
+## References
+
+- `color`: Imports or references `src/color/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+
+## Notes
+
+- No additional module-specific notes.

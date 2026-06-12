@@ -100,6 +100,8 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - Debug visualization is included because sheet layout mistakes are easier to catch when the frame grid can be rendered and inspected directly.
 - The file is the animation-frame organization layer of the sprite module.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -202,7 +204,7 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - `LSpriteAnimator:onFrame(fn) -> nil`: Set callback fired on each frame advance.
 - `LSpriteAnimator:onLoop(fn) -> nil`: Set callback fired when a looping clip wraps.
 - `LSpriteAnimator:pause() -> nil`: Pause playback without resetting frame state.
-- `LSpriteAnimator:play(name, restart?) -> nil`: Play or restart a named clip.
+- `LSpriteAnimator:play(name, restart?) -> nil`: Plays or restarts a named animation clip.
 - `LSpriteAnimator:resume() -> nil`: Resume playback from current frame when a clip is selected.
 - `LSpriteAnimator:stop() -> nil`: Stop playback and reset to the first frame of the current clip.
 - `LSpriteAnimator:type() -> string`: Returns the type name of this object.
@@ -364,3 +366,15 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `animation`: Imports or references `src/animation/`. Dependency stays inside `Feature Systems` and should remain acyclic.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems.`` into `Platform Services`.
+- `math`: Imports or references `math` from `src/math/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

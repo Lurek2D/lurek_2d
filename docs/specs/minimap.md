@@ -98,6 +98,8 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 - Separates raw layer bytes from higher-level minimap behavior.
 - Provides the data vocabulary for the whole minimap subsystem.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -210,3 +212,16 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 - `LMinimap:type() -> string`: Returns the Lua-visible type name for this minimap handle.
 - `LMinimap:typeOf(name) -> boolean`: Returns whether this minimap handle matches a supported type name.
 - `LMinimap:update(dt) -> nil`: Advances minimap animations and timers.
+
+## References
+
+- `camera`: Imports or references `src/camera/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `image`: Imports or references `image` from `src/image/`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `raycaster`: Imports or references `src/raycaster/`. Dependency stays inside `Feature Systems` and should remain acyclic.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

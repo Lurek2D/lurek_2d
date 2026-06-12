@@ -117,6 +117,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Clears transient pressed and released markers at frame boundaries while preserving active points.
 - Provides touch lifecycle mutation paths for start, move, and end events from the platform layer.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -342,3 +344,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

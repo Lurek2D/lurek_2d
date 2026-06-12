@@ -54,6 +54,23 @@ def _run_tool(script: str, extra_args: list = None) -> dict:
     return data
 
 
+def _module_count(module_data: dict) -> int:
+    """Return the number of audited modules from the module-audit payload."""
+    if isinstance(module_data, list):
+        return sum(1 for item in module_data if isinstance(item, dict))
+    if not isinstance(module_data, dict):
+        return 0
+    if isinstance(module_data.get("modules"), dict):
+        return len(module_data["modules"])
+    if isinstance(module_data.get("luna_modules"), dict):
+        return len(module_data["luna_modules"])
+    if isinstance(module_data.get("results"), dict):
+        return len(module_data["results"])
+    if isinstance(module_data.get("results"), list):
+        return len(module_data["results"])
+    return 0
+
+
 def _resolve_existing_tool(candidates: tuple[str, ...]) -> str:
     """Return the first existing tools/ script from a candidate list."""
     for script in candidates:
@@ -105,7 +122,7 @@ def generate_report(
     lines.append(f"| API validation issues | {total_issues} | {'PASS' if total_issues == 0 else 'WARN'} |")
 
     # Module count
-    luna_count = len(module_data.get("luna_modules", {}))
+    luna_count = _module_count(module_data)
     lines.append(f"| Lurek2D modules | {luna_count} | — |")
 
     # Total items
@@ -190,7 +207,7 @@ def main() -> int:
     test_data = _run_tool("audit/test_coverage.py")
 
     print("[3/4] Running module audit...", file=sys.stderr)
-    module_data = _run_tool(_resolve_existing_tool(MODULE_AUDIT_CANDIDATES))
+    module_data = _run_tool(_resolve_existing_tool(MODULE_AUDIT_CANDIDATES), ["--all"])
 
     print("[4/4] Running API validation...", file=sys.stderr)
     validation_data = _run_tool("validate/validate_game.py", ["--all-examples"])

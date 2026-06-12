@@ -12,7 +12,7 @@
 - Namespace: `lurek.html`
 - Lua API surface: `6` functions, `2` types, `54` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_html_unit.lua
 
 ## Summary
 
@@ -98,6 +98,8 @@ This module primarily collaborates with `color`. Its responsibility should stay 
 - Normalizes declaration keys and values so later cascade merges operate on stable property naming.
 - Resolves pixel, percent, and unitless length text into float values against caller-provided bases.
 - Supplies compact parse outputs consumed by document rebuild, style recompute, and layout phases.
+
+
 
 ## Lua API Ref
 
@@ -196,3 +198,11 @@ This module primarily collaborates with `color`. Its responsibility should stay 
 - `LHtmlElement:toggleClass(name, force?) -> boolean`: Toggles a CSS class on this element, optionally forcing the final state.
 - `LHtmlElement:type() -> string`: Returns the Lua-visible type name for this HTML element handle.
 - `LHtmlElement:typeOf(name) -> boolean`: Returns whether this element handle matches a supported type name.
+
+## References
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from ``Edge/Integration`` into `Edge/Integration`.
+
+## Notes
+
+- No additional module-specific notes.

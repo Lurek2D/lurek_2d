@@ -69,6 +69,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - It computes conversion factors and offsets so coordinate translation remains consistent.
 - It supports runtime staging of scale behavior without direct renderer coupling.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -203,3 +205,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

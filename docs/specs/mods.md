@@ -12,7 +12,7 @@
 - Namespace: `lurek.mods`
 - Lua API surface: `4` functions, `8` types, `51` methods
 - Rust test path(s): none found in the workspace
-- Lua test path(s): none found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_mods_unit.lua
 
 ## Summary
 
@@ -91,6 +91,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Converts undeclared API calls into Lua errors instead of crashes.
 - Limits file-system access to each mod's own content directory.
 - Reapplies the sandbox after reload so capabilities never expand at runtime.
+
+
 
 ## Lua API Ref
 
@@ -284,3 +286,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

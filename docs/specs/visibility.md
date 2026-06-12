@@ -12,7 +12,7 @@
 - Namespace: `lurek.visibility`
 - Lua API surface: `2` functions, `2` types, `27` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_visibility_unit.lua
 
 ## Summary
 
@@ -104,6 +104,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - It encodes hidden, discovered, visible, and extensible custom levels in one ordered enum.
 - It standardizes information progression so reveal logic and fog rendering stay consistent.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -170,3 +172,11 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LVisibilityGrid:setFlag(region_id, bit, value) -> nil`: Sets a visibility flag bit on a region.
 - `LVisibilityGrid:setGroup(players) -> integer`: Sets an alliance group for a list of players (shared visibility).
 - `LVisibilityGrid:sharesVisibility(player_a, player_b) -> boolean`: Checks if two players share visibility (same alliance group or same player).
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

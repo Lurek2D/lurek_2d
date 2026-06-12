@@ -88,6 +88,8 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - Connects documentation tooling with canonical field and type rules defined in the schema crate.
 - Delivers one access point that keeps schema usage consistent across docs modules.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -358,3 +360,11 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

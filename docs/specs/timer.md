@@ -73,6 +73,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - It treats non-positive durations as no-op calls to preserve predictable behavior.
 - It delegates to standard thread sleeping without busy waiting or spin loops.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -153,3 +155,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LScheduler:typeOf(name) -> boolean`: Checks whether this object matches the given type name. Accepts "LScheduler" or "Object".
 - `LScheduler:update(dt) -> integer`: Advances all time-based events by dt seconds, fires any callbacks whose delay has elapsed, and cleans up completed one-shot events. Call this once per frame with delta time. Returns the number of callbacks that fired.
 - `LScheduler:updateFrames() -> integer`: Advances all frame-based events by one frame, fires any callbacks whose frame count has been reached, and cleans up completed one-shot events. Call this once per frame. Returns the number of callbacks that fired.
+
+## References
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

@@ -64,6 +64,8 @@ This module is mostly self-contained inside the `Core Runtime` group. Cross-modu
 - It gives every major Lua value kind a display strategy, including opaque runtime objects that cannot sensibly print their full internals.
 - The formatter is tuned for readable interactive feedback rather than lossless serialization of Lua state.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -97,3 +99,11 @@ This module is mostly self-contained inside the `Core Runtime` group. Cross-modu
 - `LReplSession:len() -> integer`: Returns the number of entries stored in this REPL history.
 - `LReplSession:type() -> string`: Returns the Lua-visible type name for this REPL session handle.
 - `LReplSession:typeOf(name) -> boolean`: Returns whether this REPL session handle matches a supported type name.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

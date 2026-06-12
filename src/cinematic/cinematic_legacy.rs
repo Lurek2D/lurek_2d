@@ -42,7 +42,7 @@ impl Cinematic {
     /// In a real engine this would schedule engine events on a frame timeline.
     pub fn play(&self) {
         for cut in &self.cuts {
-            println!("[Cinematic] at {:.2}s: {}", cut.time, cut.description);
+            log::info!("[Cinematic] at {:.2}s: {}", cut.time, cut.description);
         }
     }
 

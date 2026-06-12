@@ -102,6 +102,8 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - The file is therefore the temporal logic center of the spine subsystem.
 - It explains how authored motion unfolds, not just what a static pose looks like.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -219,3 +221,13 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `image`: Imports or references `image` from `src/image/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

@@ -14,7 +14,7 @@
 - Namespace: `lurek.procgen`
 - Lua API surface: `33` functions, `15` types, `37` methods
 - Rust test path(s): src/procgen/noise_tests.rs (sibling), plus inline #[cfg(test)] in all other .rs files
-- Lua test path(s): none found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_procgen_unit.lua
 
 ## Summary
 
@@ -214,6 +214,8 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - Minimum spanning tree support gives generation and analysis code a way to reason about essential connectivity independent of redundant routes.
 - Random graph construction turns the same structure into a content generator, placing regions spatially and wiring them into plausible networks.
 - Functionally this file delivers the connected overworld skeleton for route planning, regional structure, and graph-shaped world content.
+
+
 
 ## Lua API Ref
 
@@ -504,3 +506,11 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

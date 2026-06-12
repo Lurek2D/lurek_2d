@@ -100,6 +100,8 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 - Supports listing and existence checks over mounted archive content through a unified interface.
 - Delivers archive overlay functionality used by the virtual filesystem mount stack.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -243,3 +245,12 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 - `LZipMount:readFile(virtual_path) -> string`: Reads a file from the ZIP mount by virtual path.
 - `LZipMount:type() -> string`: Returns the Lua-visible type name for this ZIP mount handle.
 - `LZipMount:typeOf(name) -> boolean`: Returns whether this ZIP mount handle matches a supported type name.
+
+## References
+
+- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Core Runtime` into `Foundations`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

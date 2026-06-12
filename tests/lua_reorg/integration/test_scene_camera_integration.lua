@@ -28,6 +28,14 @@ describe("integration: scene camera viewport operations", function()
         local cx, cy = cam:getPosition()
         expect_near(128, cx, 0.001, "camera follows entity x")
         expect_near(64,  cy, 0.001, "camera follows entity y")
+
+        universe:set(player, "x", 176.0)
+        universe:set(player, "y", 96.0)
+        cam:setPosition(universe:get(player, "x"), universe:get(player, "y"))
+
+        local moved_cx, moved_cy = cam:getPosition()
+        expect_near(176, moved_cx, 0.001, "camera follows updated entity x")
+        expect_near(96,  moved_cy, 0.001, "camera follows updated entity y")
     end)
 
 end)

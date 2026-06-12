@@ -102,6 +102,8 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - Produces RGBA output buffers suitable for texture upload in runtime chart presentation.
 - Serves as the point-series rendering backend for the charts scatter API path.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -210,3 +212,13 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - `LScatterPlot:render() -> number`: Renders the chart contents into a new pixel buffer.
 - `LScatterPlot:setDotRadius(r) -> nil`: Set the radius of the dot drawn for each data point.
 - `LScatterPlot:setTitle(title) -> nil`: Set or update the chart's displayed title.
+
+## References
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from ``Feature Systems`` into `Edge/Integration`.
+- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from ``Feature Systems`` into `Foundations`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems`` into `Platform Services`.
+
+## Notes
+
+- No additional module-specific notes.

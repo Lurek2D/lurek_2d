@@ -59,6 +59,8 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 - Unifies sink behavior under shared abstractions for consistent dispatch semantics.
 - Exposes registry orchestration for broadcasting structured and plain messages to many sinks.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -121,3 +123,12 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `binary`: Imports or references `src/binary/`. Cross-group dependency from `Foundations` into `Edge/Integration`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

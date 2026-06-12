@@ -1,11 +1,4 @@
 -- Integration: camera position driving parallax layer rendering
--- @covers lurek.camera.new
--- @covers lurek.parallax.newLayer
--- @covers lurek.parallax.newSet
--- @covers lurek.render.newImage
-
-
-
 
 local function load_image()
     return lurek.render.newImage("assets/icon.png")
@@ -22,6 +15,7 @@ end
 describe("camera + parallax integration", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
+    -- @integration LParallaxLayer:isVisible
     -- @integration LParallaxLayer:render
     -- @integration lurek.camera.new
     -- @integration lurek.parallax.newLayer
@@ -31,17 +25,16 @@ describe("camera + parallax integration", function()
 
         cam:setPosition(640.0, 360.0)
         expect_cam_xy(cam, 640.0, 360.0, "camera round trip")
+        expect_true(layer:isVisible(), "layer starts visible")
 
         local cx, cy = cam:getPosition()
-        local ok = pcall(function()
-            layer:render(cx, cy)
-        end)
-        expect_true(ok, "layer render accepts camera coordinates")
+        layer:render(cx, cy)
     end)
 
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
     -- @integration LParallaxSet:addLayer
+    -- @integration LParallaxSet:isVisible
     -- @integration LParallaxSet:render
     -- @integration lurek.camera.new
     -- @integration lurek.parallax.newLayer
@@ -55,12 +48,10 @@ describe("camera + parallax integration", function()
         local cam = lurek.camera.new(800, 600)
         cam:setPosition(500.0, 200.0)
         expect_cam_xy(cam, 500.0, 200.0, "camera set position")
+        expect_true(set:isVisible(), "parallax set starts visible")
 
         local cx, cy = cam:getPosition()
-        local ok = pcall(function()
-            set:render(cx, cy)
-        end)
-        expect_true(ok, "set render accepts camera coordinates")
+        set:render(cx, cy)
     end)
 
     -- @integration LCamera:getPosition
@@ -72,23 +63,21 @@ describe("camera + parallax integration", function()
         local cam = lurek.camera.new(800, 600)
         local layer = lurek.parallax.newLayer({ texture = load_image(), scroll_factor_x = 0.3 })
 
-        local ok_count = 0
+        local render_count = 0
         for i = 1, 5 do
             cam:setPosition(i * 120.0, i * 40.0)
             local cx, cy = cam:getPosition()
-            local ok = pcall(function()
-                layer:render(cx, cy)
-            end)
-            if ok then
-                ok_count = ok_count + 1
-            end
+            layer:render(cx, cy)
+            render_count = render_count + 1
         end
 
-        expect_equal(5, ok_count, "all camera-driven renders succeed")
+        expect_equal(5, render_count, "all camera-driven renders succeed")
+        expect_cam_xy(cam, 600.0, 200.0, "camera ends on last swept position")
     end)
 
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
+    -- @integration LParallaxLayer:getOpacity
     -- @integration LParallaxLayer:render
     -- @integration LParallaxLayer:update
     -- @integration lurek.camera.new
@@ -98,25 +87,24 @@ describe("camera + parallax integration", function()
         local layer = lurek.parallax.newLayer({ texture = load_image(), autoscroll_x = 80.0 })
 
         local dt = 1.0 / 60.0
-        local ok_count = 0
+        local render_count = 0
         for i = 1, 30 do
             layer:update(dt)
             cam:setPosition(i * 10.0, 0.0)
             local cx, cy = cam:getPosition()
-            local ok = pcall(function()
-                layer:render(cx, cy)
-            end)
-            if ok then
-                ok_count = ok_count + 1
-            end
+            layer:render(cx, cy)
+            render_count = render_count + 1
         end
 
-        expect_equal(30, ok_count, "all autoscroll renders succeed with camera motion")
+        expect_equal(30, render_count, "all autoscroll renders succeed with camera motion")
+        expect_near(1.0, layer:getOpacity(), 0.001, "autoscroll updates keep default opacity")
+        expect_cam_xy(cam, 300.0, 0.0, "camera tracks the last follow position")
     end)
 
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
     -- @integration LParallaxSet:addLayer
+    -- @integration LParallaxSet:isVisible
     -- @integration LParallaxSet:render
     -- @integration LParallaxSet:update
     -- @integration lurek.camera.new
@@ -130,25 +118,24 @@ describe("camera + parallax integration", function()
 
         local cam = lurek.camera.new(800, 600)
         local dt = 1.0 / 60.0
-        local ok_count = 0
+        local render_count = 0
 
         for i = 1, 30 do
             set:update(dt)
             cam:setPosition(i * 8.0, 0.0)
             local cx, cy = cam:getPosition()
-            local ok = pcall(function()
-                set:render(cx, cy)
-            end)
-            if ok then
-                ok_count = ok_count + 1
-            end
+            set:render(cx, cy)
+            render_count = render_count + 1
         end
 
-        expect_equal(30, ok_count, "all set renders succeed during camera sweep")
+        expect_equal(30, render_count, "all set renders succeed during camera sweep")
+        expect_true(set:isVisible(), "set remains visible during camera sweep")
+        expect_cam_xy(cam, 240.0, 0.0, "camera sweep ends on last position")
     end)
 
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
+    -- @integration LParallaxLayer:getOpacity
     -- @integration LParallaxLayer:render
     -- @integration LParallaxLayer:setOpacity
     -- @integration lurek.camera.new
@@ -159,7 +146,7 @@ describe("camera + parallax integration", function()
         local day = lurek.parallax.newLayer({ texture = img, opacity = 1.0 })
         local night = lurek.parallax.newLayer({ texture = img, opacity = 0.0 })
 
-        local ok_count = 0
+        local render_count = 0
         for i = 0, 30 do
             local t = i / 30.0
             day:setOpacity(1.0 - t)
@@ -167,21 +154,20 @@ describe("camera + parallax integration", function()
             cam:setPosition(i * 6.0, 0.0)
             local cx, cy = cam:getPosition()
 
-            local ok = pcall(function()
-                day:render(cx, cy)
-                night:render(cx, cy)
-            end)
-            if ok then
-                ok_count = ok_count + 1
-            end
+            day:render(cx, cy)
+            night:render(cx, cy)
+            render_count = render_count + 1
         end
 
-        expect_equal(31, ok_count, "all crossfade renders succeed")
+        expect_equal(31, render_count, "all crossfade renders succeed")
+        expect_near(0.0, day:getOpacity(), 0.001, "day layer fades out completely")
+        expect_near(1.0, night:getOpacity(), 0.001, "night layer fades in completely")
     end)
 
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
     -- @integration LParallaxSet:addLayer
+    -- @integration LParallaxSet:isVisible
     -- @integration LParallaxSet:render
     -- @integration LParallaxSet:setVisible
     -- @integration LParallaxSet:update
@@ -205,15 +191,14 @@ describe("camera + parallax integration", function()
         end
 
         set:setVisible(false)
+        expect_false(set:isVisible(), "set can be hidden after camera-driven updates")
         set:update(dt)
         set:setVisible(true)
+        expect_true(set:isVisible(), "set can be shown again before render")
 
         cam:setPosition(0.0, 0.0)
         local cx, cy = cam:getPosition()
-        local ok = pcall(function()
-            set:render(cx, cy)
-        end)
-        expect_true(ok, "render succeeds after visibility transition")
+        set:render(cx, cy)
     end)
 end)
 test_summary()

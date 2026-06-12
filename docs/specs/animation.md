@@ -141,6 +141,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`, `s
 - Tracks unique membership so timing alignment stays stable across coordinated animated entities.
 - Serves as lightweight grouping state for systems that enforce multi-entity animation sync.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -323,3 +325,15 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`, `s
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems`` into `Platform Services`.
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `spine`: Imports or references `src/spine/`. Dependency stays inside `Feature Systems` and should remain acyclic.
+
+## Notes
+
+- No additional module-specific notes.

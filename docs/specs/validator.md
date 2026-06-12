@@ -12,7 +12,7 @@
 - Namespace: `lurek.validator`
 - Lua API surface: `3` functions, `1` types, `9` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_validator_unit.lua
 
 ## Summary
 
@@ -113,6 +113,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - It enables configurable policy checks without adding new compiled rule types.
 - It keeps external rule definitions deterministic so CI behavior remains reproducible.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -150,3 +152,11 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LValidationEngine:ruleCount() -> integer`: Get number of loaded rules for this object.
 - `LValidationEngine:run() -> table`: Run validation against all Lua files under root.
 - `LValidationEngine:runFile(path) -> table`: Run validation against a single file.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

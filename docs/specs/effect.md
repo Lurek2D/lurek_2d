@@ -102,6 +102,8 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 - Applies defensive index handling so invalid operations fail safely at runtime boundaries.
 - Delivers the sequencing core that determines how effect chains are executed frame to frame.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -221,3 +223,14 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 - `LPostFxStack:setFeedback(factor) -> nil`: Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
 - `LPostFxStack:type() -> string`: Returns the Lua-visible type name for this post-processing stack handle.
 - `LPostFxStack:typeOf(name) -> boolean`: Returns whether this stack handle matches a supported type name.
+
+## References
+
+- `image`: Imports or references `image` from `src/image/`.
+- `overlay`: Imports or references `src/overlay/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

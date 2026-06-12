@@ -10,20 +10,23 @@ describe("graphics + camera integration", function()
         local cam = lurek.camera.newCamera()
         cam:setPosition(100, 200)
 
-        -- Verify camera position stored
         local cx, cy = cam:getPosition()
+        local ox, oy = cam:getRenderOffset()
+        local draw_x = cx + 10
+        local draw_y = cy + 10
         expect_near(100, cx, 0.01, "camera x")
         expect_near(200, cy, 0.01, "camera y")
+        expect_type("number", ox)
+        expect_type("number", oy)
+        expect_near(110, draw_x, 0.01, "camera state feeds world draw x")
+        expect_near(210, draw_y, 0.01, "camera state feeds world draw y")
 
-        -- Draw commands should still work
-        local ok = pcall(function()
-            lurek.render.setColor(1, 0, 0, 1)
-            lurek.render.rectangle("fill", 10, 10, 50, 50)
-        end)
-        expect_true(ok, "render calls accept scene state after camera position update")
+        lurek.render.setColor(1, 0, 0, 1)
+        lurek.render.rectangle("fill", draw_x, draw_y, 50, 50)
     end)
 
     -- @integration LCamera:getZoom
+    -- @integration LCamera:getViewport
     -- @integration LCamera:setZoom
     -- @integration lurek.camera.newCamera
     -- @integration lurek.render.circle
@@ -32,13 +35,14 @@ describe("graphics + camera integration", function()
         cam:setZoom(2.0)
 
         local zoom = cam:getZoom()
+        local _, _, width, height = cam:getViewport()
+        local radius = 12.5 * zoom
         expect_near(2.0, zoom, 0.01, "zoom is 2x")
+        expect_type("number", width)
+        expect_type("number", height)
+        expect_near(25.0, radius, 0.01, "camera zoom feeds render radius")
 
-        -- Drawing at zoom should not error
-        local ok = pcall(function()
-            lurek.render.circle("fill", 100, 100, 25)
-        end)
-        expect_true(ok, "circle draw accepts scene state after camera zoom update")
+        lurek.render.circle("fill", width / 2, height / 2, radius)
     end)
 
     -- @integration LCamera:getRotation
@@ -50,13 +54,13 @@ describe("graphics + camera integration", function()
         cam:setRotation(math.pi / 4)
 
         local rot = cam:getRotation()
+        local line_dx = math.cos(rot) * 100
+        local line_dy = math.sin(rot) * 100
         expect_near(math.pi / 4, rot, 0.001, "camera rotated 45 degrees")
+        expect_near(70.710678, line_dx, 0.01, "rotation derives x component for render line")
+        expect_near(70.710678, line_dy, 0.01, "rotation derives y component for render line")
 
-        -- Draw with camera rotation applied
-        local ok = pcall(function()
-            lurek.render.line(0, 0, 100, 100)
-        end)
-        expect_true(ok, "line draw accepts scene state after camera rotation update")
+        lurek.render.line(0, 0, line_dx, line_dy)
     end)
 
     -- @integration LCamera:getPosition
@@ -72,14 +76,15 @@ describe("graphics + camera integration", function()
 
         local cx, cy = cam:getPosition()
         local zoom = cam:getZoom()
+        local world_w = 20 * zoom
+        local world_h = 10 * zoom
         expect_near(200, cx, 0.01, "camera x")
         expect_near(150, cy, 0.01, "camera y")
         expect_near(1.5, zoom, 0.01, "camera zoom")
+        expect_near(30, world_w, 0.01, "camera zoom scales width coherently")
+        expect_near(15, world_h, 0.01, "camera zoom scales height coherently")
 
-        local ok = pcall(function()
-            lurek.render.rectangle("line", cx, cy, 20 * zoom, 10 * zoom)
-        end)
-        expect_true(ok, "draw command accepts camera-derived coordinates and size")
+        lurek.render.rectangle("line", cx, cy, world_w, world_h)
     end)
 end)
 test_summary()

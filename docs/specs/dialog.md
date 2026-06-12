@@ -89,6 +89,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - Serves as the planning backbone executed by dialogue state, scripting hooks, and event publication.
 - Delivers data-first branching behavior that stays testable, tunable, and stable across gameplay sessions.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -205,3 +207,11 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LSpeakerRegistry:remove(id) -> boolean`: Removes a speaker by ID for this object.
 - `LSpeakerRegistry:type() -> string`: Returns the Lua-visible type name.
 - `LSpeakerRegistry:typeOf(name) -> boolean`: Returns whether this handle matches a supported type name.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

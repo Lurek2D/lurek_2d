@@ -42,6 +42,16 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - Reuses the main runtime startup path while controlling subsystem behavior on Windows.
 - Serves as the minimal binary entrypoint for standard interactive game launch.
 
+
+
 ## Lua API Ref
 
 - No dedicated direct `lurek.*` namespace is exposed by this module.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

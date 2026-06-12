@@ -21,9 +21,7 @@ describe("integration: data serialization with filesystem I/O", function()
         expect_true(#json_str > 0, "JSON string is non-empty")
 
         -- Write, read back, and decode in the same it-block so the file persists
-        expect_no_error(function()
-            lurek.filesystem.write(TMP_PATH, json_str)
-        end)
+        lurek.filesystem.write(TMP_PATH, json_str)
 
         local exists = lurek.filesystem.exists(TMP_PATH)
         expect_true(exists, "temp file exists after write")
@@ -36,10 +34,8 @@ describe("integration: data serialization with filesystem I/O", function()
         expect_equal(9999,      decoded.score, "score round-tripped")
         expect_equal(7,         decoded.level, "level round-tripped")
 
-        -- Cleanup
-        if lurek.filesystem.exists(TMP_PATH) then
-            pcall(lurek.filesystem.remove, TMP_PATH)
-        end
+        lurek.filesystem.remove(TMP_PATH)
+        expect_false(lurek.filesystem.exists(TMP_PATH), "temp file is removed after round-trip")
     end)
 
 end)

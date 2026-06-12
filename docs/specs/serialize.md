@@ -13,7 +13,7 @@
 - Namespace: `lurek.serial`
 - Lua API surface: `15` functions, `0` types, `0` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_serialize_unit.lua
 
 ## Summary
 
@@ -109,6 +109,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Attribute and child-content handling are kept together here so engine importers see one consistent XML-to-value mapping.
 - The file is the XML ingestion path inside the broader serialization module.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -140,3 +142,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ### Types
 
 - No documented module types.
+
+## References
+
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
+
+## Notes
+
+- No additional module-specific notes.

@@ -11,9 +11,9 @@
 - Source path: `src/globe/`
 - Binding: `src/lua_api/globe_api.rs`
 - Namespace: `lurek.globe`
-- Lua API surface: `11` functions, `4` types, `72` methods
+- Lua API surface: `12` functions, `4` types, `72` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_globe_unit.lua
 
 ## Summary
 
@@ -196,6 +196,8 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - Declares subsystem error variants for loading, lookup, and path-related failure handling.
 - Delivers the canonical type contract consumed by all globe modules and integration surfaces.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -343,3 +345,15 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobeRegistry:remove(name) -> boolean`: Removes a globe from the registry by name.
 - `LGlobeRegistry:type() -> string`: Returns the Lua-visible type name for this globe registry handle.
 - `LGlobeRegistry:typeOf(name) -> boolean`: Returns whether this registry handle matches a supported type name.
+
+## References
+
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.
+- `pathfind`: Imports or references `src/pathfind/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+
+## Notes
+
+- No additional module-specific notes.

@@ -7,13 +7,13 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 /// Lua-side REPL session handle with bounded history.
-pub struct LReplSession {
+struct LuaReplSession {
     /// Release-safe REPL session implementation.
     inner: ReplSession,
 }
 
 /// Provides Lua methods for evaluating code, reading history, completion, and identifying REPL handles.
-impl LuaUserData for LReplSession {
+impl LuaUserData for LuaReplSession {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- eval --
         /// Evaluates Lua code and records the input in this REPL history.
@@ -82,7 +82,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     repl.set(
         "new",
         lua.create_function(|lua, max_history: Option<usize>| {
-            lua.create_userdata(LReplSession {
+            lua.create_userdata(LuaReplSession {
                 inner: ReplSession::new(max_history.unwrap_or(200)),
             })
         })?,

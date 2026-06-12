@@ -978,233 +978,222 @@ fn parse_globe_spec(tbl: Option<LuaTable>) -> GlobeSpec {
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     let registry = Arc::new(Mutex::new(GlobeRegistry::new()));
-    {
-        let s = state.clone();
-        // -- newRegistry --
-        /// Creates an empty globe registry handle independent from the module registry.
-        /// @return | LGlobeRegistry | New globe registry handle.
-        tbl.set(
-            "newRegistry",
-            lua.create_function(move |lua, ()| {
-                lua.create_userdata(LuaGlobeRegistry {
-                    reg: Arc::new(Mutex::new(GlobeRegistry::new())),
-                    state: s.clone(),
-                })
-            })?,
-        )?;
-    }
-    {
-        let reg = registry.clone();
-        let s = state.clone();
-        // -- new --
-        /// Creates a named globe with optional specification fields in the module registry.
-        /// @param | name | string | Globe registry name.
-        /// @param | spec_tbl | table? | Globe specification table.
-        /// @return | LGlobe | New globe handle.
-        tbl.set(
-            "new",
-            lua.create_function(move |_, (name, spec_tbl): (String, Option<LuaTable>)| {
-                let spec = parse_globe_spec(spec_tbl);
-                {
-                    let mut guard = reg.lock().map_err(|e| {
-                        mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
-                    })?;
-                    guard.create(name.clone(), spec);
-                }
-                Ok(LuaGlobe {
-                    reg: reg.clone(),
-                    name,
-                    state: s.clone(),
-                })
-            })?,
-        )?;
-    }
-    {
-        let reg = registry.clone();
-        let s = state.clone();
-        // -- get --
-        /// Returns a globe from the module registry by name.
-        /// @param | name | string | Globe registry name.
-        /// @return | LGlobe | Globe handle, or nil when no globe exists with that name.
-        tbl.set(
-            "get",
-            lua.create_function(move |_, name: String| {
-                let exists = {
-                    let guard = reg.lock().map_err(|e| {
-                        mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
-                    })?;
-                    guard.get(&name).is_some()
-                };
-                if exists {
-                    Ok(Some(LuaGlobe {
-                        reg: reg.clone(),
-                        name,
-                        state: s.clone(),
-                    }))
-                } else {
-                    Ok(None)
-                }
-            })?,
-        )?;
-    }
-    {
-        let reg = registry.clone();
-        // -- remove --
-        /// Removes a globe from the registry by name.
-        /// @param | name | string | Globe registry name.
-        /// @return | boolean | True when a globe was removed.
-        tbl.set(
-            "remove",
-            lua.create_function(move |_, name: String| {
-                let mut guard = reg.lock().map_err(|e| {
+    let registry_state = state.clone();
+    // -- newRegistry --
+    /// Creates an empty globe registry handle independent from the module registry.
+    /// @return | LGlobeRegistry | New globe registry handle.
+    tbl.set(
+        "newRegistry",
+        lua.create_function(move |lua, ()| {
+            lua.create_userdata(LuaGlobeRegistry {
+                reg: Arc::new(Mutex::new(GlobeRegistry::new())),
+                state: registry_state.clone(),
+            })
+        })?,
+    )?;
+
+    let new_reg = registry.clone();
+    let new_state = state.clone();
+    // -- new --
+    /// Creates a named globe with optional specification fields in the module registry.
+    /// @param | name | string | Globe registry name.
+    /// @param | spec_tbl | table? | Globe specification table.
+    /// @return | LGlobe | New globe handle.
+    tbl.set(
+        "new",
+        lua.create_function(move |_, (name, spec_tbl): (String, Option<LuaTable>)| {
+            let spec = parse_globe_spec(spec_tbl);
+            {
+                let mut guard = new_reg.lock().map_err(|e| {
                     mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
                 })?;
-                Ok(guard.remove(&name).is_some())
-            })?,
-        )?;
-    }
-    {
-        let reg = registry.clone();
-        let s = state.clone();
-        // -- loadFromTOMLFile --
-        /// Creates a globe and populates provinces from a TOML file path.
-        /// @param | name | string | Globe registry name.
-        /// @param | path | string | TOML file path to load.
-        /// @param | spec_tbl | table? | Globe specification table.
-        /// @return | LGlobe | New populated globe handle.
-        tbl.set(
-            "loadFromTOMLFile",
-            lua.create_function(
-                move |_, (name, path, spec_tbl): (String, String, Option<LuaTable>)| {
-                    let spec = parse_globe_spec(spec_tbl);
-                    let provinces =
-                        loader::load_from_toml_file(&path).map_err(mlua::Error::RuntimeError)?;
-                    {
-                        let mut guard = reg.lock().map_err(|e| {
-                            mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
-                        })?;
-                        let globe = guard.create(name.clone(), spec);
-                        for p in provinces {
-                            let _ = globe.add_province(p);
-                        }
+                guard.create(name.clone(), spec);
+            }
+            Ok(LuaGlobe {
+                reg: new_reg.clone(),
+                name,
+                state: new_state.clone(),
+            })
+        })?,
+    )?;
+
+    let get_reg = registry.clone();
+    let get_state = state.clone();
+    // -- get --
+    /// Returns a globe from the module registry by name.
+    /// @param | name | string | Globe registry name.
+    /// @return | LGlobe | Globe handle, or nil when no globe exists with that name.
+    tbl.set(
+        "get",
+        lua.create_function(move |_, name: String| {
+            let exists = {
+                let guard = get_reg.lock().map_err(|e| {
+                    mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
+                })?;
+                guard.get(&name).is_some()
+            };
+            if exists {
+                Ok(Some(LuaGlobe {
+                    reg: get_reg.clone(),
+                    name,
+                    state: get_state.clone(),
+                }))
+            } else {
+                Ok(None)
+            }
+        })?,
+    )?;
+
+    let remove_reg = registry.clone();
+    // -- remove --
+    /// Removes a globe from the registry by name.
+    /// @param | name | string | Globe registry name.
+    /// @return | boolean | True when a globe was removed.
+    tbl.set(
+        "remove",
+        lua.create_function(move |_, name: String| {
+            let mut guard = remove_reg.lock().map_err(|e| {
+                mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
+            })?;
+            Ok(guard.remove(&name).is_some())
+        })?,
+    )?;
+    let load_toml_file_reg = registry.clone();
+    let load_toml_file_state = state.clone();
+    // -- loadFromTOMLFile --
+    /// Creates a globe and populates provinces from a TOML file path.
+    /// @param | name | string | Globe registry name.
+    /// @param | path | string | TOML file path to load.
+    /// @param | spec_tbl | table? | Globe specification table.
+    /// @return | LGlobe | New populated globe handle.
+    tbl.set(
+        "loadFromTOMLFile",
+        lua.create_function(
+            move |_, (name, path, spec_tbl): (String, String, Option<LuaTable>)| {
+                let spec = parse_globe_spec(spec_tbl);
+                let provinces =
+                    loader::load_from_toml_file(&path).map_err(mlua::Error::RuntimeError)?;
+                {
+                    let mut guard = load_toml_file_reg.lock().map_err(|e| {
+                        mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
+                    })?;
+                    let globe = guard.create(name.clone(), spec);
+                    for p in provinces {
+                        let _ = globe.add_province(p);
                     }
-                    Ok(LuaGlobe {
-                        reg: reg.clone(),
-                        name,
-                        state: s.clone(),
-                    })
-                },
-            )?,
-        )?;
-    }
-    {
-        let reg = registry.clone();
-        let s = state.clone();
-        // -- loadFromTOML --
-        /// Creates a globe and populates provinces from TOML source text.
-        /// @param | name | string | Globe registry name.
-        /// @param | toml_src | string | TOML province document source.
-        /// @param | spec_tbl | table? | Globe specification table.
-        /// @return | LGlobe | New populated globe handle.
-        tbl.set(
-            "loadFromTOML",
-            lua.create_function(
-                move |_, (name, toml_src, spec_tbl): (String, String, Option<LuaTable>)| {
-                    let spec = parse_globe_spec(spec_tbl);
-                    let provinces =
-                        loader::load_from_toml_str(&toml_src).map_err(mlua::Error::RuntimeError)?;
-                    {
-                        let mut guard = reg.lock().map_err(|e| {
-                            mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
-                        })?;
-                        let globe = guard.create(name.clone(), spec);
-                        for p in provinces {
-                            let _ = globe.add_province(p);
-                        }
+                }
+                Ok(LuaGlobe {
+                    reg: load_toml_file_reg.clone(),
+                    name,
+                    state: load_toml_file_state.clone(),
+                })
+            },
+        )?,
+    )?;
+
+    let load_toml_reg = registry.clone();
+    let load_toml_state = state.clone();
+    // -- loadFromTOML --
+    /// Creates a globe and populates provinces from TOML source text.
+    /// @param | name | string | Globe registry name.
+    /// @param | toml_src | string | TOML province document source.
+    /// @param | spec_tbl | table? | Globe specification table.
+    /// @return | LGlobe | New populated globe handle.
+    tbl.set(
+        "loadFromTOML",
+        lua.create_function(
+            move |_, (name, toml_src, spec_tbl): (String, String, Option<LuaTable>)| {
+                let spec = parse_globe_spec(spec_tbl);
+                let provinces =
+                    loader::load_from_toml_str(&toml_src).map_err(mlua::Error::RuntimeError)?;
+                {
+                    let mut guard = load_toml_reg.lock().map_err(|e| {
+                        mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
+                    })?;
+                    let globe = guard.create(name.clone(), spec);
+                    for p in provinces {
+                        let _ = globe.add_province(p);
                     }
-                    Ok(LuaGlobe {
-                        reg: reg.clone(),
-                        name,
-                        state: s.clone(),
-                    })
-                },
-            )?,
-        )?;
-    }
-    {
-        let reg = registry.clone();
-        let s = state.clone();
-        // -- loadFromPNG --
-        /// Creates a globe and populates provinces from a PNG file.
-        /// @param | name | string | Globe registry name.
-        /// @param | png_path | string | PNG file path to load.
-        /// @param | spec_tbl | table? | Globe specification table.
-        /// @return | LGlobe | New populated globe handle.
-        tbl.set(
-            "loadFromPNG",
-            lua.create_function(
-                move |_, (name, png_path, spec_tbl): (String, String, Option<LuaTable>)| {
-                    let spec = parse_globe_spec(spec_tbl);
-                    let provinces =
-                        loader::load_from_png_file(&png_path).map_err(mlua::Error::RuntimeError)?;
-                    {
-                        let mut guard = reg.lock().map_err(|e| {
-                            mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
-                        })?;
-                        let globe = guard.create(name.clone(), spec);
-                        for p in provinces {
-                            let _ = globe.add_province(p);
-                        }
+                }
+                Ok(LuaGlobe {
+                    reg: load_toml_reg.clone(),
+                    name,
+                    state: load_toml_state.clone(),
+                })
+            },
+        )?,
+    )?;
+
+    let load_png_reg = registry.clone();
+    let load_png_state = state.clone();
+    // -- loadFromPNG --
+    /// Creates a globe and populates provinces from a PNG file.
+    /// @param | name | string | Globe registry name.
+    /// @param | png_path | string | PNG file path to load.
+    /// @param | spec_tbl | table? | Globe specification table.
+    /// @return | LGlobe | New populated globe handle.
+    tbl.set(
+        "loadFromPNG",
+        lua.create_function(
+            move |_, (name, png_path, spec_tbl): (String, String, Option<LuaTable>)| {
+                let spec = parse_globe_spec(spec_tbl);
+                let provinces =
+                    loader::load_from_png_file(&png_path).map_err(mlua::Error::RuntimeError)?;
+                {
+                    let mut guard = load_png_reg.lock().map_err(|e| {
+                        mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
+                    })?;
+                    let globe = guard.create(name.clone(), spec);
+                    for p in provinces {
+                        let _ = globe.add_province(p);
                     }
-                    Ok(LuaGlobe {
-                        reg: reg.clone(),
-                        name,
-                        state: s.clone(),
-                    })
-                },
-            )?,
-        )?;
-    }
-    {
-        let reg = registry.clone();
-        let s = state.clone();
-        // -- generateVoronoi --
-        /// Creates a globe and populates provinces from latitude-longitude seed points.
-        /// @param | name | string | Globe registry name.
-        /// @param | seeds_tbl | table | Array table of `{lat, lon}` seed pairs.
-        /// @param | spec_tbl | table? | Globe specification table.
-        /// @return | LGlobe | New generated globe handle.
-        tbl.set(
-            "generateVoronoi",
-            lua.create_function(
-                move |_, (name, seeds_tbl, spec_tbl): (String, LuaTable, Option<LuaTable>)| {
-                    let spec = parse_globe_spec(spec_tbl);
-                    let mut seeds = Vec::new();
-                    for item in seeds_tbl.sequence_values::<LuaTable>() {
-                        let p = item?;
-                        let lat: f32 = p.get(1)?;
-                        let lon: f32 = p.get(2)?;
-                        seeds.push((lat, lon));
+                }
+                Ok(LuaGlobe {
+                    reg: load_png_reg.clone(),
+                    name,
+                    state: load_png_state.clone(),
+                })
+            },
+        )?,
+    )?;
+    let generate_voronoi_reg = registry.clone();
+    let generate_voronoi_state = state.clone();
+    // -- generateVoronoi --
+    /// Creates a globe and populates provinces from latitude-longitude seed points.
+    /// @param | name | string | Globe registry name.
+    /// @param | seeds_tbl | table | Array table of `{lat, lon}` seed pairs.
+    /// @param | spec_tbl | table? | Globe specification table.
+    /// @return | LGlobe | New generated globe handle.
+    tbl.set(
+        "generateVoronoi",
+        lua.create_function(
+            move |_, (name, seeds_tbl, spec_tbl): (String, LuaTable, Option<LuaTable>)| {
+                let spec = parse_globe_spec(spec_tbl);
+                let mut seeds = Vec::new();
+                for item in seeds_tbl.sequence_values::<LuaTable>() {
+                    let p = item?;
+                    let lat: f32 = p.get(1)?;
+                    let lon: f32 = p.get(2)?;
+                    seeds.push((lat, lon));
+                }
+                let provinces = loader::generate_voronoi_provinces(&seeds);
+                {
+                    let mut guard = generate_voronoi_reg.lock().map_err(|e| {
+                        mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
+                    })?;
+                    let globe = guard.create(name.clone(), spec);
+                    for p in provinces {
+                        let _ = globe.add_province(p);
                     }
-                    let provinces = loader::generate_voronoi_provinces(&seeds);
-                    {
-                        let mut guard = reg.lock().map_err(|e| {
-                            mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
-                        })?;
-                        let globe = guard.create(name.clone(), spec);
-                        for p in provinces {
-                            let _ = globe.add_province(p);
-                        }
-                    }
-                    Ok(LuaGlobe {
-                        reg: reg.clone(),
-                        name,
-                        state: s.clone(),
-                    })
-                },
-            )?,
-        )?;
-    }
+                }
+                Ok(LuaGlobe {
+                    reg: generate_voronoi_reg.clone(),
+                    name,
+                    state: generate_voronoi_state.clone(),
+                })
+            },
+        )?,
+    )?;
     // -- greatCircleDistance --
     /// Computes great-circle distance between two latitude-longitude points.
     /// @param | la | number | Start latitude in degrees.

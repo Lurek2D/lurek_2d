@@ -4,6 +4,8 @@ describe("integration: effect + camera", function()
     -- @integration LCamera:getZoom
     -- @integration LCamera:setZoom
     -- @integration LPostFxStack:add
+    -- @integration LPostFxStack:getEffectCount
+    -- @integration LPostFxStack:getEffect
     -- @integration lurek.camera.newCamera
     -- @integration lurek.effect.newEffect
     -- @integration lurek.effect.newStack
@@ -16,6 +18,8 @@ describe("integration: effect + camera", function()
         cam:setZoom(1.25)
 
         local z = cam:getZoom()
+        expect_equal(1, stack:getEffectCount(), "stack owns one configured effect")
+        expect_equal("bloom", stack:getEffect(1):getType(), "stack preserves inserted effect type")
         expect_near(1.25, z, 0.001, "camera zoom should be applied")
     end)
 end)

@@ -240,6 +240,8 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - This file therefore acts as the observability layer for the raycaster subsystem, not just a collection of screenshots.
 - It is where engine authors can inspect the behavior of rays, walls, and depth as pictures instead of logs.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -537,3 +539,15 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LSpriteManager:sortAndProject(camX, camY, camAngle) -> integer[]`: Sorts all visible sprites by distance from the camera and returns projection data.
 - `LSpriteManager:type() -> string`: Returns the type name of this object ("LSpriteManager").
 - `LSpriteManager:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+## References
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

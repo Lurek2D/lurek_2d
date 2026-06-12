@@ -49,6 +49,8 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 - Exposes shared cache contracts while concentrating concrete registry behavior in the cache layer.
 - Serves as the composition entry for engine-side `lurek.asset` state and operations.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -131,3 +133,11 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

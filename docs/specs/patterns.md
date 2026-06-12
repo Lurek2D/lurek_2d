@@ -242,6 +242,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Revision tracking gives outside code a reliable signal that probabilities or membership changed, helping caches and derived tables stay honest.
 - Functionally this delivers the probability orchestration layer for loot tables, encounter variation, weighted choices, and repeat-aware random selection flows.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -818,3 +820,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LWeightedRandom:remove(id) -> boolean`: Remove an item by its ID. Returns true if it existed.
 - `LWeightedRandom:setWeight(id, weight) -> boolean`: Change the weight of an existing entry.
 - `LWeightedRandom:totalWeight() -> number`: Return the sum of all entry weights.
+
+## References
+
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
+
+## Notes
+
+- No additional module-specific notes.

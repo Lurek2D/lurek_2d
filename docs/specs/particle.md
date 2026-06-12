@@ -145,14 +145,16 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - Keeps render inspection separate from the particle simulation core.
 - Helps debug effect tuning without touching the live emitter loop.
 
+
+
 ## Lua API Ref
 
 ### Functions
 
 - `lurek.particle.drawLifecycleToImage(snapshots, max_particles, w, h) -> LImageData`: Draws a lifecycle chart image from `(step, count)` snapshot tables.
-- `lurek.particle.fromTOML(path) -> LParticleSystem`: Creates a particle system from a TOML config file, including optional deterministic `seed`.
+- `lurek.particle.fromTOML(path) -> LParticleSystem`: Creates a particle system from a TOML config file.
 - `lurek.particle.newPreset(name) -> LParticleSystem`: Creates a particle system from a named preset.
-- `lurek.particle.newSystem(config?) -> LParticleSystem`: Creates a particle system from an optional config table; `config.seed` fixes the emitter RNG sequence.
+- `lurek.particle.newSystem(config?) -> LParticleSystem`: Creates a particle system from an optional config table.
 - `lurek.particle.newTrail(lifetime, start_width) -> LTrail`: Creates a trail effect. This function is exposed to Lua scripts.
 
 ### Callbacks
@@ -307,3 +309,16 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LTrail:type() -> string`: Returns the Lua-visible type name for this trail handle.
 - `LTrail:typeOf(name) -> boolean`: Returns whether this trail handle matches a supported type name.
 - `LTrail:update(dt) -> nil`: Updates trail point lifetimes. This method is available to Lua scripts.
+
+## References
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `physics`: Imports or references `src/physics/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

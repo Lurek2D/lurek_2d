@@ -175,6 +175,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Posts connection lifecycle events through an MPSC channel.
 - Keeps WebSocket transport behaviour isolated from game-thread timing.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -291,7 +293,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LNetworkHost:getChannelLimit() -> integer`: Returns configured channel limit.
 - `LNetworkHost:getConnectedPeerCount() -> integer`: Returns the number of currently connected peers.
 - `LNetworkHost:getConnectedPeerIds() -> integer[]`: Returns an array of ids for all connected peers.
-- `LNetworkHost:getLeasePeer(token) -> integer?`: Retrieves the peer ID associated with a valid, non-expired lease token.
+- `LNetworkHost:getLeasePeer(token) -> integer`: Retrieves the peer ID associated with a valid, non-expired lease token.
 - `LNetworkHost:getMetrics() -> table`: Returns global network host metrics.
 - `LNetworkHost:getPeerAddress(peer_id) -> string`: Returns peer socket address when available.
 - `LNetworkHost:getPeerLimit() -> integer`: Returns configured peer limit. This method is available to Lua scripts.
@@ -468,17 +470,17 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ##### Methods
 
 - `LNetworkRuntime:authBootstrap(auth_url, payload, refresh_url) -> integer`: Start authenticating with a backend.
-- `LNetworkRuntime:authCancel() -> nil`: Cancels active authentication.
+- `LNetworkRuntime:authCancel() -> nil`: Cancels the currently active authentication request.
 - `LNetworkRuntime:getAuthStatus() -> string`: Returns the current active authentication status.
-- `LNetworkRuntime:getAuthToken() -> string?`: Returns the current active access token.
-- `LNetworkRuntime:getMetrics() -> table`: Returns network runtime metrics.
+- `LNetworkRuntime:getAuthToken() -> string`: Returns the current active access token.
+- `LNetworkRuntime:getMetrics() -> table`: Returns current network runtime metrics.
 - `LNetworkRuntime:httpGet(url, headers?) -> integer`: Starts an HTTP GET request. This method is available to Lua scripts.
 - `LNetworkRuntime:httpJson(url, body, headers?) -> integer`: Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
 - `LNetworkRuntime:httpPost(url, body, headers?) -> integer`: Starts an HTTP POST request. This method is available to Lua scripts.
 - `LNetworkRuntime:httpRequest(opts) -> integer`: Starts an HTTP request from an options table and returns its request id.
 - `LNetworkRuntime:httpStream(url, headers?, timeout_secs?) -> integer`: Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
-- `LNetworkRuntime:matchmakeCancel(id) -> nil`: Cancel matchmaking request.
-- `LNetworkRuntime:matchmakeStart(url, payload) -> integer`: Start matchmaking request.
+- `LNetworkRuntime:matchmakeCancel(id) -> nil`: Cancels a previously started matchmaking request.
+- `LNetworkRuntime:matchmakeStart(url, payload) -> integer`: Starts a matchmaking request against the backend.
 - `LNetworkRuntime:poll() -> table`: Polls runtime responses for HTTP, TCP, and WebSocket operations.
 - `LNetworkRuntime:shutdown() -> nil`: Shuts down the network runtime and cancels pending requests.
 - `LNetworkRuntime:tcpClose(id) -> nil`: Closes a TCP connection. This method is available to Lua scripts.
@@ -538,3 +540,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LSseStream:next() -> table`: Polls for the next available event from the SSE stream (non-blocking).
 - `LSseStream:type() -> string`: Returns the Lua-visible type name for this SSE stream handle.
 - `LSseStream:typeOf(name) -> boolean`: Returns whether this SSE stream handle matches a supported type name.
+
+## References
+
+- `runtime`: Imports runtime config from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

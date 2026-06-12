@@ -15,7 +15,7 @@
 - Namespace: `lurek.province`
 - Lua API surface: `15` functions, `8` types, `45` methods
 - Rust test path(s): tests/rust/unit/province_tests.rs
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_province_unit.lua
 
 ## Summary
 
@@ -207,6 +207,8 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - Keeping these transforms pure makes them easy to reuse from rendering, picking, and tooling without hidden mutable state.
 - Functionally this file delivers the camera and projection math that lets province maps be viewed, fitted, and queried interactively.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -274,7 +276,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LProvinceRegistry:provinceSpans() -> table`: Returns the raw span data for all provinces. Each span is a horizontal run of cells belonging to one province, useful for custom rendering or spatial analysis.
 - `LProvinceRegistry:registerBorderType(type_id, config) -> nil`: Registers a border type config by ID. Defines visual appearance for borders of this type.
 - `LProvinceRegistry:registerMapMode(name, config) -> nil`: Registers a named map mode with display configuration. Overwrites if name exists.
-- `LProvinceRegistry:render(opts?) -> nil`: Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
+- `LProvinceRegistry:render(opts?) -> nil`: Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional `tint` multiplies all province fill colours for this render only, while `province_tints` supplies render-time fill colour overrides keyed by province id without mutating the registry.
 - `LProvinceRegistry:screenToMap(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size?) -> number, number`: Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.
 - `LProvinceRegistry:screenToProvince(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size?) -> integer`: Converts screen-space coordinates directly to a province ID. Returns nil if the cursor is outside the map or over an unowned cell.
 - `LProvinceRegistry:setAttr(id, key, value) -> boolean`: Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.
@@ -396,3 +398,13 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+
+## Notes
+
+- No additional module-specific notes.

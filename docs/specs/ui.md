@@ -14,7 +14,7 @@
 - Source path: `src/ui/`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `91` functions, `44` types, `360` methods
+- Lua API surface: `95` functions, `44` types, `383` methods
 - Rust test path(s): tests/rust/unit/gui_tests.rs
 - Lua test path(s): tests/lua_reorg/unit/test_gui.lua, tests/lua_reorg/unit/test_ui_input_unit.lua, tests/lua_reorg/unit/test_ui_layout.lua, tests/lua_reorg/integration/test_i18n_ui.lua
 
@@ -249,6 +249,8 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - It ensures widget-level contracts remain predictable for script and engine integrations.
 - It defines the structural vocabulary that the retained UI subsystem builds upon.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -283,7 +285,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `lurek.ui.hasAutoInput() -> boolean`: Returns whether platform input is automatically forwarded to `lurek.ui`.
 - `lurek.ui.hasAutoUpdate() -> boolean`: Returns whether `lurek.ui.update(dt)` is called automatically each frame.
 - `lurek.ui.keypressed(key) -> boolean`: Delivers a key press event to the UI.
-- `lurek.ui.loadLayout(def) -> integer`: Loads a UI layout from a Lua table definition. Base fields include `padding`, `margin`, `textAlign`/`text_align`, `textVAlign`/`text_v_align`, `textWrap`/`text_wrap`, `textEllipsis`/`text_ellipsis`, `flexGrow`/`flex_grow`, and `flexShrink`/`flex_shrink`; layout containers also accept `align`, `justify`, `columns`, and `wrap`.
+- `lurek.ui.loadLayout(def) -> integer`: Loads a UI layout from a Lua table definition.
 - `lurek.ui.loadLayoutFile(path) -> integer`: Loads a UI layout from a TOML layout file.
 - `lurek.ui.loadLayoutGameFile(path) -> integer`: Loads a UI layout from a TOML file resolved through GameFS.
 - `lurek.ui.mousemoved(x, y) -> boolean`: Delivers a mouse move event to the UI.
@@ -333,10 +335,10 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `lurek.ui.newWindow(title?) -> LGuiWindow`: Creates a new GUI window widget with an optional title.
 - `lurek.ui.parseWidgetState(state) -> string`: Validates and normalizes a widget state string.
 - `lurek.ui.renderToImage(pathOrWidth, widthOrHeight, heightOrPath) -> nil`: Renders the entire UI to a PNG image file.
-- `lurek.ui.setBaseResolution(width, height) -> nil`: Set the logical base resolution the UI was designed for.
-- `lurek.ui.setDefaultTheme() -> nil`: Applies the built-in default theme to the UI context.
 - `lurek.ui.setAutoInput(enabled) -> nil`: Enables or disables automatic forwarding of platform mouse, wheel, key, and text input to `lurek.ui`.
 - `lurek.ui.setAutoUpdate(enabled) -> nil`: Enables or disables automatic `lurek.ui.update(dt)` calls during the frame update.
+- `lurek.ui.setBaseResolution(width, height) -> nil`: Set the logical base resolution the UI was designed for.
+- `lurek.ui.setDefaultTheme() -> nil`: Applies the built-in default theme to the UI context.
 - `lurek.ui.setFocus(widget?) -> nil`: Sets keyboard focus to a widget, or clears focus if nil.
 - `lurek.ui.setFont(font) -> nil`: Sets the global UI font by applying it to the root widget.
 - `lurek.ui.setTheme(theme_ud) -> nil`: Applies a theme to the entire UI context.
@@ -353,6 +355,8 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 
 - `LColorPicker:setOnChange` param `f` (`function`): Callback receiving the widget index.
 - `LDialog:addAction` param `cb` (`function?`): Optional callback fired when the action activates.
+- `LDialog:addButton` param `cb` (`function?`): Optional callback invoked when the action is activated.
+- `LDialog:setOnClose` param `f` (`function`): Callback invoked by the UI event dispatcher.
 - `LGuiTable:setOnSelect` param `f` (`function`): Callback receiving the widget index.
 - `LGuiWindow:setOnClose` param `f` (`function`): Callback receiving the widget index.
 - `LMenuItem:setOnClick` param `f` (`function`): Callback receiving the widget index.
@@ -399,7 +403,12 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LAreaChart:addLayer(name, vals_tbl, r, g, b) -> nil`: Adds a data layer to this area chart.
 - `LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, opts?) -> integer`: Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
 - `LAreaChart:drawToImage(target) -> nil`: Renders this area chart to an image buffer.
+- `LAreaChart:setShowLegend(value) -> nil`: Enables or disables the layer legend for this area chart.
+- `LAreaChart:setXLabel(label) -> nil`: Sets the X-axis label for this area chart.
+- `LAreaChart:setXTickCount(count) -> nil`: Sets the number of X-axis tick labels for this area chart.
+- `LAreaChart:setYLabel(label) -> nil`: Sets the Y-axis label for this area chart.
 - `LAreaChart:setYMax(v) -> nil`: Sets the maximum Y-axis value for this area chart.
+- `LAreaChart:setYTickCount(count) -> nil`: Sets the number of Y-axis tick labels for this area chart.
 - `LAreaChart:type() -> string`: Returns the type name of this object.
 - `LAreaChart:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
@@ -431,6 +440,11 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LBarChart:addCategory(label, vals_tbl) -> nil`: Adds a category with values for each series.
 - `LBarChart:addSeries(name, r, g, b) -> nil`: Adds a named series to this bar chart.
 - `LBarChart:drawToImage(target) -> nil`: Renders this bar chart to an image buffer.
+- `LBarChart:setShowLegend(value) -> nil`: Enables or disables the series legend for this bar chart.
+- `LBarChart:setXLabel(label) -> nil`: Sets the X-axis label for this bar chart.
+- `LBarChart:setXTickCount(count) -> nil`: Sets the number of X-axis tick labels for this bar chart.
+- `LBarChart:setYLabel(label) -> nil`: Sets the Y-axis label for this bar chart.
+- `LBarChart:setYTickCount(count) -> nil`: Sets the number of Y-axis tick labels for this bar chart.
 - `LBarChart:type() -> string`: Returns the type name of this object.
 - `LBarChart:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
@@ -510,38 +524,38 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 ##### Methods
 
 - `LDialog:addAction(text, cb?, role?, close_on_activate?) -> integer`: Adds a footer action button and returns its 1-based index.
-- `LDialog:addButton(text, cb?) -> nil`: /// Returns a value for addButton (auto-generated).
+- `LDialog:addButton(text, cb?) -> integer`: Adds a custom action button to this dialog.
 - `LDialog:centerInViewport() -> nil`: Repositions this dialog to the center of the active viewport immediately.
-- `LDialog:close() -> nil`: /// Returns a value for close (auto-generated).
-- `LDialog:getCancelAction() -> integer?`: Returns the 1-based action index triggered by Escape, if any.
+- `LDialog:close() -> nil`: Closes this dialog and dispatches close handling.
+- `LDialog:getCancelAction() -> integer`: Returns the 1-based action index triggered by Escape, if any.
 - `LDialog:getCenterOnOpen() -> boolean`: Returns whether opening this dialog recenters it in the viewport.
-- `LDialog:getContent() -> nil`: /// Returns a value for getContent (auto-generated).
-- `LDialog:getDefaultAction() -> integer?`: Returns the 1-based action index triggered by Enter, if any.
+- `LDialog:getContent() -> integer`: Returns the widget index currently assigned to this dialog's content slot.
+- `LDialog:getDefaultAction() -> integer`: Returns the 1-based action index triggered by Enter, if any.
 - `LDialog:getDismissOnOutsideClick() -> boolean`: Returns whether outside clicks dismiss this non-modal dialog.
-- `LDialog:getFooter() -> integer?`: Returns the optional footer content widget index.
-- `LDialog:getMaxSize() -> number?, number?`: Returns the optional maximum popup dimensions for this dialog.
+- `LDialog:getFooter() -> integer`: Returns the optional footer content widget index.
+- `LDialog:getMaxSize() -> number, number`: Returns the optional maximum popup dimensions for this dialog.
 - `LDialog:getMinSize() -> number, number`: Returns the minimum popup size for this dialog.
-- `LDialog:getTitle() -> nil`: /// Returns a value for getTitle (auto-generated).
+- `LDialog:getTitle() -> string`: Returns the current title text for this dialog.
 - `LDialog:isCloseable() -> boolean`: Returns whether this dialog exposes user-driven close affordances.
 - `LDialog:isDraggable() -> boolean`: Returns whether this dialog can be dragged by its title bar.
-- `LDialog:isModal() -> nil`: /// Returns a value for isModal (auto-generated).
-- `LDialog:isOpen() -> nil`: /// Returns a value for isOpen (auto-generated).
+- `LDialog:isModal() -> boolean`: Returns whether this dialog is modal.
+- `LDialog:isOpen() -> boolean`: Returns whether this dialog is currently open.
 - `LDialog:isResizable() -> boolean`: Returns whether this dialog can be resized from its edges or corners.
-- `LDialog:open() -> nil`: /// Returns a value for open (auto-generated).
+- `LDialog:open() -> nil`: Opens this dialog and marks it visible.
 - `LDialog:setCancelAction(index?) -> nil`: Sets the action triggered by Escape, using a 1-based action index.
 - `LDialog:setCenterOnOpen(value) -> nil`: Controls whether opening this dialog recenters it in the viewport.
 - `LDialog:setCloseable(value) -> nil`: Sets whether this dialog can be dismissed by close affordances or Escape fallback.
-- `LDialog:setContent(content_idx?) -> nil`: /// Returns a value for setContent (auto-generated).
+- `LDialog:setContent(content_idx?) -> nil`: Sets the widget index rendered as this dialog's content.
 - `LDialog:setDefaultAction(index?) -> nil`: Sets the action triggered by Enter, using a 1-based action index.
 - `LDialog:setDismissOnOutsideClick(value) -> nil`: Controls whether clicking outside a non-modal dialog closes it.
 - `LDialog:setDraggable(value) -> nil`: Enables or disables title-bar dragging for this dialog.
 - `LDialog:setFooter(footer_idx?) -> nil`: Assigns an optional footer content root for this dialog.
 - `LDialog:setMaxSize(width?, height?) -> nil`: Sets optional maximum popup dimensions for this dialog.
 - `LDialog:setMinSize(width, height) -> nil`: Sets the minimum popup size for this dialog.
-- `LDialog:setModal(v) -> nil`: /// Returns a value for setModal (auto-generated).
-- `LDialog:setOnClose(f) -> nil`: /// Returns a value for setOnClose (auto-generated).
+- `LDialog:setModal(v) -> nil`: Sets whether this dialog blocks outside interaction.
+- `LDialog:setOnClose(f) -> nil`: Registers a callback fired when this dialog closes.
 - `LDialog:setResizable(value) -> nil`: Enables or disables edge and corner resizing for this dialog.
-- `LDialog:setTitle(title) -> nil`: /// Returns a value for setTitle (auto-generated).
+- `LDialog:setTitle(title) -> nil`: Sets the current title text for this dialog.
 
 #### LDockPanel Type
 
@@ -667,8 +681,13 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LLineChart:addSeries(name, pts_tbl, r, g, b) -> nil`: Adds a named series of points to this line chart.
 - `LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts?) -> integer`: Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
 - `LLineChart:drawToImage(target) -> nil`: Renders this line chart to an image buffer.
+- `LLineChart:setShowLegend(value) -> nil`: Enables or disables the series legend for this line chart.
+- `LLineChart:setXLabel(label) -> nil`: Sets the X-axis label for this line chart.
 - `LLineChart:setXMax(v) -> nil`: Sets the maximum X-axis value for this line chart.
+- `LLineChart:setXTickCount(count) -> nil`: Sets the number of X-axis tick labels for this line chart.
+- `LLineChart:setYLabel(label) -> nil`: Sets the Y-axis label for this line chart.
 - `LLineChart:setYMax(v) -> nil`: Sets the maximum Y-axis value for this line chart.
+- `LLineChart:setYTickCount(count) -> nil`: Sets the number of Y-axis tick labels for this line chart.
 - `LLineChart:type() -> string`: Returns the type name of this object.
 - `LLineChart:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
@@ -788,6 +807,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LPieChart:addSegment(label, value, r, g, b) -> nil`: Adds a labeled segment to this pie chart widget.
 - `LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts?) -> integer`: Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.
 - `LPieChart:drawToImage(target) -> nil`: Renders this pie chart to an image buffer.
+- `LPieChart:setShowLegend(value) -> nil`: Enables or disables the segment legend for this pie chart.
 - `LPieChart:type() -> string`: Returns the type name of this object.
 - `LPieChart:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
@@ -839,8 +859,13 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LScatterPlot:addSeries(name, pts_tbl, r, g, b) -> nil`: Adds a data series to this scatter plot.
 - `LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts?) -> integer`: Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
 - `LScatterPlot:drawToImage(target) -> nil`: Renders this scatter plot to an image buffer.
+- `LScatterPlot:setShowLegend(value) -> nil`: Enables or disables the series legend for this scatter plot.
+- `LScatterPlot:setXLabel(label) -> nil`: Sets the X-axis label for this scatter plot.
 - `LScatterPlot:setXRange(mn, mx) -> nil`: Sets the X-axis range for this scatter plot.
+- `LScatterPlot:setXTickCount(count) -> nil`: Sets the number of X-axis tick labels for this scatter plot.
+- `LScatterPlot:setYLabel(label) -> nil`: Sets the Y-axis label for this scatter plot.
 - `LScatterPlot:setYRange(mn, mx) -> nil`: Sets the Y-axis range for this scatter plot.
+- `LScatterPlot:setYTickCount(count) -> nil`: Sets the number of Y-axis tick labels for this scatter plot.
 - `LScatterPlot:type() -> string`: Returns the type name of this object.
 - `LScatterPlot:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
@@ -1202,7 +1227,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LUiWidget:setSize(w, h) -> nil`: Sets the width and height of this widget in pixels.
 - `LUiWidget:setStyleClass(class) -> boolean`: Sets the style class of this widget.
 - `LUiWidget:setTabIndex(value) -> nil`: Sets the tab-order index for this widget.
-- `LUiWidget:setTextAlign(align) -> boolean`: Sets the horizontal alignment of text inside this widget. Accepts `"left"`, `"center"`, or `"right"`.
+- `LUiWidget:setTextAlign(align) -> boolean`: Sets the horizontal alignment of text inside this widget.
 - `LUiWidget:setTextEllipsis(ellipsis) -> nil`: Enables or disables ellipsis clipping for overflowing single-line text.
 - `LUiWidget:setTextVAlign(align) -> boolean`: Sets the vertical alignment of text inside this widget.
 - `LUiWidget:setTextWrap(wrap) -> nil`: Enables or disables word-wrap for text inside this widget.
@@ -1226,3 +1251,16 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

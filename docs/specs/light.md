@@ -126,6 +126,8 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - Clamps timing parameters to safe bounds for stable update behavior.
 - Supports per-frame stepping until transitions reach their configured targets.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -293,3 +295,14 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 - `LOccluder:setVertices(tbl) -> nil`: Replaces this occluder's flat vertex coordinate list.
 - `LOccluder:type() -> string`: Returns the Lua-visible type name for this occluder handle.
 - `LOccluder:typeOf(name) -> boolean`: Returns whether this occluder handle matches a supported type name.
+
+## References
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

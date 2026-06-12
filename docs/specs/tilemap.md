@@ -239,6 +239,8 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - It reads TMX color encodings so visual defaults are preserved during map import.
 - It delivers a predictable bridge between external level authoring and runtime world assembly.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -739,3 +741,15 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

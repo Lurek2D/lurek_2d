@@ -53,6 +53,8 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 - Exposes query and clear helpers for runtime availability checks.
 - Keeps the shared sample resource separate from transport state.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -73,3 +75,12 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 ### Types
 
 - No documented module types.
+
+## References
+
+- `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Platform Services`` into `Core Runtime`.
+
+## Notes
+
+- No additional module-specific notes.

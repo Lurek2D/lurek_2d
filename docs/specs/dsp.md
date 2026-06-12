@@ -100,6 +100,8 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 - Maps signal magnitude to consistent color intensity for comparable visual diagnostics over time.
 - Delivers artifact generation used by tooling, debugging workflows, and content analysis pipelines.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -247,3 +249,12 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 
 - `LWaveform:render(freq, duration, sample_rate, amplitude) -> LSoundData`: Renders this waveform to a new SoundData buffer.
 - `LWaveform:type() -> string`: Returns the waveform identifier string.
+
+## References
+
+- `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Platform Services`` into `Core Runtime`.
+
+## Notes
+
+- No additional module-specific notes.

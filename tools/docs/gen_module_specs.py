@@ -14,8 +14,7 @@ Auto-collected sections rebuilt from source code and Lua binding data:
 - General Info
 - References
 - Files
-- Types
-- Functions
+- Callbacks (when the module owns global engine callback contracts)
 - Lua API Reference
 - Notes
 
@@ -324,6 +323,8 @@ def collect_all_file_docs(lines: list[str]) -> list[str]:
         if stripped.startswith("//!"):
             content = stripped[3:].strip()
             if content:
+                if content.startswith("@engine-callback |") or content.startswith("@engine-param |"):
+                    continue
                 # Strip leading '- ' if present to normalize
                 if content.startswith("- "):
                     content = content[2:]
@@ -508,7 +509,7 @@ def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
     if LUA_API_JSON.exists():
         data = json.loads(read_text(LUA_API_JSON))
         all_modules = (data.get("lua_api", {}).get("modules", {}) or {})
-        if module == "lua_api":
+        if module in {"app", "lua_api"}:
             global_callbacks = data.get("engine_callbacks") or []
         module_names = [module] + LUA_API_MODULE_ALIASES.get(module, [])
 
@@ -862,6 +863,25 @@ def format_files(file_rows: list[dict], overrides: dict[str, str]) -> str:
     return "\n".join(lines).strip()
 
 
+def format_callback_line(cb: dict) -> str:
+    name = cb.get("name") or "<callback>"
+    signature = cb.get("signature") or f"function lurek.{name}()"
+    signature = re.sub(r"^\s*function\s+", "", signature).strip()
+    description = cb.get("description") or "Engine callback."
+    return_type = "boolean?" if re.search(r"\breturn true\b", description, flags=re.IGNORECASE) else "nil"
+    return f"- `{signature} -> {return_type}`: {description}"
+
+
+def format_global_callbacks(callbacks: list[dict]) -> str:
+    if not callbacks:
+        return "- No global engine callback metadata was found for this module."
+
+    lines: list[str] = []
+    for cb in callbacks:
+        lines.append(format_callback_line(cb))
+    return "\n".join(lines)
+
+
 def format_source_docs(file_docs: dict[str, list[str]]) -> str:
     """Unused in current output layout; retained as helper for future migrations."""
     if not file_docs:
@@ -1139,6 +1159,12 @@ def format_lua_api(lua_api: dict) -> str:
     return "\n".join(lines).strip()
 
 
+def with_global_callbacks(lua_api: dict, callbacks: list[dict]) -> dict:
+    updated = dict(lua_api)
+    updated["global_callbacks"] = callbacks
+    return updated
+
+
 def reference_note(group: str, dep_group: str) -> str:
     if group == dep_group:
         return f"Dependency stays inside `{group}` and should remain acyclic."
@@ -1207,11 +1233,9 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     elif "\n\n" not in summary_text:
         summary_text = summary_text + "\n\n" + build_scope_boundary(module, source["references"], group)
 
-    # Methods and Types are fully auto-generated from source and should not reuse
-    # old section text; this avoids stale or duplicated details across reruns.
+    # Legacy Rust Types/Functions sections are intentionally ignored.
+    # Specs now focus on module contract, ownership, and Lua-visible API.
     reference_overrides = combine_pair_maps(spec_sections["references"], legacy_sections["references"])
-    type_overrides = combine_pair_maps(spec_sections["types"], legacy_sections["types"])
-    function_overrides = combine_pair_maps(spec_sections["functions"], legacy_sections["functions"])
     notes_text = first_non_empty(
         spec_sections["notes"],
         agent_sections["notes"],
@@ -1234,14 +1258,12 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
         })
 
     files_text = format_files(files_with_docs, {})
-    types_text = format_types(module, source["files"], source["types_by_file"], type_overrides)
-    functions_text = format_functions(
-        module,
-        source["files"],
-        source["functions_by_file"],
-        function_overrides,
-    )
-    lua_api_text = format_lua_api(lua_api)
+    callbacks_text = ""
+    if module == "app":
+        callbacks_text = format_global_callbacks(lua_api.get("global_callbacks", []) or [])
+    lua_api_for_spec = lua_api if module != "app" else with_global_callbacks(lua_api, [])
+    lua_api_text = format_lua_api(lua_api_for_spec)
+    imports_text = format_references(group, source["references"], reference_overrides)
     references_text = format_references(group, source["references"], reference_overrides)
 
     content = f"""# {module}
@@ -1258,19 +1280,17 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 
 {summary_text}
 
+## Imports
+
+{imports_text}
+
 ## Files
 
 {files_text}
 
-## Types
+{"## Callbacks\n\n" + callbacks_text + "\n\n" if callbacks_text else ""}
 
-{types_text}
-
-## Functions
-
-{functions_text}
-
-## Lua API Reference
+## Lua API Ref
 
 {lua_api_text}
 
@@ -1340,9 +1360,7 @@ def build_callbacks_spec() -> tuple[str, dict]:
     if callbacks:
         callback_lines.extend(["### Callback Inventory", ""])
         for cb in callbacks:
-            name = cb.get("name") or "<callback>"
-            description = cb.get("description") or "Engine callback."
-            callback_lines.append(f"- `lurek.{name}`: {description}")
+            callback_lines.append(format_callback_line(cb))
         callback_lines.append("")
     else:
         callback_lines.append("- No callback metadata available in `logs/data/lua_api_data.json`.")

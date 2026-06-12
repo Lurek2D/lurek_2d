@@ -80,6 +80,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Error policy at step level lets important and optional work coexist inside the same pipeline without flattening all failures into one rule.
 - Functionally this file delivers the configurable work atom from which larger dependency graphs are assembled.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -245,3 +247,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

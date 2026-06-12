@@ -12,7 +12,7 @@
 - Namespace: `lurek.cursor`
 - Lua API surface: `4` functions, `3` types, `30` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_cursor_unit.lua
 
 ## Summary
 
@@ -91,6 +91,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - Implements cursor-following zoom-lens state for magnified local inspection around pointer position.
 - Stores radius, magnification, and border settings used by post-process cursor-lens rendering.
 - Serves as the magnifier feature contract controlled through cursor config and scripting paths.
+
+
 
 ## Lua API Ref
 
@@ -173,3 +175,11 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LCustomCursor:getPixel(x, y) -> integer`: Get the pixel color at the specified cursor image position.
 - `LCustomCursor:getSize() -> integer`: Get the pixel width and height of the cursor image.
 - `LCustomCursor:setPixel(x, y, r, g, b, a) -> nil`: Set a pixel color â€” Lua userdata object exposed by the engine.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

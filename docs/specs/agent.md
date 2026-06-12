@@ -44,6 +44,10 @@
 
 This module primarily collaborates with `network`. Its responsibility should stay inside the `Feature Systems` group rather than absorb behavior owned by those neighbors.
 
+## Imports
+
+- `network`: `src/agent/client.rs` delegates HTTP transport to `crate::network::http::execute_request`.
+
 ## Files
 
 ### chat.rs
@@ -109,129 +113,9 @@ This module primarily collaborates with `network`. Its responsibility should sta
 - Encodes retry semantics and error categories so runtime behavior is consistent across entry points.
 - Serves as the canonical contract layer that keeps agent submodules interoperable and predictable.
 
-## Types
 
-- `GlobalLlmConfig` (`struct`, `chat.rs`): Process-wide LLM configuration used by module-level functions (`configure`, `complete`, etc.). Details: fields: provider: String, base_url: String, model: String, timeout_ms: u64, api_key: Option<String>
-- `LlmTemplate` (`struct`, `chat.rs`): Simple `{key}` placeholder template. Details: methods: new (Creates a new template from `pattern`.); render (Renders the template by substituting each `{key}` with `values[key]`.)
-- `ChatMessage` (`struct`, `chat.rs`): A single message in a chat session history. Details: fields: role: String, content: String
-- `LlmChat` (`struct`, `chat.rs`): Stateful chat session backed by the Ollama `/api/chat` endpoint. Details: methods: add_message (Appends a message with the given role and content to the history.); clear (Clears all accumulated chat history entries.); complete (Sends the current history plus `user_message` to the LLM and returns the assistant reply.); history (Returns a snapshot of the current history.); new (Creates a new empty chat session with no system prompt.); set_system_prompt (Sets the system prompt used on all completions.); system_prompt (Returns the current system prompt.)
-- `AgentClient` (`struct`, `client.rs`): Background HTTP client used by [`LuaAgentRuntime`] and [`LuaAISystemRuntime`] to dispatch prompts. Details: methods: cancel (Mark `callback_id` as cancelled; its response is discarded when the background thread completes.); in_flight_count (Returns the number of in-flight requests that have not yet completed.); new (Creates a new `AgentClient`.); poll (Drains all completed responses since the last poll.); send_prompt (Dispatch `req` on a background thread; retry on transient errors up to `req.max_retries` times.)
-- `WorkingMemory` (`struct`, `memory.rs`): Bounded FIFO key-value working memory. Details: methods: capacity (Returns the configured capacity (0 = unlimited).); forget (Removes the entry with `key`.); get (Returns the value for `key`, or `None` if not present.); get_recent (Returns the `n` most recently inserted entries as `(key, value)` pairs, newest last.); is_empty (Returns `true` if there are no entries.); len (Returns the current number of entries.); new (Creates a new `WorkingMemory` with the given `capacity`.); push (Inserts or updates an entry; evicts the oldest entry if capacity is exceeded.)
-- `Episode` (`struct`, `memory.rs`): A single recorded episodic-memory event snapshot. Details: fields: tick: i64, data: HashMap<String
-- `EpisodicMemory` (`struct`, `memory.rs`): Append-only episodic memory with tick-based pruning and field-equality queries. Details: methods: forget_before (Removes all episodes with `tick < cutoff`.); is_empty (Returns `true` if there are no episodes.); len (Returns the number of stored episodes.); new (Creates an empty `EpisodicMemory`.); query (Returns all episodes whose data contains every key-value pair in `filter`.); record (Records a new episode at `tick` with the given data map.)
-- `SemanticMemory` (`struct`, `memory.rs`): Unbounded key → JSON fact store. Details: methods: forget (Removes the fact at `key`.); is_empty (Returns `true` if there are no facts.); learn (Inserts or replaces the fact at `key`.); len (Returns the number of stored facts.); new (Creates an empty `SemanticMemory`.); query (Returns all facts whose value contains every key-value pair in `filter`.); recall (Returns the fact for `key`, or `None`.)
-- `AgentMemory` (`struct`, `memory.rs`): Bundled working, episodic, and semantic memory with optional disk persistence. Details: fields: working: WorkingMemory, episodic: EpisodicMemory, semantic: SemanticMemory, persist_path: Option<String> | methods: load (Deserialises memory state from `persist_path`, replacing the current contents.); new (Creates an `AgentMemory` with the given working-memory capacity.); save (Serialises all three memory banks to the configured `persist_path`.)
-- `ModelInfo` (`struct`, `ollama.rs`): Info about a locally available Ollama model returned by [`OllamaManager::list_models`]. Details: fields: name: String, size_gb: f64
-- `OllamaPullResult` (`struct`, `ollama.rs`): Result of a completed async model pull dispatched by [`OllamaManager::pull_model`]. Details: fields: callback_id: usize, result: Result<()
-- `OllamaManager` (`struct`, `ollama.rs`): Manages connectivity, process lifecycle, and model operations for a local Ollama instance. Details: methods: base_url (Returns the base URL this manager was created with.); delete_model (Sends `DELETE /api/delete` to remove `name` from local Ollama storage; returns `true` on success.); has_model (Returns `true` if a model with `name` (or the base name before `:`) is available locally.); in_flight_count (Returns the number of active background pull operations.); is_running (Returns `true` if the Ollama HTTP server responds on the base URL within 5 seconds.); list_models (Returns all locally available models from `/api/tags`; empty vec if Ollama is not running.); model_names (Returns the names of all locally available models; empty vec if Ollama is not running.); new (Creates an `OllamaManager` targeting `base_url` (e.g.); poll (Drains completed pull results since the last call; used by `LuaOllamaManager::update`.); pull_model (Dispatches a background model pull for `name`; returns the callback ID for use with [`OllamaManager::poll`].); restart (Stops then starts a fresh Ollama process; returns `true` if the restart succeeded.); start (Spawns `ollama serve` as a managed child process; returns `true` on success.); stop (Kills the Ollama child process started by this manager; returns `true` if it was running.); version (Returns the Ollama version string from `/api/version`, or an empty string if not reachable.)
-- `AgentBatchTask` (`struct`, `orchestration.rs`): One queued batch task derived from an agent configuration. Details: fields: agent_idx: usize, instruction: String, state: AgentState, system_override: Option<String>
-- `AgentState` (`struct`, `state.rs`): Per-agent runtime configuration owned by [`LuaAgentRuntime`] and [`LuaAISystemRuntime`]. Details: fields: name: String, description: String, url: String, model: String, system_prompt: String, format: String, options: HashMap<String, skills: Vec<(String, max_retries: u32, timeout_secs: u64 | methods: add_skill (Appends a named skill to the agent's context.); build_system_block (Build the system block: base system prompt followed by a `Skills` section when skills are registered.); clear_skills (Removes all registered skills.); has_skill (Returns `true` if a skill with `name` is registered.); list_skills (Returns the names of all registered skills in insertion order.); new (Creates a new `AgentState` with no skills and default retry/timeout settings.); set_description (Sets the agent's role description used when routed through an AISystem.); set_format (Sets the response format (`"json"`, `"csv"`, or `"text"`).); set_max_retries (Sets the maximum retry count for transient errors.); set_model (Sets the model identifier used for all future prompts.); set_name (Sets the agent's name identifier.); set_option (Inserts or updates a single model option.); set_timeout (Sets the per-request timeout in seconds (0 = use default 60 s).); set_url (Sets the LLM endpoint URL used for outbound requests.); skill_count (Returns the number of registered skills.); to_request (Builds one outbound request using the current agent configuration.); to_request_with_system (Build a request with an external system block, bypassing this agent's own system prompt; used by AISystem routing.)
-- `SystemSkill` (`struct`, `state.rs`): Keyword-gated skill auto-injected into the system block when its keywords overlap with the prompt. Details: fields: name: String, keywords: Vec<String>, prompt: String
-- `AISystemState` (`struct`, `state.rs`): Shared orchestration state for [`LuaAISystemRuntime`]: system prompt, instruction blocks, and keyword-gated skills. Details: fields: system_prompt: String, instructions: Vec<(String, system_skills: Vec<SystemSkill> | methods: add_instruction (Adds or replaces a named instruction block.); add_system_skill (Adds a keyword-gated skill.); build_context (Builds the combined context block for a given prompt.); has_instruction (Returns `true` if an instruction with `key` exists.); has_system_skill (Returns `true` if a system skill with `name` is registered.); instruction_count (Returns the number of registered instructions.); list_instructions (Returns the keys of all registered instructions in insertion order.); new (Creates a new `AISystemState` with the given system prompt.); remove_instruction (Removes an instruction by key.); remove_system_skill (Removes a system skill by name.); system_skill_count (Returns the number of registered system skills.)
-- `AgentError` (`enum`, `types.rs`): Error variants for LLM agent requests; used by [`AgentClient`] and [`AgentState`]. Details: variants: Network, Timeout, Format, Model | methods: code (Returns the stable Lua-facing error code for this variant.); is_transient (Returns `true` if this error is likely transient and safe to retry.); message (Returns the inner error message string.)
-- `AgentRequest` (`struct`, `types.rs`): Single outbound LLM prompt request built by [`AgentState`] and dispatched by [`AgentClient`]. Details: fields: url: String, model: String, prompt: String, system: String, format: String, options: serde_json::Value, callback_id: usize, max_retries: u32, timeout_secs: u64
-- `AgentResponse` (`struct`, `types.rs`): Completed LLM response returned by [`AgentClient::poll`]; matched to a request by `callback_id`. Details: fields: callback_id: usize, body: Result<String | methods: is_ok (Returns `true` if the response body is `Ok`.); text (Returns the response text if successful; `None` on error.)
 
-## Functions
-
-- `read_global_config` (`chat.rs`): Reads a snapshot of the current global LLM config.
-- `write_global_config` (`chat.rs`): Replaces the global LLM config.
-- `ollama_generate` (`chat.rs`): Calls the Ollama `/api/generate` endpoint synchronously and returns the response text.
-- `ollama_generate_json` (`chat.rs`): Calls the Ollama `/api/generate` endpoint and requests a JSON format response.
-- `ollama_embed` (`chat.rs`): Calls the Ollama `/api/embeddings` endpoint and returns the embedding vector.
-- `ollama_list_models` (`chat.rs`): Calls the Ollama `/api/tags` endpoint and returns available model names.
-- `ollama_is_available` (`chat.rs`): Probes the Ollama base URL and returns `true` if it responds.
-- `LlmTemplate::new` (`chat.rs`): Creates a new template from `pattern`.
-- `LlmTemplate::render` (`chat.rs`): Renders the template by substituting each `{key}` with `values[key]`.
-- `LlmChat::new` (`chat.rs`): Creates a new empty chat session with no system prompt.
-- `LlmChat::set_system_prompt` (`chat.rs`): Sets the system prompt used on all completions.
-- `LlmChat::system_prompt` (`chat.rs`): Returns the current system prompt.
-- `LlmChat::add_message` (`chat.rs`): Appends a message with the given role and content to the history.
-- `LlmChat::clear` (`chat.rs`): Clears all accumulated chat history entries.
-- `LlmChat::history` (`chat.rs`): Returns a snapshot of the current history.
-- `LlmChat::complete` (`chat.rs`): Sends the current history plus `user_message` to the LLM and returns the assistant reply.
-- `AgentClient::new` (`client.rs`): Creates a new `AgentClient`.
-- `AgentClient::send_prompt` (`client.rs`): Dispatch `req` on a background thread; retry on transient errors up to `req.max_retries` times.
-- `AgentClient::cancel` (`client.rs`): Mark `callback_id` as cancelled; its response is discarded when the background thread completes.
-- `AgentClient::in_flight_count` (`client.rs`): Returns the number of in-flight requests that have not yet completed.
-- `AgentClient::poll` (`client.rs`): Drains all completed responses since the last poll.
-- `WorkingMemory::new` (`memory.rs`): Creates a new `WorkingMemory` with the given `capacity`.
-- `WorkingMemory::capacity` (`memory.rs`): Returns the configured capacity (0 = unlimited).
-- `WorkingMemory::len` (`memory.rs`): Returns the current number of entries.
-- `WorkingMemory::is_empty` (`memory.rs`): Returns `true` if there are no entries.
-- `WorkingMemory::push` (`memory.rs`): Inserts or updates an entry; evicts the oldest entry if capacity is exceeded.
-- `WorkingMemory::get` (`memory.rs`): Returns the value for `key`, or `None` if not present.
-- `WorkingMemory::forget` (`memory.rs`): Removes the entry with `key`.
-- `WorkingMemory::get_recent` (`memory.rs`): Returns the `n` most recently inserted entries as `(key, value)` pairs, newest last.
-- `EpisodicMemory::new` (`memory.rs`): Creates an empty `EpisodicMemory`.
-- `EpisodicMemory::len` (`memory.rs`): Returns the number of stored episodes.
-- `EpisodicMemory::is_empty` (`memory.rs`): Returns `true` if there are no episodes.
-- `EpisodicMemory::record` (`memory.rs`): Records a new episode at `tick` with the given data map.
-- `EpisodicMemory::query` (`memory.rs`): Returns all episodes whose data contains every key-value pair in `filter`.
-- `EpisodicMemory::forget_before` (`memory.rs`): Removes all episodes with `tick < cutoff`.
-- `SemanticMemory::new` (`memory.rs`): Creates an empty `SemanticMemory`.
-- `SemanticMemory::len` (`memory.rs`): Returns the number of stored facts.
-- `SemanticMemory::is_empty` (`memory.rs`): Returns `true` if there are no facts.
-- `SemanticMemory::learn` (`memory.rs`): Inserts or replaces the fact at `key`.
-- `SemanticMemory::recall` (`memory.rs`): Returns the fact for `key`, or `None`.
-- `SemanticMemory::forget` (`memory.rs`): Removes the fact at `key`.
-- `SemanticMemory::query` (`memory.rs`): Returns all facts whose value contains every key-value pair in `filter`.
-- `AgentMemory::new` (`memory.rs`): Creates an `AgentMemory` with the given working-memory capacity.
-- `AgentMemory::save` (`memory.rs`): Serialises all three memory banks to the configured `persist_path`.
-- `AgentMemory::load` (`memory.rs`): Deserialises memory state from `persist_path`, replacing the current contents.
-- `OllamaManager::new` (`ollama.rs`): Creates an `OllamaManager` targeting `base_url` (e.g.
-- `OllamaManager::base_url` (`ollama.rs`): Returns the base URL this manager was created with.
-- `OllamaManager::model_names` (`ollama.rs`): Returns the names of all locally available models; empty vec if Ollama is not running.
-- `OllamaManager::is_running` (`ollama.rs`): Returns `true` if the Ollama HTTP server responds on the base URL within 5 seconds.
-- `OllamaManager::version` (`ollama.rs`): Returns the Ollama version string from `/api/version`, or an empty string if not reachable.
-- `OllamaManager::list_models` (`ollama.rs`): Returns all locally available models from `/api/tags`; empty vec if Ollama is not running.
-- `OllamaManager::has_model` (`ollama.rs`): Returns `true` if a model with `name` (or the base name before `:`) is available locally.
-- `OllamaManager::start` (`ollama.rs`): Spawns `ollama serve` as a managed child process; returns `true` on success.
-- `OllamaManager::stop` (`ollama.rs`): Kills the Ollama child process started by this manager; returns `true` if it was running.
-- `OllamaManager::restart` (`ollama.rs`): Stops then starts a fresh Ollama process; returns `true` if the restart succeeded.
-- `OllamaManager::pull_model` (`ollama.rs`): Dispatches a background model pull for `name`; returns the callback ID for use with [`OllamaManager::poll`].
-- `OllamaManager::delete_model` (`ollama.rs`): Sends `DELETE /api/delete` to remove `name` from local Ollama storage; returns `true` on success.
-- `OllamaManager::in_flight_count` (`ollama.rs`): Returns the number of active background pull operations.
-- `OllamaManager::poll` (`ollama.rs`): Drains completed pull results since the last call; used by `LuaOllamaManager::update`.
-- `pack_batch_callback_id` (`orchestration.rs`): Encodes `(batch_id, task_idx)` into a single callback ID.
-- `unpack_batch_callback_id` (`orchestration.rs`): Decodes a packed callback ID back into `(batch_id, task_idx)`.
-- `build_system_context` (`orchestration.rs`): Builds the system context block for the given prompt and optional target agent.
-- `make_system_task` (`orchestration.rs`): Builds a batch task for a named agent, injecting system context.
-- `AgentState::new` (`state.rs`): Creates a new `AgentState` with no skills and default retry/timeout settings.
-- `AgentState::set_name` (`state.rs`): Sets the agent's name identifier.
-- `AgentState::set_description` (`state.rs`): Sets the agent's role description used when routed through an AISystem.
-- `AgentState::set_max_retries` (`state.rs`): Sets the maximum retry count for transient errors.
-- `AgentState::set_timeout` (`state.rs`): Sets the per-request timeout in seconds (0 = use default 60 s).
-- `AgentState::set_option` (`state.rs`): Inserts or updates a single model option.
-- `AgentState::add_skill` (`state.rs`): Appends a named skill to the agent's context.
-- `AgentState::clear_skills` (`state.rs`): Removes all registered skills.
-- `AgentState::has_skill` (`state.rs`): Returns `true` if a skill with `name` is registered.
-- `AgentState::skill_count` (`state.rs`): Returns the number of registered skills.
-- `AgentState::list_skills` (`state.rs`): Returns the names of all registered skills in insertion order.
-- `AgentState::set_format` (`state.rs`): Sets the response format (`"json"`, `"csv"`, or `"text"`).
-- `AgentState::set_model` (`state.rs`): Sets the model identifier used for all future prompts.
-- `AgentState::set_url` (`state.rs`): Sets the LLM endpoint URL used for outbound requests.
-- `AgentState::build_system_block` (`state.rs`): Build the system block: base system prompt followed by a `Skills` section when skills are registered.
-- `AgentState::to_request` (`state.rs`): Builds one outbound request using the current agent configuration.
-- `AgentState::to_request_with_system` (`state.rs`): Build a request with an external system block, bypassing this agent's own system prompt; used by AISystem routing.
-- `AISystemState::new` (`state.rs`): Creates a new `AISystemState` with the given system prompt.
-- `AISystemState::add_instruction` (`state.rs`): Adds or replaces a named instruction block.
-- `AISystemState::remove_instruction` (`state.rs`): Removes an instruction by key.
-- `AISystemState::add_system_skill` (`state.rs`): Adds a keyword-gated skill.
-- `AISystemState::remove_system_skill` (`state.rs`): Removes a system skill by name.
-- `AISystemState::has_instruction` (`state.rs`): Returns `true` if an instruction with `key` exists.
-- `AISystemState::instruction_count` (`state.rs`): Returns the number of registered instructions.
-- `AISystemState::list_instructions` (`state.rs`): Returns the keys of all registered instructions in insertion order.
-- `AISystemState::has_system_skill` (`state.rs`): Returns `true` if a system skill with `name` is registered.
-- `AISystemState::system_skill_count` (`state.rs`): Returns the number of registered system skills.
-- `AISystemState::build_context` (`state.rs`): Builds the combined context block for a given prompt.
-- `AgentError::code` (`types.rs`): Returns the stable Lua-facing error code for this variant.
-- `AgentError::is_transient` (`types.rs`): Returns `true` if this error is likely transient and safe to retry.
-- `AgentError::message` (`types.rs`): Returns the inner error message string.
-- `AgentResponse::is_ok` (`types.rs`): Returns `true` if the response body is `Ok`.
-- `AgentResponse::text` (`types.rs`): Returns the response text if successful; `None` on error.
-
-## Lua API Reference
+## Lua API Ref
 
 ### Functions
 

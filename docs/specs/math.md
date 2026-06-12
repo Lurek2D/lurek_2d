@@ -228,6 +228,8 @@ This module primarily collaborates with `globe`, `image`. Its responsibility sho
 - Handles coincident sites gracefully instead of failing the whole diagram.
 - Gives procedural generation and spatial partitioning code a ready-made diagram source.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -730,3 +732,12 @@ This module primarily collaborates with `globe`, `image`. Its responsibility sho
 - `LVec3:sub(other) -> LVec3`: Returns the difference from another vector.
 - `LVec3:type() -> string`: Returns the Lua-visible type name for this vector handle.
 - `LVec3:typeOf(name) -> boolean`: Returns whether this vector handle matches a supported type name.
+
+## References
+
+- `globe`: Imports or references `src/globe/`. Cross-group dependency from `Foundations` into `Feature Systems`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Foundations` into `Platform Services`.
+
+## Notes
+
+- No additional module-specific notes.

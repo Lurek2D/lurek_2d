@@ -11,6 +11,7 @@ use crate::runtime::{Config, EngineError, EngineResult, SharedState};
 use mlua::prelude::*;
 use mlua::HookTriggers;
 use std::cell::RefCell;
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 use std::rc::Rc;
@@ -34,7 +35,7 @@ pub fn run_headless(config: Config, options: HeadlessOptions) -> ExitCode {
     match run_headless_checked(config, options) {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
-            eprintln!("{}", error);
+            log::error!("{}", error);
             ExitCode::FAILURE
         }
     }
@@ -106,7 +107,9 @@ fn install_stdout_print(lua: &Lua) -> EngineResult<()> {
     let print = lua
         .create_function(|_, values: mlua::Variadic<mlua::Value>| {
             let parts: Vec<String> = values.iter().map(value_to_string).collect();
-            println!("{}", parts.join("\t"));
+            let mut stdout = io::stdout().lock();
+            writeln!(stdout, "{}", parts.join("\t"))
+                .map_err(|error| LuaError::RuntimeError(format!("headless print: {}", error)))?;
             Ok(())
         })
         .map_err(|error| EngineError::LuaError(format!("headless print: {}", error)))?;

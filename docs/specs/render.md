@@ -15,7 +15,7 @@
 - Namespace: `lurek.render`
 - Lua API surface: `117` functions, `14` types, `88` methods
 - Rust test path(s): src/render/ (inline #[cfg(test)] in canvas, decal_surface, draw_layer, font, image_effect, mesh, shader, shape), src/render/renderer_tests.rs, src/render/postfx_pipeline_tests.rs
-- Lua test path(s): none found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_render_unit.lua
 
 ## Summary
 
@@ -465,6 +465,14 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - Restricts memory reallocations using flat vector coordinates.
 - Integrates with compound shape registries for simple frame-level lookups.
 
+### software_capture.rs
+
+- CPU-side screenshot fallback for queued 2D render commands.
+- Replays a practical subset of `RenderCommand` values into `ImageData`.
+- Exists to support evidence capture in headless/unit environments where GPU readback is unavailable.
+
+
+
 ## Lua API Ref
 
 ### Functions
@@ -472,7 +480,7 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `lurek.render.applyTransform(mat) -> nil`: Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
 - `lurek.render.arc(mode, x, y, radius, angle1, angle2, segments?) -> nil`: Draws a filled or outlined circular arc segment.
 - `lurek.render.beginSortGroup(id) -> nil`: Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
-- `lurek.render.captureScreenshot(callback) -> nil`: Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
+- `lurek.render.captureScreenshot(callback) -> nil`: Captures the queued 2D render commands into an ImageData fallback and passes it to a callback.
 - `lurek.render.circle(mode, x, y, radius) -> nil`: Draws a filled or outlined circle at the given position.
 - `lurek.render.clear(r?, g?, b?) -> nil`: Clears all queued render commands for the current frame.
 - `lurek.render.clearStencil() -> nil`: Resets the stencil state to defaults (no stencil operations).
@@ -860,19 +868,14 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - `LSpriteBatch:type() -> string`: Returns the type name string for this sprite batch.
 - `LSpriteBatch:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
-## Lua API Reference
-
-The generated Lua API reference for this module is maintained in `## Lua API Ref` above.
-Do not edit generated function or type rows by hand; rebuild them with `python tools/gen_all_docs.py`.
-
 ## References
 
-- `src/render/`
-- `src/lua_api/render_api.rs`
-- `docs/architecture/render-pipeline.md`
-- `content/examples/render.lua`
-- `tests/lua_reorg/unit/test_render_core_unit.lua`
-- `tests/rust/unit/render_tests.rs`
+- `font`: Imports or references `src/font/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `light`: Imports or references `light` from `src/light/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `sprite`: Imports or references `sprite` from `src/sprite/`.
 
 ## Notes
 

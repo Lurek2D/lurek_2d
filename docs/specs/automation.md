@@ -71,6 +71,8 @@ This module primarily collaborates with `event`, `input`, `runtime`, `timer`. It
 - Maps textual action tags to enum variants for deterministic parse and dispatch behavior.
 - Supplies repeat and interval semantics used during script expansion and schedule construction.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -119,3 +121,14 @@ This module primarily collaborates with `event`, `input`, `runtime`, `timer`. It
 ### Types
 
 - No documented module types.
+
+## References
+
+- `event`: Imports or references `event` from `src/event/`.
+- `input`: Imports or references `src/input/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `timer`: Imports or references `src/timer/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
+
+## Notes
+
+- No additional module-specific notes.

@@ -175,7 +175,7 @@ fn make_lua_font(state: Rc<RefCell<SharedState>>, key: FontKey) -> LuaFont {
 }
 
 /// Registers the `lurek.font` namespace and returns the Lua table.
-pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResult<LuaTable<'_>> {
+fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResult<LuaTable<'_>> {
     let font = lua.create_table()?;
 
     // --- Constants ---

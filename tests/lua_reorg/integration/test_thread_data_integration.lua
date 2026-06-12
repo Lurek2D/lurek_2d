@@ -2,6 +2,7 @@
 -- @describe integration: thread channel with serialized data
 describe("integration: thread channel with serialized data", function()
 
+    -- @integration LChannel:getCount
     -- @integration LChannel:pop
     -- @integration LChannel:push
     -- @integration lurek.serial.fromJson
@@ -13,8 +14,10 @@ describe("integration: thread channel with serialized data", function()
 
         local encoded = lurek.serial.toJson(payload)
         ch:push(encoded)
+        expect_equal(1, ch:getCount(), "channel count increases after push")
 
         local raw = ch:pop()
+        expect_equal(0, ch:getCount(), "channel count drops after pop")
         expect_type("string", raw, "received encoded string from channel")
 
         local decoded = lurek.serial.fromJson(raw)
@@ -23,6 +26,7 @@ describe("integration: thread channel with serialized data", function()
         expect_equal("pos", decoded.label, "label round-tripped through channel")
     end)
 
+    -- @integration LChannel:getCount
     -- @integration LChannel:pop
     -- @integration LChannel:push
     -- @integration lurek.serial.fromJson
@@ -35,8 +39,10 @@ describe("integration: thread channel with serialized data", function()
 
         local encoded = lurek.serial.toJson(big)
         ch:push(encoded)
+        expect_equal(1, ch:getCount(), "large payload still occupies one queued channel entry")
 
         local raw     = ch:pop()
+        expect_equal(0, ch:getCount(), "channel is empty after popping the large payload")
         local decoded = lurek.serial.fromJson(raw)
         expect_equal(1000, #decoded,     "1000-element array round-tripped")
         expect_equal(2000, decoded[1000], "last element correct")

@@ -55,6 +55,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - Supports Tween, Camera, Audio, and Signal track types with frame-accurate scheduling.
 - Clips are applied in time order, and playback state is driven by update(dt) each frame.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -101,8 +103,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 - `LCinematicTimeline:addClip(track_name, at, duration, clip_table) -> nil`: Adds a clip to a named track (creates track if missing).
 - `LCinematicTimeline:addLabel(name, time) -> nil`: Registers a named time position for branching.
-- `LCinematicTimeline:addTrack(name) -> nil`: Adds a new track to the timeline.
-- `LCinematicTimeline:branch(label) -> boolean`: Jumps to a named label position.
+- `LCinematicTimeline:addTrack(name) -> nil`: Adds a named track to this cinematic timeline.
+- `LCinematicTimeline:branch(label) -> boolean`: Jumps playback to a named label position.
 - `LCinematicTimeline:getDuration() -> number`: Returns the total duration of the timeline.
 - `LCinematicTimeline:getState() -> string`: Returns the playback state as a string.
 - `LCinematicTimeline:getTime() -> number`: Returns the current playback time.
@@ -110,9 +112,17 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LCinematicTimeline:isPlaying() -> boolean`: Checks if the timeline is currently playing.
 - `LCinematicTimeline:pause() -> nil`: Pauses playback without resetting time.
 - `LCinematicTimeline:play() -> nil`: Starts playback from the current time.
-- `LCinematicTimeline:seek(time) -> nil`: Jumps to a specific time.
+- `LCinematicTimeline:seek(time) -> nil`: Jumps playback to a specific timeline time.
 - `LCinematicTimeline:skipToEnd() -> nil`: Instantly jumps to the end of the timeline.
 - `LCinematicTimeline:stop() -> nil`: Stops playback and resets to time 0.
 - `LCinematicTimeline:type() -> string`: Returns the Lua-visible type name.
 - `LCinematicTimeline:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LCinematicTimeline:update(dt) -> nil`: Advances time by dt (only if playing).
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

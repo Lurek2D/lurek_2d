@@ -12,7 +12,7 @@
 - Namespace: `lurek.grep`
 - Lua API surface: `7` functions, `2` types, `9` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_grep_unit.lua
 
 ## Summary
 
@@ -126,6 +126,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `GrepResult` is the top-level return: `matches`, `files_searched`, `total_matches`.
 - All types are `Debug + Clone`; `GrepResult` implements `Display` for summary output.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -178,3 +180,11 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LGrepEngine:search(path, pattern) -> table`: Search a directory for a literal pattern.
 - `LGrepEngine:searchExt(path, pattern, extensions) -> table`: Search with file extension filter.
 - `LGrepEngine:searchFiles(files, pattern) -> table`: Search a specific provided list of files for text matches.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

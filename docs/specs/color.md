@@ -61,6 +61,8 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 - Supports extension flows where new palette sets can be surfaced through higher API layers.
 - Serves as the canonical palette source used by rendering tools and script-facing color features.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -96,3 +98,11 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 ### Types
 
 - No documented module types.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

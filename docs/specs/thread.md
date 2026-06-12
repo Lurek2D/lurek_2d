@@ -72,6 +72,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - It connects workers to shared named channels so inter-VM communication remains explicit and typed.
 - It offers blocking and timeout joins to synchronize background completion with frame progression.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -171,3 +173,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LThreadPool:submit(value) -> nil`: Pushes a value into the pool's input channel for processing by a worker thread.
 - `LThreadPool:type() -> string`: Returns the type name of this object.
 - `LThreadPool:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+## References
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

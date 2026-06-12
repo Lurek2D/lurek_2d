@@ -32,7 +32,9 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
 LUA_API_DATA = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
-LUA_TESTS_DIR = WORKSPACE_ROOT / "tests" / "lua"
+DEFAULT_LUA_TESTS_DIR = WORKSPACE_ROOT / "tests" / "lua_reorg"
+LEGACY_LUA_TESTS_DIR = WORKSPACE_ROOT / "tests" / "lua"
+LUA_TESTS_DIR = DEFAULT_LUA_TESTS_DIR if DEFAULT_LUA_TESTS_DIR.exists() else LEGACY_LUA_TESTS_DIR
 COVERAGE_JSON = WORKSPACE_ROOT / "logs" / "data" / "lua_api_test_coverage.json"
 OUTPUT_JSON = WORKSPACE_ROOT / "logs" / "data" / "test_analytics.json"
 OUTPUT_HTML = WORKSPACE_ROOT / "logs" / "reports" / "test_analytics.html"

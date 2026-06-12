@@ -12,7 +12,7 @@
 ## Rules
 - Treat each spec as a strict source/behavior contract.
 - `## Summary` is hand-written.
-- `## General Info`, `## Imports`, `## Files`, and `## Lua API Ref` are generator-owned.
+- `## General Info`, `## Imports`, `## Files`, `## Lua API Ref`, and module-owned generated `## Callbacks` sections are generator-owned.
 - Update `README.md` when adding, removing, or retiering top-level modules.
 - Rebuild specs after Rust Lua API signature changes.
 

@@ -78,6 +78,8 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - Emits only the single origin position for non-repeating layers.
 - Supplies the viewport coverage iterator used by parallax rendering.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -165,3 +167,13 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LParallaxSet:sortByZ() -> nil`: Sorts layers by z order on this object.
 - `LParallaxSet:type() -> string`: Returns the Lua-visible type name for this parallax set handle.
 - `LParallaxSet:update(dt) -> nil`: Updates all layers in this parallax set.
+
+## References
+
+- `image`: Imports or references `image` from `src/image/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

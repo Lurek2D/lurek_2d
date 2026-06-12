@@ -14,7 +14,7 @@
 - Namespace: `lurek.scene`
 - Lua API surface: `60` functions, `10` types, `21` methods
 - Rust test path(s): none found in the workspace
-- Lua test path(s): none found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_scene_unit.lua
 
 ## Summary
 
@@ -100,6 +100,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Parsing support is included here because scripts often describe transitions through compact names rather than direct Rust types.
 - The file turns those names and durations into concrete animated progress over time.
 - In practice it is the scene module's motion vocabulary for entering, leaving, and revealing states.
+
+
 
 ## Lua API Ref
 
@@ -244,7 +246,7 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ##### Methods
 
-- `LSceneObjectContainer:add(obj) -> nil`: Add an object to the container.
+- `LSceneObjectContainer:add(obj) -> nil`: Adds an object table to the scene container.
 - `LSceneObjectContainer:clear() -> nil`: Remove all objects from the container.
 - `LSceneObjectContainer:draw() -> nil`: Call draw() on all objects that have a draw method, sorted by layer.
 - `LSceneObjectContainer:getByLayer(n) -> table`: Get all objects whose layer equals `n`.
@@ -252,8 +254,8 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - `LSceneObjectContainer:getObjects() -> table`: Get all objects as an array (layer-sorted).
 - `LSceneObjectContainer:has(obj) -> boolean`: Check whether an object is present in the container.
 - `LSceneObjectContainer:remove(obj) -> nil`: Remove an object from the container (identity comparison).
-- `LSceneObjectContainer:type() -> string`: Get the type name of this userdata.
-- `LSceneObjectContainer:typeOf(name) -> boolean`: Check type by name.
+- `LSceneObjectContainer:type() -> string`: Gets the Lua-visible type name of this userdata.
+- `LSceneObjectContainer:typeOf(name) -> boolean`: Checks whether this container matches a type name.
 - `LSceneObjectContainer:update(dt) -> nil`: Call update(dt) on all objects that have an update method.
 
 #### LSceneSerializeSceneResult Type
@@ -320,3 +322,14 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

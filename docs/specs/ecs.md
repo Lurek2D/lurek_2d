@@ -106,6 +106,8 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Encapsulates scheduling metadata handling to keep orchestration logic separate from core ECS storage.
 - Delivers the execution-order facade used by callers to run systems consistently frame to frame.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -246,3 +248,11 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

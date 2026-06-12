@@ -48,6 +48,10 @@
 
 This module is mostly self-contained inside the `Feature Systems` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
 ## Files
 
 ### attention.rs
@@ -169,129 +173,9 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 - Provides reusable transformer primitives for sequence learning and inference experiments.
 - Integrates with the wider learning stack through common tensor and layer contracts.
 
-## Types
 
-- `PositionalEncoding` (`struct`, `attention.rs`): Sinusoidal positional encoding for `[seq_len, d_model]` tensors. Details: fields: d_model: usize, max_len: usize, encoding: Vec<f32> | methods: apply (Add positional vectors in-place.); new (Precompute positional encoding table.)
-- `MultiHeadAttention` (`struct`, `attention.rs`): CPU multi-head self-attention with combined linear projections. Details: fields: d_model: usize, num_heads: usize, d_k: usize, w_q: Vec<f32>, w_k: Vec<f32>, w_v: Vec<f32>, w_o: Vec<f32>, b_q: Vec<f32>, b_k: Vec<f32>, b_v: Vec<f32>, b_o: Vec<f32> | methods: forward (Run self-attention on `x` with shape `[S,D]`.); new (Create a zero-initialized MHA block.)
-- `BanditArm` (`struct`, `bandit.rs`): A single bandit arm with accumulated reward statistics. Details: fields: pulls: u32, total_reward: f64, alpha: f64, beta: f64, label: Option<String> | methods: mean_reward (Return the empirical mean reward; returns 0.5 before the first pull.)
-- `BanditStrategy` (`enum`, `bandit.rs`): Selection strategy used by `Bandit`. Details: variants: EpsilonGreedy, UCB1, ThompsonSampling
-- `Bandit` (`struct`, `bandit.rs`): Complete bandit agent with one strategy and a mutable set of arms. Details: fields: arms: Vec<BanditArm>, strategy: BanditStrategy, total_pulls: u64 | methods: arm_count (Return the number of available arms.); best_arm (Return the greedy best arm by empirical mean reward.); new (Create a bandit with `arm_count` arms and a fixed RNG seed.); reset (Reset all arm statistics and the total pull counter.); select (Select an arm index according to the current strategy.); update (Update the chosen arm with an observed reward in the range `[0, 1]`.)
-- `Conv2D` (`struct`, `conv.rs`): 2D convolution layer over `[channels, height, width]` tensors. Details: fields: in_channels: usize, out_channels: usize, kernel_size: (usize, stride: (usize, padding: (usize, weights: Vec<f32>, biases: Vec<f32> | methods: forward (Run convolution over one input tensor shaped `[C, H, W]`.); new (Create a zero-initialized convolution layer.)
-- `MaxPool2D` (`struct`, `conv.rs`): Max pooling over `[channels, height, width]` tensors. Details: fields: kernel_size: (usize, stride: (usize | methods: forward (Run max pooling.); new (Create max pool layer.)
-- `NeuralBlock` (`enum`, `engine.rs`): Supported functional blocks for `LurekNeuralEngine`. Details: variants: Dense, Conv2D, MaxPool2D, Lstm, Gru, TransformerEncoder, TransformerDecoder | methods: get_weights (Export trainable parameters for this block.); param_count (Trainable parameter count for this block.); set_weights (Load trainable parameters for this block.)
-- `LurekNeuralEngine` (`struct`, `engine.rs`): Heterogeneous neural graph with deterministic flat-parameter packing. Details: methods: add_block (Append one block.); block_count (Number of blocks in the engine.); blocks (Immutable block access.); blocks_mut (Mutable block access.); get_weights (Export all trainable parameters in block insertion order.); new (Create an empty engine.); param_count (Total trainable parameter count across all blocks.); set_weights (Load a flat parameter buffer and split it across blocks in insertion order.)
-- `SpaceSpec` (`struct`, `env.rs`): Space descriptor shared by observation and action spaces. Details: fields: shape: Vec<u32>, low: Vec<f32>, high: Vec<f32>, n: u32
-- `FrameStack` (`struct`, `env.rs`): Frame stacking ring buffer for history-based observations. Details: methods: capacity (Returns the maximum number of frames retained.); get (Returns the flattened stack.); new (Creates a new empty frame stack with the given capacity.); push (Pushes an observation, discarding the oldest if at capacity.); reset (Clears all stored frames and resets the observed dimension.)
-- `EvolutionaryLayer` (`trait`, `evolutionary.rs`): Contract for layers usable in neuroevolution workflows.
-- `Chromosome` (`struct`, `genetic.rs`): Evolving genome with fitness and stable id. Details: fields: genes: Vec<f32>, fitness: f32, id: u64 | methods: new (Create a zeroed chromosome with `gene_count` genes.)
-- `GeneticAlgorithm` (`struct`, `genetic.rs`): Population-based genetic optimizer. Details: fields: population: Vec<Chromosome>, gene_count: usize, mutation_rate: f32, mutation_std: f32, tournament_size: usize, elitism: usize, generation: usize | methods: best (Return the chromosome with the highest fitness, or `None` if empty.); evolve (Build the next generation using elitism, tournament selection, crossover, and mutation.); new (Create a population with random initial genes.); pop_size (Return the current population size.)
-- `Activation` (`enum`, `neural_net.rs`): Activation function used by a layer. Details: variants: ReLU, Sigmoid, Tanh, Linear, Softmax | methods: apply (Apply the activation in place to `v`.); as_str (Return the canonical activation name.); from_str (Parse a lowercase activation name; unknown strings map to `Linear`.)
-- `NeuralLayer` (`struct`, `neural_net.rs`): Dense layer with row-major weights and per-output biases. Details: fields: inputs: usize, outputs: usize, weights: Vec<f32>, biases: Vec<f32>, activation: Activation | methods: forward (Compute the layer output for `input`.); new (Create a zeroed dense layer.); param_count (Return the number of learnable parameters in the layer.)
-- `NeuralNet` (`struct`, `neural_net.rs`): Ordered stack of dense layers. Details: methods: add_layer (Append a new dense layer.); forward (Run a forward pass through all layers.); get_weights (Return the flattened weights and biases.); layer_count (Return the number of layers.); new (Create an empty neural net.); param_count (Return the total number of learnable parameters.); set_weights (Load flattened weights and biases; returns `false` when the shape mismatches.)
-- `Neuroevolution` (`struct`, `neuroevolution.rs`): GA-backed neural-network population manager. Details: fields: ga: GeneticAlgorithm, generation: usize | methods: best_fitness (Return the best fitness in the current population, or 0.0 if empty.); best_network (Build the network for the best chromosome, or `None` if the population is empty.); chromosome_to_net (Build a neural net from chromosome `i`; returns `None` when the index is invalid.); evolve (Advance the underlying genetic algorithm and generation counter.); new (Create a population for the provided layer spec.); pop_size (Return the population size.); population (Return the current chromosome slice.); set_fitness (Assign fitness to chromosome `i` when present.)
-- `OnnxModel` (`struct`, `onnx.rs`): Loaded and optimised ONNX model wrapped around a tract runnable plan. Details: methods: input_count (Number of input tensors expected by the model.); load (Load an ONNX model from `path`, optimise it, and return a runnable handle.); output_count (Number of output tensors produced by the model.); run (Run inference on `inputs`, returning one `LurekTensor` per model output.)
-- `QLearner` (`struct`, `qlearner.rs`): Q-learning agent with a flat `state × action` value table. Details: fields: state_count: usize, action_count: usize, qtable: Vec<f64>, alpha: f64, gamma: f64, epsilon: f64, epsilon_decay: f64, episode_count: u64 | methods: best_action (Return the action with the highest Q-value for `state`; ties broken by index.); choose_action (Return a randomly chosen action (explore) or the greedy best action (exploit).); deserialize (Parse a JSON Q-table string and overwrite the current table; returns error on shape mismatch.); end_episode (Decay epsilon and increment `episode_count`; call once at the end of each episode.); get_q (Return Q[state, action]; returns 0.0 if indices are out of bounds.); learn (Apply a Bellman update: `Q[s,a] ← Q[s,a] + α(r + γ·max Q[s'] − Q[s,a])`.); new (Create a zeroed Q-table for `state_count` states and `action_count` actions.); serialize (Serialize the Q-table to a compact JSON string `[[row0], [row1], ...]`.); set_q (Set Q[state, action] to `value`; no-op if indices are out of bounds.)
-- `LstmLayer` (`struct`, `recurrent.rs`): CPU LSTM layer with combined gate matrices. Details: fields: input_size: usize, hidden_size: usize, w_gate: Vec<f32>, u_gate: Vec<f32>, b_gate: Vec<f32> | methods: new (Create a zero-initialized LSTM layer.); step (Execute one recurrent step.)
-- `GruLayer` (`struct`, `recurrent.rs`): CPU GRU layer with combined gate matrices. Details: fields: input_size: usize, hidden_size: usize, w_gate: Vec<f32>, u_gate: Vec<f32>, b_gate: Vec<f32> | methods: new (Create a zero-initialized GRU layer.); step (Execute one recurrent step.)
-- `LurekTensor` (`struct`, `tensor.rs`): Flat f32 tensor with explicit row-major shape metadata. Details: fields: shape: Vec<usize>, data: Vec<f32> | methods: flat_index (Convert multi-dimensional zero-based indices to a flat row-major offset.); flatten (Return a flattened copy with shape `[len]`.); get_element (Return the element at the given multi-dimensional indices (zero-based, row-major).); is_empty (True when there are no elements.); len (Returns the total number of tensor elements.); new (Create a tensor with the given `shape` and flat `data`.); to_tract_tensor (Build a tract `Tensor` from this handle for use as a model input.); zeros (Create a zero-filled tensor for the given `shape`.)
-- `LayerNorm` (`struct`, `transformer.rs`): Layer normalization over a single model vector. Details: fields: d_model: usize, gamma: Vec<f32>, beta: Vec<f32>, epsilon: f32 | methods: forward_tensor (Normalize tensor rows for shape `[S,D]`.); forward_vec (Normalize one vector of length `d_model`.); new (Create layer norm with identity scale and zero bias.)
-- `TransformerEncoderBlock` (`struct`, `transformer.rs`): Standard transformer encoder block. Details: fields: attention: MultiHeadAttention, norm1: LayerNorm, norm2: LayerNorm, ffn_w1: Vec<f32>, ffn_b1: Vec<f32>, ffn_w2: Vec<f32>, ffn_b2: Vec<f32>, d_model: usize, d_ff: usize | methods: forward (Forward pass for one encoder block.); new (Create a zero-initialized encoder block.)
-- `TransformerDecoderBlock` (`struct`, `transformer.rs`): Transformer decoder block with self-attention and encoder cross-attention. Details: fields: self_attention: MultiHeadAttention, cross_attention: MultiHeadAttention, norm1: LayerNorm, norm2: LayerNorm, norm3: LayerNorm, ffn_w1: Vec<f32>, ffn_b1: Vec<f32>, ffn_w2: Vec<f32>, ffn_b2: Vec<f32>, d_model: usize, d_ff: usize | methods: forward (Forward pass for one decoder block.); new (Create a zero-initialized decoder block.)
 
-## Functions
-
-- `PositionalEncoding::new` (`attention.rs`): Precompute positional encoding table.
-- `PositionalEncoding::apply` (`attention.rs`): Add positional vectors in-place.
-- `MultiHeadAttention::new` (`attention.rs`): Create a zero-initialized MHA block.
-- `MultiHeadAttention::forward` (`attention.rs`): Run self-attention on `x` with shape `[S,D]`.
-- `BanditArm::mean_reward` (`bandit.rs`): Return the empirical mean reward; returns 0.5 before the first pull.
-- `Bandit::new` (`bandit.rs`): Create a bandit with `arm_count` arms and a fixed RNG seed.
-- `Bandit::arm_count` (`bandit.rs`): Return the number of available arms.
-- `Bandit::select` (`bandit.rs`): Select an arm index according to the current strategy.
-- `Bandit::update` (`bandit.rs`): Update the chosen arm with an observed reward in the range `[0, 1]`.
-- `Bandit::best_arm` (`bandit.rs`): Return the greedy best arm by empirical mean reward.
-- `Bandit::reset` (`bandit.rs`): Reset all arm statistics and the total pull counter.
-- `Conv2D::new` (`conv.rs`): Create a zero-initialized convolution layer.
-- `Conv2D::forward` (`conv.rs`): Run convolution over one input tensor shaped `[C, H, W]`.
-- `MaxPool2D::new` (`conv.rs`): Create max pool layer.
-- `MaxPool2D::forward` (`conv.rs`): Run max pooling.
-- `NeuralBlock::param_count` (`engine.rs`): Trainable parameter count for this block.
-- `NeuralBlock::set_weights` (`engine.rs`): Load trainable parameters for this block.
-- `NeuralBlock::get_weights` (`engine.rs`): Export trainable parameters for this block.
-- `LurekNeuralEngine::new` (`engine.rs`): Create an empty engine.
-- `LurekNeuralEngine::add_block` (`engine.rs`): Append one block.
-- `LurekNeuralEngine::blocks` (`engine.rs`): Immutable block access.
-- `LurekNeuralEngine::blocks_mut` (`engine.rs`): Mutable block access.
-- `LurekNeuralEngine::block_count` (`engine.rs`): Number of blocks in the engine.
-- `LurekNeuralEngine::param_count` (`engine.rs`): Total trainable parameter count across all blocks.
-- `LurekNeuralEngine::set_weights` (`engine.rs`): Load a flat parameter buffer and split it across blocks in insertion order.
-- `LurekNeuralEngine::get_weights` (`engine.rs`): Export all trainable parameters in block insertion order.
-- `FrameStack::new` (`env.rs`): Creates a new empty frame stack with the given capacity.
-- `FrameStack::push` (`env.rs`): Pushes an observation, discarding the oldest if at capacity.
-- `FrameStack::get` (`env.rs`): Returns the flattened stack.
-- `FrameStack::reset` (`env.rs`): Clears all stored frames and resets the observed dimension.
-- `FrameStack::capacity` (`env.rs`): Returns the maximum number of frames retained.
-- `Chromosome::new` (`genetic.rs`): Create a zeroed chromosome with `gene_count` genes.
-- `GeneticAlgorithm::new` (`genetic.rs`): Create a population with random initial genes.
-- `GeneticAlgorithm::pop_size` (`genetic.rs`): Return the current population size.
-- `GeneticAlgorithm::best` (`genetic.rs`): Return the chromosome with the highest fitness, or `None` if empty.
-- `GeneticAlgorithm::evolve` (`genetic.rs`): Build the next generation using elitism, tournament selection, crossover, and mutation.
-- `Activation::from_str` (`neural_net.rs`): Parse a lowercase activation name; unknown strings map to `Linear`.
-- `Activation::as_str` (`neural_net.rs`): Return the canonical activation name.
-- `Activation::apply` (`neural_net.rs`): Apply the activation in place to `v`.
-- `NeuralLayer::new` (`neural_net.rs`): Create a zeroed dense layer.
-- `NeuralLayer::param_count` (`neural_net.rs`): Return the number of learnable parameters in the layer.
-- `NeuralLayer::forward` (`neural_net.rs`): Compute the layer output for `input`.
-- `NeuralNet::new` (`neural_net.rs`): Create an empty neural net.
-- `NeuralNet::add_layer` (`neural_net.rs`): Append a new dense layer.
-- `NeuralNet::param_count` (`neural_net.rs`): Return the total number of learnable parameters.
-- `NeuralNet::forward` (`neural_net.rs`): Run a forward pass through all layers.
-- `NeuralNet::set_weights` (`neural_net.rs`): Load flattened weights and biases; returns `false` when the shape mismatches.
-- `NeuralNet::get_weights` (`neural_net.rs`): Return the flattened weights and biases.
-- `NeuralNet::layer_count` (`neural_net.rs`): Return the number of layers.
-- `Neuroevolution::new` (`neuroevolution.rs`): Create a population for the provided layer spec.
-- `Neuroevolution::pop_size` (`neuroevolution.rs`): Return the population size.
-- `Neuroevolution::chromosome_to_net` (`neuroevolution.rs`): Build a neural net from chromosome `i`; returns `None` when the index is invalid.
-- `Neuroevolution::set_fitness` (`neuroevolution.rs`): Assign fitness to chromosome `i` when present.
-- `Neuroevolution::evolve` (`neuroevolution.rs`): Advance the underlying genetic algorithm and generation counter.
-- `Neuroevolution::best_network` (`neuroevolution.rs`): Build the network for the best chromosome, or `None` if the population is empty.
-- `Neuroevolution::best_fitness` (`neuroevolution.rs`): Return the best fitness in the current population, or 0.0 if empty.
-- `Neuroevolution::population` (`neuroevolution.rs`): Return the current chromosome slice.
-- `OnnxModel::load` (`onnx.rs`): Load an ONNX model from `path`, optimise it, and return a runnable handle.
-- `OnnxModel::run` (`onnx.rs`): Run inference on `inputs`, returning one `LurekTensor` per model output.
-- `OnnxModel::input_count` (`onnx.rs`): Number of input tensors expected by the model.
-- `OnnxModel::output_count` (`onnx.rs`): Number of output tensors produced by the model.
-- `QLearner::new` (`qlearner.rs`): Create a zeroed Q-table for `state_count` states and `action_count` actions.
-- `QLearner::choose_action` (`qlearner.rs`): Return a randomly chosen action (explore) or the greedy best action (exploit).
-- `QLearner::best_action` (`qlearner.rs`): Return the action with the highest Q-value for `state`; ties broken by index.
-- `QLearner::learn` (`qlearner.rs`): Apply a Bellman update: `Q[s,a] ← Q[s,a] + α(r + γ·max Q[s'] − Q[s,a])`.
-- `QLearner::end_episode` (`qlearner.rs`): Decay epsilon and increment `episode_count`; call once at the end of each episode.
-- `QLearner::get_q` (`qlearner.rs`): Return Q[state, action]; returns 0.0 if indices are out of bounds.
-- `QLearner::set_q` (`qlearner.rs`): Set Q[state, action] to `value`; no-op if indices are out of bounds.
-- `QLearner::serialize` (`qlearner.rs`): Serialize the Q-table to a compact JSON string `[[row0], [row1], ...]`.
-- `QLearner::deserialize` (`qlearner.rs`): Parse a JSON Q-table string and overwrite the current table; returns error on shape mismatch.
-- `LstmLayer::new` (`recurrent.rs`): Create a zero-initialized LSTM layer.
-- `LstmLayer::step` (`recurrent.rs`): Execute one recurrent step.
-- `GruLayer::new` (`recurrent.rs`): Create a zero-initialized GRU layer.
-- `GruLayer::step` (`recurrent.rs`): Execute one recurrent step.
-- `LurekTensor::new` (`tensor.rs`): Create a tensor with the given `shape` and flat `data`.
-- `LurekTensor::zeros` (`tensor.rs`): Create a zero-filled tensor for the given `shape`.
-- `LurekTensor::len` (`tensor.rs`): Returns the total number of tensor elements.
-- `LurekTensor::is_empty` (`tensor.rs`): True when there are no elements.
-- `LurekTensor::get_element` (`tensor.rs`): Return the element at the given multi-dimensional indices (zero-based, row-major).
-- `LurekTensor::flat_index` (`tensor.rs`): Convert multi-dimensional zero-based indices to a flat row-major offset.
-- `LurekTensor::flatten` (`tensor.rs`): Return a flattened copy with shape `[len]`.
-- `LurekTensor::to_tract_tensor` (`tensor.rs`): Build a tract `Tensor` from this handle for use as a model input.
-- `gemm` (`tensor.rs`): Multiply matrix A `[m x k]` by matrix B `[k x n]` and optionally add a bias `[n]`.
-- `LayerNorm::new` (`transformer.rs`): Create layer norm with identity scale and zero bias.
-- `LayerNorm::forward_vec` (`transformer.rs`): Normalize one vector of length `d_model`.
-- `LayerNorm::forward_tensor` (`transformer.rs`): Normalize tensor rows for shape `[S,D]`.
-- `TransformerEncoderBlock::new` (`transformer.rs`): Create a zero-initialized encoder block.
-- `TransformerEncoderBlock::forward` (`transformer.rs`): Forward pass for one encoder block.
-- `TransformerDecoderBlock::new` (`transformer.rs`): Create a zero-initialized decoder block.
-- `TransformerDecoderBlock::forward` (`transformer.rs`): Forward pass for one decoder block.
-
-## Lua API Reference
+## Lua API Ref
 
 ### Functions
 
@@ -508,7 +392,7 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 ##### Methods
 
-- `LNeuralEngine:addConv2D(in_channels, out_channels, kernel_h, kernel_w, stride_h?, stride_w?, pad_h?, pad_w?) -> nil`: Appends a Conv2D block.
+- `LNeuralEngine:addConv2D(args) -> nil`: Appends a convolutional 2D block to this engine.
 - `LNeuralEngine:addDense(inputs, outputs, activation?) -> nil`: Appends a dense neural layer block.
 - `LNeuralEngine:addMaxPool2D(kernel_h, kernel_w, stride_h?, stride_w?) -> nil`: Appends a non-trainable MaxPool2D block.
 - `LNeuralEngine:addTransformerEncoder(d_model, heads, ff_hidden) -> nil`: Appends a transformer encoder block.

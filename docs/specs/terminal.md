@@ -122,6 +122,8 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - The file is therefore the structural UI type system of the terminal module.
 - It gives the terminal more expressive interface primitives than raw cells alone could provide.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -264,3 +266,13 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LWidget:setVisible(visible) -> nil`: Controls whether the widget is drawn and receives input events.
 - `LWidget:type() -> string`: Returns the type name string "LWidget".
 - `LWidget:typeOf(name) -> boolean`: Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
+
+## References
+
+- `image`: Imports or references `image` from `src/image/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

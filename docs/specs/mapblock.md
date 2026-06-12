@@ -12,7 +12,7 @@
 - Namespace: `lurek.mapblock`
 - Lua API surface: `10` functions, `9` types, `53` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): None found in the workspace
+- Lua test path(s): tests/lua_reorg/unit/test_mapblock_unit.lua
 
 ## Summary
 
@@ -151,6 +151,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - Stores tileset identity, sizing, and index-offset data shared across blocks.
 - Supports reuse of one tileset with different offset conventions per content group.
 - Serves as lookup glue between authored blocks and runtime tilemap output.
+
+
 
 ## Lua API Ref
 
@@ -328,3 +330,11 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LTilesetRef:getId() -> integer`: Get the numeric tileset ID for this tileset reference.
 - `LTilesetRef:getName() -> string`: Get tileset name â€” Lua userdata object exposed by the engine.
 - `LTilesetRef:setImagePath(path) -> nil`: Set the image file path for this tileset reference.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

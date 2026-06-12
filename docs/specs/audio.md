@@ -146,6 +146,8 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 - Stores identity and basic playback defaults that classify each loaded runtime source.
 - Serves as the foundational source contract shared across routing, playback, and spatialization paths.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -193,8 +195,8 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 - `lurek.audio.isPlaying(source) -> boolean`: Returns whether a source is currently playing.
 - `lurek.audio.isStopped(source) -> boolean`: Returns whether a source is currently stopped.
 - `lurek.audio.judgeBeat(clock, division?, hit_offset?) -> string`: Judges timing against the nearest beat grid for a beat clock.
-- `lurek.audio.manager.pauseAll() -> nil`: Pauses all active audio sources.
-- `lurek.audio.manager.resumeAll() -> nil`: Resumes all paused audio sources.
+- `lurek.audio.manager.pauseAll() -> nil`: Pauses every currently active audio source.
+- `lurek.audio.manager.resumeAll() -> nil`: Resumes every currently paused audio source.
 - `lurek.audio.mixInto(dest_ud, src_ud) -> nil`: Mixes the samples of `src` into `dest` in-place (both must have the same format).
 - `lurek.audio.newBeatClock(bpm, beats_per_bar_or_opts, opts?) -> LBeatClock`: Creates a musical beat clock for rhythm-game timing, tap-tempo, and beat scheduling.
 - `lurek.audio.newBus(name) -> LBus`: Creates a new audio mixing bus for grouping and controlling sources.
@@ -493,3 +495,14 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 - `LSource:tell() -> number`: Returns the current playback position of this source in seconds.
 - `LSource:type() -> string`: Returns the type name of this object for runtime type-checking.
 - `LSource:typeOf(name) -> boolean`: Checks whether this object is of the given type name or a parent type.
+
+## References
+
+- `dsp`: Imports or references `src/dsp/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
+- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

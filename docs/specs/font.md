@@ -69,6 +69,8 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 - Emits shaped line collections with offsets and widths for downstream rendering stages.
 - Delivers the layout layer that bridges font metrics and final text draw preparation.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -113,3 +115,11 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 - `LFont:lineHeight() -> number`: Returns the line height of this font in pixels. This method is available to Lua scripts.
 - `LFont:measure(text, scale?) -> number, number`: Measures the pixel dimensions of a text string at the given scale. This method is available to Lua scripts.
 - `LFont:wrapText(text, maxWidth, scale?) -> table`: Wraps text into lines fitting within the given max width. This method is available to Lua scripts.
+
+## References
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+
+## Notes
+
+- No additional module-specific notes.

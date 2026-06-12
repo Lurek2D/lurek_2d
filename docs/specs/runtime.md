@@ -163,6 +163,8 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - Without this container, subsystems would duplicate ownership logic or pass oversized parameter sets through every call.
 - In practice this is the mutable coordination nucleus of the runtime.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -367,3 +369,29 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `audio`: Imports or references `audio` from `src/audio/`.
+- `camera`: Imports or references `camera` from `src/camera/`.
+- `event`: Imports or references `event` from `src/event/`.
+- `filesystem`: Imports or references `filesystem` from `src/filesystem/`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
+- `input`: Imports or references `input` from `src/input/`.
+- `light`: Imports or references `light` from `src/light/`.
+- `lua_api`: `src/lua_api/system_api.rs`, `src/lua_api/engine_api.rs`, and `src/lua_api/register.rs` expose the runtime contract to Lua. `src/runtime/` must not import the binding layer.
+- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `parallax`: Imports or references `parallax` from `src/parallax/`.
+- `particle`: Imports or references `particle` from `src/particle/`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `raycaster`: Imports or references `raycaster` from `src/raycaster/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `repl`: Imports or references `src/repl/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `sprite`: Imports or references `sprite` from `src/sprite/`.
+- `tilemap`: Imports or references `tilemap` from `src/tilemap/`.
+- `timer`: Imports or references `timer` from `src/timer/`.
+- `ui`: Imports or references `ui` from `src/ui/`.
+
+## Notes
+
+- No additional module-specific notes.

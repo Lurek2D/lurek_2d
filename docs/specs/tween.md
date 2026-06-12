@@ -100,6 +100,8 @@ This module primarily collaborates with `math`. Its responsibility should stay i
 - It exposes built-in easing catalog data for tooling, validation, and autocomplete features.
 - It keeps progress semantics stable so tween updates remain deterministic across runtime paths.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -289,3 +291,11 @@ This module primarily collaborates with `math`. Its responsibility should stay i
 - `LTweenState:tick(dt) -> number`: Advances the tween state by the given delta time and returns the eased interpolation value (0..1).
 - `LTweenState:type() -> string`: Returns the type name of this object.
 - `LTweenState:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+## References
+
+- `math`: Imports or references `math` from `src/math/`.
+
+## Notes
+
+- No additional module-specific notes.

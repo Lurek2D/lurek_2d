@@ -152,6 +152,8 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - Delivers the common identity foundation for graph storage and cross-module interoperability.
 - Keeps handle semantics consistent so id usage remains safe and readable throughout flownet code.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -390,3 +392,13 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraphNode:setType(t) -> nil`: Sets this node's type string for this object.
 - `LGraphNode:type() -> string`: Returns the Lua-visible type name for this graph node handle.
 - `LGraphNode:typeOf(name) -> boolean`: Returns whether this graph node handle matches a supported type name.
+
+## References
+
+- `image`: Imports or references `image` from `src/image/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.

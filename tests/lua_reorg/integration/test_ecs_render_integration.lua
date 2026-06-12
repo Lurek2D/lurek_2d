@@ -19,15 +19,17 @@ describe("integration: entity position drives draw coordinates", function()
         local y = universe:get(id, "y")
         local w = universe:get(id, "w")
         local h = universe:get(id, "h")
+        local draw_count = 0
 
         expect_equal(200.0, x, "entity x")
         expect_equal(150.0, y, "entity y")
+        expect_equal(32.0, w, "entity width")
+        expect_equal(32.0, h, "entity height")
 
-        -- Draw commands execute without error
-        expect_no_error(function()
-            lurek.render.setColor(1, 1, 1, 1)
-            lurek.render.rectangle("fill", x --[[@as number]], y --[[@as number]], w --[[@as number]], h --[[@as number]])
-        end)
+        draw_count = draw_count + 1
+        lurek.render.setColor(1, 1, 1, 1)
+        lurek.render.rectangle("fill", x --[[@as number]], y --[[@as number]], w --[[@as number]], h --[[@as number]])
+        expect_equal(1, draw_count, "one ECS-driven draw executes")
     end)
 
     -- @integration LUniverse:get
@@ -40,6 +42,9 @@ describe("integration: entity position drives draw coordinates", function()
         local universe = lurek.ecs.newUniverse()
         local positions = {{10, 20}, {100, 200}, {300, 400}}
         local ids = {}
+        local draw_count = 0
+        local sum_x = 0
+        local sum_y = 0
 
         for i, pos in ipairs(positions) do
             local id = universe:spawn()
@@ -53,11 +58,17 @@ describe("integration: entity position drives draw coordinates", function()
             local y = universe:get(id, "y")
             expect_equal(positions[i][1], x, "entity " .. i .. " x")
             expect_equal(positions[i][2], y, "entity " .. i .. " y")
-            expect_no_error(function()
-                lurek.render.setColor(1, 0, 0, 1)
-                lurek.render.rectangle("fill", x --[[@as number]], y --[[@as number]], 16, 16)
-            end)
+
+            sum_x = sum_x + x
+            sum_y = sum_y + y
+            draw_count = draw_count + 1
+            lurek.render.setColor(1, 0, 0, 1)
+            lurek.render.rectangle("fill", x --[[@as number]], y --[[@as number]], 16, 16)
         end
+
+        expect_equal(3, draw_count, "each ECS entity reaches one draw call")
+        expect_equal(410, sum_x, "drawn x coordinates preserve ECS positions")
+        expect_equal(620, sum_y, "drawn y coordinates preserve ECS positions")
     end)
 
     -- @integration LUniverse:get
@@ -72,17 +83,27 @@ describe("integration: entity position drives draw coordinates", function()
         universe:set(id, "visible", true)
         universe:set(id, "x", 50.0)
         universe:set(id, "y", 50.0)
+        local draw_count = 0
 
         local visible = universe:get(id, "visible")
         expect_true(visible, "entity visible by default")
 
-        -- Simulate visibility check before draw
-        expect_no_error(function()
-            if universe:get(id, "visible") then
-                lurek.render.setColor(0, 1, 0, 1)
-                lurek.render.rectangle("line", 50, 50, 20, 20)
-            end
-        end)
+        if universe:get(id, "visible") then
+            draw_count = draw_count + 1
+            lurek.render.setColor(0, 1, 0, 1)
+            lurek.render.rectangle("line", 50, 50, 20, 20)
+        end
+        expect_equal(1, draw_count, "visible entity is drawn once")
+
+        universe:set(id, "visible", false)
+        expect_false(universe:get(id, "visible"), "entity can be hidden before draw")
+
+        if universe:get(id, "visible") then
+            draw_count = draw_count + 1
+            lurek.render.setColor(0, 1, 0, 1)
+            lurek.render.rectangle("line", 50, 50, 20, 20)
+        end
+        expect_equal(1, draw_count, "hidden entity skips the second draw")
     end)
 end)
 test_summary()

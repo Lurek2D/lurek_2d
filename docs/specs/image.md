@@ -11,7 +11,7 @@
 - Source path: `src/image/`
 - Binding: `src/lua_api/image_api.rs`
 - Namespace: `lurek.image`
-- Lua API surface: `12` functions, `10` types, `90` methods
+- Lua API surface: `13` functions, `10` types, `90` methods
 - Rust test path(s): tests/rust/unit/image_tests.rs, tests/rust/stress/image_stress_tests.rs
 - Lua test path(s): tests/lua_reorg/unit/test_image_core_unit.lua, tests/lua_reorg/unit/test_image.lua, tests/lua_reorg/unit/test_image_effect.lua, tests/lua_reorg/unit/test_render_core_unit.lua, tests/lua_reorg/stress/test_image_stress.lua, tests/lua_reorg/evidence/test_evidence_image_drawing.lua, tests/lua_reorg/evidence/test_evidence_imagedata.lua, tests/lua_reorg/evidence/test_evidence_image_effects.lua, tests/lua_reorg/evidence/test_evidence_imagedata_effects.lua
 
@@ -59,6 +59,12 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
+
+### animated_gif.rs
+
+- Encodes frame sequences of `ImageData` into animated GIF files for evidence and export flows.
+- Validates frame dimensions and timing up front so Lua-facing callers get deterministic failures.
+- Uses per-frame quantization from RGBA buffers to keep the API simple for software-rendered captures.
 
 ### compressed.rs
 
@@ -253,6 +259,8 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - Includes swatches and progress widgets for color and status presentation experiments.
 - Supplies deterministic UI snapshots useful in examples, tests, and design iteration loops.
 
+
+
 ## Lua API Ref
 
 ### Functions
@@ -267,6 +275,7 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 - `lurek.image.newLayeredImage(width, height) -> LLayeredImage`: Creates a layered image stack with one or more blank layers.
 - `lurek.image.newPaletteLut() -> LPaletteLUT`: Creates an empty palette lookup table.
 - `lurek.image.newProvinceGrid(filename) -> LProvinceGrid`: Loads a province id grid from an image file under the current game directory.
+- `lurek.image.saveGIF(frames, filename, opts?) -> nil`: Encodes a sequence of equally sized image frames as an animated GIF.
 - `lurek.image.saveImage(img_ud, filename) -> nil`: Saves an image data object to a path under the current game directory.
 - `lurek.image.savePNG(img_ud, filename) -> nil`: Encodes image data as PNG and writes it under the current game directory.
 
@@ -497,3 +506,17 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 ##### Methods
 
 - No documented methods.
+
+## References
+
+- `animation`: Imports or references `animation` from `src/animation/`.
+- `camera`: Imports or references `camera` from `src/camera/`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `math`: Imports or references `math` from `src/math/`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+
+## Notes
+
+- No additional module-specific notes.
