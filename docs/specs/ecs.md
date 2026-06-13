@@ -13,7 +13,7 @@
 - Namespace: `lurek.ecs`
 - Lua API surface: `1` functions, `4` types, `68` methods
 - Rust test path(s): tests/rust/unit/ecs_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_ecs_core_unit.lua
+- Lua test path(s): tests/lua/unit/test_ecs_core_unit.lua
 
 ## Summary
 

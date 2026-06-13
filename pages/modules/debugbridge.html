@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -5700,8 +5700,16 @@
 
 <h1 id="debugbridge">Debugbridge<a class="headerlink" href="#debugbridge" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module establishes a communication bridge between the active game session and external editing panels. By running a background network server, it allows developers to remotely inspect and control the engine's state without interrupting gameplay. It enables on-the-fly code updates, performance tracking, and screenshot captures.</p>
-<p>Additionally, the system manages session security and distributes console logs to all connected screens. This remote messaging streamlines session monitoring and facilitates diagnosing behaviors during development.</p>
+<ul>
+<li>Connects a running game session to external tooling so developers can inspect and control runtime state live.</li>
+<li>Enables remote debugging workflows without stopping gameplay or attaching heavyweight local instrumentation.</li>
+<li>Exposes protocol and capability metadata so client tools can negotiate supported bridge behavior safely.</li>
+<li>Streams print history and broadcast events to connected clients for faster issue triage.</li>
+<li>Supports screenshot and hot-reload request flows that accelerate iteration during content and script tuning.</li>
+<li>Provides basic session hardening through handshake and nonce-based access checks.</li>
+<li>Gives teams one remote diagnostics channel for live observability and command dispatch.</li>
+</ul>
+<p>This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekdebugbridgebroadcast"><code>lurek.debugbridge.broadcast</code><a class="headerlink" href="#lurekdebugbridgebroadcast" title="Permanent link">&para;</a></h3>
 <p>Queues a JSON string payload broadcast for debug bridge clients.</p>

@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -9030,9 +9030,29 @@
 
 <h1 id="camera">Camera<a class="headerlink" href="#camera" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>The camera module serves as the primary viewport projection layer for Lurek2D, mapping 2D world coordinates onto the user's screen. Its core purpose is to track gameplay targets smoothly using follow algorithms that apply dead-zone constraints, speed smoothing, easing modes, and look-ahead displacements. It supplies follow presets—aggressive, balanced, cinematic, and tight—to quickly capture common movement profiles while enforcing hard bounds to lock the view inside active maps.</p>
-<p>To enhance the visual and kinetic feel of gameplay, the module layers a dynamic suite of transient camera effects on top of the base tracking transform. Scripts can programmatically trigger camera shake impulses, pulse-based zoom bursts, oscillatory sways with adjustable damping, and ambient breathing zoom modulations for low-action timing. The engine composes these layers with zoom, rotation, and dampening constraints to construct a stable, frame-accurate view matrix while providing pixel-to-world coordinate conversion tools.</p>
-<p>For split-screen multiplayer, picture-in-picture maps, or multi-pass scenes, the module supplies multi-camera rig orchestrators. Rigs govern groups of named cameras, auto-calculating split-screen, minimap, and inset display layouts. Viewports are governed by scaling policies that resolve aspect-ratio adjustments into letterbox, stretched, or pixel-perfect projection dimensions, while waypoint-driven path systems interpolate guided cameras along authored waypoints.</p>
+<ul>
+<li>Controls how players see the world by mapping game-space motion into stable, readable screen framing.</li>
+<li>Enables smooth target following with dead zones, easing, and look-ahead to reduce jitter and improve readability.</li>
+<li>Provides practical follow presets so teams can get a good camera feel quickly before deep tuning.</li>
+<li>Supports world bounds to prevent exposing invalid map regions during traversal and high-speed movement.</li>
+<li>Exposes direct positioning and rotation controls for scripted cinematics and authored transitions.</li>
+<li>Includes zoom controls with constraints and damping so scale changes stay intentional and comfortable.</li>
+<li>Adds screen shake for impact feedback while preserving controllable intensity and duration.</li>
+<li>Adds sway and breathing effects for subtle motion language in exploration and menu-heavy scenes.</li>
+<li>Supports zoom pulses and timed transitions for moment-to-moment emphasis during gameplay beats.</li>
+<li>Provides world-to-screen and screen-to-world conversion for UI overlays, targeting, and interaction tools.</li>
+<li>Handles resize-aware viewport behavior so camera output remains predictable across resolutions.</li>
+<li>Supports scale modes like letterbox and pixel-perfect for different visual presentation goals.</li>
+<li>Enables path-driven camera movement for intros, cutscenes, and guided tutorial sequences.</li>
+<li>Allows multiple named cameras in one rig for split-screen, minimap, and inset workflows.</li>
+<li>Lets systems switch active views cleanly without rebuilding render pipelines.</li>
+<li>Gives gameplay, UI, and render code one shared camera contract instead of parallel ad-hoc logic.</li>
+<li>Helps users build camera behavior that feels responsive, cinematic, and technically stable.</li>
+<li>Acts as the core module for viewport control across single-camera and multi-camera game experiences.</li>
+<li>Reduces implementation friction by packaging common camera patterns behind script-friendly APIs.</li>
+<li>Improves player comfort by keeping motion framing, zoom, and rotation behavior consistent and bounded.</li>
+</ul>
+<p>This module primarily collaborates with <code>math</code>, <code>render</code>, <code>tilemap</code>. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekcameranew"><code>lurek.camera.new</code><a class="headerlink" href="#lurekcameranew" title="Permanent link">&para;</a></h3>
 <p>Creates a 2D camera with optional virtual viewport size.</p>
@@ -9735,9 +9755,10 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="kr">do</span>
 <a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">cam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">600</span><span class="p">)</span>
 <a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a><span class="w">    </span><span class="nv">cam</span><span class="p">:</span><span class="nf">setRotationConstraints</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">)</span>
-<a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">mn</span><span class="p">,</span><span class="w"> </span><span class="nv">mx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">cam</span><span class="p">:</span><span class="nf">getRotationConstraints</span><span class="p">()</span>
-<a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rotation range = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">mn</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot; to &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">mx</span><span class="p">)</span>
-<a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a><span class="kr">end</span>
+<a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">has_min</span><span class="p">,</span><span class="w"> </span><span class="nv">mn</span><span class="p">,</span><span class="w"> </span><span class="nv">has_max</span><span class="p">,</span><span class="w"> </span><span class="nv">mx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">cam</span><span class="p">:</span><span class="nf">getRotationConstraints</span><span class="p">()</span>
+<a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rotation min enabled = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">has_min</span><span class="p">)</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot; value = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">mn</span><span class="p">)</span>
+<a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rotation max enabled = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">has_max</span><span class="p">)</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot; value = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">mx</span><span class="p">)</span>
+<a id="__codelineno-43-7" name="__codelineno-43-7" href="#__codelineno-43-7"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lcameragetrotationdamping"><code>LCamera:getRotationDamping</code><a class="headerlink" href="#lcameragetrotationdamping" title="Permanent link">&para;</a></h4>
@@ -11984,7 +12005,7 @@
 <p><em>No documented fields for this handle.</em></p>
 <h3 id="type-methods_2">Type Methods<a class="headerlink" href="#type-methods_2" title="Permanent link">&para;</a></h3>
 <h4 id="lcamerawalkergetcamera"><code>LCameraWalker:getCamera</code><a class="headerlink" href="#lcamerawalkergetcamera" title="Permanent link">&para;</a></h4>
-<p>Returns the associated camera.</p>
+<p>Returns the camera associated with this walker.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-178-1" name="__codelineno-178-1" href="#__codelineno-178-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">getCamera</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
@@ -12034,10 +12055,19 @@
 </tr>
 </tbody>
 </table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-181-1" name="__codelineno-181-1" href="#__codelineno-181-1"></a><span class="kr">do</span>
+<a id="__codelineno-181-2" name="__codelineno-181-2" href="#__codelineno-181-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-181-3" name="__codelineno-181-3" href="#__codelineno-181-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">)</span>
+<a id="__codelineno-181-4" name="__codelineno-181-4" href="#__codelineno-181-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">setPosition</span><span class="p">(</span><span class="mi">96</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="p">)</span>
+<a id="__codelineno-181-5" name="__codelineno-181-5" href="#__codelineno-181-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
+<a id="__codelineno-181-6" name="__codelineno-181-6" href="#__codelineno-181-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;walker pos = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;, &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
+<a id="__codelineno-181-7" name="__codelineno-181-7" href="#__codelineno-181-7"></a><span class="kr">end</span>
+</code></pre></div>
 <hr />
 <h4 id="lcamerawalkergettileposition"><code>LCameraWalker:getTilePosition</code><a class="headerlink" href="#lcamerawalkergettileposition" title="Permanent link">&para;</a></h4>
 <p>Returns current walker tile coordinates (1-based).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-181-1" name="__codelineno-181-1" href="#__codelineno-181-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">getTilePosition</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-182-1" name="__codelineno-182-1" href="#__codelineno-182-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">getTilePosition</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -12059,18 +12089,18 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-182-1" name="__codelineno-182-1" href="#__codelineno-182-1"></a><span class="kr">do</span>
-<a id="__codelineno-182-2" name="__codelineno-182-2" href="#__codelineno-182-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
-<a id="__codelineno-182-3" name="__codelineno-182-3" href="#__codelineno-182-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">tile_w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="nv">tile_h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="p">})</span>
-<a id="__codelineno-182-4" name="__codelineno-182-4" href="#__codelineno-182-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">setTilePosition</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
-<a id="__codelineno-182-5" name="__codelineno-182-5" href="#__codelineno-182-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">tx</span><span class="p">,</span><span class="w"> </span><span class="nv">ty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getTilePosition</span><span class="p">()</span>
-<a id="__codelineno-182-6" name="__codelineno-182-6" href="#__codelineno-182-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;walker tile = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">tx</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;, &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">ty</span><span class="p">)</span>
-<a id="__codelineno-182-7" name="__codelineno-182-7" href="#__codelineno-182-7"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-183-1" name="__codelineno-183-1" href="#__codelineno-183-1"></a><span class="kr">do</span>
+<a id="__codelineno-183-2" name="__codelineno-183-2" href="#__codelineno-183-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-183-3" name="__codelineno-183-3" href="#__codelineno-183-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">tile_w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="nv">tile_h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-183-4" name="__codelineno-183-4" href="#__codelineno-183-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">setTilePosition</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<a id="__codelineno-183-5" name="__codelineno-183-5" href="#__codelineno-183-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">tx</span><span class="p">,</span><span class="w"> </span><span class="nv">ty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getTilePosition</span><span class="p">()</span>
+<a id="__codelineno-183-6" name="__codelineno-183-6" href="#__codelineno-183-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;walker tile = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">tx</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;, &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">ty</span><span class="p">)</span>
+<a id="__codelineno-183-7" name="__codelineno-183-7" href="#__codelineno-183-7"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lcamerawalkermovedown"><code>LCameraWalker:moveDown</code><a class="headerlink" href="#lcamerawalkermovedown" title="Permanent link">&para;</a></h4>
 <p>Moves the walker down (positive Y) with collision checking.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-183-1" name="__codelineno-183-1" href="#__codelineno-183-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">moveDown</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-184-1" name="__codelineno-184-1" href="#__codelineno-184-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">moveDown</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12090,18 +12120,18 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-184-1" name="__codelineno-184-1" href="#__codelineno-184-1"></a><span class="kr">do</span>
-<a id="__codelineno-184-2" name="__codelineno-184-2" href="#__codelineno-184-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
-<a id="__codelineno-184-3" name="__codelineno-184-3" href="#__codelineno-184-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">})</span>
-<a id="__codelineno-184-4" name="__codelineno-184-4" href="#__codelineno-184-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">moveDown</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
-<a id="__codelineno-184-5" name="__codelineno-184-5" href="#__codelineno-184-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
-<a id="__codelineno-184-6" name="__codelineno-184-6" href="#__codelineno-184-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;moved down, new y = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
-<a id="__codelineno-184-7" name="__codelineno-184-7" href="#__codelineno-184-7"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-185-1" name="__codelineno-185-1" href="#__codelineno-185-1"></a><span class="kr">do</span>
+<a id="__codelineno-185-2" name="__codelineno-185-2" href="#__codelineno-185-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-185-3" name="__codelineno-185-3" href="#__codelineno-185-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-185-4" name="__codelineno-185-4" href="#__codelineno-185-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">moveDown</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<a id="__codelineno-185-5" name="__codelineno-185-5" href="#__codelineno-185-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
+<a id="__codelineno-185-6" name="__codelineno-185-6" href="#__codelineno-185-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;moved down, new y = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
+<a id="__codelineno-185-7" name="__codelineno-185-7" href="#__codelineno-185-7"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lcamerawalkermoveleft"><code>LCameraWalker:moveLeft</code><a class="headerlink" href="#lcamerawalkermoveleft" title="Permanent link">&para;</a></h4>
 <p>Moves the walker left (negative X) with collision checking.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-185-1" name="__codelineno-185-1" href="#__codelineno-185-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">moveLeft</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-186-1" name="__codelineno-186-1" href="#__codelineno-186-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">moveLeft</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12121,18 +12151,18 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-186-1" name="__codelineno-186-1" href="#__codelineno-186-1"></a><span class="kr">do</span>
-<a id="__codelineno-186-2" name="__codelineno-186-2" href="#__codelineno-186-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
-<a id="__codelineno-186-3" name="__codelineno-186-3" href="#__codelineno-186-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">})</span>
-<a id="__codelineno-186-4" name="__codelineno-186-4" href="#__codelineno-186-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">moveLeft</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
-<a id="__codelineno-186-5" name="__codelineno-186-5" href="#__codelineno-186-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
-<a id="__codelineno-186-6" name="__codelineno-186-6" href="#__codelineno-186-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;moved left, new x = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span>
-<a id="__codelineno-186-7" name="__codelineno-186-7" href="#__codelineno-186-7"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-187-1" name="__codelineno-187-1" href="#__codelineno-187-1"></a><span class="kr">do</span>
+<a id="__codelineno-187-2" name="__codelineno-187-2" href="#__codelineno-187-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-187-3" name="__codelineno-187-3" href="#__codelineno-187-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-187-4" name="__codelineno-187-4" href="#__codelineno-187-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">moveLeft</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<a id="__codelineno-187-5" name="__codelineno-187-5" href="#__codelineno-187-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
+<a id="__codelineno-187-6" name="__codelineno-187-6" href="#__codelineno-187-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;moved left, new x = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span>
+<a id="__codelineno-187-7" name="__codelineno-187-7" href="#__codelineno-187-7"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lcamerawalkermoveright"><code>LCameraWalker:moveRight</code><a class="headerlink" href="#lcamerawalkermoveright" title="Permanent link">&para;</a></h4>
 <p>Moves the walker right (positive X) with collision checking.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-187-1" name="__codelineno-187-1" href="#__codelineno-187-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">moveRight</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-188-1" name="__codelineno-188-1" href="#__codelineno-188-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">moveRight</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12152,18 +12182,18 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-188-1" name="__codelineno-188-1" href="#__codelineno-188-1"></a><span class="kr">do</span>
-<a id="__codelineno-188-2" name="__codelineno-188-2" href="#__codelineno-188-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
-<a id="__codelineno-188-3" name="__codelineno-188-3" href="#__codelineno-188-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">})</span>
-<a id="__codelineno-188-4" name="__codelineno-188-4" href="#__codelineno-188-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">moveRight</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
-<a id="__codelineno-188-5" name="__codelineno-188-5" href="#__codelineno-188-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
-<a id="__codelineno-188-6" name="__codelineno-188-6" href="#__codelineno-188-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;moved right, new x = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span>
-<a id="__codelineno-188-7" name="__codelineno-188-7" href="#__codelineno-188-7"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-189-1" name="__codelineno-189-1" href="#__codelineno-189-1"></a><span class="kr">do</span>
+<a id="__codelineno-189-2" name="__codelineno-189-2" href="#__codelineno-189-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-189-3" name="__codelineno-189-3" href="#__codelineno-189-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-189-4" name="__codelineno-189-4" href="#__codelineno-189-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">moveRight</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<a id="__codelineno-189-5" name="__codelineno-189-5" href="#__codelineno-189-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
+<a id="__codelineno-189-6" name="__codelineno-189-6" href="#__codelineno-189-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;moved right, new x = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span>
+<a id="__codelineno-189-7" name="__codelineno-189-7" href="#__codelineno-189-7"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lcamerawalkermoveup"><code>LCameraWalker:moveUp</code><a class="headerlink" href="#lcamerawalkermoveup" title="Permanent link">&para;</a></h4>
 <p>Moves the walker up (negative Y) with collision checking.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-189-1" name="__codelineno-189-1" href="#__codelineno-189-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">moveUp</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-190-1" name="__codelineno-190-1" href="#__codelineno-190-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">moveUp</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12183,18 +12213,18 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-190-1" name="__codelineno-190-1" href="#__codelineno-190-1"></a><span class="kr">do</span>
-<a id="__codelineno-190-2" name="__codelineno-190-2" href="#__codelineno-190-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
-<a id="__codelineno-190-3" name="__codelineno-190-3" href="#__codelineno-190-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">})</span>
-<a id="__codelineno-190-4" name="__codelineno-190-4" href="#__codelineno-190-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">moveUp</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
-<a id="__codelineno-190-5" name="__codelineno-190-5" href="#__codelineno-190-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
-<a id="__codelineno-190-6" name="__codelineno-190-6" href="#__codelineno-190-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;moved up, new y = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
-<a id="__codelineno-190-7" name="__codelineno-190-7" href="#__codelineno-190-7"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-191-1" name="__codelineno-191-1" href="#__codelineno-191-1"></a><span class="kr">do</span>
+<a id="__codelineno-191-2" name="__codelineno-191-2" href="#__codelineno-191-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-191-3" name="__codelineno-191-3" href="#__codelineno-191-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-191-4" name="__codelineno-191-4" href="#__codelineno-191-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">moveUp</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<a id="__codelineno-191-5" name="__codelineno-191-5" href="#__codelineno-191-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
+<a id="__codelineno-191-6" name="__codelineno-191-6" href="#__codelineno-191-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;moved up, new y = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
+<a id="__codelineno-191-7" name="__codelineno-191-7" href="#__codelineno-191-7"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lcamerawalkersetposition"><code>LCameraWalker:setPosition</code><a class="headerlink" href="#lcamerawalkersetposition" title="Permanent link">&para;</a></h4>
 <p>Sets the walker world-space center position.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-191-1" name="__codelineno-191-1" href="#__codelineno-191-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">setPosition</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-192-1" name="__codelineno-192-1" href="#__codelineno-192-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">setPosition</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12219,18 +12249,18 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-192-1" name="__codelineno-192-1" href="#__codelineno-192-1"></a><span class="kr">do</span>
-<a id="__codelineno-192-2" name="__codelineno-192-2" href="#__codelineno-192-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
-<a id="__codelineno-192-3" name="__codelineno-192-3" href="#__codelineno-192-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">)</span>
-<a id="__codelineno-192-4" name="__codelineno-192-4" href="#__codelineno-192-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">setPosition</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="w"> </span><span class="mi">96</span><span class="p">)</span>
-<a id="__codelineno-192-5" name="__codelineno-192-5" href="#__codelineno-192-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
-<a id="__codelineno-192-6" name="__codelineno-192-6" href="#__codelineno-192-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;walker pos = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;, &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
-<a id="__codelineno-192-7" name="__codelineno-192-7" href="#__codelineno-192-7"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-193-1" name="__codelineno-193-1" href="#__codelineno-193-1"></a><span class="kr">do</span>
+<a id="__codelineno-193-2" name="__codelineno-193-2" href="#__codelineno-193-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-193-3" name="__codelineno-193-3" href="#__codelineno-193-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">)</span>
+<a id="__codelineno-193-4" name="__codelineno-193-4" href="#__codelineno-193-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">setPosition</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="w"> </span><span class="mi">96</span><span class="p">)</span>
+<a id="__codelineno-193-5" name="__codelineno-193-5" href="#__codelineno-193-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
+<a id="__codelineno-193-6" name="__codelineno-193-6" href="#__codelineno-193-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;walker pos = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;, &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
+<a id="__codelineno-193-7" name="__codelineno-193-7" href="#__codelineno-193-7"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lcamerawalkersettileposition"><code>LCameraWalker:setTilePosition</code><a class="headerlink" href="#lcamerawalkersettileposition" title="Permanent link">&para;</a></h4>
 <p>Places walker using 1-based tile coordinates.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-193-1" name="__codelineno-193-1" href="#__codelineno-193-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">setTilePosition</span><span class="p">(</span><span class="nv">tx</span><span class="p">,</span><span class="w"> </span><span class="nv">ty</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-194-1" name="__codelineno-194-1" href="#__codelineno-194-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">setTilePosition</span><span class="p">(</span><span class="nv">tx</span><span class="p">,</span><span class="w"> </span><span class="nv">ty</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12254,10 +12284,19 @@
 </tr>
 </tbody>
 </table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-195-1" name="__codelineno-195-1" href="#__codelineno-195-1"></a><span class="kr">do</span>
+<a id="__codelineno-195-2" name="__codelineno-195-2" href="#__codelineno-195-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-195-3" name="__codelineno-195-3" href="#__codelineno-195-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">tile_w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="nv">tile_h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-195-4" name="__codelineno-195-4" href="#__codelineno-195-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">setTilePosition</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<a id="__codelineno-195-5" name="__codelineno-195-5" href="#__codelineno-195-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">tx</span><span class="p">,</span><span class="w"> </span><span class="nv">ty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getTilePosition</span><span class="p">()</span>
+<a id="__codelineno-195-6" name="__codelineno-195-6" href="#__codelineno-195-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;walker tile = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">tx</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;, &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">ty</span><span class="p">)</span>
+<a id="__codelineno-195-7" name="__codelineno-195-7" href="#__codelineno-195-7"></a><span class="kr">end</span>
+</code></pre></div>
 <hr />
 <h4 id="lcamerawalkertype"><code>LCameraWalker:type</code><a class="headerlink" href="#lcamerawalkertype" title="Permanent link">&para;</a></h4>
 <p>Returns the type name of this userdata.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-194-1" name="__codelineno-194-1" href="#__codelineno-194-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">type</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-196-1" name="__codelineno-196-1" href="#__codelineno-196-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">type</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -12274,10 +12313,17 @@
 </tr>
 </tbody>
 </table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-197-1" name="__codelineno-197-1" href="#__codelineno-197-1"></a><span class="kr">do</span>
+<a id="__codelineno-197-2" name="__codelineno-197-2" href="#__codelineno-197-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-197-3" name="__codelineno-197-3" href="#__codelineno-197-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">)</span>
+<a id="__codelineno-197-4" name="__codelineno-197-4" href="#__codelineno-197-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;walker type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">type</span><span class="p">())</span>
+<a id="__codelineno-197-5" name="__codelineno-197-5" href="#__codelineno-197-5"></a><span class="kr">end</span>
+</code></pre></div>
 <hr />
 <h4 id="lcamerawalkertypeof"><code>LCameraWalker:typeOf</code><a class="headerlink" href="#lcamerawalkertypeof" title="Permanent link">&para;</a></h4>
 <p>Checks whether this object matches the given type name.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-195-1" name="__codelineno-195-1" href="#__codelineno-195-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="nv">name</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-198-1" name="__codelineno-198-1" href="#__codelineno-198-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="nv">name</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12311,10 +12357,17 @@
 </tr>
 </tbody>
 </table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-199-1" name="__codelineno-199-1" href="#__codelineno-199-1"></a><span class="kr">do</span>
+<a id="__codelineno-199-2" name="__codelineno-199-2" href="#__codelineno-199-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-199-3" name="__codelineno-199-3" href="#__codelineno-199-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">)</span>
+<a id="__codelineno-199-4" name="__codelineno-199-4" href="#__codelineno-199-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;is LCameraWalker = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">walker</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="s2">&quot;LCameraWalker&quot;</span><span class="p">)))</span>
+<a id="__codelineno-199-5" name="__codelineno-199-5" href="#__codelineno-199-5"></a><span class="kr">end</span>
+</code></pre></div>
 <hr />
 <h4 id="lcamerawalkerupdate"><code>LCameraWalker:update</code><a class="headerlink" href="#lcamerawalkerupdate" title="Permanent link">&para;</a></h4>
 <p>Updates camera state and advances smooth interpolation.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-196-1" name="__codelineno-196-1" href="#__codelineno-196-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">update</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-200-1" name="__codelineno-200-1" href="#__codelineno-200-1"></a><span class="nv">LCameraWalker</span><span class="p">:</span><span class="nf">update</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12334,14 +12387,14 @@
 </tbody>
 </table>
 <p><strong>Example</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-197-1" name="__codelineno-197-1" href="#__codelineno-197-1"></a><span class="kr">do</span>
-<a id="__codelineno-197-2" name="__codelineno-197-2" href="#__codelineno-197-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
-<a id="__codelineno-197-3" name="__codelineno-197-3" href="#__codelineno-197-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">)</span>
-<a id="__codelineno-197-4" name="__codelineno-197-4" href="#__codelineno-197-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">setPosition</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span>
-<a id="__codelineno-197-5" name="__codelineno-197-5" href="#__codelineno-197-5"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">update</span><span class="p">(</span><span class="mf">0.016</span><span class="p">)</span><span class="w">  </span><span class="c1">-- Update at ~60 FPS</span>
-<a id="__codelineno-197-6" name="__codelineno-197-6" href="#__codelineno-197-6"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
-<a id="__codelineno-197-7" name="__codelineno-197-7" href="#__codelineno-197-7"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;walker updated, pos = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;, &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
-<a id="__codelineno-197-8" name="__codelineno-197-8" href="#__codelineno-197-8"></a><span class="kr">end</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-201-1" name="__codelineno-201-1" href="#__codelineno-201-1"></a><span class="kr">do</span>
+<a id="__codelineno-201-2" name="__codelineno-201-2" href="#__codelineno-201-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">tilemap</span><span class="p">.</span><span class="nf">newTileMap</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-201-3" name="__codelineno-201-3" href="#__codelineno-201-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">camera</span><span class="p">.</span><span class="nf">newWalker</span><span class="p">(</span><span class="nv">map</span><span class="p">)</span>
+<a id="__codelineno-201-4" name="__codelineno-201-4" href="#__codelineno-201-4"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">setPosition</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span>
+<a id="__codelineno-201-5" name="__codelineno-201-5" href="#__codelineno-201-5"></a><span class="w">    </span><span class="nv">walker</span><span class="p">:</span><span class="nf">update</span><span class="p">(</span><span class="mf">0.016</span><span class="p">)</span><span class="w">  </span><span class="c1">-- Update at ~60 FPS</span>
+<a id="__codelineno-201-6" name="__codelineno-201-6" href="#__codelineno-201-6"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">walker</span><span class="p">:</span><span class="nf">getPosition</span><span class="p">()</span>
+<a id="__codelineno-201-7" name="__codelineno-201-7" href="#__codelineno-201-7"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;walker updated, pos = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;, &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
+<a id="__codelineno-201-8" name="__codelineno-201-8" href="#__codelineno-201-8"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h2 id="ltilemap">LTileMap<a class="headerlink" href="#ltilemap" title="Permanent link">&para;</a></h2>
@@ -12350,7 +12403,7 @@
 <h3 id="type-methods_3">Type Methods<a class="headerlink" href="#type-methods_3" title="Permanent link">&para;</a></h3>
 <h4 id="ltilemapaddlayer"><code>LTileMap:addLayer</code><a class="headerlink" href="#ltilemapaddlayer" title="Permanent link">&para;</a></h4>
 <p>Creates a new tile layer with the given name and dimensions.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-198-1" name="__codelineno-198-1" href="#__codelineno-198-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">addLayer</span><span class="p">(</span><span class="nv">name</span><span class="p">,</span><span class="w"> </span><span class="nv">w</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-202-1" name="__codelineno-202-1" href="#__codelineno-202-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">addLayer</span><span class="p">(</span><span class="nv">name</span><span class="p">,</span><span class="w"> </span><span class="nv">w</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12397,7 +12450,7 @@
 <hr />
 <h4 id="ltilemapaddtileset"><code>LTileMap:addTileSet</code><a class="headerlink" href="#ltilemapaddtileset" title="Permanent link">&para;</a></h4>
 <p>Attaches a tileset to this map for tile rendering.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-199-1" name="__codelineno-199-1" href="#__codelineno-199-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">addTileSet</span><span class="p">(</span><span class="nv">tileSet</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-203-1" name="__codelineno-203-1" href="#__codelineno-203-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">addTileSet</span><span class="p">(</span><span class="nv">tileSet</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12419,7 +12472,7 @@
 <hr />
 <h4 id="ltilemapapplyautotile"><code>LTileMap:applyAutoTile</code><a class="headerlink" href="#ltilemapapplyautotile" title="Permanent link">&para;</a></h4>
 <p>Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-200-1" name="__codelineno-200-1" href="#__codelineno-200-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">applyAutoTile</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">typeName</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-204-1" name="__codelineno-204-1" href="#__codelineno-204-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">applyAutoTile</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">typeName</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12446,7 +12499,7 @@
 <hr />
 <h4 id="ltilemapapplyautotile8"><code>LTileMap:applyAutoTile8</code><a class="headerlink" href="#ltilemapapplyautotile8" title="Permanent link">&para;</a></h4>
 <p>Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-201-1" name="__codelineno-201-1" href="#__codelineno-201-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">applyAutoTile8</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">typeName</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-205-1" name="__codelineno-205-1" href="#__codelineno-205-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">applyAutoTile8</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">typeName</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12473,7 +12526,7 @@
 <hr />
 <h4 id="ltilemapapplyautotile8at"><code>LTileMap:applyAutoTile8At</code><a class="headerlink" href="#ltilemapapplyautotile8at" title="Permanent link">&para;</a></h4>
 <p>Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-202-1" name="__codelineno-202-1" href="#__codelineno-202-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">applyAutoTile8At</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">typeName</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-206-1" name="__codelineno-206-1" href="#__codelineno-206-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">applyAutoTile8At</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">typeName</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12510,7 +12563,7 @@
 <hr />
 <h4 id="ltilemapapplyautotileat"><code>LTileMap:applyAutoTileAt</code><a class="headerlink" href="#ltilemapapplyautotileat" title="Permanent link">&para;</a></h4>
 <p>Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-203-1" name="__codelineno-203-1" href="#__codelineno-203-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">applyAutoTileAt</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">typeName</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-207-1" name="__codelineno-207-1" href="#__codelineno-207-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">applyAutoTileAt</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">typeName</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12547,7 +12600,7 @@
 <hr />
 <h4 id="ltilemapcheckentities"><code>LTileMap:checkEntities</code><a class="headerlink" href="#ltilemapcheckentities" title="Permanent link">&para;</a></h4>
 <p>Checks a list of entities against registered tile-enter callbacks on a layer.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-204-1" name="__codelineno-204-1" href="#__codelineno-204-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">checkEntities</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">entities</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-208-1" name="__codelineno-208-1" href="#__codelineno-208-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">checkEntities</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">entities</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12574,7 +12627,7 @@
 <hr />
 <h4 id="ltilemapcleartile"><code>LTileMap:clearTile</code><a class="headerlink" href="#ltilemapcleartile" title="Permanent link">&para;</a></h4>
 <p>Removes the tile at a specific grid position, setting it to empty (GID 0).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-205-1" name="__codelineno-205-1" href="#__codelineno-205-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">clearTile</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-209-1" name="__codelineno-209-1" href="#__codelineno-209-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">clearTile</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12606,7 +12659,7 @@
 <hr />
 <h4 id="ltilemapdrawtoimage"><code>LTileMap:drawToImage</code><a class="headerlink" href="#ltilemapdrawtoimage" title="Permanent link">&para;</a></h4>
 <p>Rasterizes the map into an image using the given tile size, returning an image handle.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-206-1" name="__codelineno-206-1" href="#__codelineno-206-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">drawToImage</span><span class="p">(</span><span class="nv">tileSize</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-210-1" name="__codelineno-210-1" href="#__codelineno-210-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">drawToImage</span><span class="p">(</span><span class="nv">tileSize</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12643,7 +12696,7 @@
 <hr />
 <h4 id="ltilemapfill"><code>LTileMap:fill</code><a class="headerlink" href="#ltilemapfill" title="Permanent link">&para;</a></h4>
 <p>Fills every cell of a layer with the given GID.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-207-1" name="__codelineno-207-1" href="#__codelineno-207-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">fill</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">gid</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-211-1" name="__codelineno-211-1" href="#__codelineno-211-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">fill</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">gid</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12670,7 +12723,7 @@
 <hr />
 <h4 id="ltilemapfindtilesbygid"><code>LTileMap:findTilesByGid</code><a class="headerlink" href="#ltilemapfindtilesbygid" title="Permanent link">&para;</a></h4>
 <p>Returns all positions on a layer that contain a specific GID.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-208-1" name="__codelineno-208-1" href="#__codelineno-208-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">findTilesByGid</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">gid</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-212-1" name="__codelineno-212-1" href="#__codelineno-212-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">findTilesByGid</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">gid</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12712,7 +12765,7 @@
 <hr />
 <h4 id="ltilemapfiretileexit"><code>LTileMap:fireTileExit</code><a class="headerlink" href="#ltilemapfiretileexit" title="Permanent link">&para;</a></h4>
 <p>Manually fires the tile-exit callback for a specific GID and entity at a tile position.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-209-1" name="__codelineno-209-1" href="#__codelineno-209-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">fireTileExit</span><span class="p">(</span><span class="nv">gid</span><span class="p">,</span><span class="w"> </span><span class="nv">entity</span><span class="p">,</span><span class="w"> </span><span class="nv">tx</span><span class="p">,</span><span class="w"> </span><span class="nv">ty</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-213-1" name="__codelineno-213-1" href="#__codelineno-213-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">fireTileExit</span><span class="p">(</span><span class="nv">gid</span><span class="p">,</span><span class="w"> </span><span class="nv">entity</span><span class="p">,</span><span class="w"> </span><span class="nv">tx</span><span class="p">,</span><span class="w"> </span><span class="nv">ty</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12749,7 +12802,7 @@
 <hr />
 <h4 id="ltilemapfiretilestep"><code>LTileMap:fireTileStep</code><a class="headerlink" href="#ltilemapfiretilestep" title="Permanent link">&para;</a></h4>
 <p>Manually fires the tile-step callback for a specific GID and entity at a tile position.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-210-1" name="__codelineno-210-1" href="#__codelineno-210-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">fireTileStep</span><span class="p">(</span><span class="nv">gid</span><span class="p">,</span><span class="w"> </span><span class="nv">entity</span><span class="p">,</span><span class="w"> </span><span class="nv">tx</span><span class="p">,</span><span class="w"> </span><span class="nv">ty</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-214-1" name="__codelineno-214-1" href="#__codelineno-214-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">fireTileStep</span><span class="p">(</span><span class="nv">gid</span><span class="p">,</span><span class="w"> </span><span class="nv">entity</span><span class="p">,</span><span class="w"> </span><span class="nv">tx</span><span class="p">,</span><span class="w"> </span><span class="nv">ty</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12786,7 +12839,7 @@
 <hr />
 <h4 id="ltilemapgetchunksize"><code>LTileMap:getChunkSize</code><a class="headerlink" href="#ltilemapgetchunksize" title="Permanent link">&para;</a></h4>
 <p>Returns the chunk size used for internal tile storage.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-211-1" name="__codelineno-211-1" href="#__codelineno-211-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getChunkSize</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-215-1" name="__codelineno-215-1" href="#__codelineno-215-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getChunkSize</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -12806,7 +12859,7 @@
 <hr />
 <h4 id="ltilemapgetlayercolor"><code>LTileMap:getLayerColor</code><a class="headerlink" href="#ltilemapgetlayercolor" title="Permanent link">&para;</a></h4>
 <p>Returns the tint color of a layer as four RGBA components.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-212-1" name="__codelineno-212-1" href="#__codelineno-212-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerColor</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-216-1" name="__codelineno-216-1" href="#__codelineno-216-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerColor</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12855,7 +12908,7 @@
 <hr />
 <h4 id="ltilemapgetlayercount"><code>LTileMap:getLayerCount</code><a class="headerlink" href="#ltilemapgetlayercount" title="Permanent link">&para;</a></h4>
 <p>Returns the total number of layers in this map.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-213-1" name="__codelineno-213-1" href="#__codelineno-213-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerCount</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-217-1" name="__codelineno-217-1" href="#__codelineno-217-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerCount</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -12875,7 +12928,7 @@
 <hr />
 <h4 id="ltilemapgetlayername"><code>LTileMap:getLayerName</code><a class="headerlink" href="#ltilemapgetlayername" title="Permanent link">&para;</a></h4>
 <p>Returns the name of a layer by index.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-214-1" name="__codelineno-214-1" href="#__codelineno-214-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerName</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-218-1" name="__codelineno-218-1" href="#__codelineno-218-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerName</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12912,7 +12965,7 @@
 <hr />
 <h4 id="ltilemapgetlayeroffset"><code>LTileMap:getLayerOffset</code><a class="headerlink" href="#ltilemapgetlayeroffset" title="Permanent link">&para;</a></h4>
 <p>Returns the pixel offset of a layer.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-215-1" name="__codelineno-215-1" href="#__codelineno-215-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerOffset</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-219-1" name="__codelineno-219-1" href="#__codelineno-219-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerOffset</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12953,7 +13006,7 @@
 <hr />
 <h4 id="ltilemapgetlayerparallax"><code>LTileMap:getLayerParallax</code><a class="headerlink" href="#ltilemapgetlayerparallax" title="Permanent link">&para;</a></h4>
 <p>Returns the parallax scroll factor of a layer.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-216-1" name="__codelineno-216-1" href="#__codelineno-216-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerParallax</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-220-1" name="__codelineno-220-1" href="#__codelineno-220-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerParallax</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -12994,7 +13047,7 @@
 <hr />
 <h4 id="ltilemapgetlayervisible"><code>LTileMap:getLayerVisible</code><a class="headerlink" href="#ltilemapgetlayervisible" title="Permanent link">&para;</a></h4>
 <p>Returns whether a layer is currently visible.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-217-1" name="__codelineno-217-1" href="#__codelineno-217-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerVisible</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-221-1" name="__codelineno-221-1" href="#__codelineno-221-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getLayerVisible</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13031,7 +13084,7 @@
 <hr />
 <h4 id="ltilemapgetorientation"><code>LTileMap:getOrientation</code><a class="headerlink" href="#ltilemapgetorientation" title="Permanent link">&para;</a></h4>
 <p>Returns the current map orientation as a string.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-218-1" name="__codelineno-218-1" href="#__codelineno-218-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getOrientation</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-222-1" name="__codelineno-222-1" href="#__codelineno-222-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getOrientation</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -13051,7 +13104,7 @@
 <hr />
 <h4 id="ltilemapgettile"><code>LTileMap:getTile</code><a class="headerlink" href="#ltilemapgettile" title="Permanent link">&para;</a></h4>
 <p>Returns the tile GID at a specific grid position on a layer.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-219-1" name="__codelineno-219-1" href="#__codelineno-219-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTile</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-223-1" name="__codelineno-223-1" href="#__codelineno-223-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTile</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13098,7 +13151,7 @@
 <hr />
 <h4 id="ltilemapgettiledimensions"><code>LTileMap:getTileDimensions</code><a class="headerlink" href="#ltilemapgettiledimensions" title="Permanent link">&para;</a></h4>
 <p>Returns both tile width and height in pixels.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-220-1" name="__codelineno-220-1" href="#__codelineno-220-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTileDimensions</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-224-1" name="__codelineno-224-1" href="#__codelineno-224-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTileDimensions</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -13122,7 +13175,7 @@
 <hr />
 <h4 id="ltilemapgettileheight"><code>LTileMap:getTileHeight</code><a class="headerlink" href="#ltilemapgettileheight" title="Permanent link">&para;</a></h4>
 <p>Returns the height of a single tile in pixels for this map.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-221-1" name="__codelineno-221-1" href="#__codelineno-221-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTileHeight</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-225-1" name="__codelineno-225-1" href="#__codelineno-225-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTileHeight</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -13142,7 +13195,7 @@
 <hr />
 <h4 id="ltilemapgettileset"><code>LTileMap:getTileSet</code><a class="headerlink" href="#ltilemapgettileset" title="Permanent link">&para;</a></h4>
 <p>Returns the tileset at the given index.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-222-1" name="__codelineno-222-1" href="#__codelineno-222-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTileSet</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-226-1" name="__codelineno-226-1" href="#__codelineno-226-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTileSet</span><span class="p">(</span><span class="nv">idx</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13179,7 +13232,7 @@
 <hr />
 <h4 id="ltilemapgettilesetcount"><code>LTileMap:getTileSetCount</code><a class="headerlink" href="#ltilemapgettilesetcount" title="Permanent link">&para;</a></h4>
 <p>Returns how many tilesets are attached to this map.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-223-1" name="__codelineno-223-1" href="#__codelineno-223-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTileSetCount</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-227-1" name="__codelineno-227-1" href="#__codelineno-227-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTileSetCount</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -13199,7 +13252,7 @@
 <hr />
 <h4 id="ltilemapgettilewidth"><code>LTileMap:getTileWidth</code><a class="headerlink" href="#ltilemapgettilewidth" title="Permanent link">&para;</a></h4>
 <p>Returns the width of a single tile in pixels for this map.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-224-1" name="__codelineno-224-1" href="#__codelineno-224-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTileWidth</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-228-1" name="__codelineno-228-1" href="#__codelineno-228-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getTileWidth</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -13219,7 +13272,7 @@
 <hr />
 <h4 id="ltilemapgetviewport"><code>LTileMap:getViewport</code><a class="headerlink" href="#ltilemapgetviewport" title="Permanent link">&para;</a></h4>
 <p>Returns the current viewport rectangle, or nils if none is set.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-225-1" name="__codelineno-225-1" href="#__codelineno-225-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getViewport</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-229-1" name="__codelineno-229-1" href="#__codelineno-229-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">getViewport</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -13251,7 +13304,7 @@
 <hr />
 <h4 id="ltilemapissolid"><code>LTileMap:isSolid</code><a class="headerlink" href="#ltilemapissolid" title="Permanent link">&para;</a></h4>
 <p>Checks whether the tile at a given position on a layer is solid.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-226-1" name="__codelineno-226-1" href="#__codelineno-226-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">isSolid</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-230-1" name="__codelineno-230-1" href="#__codelineno-230-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">isSolid</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13298,7 +13351,7 @@
 <hr />
 <h4 id="ltilemapontileenter"><code>LTileMap:onTileEnter</code><a class="headerlink" href="#ltilemapontileenter" title="Permanent link">&para;</a></h4>
 <p>Registers a callback invoked when an entity enters a tile with the given GID.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-227-1" name="__codelineno-227-1" href="#__codelineno-227-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">onTileEnter</span><span class="p">(</span><span class="nv">gid</span><span class="p">,</span><span class="w"> </span><span class="nv">func</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-231-1" name="__codelineno-231-1" href="#__codelineno-231-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">onTileEnter</span><span class="p">(</span><span class="nv">gid</span><span class="p">,</span><span class="w"> </span><span class="nv">func</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13325,7 +13378,7 @@
 <hr />
 <h4 id="ltilemapontileexit"><code>LTileMap:onTileExit</code><a class="headerlink" href="#ltilemapontileexit" title="Permanent link">&para;</a></h4>
 <p>Registers a callback invoked when an entity leaves a tile with the given GID.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-228-1" name="__codelineno-228-1" href="#__codelineno-228-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">onTileExit</span><span class="p">(</span><span class="nv">gid</span><span class="p">,</span><span class="w"> </span><span class="nv">func</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-232-1" name="__codelineno-232-1" href="#__codelineno-232-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">onTileExit</span><span class="p">(</span><span class="nv">gid</span><span class="p">,</span><span class="w"> </span><span class="nv">func</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13352,7 +13405,7 @@
 <hr />
 <h4 id="ltilemapontilestep"><code>LTileMap:onTileStep</code><a class="headerlink" href="#ltilemapontilestep" title="Permanent link">&para;</a></h4>
 <p>Registers a callback invoked each frame an entity remains on a tile with the given GID.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-229-1" name="__codelineno-229-1" href="#__codelineno-229-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">onTileStep</span><span class="p">(</span><span class="nv">gid</span><span class="p">,</span><span class="w"> </span><span class="nv">func</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-233-1" name="__codelineno-233-1" href="#__codelineno-233-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">onTileStep</span><span class="p">(</span><span class="nv">gid</span><span class="p">,</span><span class="w"> </span><span class="nv">func</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13379,7 +13432,7 @@
 <hr />
 <h4 id="ltilemaprectoverlapssolid"><code>LTileMap:rectOverlapsSolid</code><a class="headerlink" href="#ltilemaprectoverlapssolid" title="Permanent link">&para;</a></h4>
 <p>Tests whether a world-space rectangle overlaps any solid tile on a layer.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-230-1" name="__codelineno-230-1" href="#__codelineno-230-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">rectOverlapsSolid</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">w</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-234-1" name="__codelineno-234-1" href="#__codelineno-234-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">rectOverlapsSolid</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">w</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13436,7 +13489,7 @@
 <hr />
 <h4 id="ltilemaprender"><code>LTileMap:render</code><a class="headerlink" href="#ltilemaprender" title="Permanent link">&para;</a></h4>
 <p>Submits render commands for all visible tiles, optionally offset by a scroll position.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-231-1" name="__codelineno-231-1" href="#__codelineno-231-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">render</span><span class="p">(</span><span class="nv">ox</span><span class="p">,</span><span class="w"> </span><span class="nv">oy</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-235-1" name="__codelineno-235-1" href="#__codelineno-235-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">render</span><span class="p">(</span><span class="nv">ox</span><span class="p">,</span><span class="w"> </span><span class="nv">oy</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13463,7 +13516,7 @@
 <hr />
 <h4 id="ltilemapsetlayercolor"><code>LTileMap:setLayerColor</code><a class="headerlink" href="#ltilemapsetlayercolor" title="Permanent link">&para;</a></h4>
 <p>Sets the tint color for an entire layer.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-232-1" name="__codelineno-232-1" href="#__codelineno-232-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setLayerColor</span><span class="p">(</span><span class="nv">idx</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">,</span><span class="w"> </span><span class="nv">g</span><span class="p">,</span><span class="w"> </span><span class="nv">b</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-236-1" name="__codelineno-236-1" href="#__codelineno-236-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setLayerColor</span><span class="p">(</span><span class="nv">idx</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">,</span><span class="w"> </span><span class="nv">g</span><span class="p">,</span><span class="w"> </span><span class="nv">b</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13505,7 +13558,7 @@
 <hr />
 <h4 id="ltilemapsetlayeroffset"><code>LTileMap:setLayerOffset</code><a class="headerlink" href="#ltilemapsetlayeroffset" title="Permanent link">&para;</a></h4>
 <p>Sets the pixel offset for a layer, shifting all tiles during rendering.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-233-1" name="__codelineno-233-1" href="#__codelineno-233-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setLayerOffset</span><span class="p">(</span><span class="nv">idx</span><span class="p">,</span><span class="w"> </span><span class="nv">ox</span><span class="p">,</span><span class="w"> </span><span class="nv">oy</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-237-1" name="__codelineno-237-1" href="#__codelineno-237-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setLayerOffset</span><span class="p">(</span><span class="nv">idx</span><span class="p">,</span><span class="w"> </span><span class="nv">ox</span><span class="p">,</span><span class="w"> </span><span class="nv">oy</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13537,7 +13590,7 @@
 <hr />
 <h4 id="ltilemapsetlayerparallax"><code>LTileMap:setLayerParallax</code><a class="headerlink" href="#ltilemapsetlayerparallax" title="Permanent link">&para;</a></h4>
 <p>Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-234-1" name="__codelineno-234-1" href="#__codelineno-234-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setLayerParallax</span><span class="p">(</span><span class="nv">idx</span><span class="p">,</span><span class="w"> </span><span class="nv">px</span><span class="p">,</span><span class="w"> </span><span class="nv">py</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-238-1" name="__codelineno-238-1" href="#__codelineno-238-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setLayerParallax</span><span class="p">(</span><span class="nv">idx</span><span class="p">,</span><span class="w"> </span><span class="nv">px</span><span class="p">,</span><span class="w"> </span><span class="nv">py</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13569,7 +13622,7 @@
 <hr />
 <h4 id="ltilemapsetlayervisible"><code>LTileMap:setLayerVisible</code><a class="headerlink" href="#ltilemapsetlayervisible" title="Permanent link">&para;</a></h4>
 <p>Sets whether a layer is drawn during rendering.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-235-1" name="__codelineno-235-1" href="#__codelineno-235-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setLayerVisible</span><span class="p">(</span><span class="nv">idx</span><span class="p">,</span><span class="w"> </span><span class="nv">visible</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-239-1" name="__codelineno-239-1" href="#__codelineno-239-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setLayerVisible</span><span class="p">(</span><span class="nv">idx</span><span class="p">,</span><span class="w"> </span><span class="nv">visible</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13596,7 +13649,7 @@
 <hr />
 <h4 id="ltilemapsetorientation"><code>LTileMap:setOrientation</code><a class="headerlink" href="#ltilemapsetorientation" title="Permanent link">&para;</a></h4>
 <p>Sets the map orientation, affecting coordinate transforms and rendering.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-236-1" name="__codelineno-236-1" href="#__codelineno-236-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setOrientation</span><span class="p">(</span><span class="nv">orientation</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-240-1" name="__codelineno-240-1" href="#__codelineno-240-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setOrientation</span><span class="p">(</span><span class="nv">orientation</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13618,7 +13671,7 @@
 <hr />
 <h4 id="ltilemapsettile"><code>LTileMap:setTile</code><a class="headerlink" href="#ltilemapsettile" title="Permanent link">&para;</a></h4>
 <p>Sets the tile GID at a specific grid position on a layer.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-237-1" name="__codelineno-237-1" href="#__codelineno-237-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setTile</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">gid</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-241-1" name="__codelineno-241-1" href="#__codelineno-241-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setTile</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">gid</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13655,7 +13708,7 @@
 <hr />
 <h4 id="ltilemapsettiletint"><code>LTileMap:setTileTint</code><a class="headerlink" href="#ltilemapsettiletint" title="Permanent link">&para;</a></h4>
 <p>Overrides the color tint for a single tile at a given position.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-238-1" name="__codelineno-238-1" href="#__codelineno-238-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setTileTint</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">,</span><span class="w"> </span><span class="nv">g</span><span class="p">,</span><span class="w"> </span><span class="nv">b</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-242-1" name="__codelineno-242-1" href="#__codelineno-242-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setTileTint</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">,</span><span class="w"> </span><span class="nv">g</span><span class="p">,</span><span class="w"> </span><span class="nv">b</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13707,7 +13760,7 @@
 <hr />
 <h4 id="ltilemapsetviewport"><code>LTileMap:setViewport</code><a class="headerlink" href="#ltilemapsetviewport" title="Permanent link">&para;</a></h4>
 <p>Sets the visible area of the map for culling during rendering.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-239-1" name="__codelineno-239-1" href="#__codelineno-239-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setViewport</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">w</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-243-1" name="__codelineno-243-1" href="#__codelineno-243-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">setViewport</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">w</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13744,7 +13797,7 @@
 <hr />
 <h4 id="ltilemapsweeprect"><code>LTileMap:sweepRect</code><a class="headerlink" href="#ltilemapsweeprect" title="Permanent link">&para;</a></h4>
 <p>Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-240-1" name="__codelineno-240-1" href="#__codelineno-240-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">sweepRect</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">w</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">,</span><span class="w"> </span><span class="nv">dx</span><span class="p">,</span><span class="w"> </span><span class="nv">dy</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-244-1" name="__codelineno-244-1" href="#__codelineno-244-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">sweepRect</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">x</span><span class="p">,</span><span class="w"> </span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">w</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">,</span><span class="w"> </span><span class="nv">dx</span><span class="p">,</span><span class="w"> </span><span class="nv">dy</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13831,7 +13884,7 @@
 <hr />
 <h4 id="ltilemaptiletoworld"><code>LTileMap:tileToWorld</code><a class="headerlink" href="#ltilemaptiletoworld" title="Permanent link">&para;</a></h4>
 <p>Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-241-1" name="__codelineno-241-1" href="#__codelineno-241-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">tileToWorld</span><span class="p">(</span><span class="nv">tx</span><span class="p">,</span><span class="w"> </span><span class="nv">ty</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-245-1" name="__codelineno-245-1" href="#__codelineno-245-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">tileToWorld</span><span class="p">(</span><span class="nv">tx</span><span class="p">,</span><span class="w"> </span><span class="nv">ty</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13877,7 +13930,7 @@
 <hr />
 <h4 id="ltilemaptiletypeindex"><code>LTileMap:tileTypeIndex</code><a class="headerlink" href="#ltilemaptiletypeindex" title="Permanent link">&para;</a></h4>
 <p>Builds an index mapping each GID present on a layer to an array of <code>{x, y}</code> positions.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-242-1" name="__codelineno-242-1" href="#__codelineno-242-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">tileTypeIndex</span><span class="p">(</span><span class="nv">layer</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-246-1" name="__codelineno-246-1" href="#__codelineno-246-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">tileTypeIndex</span><span class="p">(</span><span class="nv">layer</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13914,7 +13967,7 @@
 <hr />
 <h4 id="ltilemaptonavgrid"><code>LTileMap:toNavGrid</code><a class="headerlink" href="#ltilemaptonavgrid" title="Permanent link">&para;</a></h4>
 <p>Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-243-1" name="__codelineno-243-1" href="#__codelineno-243-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">toNavGrid</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">gids</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-247-1" name="__codelineno-247-1" href="#__codelineno-247-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">toNavGrid</span><span class="p">(</span><span class="nv">layer</span><span class="p">,</span><span class="w"> </span><span class="nv">gids</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -13956,7 +14009,7 @@
 <hr />
 <h4 id="ltilemaptype"><code>LTileMap:type</code><a class="headerlink" href="#ltilemaptype" title="Permanent link">&para;</a></h4>
 <p>Returns the type name of this userdata.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-244-1" name="__codelineno-244-1" href="#__codelineno-244-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">type</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-248-1" name="__codelineno-248-1" href="#__codelineno-248-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">type</span><span class="p">()</span>
 </code></pre></div>
 <p><strong>Returns</strong></p>
 <table>
@@ -13976,7 +14029,7 @@
 <hr />
 <h4 id="ltilemaptypeof"><code>LTileMap:typeOf</code><a class="headerlink" href="#ltilemaptypeof" title="Permanent link">&para;</a></h4>
 <p>Checks whether this object matches the given type name.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-245-1" name="__codelineno-245-1" href="#__codelineno-245-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="nv">name</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-249-1" name="__codelineno-249-1" href="#__codelineno-249-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="nv">name</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -14013,7 +14066,7 @@
 <hr />
 <h4 id="ltilemapupdate"><code>LTileMap:update</code><a class="headerlink" href="#ltilemapupdate" title="Permanent link">&para;</a></h4>
 <p>Advances tile animations by the given delta time.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-246-1" name="__codelineno-246-1" href="#__codelineno-246-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">update</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-250-1" name="__codelineno-250-1" href="#__codelineno-250-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">update</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -14035,7 +14088,7 @@
 <hr />
 <h4 id="ltilemapworldtotile"><code>LTileMap:worldToTile</code><a class="headerlink" href="#ltilemapworldtotile" title="Permanent link">&para;</a></h4>
 <p>Converts world-space pixel coordinates to tile-grid coordinates.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-247-1" name="__codelineno-247-1" href="#__codelineno-247-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">worldToTile</span><span class="p">(</span><span class="nv">wx</span><span class="p">,</span><span class="w"> </span><span class="nv">wy</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-251-1" name="__codelineno-251-1" href="#__codelineno-251-1"></a><span class="nv">LTileMap</span><span class="p">:</span><span class="nf">worldToTile</span><span class="p">(</span><span class="nv">wx</span><span class="p">,</span><span class="w"> </span><span class="nv">wy</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>

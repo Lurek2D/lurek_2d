@@ -12,7 +12,7 @@
 - Namespace: `lurek.thread`
 - Lua API surface: `7` functions, `4` types, `34` methods
 - Rust test path(s): tests/rust/unit/thread_tests.rs, plus inline unit coverage in src/thread/channel.rs, src/thread/promise.rs, src/thread/pool.rs, src/thread/worker.rs
-- Lua test path(s): tests/lua_reorg/unit/test_thread.lua, tests/lua_reorg/stress/test_thread_stress.lua, tests/lua_reorg/integration/test_thread_data.lua
+- Lua test path(s): tests/lua/unit/test_thread.lua, tests/lua/stress/test_thread_stress.lua, tests/lua/integration/test_thread_data.lua
 
 ## Summary
 

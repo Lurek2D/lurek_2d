@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6054,8 +6054,17 @@
 
 <h1 id="save">Save<a class="headerlink" href="#save" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides a unified state persistence and save slot manager designed to handle game progress. Diverse gameplay systems register data sections using collector and restorer callback pairs. When saving, the manager invokes collectors to assemble a single structured state payload; during loads, it distributes this data back to their respective systems to ensure smooth, reliable state restorations.</p>
-<p>To optimize disk usage, the system integrates compression, auto-saves, and migrations. It applies LZ4 compression to minimize files, tracks modifications with a dirty flag, and schedules auto-save timers. Additionally, it enforces schema versioning and runs registered transformation callbacks to migrate old save files to current formats.</p>
+<ul>
+<li>The save module gives users a centralized save-state manager for persistent progress across slots.</li>
+<li>Systems register collector and restorer callbacks so each subsystem contributes and rebuilds its own state segment.</li>
+<li>Save operations assemble one coherent payload from all registered sections.</li>
+<li>Load operations replay restorers so runtime state returns predictably.</li>
+<li>Dirty tracking and auto-save timers support low-friction periodic persistence.</li>
+<li>Compression reduces save-file size for content-heavy projects.</li>
+<li>Schema versioning and migration callbacks support forward compatibility of older saves.</li>
+<li>Persistence stays controlled and extensible instead of ad-hoc.</li>
+</ul>
+<p>This module primarily collaborates with <code>binary</code>, <code>runtime</code>. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lureksavenewsavemanager"><code>lurek.save.newSaveManager</code><a class="headerlink" href="#lureksavenewsavemanager" title="Permanent link">&para;</a></h3>
 <p>Create a new SaveManager instance for managing persistent game saves.</p>
@@ -7029,8 +7038,10 @@
 <a id="__codelineno-55-6" name="__codelineno-55-6" href="#__codelineno-55-6"></a><span class="w">    </span><span class="nv">mgr</span><span class="p">:</span><span class="nf">markDirty</span><span class="p">()</span>
 <a id="__codelineno-55-7" name="__codelineno-55-7" href="#__codelineno-55-7"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;auto-save triggered = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">mgr</span><span class="p">:</span><span class="nf">update</span><span class="p">(</span><span class="mf">6.0</span><span class="p">)))</span>
 <a id="__codelineno-55-8" name="__codelineno-55-8" href="#__codelineno-55-8"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;slot exists = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">mgr</span><span class="p">:</span><span class="nf">exists</span><span class="p">(</span><span class="nv">slot</span><span class="p">)))</span>
-<a id="__codelineno-55-9" name="__codelineno-55-9" href="#__codelineno-55-9"></a><span class="w">    </span><span class="nv">mgr</span><span class="p">:</span><span class="nf">delete</span><span class="p">(</span><span class="nv">slot</span><span class="p">)</span>
-<a id="__codelineno-55-10" name="__codelineno-55-10" href="#__codelineno-55-10"></a><span class="kr">end</span>
+<a id="__codelineno-55-9" name="__codelineno-55-9" href="#__codelineno-55-9"></a><span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">mgr</span><span class="p">:</span><span class="nf">exists</span><span class="p">(</span><span class="nv">slot</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<a id="__codelineno-55-10" name="__codelineno-55-10" href="#__codelineno-55-10"></a><span class="w">        </span><span class="nv">mgr</span><span class="p">:</span><span class="nf">delete</span><span class="p">(</span><span class="nv">slot</span><span class="p">)</span>
+<a id="__codelineno-55-11" name="__codelineno-55-11" href="#__codelineno-55-11"></a><span class="w">    </span><span class="kr">end</span>
+<a id="__codelineno-55-12" name="__codelineno-55-12" href="#__codelineno-55-12"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 

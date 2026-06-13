@@ -13,7 +13,7 @@
 - Namespace: `lurek.particle`
 - Lua API surface: `5` functions, `3` types, `105` methods
 - Rust test path(s): tests/rust/unit/particle_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_particle.lua, tests/lua_reorg/stress/test_particle_stress.lua, tests/lua_reorg/integration/test_particle_timer.lua, tests/lua_reorg/evidence/test_evidence_particle.lua
+- Lua test path(s): tests/lua/unit/test_particle.lua, tests/lua/stress/test_particle_stress.lua, tests/lua/integration/test_particle_timer.lua, tests/lua/evidence/test_evidence_particle.lua
 
 ## Summary
 

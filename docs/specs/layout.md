@@ -12,7 +12,7 @@
 - Namespace: `lurek.layout`
 - Lua API surface: `5` functions, `0` types, `0` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua_reorg/unit/test_layout_unit.lua
+- Lua test path(s): tests/lua/unit/test_layout_unit.lua
 
 ## Summary
 

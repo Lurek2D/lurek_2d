@@ -204,7 +204,7 @@ def _generate_lua_section(data: dict) -> list[str]:
 
     lines.append("## How to Improve Coverage")
     lines.append("")
-    lines.append("1. Write `describe`/`it`/`expect_*` blocks in `tests/lua_reorg/unit/test_<module>_unit.lua`")
+    lines.append("1. Write `describe`/`it`/`expect_*` blocks in `tests/lua/unit/test_<module>_unit.lua`")
     lines.append("2. Ensure every `lurek.*` function has at least one test")
     lines.append("3. Re-run `python tools/gen_test_docs.py --mode lua` to regenerate")
     lines.append("")

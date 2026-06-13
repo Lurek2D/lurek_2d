@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6894,8 +6894,19 @@
 
 <h1 id="parallax">Parallax<a class="headerlink" href="#parallax" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides a multi-layered parallax scrolling system that creates a sense of depth in 2D environments. By assigning distinct scroll factors, z-orders, and offsets to individual planes, layers move relative to the camera at varying speeds. The system supports autonomous autoscrolling for moving skies, as well as scroll clamping to restrict layer movement within designated map boundaries.</p>
-<p>To ease implementation, the module provides ready-made depth templates, such as distant skies and foreground fog. It tiles textures across the viewport using smart visibility logic that avoids edge gaps. Additionally, layers can incorporate motion-based stretch blur driven by velocity and custom shader chains to create stylized visual atmosphere.</p>
+<ul>
+<li>This module gives users layered parallax control for creating depth in 2D scenes.</li>
+<li>Layers can move at different scroll factors relative to camera movement.</li>
+<li>Autoscroll support enables moving skies, fog drift, and ambient motion backgrounds.</li>
+<li>Clamp options keep layer motion within designed world bounds.</li>
+<li>Tiling logic maintains seamless coverage across the viewport.</li>
+<li>Preset layers provide quick-start setups for common depth planes.</li>
+<li>Motion-stretch options add velocity-driven style cues.</li>
+<li>Per-layer effect chains support stylized post-processing on background planes.</li>
+<li>Layer sets help organize multiple planes into reusable scene groups.</li>
+<li>For users, this module turns depth presentation into a configurable runtime system.</li>
+</ul>
+<p>This module primarily collaborates with <code>image</code>, <code>render</code>, <code>runtime</code>. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekparallaxnewlayer"><code>lurek.parallax.newLayer</code><a class="headerlink" href="#lurekparallaxnewlayer" title="Permanent link">&para;</a></h3>
 <p>Creates a parallax layer from an options table.</p>

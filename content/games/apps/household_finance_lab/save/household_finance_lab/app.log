@@ -1,2 +1,4 @@
 Household Finance Lab app log
 [info] Restored dataframe database with lurek.dataframe.loadDatabase
+[info] Reloaded dataframe database cache
+[info] Screenshot requested: save/household_finance_lab/dashboard.png

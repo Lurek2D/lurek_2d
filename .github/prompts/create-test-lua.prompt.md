@@ -1,4 +1,4 @@
-﻿---
+---
 name: create-test-lua
 description: "Load this skill when creating or modifying Lua tests for public lurek APIs under tests/lua. Skip it for Rust-only internals, integration-only coverage, or visual evidence tests."
 ---
@@ -16,9 +16,9 @@ description: "Load this skill when creating or modifying Lua tests for public lu
 2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
 3. Run the listed RAG query before broad file reads.
 4. Inspect existing test files, harness registration, and coverage output before writing.
-5. Modify the matching `tests/lua_reorg/` file when present; create a new file only for uncovered module coverage.
+5. Modify the matching `tests/lua/` file when present; create a new file only for uncovered module coverage.
 6. Use `@covers` markers, specific assertions, and `test_summary()`.
-7. Register new files in `tests/lua_reorg_tests.rs`.
+7. Register new files in `tests/lua_tests.rs`.
 8. Report changed files, findings, validation output, and unresolved blockers.
 
 # Success Criteria
@@ -37,7 +37,7 @@ description: "Load this skill when creating or modifying Lua tests for public lu
 
 # References
 - skills: `.codex/skills/create-test-lua/SKILL.md`
-- contracts: tests/AGENTS.md, tests/lua_reorg/AGENTS.md, content/AGENTS.md
-- tools: tools/python.cmd tools/rag/query.py "Lua unit tests public API coverage" --profile game --limit 10, tools/python.cmd tools/audit/lua_api_test_coverage.py --module <module>, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua_reorg/, cargo test --test lua_tests, tools/python.cmd tools/validate/cag_validate.py
+- contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md
+- tools: tools/python.cmd tools/rag/query.py "Lua unit tests public API coverage" --profile game --limit 10, tools/python.cmd tools/audit/lua_api_test_coverage.py --module <module>, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/, cargo test --test lua_tests, tools/python.cmd tools/validate/cag_validate.py
 - agent: tester
 

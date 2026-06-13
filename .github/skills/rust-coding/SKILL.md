@@ -1,4 +1,4 @@
-﻿---
+---
 name: rust-coding
 description: "Load this skill when writing or reviewing Rust engine code. It owns safe Rust conventions, error patterns, module structure, and idiomatic style. Skip it for Lua scripts, CAG files, or docs."
 ---
@@ -167,4 +167,4 @@ Only methods/functions actually registered to Lua (`methods.add_method`, `method
 - src/
 - docs/specs/
 - tests/rust/unit/
-- tests/lua_reorg/
+- tests/lua/

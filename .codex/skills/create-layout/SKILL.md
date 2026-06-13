@@ -41,7 +41,7 @@ description: "Load this skill when creating or modifying TOML UI layouts under c
 
 ## Companion File Index
 - Contracts: `content/AGENTS.md`, `content/layouts/AGENTS.md`, `content/examples/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "content layouts TOML UI primitives" --profile game --limit 10`, `tools/python.cmd tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive`, `tools/python.cmd tools/ui/fix_layouts.py content/layouts/ --recursive --fix`, `tests/lua_reorg/evidence/test_gui_evidence.lua`
+- Primary tools: `tools/python.cmd tools/rag/query.py "content layouts TOML UI primitives" --profile game --limit 10`, `tools/python.cmd tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive`, `tools/python.cmd tools/ui/fix_layouts.py content/layouts/ --recursive --fix`, `tests/lua/evidence/test_ui_evidence.lua`
 - Owner profile: `content`
 
 ## Common RAG Queries
@@ -57,5 +57,5 @@ description: "Load this skill when creating or modifying TOML UI layouts under c
 
 ## References
 - `contracts: content/AGENTS.md, content/layouts/AGENTS.md, content/examples/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "content layouts TOML UI primitives" --profile game --limit 10, tools/python.cmd tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive, tools/python.cmd tools/ui/fix_layouts.py content/layouts/ --recursive --fix, tests/lua_reorg/evidence/test_gui_evidence.lua`
+- `tools: tools/python.cmd tools/rag/query.py "content layouts TOML UI primitives" --profile game --limit 10, tools/python.cmd tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive, tools/python.cmd tools/ui/fix_layouts.py content/layouts/ --recursive --fix, tests/lua/evidence/test_ui_evidence.lua`
 - `agent: content`

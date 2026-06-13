@@ -6,7 +6,7 @@ description: "Load this skill when creating or modifying stress tests, ceilings,
 
 ## Mission
 - Create or modify stress coverage that records realistic load ceilings and failure behavior.
-- Keep canonical `tests/lua_reorg/stress/test_<module>_stress.lua` ownership exact: `1 API = 1 @stress marker = 1 it()`.
+- Keep canonical `tests/lua/stress/test_<module>_stress.lua` ownership exact: `1 API = 1 @stress marker = 1 it()`.
 
 ## When To Load
 - Creating or modifying stress tests, ceilings, or heavy-load validation for a module.
@@ -24,7 +24,7 @@ description: "Load this skill when creating or modifying stress tests, ceilings,
 
 ## Workflow
 - Inspect current stress reports, existing stress tests, and user threshold before editing.
-- Modify the canonical `tests/lua_reorg/stress/test_<module>_stress.lua` file for that module when present; create a new file only for a missing module owner.
+- Modify the canonical `tests/lua/stress/test_<module>_stress.lua` file for that module when present; create a new file only for a missing module owner.
 - Split any stress `it()` block that still owns multiple APIs so one API has one `@stress` marker and one block.
 - Keep load deterministic and record artifacts under `work/<short-chat-name>/` when temporary output is needed.
 - Run the stress script and monitor OOM, timeout, and frame-time behavior.
@@ -42,7 +42,7 @@ description: "Load this skill when creating or modifying stress tests, ceilings,
 - Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
 ## Companion File Index
-- Contracts: `tests/AGENTS.md`, `tests/lua_reorg/AGENTS.md`, `tools/audit/AGENTS.md`, `work/AGENTS.md`
+- Contracts: `tests/AGENTS.md`, `tests/lua/AGENTS.md`, `tools/audit/AGENTS.md`, `work/AGENTS.md`
 - Primary tools: `tools/python.cmd tools/rag/query.py "stress tests performance ceilings" --profile engine --limit 10`, `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py --category stress`, `tools/python.cmd tools/audit/stress_report.py`
 - Owner profile: `tester`
 
@@ -58,6 +58,6 @@ description: "Load this skill when creating or modifying stress tests, ceilings,
   - suspect hot paths in `src/`
 
 ## References
-- `contracts: tests/AGENTS.md, tests/lua_reorg/AGENTS.md, tools/audit/AGENTS.md, work/AGENTS.md`
+- `contracts: tests/AGENTS.md, tests/lua/AGENTS.md, tools/audit/AGENTS.md, work/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "stress tests performance ceilings" --profile engine --limit 10, tools/python.cmd tools/audit/lua_nonunit_test_coverage.py --category stress, tools/python.cmd tools/audit/stress_report.py`
 - `agent: tester`

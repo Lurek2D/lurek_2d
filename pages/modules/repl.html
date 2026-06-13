@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -5614,8 +5614,14 @@
 
 <h1 id="repl">Repl<a class="headerlink" href="#repl" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides a headless, embeddable interactive Lua session that evaluates code against the running VM. It operates independently of rendering layers, maintaining a bounded history and executing colon-prefixed console commands.</p>
-<p>To assist users, a completer scans live globals and keywords to suggest autocomplete candidates, resolving dot-paths. Raw values are formatted into readable text for interactive debugging feedback.</p>
+<ul>
+<li>The repl module gives users an embeddable headless Lua REPL for live runtime inspection and quick experimentation.</li>
+<li>Session state includes bounded history so command context stays manageable over long usage.</li>
+<li>Colon-prefixed commands support console-style control behavior alongside Lua evaluation.</li>
+<li>Completion scans keywords and live globals, including dot-path suggestions.</li>
+<li>Value formatting produces readable output suited to interactive debugging sessions.</li>
+</ul>
+<p>This module is mostly self-contained inside the <code>Core Runtime</code> group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekreplnew"><code>lurek.repl.new</code><a class="headerlink" href="#lurekreplnew" title="Permanent link">&para;</a></h3>
 <p>Creates a release-safe REPL session with bounded command history.</p>

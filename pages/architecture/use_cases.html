@@ -241,7 +241,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -398,7 +398,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -10714,7 +10714,7 @@ On ARM64 server: <code>--features lua54 --no-default-features</code> (LuaJIT not
 <li><code>dataframe</code> provides pandas-like in-memory data processing without Python.</li>
 <li><code>thread</code> enables parallel worker VMs for embarrassingly parallel jobs.</li>
 <li><code>agent</code> connects to local Ollama for LLM-augmented pipelines.</li>
-<li>Existing test harness (<code>tests/lua/harness.rs</code>) demonstrates the headless pattern.</li>
+<li>Existing test harness (<code>tests/lua_tests.rs</code>) demonstrates the headless pattern.</li>
 </ul>
 <h3 id="constraints_7">Constraints<a class="headerlink" href="#constraints_7" title="Permanent link">&para;</a></h3>
 <ul>
@@ -11448,7 +11448,7 @@ On ARM64 server: <code>--features lua54 --no-default-features</code> (LuaJIT not
 <hr />
 <h2 id="uc-31-ci-test-automation-harness">UC-31 — CI / Test Automation Harness<a class="headerlink" href="#uc-31-ci-test-automation-harness" title="Permanent link">&para;</a></h2>
 <h3 id="description_30">Description<a class="headerlink" href="#description_30" title="Permanent link">&para;</a></h3>
-<p>Lurek2D already ships a headless Lua test harness (<code>tests/lua/harness.rs</code>) used by its own CI. The same pattern can be adopted by external projects: run Lua scripts headlessly to test game logic, simulate player input, validate save/load round-trips, or benchmark frame time.</p>
+<p>Lurek2D already ships a headless Lua test harness (<code>tests/lua_tests.rs</code>) used by its own CI. The same pattern can be adopted by external projects: run Lua scripts headlessly to test game logic, simulate player input, validate save/load round-trips, or benchmark frame time.</p>
 <p>The <code>automation</code> module (<code>lurek.automation.*</code>) records and replays input sequences — enabling regression tests that verify pixel-accurate game behaviour.</p>
 <h3 id="build-variant_30">Build Variant<a class="headerlink" href="#build-variant_30" title="Permanent link">&para;</a></h3>
 <p><code>release --headless</code> for pure logic tests; <code>release</code> windowed for screenshot-based regression tests.</p>

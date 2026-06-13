@@ -40,7 +40,7 @@ description: "Load this skill when creating or modifying runnable Lua demo games
 - Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
 ## Companion File Index
-- Contracts: `content/AGENTS.md`, `content/games/AGENTS.md`, `tests/lua_reorg/AGENTS.md`
+- Contracts: `content/AGENTS.md`, `content/games/AGENTS.md`, `tests/lua/AGENTS.md`
 - Primary tools: `tools/python.cmd tools/rag/query.py "content games demo conventions" --profile game --limit 10`, `tools/python.cmd tools/validate/validate_game.py <demo-dir>`, `cargo test --test demo_smoke_tests`
 - Owner profile: `content`
 
@@ -56,6 +56,6 @@ description: "Load this skill when creating or modifying runnable Lua demo games
   - related `docs/` specs or examples
 
 ## References
-- `contracts: content/AGENTS.md, content/games/AGENTS.md, tests/lua_reorg/AGENTS.md`
+- `contracts: content/AGENTS.md, content/games/AGENTS.md, tests/lua/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "content games demo conventions" --profile game --limit 10, tools/python.cmd tools/validate/validate_game.py <demo-dir>, cargo test --test demo_smoke_tests`
 - `agent: content`

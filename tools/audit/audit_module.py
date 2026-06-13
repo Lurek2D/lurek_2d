@@ -36,7 +36,7 @@ SRC = WORKSPACE / "src"
 LUA_API = SRC / "lua_api"
 LUA_API_DATA = WORKSPACE / "logs" / "data" / "lua_api_data.json"
 TESTS_RUST = WORKSPACE / "tests" / "rust"
-TESTS_LUA = WORKSPACE / "tests" / "lua_reorg"
+TESTS_LUA = WORKSPACE / "tests" / "lua"
 DOCS_API = WORKSPACE / "docs" / "API"
 WIKI = WORKSPACE / "docs" / "wiki"
 
@@ -1114,7 +1114,7 @@ def check_rust_test_exists(module: str) -> Check:
 
 
 def check_lua_test_exists(module: str) -> Check:
-    """T-02: Lua test file exists and is registered in tests/lua_reorg_tests.rs."""
+    """T-02: Lua test file exists and is registered in tests/lua_tests.rs."""
     api_file = LUA_API / f"{module}_api.rs"
     api_dir = LUA_API / f"{module}_api"
     has_lua_api = api_file.exists() or api_dir.is_dir()
@@ -1122,7 +1122,7 @@ def check_lua_test_exists(module: str) -> Check:
     if not has_lua_api:
         return Check("T-02", "Lua test file", PASS, "Module has no Lua API — skip")
 
-    harness = read_text(WORKSPACE / "tests" / "lua_reorg_tests.rs")
+    harness = read_text(WORKSPACE / "tests" / "lua_tests.rs")
 
     canonical_lua_test = TESTS_LUA / "unit" / f"test_{module}_unit.lua"
     if canonical_lua_test.exists():
@@ -1130,9 +1130,9 @@ def check_lua_test_exists(module: str) -> Check:
         if expected_entry not in harness:
             return Check("T-02", "Lua test file", ERROR,
                           "Canonical Lua unit file exists but no matching registration "
-                          "was found in tests/lua_reorg_tests.rs")
+                          "was found in tests/lua_tests.rs")
         return Check("T-02", "Lua test file", PASS,
-                      f"tests/lua_reorg/unit/test_{module}_unit.lua registered in tests/lua_reorg_tests.rs")
+                      f"tests/lua/unit/test_{module}_unit.lua registered in tests/lua_tests.rs")
 
     # Fall back: multi-file split convention (test_{module}_*_unit.lua)
     split_files = sorted((TESTS_LUA / "unit").glob(f"test_{module}_*_unit.lua"))
@@ -1143,10 +1143,10 @@ def check_lua_test_exists(module: str) -> Check:
             return Check("T-02", "Lua test file", PASS,
                           f"Multi-file split: {names}")
         return Check("T-02", "Lua test file", ERROR,
-                      f"Split test files found but none are registered in tests/lua_reorg_tests.rs")
+                      f"Split test files found but none are registered in tests/lua_tests.rs")
 
     return Check("T-02", "Lua test file", ERROR,
-                  f"Module has Lua API but no tests/lua_reorg/unit/test_{module}_unit.lua")
+                  f"Module has Lua API but no tests/lua/unit/test_{module}_unit.lua")
 
 
 # ── Phase 7: Code Quality ──

@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -5880,8 +5880,20 @@
 
 <h1 id="grep">Grep<a class="headerlink" href="#grep" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module represents the high-performance content-search and text-scanning subsystem, supplying systems with tools to query files. It supports multiple search strategies including exact literals, regular expressions, shell globs, and edit-distance fuzzy matching. By checking search configurations, the scanning engine bounds processing loads by enforcing maximum file size limits, whole-word constraints, and case filters.</p>
-<p>To scan directory structures efficiently, the engine distributes matching tasks across a parallel thread pool. Small files are parsed using buffered streams, while large assets leverage zero-copy memory mapping for fast scanning. Path filters narrow scopes by excluding hidden directories or checking extensions. Special search workflows extract data from JSON files and structured logs.</p>
+<ul>
+<li>This module gives users fast text and content search across project files from one scriptable API.</li>
+<li>It supports literal, regex, glob, fuzzy, and multi-pattern matching for different search needs.</li>
+<li>File filters and extension controls help narrow scope before scanning begins.</li>
+<li>Parallel execution improves throughput on large code and content trees.</li>
+<li>Large-file handling with mmap paths keeps heavy searches practical.</li>
+<li>JSON-path and structured-log search helpers support data-oriented workflows beyond plain text.</li>
+<li>Configurable limits and flags keep scans predictable and safer for mixed asset repositories.</li>
+<li>Result objects include match context suitable for tooling, diagnostics, and automated audits.</li>
+<li>For users, this module turns ad-hoc grep logic into a reusable, high-performance search subsystem.</li>
+<li>It is useful for validation scripts, content checks, migration tools, and runtime diagnostics.</li>
+<li>The practical value is faster discovery and less custom search boilerplate.</li>
+</ul>
+<p>This module is mostly self-contained inside the <code>Edge/Integration</code> group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekgrepjsonsearch"><code>lurek.grep.jsonSearch</code><a class="headerlink" href="#lurekgrepjsonsearch" title="Permanent link">&para;</a></h3>
 <p>Searches a JSON file for all values associated with a given key name at any depth.</p>
@@ -5979,9 +5991,11 @@
 </table>
 <p><strong>Example</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kr">do</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">grep</span><span class="p">.</span><span class="nf">logSearch</span><span class="p">(</span><span class="s2">&quot;logs/runtime.log&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;panic&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;log results = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="o">#</span><span class="nv">results</span><span class="p">)</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kr">end</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;save/grep_runtime.log&quot;</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">filesystem</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="nv">path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;[INFO] boot</span><span class="se">\n</span><span class="s2">[ERROR] panic: sample failure</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">grep</span><span class="p">.</span><span class="nf">logSearch</span><span class="p">(</span><span class="nv">path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;panic&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;log results = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="o">#</span><span class="nv">results</span><span class="p">)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h3 id="lurekgrepluafilter"><code>lurek.grep.luaFilter</code><a class="headerlink" href="#lurekgrepluafilter" title="Permanent link">&para;</a></h3>

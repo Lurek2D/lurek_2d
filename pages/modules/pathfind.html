@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -9922,11 +9922,44 @@
 
 <h1 id="pathfind">Pathfind<a class="headerlink" href="#pathfind" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides a navigation and spatial pathfinding subsystem designed to handle diverse 2D grid and graph environments. It supports standard grid surfaces, hex grids with pointy or flat orientations, rectangular isometric cell structures, and polygon-based navigation meshes for large open spaces. Additionally, adjacency graphs represent province-level connections, giving developers a comprehensive toolkit to manage paths across strategic maps, tactical grids, or complex geometric zones.</p>
-<p>For single-agent navigation, the system implements several stateful search algorithms optimized for performance and quality. It executes standard A<em> searches using octile or Manhattan heuristics, JPS to rapidly traverse open regions, and bidirectional A</em> searches that explore from both endpoints to find routes quickly. Waypoint smoothing through line-of-sight analysis cleans up redundant steps, while budget-limited A* queries return partial progress to keep frame rates stable.</p>
-<p>To scale up to massive maps, the system features hierarchical and asynchronous pathfinding architectures. Hierarchical A* divides large grids into local chunks, caching boundary doorways to solve long-distance paths over an abstract graph before refining them locally. To prevent main-thread stuttering under heavy search loads, a thread-safe asynchronous work pool runs queries in parallel on background worker threads, automatically skipping canceled requests.</p>
-<p>Group steering and tactical behaviors are managed via cost fields and distance maps. Dijkstra-based flow fields propagate movement directions from target goals, allowing massive crowds of units of varying sizes to steer smoothly around terrain obstacles. Multi-source goal maps define reachability and fleeing gradients, while layered influence maps stamp, diffuse, and decay tactical pressure over time, providing valuable spatial datasets for AI strategic scoring.</p>
-<p>Finally, the module integrates dynamic diagnostic visualizations to facilitate developer iteration. It compiles live path grids, flow direction arrows, and influence heatmaps into colorized render commands and CPU-side image snapshots. This allows developers to inspect pathfinding search corridors, obstacle boundaries, and influence values directly inside the game world, ensuring high visibility over AI spatial reasoning and map configuration.</p>
+<ul>
+<li>This module gives users a unified navigation toolkit across grid, hex, isometric, navmesh, and graph-based worlds.</li>
+<li>Standard grid pathfinding supports A*, Dijkstra, BFS, and related movement-query workflows.</li>
+<li>JPS support accelerates open-grid shortest-path searches.</li>
+<li>Bidirectional A* support improves long-distance query efficiency in many layouts.</li>
+<li>Hierarchical pathfinding support scales large-map queries through abstracted chunk-level routing.</li>
+<li>NavGrid APIs support walkability, cost weights, and variable-unit-size navigation constraints.</li>
+<li>Path smoothing helpers reduce noisy waypoint chains through line-of-sight checks.</li>
+<li>Partial-path and budgeted search modes support frame-time-safe fallback behavior.</li>
+<li>Async path pool support offloads heavy queries to worker threads.</li>
+<li>Cancellation support helps avoid wasting work on stale async requests.</li>
+<li>Flow-field support enables crowd movement toward goals with per-cell direction guidance.</li>
+<li>Goal-map support enables multi-source distance and flee-style gradient queries.</li>
+<li>Influence-map support enables tactical pressure fields with stamp, blur, and decay behaviors.</li>
+<li>Graph-nav support enables non-grid routing for province and abstract node networks.</li>
+<li>Province/path graph helpers support strategic map movement and region-level planning.</li>
+<li>Hex and isometric grid variants support non-rectangular movement models.</li>
+<li>Navmesh support enables polygonal traversal for open-area navigation.</li>
+<li>Range-map utilities support movement radius and reachable-area previews.</li>
+<li>Unit-pathfinder wrappers support per-agent cached path behavior.</li>
+<li>Debug rendering support visualizes paths, fields, and influence layers for tuning.</li>
+<li>Image export debug paths support snapshot-based validation workflows.</li>
+<li>The module is useful for AI locomotion, tactical planning, and player movement assistance.</li>
+<li>It centralizes navigation behaviors that are often fragmented across game systems.</li>
+<li>For users, this means consistent path semantics across very different map representations.</li>
+<li>It reduces bespoke path code and improves runtime observability.</li>
+<li>The practical result is more reliable movement behavior under scale.</li>
+<li>It also supports iteration speed through rich debugging surfaces.</li>
+<li>Overall, users get a comprehensive pathfinding and spatial-reasoning runtime.</li>
+<li>This makes advanced navigation systems feasible without custom engine rewrites.</li>
+<li>It bridges low-level search algorithms and gameplay-facing movement decisions.</li>
+<li>That bridge is critical in projects combining tactical AI, large worlds, and real-time constraints.</li>
+<li>Users can start simple and scale toward hierarchical and async strategies as complexity grows.</li>
+<li>The module keeps those strategies within one coherent API family.</li>
+<li>It supports both direct movement and higher-level strategic navigation logic.</li>
+<li>In short, it is the engine's navigation backbone for diverse world topologies.</li>
+</ul>
+<p>This module primarily collaborates with <code>flownet</code>, <code>image</code>, <code>render</code>, <code>runtime</code>. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekpathfindgetthreadcount"><code>lurek.pathfind.getThreadCount</code><a class="headerlink" href="#lurekpathfindgetthreadcount" title="Permanent link">&para;</a></h3>
 <p>Returns the configured pathfinding thread count.</p>

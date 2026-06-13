@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6828,9 +6828,25 @@
 
 <h1 id="mods">Mods<a class="headerlink" href="#mods" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module represents the modular extension and package management subsystem, supplying tools to discover, validate, and orchestrate user-created packages. It processes manifest declarations to register mods with the manager, tracking metadata such as versions, authors, and configuration schemas. This decouples core engine operations from custom content folders while guaranteeing stable load pathways at runtime.</p>
-<p>To ensure stable execution, the manager resolves mod priorities and dependencies using a topological sorting algorithm. This sorting detects circular dependencies, handles missing requirements early, and prevents file path collisions across loaded packages. Furthermore, a hot-reload queue coordinates atomic re-registration of modified mod packages during active gameplay, making it easy to test changes on the fly.</p>
-<p>Security and containment are managed by a capability-based sandbox framework. It tracks API registries and schemas, mapping permitted engine methods to mod permissions to restrict access to the core namespaces. Mod execution is sandboxed, converting unauthorized API requests into non-fatal scripting errors. This sandbox confinement also limits file access to each mod's own directory, maintaining sandbox guarantees after hot reloads.</p>
+<ul>
+<li>This module gives users a managed mod runtime for discovering, validating, loading, and reloading extension packages.</li>
+<li>Manifest processing captures metadata, dependencies, capabilities, and config schema requirements.</li>
+<li>Dependency ordering ensures mods initialize in a stable sequence without circular dependency breakage.</li>
+<li>Collision checks help prevent conflicting resource paths across concurrently loaded mods.</li>
+<li>Hot-reload queues support iterative mod development without full runtime restart.</li>
+<li>Capability-based sandboxing limits mod API access to declared permissions.</li>
+<li>Registry/schema checks validate requested APIs before mod logic executes.</li>
+<li>Unauthorized operations are surfaced as script errors instead of hard runtime crashes.</li>
+<li>File-access boundaries keep mods confined to their own content scope.</li>
+<li>Mod manager APIs support querying by capability, load order, and lifecycle status.</li>
+<li>Content registry support enables typed content registration by mods.</li>
+<li>For users, this module balances openness to modding with runtime safety and control.</li>
+<li>It reduces brittle manual load scripting in mod-heavy projects.</li>
+<li>The practical result is more reliable extension ecosystems and faster iteration for creators.</li>
+<li>Overall, users get a structured, scriptable mod platform inside the engine.</li>
+<li>This makes third-party content integration much easier to govern.</li>
+</ul>
+<p>This module primarily collaborates with <code>runtime</code>. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekmodscheckapiversion"><code>lurek.mods.checkApiVersion</code><a class="headerlink" href="#lurekmodscheckapiversion" title="Permanent link">&para;</a></h3>
 <p>Checks whether a mod API version is compatible with a host version.</p>

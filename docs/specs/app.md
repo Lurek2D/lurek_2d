@@ -13,7 +13,7 @@
 - Binding: None direct
 - Namespace: `lurek.input`
 - Lua API surface: `0` functions, `0` types, `0` methods
-- Rust test path(s): tests/engine_tests.rs; tests/rust/ext/graphics_runtime_smoke_tests.rs
+- Rust test path(s): tests/rust/unit/app_tests.rs; tests/games_load_test.rs; tests/rust/ext/graphics_runtime_smoke_tests.rs
 - Lua test path(s): None dedicated
 
 ## Summary

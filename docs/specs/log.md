@@ -12,7 +12,7 @@
 - Namespace: `lurek.log`
 - Lua API surface: `18` functions, `2` types, `0` methods
 - Rust test path(s): tests/rust/unit/log_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_log_core_unit.lua
+- Lua test path(s): tests/lua/unit/test_log_core_unit.lua
 
 ## Summary
 

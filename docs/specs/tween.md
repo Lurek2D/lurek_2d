@@ -12,7 +12,7 @@
 - Namespace: `lurek.tween`
 - Lua API surface: `15` functions, `6` types, `82` methods
 - Rust test path(s): tests/rust/unit/tween_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_tween.lua, tests/lua_reorg/stress/test_tween_stress.lua, tests/lua_reorg/integration/test_tween_ecs.lua, tests/lua_reorg/integration/test_tween_camera.lua, tests/lua_reorg/integration/test_tween_animation.lua
+- Lua test path(s): tests/lua/unit/test_tween.lua, tests/lua/stress/test_tween_stress.lua, tests/lua/integration/test_tween_ecs.lua, tests/lua/integration/test_tween_camera.lua, tests/lua/integration/test_tween_animation.lua
 
 ## Summary
 

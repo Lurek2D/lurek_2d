@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -7092,10 +7092,24 @@
 
 <h1 id="filesystem">Filesystem<a class="headerlink" href="#filesystem" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides virtual filesystem services, sandboxing file access to game directories. It coordinates path resolution, file operations, and virtual mounts, ensuring scripting layers interact with files safely. Normalising paths across systems guarantees consistent cross-platform behavior for all read, write, and directory workflows.</p>
-<p>To support asset loading, the system features virtual overlays. It mounts directories or ZIP archives under virtual prefixes, building lookup indexes to read archive files on demand without full extraction. This lets the engine resolve assets across folders dynamically, simplifying modding support and content overrides.</p>
-<p>I/O operations support both synchronous streams and non-blocking asynchronous requests. The async loader delegates tasks to a dedicated worker thread, allowing the engine to transfer files without main-thread stalls. Buffered handles support mode-aware reading, writing, seeking, and appending for predictable stream control.</p>
-<p>Additionally, a poll-based file watcher tracks modification timestamps. This detects file changes on demand, serving as the foundation for hot-reloading configurations and assets. The virtual filesystem layer also provides JSON serialization, temporary file creation, and directory metadata inspection.</p>
+<ul>
+<li>This module gives users a sandboxed file service that keeps script I/O inside controlled game paths.</li>
+<li>Path normalization and traversal checks help keep behavior consistent and safe across desktop platforms.</li>
+<li>Virtual mount support lets teams overlay directories and ZIP content under logical prefixes.</li>
+<li>This is useful for mods, DLC-style content packs, and environment-specific asset overrides.</li>
+<li>Archive mounting reads files on demand, avoiding full extraction overhead.</li>
+<li>Sync file handles support common stream patterns such as read, write, append, seek, and line iteration.</li>
+<li>Async read/write operations move heavy transfer work off the main thread.</li>
+<li>Poll-based watcher features enable hot-reload loops for assets and config updates.</li>
+<li>JSON helpers and temporary file utilities reduce boilerplate in tooling scripts.</li>
+<li>Metadata and recursive listing APIs support content indexing and diagnostics.</li>
+<li>Mount introspection helps users reason about effective storage topology at runtime.</li>
+<li>The module unifies persistence, asset lookup, and automation-friendly file access in one namespace.</li>
+<li>For users, this means fewer custom path hacks and fewer platform-specific surprises.</li>
+<li>It supports both gameplay persistence and build/test tooling workflows.</li>
+<li>Overall, it is the core storage abstraction for safe and flexible runtime file operations.</li>
+</ul>
+<p>This module primarily collaborates with <code>dataframe</code>, <code>runtime</code>. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekfilesystemappend"><code>lurek.filesystem.append</code><a class="headerlink" href="#lurekfilesystemappend" title="Permanent link">&para;</a></h3>
 <p>Appends UTF-8 text to a GameFS file.</p>

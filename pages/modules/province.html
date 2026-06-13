@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6758,13 +6758,36 @@
 
 <h1 id="province">Province<a class="headerlink" href="#province" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides a province-based cartography and region simulation subsystem that manages irregular region maps as semantic gameplay entities. Unlike cell-based tilemaps, provinces represent cohesive territories parsed from color-coded map graphics. The system maintains an authoritative registry that decodes raster pixels into stable province identities, establishing an adjacency network that acts as the topological foundation for map-wide routing and borders.</p>
-<p>To ingest custom worlds, the module implements an asset import pipeline. It parses color-coded PNG files, sanitizes capital markers, and extracts label baselines. A neighbor-searching algorithm resolves capital and label hint pixels to surrounding provinces by checking local context, bridging the gap between graphical assets and active game registries. Extracted regions are mapped to CSV color tables and TOML definitions.</p>
-<p>To keep large strategic maps running efficiently, the engine optimizes and caches region geometry. It decodes irregular shapes into horizontal cell runs that are highly efficient for rendering and bounds testing. Traced border contours are simplified to remove staircase pixel artifacts, and the resulting structures are stored in a binary geometry cache, letting imported maps load almost instantly without expensive pixel rescans.</p>
-<p>Visual presentation is driven by extensible styles and map modes. The rendering system can draw political overlays, terrain fills, and visibility layers over the same province geometry. Each province tracks styling parameters, including political colors, terrain indices, and fog-of-war bytes. Specific borders between neighboring provinces can be customized with distinct thicknesses, colors, and relationship styles.</p>
-<p>Spatial reasoning is supported through precomputed depth and positioning metrics. The system generates multi-source inward-depth distance fields to measure how far any coordinate lies from its regional boundary, providing visual shading signals. Centroid calculators find actual geometric centers for label placement, and transform maps allow interactive mouse picks, anchors, and zooms.</p>
-<p>Strategic pathfinding is handled by routing tools that operate over the adjacency graph. The module provides unweighted neighbor search and cost-aware Dijkstra algorithms, allowing agents to plot optimal paths across strategic regions. The routing engine checks map connectivity, detects isolated province clusters, and returns topological groupings without cluttering the central registry.</p>
-<p>Finally, the registry implements change-tracking mechanics. Monotonic revision counters increment on every styling, visibility, or political update, generating detailed chronological change logs. This incrementally observable database lets Lua scripts and external shaders sync state efficiently, driving reactive user interfaces and tactical map updates without expensive map diff calculations.</p>
+<ul>
+<li>The province module manages irregular region maps as semantic territories rather than tile cells.</li>
+<li>It provides authoritative province identity, topology, style, and metadata state.</li>
+<li>PNG color-map import converts authored raster maps into province ownership grids.</li>
+<li>Marker sanitation handles capital and label helper pixels during import.</li>
+<li>CSV/TOML integration maps external metadata into runtime province records.</li>
+<li>Geometry extraction converts ownership maps into spans, borders, and contour products.</li>
+<li>Adjacency graph construction provides stable province-neighbor topology.</li>
+<li>The registry is the source of truth for mutable province runtime state.</li>
+<li>Revision counters and change logs support incremental synchronization flows.</li>
+<li>Map modes project the same geometry into different semantic visual views.</li>
+<li>Pair-specific border overrides support relationship-aware edge styling.</li>
+<li>Distance fields encode inward depth from borders for shaders and heuristics.</li>
+<li>Label anchoring uses geometric centers derived from actual region coverage.</li>
+<li>Routing utilities provide BFS and weighted path search over adjacency.</li>
+<li>Connected-component analysis supports strategic map diagnostics.</li>
+<li>Per-province properties support extensible game-specific metadata.</li>
+<li>Cache layers persist geometry products for fast reload in large maps.</li>
+<li>GPU bridge/upload paths convert state into shader-ready texture/buffer formats.</li>
+<li>View transforms support robust screen-map coordinate conversion.</li>
+<li>Render integration supports culling, highlighting, labels, and capitals.</li>
+<li>The module owns province map state and topology, not strategy gameplay policy.</li>
+<li>It collaborates with image, render, and runtime through explicit boundaries.</li>
+<li>Invariants emphasize stable identity and deterministic topology reconstruction.</li>
+<li>It is the canonical runtime substrate for region-based strategy features.</li>
+<li>Overall, province turns authored map art into queryable and renderable territorial data.</li>
+<li>It balances import flexibility with strict runtime state ownership.</li>
+<li>The module supports both game presentation and tooling workflows.</li>
+</ul>
+<p>This module primarily collaborates with <code>image</code>, <code>render</code>, <code>runtime</code>. Its responsibility should stay inside the <code>Edge/Integration</code> group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekprovinceclearproperties"><code>lurek.province.clearProperties</code><a class="headerlink" href="#lurekprovinceclearproperties" title="Permanent link">&para;</a></h3>
 <p>Removes all properties, attributes, and flags for a province.</p>
@@ -8635,7 +8658,7 @@
 </code></pre></div>
 <hr />
 <h4 id="lprovinceregistryrender"><code>LProvinceRegistry:render</code><a class="headerlink" href="#lprovinceregistryrender" title="Permanent link">&para;</a></h4>
-<p>Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.</p>
+<p>Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options. Optional <code>tint</code> multiplies all province fill colours for this render only, while <code>province_tints</code> supplies render-time fill colour overrides keyed by province id without mutating the registry.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-82-1" name="__codelineno-82-1" href="#__codelineno-82-1"></a><span class="nv">LProvinceRegistry</span><span class="p">:</span><span class="nf">render</span><span class="p">(</span><span class="nv">opts</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
@@ -8659,27 +8682,37 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-83-1" name="__codelineno-83-1" href="#__codelineno-83-1"></a><span class="kr">do</span>
 <a id="__codelineno-83-2" name="__codelineno-83-2" href="#__codelineno-83-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">reg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">province</span><span class="p">.</span><span class="nf">newFromPng</span><span class="p">(</span><span class="s2">&quot;render&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;assets/textures/province_map.png&quot;</span><span class="p">)</span>
 <a id="__codelineno-83-3" name="__codelineno-83-3" href="#__codelineno-83-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">cam_x</span><span class="p">,</span><span class="w"> </span><span class="nv">cam_y</span><span class="p">,</span><span class="w"> </span><span class="nv">zoom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">reg</span><span class="p">:</span><span class="nf">fitCamera</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span><span class="w"> </span><span class="mi">600</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">)</span>
-<a id="__codelineno-83-4" name="__codelineno-83-4" href="#__codelineno-83-4"></a>
-<a id="__codelineno-83-5" name="__codelineno-83-5" href="#__codelineno-83-5"></a><span class="w">    </span><span class="nv">reg</span><span class="p">:</span><span class="nf">render</span><span class="p">({</span>
-<a id="__codelineno-83-6" name="__codelineno-83-6" href="#__codelineno-83-6"></a><span class="w">        </span><span class="nv">map_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;political&quot;</span><span class="p">,</span>
-<a id="__codelineno-83-7" name="__codelineno-83-7" href="#__codelineno-83-7"></a><span class="w">        </span><span class="nv">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">cam_x</span><span class="p">,</span>
-<a id="__codelineno-83-8" name="__codelineno-83-8" href="#__codelineno-83-8"></a><span class="w">        </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">cam_y</span><span class="p">,</span>
-<a id="__codelineno-83-9" name="__codelineno-83-9" href="#__codelineno-83-9"></a><span class="w">        </span><span class="nv">zoom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">zoom</span><span class="p">,</span>
-<a id="__codelineno-83-10" name="__codelineno-83-10" href="#__codelineno-83-10"></a><span class="w">        </span><span class="nv">pixel_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-<a id="__codelineno-83-11" name="__codelineno-83-11" href="#__codelineno-83-11"></a><span class="w">        </span><span class="nv">screen_w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span>
-<a id="__codelineno-83-12" name="__codelineno-83-12" href="#__codelineno-83-12"></a><span class="w">        </span><span class="nv">screen_h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">600</span><span class="p">,</span>
-<a id="__codelineno-83-13" name="__codelineno-83-13" href="#__codelineno-83-13"></a><span class="w">        </span><span class="nv">draw_fills</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-83-14" name="__codelineno-83-14" href="#__codelineno-83-14"></a><span class="w">        </span><span class="nv">draw_borders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-83-15" name="__codelineno-83-15" href="#__codelineno-83-15"></a><span class="w">        </span><span class="nv">draw_labels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-83-16" name="__codelineno-83-16" href="#__codelineno-83-16"></a><span class="w">        </span><span class="nv">draw_capitals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-83-17" name="__codelineno-83-17" href="#__codelineno-83-17"></a><span class="w">        </span><span class="nv">border_width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.5</span><span class="p">,</span>
-<a id="__codelineno-83-18" name="__codelineno-83-18" href="#__codelineno-83-18"></a><span class="w">        </span><span class="nv">hovered_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<a id="__codelineno-83-19" name="__codelineno-83-19" href="#__codelineno-83-19"></a><span class="w">        </span><span class="nv">selected_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<a id="__codelineno-83-20" name="__codelineno-83-20" href="#__codelineno-83-20"></a><span class="w">    </span><span class="p">})</span>
-<a id="__codelineno-83-21" name="__codelineno-83-21" href="#__codelineno-83-21"></a>
-<a id="__codelineno-83-22" name="__codelineno-83-22" href="#__codelineno-83-22"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rendered registry = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">reg</span><span class="p">:</span><span class="nf">getName</span><span class="p">())</span>
-<a id="__codelineno-83-23" name="__codelineno-83-23" href="#__codelineno-83-23"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;zoom = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">zoom</span><span class="p">))</span>
-<a id="__codelineno-83-24" name="__codelineno-83-24" href="#__codelineno-83-24"></a><span class="kr">end</span>
+<a id="__codelineno-83-4" name="__codelineno-83-4" href="#__codelineno-83-4"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">reg</span><span class="p">:</span><span class="nf">provinceIds</span><span class="p">()</span>
+<a id="__codelineno-83-5" name="__codelineno-83-5" href="#__codelineno-83-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">tints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<a id="__codelineno-83-6" name="__codelineno-83-6" href="#__codelineno-83-6"></a><span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">ids</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span>
+<a id="__codelineno-83-7" name="__codelineno-83-7" href="#__codelineno-83-7"></a><span class="w">        </span><span class="nv">tints</span><span class="p">[</span><span class="nv">ids</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-83-8" name="__codelineno-83-8" href="#__codelineno-83-8"></a><span class="w">    </span><span class="kr">end</span>
+<a id="__codelineno-83-9" name="__codelineno-83-9" href="#__codelineno-83-9"></a><span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">ids</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span>
+<a id="__codelineno-83-10" name="__codelineno-83-10" href="#__codelineno-83-10"></a><span class="w">        </span><span class="nv">tints</span><span class="p">[</span><span class="nv">ids</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span><span class="w"> </span><span class="mf">0.35</span><span class="p">,</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-83-11" name="__codelineno-83-11" href="#__codelineno-83-11"></a><span class="w">    </span><span class="kr">end</span>
+<a id="__codelineno-83-12" name="__codelineno-83-12" href="#__codelineno-83-12"></a>
+<a id="__codelineno-83-13" name="__codelineno-83-13" href="#__codelineno-83-13"></a><span class="w">    </span><span class="nv">reg</span><span class="p">:</span><span class="nf">render</span><span class="p">({</span>
+<a id="__codelineno-83-14" name="__codelineno-83-14" href="#__codelineno-83-14"></a><span class="w">        </span><span class="nv">map_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;political&quot;</span><span class="p">,</span>
+<a id="__codelineno-83-15" name="__codelineno-83-15" href="#__codelineno-83-15"></a><span class="w">        </span><span class="nv">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">cam_x</span><span class="p">,</span>
+<a id="__codelineno-83-16" name="__codelineno-83-16" href="#__codelineno-83-16"></a><span class="w">        </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">cam_y</span><span class="p">,</span>
+<a id="__codelineno-83-17" name="__codelineno-83-17" href="#__codelineno-83-17"></a><span class="w">        </span><span class="nv">zoom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">zoom</span><span class="p">,</span>
+<a id="__codelineno-83-18" name="__codelineno-83-18" href="#__codelineno-83-18"></a><span class="w">        </span><span class="nv">pixel_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<a id="__codelineno-83-19" name="__codelineno-83-19" href="#__codelineno-83-19"></a><span class="w">        </span><span class="nv">screen_w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">800</span><span class="p">,</span>
+<a id="__codelineno-83-20" name="__codelineno-83-20" href="#__codelineno-83-20"></a><span class="w">        </span><span class="nv">screen_h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">600</span><span class="p">,</span>
+<a id="__codelineno-83-21" name="__codelineno-83-21" href="#__codelineno-83-21"></a><span class="w">        </span><span class="nv">draw_fills</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-83-22" name="__codelineno-83-22" href="#__codelineno-83-22"></a><span class="w">        </span><span class="nv">draw_borders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-83-23" name="__codelineno-83-23" href="#__codelineno-83-23"></a><span class="w">        </span><span class="nv">draw_labels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-83-24" name="__codelineno-83-24" href="#__codelineno-83-24"></a><span class="w">        </span><span class="nv">draw_capitals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-83-25" name="__codelineno-83-25" href="#__codelineno-83-25"></a><span class="w">        </span><span class="nv">tint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">0.92</span><span class="p">,</span><span class="w"> </span><span class="mf">0.95</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-83-26" name="__codelineno-83-26" href="#__codelineno-83-26"></a><span class="w">        </span><span class="nv">province_tints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">tints</span><span class="p">,</span>
+<a id="__codelineno-83-27" name="__codelineno-83-27" href="#__codelineno-83-27"></a><span class="w">        </span><span class="nv">border_width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.5</span><span class="p">,</span>
+<a id="__codelineno-83-28" name="__codelineno-83-28" href="#__codelineno-83-28"></a><span class="w">        </span><span class="nv">hovered_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-83-29" name="__codelineno-83-29" href="#__codelineno-83-29"></a><span class="w">        </span><span class="nv">selected_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-83-30" name="__codelineno-83-30" href="#__codelineno-83-30"></a><span class="w">    </span><span class="p">})</span>
+<a id="__codelineno-83-31" name="__codelineno-83-31" href="#__codelineno-83-31"></a>
+<a id="__codelineno-83-32" name="__codelineno-83-32" href="#__codelineno-83-32"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rendered registry = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">reg</span><span class="p">:</span><span class="nf">getName</span><span class="p">())</span>
+<a id="__codelineno-83-33" name="__codelineno-83-33" href="#__codelineno-83-33"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;zoom = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">zoom</span><span class="p">))</span>
+<a id="__codelineno-83-34" name="__codelineno-83-34" href="#__codelineno-83-34"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lprovinceregistryscreentomap"><code>LProvinceRegistry:screenToMap</code><a class="headerlink" href="#lprovinceregistryscreentomap" title="Permanent link">&para;</a></h4>

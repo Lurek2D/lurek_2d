@@ -12,7 +12,7 @@
 - Namespace: `lurek.save`
 - Lua API surface: `1` functions, `3` types, `27` methods
 - Rust test path(s): tests/rust/unit/savegame_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_save.lua, tests/lua_reorg/stress/test_save_stress.lua, tests/lua_reorg/security/test_save_validation.lua, tests/lua_reorg/integration/test_save_ecs.lua, tests/lua_reorg/integration/test_save_tilemap.lua, tests/lua_reorg/integration/test_save_ecs_scene.lua
+- Lua test path(s): tests/lua/unit/test_save.lua, tests/lua/stress/test_save_stress.lua, tests/lua/security/test_save_validation.lua, tests/lua/integration/test_save_ecs.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_save_ecs_scene.lua
 
 ## Summary
 

@@ -1192,7 +1192,7 @@ def build_default_notes(module: str, lua_api: dict) -> str:
 
 def discover_lua_tests(module: str) -> str:
     candidates = [
-        ROOT / "tests" / "lua_reorg" / "unit" / f"test_{module}_unit.lua",
+        ROOT / "tests" / "lua" / "unit" / f"test_{module}_unit.lua",
     ]
     found = [path.relative_to(ROOT).as_posix() for path in candidates if path.exists()]
     return ", ".join(found)

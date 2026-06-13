@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6516,9 +6516,20 @@
 
 <h1 id="timer">Timer<a class="headerlink" href="#timer" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module serves as the core timing backbone for the game runtime, ensuring that delta times, elapsed sessions, and frame-rate calculations remain highly stable and precise. By integrating a drift-safe microsecond accumulator that retains fractional carry between updates, the system eliminates rounding errors over long sessions. Clocking metrics provide both raw delta times and smoothed averages, reducing frame jitter for movement interpolations.</p>
-<p>For game physics and performance diagnostics, the module exposes robust timestep configurations and diagnostic tools. It manages fixed physics intervals alongside step limits to prevent performance degradations under heavy rendering loads. High-resolution benchmarking timers and rolling average FPS counters offer precise performance telemetry, while safe thread-sleeping wrappers block execution without wasting CPU cycles.</p>
-<p>Finally, the subsystem includes a powerful scheduler for coordinating timed and frame-based callbacks. Developers can register one-shot, repeating, or named debouncing events, and control them using local time-scaling factors, pauses, and cancellations. This scheduling engine also coordinates coroutine yielding, letting gameplay scripts pause task execution for a specific duration or frame count before resuming.</p>
+<ul>
+<li>This module gives users core runtime timing for frame deltas, elapsed time, and scheduler-driven callbacks.</li>
+<li>Drift-safe accumulation keeps long-session timing stable and reduces rounding artifacts.</li>
+<li>APIs expose raw delta, smoothed delta, average delta, FPS, and frame counters.</li>
+<li>Physics timestep controls support fixed-step tuning and max-step safety limits.</li>
+<li>Sleep and high-resolution time helpers support profiling and synchronization use cases.</li>
+<li>Scheduler APIs support one-shot, repeating, named, and frame-based events.</li>
+<li>Pause/resume/cancel controls support runtime-safe timer lifecycle management.</li>
+<li>Time-scale controls support localized speed adjustments for scheduled events.</li>
+<li>Coroutine wait helpers support frame or second delays in script flows.</li>
+<li>Real-time timer paths support out-of-timescale callback scheduling.</li>
+<li>For users, this module centralizes timing semantics and deferred execution behavior.</li>
+</ul>
+<p>This module primarily collaborates with <code>runtime</code>. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurektimerafterreal"><code>lurek.timer.afterReal</code><a class="headerlink" href="#lurektimerafterreal" title="Permanent link">&para;</a></h3>
 <p>Schedules a one-shot callback based on real (wall-clock) time, unaffected by game pausing or time scaling. Use for UI fade-outs, notifications, or anything that should run on real time.</p>

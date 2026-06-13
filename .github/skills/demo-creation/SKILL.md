@@ -20,7 +20,7 @@ description: "Load this skill when creating demo projects in content/games/, inc
 ## Domain Knowledge
 - Demo folder structure is mandatory: `content/games/<category>/<name>/conf.toml`, `main.lua`, `README.md`. Optional but recommended: `ui.toml`, `screen.png`, `assets/`.
 - `conf.toml` should define at least `[window] title/width/height`; recommended: `vsync`, plus a stable FPS target block used by neighboring demos. Check `src/runtime/config.rs` and nearby content templates before writing config.
-- After creating a demo, keep registration aligned with current discovery flow: `tests/games_load_test.rs` auto-discovers `content/games/**/main.lua`, `tests/lua_reorg_tests.rs` auto-discovers `content/games/**/test.lua`, `tests/demo_smoke_tests.rs` needs an explicit `#[ignore]` smoke test entry when screenshot coverage is required.
+- After creating a demo, keep registration aligned with current discovery flow: `tests/games_load_test.rs` auto-discovers `content/games/**/main.lua`, `tests/lua_tests.rs` auto-discovers `content/games/**/test.lua`, `tests/demo_smoke_tests.rs` needs an explicit `#[ignore]` smoke test entry when screenshot coverage is required.
 - Smoke tests in `tests/demo_smoke_tests.rs` run with `#[ignore]` and require a window. They are run manually or in dedicated CI jobs with a display.
 - README.md structure: one-line description, feature list, "How to run" section, and "What to look for" section explaining the expected behavior. Keep it under 30 lines.
 - Asset budget: demos should use only assets already in `assets/` or tiny purpose-specific assets in `content/games/<name>/assets/`. Do not add large binary assets to prove a small point.
@@ -34,6 +34,6 @@ description: "Load this skill when creating demo projects in content/games/, inc
 
 ## References
 - content/games/
-- tests/lua_reorg/demos/
+- content/games/**/test.lua
 - tests/demo_smoke_tests.rs
 - tests/games_load_test.rs

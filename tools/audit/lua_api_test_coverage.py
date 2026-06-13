@@ -45,11 +45,6 @@ DESCRIBE_RE = re.compile(
     r'describe\(\s*["\']((?:lurek\.\w+(?:\.\w+)+)|(?:\w+:\w+)|(?:\w+\.\w+))["\']'
 )
 
-# Regex for @evidence markers
-EVIDENCE_RE = re.compile(
-    r"^--\s*@evidence\s+(\w+):(.+)\s*$"
-)
-
 # Regex for @golden markers
 GOLDEN_RE = re.compile(
     r"^--\s*@golden\s+(.+)\s*$"
@@ -71,12 +66,8 @@ LEGACY_NON_API_PREFIXES = {
 
 
 def resolve_lua_tests_dir() -> Path:
-    """Prefer canonical reorganized Lua tests, with legacy fallback."""
-    reorg_dir = WORKSPACE_ROOT / "tests" / "lua_reorg"
-    legacy_dir = WORKSPACE_ROOT / "tests" / "lua"
-    if reorg_dir.exists():
-        return reorg_dir
-    return legacy_dir
+    """Return the canonical Lua tests directory."""
+    return WORKSPACE_ROOT / "tests" / "lua"
 
 
 LUA_TESTS_DIR = resolve_lua_tests_dir()
@@ -132,7 +123,7 @@ def collect_api_functions(api_data: Dict, module_filter: Optional[str] = None) -
 def scan_markers(tests_dir: Path) -> Dict[str, List[Dict]]:
     """Scan only unit/ Lua test files for @covers markers.
 
-    Only tests/lua_reorg/unit/ files count toward coverage.
+    Only tests/lua/unit/ files count toward coverage.
     Library, stress, integration and security tests use @library / @stress /
     @integration / @security markers and are intentionally excluded here.
 

@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -7222,11 +7222,27 @@
 
 <h1 id="scene">Scene<a class="headerlink" href="#scene" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides a robust game flow and state control subsystem built on a structured scene stack model. It organizes game progression across major runtime states, such as menus, levels, and popup screens, through standard push, pop, and switch operations. The stack supports overlay layouts that can run alongside underlying states, and utilizes prototype metatable factories to define and instantiate custom scene classes dynamically.</p>
-<p>State navigation is governed by a predictable lifecycle callback pipeline. Pushed, popped, or transitioned scenes receive timely enter, leave, pause, resume, and ready callbacks in strict stack order, ensuring consistent state setups. To prevent startup stutters under heavy loads, developers can register deferred preload functions, lazy-loading heavy asset pools only when a scene is first pushed to the stack.</p>
-<p>To bridge state changes smoothly, the module implements timed visual transition queues. Scene switches can trigger animated slides, fades, sweeps, or iris wipes with configurable easing curves. Easing parameters convert name descriptors into dynamic progress values, while a first-in-first-out transition queue schedules sequential animations automatically to support complex cinematic reveal loops.</p>
-<p>Frictions during transition and save-state routing are resolved using shared contexts and serialization engines. The module maintains a shared key-value data register that lets adjacent scenes pass parameters cleanly without global namespace sprawl. Additionally, it compiles the active scene stack and its shared context into a serializable snapshot table, enabling quick save and reload workflows.</p>
-<p>Finally, the system integrates a z-ordered painter-style depth sorter to handle visual overlays. The sorter collects raw draw callbacks or drawable game tables, sorting them in a back-to-front order before rendering. It supports both high-performance sorting and stable sorting configurations; enabling stable sorting prevents visual flickering for overlapping objects that share identical z-depths.</p>
+<ul>
+<li>This module gives users stack-based scene flow control for menus, gameplay states, overlays, and transitions.</li>
+<li>Push/pop/switch operations provide explicit runtime state navigation primitives.</li>
+<li>Overlay support allows stacked scene behavior without fully replacing underlying context.</li>
+<li>Lifecycle callbacks coordinate enter, leave, pause, resume, and ready phases consistently.</li>
+<li>Preload hooks support deferred scene initialization to reduce transition stutter.</li>
+<li>Shared scene data APIs support parameter passing without global-variable sprawl.</li>
+<li>Registered scene names support lookup, reuse, and navigation by symbolic identifiers.</li>
+<li>Transition helpers support fade, slide, wipe, and iris style visual changes.</li>
+<li>Transition queues allow staged cinematic scene changes.</li>
+<li>Serialization helpers capture stack and shared data snapshots for save/load workflows.</li>
+<li>Process/update/render toggle controls support selective scene execution policies.</li>
+<li>Active-scene and layer queries support debug overlays and tooling integration.</li>
+<li>Built-in depth sorter supports painter-order rendering for mixed drawables.</li>
+<li>Stable-sort support prevents equal-depth flicker artifacts.</li>
+<li>This module is useful for game-state architecture, UI layering, and narrative flow systems.</li>
+<li>For users, it centralizes scene lifecycle semantics instead of scattered ad-hoc table swaps.</li>
+<li>It improves maintainability of complex navigation and transition behavior.</li>
+<li>Overall, users get a robust orchestration layer for stateful game flow.</li>
+</ul>
+<p>This module primarily collaborates with <code>image</code>, <code>math</code>, <code>render</code>, <code>runtime</code>. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lureksceneclear"><code>lurek.scene.clear</code><a class="headerlink" href="#lureksceneclear" title="Permanent link">&para;</a></h3>
 <p>Remove all scenes from the stack. Each removed scene receives its <code>leave()</code> callback in stack order. After this call the stack is empty and <code>isEmpty()</code> returns true. Useful for returning to a title screen or tearing down the entire scene graph.</p>
@@ -9699,7 +9715,7 @@
 <p><em>No documented fields for this handle.</em></p>
 <h3 id="type-methods_1">Type Methods<a class="headerlink" href="#type-methods_1" title="Permanent link">&para;</a></h3>
 <h4 id="lsceneobjectcontaineradd"><code>LSceneObjectContainer:add</code><a class="headerlink" href="#lsceneobjectcontaineradd" title="Permanent link">&para;</a></h4>
-<p>Add an object to the container.</p>
+<p>Adds an object table to the scene container.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-132-1" name="__codelineno-132-1" href="#__codelineno-132-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">obj</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
@@ -9714,25 +9730,49 @@
 <tbody>
 <tr>
 <td><code>obj</code></td>
-<td>any</td>
-<td></td>
+<td>table</td>
+<td>Object table to append to the scene container.</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-133-1" name="__codelineno-133-1" href="#__codelineno-133-1"></a><span class="kr">do</span>
+<a id="__codelineno-133-2" name="__codelineno-133-2" href="#__codelineno-133-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">scene</span><span class="p">.</span><span class="nf">newObjectContainer</span><span class="p">()</span>
+<a id="__codelineno-133-3" name="__codelineno-133-3" href="#__codelineno-133-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-133-4" name="__codelineno-133-4" href="#__codelineno-133-4"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">obj</span><span class="p">)</span>
+<a id="__codelineno-133-5" name="__codelineno-133-5" href="#__codelineno-133-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;count after add = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">container</span><span class="p">:</span><span class="nf">getCount</span><span class="p">())</span>
+<a id="__codelineno-133-6" name="__codelineno-133-6" href="#__codelineno-133-6"></a><span class="kr">end</span>
+</code></pre></div>
 <hr />
 <h4 id="lsceneobjectcontainerclear"><code>LSceneObjectContainer:clear</code><a class="headerlink" href="#lsceneobjectcontainerclear" title="Permanent link">&para;</a></h4>
 <p>Remove all objects from the container.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-133-1" name="__codelineno-133-1" href="#__codelineno-133-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">clear</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-134-1" name="__codelineno-134-1" href="#__codelineno-134-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">clear</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-135-1" name="__codelineno-135-1" href="#__codelineno-135-1"></a><span class="kr">do</span>
+<a id="__codelineno-135-2" name="__codelineno-135-2" href="#__codelineno-135-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">scene</span><span class="p">.</span><span class="nf">newObjectContainer</span><span class="p">()</span>
+<a id="__codelineno-135-3" name="__codelineno-135-3" href="#__codelineno-135-3"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">add</span><span class="p">({</span><span class="w"> </span><span class="nv">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-135-4" name="__codelineno-135-4" href="#__codelineno-135-4"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">clear</span><span class="p">()</span>
+<a id="__codelineno-135-5" name="__codelineno-135-5" href="#__codelineno-135-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;count after clear = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">container</span><span class="p">:</span><span class="nf">getCount</span><span class="p">())</span>
+<a id="__codelineno-135-6" name="__codelineno-135-6" href="#__codelineno-135-6"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lsceneobjectcontainerdraw"><code>LSceneObjectContainer:draw</code><a class="headerlink" href="#lsceneobjectcontainerdraw" title="Permanent link">&para;</a></h4>
 <p>Call draw() on all objects that have a draw method, sorted by layer.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-134-1" name="__codelineno-134-1" href="#__codelineno-134-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">draw</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-136-1" name="__codelineno-136-1" href="#__codelineno-136-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">draw</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-137-1" name="__codelineno-137-1" href="#__codelineno-137-1"></a><span class="kr">do</span>
+<a id="__codelineno-137-2" name="__codelineno-137-2" href="#__codelineno-137-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">scene</span><span class="p">.</span><span class="nf">newObjectContainer</span><span class="p">()</span>
+<a id="__codelineno-137-3" name="__codelineno-137-3" href="#__codelineno-137-3"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">add</span><span class="p">({</span><span class="w"> </span><span class="nv">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nv">draw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;draw layer 1&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-137-4" name="__codelineno-137-4" href="#__codelineno-137-4"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">draw</span><span class="p">()</span>
+<a id="__codelineno-137-5" name="__codelineno-137-5" href="#__codelineno-137-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;container draw called&quot;</span><span class="p">)</span>
+<a id="__codelineno-137-6" name="__codelineno-137-6" href="#__codelineno-137-6"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lsceneobjectcontainergetbylayer"><code>LSceneObjectContainer:getByLayer</code><a class="headerlink" href="#lsceneobjectcontainergetbylayer" title="Permanent link">&para;</a></h4>
 <p>Get all objects whose layer equals <code>n</code>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-135-1" name="__codelineno-135-1" href="#__codelineno-135-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">getByLayer</span><span class="p">(</span><span class="nv">n</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-138-1" name="__codelineno-138-1" href="#__codelineno-138-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">getByLayer</span><span class="p">(</span><span class="nv">n</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -9746,25 +9786,79 @@
 <tbody>
 <tr>
 <td><code>n</code></td>
-<td>any</td>
-<td></td>
+<td>number</td>
+<td>Target layer value.</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Returns</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>table</td>
+<td>Sequential table of objects on the given layer.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-139-1" name="__codelineno-139-1" href="#__codelineno-139-1"></a><span class="kr">do</span>
+<a id="__codelineno-139-2" name="__codelineno-139-2" href="#__codelineno-139-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">scene</span><span class="p">.</span><span class="nf">newObjectContainer</span><span class="p">()</span>
+<a id="__codelineno-139-3" name="__codelineno-139-3" href="#__codelineno-139-3"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">add</span><span class="p">({</span><span class="w"> </span><span class="nv">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-139-4" name="__codelineno-139-4" href="#__codelineno-139-4"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">container</span><span class="p">:</span><span class="nf">getByLayer</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<a id="__codelineno-139-5" name="__codelineno-139-5" href="#__codelineno-139-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;layer 3 count = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="o">#</span><span class="nv">objects</span><span class="p">))</span>
+<a id="__codelineno-139-6" name="__codelineno-139-6" href="#__codelineno-139-6"></a><span class="kr">end</span>
+</code></pre></div>
 <hr />
 <h4 id="lsceneobjectcontainergetcount"><code>LSceneObjectContainer:getCount</code><a class="headerlink" href="#lsceneobjectcontainergetcount" title="Permanent link">&para;</a></h4>
 <p>Get the number of objects currently in the container.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-136-1" name="__codelineno-136-1" href="#__codelineno-136-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">getCount</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-140-1" name="__codelineno-140-1" href="#__codelineno-140-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">getCount</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-141-1" name="__codelineno-141-1" href="#__codelineno-141-1"></a><span class="kr">do</span>
+<a id="__codelineno-141-2" name="__codelineno-141-2" href="#__codelineno-141-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">scene</span><span class="p">.</span><span class="nf">newObjectContainer</span><span class="p">()</span>
+<a id="__codelineno-141-3" name="__codelineno-141-3" href="#__codelineno-141-3"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">add</span><span class="p">({</span><span class="w"> </span><span class="nv">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-141-4" name="__codelineno-141-4" href="#__codelineno-141-4"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">add</span><span class="p">({</span><span class="w"> </span><span class="nv">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-141-5" name="__codelineno-141-5" href="#__codelineno-141-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;container count = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">container</span><span class="p">:</span><span class="nf">getCount</span><span class="p">())</span>
+<a id="__codelineno-141-6" name="__codelineno-141-6" href="#__codelineno-141-6"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lsceneobjectcontainergetobjects"><code>LSceneObjectContainer:getObjects</code><a class="headerlink" href="#lsceneobjectcontainergetobjects" title="Permanent link">&para;</a></h4>
 <p>Get all objects as an array (layer-sorted).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-137-1" name="__codelineno-137-1" href="#__codelineno-137-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">getObjects</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-142-1" name="__codelineno-142-1" href="#__codelineno-142-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">getObjects</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>Returns</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>table</td>
+<td>Sequential table containing current objects.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-143-1" name="__codelineno-143-1" href="#__codelineno-143-1"></a><span class="kr">do</span>
+<a id="__codelineno-143-2" name="__codelineno-143-2" href="#__codelineno-143-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">scene</span><span class="p">.</span><span class="nf">newObjectContainer</span><span class="p">()</span>
+<a id="__codelineno-143-3" name="__codelineno-143-3" href="#__codelineno-143-3"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">add</span><span class="p">({</span><span class="w"> </span><span class="nv">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">})</span>
+<a id="__codelineno-143-4" name="__codelineno-143-4" href="#__codelineno-143-4"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">container</span><span class="p">:</span><span class="nf">getObjects</span><span class="p">()</span>
+<a id="__codelineno-143-5" name="__codelineno-143-5" href="#__codelineno-143-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;objects count = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="o">#</span><span class="nv">objects</span><span class="p">))</span>
+<a id="__codelineno-143-6" name="__codelineno-143-6" href="#__codelineno-143-6"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lsceneobjectcontainerhas"><code>LSceneObjectContainer:has</code><a class="headerlink" href="#lsceneobjectcontainerhas" title="Permanent link">&para;</a></h4>
 <p>Check whether an object is present in the container.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-138-1" name="__codelineno-138-1" href="#__codelineno-138-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">has</span><span class="p">(</span><span class="nv">obj</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-144-1" name="__codelineno-144-1" href="#__codelineno-144-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">has</span><span class="p">(</span><span class="nv">obj</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -9778,15 +9872,38 @@
 <tbody>
 <tr>
 <td><code>obj</code></td>
-<td>any</td>
-<td></td>
+<td>table</td>
+<td>Object table to test.</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Returns</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>boolean</td>
+<td>True when the exact object exists in the container.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-145-1" name="__codelineno-145-1" href="#__codelineno-145-1"></a><span class="kr">do</span>
+<a id="__codelineno-145-2" name="__codelineno-145-2" href="#__codelineno-145-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">scene</span><span class="p">.</span><span class="nf">newObjectContainer</span><span class="p">()</span>
+<a id="__codelineno-145-3" name="__codelineno-145-3" href="#__codelineno-145-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-145-4" name="__codelineno-145-4" href="#__codelineno-145-4"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">obj</span><span class="p">)</span>
+<a id="__codelineno-145-5" name="__codelineno-145-5" href="#__codelineno-145-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;has obj = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">container</span><span class="p">:</span><span class="nf">has</span><span class="p">(</span><span class="nv">obj</span><span class="p">)))</span>
+<a id="__codelineno-145-6" name="__codelineno-145-6" href="#__codelineno-145-6"></a><span class="kr">end</span>
+</code></pre></div>
 <hr />
 <h4 id="lsceneobjectcontainerremove"><code>LSceneObjectContainer:remove</code><a class="headerlink" href="#lsceneobjectcontainerremove" title="Permanent link">&para;</a></h4>
 <p>Remove an object from the container (identity comparison).</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-139-1" name="__codelineno-139-1" href="#__codelineno-139-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">remove</span><span class="p">(</span><span class="nv">obj</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-146-1" name="__codelineno-146-1" href="#__codelineno-146-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">remove</span><span class="p">(</span><span class="nv">obj</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -9800,20 +9917,50 @@
 <tbody>
 <tr>
 <td><code>obj</code></td>
-<td>any</td>
-<td></td>
+<td>table</td>
+<td>Object table reference to remove.</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-147-1" name="__codelineno-147-1" href="#__codelineno-147-1"></a><span class="kr">do</span>
+<a id="__codelineno-147-2" name="__codelineno-147-2" href="#__codelineno-147-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">scene</span><span class="p">.</span><span class="nf">newObjectContainer</span><span class="p">()</span>
+<a id="__codelineno-147-3" name="__codelineno-147-3" href="#__codelineno-147-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-147-4" name="__codelineno-147-4" href="#__codelineno-147-4"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">obj</span><span class="p">)</span>
+<a id="__codelineno-147-5" name="__codelineno-147-5" href="#__codelineno-147-5"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">remove</span><span class="p">(</span><span class="nv">obj</span><span class="p">)</span>
+<a id="__codelineno-147-6" name="__codelineno-147-6" href="#__codelineno-147-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;count after remove = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">container</span><span class="p">:</span><span class="nf">getCount</span><span class="p">())</span>
+<a id="__codelineno-147-7" name="__codelineno-147-7" href="#__codelineno-147-7"></a><span class="kr">end</span>
+</code></pre></div>
 <hr />
 <h4 id="lsceneobjectcontainertype"><code>LSceneObjectContainer:type</code><a class="headerlink" href="#lsceneobjectcontainertype" title="Permanent link">&para;</a></h4>
-<p>Get the type name of this userdata.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-140-1" name="__codelineno-140-1" href="#__codelineno-140-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">type</span><span class="p">()</span>
+<p>Gets the Lua-visible type name of this userdata.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-148-1" name="__codelineno-148-1" href="#__codelineno-148-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">type</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>Returns</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>string</td>
+<td>The literal <code>"[LSceneObjectContainer](#lsceneobjectcontainer)"</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-149-1" name="__codelineno-149-1" href="#__codelineno-149-1"></a><span class="kr">do</span>
+<a id="__codelineno-149-2" name="__codelineno-149-2" href="#__codelineno-149-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">scene</span><span class="p">.</span><span class="nf">newObjectContainer</span><span class="p">()</span>
+<a id="__codelineno-149-3" name="__codelineno-149-3" href="#__codelineno-149-3"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;container type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">container</span><span class="p">:</span><span class="nf">type</span><span class="p">())</span>
+<a id="__codelineno-149-4" name="__codelineno-149-4" href="#__codelineno-149-4"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h4 id="lsceneobjectcontainertypeof"><code>LSceneObjectContainer:typeOf</code><a class="headerlink" href="#lsceneobjectcontainertypeof" title="Permanent link">&para;</a></h4>
-<p>Check type by name.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-141-1" name="__codelineno-141-1" href="#__codelineno-141-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="nv">name</span><span class="p">)</span>
+<p>Checks whether this container matches a type name.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-150-1" name="__codelineno-150-1" href="#__codelineno-150-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="nv">name</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -9827,15 +9974,36 @@
 <tbody>
 <tr>
 <td><code>name</code></td>
-<td>any</td>
-<td></td>
+<td>string</td>
+<td>Type name to compare against.</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Returns</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>boolean</td>
+<td>True when <code>name</code> matches <code>"[LSceneObjectContainer](#lsceneobjectcontainer)"</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-151-1" name="__codelineno-151-1" href="#__codelineno-151-1"></a><span class="kr">do</span>
+<a id="__codelineno-151-2" name="__codelineno-151-2" href="#__codelineno-151-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">scene</span><span class="p">.</span><span class="nf">newObjectContainer</span><span class="p">()</span>
+<a id="__codelineno-151-3" name="__codelineno-151-3" href="#__codelineno-151-3"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;is LSceneObjectContainer = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">container</span><span class="p">:</span><span class="nf">typeOf</span><span class="p">(</span><span class="s2">&quot;LSceneObjectContainer&quot;</span><span class="p">)))</span>
+<a id="__codelineno-151-4" name="__codelineno-151-4" href="#__codelineno-151-4"></a><span class="kr">end</span>
+</code></pre></div>
 <hr />
 <h4 id="lsceneobjectcontainerupdate"><code>LSceneObjectContainer:update</code><a class="headerlink" href="#lsceneobjectcontainerupdate" title="Permanent link">&para;</a></h4>
 <p>Call update(dt) on all objects that have an update method.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-142-1" name="__codelineno-142-1" href="#__codelineno-142-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">update</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-152-1" name="__codelineno-152-1" href="#__codelineno-152-1"></a><span class="nv">LSceneObjectContainer</span><span class="p">:</span><span class="nf">update</span><span class="p">(</span><span class="nv">dt</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters</strong></p>
 <table>
@@ -9849,11 +10017,27 @@
 <tbody>
 <tr>
 <td><code>dt</code></td>
-<td>any</td>
-<td></td>
+<td>number</td>
+<td>Delta time in seconds for this frame.</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-153-1" name="__codelineno-153-1" href="#__codelineno-153-1"></a><span class="kr">do</span>
+<a id="__codelineno-153-2" name="__codelineno-153-2" href="#__codelineno-153-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">scene</span><span class="p">.</span><span class="nf">newObjectContainer</span><span class="p">()</span>
+<a id="__codelineno-153-3" name="__codelineno-153-3" href="#__codelineno-153-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">ticks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<a id="__codelineno-153-4" name="__codelineno-153-4" href="#__codelineno-153-4"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">add</span><span class="p">({</span>
+<a id="__codelineno-153-5" name="__codelineno-153-5" href="#__codelineno-153-5"></a><span class="w">        </span><span class="nv">layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-153-6" name="__codelineno-153-6" href="#__codelineno-153-6"></a><span class="w">        </span><span class="nv">update</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">dt</span><span class="p">)</span>
+<a id="__codelineno-153-7" name="__codelineno-153-7" href="#__codelineno-153-7"></a><span class="w">            </span><span class="kr">if</span><span class="w"> </span><span class="nv">dt</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">then</span>
+<a id="__codelineno-153-8" name="__codelineno-153-8" href="#__codelineno-153-8"></a><span class="w">                </span><span class="nv">ticks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ticks</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<a id="__codelineno-153-9" name="__codelineno-153-9" href="#__codelineno-153-9"></a><span class="w">            </span><span class="kr">end</span>
+<a id="__codelineno-153-10" name="__codelineno-153-10" href="#__codelineno-153-10"></a><span class="w">        </span><span class="kr">end</span><span class="p">,</span>
+<a id="__codelineno-153-11" name="__codelineno-153-11" href="#__codelineno-153-11"></a><span class="w">    </span><span class="p">})</span>
+<a id="__codelineno-153-12" name="__codelineno-153-12" href="#__codelineno-153-12"></a><span class="w">    </span><span class="nv">container</span><span class="p">:</span><span class="nf">update</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span>
+<a id="__codelineno-153-13" name="__codelineno-153-13" href="#__codelineno-153-13"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;updates called = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">ticks</span><span class="p">))</span>
+<a id="__codelineno-153-14" name="__codelineno-153-14" href="#__codelineno-153-14"></a><span class="kr">end</span>
+</code></pre></div>
 <hr />
 
 

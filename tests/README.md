@@ -3,7 +3,7 @@
 Lurek2D uses a two-layer test system executed through cargo:
 
 - Rust tests in tests/rust/ for engine internals.
-- Lua BDD tests in tests/lua_reorg/ for lurek.* behavior.
+- Lua BDD tests in tests/lua/ for lurek.* behavior.
 
 This file is a short contributor guide. The architecture source of truth is docs/architecture/test-framework.md.
 
@@ -20,9 +20,9 @@ This file is a short contributor guide. The architecture source of truth is docs
 | Analytics HTML | python tools/audit/test_analytics.py --html |
 | Perf Regression Gate | python tools/audit/perf_regression_gate.py --min-stress-pct 35 |
 | Generate Contract Tests | python tools/audit/gen_lua_contract_tests.py |
-| Generate Demo Lua Tests | python tools/audit/gen_demo_lua_tests.py |
 | Mutation Report | python tools/audit/mutation_report.py |
-| Headless demo suite | cargo test --test lua_tests lua_demos_headless_all -- --test-threads=1 |
+| Colocated game tests | cargo test --test lua_tests lua_demo_colocated_games -- --test-threads=1 |
+| Python tool self-tests | python -m unittest discover -s tests/python -p "test_*.py" -q |
 
 ## Directory Layout
 
@@ -32,17 +32,18 @@ This file is a short contributor guide. The architecture source of truth is docs
 - tests/rust/config/: configuration tests.
 - tests/rust/security/: sandbox and path safety tests.
 - tests/rust/ext/: cross-module Rust smoke tests.
-- tests/lua_reorg_tests.rs: explicit registration of Lua test files.
-- tests/lua_reorg/unit/: one file per module for lurek.* API contracts.
-- tests/lua_reorg/library/: canonical one file per pure-Lua library.
-- tests/lua_reorg/integration/: tests touching at least 2 modules.
-- tests/lua_reorg/stress/: high iteration Lua load tests.
-- tests/lua_reorg/security/: hostile input and safety behavior.
-- tests/lua_reorg/evidence/: runtime evidence production.
-- tests/lua_reorg/golden/: deterministic comparison against baselines.
-- tests/lua_reorg/config/: Lua config tests.
-- tests/lua_reorg/demos/: headless contract tests for screenshot-smoke demos (see demos/README.md).
-- tests/lua_reorg/fixtures/: shared helpers (e.g. world_helpers.lua via dofile).
+- tests/lua_tests.rs: explicit registration of Lua test files.
+- tests/python/: stdlib `unittest` self-tests for repo audit and validation tools.
+- tests/lua/unit/: one file per module for lurek.* API contracts.
+- tests/lua/library/: canonical one file per pure-Lua library.
+- tests/lua/integration/: tests touching at least 2 modules.
+- tests/lua/stress/: high iteration Lua load tests.
+- tests/lua/security/: hostile input and safety behavior.
+- tests/lua/evidence/: runtime evidence production.
+- tests/lua/golden/: deterministic comparison against baselines.
+- tests/lua/config/: Lua config tests.
+- content/games/**/test.lua: colocated headless demo/game tests discovered by the Lua harness.
+- tests/lua/fixtures/: shared helpers (e.g. world_helpers.lua via dofile).
 - tests/artifacts/current/: current generated evidence artifacts.
 - tests/artifacts/baselines/: committed golden baselines used for comparison.
 
@@ -57,19 +58,19 @@ This file is a short contributor guide. The architecture source of truth is docs
 
 Folder marker mapping is strict:
 
-- tests/lua_reorg/unit/ -> @covers
-- tests/lua_reorg/security/ -> @security
-- tests/lua_reorg/integration/ -> @integration
-- tests/lua_reorg/stress/ -> @stress
-- tests/lua_reorg/evidence/ -> @evidence
+- tests/lua/unit/ -> @covers
+- tests/lua/security/ -> @security
+- tests/lua/integration/ -> @integration
+- tests/lua/stress/ -> @stress
+- tests/lua/evidence/ -> prose rationale comments above each `it()`
 
 Rules:
 
 - Markers must be directly above the it() they annotate.
 - Marker indentation must match that it() block.
 - @covers entries must be assertion-backed in the same it().
-- In `tests/lua_reorg/unit/`, every `it()` must have exactly one directly-adjacent `@covers`.
-- In `tests/lua_reorg/unit/`, every public Lua API should own exactly one `it()` across the full unit suite.
+- In `tests/lua/unit/`, every `it()` must have exactly one directly-adjacent `@covers`.
+- In `tests/lua/unit/`, every public Lua API should own exactly one `it()` across the full unit suite.
 - @tests is forbidden.
 
 ## Evidence and Golden
@@ -88,12 +89,19 @@ Evidence naming contract:
 - Write module-owned artifacts under `tests/artifacts/current/<module>/`.
 - Prefer descriptive artifact names such as `layout_dashboard_desktop_1280x720.png` or `procgen_cellular_cave_map.png`.
 - Avoid vague folder names like `combined`, `advanced`, `misc`, or category-only roots when the owning `lurek.*` module is known.
+- Do not put file-level `@covers` markers in evidence files.
+- Keep one module-owned evidence file: `test_math_evidence.lua` should demonstrate `lurek.math.*` and math-owned userdata only, not helper sinks like `lurek.image.savePNG`.
+- Put a short rationale block above every evidence `it()` with:
+  `-- Does:`
+  `-- Shows:`
+  `-- Artifact:`
+  `-- Why:`
+- The artifact should visualize or export results computed from the target API. Do not add draw helpers to unrelated Lurek modules only to make evidence easier.
 
 ## Harness and Registration
 
-Most Lua suites use explicit `#[test]` entries in `tests/lua_reorg_tests.rs`. Exceptions:
+Most Lua suites use explicit `#[test]` entries in `tests/lua_tests.rs`. Exception:
 
-- `lua_demos_headless_all` — runs every `tests/lua_reorg/demos/test_*.lua`.
 - `lua_demo_colocated_games` — runs every `content/games/**/test.lua`.
 
 All other new Lua files need a harness entry or they will not run under `cargo test`.

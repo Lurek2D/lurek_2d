@@ -12,7 +12,7 @@
 - Namespace: `lurek.automation`
 - Lua API surface: `32` functions, `0` types, `0` methods
 - Rust test path(s): tests/rust/unit/automation_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_automation_core_unit.lua, tests/lua_reorg/integration/test_automation_event.lua
+- Lua test path(s): tests/lua/unit/test_automation_core_unit.lua, tests/lua/integration/test_automation_event.lua
 
 ## Summary
 

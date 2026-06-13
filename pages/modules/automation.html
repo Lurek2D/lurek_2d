@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6052,8 +6052,17 @@
 
 <h1 id="automation">Automation<a class="headerlink" href="#automation" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>The automation module delivers a deterministic input replay and scripted verification pipeline for Lurek2D. Its core purpose is to programmatically simulate human player interactions—including keyboard, mouse, and text inputs—to test gameplay behaviors. It parses ordered step sequences from TOML or Lua tables, expanding repeat directives and time intervals into concrete playback schedules.</p>
-<p>Simulation playback supports real-time pausing, resuming, speed scaling, and macro reuse. Scripts can wait for predicates, run conditional steps gated by boolean flags, and execute visual assertions with configurable error tolerances, enabling robust regression verification.</p>
+<ul>
+<li>The automation module replays scripted input and validates gameplay flows deterministically.</li>
+<li>It converts Lua/TOML steps into time-ordered actions so scenarios run the same on every machine.</li>
+<li>Supported inputs include keyboard, mouse, wheel, text, and macro playback.</li>
+<li>Pause, resume, speed scaling, and wait predicates make failures easier to reproduce and inspect.</li>
+<li>Visual assertions with tolerance thresholds catch rendering regressions in CI-style runs.</li>
+<li>Progress, failure state, and last-error queries provide actionable harness diagnostics.</li>
+<li>Script replay reduces manual smoke testing across gameplay, UI, and input-heavy systems.</li>
+<li>The module exists as the user-facing foundation for regression automation.</li>
+</ul>
+<p>This module primarily collaborates with <code>event</code>, <code>input</code>, <code>runtime</code>, <code>timer</code>. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekautomationgetcondition"><code>lurek.automation.getCondition</code><a class="headerlink" href="#lurekautomationgetcondition" title="Permanent link">&para;</a></h3>
 <p>Returns a named automation condition value.</p>

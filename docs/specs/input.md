@@ -13,7 +13,7 @@
 - Namespace: `lurek.input`
 - Lua API surface: `89` functions, `8` types, `18` methods
 - Rust test path(s): tests/rust/unit/input_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_input.lua, tests/lua_reorg/integration/test_input_camera.lua
+- Lua test path(s): tests/lua/unit/test_input.lua, tests/lua/integration/test_input_camera.lua
 
 ## Summary
 

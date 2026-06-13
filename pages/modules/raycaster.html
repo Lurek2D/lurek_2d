@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -7470,13 +7470,45 @@
 
 <h1 id="raycaster">Raycaster<a class="headerlink" href="#raycaster" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides a classic grid-based first-person raycasting subsystem, turning 2D maps into immersive pseudo-3D environments. At its computational core, a Digital Differential Analysis marcher shoots rays across the map grid to detect wall collisions, calculating corrected perpendicular distances to prevent perspective distortion. This allows developers to present textured first-person viewpoints while preserving the low-overhead structure of a 2D engine runtime.</p>
-<p>To support complex layouts, the subsystem extends beyond simple flat maps. The DDA marcher handles layered transparent walls, allowing players to peer through windows. Heightmaps define variable floor and ceiling offsets to model pits, raised steps, and tall chambers. Multilevel slices stack individual storeys horizontally, enabling multi-storey dungeons with vertical shafts, overhead walkways, and smooth transitions between vertical levels.</p>
-<p>Moving boundaries and gameplay actors are integrated directly into the spatial model. Sliding doors are represented as stateful grid occupants that animate open or closed over time. This keeps movement and collision in sync without hardcoding transitions. For locomotion, the module provides a grid-motion controller that snaps travel cleanly from tile to tile, which fits classic dungeon exploration games and ensures predictable grid boundaries.</p>
-<p>Dynamic props, pickups, and enemies are managed as billboard sprites that face the camera. The sprite manager registers world-space objects, projects them using the camera pose, and sorts them by distance. This depth-aware ordering prevents sprites from bleeding through solid walls, and ensures they blend with the environment, matching the perspective of adjacent wall columns and corridor depths.</p>
-<p>The scene builder compiles these spatial hits into a textured 3D environment. It maps wall hits to screen quads and expands floor and ceiling rows into perspective-correct textured strips. A lighting engine applies ambient fill, distance falloff, and colored point lights that respect wall blockages. Half-pixel snapping is also applied to reduce texture shimmering along long wall seams, producing a stable visual space.</p>
-<p>Rasterization is handled by both CPU and GPU paths. A per-column depth buffer tracks wall distances, enabling subsequent passes to reject hidden fragments. For GPU rendering, the system generates textured quad draw lists that are easily consumed by the main renderer. Alternatively, a CPU-side software draw pass rasterizes scenes directly into raw image buffers, facilitating offline image generation and tool-facing previews.</p>
-<p>Finally, the module provides interactive tile pickers and diagnostic tools. The picker casts rays from cursor clicks to select wall and floor cells, reporting which side was targeted. Line-of-sight and visibility fan utilities calculate field-of-view masks for fog-of-war systems. Software visualizers paint top-down overhead maps, camera sweeps, and depth previews, offering high visibility over the entire raycasting pipeline during development.</p>
+<ul>
+<li>The raycaster module projects 2D grid maps into pseudo-3D first-person scenes.</li>
+<li>Core traversal uses DDA ray marching for reliable tile intersection.</li>
+<li>Perpendicular distance correction reduces fish-eye distortion artifacts.</li>
+<li>Layered hit traversal supports transparent or partially passable surfaces.</li>
+<li>Heightmaps support variable floor and ceiling profiles.</li>
+<li>Multilevel support enables stacked slices and vertical transition logic.</li>
+<li>Sliding doors are tracked as stateful animated grid occupants.</li>
+<li>Grid-motion helpers support classic tile-snapped dungeon movement.</li>
+<li>Billboard sprites represent dynamic entities in camera-facing projection.</li>
+<li>Depth-aware ordering prevents billboard leakage through wall columns.</li>
+<li>Scene building composes walls, floors, ceilings, sprites, and optional mesh inserts.</li>
+<li>Lighting combines ambient and point-light effects with occlusion checks.</li>
+<li>Depth buffers track wall ownership per screen column.</li>
+<li>GPU path emits render commands for shared backend composition.</li>
+<li>CPU software path supports snapshots, tests, and tool previews.</li>
+<li>Tile picking maps screen coordinates back to hit tile and side semantics.</li>
+<li>Visibility helpers support line-of-sight and fan-style query tooling.</li>
+<li>Visualization utilities generate diagnostic images for rays and depth behavior.</li>
+<li>Column batch structures provide compact transport of cast results.</li>
+<li>Scene structs define a stable handoff between cast and draw phases.</li>
+<li>Camera semantics are kept consistent across cast, pick, and render paths.</li>
+<li>The module is 2D-first and does not implement full 3D physics.</li>
+<li>It owns projection and scene composition for first-person map experiences.</li>
+<li>Dependencies remain aligned with Lurek2D architecture boundaries.</li>
+<li>Invariants emphasize deterministic cast output for fixed camera/map input.</li>
+<li>Ordering invariants preserve coherent depth between walls and billboards.</li>
+<li>APIs support both gameplay runtime and authoring/debug workflows.</li>
+<li>The module is suitable for retro FPS and dungeon crawler experiences.</li>
+<li>It provides strong observability through explicit diagnostics.</li>
+<li>Performance is controlled by bounded per-column processing and culling assumptions.</li>
+<li>Integration with render is direct through shared quad-oriented command language.</li>
+<li>Overall, raycaster is a dedicated Feature Systems view pipeline.</li>
+<li>It delivers practical first-person rendering without a full 3D stack.</li>
+<li>This keeps implementation affordable while preserving gameplay readability.</li>
+<li>The module is robust enough for production maps and iterative prototypes.</li>
+<li>It supports deterministic behavior needed by evidence-style tests.</li>
+</ul>
+<p>This module primarily collaborates with <code>color</code>, <code>image</code>, <code>math</code>, <code>render</code>, <code>runtime</code>. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekraycasterapplylitshade"><code>lurek.raycaster.applyLitShade</code><a class="headerlink" href="#lurekraycasterapplylitshade" title="Permanent link">&para;</a></h3>
 <p>Applies an RGB light color to a scalar shade value.</p>

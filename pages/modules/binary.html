@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -7292,9 +7292,27 @@
 
 <h1 id="binary">Binary<a class="headerlink" href="#binary" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>The binary module serves as the core byte-manipulation and low-level data transformation toolbox for Lurek2D. Its primary purpose is to provide scripts with high-performance, safe control over raw binary structures, memory buffers, and network interchange payloads. It exposes mutable, owned byte containers supporting bit-level updates and text decoding, read-only typed window views for bounds-checked numeric reads, and growable, seekable data writers for endian-aware structure construction.</p>
-<p>To serialize structured data compactly, the module implements dynamic format-driven packing and unpacking systems. Developers can pack heterogeneous Lua tables and values into binary strings using tokenized formatting rules that support endian directives, padding alignments, and value coercions. It also parses standard TOML documents and decodes high-efficiency MsgPack payloads directly into standard Lua values, bridging data interchange and runtime memory models seamlessly.</p>
-<p>Rhythmic queues, network protocols, and data protection are supported by a suite of helper structures. Fixed-capacity elements are managed by a circular element ring buffer that applies FIFO element caching and evictions. This is paired with multi-codec data compression systems—handling zlib, gzip, deflate, and lz4 streams—alongside base64 and hexadecimal conversions, MD5 and SHA cryptographic hashing, and CRC32 fast checksums for data integrity verification.</p>
+<ul>
+<li>Gives scripts low-level byte control for save formats, protocol payloads, and compact runtime data exchange.</li>
+<li>Supports mutable binary buffers for write-heavy flows and typed read views for safe structured parsing.</li>
+<li>Enables bit-level edits and indexed byte access when gameplay systems need precise binary patch operations.</li>
+<li>Provides format-string pack and unpack paths so teams can define wire/file layouts without hand-rolled serializers.</li>
+<li>Handles endian selection and padding concerns for cross-platform compatibility and legacy format interoperability.</li>
+<li>Offers data-writer primitives for building binary payloads incrementally with explicit cursor control.</li>
+<li>Exposes TOML encode/decode helpers that bridge textual config and binary-centric pipelines.</li>
+<li>Includes MsgPack conversion to move rich Lua values through compact transport or storage channels.</li>
+<li>Provides compression and decompression across multiple codecs for bandwidth and disk footprint reduction.</li>
+<li>Supports chunked compression paths for stream-like workflows where full-buffer loading is undesirable.</li>
+<li>Adds base64 and hex transforms for systems that require text-safe binary representation.</li>
+<li>Includes cryptographic and checksum hashing to verify integrity or fingerprint content deterministically.</li>
+<li>Supplies ring-buffer utilities for rolling windows, streaming queues, and fixed-memory pipelines.</li>
+<li>Helps users keep binary tooling in-engine instead of relying on external preprocessors.</li>
+<li>Serves as the practical bridge between high-level Lua logic and byte-accurate data contracts.</li>
+<li>Reduces serialization bugs by centralizing common conversion, packing, and validation patterns.</li>
+<li>Improves debugging by exposing readable conversion outputs and deterministic hash/checksum results.</li>
+<li>Lets gameplay and tooling scripts share one consistent binary workflow surface across the project.</li>
+</ul>
+<p>This module is mostly self-contained inside the <code>Foundations</code> group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekbinarycompress"><code>lurek.binary.compress</code><a class="headerlink" href="#lurekbinarycompress" title="Permanent link">&para;</a></h3>
 <p>Compresses a binary string using a named compression format.</p>

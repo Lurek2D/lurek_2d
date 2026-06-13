@@ -32,12 +32,8 @@ DEFAULT_JSON_OUTPUT = WORKSPACE_ROOT / "logs" / "data" / "test_coverage.json"
 
 
 def resolve_lua_tests_dir() -> Path:
-    """Prefer canonical reorganized Lua tests, with legacy fallback."""
-    reorg_dir = WORKSPACE_ROOT / "tests" / "lua_reorg"
-    legacy_dir = WORKSPACE_ROOT / "tests" / "lua"
-    if reorg_dir.exists():
-        return reorg_dir
-    return legacy_dir
+    """Return the canonical Lua tests directory."""
+    return WORKSPACE_ROOT / "tests" / "lua"
 
 
 LUA_TESTS_DIR = resolve_lua_tests_dir()

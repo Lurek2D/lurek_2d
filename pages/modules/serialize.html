@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -5226,9 +5226,17 @@
 
 <h1 id="serialize">Serialize<a class="headerlink" href="#serialize" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module serves as the primary data-translation and validation subsystem for Lurek2D, providing a unified frontend to ingest and export data. The subsystem translates all text and binary inputs into a format-agnostic intermediate value tree. Through a single entry point, the codec automatically detects and parses payloads—including JSON, TOML, CSV, XML, INI, and MessagePack—isolating format quirks from the runtime.</p>
-<p>The module provides dedicated adapters to bridge scripts and raw files. It handles CSV rows, sectioned INI settings, hierarchical XML nodes, TOML configs, MessagePack binary packets, and JSON streams. The system automatically distinguishes between sequence arrays and maps when bridging dynamic Lua tables to the intermediate tree, preserving layout structures without manual tagging.</p>
-<p>To guarantee data integrity, a declarative schema validation engine defines required types and constraints. Validation passes automatically merge schema-defined default values into missing fields. When validation fails, it reports precise paths pointing to the exact entry that broke the contract.</p>
+<ul>
+<li>The serialize module gives users one multi-format surface for decoding, encoding, and validation.</li>
+<li>It supports JSON, TOML, CSV, XML, INI, and MessagePack through a shared intermediate value model.</li>
+<li>Automatic format detection helps ingest unknown text payloads in tool-style workflows.</li>
+<li>Lua table bridging converts between script data and typed serialized structures.</li>
+<li>Codec adapters isolate format-specific quirks so callers can use consistent APIs.</li>
+<li>Schema validation enforces structure and constraints before data reaches gameplay logic.</li>
+<li>Default-merge helpers fill missing fields from schema definitions.</li>
+<li>Path-specific validation errors make malformed data easier to diagnose quickly.</li>
+</ul>
+<p>This module primarily collaborates with <code>runtime</code>. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.</p>
 <p><em>No public API documented yet.</em></p>
 
 

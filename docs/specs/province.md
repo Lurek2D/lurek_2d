@@ -15,7 +15,7 @@
 - Namespace: `lurek.province`
 - Lua API surface: `15` functions, `8` types, `45` methods
 - Rust test path(s): tests/rust/unit/province_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_province_unit.lua
+- Lua test path(s): tests/lua/unit/test_province_unit.lua
 
 ## Summary
 

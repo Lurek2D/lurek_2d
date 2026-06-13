@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6980,13 +6980,23 @@
 
 <h1 id="pipeline">Pipeline<a class="headerlink" href="#pipeline" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides a dependency-aware workflow orchestration system that manages execution flows as directed acyclic graphs. Rather than using rigid call sequences, work is modeled as distinct steps linked by explicit prerequisites. This dependency-oriented design ensures that complex tasks execute in a safe and logical order, keeping code modular and allowing developers to assemble dynamic workflows from scripts and data-driven configuration tables.</p>
-<p>Before execution, the system validates the graph using topological sorting and cycle detection, automatically catching invalid or circular arrangements. It groups independent steps into concurrent bands so unrelated tasks can run in parallel without sacrificing safety. Callers can also fold smaller pipelines into larger ones using namespaced aliases, and output readable ASCII diagrams to visualize the entire dependency structure for easy debugging.</p>
-<p>Individual steps carry granular configuration rules that govern their execution lifetime. Each task can define timing parameters such as pre-execution delays, timeouts, and automatic retry counts with separate intervals. Steps can also carry custom metadata, select optional or critical status, and evaluate predicate conditions dynamically. This lets pipelines skip unnecessary steps or recover from transient failures without aborting the entire sequence.</p>
-<p>Finally, the module supports both synchronous blocking execution and frame-driven asynchronous scheduling. Asynchronous pipelines run as lightweight coroutines that yield control, advancing step by step via update ticks. Execution tracks chronological progress, recording step durations, retry attempts, and detailed errors. Developers can customize the error mode to either abort on first failure or continue executing unaffected tasks.</p>
-<p>The runtime surface is feature-gated behind <code>pipeline</code>.</p>
-<p>Integration note: overlap with <code>automation</code> remains intentionally limited to composition at a higher level. This module still owns dependency-graph orchestration, while automation sequences remain a separate concern rather than being merged into the pipeline contract.</p>
-<p>Internal runtime note: hot-path dependency checks and async scheduler readiness now use borrowed step-name paths (<code>&amp;str</code>) to reduce transient <code>String</code> cloning during per-frame updates. The public contract for parallel grouping and delayed-step readiness remains unchanged.</p>
+<ul>
+<li>This module gives users dependency-aware workflow orchestration for multi-step runtime jobs.</li>
+<li>Work is modeled as graph-connected steps, enabling explicit ordering and clear prerequisites.</li>
+<li>Graph validation catches missing dependencies and circular links before execution.</li>
+<li>Parallel group computation reveals which independent steps can run concurrently.</li>
+<li>Step policies support delays, retries, conditions, optionality, and metadata tagging.</li>
+<li>Sync execution is available for blocking workflows with immediate result collection.</li>
+<li>Async execution supports frame-by-frame progression for non-blocking runtime integration.</li>
+<li>Progress and event callbacks expose run state for UI and monitoring hooks.</li>
+<li>Result models capture completed, skipped, failed, cancelled, and timing outcomes.</li>
+<li>Error modes allow abort-on-failure or continue-on-failure execution strategies.</li>
+<li>Sub-pipeline embedding supports modular composition of larger workflow graphs.</li>
+<li>ASCII graph export supports quick debugging and author verification.</li>
+<li>The module is useful for content pipelines, setup sequences, and orchestration-heavy tools.</li>
+<li>For users, it replaces fragile ad-hoc sequencing with explicit, reusable workflow contracts.</li>
+</ul>
+<p>This module primarily collaborates with <code>runtime</code>. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekpipelinefromtable"><code>lurek.pipeline.fromTable</code><a class="headerlink" href="#lurekpipelinefromtable" title="Permanent link">&para;</a></h3>
 <p>Creates a pipeline pre-populated with steps from a declarative table definition. Each step entry can specify name, deps, delay, optional, retryCount, retryDelay, async, tag, and fn.</p>

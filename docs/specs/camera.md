@@ -13,7 +13,7 @@
 - Namespace: `lurek.camera`
 - Lua API surface: `4` functions, `3` types, `97` methods
 - Rust test path(s): tests/rust/unit/camera_tests.rs, tests/rust/stress/camera_fuzz_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_camera.lua, tests/lua_reorg/stress/test_camera_stress.lua, tests/lua_reorg/integration/test_tween_camera.lua, tests/lua_reorg/integration/test_tilemap_camera.lua, tests/lua_reorg/integration/test_scene_camera.lua, tests/lua_reorg/integration/test_parallax_camera.lua, tests/lua_reorg/integration/test_input_camera.lua, tests/lua_reorg/integration/test_render_camera.lua
+- Lua test path(s): tests/lua/unit/test_camera.lua, tests/lua/stress/test_camera_stress.lua, tests/lua/integration/test_tween_camera.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_scene_camera.lua, tests/lua/integration/test_parallax_camera.lua, tests/lua/integration/test_input_camera.lua, tests/lua/integration/test_render_camera.lua
 
 ## Summary
 

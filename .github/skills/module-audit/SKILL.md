@@ -1,4 +1,4 @@
-﻿---
+---
 name: module-audit
 description: "Load this skill when running end-to-end audits on src/ modules for docs, tests, architecture, wiki, or code quality. Skip it for feature work, game scripts, or pure Lua."
 ---
@@ -25,7 +25,7 @@ Own the 12-phase module audit process: structure, documentation, testing, archit
 - `tools/python.cmd tools/audit/audit_module.py <module>` is the entry point. It runs 12 phases: mod.rs thinness, file size limits, docs/specs presence, Lua API coverage, test coverage, wiki coverage, example coverage, dependency direction, lua_api wrapper leakage, println/eprintln hotspots, unsafe without SAFETY comments, bare unwrap in public paths.
 - Phase 9 checks that no `src/<module>/` file imports from `src/lua_api/`. If it does, that is a T-02 violation â€” not a style issue, a blocking defect.
 - Phase 3 checks that `docs/specs/<module>.md` exists AND has non-empty Ownership and Invariants sections. A spec file with placeholder text fails this phase.
-- Phase 4 compares functions registered in `src/lua_api/<module>_api.rs` against `@covers` markers in `tests/lua_reorg/unit/test_<module>_*.lua`. Every registered function must have at least one test covering it.
+- Phase 4 compares functions registered in `src/lua_api/<module>_api.rs` against `@covers` markers in `tests/lua/unit/test_<module>_*.lua`. Every registered function must have at least one test covering it.
 - Phase 10 treats any `println!` in `src/<module>/` as a defect. Engine output must go through `src/log/` with proper level tagging.
 - Audit output format: each finding includes phase number, file path, line number, finding type, and description. BLOCKING findings must be resolved before merge.
 - Routing audit findings: BLOCKING dependency violations â†’ Architect. BLOCKING coverage gaps â†’ Tester.

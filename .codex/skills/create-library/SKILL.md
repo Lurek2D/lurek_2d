@@ -40,7 +40,7 @@ description: "Load this skill when creating or modifying pure Lua library module
 - Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
 ## Companion File Index
-- Contracts: `library/AGENTS.md`, `tests/lua_reorg/AGENTS.md`, `content/AGENTS.md`
+- Contracts: `library/AGENTS.md`, `tests/lua/AGENTS.md`, `content/AGENTS.md`
 - Primary tools: `tools/python.cmd tools/rag/query.py "library Lua module conventions" --profile game --limit 10`, `tools/python.cmd tools/audit/library_coverage.py`, `tools/python.cmd tools/validate/validate_library.py --lib <name>`
 - Owner profile: `content`
 
@@ -51,11 +51,11 @@ description: "Load this skill when creating or modifying pure Lua library module
   - `tests lua helper assert fixture`
 - Common areas to inspect after top hits:
   - `library/`
-  - `tests/lua_reorg/`
+  - `tests/lua/`
   - `content/examples/`
   - `docs/` API references
 
 ## References
-- `contracts: library/AGENTS.md, tests/lua_reorg/AGENTS.md, content/AGENTS.md`
+- `contracts: library/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md`
 - `tools: tools/python.cmd tools/rag/query.py "library Lua module conventions" --profile game --limit 10, tools/python.cmd tools/audit/library_coverage.py, tools/python.cmd tools/validate/validate_library.py --lib <name>`
 - `agent: content`

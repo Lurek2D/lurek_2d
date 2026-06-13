@@ -15,7 +15,7 @@
 - Namespace: `lurek.render`
 - Lua API surface: `117` functions, `14` types, `88` methods
 - Rust test path(s): src/render/ (inline #[cfg(test)] in canvas, decal_surface, draw_layer, font, image_effect, mesh, shader, shape), src/render/renderer_tests.rs, src/render/postfx_pipeline_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_render_unit.lua
+- Lua test path(s): tests/lua/unit/test_render_unit.lua
 
 ## Summary
 
@@ -879,6 +879,6 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ## Notes
 
-- Public `lurek.render` behavior is Lua-first and should keep canonical coverage in `tests/lua_reorg/unit/`.
+- Public `lurek.render` behavior is Lua-first and should keep canonical coverage in `tests/lua/unit/`.
 - `src/render/mod.rs` stays export-only; implementation logic belongs in peer files.
 - Renderer reliability changes should prefer recoverable errors or skipped invalid draws over panics in frame submission.

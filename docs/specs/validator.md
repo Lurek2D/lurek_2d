@@ -12,7 +12,7 @@
 - Namespace: `lurek.validator`
 - Lua API surface: `3` functions, `1` types, `9` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua_reorg/unit/test_validator_unit.lua
+- Lua test path(s): tests/lua/unit/test_validator_unit.lua
 
 ## Summary
 

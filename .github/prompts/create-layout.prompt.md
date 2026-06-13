@@ -1,4 +1,4 @@
-﻿---
+---
 name: create-layout
 description: "Load this skill when creating or modifying TOML UI layouts under content/layouts and producing visual/evidence validation. Skip it for HTML UI, engine renderer internals, or non-layout Lua examples."
 ---
@@ -38,6 +38,6 @@ description: "Load this skill when creating or modifying TOML UI layouts under c
 # References
 - skills: `.codex/skills/create-layout/SKILL.md`
 - contracts: content/AGENTS.md, content/layouts/AGENTS.md, content/examples/AGENTS.md
-- tools: tools/python.cmd tools/rag/query.py "content layouts TOML UI primitives" --profile game --limit 10, tools/python.cmd tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive, tools/python.cmd tools/ui/fix_layouts.py content/layouts/ --recursive --fix, tests/lua_reorg/evidence/test_gui_evidence.lua
+- tools: tools/python.cmd tools/rag/query.py "content layouts TOML UI primitives" --profile game --limit 10, tools/python.cmd tools/ui/snap_to_grid.py content/layouts/ --grid 8 --recursive, tools/python.cmd tools/ui/fix_layouts.py content/layouts/ --recursive --fix, tests/lua/evidence/test_gui_evidence.lua
 - agent: content
 

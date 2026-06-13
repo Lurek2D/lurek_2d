@@ -22,7 +22,7 @@
   {
     "query": "keyboard input lua API examples tests",
     "profile": "all",
-    "must_match_any": ["content/examples/input.lua", "tests/lua_reorg/unit/test_input_core_unit.lua", "docs/wiki/API-Reference.md"]
+    "must_match_any": ["content/examples/input.lua", "tests/lua/unit/test_input_core_unit.lua", "docs/wiki/API-Reference.md"]
   },
   {
     "query": "Lua unit tests public API coverage",
@@ -82,7 +82,7 @@
   {
     "query": "Lua evidence tests golden artifacts",
     "profile": "game",
-    "must_match_any": [".codex/skills/create-test-evidence/SKILL.md", "tests/lua_reorg/evidence/", "tools/audit/golden_test.py"]
+    "must_match_any": [".codex/skills/create-test-evidence/SKILL.md", "tests/lua/evidence/", "tools/audit/golden_test.py"]
   },
   {
     "query": "tools audit validator CLI registry",
@@ -112,7 +112,7 @@
   {
     "query": "Lua integration tests module interaction",
     "profile": "game",
-    "must_match_any": [".codex/skills/create-integration-test/SKILL.md", "tests/lua_reorg/integration/", "tools/audit/integration_coverage.py"]
+    "must_match_any": [".codex/skills/create-integration-test/SKILL.md", "tests/lua/integration/", "tools/audit/integration_coverage.py"]
   },
   {
     "query": "Rust tests internal module Cargo target",
@@ -167,7 +167,7 @@
   {
     "query": "Lua test coverage structure harness public API",
     "profile": "game",
-    "must_match_any": [".codex/skills/review-tests/SKILL.md", "tests/lua_reorg_tests.rs", "tools/audit/lua_test_structure_audit.py"]
+    "must_match_any": [".codex/skills/review-tests/SKILL.md", "tests/lua_tests.rs", "tools/audit/lua_test_structure_audit.py"]
   },
   {
     "query": "Rust engine module lua_api docs specs",
@@ -212,17 +212,17 @@
   {
     "query": "Lua evidence tests golden artifacts contract",
     "profile": "game",
-    "must_match_any": [".codex/skills/create-test-evidence/SKILL.md", "tools/audit/lua_evidence_golden_contract_audit.py", "tests/lua_reorg/golden/"]
+    "must_match_any": [".codex/skills/create-test-evidence/SKILL.md", "tools/audit/lua_evidence_golden_contract_audit.py", "tests/lua/golden/"]
   },
   {
     "query": "Lua unit tests public API coverage module",
     "profile": "game",
-    "must_match_any": [".codex/skills/create-test-lua/SKILL.md", "tests/lua_reorg/unit/", "tools/audit/lua_api_test_coverage.py"]
+    "must_match_any": [".codex/skills/create-test-lua/SKILL.md", "tests/lua/unit/", "tools/audit/lua_api_test_coverage.py"]
   },
   {
     "query": "stress tests performance ceilings",
     "profile": "engine",
-    "must_match_any": [".codex/skills/create-test-stress/SKILL.md", "tools/audit/stress_report.py", "tests/lua_reorg/stress/"]
+    "must_match_any": [".codex/skills/create-test-stress/SKILL.md", "tools/audit/stress_report.py", "tests/lua/stress/"]
   },
   {
     "query": "tools audit validator CLI registry create tool",
@@ -257,7 +257,7 @@
   {
     "query": "tests contract Lua API coverage harness",
     "profile": "game",
-    "must_match_any": ["tests/AGENTS.md", "tests/lua_reorg/AGENTS.md", "tests/lua_reorg_tests.rs"]
+    "must_match_any": ["tests/AGENTS.md", "tests/lua/AGENTS.md", "tests/lua_tests.rs"]
   },
   {
     "query": "extension vscode AGENTS commands providers webview",

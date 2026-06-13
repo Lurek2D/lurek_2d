@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6166,8 +6166,19 @@
 
 <h1 id="visibility">Visibility<a class="headerlink" href="#visibility" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module delivers a highly flexible, geometry-agnostic visibility and fog-of-war system that integrates seamlessly with varied world models. By decoupling layout metrics from visibility calculations through a generic adjacency interface, the system can track exploration across tile grids, hex maps, province networks, and global spheres. It tracks hidden, discovered, and visible statuses separately across factions.</p>
-<p>For tactical environments, the module features a recursive shadowcasting engine that calculates field-of-view masks with custom obstacle predicates. It supports exploration-sharing alliances, customizable discovery costs, and compact state serialization for game saves. When visibility updates occur, the system dispatches transition events, letting scripts react to changes dynamically.</p>
+<ul>
+<li>The visibility module provides geometry-agnostic fog-of-war and discovery state simulation.</li>
+<li>Topology is abstracted through adjacency contracts rather than a fixed map representation.</li>
+<li>Per-player region state tracks hidden, discovered, and currently visible layers.</li>
+<li>Alliance grouping supports shared visibility between cooperating actors.</li>
+<li>Cost and flag channels support configurable reveal progression rules.</li>
+<li>Visibility transitions are emitted as structured events for script systems.</li>
+<li>Fog rendering parameters map state to visual intensity outputs.</li>
+<li>Shadowcasting FOV provides efficient tile-grid line-of-sight computation.</li>
+<li>State export/import supports save persistence of visibility history.</li>
+<li>The module owns visibility semantics, not renderer or AI policy.</li>
+</ul>
+<p>This module is mostly self-contained inside the <code>Edge/Integration</code> group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekvisibilitynew"><code>lurek.visibility.new</code><a class="headerlink" href="#lurekvisibilitynew" title="Permanent link">&para;</a></h3>
 <p>Create a new visibility grid for shadow-cast computation.</p>

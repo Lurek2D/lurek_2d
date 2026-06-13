@@ -295,12 +295,12 @@ def extract_tests(verbose: bool = False) -> list:
     return tests
 
 
-# ── Lua integration tests (tests/lua_reorg/) ─────────────────────────────────────────
+# ── Lua integration tests (tests/lua/) ─────────────────────────────────────────
 
 def extract_lua_tests() -> list:
-    """Scan tests/lua_reorg/**/*.lua for test scripts."""
+    """Scan tests/lua/**/*.lua for test scripts."""
     lua_tests = []
-    lua_dir = TESTS_DIR / "lua_reorg"
+    lua_dir = TESTS_DIR / "lua"
     if not lua_dir.exists():
         return lua_tests
 
@@ -361,7 +361,7 @@ def main() -> int:
 
     print("--- Scanning Lua tests ---")
     lua_tests = extract_lua_tests()
-    print(f"   {len(lua_tests)} Lua test scripts in tests/lua_reorg/")
+    print(f"   {len(lua_tests)} Lua test scripts in tests/lua/")
 
     # Read version from Cargo.toml
     version = "unknown"

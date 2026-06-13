@@ -1,4 +1,4 @@
-﻿---
+---
 name: create-integration-test
 description: "Load this skill when creating or modifying Lua integration tests that prove interactions between two or more modules. Skip it for single-module unit tests, Rust-only internal tests, or performance stress tests."
 ---
@@ -16,7 +16,7 @@ description: "Load this skill when creating or modifying Lua integration tests t
 2. Read root `AGENTS.md`, listed contracts, and relevant owner files before editing or reviewing.
 3. Run the listed RAG query before broad file reads.
 4. Inspect existing integration tests and involved API specs before writing.
-5. Modify an existing integration file for the module pair when present; create under `tests/lua_reorg/integration/` only for new coverage.
+5. Modify an existing integration file for the module pair when present; create under `tests/lua/integration/` only for new coverage.
 6. Use public `lurek.*` APIs and explicit state assertions.
 7. Add or confirm harness registration when a new file is introduced.
 8. Report changed files, findings, validation output, and unresolved blockers.
@@ -37,7 +37,7 @@ description: "Load this skill when creating or modifying Lua integration tests t
 
 # References
 - skills: `.codex/skills/create-integration-test/SKILL.md`
-- contracts: tests/AGENTS.md, tests/lua_reorg/AGENTS.md, content/AGENTS.md
+- contracts: tests/AGENTS.md, tests/lua/AGENTS.md, content/AGENTS.md
 - tools: tools/python.cmd tools/rag/query.py "Lua integration tests module interaction" --profile game --limit 10, tools/python.cmd tools/audit/integration_coverage.py, cargo test --test lua_tests
 - agent: tester
 

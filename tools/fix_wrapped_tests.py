@@ -36,8 +36,8 @@ def fix_test_file_with_wrapped_it(file_path, covers_symbol):
     print(f"Fixed {file_path}")
 
 # Fix the problematic files
-fix_test_file_with_wrapped_it("tests/lua_reorg/unit/test_dialog_sequencer_unit.lua", "lurek.dialog")
-fix_test_file_with_wrapped_it("tests/lua_reorg/unit/test_agent_core_unit.lua", "lurek.agent")
-fix_test_file_with_wrapped_it("tests/lua_reorg/unit/test_tilemap_core_unit.lua", "lurek.tilemap")
+fix_test_file_with_wrapped_it("tests/lua/unit/test_dialog_sequencer_unit.lua", "lurek.dialog")
+fix_test_file_with_wrapped_it("tests/lua/unit/test_agent_core_unit.lua", "lurek.agent")
+fix_test_file_with_wrapped_it("tests/lua/unit/test_tilemap_core_unit.lua", "lurek.tilemap")
 
 print("\nAll wrapped test files fixed!")

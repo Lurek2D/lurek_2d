@@ -15,7 +15,7 @@
 - Namespace: `lurek.patterns`
 - Lua API surface: `24` functions, `27` types, `218` methods
 - Rust test path(s): tests/rust/unit/patterns_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_patterns_core_unit.lua; tests/lua_reorg/stress/test_patterns_stress.lua
+- Lua test path(s): tests/lua/unit/test_patterns_core_unit.lua; tests/lua/stress/test_patterns_stress.lua
 
 ## Summary
 

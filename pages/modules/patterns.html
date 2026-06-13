@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -12920,16 +12920,59 @@
 
 <h1 id="patterns">Patterns<a class="headerlink" href="#patterns" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module serves as a foundational gameplay-architecture toolkit, offering an array of reusable coordination, state-flow, and data-structure patterns. By packaging complex logic routing, decision architectures, and communication networks into lightweight primitives, the system enables highly decoupled game designs. These components bridge Lua scripting and Rust systems, ensuring that developers can coordinate state across distinct gameplay layers safely and deterministically.</p>
-<p>For AI decision-making, the module provides a hierarchical behavior tree runtime. This allows developers to compose structured node networks using sequences, selectors, parallels, repeaters, and inverters. The tree ticks leaf actions in a predictable left-to-right order, storing execution progress and loop counts without relying on opaque callbacks. This results in highly legible branching behaviors that are simple to debug, expand, and reset at runtime.</p>
-<p>State tracking is supported through both simple mode switches and complete finite state machines. Simple trackers manage mutually exclusive phases, making them ideal for UI menus or basic actor states. In contrast, the full state machine runtime enforces transition rules and guards to prevent illegal mode switches. It also records a chronological history of state changes, providing crucial tracking data for complex game flows and chronological analytics.</p>
-<p>To decouple system communications, the toolkit implements event buses and mediator registries. The event bus routes named signals to prioritised listeners, supporting wildcard patterns and one-shot triggers to simplify broad-spectrum notifications. The mediator registry facilitates channel-based messaging through central brokers. This prevents individual systems from referencing each other directly, ensuring modularity across systems.</p>
-<p>Shared memory and reactive state updates are coordinated through blackboards and observers. Blackboards act as common data registers with built-in revision tracking, enabling local boards to inherit from parent registers while overriding specific facts. The observer system watches named properties and broadcasts changes to key-specific or wildcard subscribers, driving reactive user interfaces and quest trackers with minimal wiring.</p>
-<p>Chronological history and player actions are managed via command stacks. The stack records a linear history of reversible operations, letting developers implement complex undo and redo systems with hard size limits and automatic pruning. Support for atomic batching groups multi-step operations together, ensuring that strategic transactions or editor modifications can be rolled back safely without leaving behind half-finished edits.</p>
-<p>Timing and input cadences are regulated using throttle and debounce utilities. Throttles enforce a minimum time interval between action triggers, while debounces delay firing until a specified period of silence has elapsed. Together, these pacing utilities smooth out noisy inputs, govern combat cooldowns, and prevent duplicate interface click events, ensuring that execution frequencies remain within expected boundaries.</p>
-<p>For resource management and scheduling, the module provides object pools, priority queues, and ring buffers. Object pools recycle stable identities to minimize dynamic allocation overhead, which is useful for bullet or particle pools. Priority queues organize tasks using deterministic insertion order for matching scores. Ring buffers store rolling telemetry and history timelines, automatically discarding the oldest entries.</p>
-<p>Dynamic instantiations and algorithm swapping are managed by factories, strategy registers, and service locators. Factories register constructor associations to spawn game objects from data-driven templates. Strategy containers hold hot-swappable algorithm implementations, letting systems alter processing modes at runtime. Service locators provide a central directory to locate shared capabilities across independent modules.</p>
-<p>Finally, the toolkit includes relational data structures like graphs, bidirectional maps, and prefix tries. Graphs represent complex networks using integer-addressed nodes and weighted edges, supporting breadth-first and depth-first traversals. Bidirectional maps maintain mirrored forward and reverse entries to ensure rapid reversible indexing. Prefix tries index text keys, facilitating command palettes and search filters.</p>
+<ul>
+<li>The patterns module is a Foundations toolbox for coordination, control flow, and reusable architecture primitives.</li>
+<li>It focuses on decoupling systems and making game logic easier to compose and test.</li>
+<li>Behavior trees provide deterministic reactive decision flow with explicit node semantics.</li>
+<li>Trees support sequence, selector, inverter, repeater, and parallel execution patterns.</li>
+<li>Runtime tree state is preserved across ticks for long-running action continuity.</li>
+<li>Simple state tracking supports lightweight single-mode workflows.</li>
+<li>Full state machines provide guarded transitions and bounded transition history.</li>
+<li>Transition history enables debugging and analytics of behavior progression.</li>
+<li>Event buses provide publish-subscribe routing with priorities and wildcard listeners.</li>
+<li>One-shot listeners reduce boilerplate for temporary event reactions.</li>
+<li>Mediator routing supports broker-style communication channels between decoupled systems.</li>
+<li>Blackboard storage supports shared facts with revision-aware reads.</li>
+<li>Hierarchical blackboards allow local override with parent fallback.</li>
+<li>Observer primitives provide key-based reactive notifications.</li>
+<li>Wildcard observers support broad state-change monitoring.</li>
+<li>Command stacks implement undo and redo with bounded history policies.</li>
+<li>Batch commands support atomic rollback of multi-step operations.</li>
+<li>Throttle and debounce utilities control cadence for noisy inputs and triggers.</li>
+<li>Object pools support stable identity reuse in allocation-sensitive loops.</li>
+<li>Priority queues support deterministic ordering for equal-priority entries.</li>
+<li>Ring buffers retain rolling windows of recent values or events.</li>
+<li>Bi-directional maps support reversible key-value lookup.</li>
+<li>Tries support efficient prefix search for command palettes and filters.</li>
+<li>Factory registries support data-driven construction by symbolic names.</li>
+<li>Strategy registries support runtime algorithm swapping without callsite rewrites.</li>
+<li>Service locators expose shared capability lookup for loosely-coupled modules.</li>
+<li>Graph primitives support node-edge modeling with traversal helpers.</li>
+<li>Weighted random selection supports repeat-aware probabilistic choice.</li>
+<li>Funnel buffering supports time-windowed accumulation and controlled flush behavior.</li>
+<li>Collection capacity helpers keep bounded/unbounded semantics consistent.</li>
+<li>The module favors explicit IDs and stable iteration order.</li>
+<li>That design improves reproducibility across runs and test environments.</li>
+<li>Primitives are intentionally small and orthogonal for composability.</li>
+<li>The module does not own gameplay domain rules.</li>
+<li>It does not own rendering, audio, filesystem, or host runtime concerns.</li>
+<li>It is intended to be reused by many higher-level feature modules.</li>
+<li>Typical AI stacks combine behavior trees, blackboards, and event buses.</li>
+<li>Typical tooling stacks combine command stacks with observers.</li>
+<li>Typical input pipelines combine debounce/throttle with ring diagnostics.</li>
+<li>Contracts are script-friendly while keeping behavior deterministic.</li>
+<li>APIs are designed for incremental adoption in existing systems.</li>
+<li>Cross-module dependencies remain acyclic at the Foundations level.</li>
+<li>The module improves maintainability by reducing orchestration duplication.</li>
+<li>It improves testability by making side effects and transitions explicit.</li>
+<li>It improves readability by encoding common control patterns directly.</li>
+<li>The toolbox is broad but consistently structured.</li>
+<li>It scales from small prototypes to production systems.</li>
+<li>It remains architecture-focused rather than feature-domain specific.</li>
+<li>Overall, patterns is the reusable orchestration layer beneath gameplay features.</li>
+<li>It exists to help teams ship complex behavior with less structural debt.</li>
+</ul>
+<p>This module primarily collaborates with <code>runtime</code>. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekpatternsnewbehaviortree"><code>lurek.patterns.newBehaviorTree</code><a class="headerlink" href="#lurekpatternsnewbehaviortree" title="Permanent link">&para;</a></h3>
 <p>Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.</p>

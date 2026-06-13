@@ -12,7 +12,7 @@
 - Namespace: `lurek.event`
 - Lua API surface: `16` functions, `2` types, `12` methods
 - Rust test path(s): tests/rust/unit/event_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_event.lua, tests/lua_reorg/integration/test_audio_event.lua
+- Lua test path(s): tests/lua/unit/test_event.lua, tests/lua/integration/test_audio_event.lua
 
 ## Summary
 

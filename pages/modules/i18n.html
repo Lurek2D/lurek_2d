@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6140,8 +6140,19 @@
 
 <h1 id="i18n">I18N<a class="headerlink" href="#i18n" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module represents the internationalization and localization subsystem, providing tools to manage translations and regional formatting during runtime. It hosts a translation catalog that maps hierarchical locale keys from TOML, JSON, or nested Lua tables into a flattened namespace. Resilient lookup chains resolve missing text strings by walking configured fallbacks before reporting coverage gaps, facilitating language switching without restarting the game.</p>
-<p>To deliver natural translations, the module implements dynamic placeholder interpolation and pluralization category logic. Plural selection handles grammatical rules (such as English or Slavic models) to select appropriate variations by quantity. Additionally, a regional formatting engine converts numbers and Unix timestamps into localized dates and separators, ensuring that UI components automatically display regional values.</p>
+<ul>
+<li>This module gives users runtime localization support for translated text, plural forms, and locale-aware formatting.</li>
+<li>Translation catalogs can be loaded from Lua tables, JSON, or TOML and queried through one lookup path.</li>
+<li>Fallback locale chains help keep UI functional when specific keys are missing.</li>
+<li>Placeholder interpolation supports dynamic text composition with runtime values.</li>
+<li>Pluralization helpers handle language-specific quantity forms for more natural phrasing.</li>
+<li>Number and date formatting APIs localize separators and date styles automatically.</li>
+<li>Locale switching can happen during runtime, enabling live language changes in settings screens.</li>
+<li>Coverage and search helpers support localization QA and translation completeness checks.</li>
+<li>For users, this module centralizes language behavior instead of scattering string rules across scripts.</li>
+<li>The practical result is more maintainable multilingual UX with fewer edge-case formatting bugs.</li>
+</ul>
+<p>This module is mostly self-contained inside the Feature Systems group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lureki18nbuildindex"><code>lurek.i18n.buildIndex</code><a class="headerlink" href="#lureki18nbuildindex" title="Permanent link">&para;</a></h3>
 <p>Builds a word-to-keys search index from the catalog.</p>

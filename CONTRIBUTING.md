@@ -1,4 +1,4 @@
-﻿# Contributing to Lurek2D
+# Contributing to Lurek2D
 
 Lurek2D is a desktop-only 2D engine written in Rust that runs Lua game scripts. Read [docs/architecture/philosophy.md](docs/architecture/philosophy.md) and [docs/architecture/engine-architecture.md](docs/architecture/engine-architecture.md) before making structural changes.
 
@@ -99,7 +99,7 @@ cargo test lua_test_<category>_<name> -- --nocapture
 Demos are playable showcases, organized by genre (`action/`, `arcade/`, `rpg/`, `strategy/`, â€¦).
 
 - Each demo needs: `main.lua`, `conf.lua` (optional), `README.md`, `screen.png`.
-- Every demo must have a matching test in `tests/lua/demos/test_demo_<name>.lua`.
+- Every demo may provide a colocated `content/games/**/test.lua` headless test.
 - Register new demos in `content/games/README.md`.
 - Demos must run with `python tools/dev/parallel_cargo.py run debug -- content/games/<name>` and exit cleanly.
 - Use `library/` modules and `lurek.*` API â€” no engine Rust internals.

@@ -2,7 +2,7 @@
 """
 integration_coverage.py — Lurek2D integration test coverage analysis.
 
-Analyzes integration tests in tests/lua_reorg/integration/ to determine which
+Analyzes integration tests in tests/lua/integration/ to determine which
 module-pair combinations have test coverage. Produces a heat map.
 
 Usage:
@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Dict, Set, Tuple
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
-INTEGRATION_DIR = WORKSPACE_ROOT / "tests" / "lua_reorg" / "integration"
+INTEGRATION_DIR = WORKSPACE_ROOT / "tests" / "lua" / "integration"
 
 # Module namespace patterns to detect in Lua code
 MODULE_PATTERNS = {
@@ -182,7 +182,7 @@ Examples:
     test_results = analyze_integration_tests()
 
     if not test_results:
-        print("[WARN] No integration tests found in tests/lua_reorg/integration/",
+        print("[WARN] No integration tests found in tests/lua/integration/",
               file=sys.stderr)
 
     pair_matrix = build_pair_matrix(test_results)

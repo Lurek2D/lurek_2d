@@ -22,4 +22,4 @@ Lua tests: `lurek.audio.newDecoder("tests/fixtures/file.wav")`
 
 - All new binary test assets go here, not in subdirectory fixtures folders.
 - Rust code fixtures (`.rs` files) may also live here if they are shared across modules.
-- Do **not** duplicate assets in `tests/rust/fixtures/` or `tests/lua_reorg/fixtures/`.
+- Do **not** duplicate assets in `tests/rust/fixtures/` or `tests/lua/fixtures/`.

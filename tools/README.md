@@ -34,7 +34,7 @@ Single registry for all durable tooling under `tools/`.
 - `audit/example_coverage.py` [audit; durable; mcp:candidate] - Cross-reference Lua example scripts against the lurek.* Lua API.
 - `audit/extract_constructors.py` [audit; durable; mcp:no] - Extract all lurek.module.function signatures from docs/api/lurek.lua
 - `audit/gen_coverage_gaps.py` [audit; durable; mcp:no] - gen_coverage_gaps.py — Generate an API gap report for Lurek2D.
-- `audit/gen_demo_lua_tests.py` [audit; durable; mcp:no] - Generate tests/lua_reorg/demos/test_*.lua from demo_smoke_tests.rs paths.
+
 - `audit/gen_lua_contract_tests.py` [audit; durable; mcp:no] - gen_lua_contract_tests.py — generate Lua contract smoke tests from lua_api_data.json.
 - `audit/get_api_sigs.py` [audit; durable; mcp:no] - Extract all lurek.* namespace-level function signatures from docs/api/lurek.lua
 - `audit/golden_test.py` [audit; durable; mcp:no] - golden_test.py — Lurek2D golden file comparison tests.
@@ -45,9 +45,9 @@ Single registry for all durable tooling under `tools/`.
 - `audit/lua_artifact_lock.py` [audit; durable; mcp:no] - Shared lock for Lua artifact maintenance tools.
 - `audit/lua_covers_lurek_api_audit.py` [audit; durable; mcp:no] - Audit @covers markers against docs/api/lurek.lua.
 - `audit/lua_evidence_golden_contract_audit.py` [audit; durable; mcp:no] - Audit Lua evidence and golden test contract compliance.
-- `audit/lua_nonunit_test_coverage.py` [audit; durable; mcp:no] - lua_nonunit_test_coverage.py - Audit canonical non-unit Lua tests in tests/lua_reorg.
+- `audit/lua_nonunit_test_coverage.py` [audit; durable; mcp:no] - lua_nonunit_test_coverage.py - Audit canonical non-unit Lua tests in tests/lua.
 - `audit/lua_spec_coverage.py` [audit; durable; mcp:candidate] - lua_spec_coverage.py — Measure how completely docs/specs/<module>.md covers the lurek.* Lua API.
-- `audit/lua_test_structure_audit.py` [audit; durable; mcp:no] - Audit and normalize Lua BDD test structure under tests/lua_reorg_reorg.
+- `audit/lua_test_structure_audit.py` [audit; durable; mcp:no] - Audit and normalize Lua BDD test structure under tests/lua.
 - `audit/module_docstring_audit.py` [audit; durable; mcp:no] - module_docstring_audit.py -- Audit Rust source files for adequate module-level //! docstrings.
 - `audit/mutation_report.py` [audit; durable; mcp:no] - mutation_report.py — run cargo-mutants for selected priority modules.
 - `audit/parse_test_log.py` [audit; durable; mcp:no] - tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary.

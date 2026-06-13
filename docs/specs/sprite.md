@@ -13,7 +13,7 @@
 - Namespace: `lurek.sprite`
 - Lua API surface: `8` functions, `13` types, `53` methods
 - Rust test path(s): tests/rust/unit/sprite_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_sprite_core_unit.lua
+- Lua test path(s): tests/lua/unit/test_sprite_core_unit.lua
 
 ## Summary
 

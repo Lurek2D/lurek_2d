@@ -15,7 +15,7 @@
 - Namespace: `lurek.physics`
 - Lua API surface: `22` functions, `17` types, `172` methods
 - Rust test path(s): src/physics/world_tests.rs, inline #[cfg(test)] in body.rs, shape.rs, zone.rs, cellular.rs, terrain.rs, render.rs, collision_helpers.rs
-- Lua test path(s): tests/lua_reorg/unit/test_physics_unit.lua
+- Lua test path(s): tests/lua/unit/test_physics_unit.lua
 
 ## Summary
 

@@ -247,6 +247,10 @@ name = "examples_load_test"
 path = "tests/examples_load_test.rs"
 
 [[test]]
+name = "games_load_test"
+path = "tests/games_load_test.rs"
+
+[[test]]
 name = "golden_tests"
 path = "tests/rust/golden/harness.rs"
 
@@ -256,7 +260,7 @@ path = "tests/rust/unit/gui_tests.rs"
 
 [[test]]
 name = "lua_tests"
-path = "tests/lua_reorg_tests.rs"
+path = "tests/lua_tests.rs"
 
 [[test]]
 name = "patterns_tests"

@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -8764,10 +8764,29 @@
 
 <h1 id="light">Light<a class="headerlink" href="#light" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module represents the dynamic 2D illumination and shadow-casting subsystem, offering developers control over visual lighting environments. It operates a centralized light world container that manages active lights and structural occluders keyed by stable handles. By processing coordinates, global ambient colors, and light groupings, the system produces coordinated illumination layers that shape visual depth and gameplay moods in real-time.</p>
-<p>At the heart of the light simulation are geometric models distinguishing point, spot-cone, and directional light types. Individual lights carry parameters for color, energy, and quadratic attenuation formulas that dictate how intensity decays over distance. Radial falloff profiles define custom decay curves between light centers and outer radii. These properties blend using additive or subtractive modes to compose complex, overlapping lighting maps.</p>
-<p>To animate lighting layouts dynamically, the module includes temporal flicker modules and smooth transition helpers. Flicker units animate lights using sine-based oscillations that simulate torches, candles, or flickering neon bulbs over time. Transition systems interpolate values linearly across frame boundaries, stepping colors, intensities, and sizes toward target goals smoothly to create environmental changes.</p>
-<p>Shadow casting is supported by convex polygon occluders that block light dynamically. Occluders carry local coordinates, enabling developers to position collision shapes and modify their opacity in real-time. Inclusion and shadow receiver masks allow developers to control which lights interact with specific occluding objects. This system features hard-shadowing or soft-shadow PCF-based filters to control both visual styling and rendering costs.</p>
+<ul>
+<li>This module gives users dynamic 2D lighting and shadow control for mood, readability, and gameplay signaling.</li>
+<li>It supports point, spot, and directional light types with configurable intensity and color behavior.</li>
+<li>Attenuation and falloff controls let teams tune how light fades across distance.</li>
+<li>Blend modes support additive and subtractive composition for different visual styles.</li>
+<li>Ambient controls provide scene-wide baseline illumination.</li>
+<li>Group operations allow bulk edits to sets of lights during state transitions.</li>
+<li>Flicker and transition helpers support animated lighting effects without custom per-frame math.</li>
+<li>Shadow casting uses polygon occluders for geometry-driven blocking behavior.</li>
+<li>Shadow masks and receiver masks provide control over which objects interact with which lights.</li>
+<li>Filter settings support quality/performance trade-offs for hard and softened shadows.</li>
+<li>Normal-map hinting and volumetric-adjacent settings help integrate richer shading workflows.</li>
+<li>Light-world APIs centralize creation, mutation, and cleanup of runtime light entities.</li>
+<li>Preview-to-image utilities support debug and evidence workflows for visual validation.</li>
+<li>The module is useful for stealth, atmosphere, navigation cues, and dramatic scene transitions.</li>
+<li>For users, it turns lighting from static art into a controllable gameplay system.</li>
+<li>It reduces custom lighting glue code while keeping behavior script-driven.</li>
+<li>The practical result is faster lighting iteration and clearer visual feedback loops.</li>
+<li>It also improves testability by exposing deterministic controls and introspection-friendly outputs.</li>
+<li>Overall, users get a comprehensive 2D illumination toolkit integrated with runtime scripting.</li>
+<li>This helps teams balance style, performance, and legibility in one place.</li>
+</ul>
+<p>This module primarily collaborates with <code>color</code>, <code>image</code>, <code>math</code>, <code>runtime</code>. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lureklightadvanceflickers"><code>lurek.light.advanceFlickers</code><a class="headerlink" href="#lureklightadvanceflickers" title="Permanent link">&para;</a></h3>
 <p>Advances flicker animation for all indexed flickering lights.</p>

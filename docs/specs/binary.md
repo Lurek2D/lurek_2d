@@ -13,7 +13,7 @@
 - Namespace: `lurek.binary`
 - Lua API surface: `22` functions, `4` types, `50` methods
 - Rust test path(s): tests/rust/unit/binary_tests.rs; tests/rust/stress/binary_stress_tests.rs; inline tests in src/binary/byte_data.rs, src/binary/encode.rs, src/binary/hash.rs
-- Lua test path(s): tests/lua_reorg/unit/test_binary_core_unit.lua; tests/lua_reorg/stress/test_binary_stress.lua; tests/lua_reorg/integration/test_binary_filesystem.lua; tests/lua_reorg/integration/test_binary_compute.lua; tests/lua_reorg/golden/test_binary_golden.lua
+- Lua test path(s): tests/lua/unit/test_binary_core_unit.lua; tests/lua/stress/test_binary_stress.lua; tests/lua/integration/test_binary_filesystem.lua; tests/lua/integration/test_binary_compute.lua; tests/lua/golden/test_binary_golden.lua
 
 ## Summary
 

@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6558,9 +6558,23 @@
 
 <h1 id="window">Window<a class="headerlink" href="#window" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module serves as the primary gateway for controlling the OS-level application window and managing multi-monitor systems. By abstracting the operating system's display APIs, it lets developers query connected monitors, retrieve desktop resolutions, and transition the game window across screens seamlessly. The window manager targets startup monitors dynamically while exposing centering and window-movement operations.</p>
-<p>To ensure seamless gameplay interactions, the window subsystem implements a deferred state-change pipeline. Title updates, resolution shifts, custom icons, and min/max window states are queued and applied safely during event-loop ticks. This manager also regulates synchronization behaviors, allowing users to toggle between VSync configurations and borderless or exclusive fullscreen modes.</p>
-<p>Finally, the viewport system maps logical game coordinates to physical screens, computing scale factors and letterbox offsets automatically. This translation guarantees consistent mouse mapping and render scaling under varied window dimensions. The module also wraps OS dialog systems, offering native message boxes, blocking file pickers, and DPI-change callbacks for seamless integration.</p>
+<ul>
+<li>This module gives users runtime control over the application window, displays, scaling, and desktop integration features.</li>
+<li>Display APIs expose monitor inventory, resolution data, and current-screen placement.</li>
+<li>Window lifecycle controls cover position, size, minimize, maximize, restore, and close behavior.</li>
+<li>Fullscreen controls support desktop and exclusive modes with VSync configuration options.</li>
+<li>Deferred state application keeps mode changes safe within event-loop boundaries.</li>
+<li>Title, icon, and attention APIs support polished desktop application behavior.</li>
+<li>DPI and pixel conversion helpers support high-DPI-aware coordinate handling.</li>
+<li>Scale-mode and viewport helpers keep logical game space consistent across window sizes.</li>
+<li>Screen/game coordinate mapping supports reliable pointer-to-world interactions.</li>
+<li>Native dialogs support message boxes and file-picking integration.</li>
+<li>Theme and focus visibility queries support adaptive UI behavior.</li>
+<li>The module is useful for desktop UX quality, settings menus, and multi-monitor workflows.</li>
+<li>For users, it centralizes OS window interactions behind one scriptable API surface.</li>
+<li>It reduces platform-quirk handling in gameplay and UI scripts.</li>
+</ul>
+<p>This module primarily collaborates with <code>runtime</code>. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekwindowclose"><code>lurek.window.close</code><a class="headerlink" href="#lurekwindowclose" title="Permanent link">&para;</a></h3>
 <p>Closes the window and signals the engine to shut down.</p>

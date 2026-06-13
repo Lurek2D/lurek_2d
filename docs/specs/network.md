@@ -13,7 +13,7 @@
 - Namespace: `lurek.network`
 - Lua API surface: `30` functions, `17` types, `61` methods
 - Rust test path(s): tests/rust/unit/network_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_network.lua, tests/lua_reorg/unit/test_network_constants.lua, tests/lua_reorg/unit/test_network_pack_unpack.lua, tests/lua_reorg/unit/test_network_roles.lua, tests/lua_reorg/unit/test_network_runtimer.lua, tests/lua_reorg/security/test_network_security.lua
+- Lua test path(s): tests/lua/unit/test_network.lua, tests/lua/unit/test_network_constants.lua, tests/lua/unit/test_network_pack_unpack.lua, tests/lua/unit/test_network_roles.lua, tests/lua/unit/test_network_runtimer.lua, tests/lua/security/test_network_security.lua
 
 ## Summary
 

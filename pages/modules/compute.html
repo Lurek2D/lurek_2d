@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -7484,9 +7484,30 @@
 
 <h1 id="compute">Compute<a class="headerlink" href="#compute" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>The compute module serves as the primary high-performance numeric processing engine for Lurek2D. Its core purpose is to provide scripts with dense, multi-dimensional array structures, enabling heavy mathematical calculations directly within game loops. It centers around a robust NdArray model that stores typed scalar buffers with explicit shape strides, supporting initializations for zeros, ones, or custom ranges. It manages sub-regions and supports parallel multithreaded calculation thresholds for massive array blocks.</p>
-<p>For scientific computing and complex transformations, the module exposes rich algebraic, geometric, and spectral operations. It provides linear-algebra tools including vector cross products, unit normalizations, Gaussian solvers with pivoting, LU matrix decompositions, and eigenpair estimators. It also includes radix-2 fast Fourier transforms and inverse transforms, allowing scripts to map real-valued waveforms into complex frequency spectra and back for audio or signal-processing tasks.</p>
-<p>Spatial data processing and statistical analysis are supported through spatial grid and analytics layers. The spatial engine delivers zero-padded convolutions, Sobel gradient calculations, flood-fill propagation, and morphological dilation or erosion filters over coordinate grids. In parallel, the analytics layer computes cumulative sums, percentile distributions, histogram binning, range scaling, and Pearson correlations, supplying comprehensive telemetry capabilities.</p>
+<ul>
+<li>Gives users a dense numeric workspace for array-heavy gameplay, simulation, AI, and analysis tasks.</li>
+<li>Exposes multidimensional arrays that make matrix and tensor-like logic practical from Lua.</li>
+<li>Supports common constructors and shape operations so data pipelines start quickly and stay explicit.</li>
+<li>Enables element-wise arithmetic, comparisons, reductions, and logical transforms for fast feature engineering.</li>
+<li>Provides in-place operations for performance-sensitive loops where allocation churn must stay low.</li>
+<li>Includes axis-aware aggregates for summarizing large datasets without custom iteration code.</li>
+<li>Supports linear algebra workflows for transforms, constraints, and solver-driven mechanics.</li>
+<li>Offers matrix decomposition and linear-system tools useful in optimization and simulation scenarios.</li>
+<li>Adds eigen and vector utilities for directional analysis and advanced math features.</li>
+<li>Includes FFT and inverse FFT paths for spectral analysis, rhythm tools, and signal-oriented gameplay.</li>
+<li>Provides convolution and Sobel operations for image-like or grid-based processing.</li>
+<li>Supports morphology and flood-fill style operations for map processing and mask refinement tasks.</li>
+<li>Delivers histogram, percentile, z-score, and correlation analytics for telemetry and balancing.</li>
+<li>Gives one pipeline from raw numeric data to derived insights without leaving engine runtime.</li>
+<li>Supports configurable parallel thresholds so heavy workloads can scale better on larger inputs.</li>
+<li>Helps teams avoid reimplementing math kernels in ad-hoc Lua loops.</li>
+<li>Acts as the user-facing compute backbone for projects that need more than scalar scripting.</li>
+<li>Balances high-level ergonomics with deterministic behavior required by tests and reproducible runs.</li>
+<li>Bridges gameplay scripting and scientific-style data operations in one cohesive module surface.</li>
+<li>Improves iteration speed by keeping experimentation, diagnostics, and math-heavy logic in-engine.</li>
+<li>Serves as the practical foundation for data-driven systems that depend on robust numeric primitives.</li>
+</ul>
+<p>This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekcomputeaffine2d"><code>lurek.compute.affine2d</code><a class="headerlink" href="#lurekcomputeaffine2d" title="Permanent link">&para;</a></h3>
 <p>Creates a 2D affine transform matrix.</p>

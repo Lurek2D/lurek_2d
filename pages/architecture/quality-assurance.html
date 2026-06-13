@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#lurek2d-a-test-framework-architecture" class="md-skip">
+        <a href="#lurek2d-a-aat-test-framework-architecture" class="md-skip">
           Skip to content
         </a>
       
@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -813,10 +813,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#enforcement-a-audit-scripts" class="md-nav__link">
+  <a href="#enforcement-a-aat-audit-scripts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Enforcement â€” Audit Scripts
+        Enforcement Ă˘â‚¬â€ť Audit Scripts
       
     </span>
   </a>
@@ -863,10 +863,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#testsrustgame-a-retired" class="md-nav__link">
+  <a href="#testsrustgame-a-aat-retired" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tests/rust/game/ â€” Retired
+        tests/rust/game/ Ă˘â‚¬â€ť Retired
       
     </span>
   </a>
@@ -1051,10 +1051,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#headless-demo-tests-testsluademos" class="md-nav__link">
+  <a href="#headless-demo-tests-contentgamestestlua" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Headless Demo Tests (tests/lua/demos/)
+        Headless Demo Tests (content/games/**/test.lua)
       
     </span>
   </a>
@@ -5596,10 +5596,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#enforcement-a-audit-scripts" class="md-nav__link">
+  <a href="#enforcement-a-aat-audit-scripts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Enforcement â€” Audit Scripts
+        Enforcement Ă˘â‚¬â€ť Audit Scripts
       
     </span>
   </a>
@@ -5646,10 +5646,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#testsrustgame-a-retired" class="md-nav__link">
+  <a href="#testsrustgame-a-aat-retired" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tests/rust/game/ â€” Retired
+        tests/rust/game/ Ă˘â‚¬â€ť Retired
       
     </span>
   </a>
@@ -5834,10 +5834,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#headless-demo-tests-testsluademos" class="md-nav__link">
+  <a href="#headless-demo-tests-contentgamestestlua" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Headless Demo Tests (tests/lua/demos/)
+        Headless Demo Tests (content/games/**/test.lua)
       
     </span>
   </a>
@@ -5888,12 +5888,12 @@
 
 
 
-<h1 id="lurek2d-a-test-framework-architecture">Lurek2D â€” Test Framework Architecture<a class="headerlink" href="#lurek2d-a-test-framework-architecture" title="Permanent link">&para;</a></h1>
+<h1 id="lurek2d-a-aat-test-framework-architecture">Lurek2D Ă˘â‚¬â€ť Test Framework Architecture<a class="headerlink" href="#lurek2d-a-aat-test-framework-architecture" title="Permanent link">&para;</a></h1>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Source of truth for the test suite structure, placement rules, BDD framework, golden tests, and CI quality gates.</li>
 </ul>
-<p>Companion documents: <a href="engine-core.html">engine-core.md</a> Â· <a href="philosophy.html">philosophy.md</a></p>
+<p>Companion documents: <a href="engine-core.html">engine-core.md</a> Ă‚Â· <a href="philosophy.html">philosophy.md</a></p>
 <hr />
 <h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
 <ol>
@@ -5917,10 +5917,10 @@
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Lurek2D uses a <strong>two-layer test system</strong> executed through <code>cargo test</code>:</p>
 <ol>
-<li><strong>Rust tests</strong> â€” compiled test binaries exercising engine modules directly via crate imports (unit, stress, golden, config, security, ext).</li>
-<li><strong>Lua BDD tests</strong> â€” <code>.lua</code> scripts using <code>describe</code>/<code>it</code>/<code>expect_*</code> framework, dispatched by a Rust harness (unit, library, integration, stress, security, golden, config, demos).</li>
+<li><strong>Rust tests</strong> Ă˘â‚¬â€ť compiled test binaries exercising engine modules directly via crate imports (unit, stress, golden, config, security, ext).</li>
+<li><strong>Lua BDD tests</strong> Ă˘â‚¬â€ť <code>.lua</code> scripts using <code>describe</code>/<code>it</code>/<code>expect_*</code> framework, dispatched by a Rust harness (unit, library, integration, stress, security, golden, config, demos).</li>
 </ol>
-<p>Both layers run <strong>headless</strong> â€” no window, no GPU, no audio device required. This enables CI/CD and parallel execution without display servers.</p>
+<p>Both layers run <strong>headless</strong> Ă˘â‚¬â€ť no window, no GPU, no audio device required. This enables CI/CD and parallel execution without display servers.</p>
 <p><strong>Examples vs Demos:</strong></p>
 <table>
 <thead>
@@ -5933,13 +5933,13 @@
 <tbody>
 <tr>
 <td>Purpose</td>
-<td>Documentation â€” shows one <code>lurek.*</code> API in isolation</td>
+<td>Documentation Ă˘â‚¬â€ť shows one <code>lurek.*</code> API in isolation</td>
 <td>Fully functional game showcases</td>
 </tr>
 <tr>
 <td>Tested?</td>
-<td>No â€” read-only reference scripts</td>
-<td>Yes â€” every demo must have a test</td>
+<td>No Ă˘â‚¬â€ť read-only reference scripts</td>
+<td>Yes Ă˘â‚¬â€ť every demo must have a test</td>
 </tr>
 <tr>
 <td>Format</td>
@@ -5950,7 +5950,7 @@
 </table>
 <hr />
 <h2 id="test-placement-rules">Test Placement Rules<a class="headerlink" href="#test-placement-rules" title="Permanent link">&para;</a></h2>
-<p>Constraints <strong>TST-01</strong> through <strong>TST-06</strong> from <a href="philosophy.html#testing-constraints">philosophy.md Â§ Testing Constraints</a> are binding. Summary:</p>
+<p>Constraints <strong>TST-01</strong> through <strong>TST-06</strong> from <a href="philosophy.html#testing-constraints">philosophy.md Ă‚Â§ Testing Constraints</a> are binding. Summary:</p>
 <table>
 <thead>
 <tr>
@@ -5977,7 +5977,7 @@
 </tr>
 <tr>
 <td><strong>TST-05</strong></td>
-<td>Demo tests: headless Lua tests in <code>tests/lua/demos/test_&lt;name&gt;.lua</code>; screenshot tests in <code>tests/demo_smoke_tests.rs</code> with <code>#[ignore]</code>. Never put demo tests in <code>tests/lua/unit/</code>.</td>
+<td>Demo tests: colocated headless Lua tests in <code>content/games/**/test.lua</code>; screenshot tests in <code>tests/demo_smoke_tests.rs</code> with <code>#[ignore]</code>. Never put demo tests in <code>tests/lua/unit/</code>.</td>
 </tr>
 <tr>
 <td><strong>TST-06</strong></td>
@@ -5991,16 +5991,16 @@
 <h3 id="decision-tree">Decision Tree<a class="headerlink" href="#decision-tree" title="Permanent link">&para;</a></h3>
 <ol>
 <li>
-<p><strong>Reachable via any <code>lurek.*</code> function, userdata, or callback?</strong> â†’ Lua test in <code>tests/lua/unit/test_&lt;module&gt;.lua</code> (single module) or <code>tests/lua/integration/test_&lt;a&gt;_&lt;b&gt;.lua</code> (â‰Ą2 namespaces). This is TST-01 â€” the default path.</p>
+<p><strong>Reachable via any <code>lurek.*</code> function, userdata, or callback?</strong> Ă˘â€ â€™ Lua test in <code>tests/lua/unit/test_&lt;module&gt;.lua</code> (single module) or <code>tests/lua/integration/test_&lt;a&gt;_&lt;b&gt;.lua</code> (Ă˘â€°Ä„2 namespaces). This is TST-01 Ă˘â‚¬â€ť the default path.</p>
 </li>
 <li>
-<p><strong>Private internal helper</strong> â€” no Lua exposure? â†’ Rust unit test in <code>tests/rust/unit/&lt;module&gt;_tests.rs</code>. Register binary in <code>Cargo.toml</code>. TST-02.</p>
+<p><strong>Private internal helper</strong> Ă˘â‚¬â€ť no Lua exposure? Ă˘â€ â€™ Rust unit test in <code>tests/rust/unit/&lt;module&gt;_tests.rs</code>. Register binary in <code>Cargo.toml</code>. TST-02.</p>
 </li>
 <li>
-<p><strong>Test for a game demo in <code>content/games/</code>?</strong> â†’ Headless Lua test in <code>tests/lua/demos/test_&lt;name&gt;.lua</code> (TST-05) + <code>#[ignore]</code> screenshot test in <code>tests/demo_smoke_tests.rs</code>.</p>
+<p><strong>Test for a game demo in <code>content/games/</code>?</strong> Ă˘â€ â€™ Colocated headless Lua test in <code>content/games/**/test.lua</code> (TST-05) + <code>#[ignore]</code> screenshot test in <code>tests/demo_smoke_tests.rs</code>.</p>
 </li>
 <li>
-<p><strong>Anything else</strong> (integration, golden, stress, evidence, config, security) â†’ choose the matching subfolder in <code>tests/rust/</code> or <code>tests/lua/</code>.</p>
+<p><strong>Anything else</strong> (integration, golden, stress, evidence, config, security) Ă˘â€ â€™ choose the matching subfolder in <code>tests/rust/</code> or <code>tests/lua/</code>.</p>
 </li>
 </ol>
 <p>When both 1 and 2 apply, choose 1 (Lua-first). Promote private helpers to <code>pub(crate)</code> and cover through the Lua surface.</p>
@@ -6037,7 +6037,7 @@
 <tr>
 <td>Demo tests in <code>tests/lua/unit/</code></td>
 <td>TST-05</td>
-<td>Move to <code>tests/lua/demos/</code></td>
+<td>Move to colocated <code>content/games/**/test.lua</code></td>
 </tr>
 <tr>
 <td>Split per-sub-feature test files</td>
@@ -6046,7 +6046,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="enforcement-a-audit-scripts">Enforcement â€” Audit Scripts<a class="headerlink" href="#enforcement-a-audit-scripts" title="Permanent link">&para;</a></h3>
+<h3 id="enforcement-a-aat-audit-scripts">Enforcement Ă˘â‚¬â€ť Audit Scripts<a class="headerlink" href="#enforcement-a-aat-audit-scripts" title="Permanent link">&para;</a></h3>
 <p>Under <code>tools/audit/</code>:</p>
 <table>
 <thead>
@@ -6058,19 +6058,19 @@
 <tbody>
 <tr>
 <td><code>inline_test_audit.py</code></td>
-<td>TST-02 â€” lists every inline <code>#[cfg(test)]</code> block with relocation target</td>
+<td>TST-02 Ă˘â‚¬â€ť lists every inline <code>#[cfg(test)]</code> block with relocation target</td>
 </tr>
 <tr>
 <td><code>thin_wrapper_audit.py</code></td>
-<td>TST-03 â€” flags business-logic violations inside <code>src/lua_api/</code></td>
+<td>TST-03 Ă˘â‚¬â€ť flags business-logic violations inside <code>src/lua_api/</code></td>
 </tr>
 <tr>
 <td><code>thin_modrs_audit.py</code></td>
-<td>TST-04 â€” flags disallowed definitions inside any <code>mod.rs</code></td>
+<td>TST-04 Ă˘â‚¬â€ť flags disallowed definitions inside any <code>mod.rs</code></td>
 </tr>
 <tr>
 <td><code>test_coverage.py</code></td>
-<td>TST-01 â€” reports undercovered <code>lurek.*</code> surface</td>
+<td>TST-01 Ă˘â‚¬â€ť reports undercovered <code>lurek.*</code> surface</td>
 </tr>
 <tr>
 <td><code>lua_test_structure_audit.py</code></td>
@@ -6095,73 +6095,71 @@
 </tbody>
 </table>
 <h3 id="harness-registration">Harness Registration<a class="headerlink" href="#harness-registration" title="Permanent link">&para;</a></h3>
-<p>Lua tests are registered <strong>manually</strong> in <code>tests/lua/harness.rs</code>. Auto-discovery is intentionally not used. An unregistered <code>.lua</code> file will never be executed by <code>cargo test</code>.</p>
+<p>Lua tests are registered <strong>manually</strong> in <code>tests/lua_tests.rs</code>. Auto-discovery is intentionally not used. An unregistered <code>.lua</code> file will never be executed by <code>cargo test</code>.</p>
 <hr />
 <h2 id="two-layer-test-model">Two-Layer Test Model<a class="headerlink" href="#two-layer-test-model" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cargo test
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  â”‚
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  â”śâ”€â”€ Rust test binaries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  â”‚   tests/rust/unit/          Engine module Rust contracts
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  â”‚   tests/rust/stress/        Throughput + allocation tests
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  â”‚   tests/rust/golden/        Snapshot: graphics/audio/text
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>  â”‚   tests/rust/config/        Config loading + validation
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  â”‚   tests/rust/security/      Sandbox audit, path traversal
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  â”‚   tests/rust/ext/           Cross-module Rust smoke tests
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  â”‚
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  â””â”€â”€ Lua BDD harness â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>      tests/lua/harness.rs
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>      â”śâ”€â”€ unit/         One file per engine module (API surface)
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>      â”śâ”€â”€ library/      One file per Lureksome library
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>      â”śâ”€â”€ integration/  Tests between â‰Ą2 modules
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>      â”śâ”€â”€ stress/       Throughput + allocation from Lua
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>      â”śâ”€â”€ security/     Sandboxing + input validation
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>      â”śâ”€â”€ golden/       Deterministic output comparison
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>      â”śâ”€â”€ config/       Configuration loading tests
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>      â””â”€â”€ demos/        One file per demo in content/games/
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  Ă˘â€ťâ€š
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ Rust test binaries Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  Ă˘â€ťâ€š   tests/rust/unit/          Engine module Rust contracts
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  Ă˘â€ťâ€š   tests/rust/stress/        Throughput + allocation tests
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  Ă˘â€ťâ€š   tests/rust/golden/        Snapshot: graphics/audio/text
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>  Ă˘â€ťâ€š   tests/rust/config/        Config loading + validation
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  Ă˘â€ťâ€š   tests/rust/security/      Sandbox audit, path traversal
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  Ă˘â€ťâ€š   tests/rust/ext/           Cross-module Rust smoke tests
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  Ă˘â€ťâ€š
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  Ă˘â€ťâ€ťĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬ Lua BDD harness Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>      tests/lua_tests.rs
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>      Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ unit/         One file per engine module (API surface)
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>      Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ library/      One file per Lureksome library
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>      Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ integration/  Tests between Ă˘â€°Ä„2 modules
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>      Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ stress/       Throughput + allocation from Lua
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>      Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ security/     Sandboxing + input validation
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>      Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ golden/       Deterministic output comparison
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>      Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ config/       Configuration loading tests
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>      Ă˘â€ťâ€ťĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬ Headless demo tests live next to each game as `content/games/**/test.lua`
 </code></pre></div>
 <p><strong>Why two layers:</strong>
 - Rust tests cover internal engine contracts: struct invariants, error handling, resource lifecycle, mathematical correctness.
-- Lua tests cover the public <code>lurek.*</code> API surface from the user's perspective â€” the same VM game scripts use.
+- Lua tests cover the public <code>lurek.*</code> API surface from the user's perspective Ă˘â‚¬â€ť the same VM game scripts use.
 - Library tests (<code>tests/lua/library/</code>) exclusively test Lureksome pure-Lua libraries.</p>
 <hr />
 <h2 id="directory-layout">Directory Layout<a class="headerlink" href="#directory-layout" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>tests/
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>â”śâ”€â”€ fixtures/            Shared test assets (images, audio, data files)
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>â”śâ”€â”€ output/              Evidence artefact output (git-ignored)
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>â”śâ”€â”€ samples/             Golden comparison baselines (committed)
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>â”‚
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>â”śâ”€â”€ rust/
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>â”‚   â”śâ”€â”€ unit/            One file per engine module (Rust contracts)
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>â”‚   â”‚   â”śâ”€â”€ math_tests.rs
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>â”‚   â”‚   â”śâ”€â”€ physics_tests.rs
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>â”‚   â”‚   â”śâ”€â”€ render_tests.rs
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>â”‚   â”‚   â””â”€â”€ ...
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>â”‚   â”śâ”€â”€ stress/          Raw Rust-level throughput tests
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>â”‚   â”śâ”€â”€ golden/          Snapshot tests (harness.rs + expected/)
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>â”‚   â”śâ”€â”€ config/          TOML config loading + validation
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>â”‚   â”śâ”€â”€ security/        Sandbox + path-traversal audits
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>â”‚   â””â”€â”€ ext/             Cross-module Rust smoke tests
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>â”‚
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>â””â”€â”€ lua/
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    â”śâ”€â”€ harness.rs       Rust harness â€” one #[test] per .lua file
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    â”śâ”€â”€ init.lua         BDD framework (describe/it/expect_*)
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>    â”śâ”€â”€ unit/            One file per lurek.* namespace
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>    â”śâ”€â”€ library/         One file per Lureksome library
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>    â”śâ”€â”€ integration/     Tests between â‰Ą2 modules
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>    â”śâ”€â”€ stress/          Throughput + allocation from Lua
-<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>    â”śâ”€â”€ security/        Sandboxing + input validation
-<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>    â”śâ”€â”€ golden/          Deterministic output comparison
-<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>    â”śâ”€â”€ config/          Config loading tests
-<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>    â””â”€â”€ demos/           One file per content/games/ demo
-<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>        â”śâ”€â”€ _common_checks.lua
-<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>        â””â”€â”€ test_&lt;name&gt;.lua
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ fixtures/            Shared test assets (images, audio, data files)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ output/              Evidence artefact output (git-ignored)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ samples/             Golden comparison baselines (committed)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Ă˘â€ťâ€š
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ rust/
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>Ă˘â€ťâ€š   Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ unit/            One file per engine module (Rust contracts)
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>Ă˘â€ťâ€š   Ă˘â€ťâ€š   Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ math_tests.rs
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>Ă˘â€ťâ€š   Ă˘â€ťâ€š   Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ physics_tests.rs
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>Ă˘â€ťâ€š   Ă˘â€ťâ€š   Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ render_tests.rs
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>Ă˘â€ťâ€š   Ă˘â€ťâ€š   Ă˘â€ťâ€ťĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬ ...
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>Ă˘â€ťâ€š   Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ stress/          Raw Rust-level throughput tests
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>Ă˘â€ťâ€š   Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ golden/          Snapshot tests (tests/lua_tests.rs + expected/)
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>Ă˘â€ťâ€š   Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ config/          TOML config loading + validation
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>Ă˘â€ťâ€š   Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ security/        Sandbox + path-traversal audits
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>Ă˘â€ťâ€š   Ă˘â€ťâ€ťĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬ ext/             Cross-module Rust smoke tests
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>Ă˘â€ťâ€š
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>Ă˘â€ťâ€ťĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬ lua/
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ ../lua_tests.rs       Rust harness Ă˘â‚¬â€ť one #[test] per .lua file
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ init.lua         BDD framework (describe/it/expect_*)
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>    Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ unit/            One file per lurek.* namespace
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>    Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ library/         One file per Lureksome library
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>    Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ integration/     Tests between Ă˘â€°Ä„2 modules
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>    Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ stress/          Throughput + allocation from Lua
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>    Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ security/        Sandboxing + input validation
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>    Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ golden/          Deterministic output comparison
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>    Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ config/          Config loading tests
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>    Ă˘â€ťâ€ťĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬ Headless demo tests live next to each game as `content/games/**/test.lua`
 </code></pre></div>
 <p>All Rust test binaries are <strong>explicitly registered</strong> in <code>Cargo.toml</code> under <code>[[test]]</code> sections. Unregistered <code>.rs</code> files in <code>tests/</code> are not discovered by <code>cargo test</code>.</p>
-<h3 id="testsrustgame-a-retired">tests/rust/game/ â€” Retired<a class="headerlink" href="#testsrustgame-a-retired" title="Permanent link">&para;</a></h3>
+<h3 id="testsrustgame-a-aat-retired">tests/rust/game/ Ă˘â‚¬â€ť Retired<a class="headerlink" href="#testsrustgame-a-aat-retired" title="Permanent link">&para;</a></h3>
 <p><code>tests/rust/game/</code> previously held Rust tests for game systems (battle, cardgame, combat, crafting, inventory, quest, stats). Those systems are now pure-Lua libraries in <code>library/</code>. Their tests live in <code>tests/lua/library/</code>. Do not add new files there.</p>
 <hr />
 <h2 id="rust-test-suites">Rust Test Suites<a class="headerlink" href="#rust-test-suites" title="Permanent link">&para;</a></h2>
-<p><strong>Scope rule:</strong> All public API methods must be tested in Lua. Rust tests cover private/internal code only â€” struct invariants, internal algorithms, resource lifecycle, and implementation details with no <code>lurek.*</code> surface.</p>
+<p><strong>Scope rule:</strong> All public API methods must be tested in Lua. Rust tests cover private/internal code only Ă˘â‚¬â€ť struct invariants, internal algorithms, resource lifecycle, and implementation details with no <code>lurek.*</code> surface.</p>
 <table>
 <thead>
 <tr>
@@ -6222,19 +6220,19 @@
 <td>Unit</td>
 <td><code>tests/lua/unit/</code></td>
 <td>One module per file</td>
-<td><code>test_&lt;module&gt;.lua</code></td>
+<td><code>test_&lt;module&gt;_unit.lua</code></td>
 </tr>
 <tr>
 <td>Library</td>
 <td><code>tests/lua/library/</code></td>
 <td>One Lureksome library</td>
-<td><code>test_library_&lt;name&gt;.lua</code></td>
+<td><code>test_&lt;name&gt;_library.lua</code></td>
 </tr>
 <tr>
 <td>Integration</td>
 <td><code>tests/lua/integration/</code></td>
-<td>â‰Ą2 modules</td>
-<td><code>test_&lt;modA&gt;_&lt;modB&gt;.lua</code></td>
+<td>Ă˘â€°Ä„2 modules</td>
+<td><code>test_&lt;modules&gt;_integration.lua</code></td>
 </tr>
 <tr>
 <td>Stress</td>
@@ -6246,7 +6244,7 @@
 <td>Security</td>
 <td><code>tests/lua/security/</code></td>
 <td>Sandboxing + input validation</td>
-<td>â€”</td>
+<td>Ă˘â‚¬â€ť</td>
 </tr>
 <tr>
 <td>Golden</td>
@@ -6258,13 +6256,13 @@
 <td>Config</td>
 <td><code>tests/lua/config/</code></td>
 <td>Configuration loading</td>
-<td>â€”</td>
+<td>Ă˘â‚¬â€ť</td>
 </tr>
 <tr>
 <td>Demos</td>
-<td><code>tests/lua/demos/</code></td>
-<td>One per <code>content/games/</code> demo</td>
-<td><code>test_&lt;name&gt;.lua</code></td>
+<td><code>content/games/**/test.lua</code></td>
+<td>Optional colocated headless demo/game test</td>
+<td><code>test.lua</code></td>
 </tr>
 </tbody>
 </table>
@@ -6357,7 +6355,7 @@
 </tr>
 <tr>
 <td><code>test_summary()</code></td>
-<td><strong>Mandatory</strong> â€” must be the last call in every file</td>
+<td><strong>Mandatory</strong> Ă˘â‚¬â€ť must be the last call in every file</td>
 </tr>
 </tbody>
 </table>
@@ -6365,17 +6363,17 @@
 <p>An integration test must exercise at least two distinct <code>lurek.*</code> module namespaces. Testing one module with complex data does not qualify.</p>
 <hr />
 <h2 id="lua-test-documentation-standard">Lua Test Documentation Standard<a class="headerlink" href="#lua-test-documentation-standard" title="Permanent link">&para;</a></h2>
-<p>Three comment layers â€” do not mix them:</p>
+<p>Three comment layers Ă˘â‚¬â€ť do not mix them:</p>
 <ol>
-<li><strong>File header</strong> â€” plain <code>-- ...</code> prose at top. Explains coverage and headless constraints. No <code>@description</code>.</li>
-<li><strong>Suite description</strong> â€” one <code>-- @describe &lt;text&gt;</code> line immediately above each <code>describe()</code> block.</li>
-<li><strong>Case description</strong> â€” optional plain comment lines above each <code>it()</code> block when needed for clarity.</li>
+<li><strong>File header</strong> Ă˘â‚¬â€ť plain <code>-- ...</code> prose at top. Explains coverage and headless constraints. No <code>@description</code>.</li>
+<li><strong>Suite description</strong> Ă˘â‚¬â€ť one <code>-- @describe &lt;text&gt;</code> line immediately above each <code>describe()</code> block.</li>
+<li><strong>Case description</strong> Ă˘â‚¬â€ť optional plain comment lines above each <code>it()</code> block when needed for clarity.</li>
 </ol>
 <p><strong>Rules:</strong>
-- File header uses plain comments only â€” no <code>-- @description</code>, no <code>-- @category:</code>.
+- File header uses plain comments only Ă˘â‚¬â€ť no <code>-- @description</code>, no <code>-- @category:</code>.
 - <code>-- @category: ...</code> markers are forbidden everywhere.
 - <code>test_summary()</code> must be the last non-empty line in every file.
-- <code>return test_summary()</code> is forbidden â€” use bare <code>test_summary()</code>.
+- <code>return test_summary()</code> is forbidden Ă˘â‚¬â€ť use bare <code>test_summary()</code>.
 - Marker annotations belong on <code>it()</code> blocks and are folder-specific:
     - <code>tests/lua/unit/</code> -&gt; <code>@covers</code>
     - <code>tests/lua/security/</code> -&gt; <code>@security</code>
@@ -6413,20 +6411,21 @@
 <p><strong>Rules:</strong>
 1. <strong>Golden tests ONLY compare.</strong> They read an evidence file and a golden sample, then assert they match. No content creation.
 2. <strong>Evidence tests must run first.</strong> If the evidence file does not exist, the golden test fails with a clear message.
-3. <strong>Golden samples live in <code>tests/lua/golden/samples/&lt;module&gt;/</code></strong> â€” committed to git, human-reviewed.
+3. <strong>Golden samples live in <code>tests/artifacts/baselines/&lt;module&gt;/</code></strong> Ă˘â‚¬â€ť committed to git, human-reviewed.
 4. <strong>Golden tests must not call <code>lurek.*</code> APIs, <code>savePNG</code>, <code>saveWAV</code>, or write files.</strong> Content creation belongs in the evidence layer.
 5. <strong>Every golden test uses BDD structure</strong> and the <code>-- @golden</code> marker.
 6. Use <code>expect_golden_file_match()</code> for binary (PNG, WAV) or <code>expect_golden_text_match()</code> for text (normalises whitespace/line endings).</p>
 <p><strong>Directory structure:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>tests/lua/golden/
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>â”śâ”€â”€ test_&lt;module&gt;_golden.lua          Golden test script
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>â””â”€â”€ samples/                          Committed baseline files
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    â”śâ”€â”€ math/constants.txt
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    â”śâ”€â”€ physics/draw_debug.png
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    â””â”€â”€ audio/sine_440hz.wav
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>tests/lua/evidence/output/            Generated at test run (git-ignored)
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>â””â”€â”€ math/constants.txt
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Ă˘â€ťâ€ťĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬ test_&lt;module&gt;_golden.lua          Golden test script
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>tests/artifacts/baselines/                             Committed baseline files
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ math/constants.txt
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>Ă˘â€ťĹ›Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ physics/draw_debug.png
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>Ă˘â€ťâ€ťĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬ audio/sine_440hz.wav
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>tests/artifacts/current/                              Generated at test run
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>Ă˘â€ťâ€ťĂ˘â€ťâ‚¬Ă˘â€ťâ‚¬ math/constants.txt
 </code></pre></div></p>
 <p><strong>Golden test template:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">-- @golden</span>
@@ -6435,7 +6434,7 @@
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nf">describe</span><span class="p">(</span><span class="s2">&quot;golden: &lt;module&gt; &lt;description&gt;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nf">it</span><span class="p">(</span><span class="s2">&quot;matches golden sample for &lt;artifact&gt;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">evidence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">evidence_output_dir</span><span class="p">(</span><span class="s2">&quot;&lt;module&gt;&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;&lt;filename&gt;&quot;</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">golden</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tests/lua/golden/samples/&lt;module&gt;/&lt;filename&gt;&quot;</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">golden</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tests/artifacts/baselines/&lt;module&gt;/&lt;filename&gt;&quot;</span>
 <a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">        </span><span class="nf">expect_golden_file_match</span><span class="p">(</span><span class="nv">evidence</span><span class="p">,</span><span class="w"> </span><span class="nv">golden</span><span class="p">)</span>
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="kr">end</span><span class="p">)</span>
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="kr">end</span><span class="p">)</span>
@@ -6465,23 +6464,23 @@
 </tr>
 <tr>
 <td>Lua unit file</td>
-<td><code>test_&lt;module&gt;.lua</code></td>
-<td><code>test_math.lua</code></td>
+<td><code>test_&lt;module&gt;_unit.lua</code></td>
+<td><code>test_math_unit.lua</code></td>
 </tr>
 <tr>
 <td>Lua library file</td>
-<td><code>test_library_&lt;name&gt;.lua</code></td>
-<td><code>test_library_combat.lua</code></td>
+<td><code>test_&lt;name&gt;_library.lua</code></td>
+<td><code>test_combat_library.lua</code></td>
 </tr>
 <tr>
 <td>Lua integration file</td>
-<td><code>test_&lt;modA&gt;_&lt;modB&gt;.lua</code></td>
-<td><code>test_physics_timer.lua</code></td>
+<td><code>test_&lt;modA&gt;_&lt;modB&gt;_integration.lua</code></td>
+<td><code>test_physics_timer_integration.lua</code></td>
 </tr>
 <tr>
 <td>Lua demo file</td>
-<td><code>test_&lt;name&gt;.lua</code></td>
-<td><code>test_globe_demo.lua</code></td>
+<td><code>content/games/**/test.lua</code></td>
+<td><code>content/games/showcase/globe_demo/test.lua</code></td>
 </tr>
 <tr>
 <td>Lua golden file</td>
@@ -6515,12 +6514,12 @@
 <tr>
 <td>Physics positions</td>
 <td><code>1e-3</code> tolerance</td>
-<td>â€”</td>
+<td>Ă˘â‚¬â€ť</td>
 </tr>
 <tr>
 <td>Render coordinates</td>
 <td><code>0.5</code> tolerance (half pixel)</td>
-<td>â€”</td>
+<td>Ă˘â‚¬â€ť</td>
 </tr>
 </tbody>
 </table>
@@ -6644,15 +6643,15 @@
 - <code>.github/workflows/test-analytics.yml</code> runs quality gates, strict coverage, analytics, and uploads artefacts on Windows and Linux.</p>
 <hr />
 <h2 id="evidence-based-testing">Evidence-Based Testing<a class="headerlink" href="#evidence-based-testing" title="Permanent link">&para;</a></h2>
-<p>Evidence tests produce <strong>artefacts</strong> (images, text files, audio) from actual engine output. They are in <code>tests/lua/evidence/</code> and write to <code>tests/lua/evidence/output/</code> (git-ignored). Golden tests then compare those artefacts against committed samples in <code>tests/lua/golden/samples/</code>.</p>
+<p>Evidence tests produce <strong>artefacts</strong> (images, text files, audio) from actual engine output. They are in <code>tests/lua/evidence/</code> and write to <code>tests/artifacts/current/</code>. Golden tests then compare those artefacts against committed samples in <code>tests/artifacts/baselines/</code>.</p>
 <p><strong>Two-step pattern:</strong>
 1. Evidence test runs, calls <code>lurek.*</code>, saves output to <code>output/&lt;module&gt;/</code>.
 2. Golden test reads saved output and committed sample, asserts they match.</p>
-<p>Never mix steps â€” an <code>it()</code> block must do either production or comparison, never both.</p>
+<p>Never mix steps Ă˘â‚¬â€ť an <code>it()</code> block must do either production or comparison, never both.</p>
 <hr />
 <h2 id="demo-tests">Demo Tests<a class="headerlink" href="#demo-tests" title="Permanent link">&para;</a></h2>
-<h3 id="headless-demo-tests-testsluademos">Headless Demo Tests (<code>tests/lua/demos/</code>)<a class="headerlink" href="#headless-demo-tests-testsluademos" title="Permanent link">&para;</a></h3>
-<p>Every folder in <code>content/games/</code> must have exactly one <code>test_&lt;name&gt;.lua</code> in <code>tests/lua/demos/</code>. Each test:
+<h3 id="headless-demo-tests-contentgamestestlua">Headless Demo Tests (<code>content/games/**/test.lua</code>)<a class="headerlink" href="#headless-demo-tests-contentgamestestlua" title="Permanent link">&para;</a></h3>
+<p>Headless demo tests now live next to the demo as <code>content/games/**/test.lua</code>. Each test:
 - Loads the demo's <code>main.lua</code> via <code>dofile()</code> or static analysis
 - Verifies the demo initialises without error
 - Runs at least one frame cycle headlessly
@@ -6674,7 +6673,7 @@
 <tr>
 <td>Runs headless?</td>
 <td>Yes</td>
-<td>No â€” needs GPU</td>
+<td>No Ă˘â‚¬â€ť needs GPU</td>
 </tr>
 <tr>
 <td>Runs in CI by default?</td>

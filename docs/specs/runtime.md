@@ -14,7 +14,7 @@
 - Namespace: `lurek.runtime`
 - Lua API surface: `41` functions, `8` types, `0` methods
 - Rust test path(s): tests/rust/unit/runtime_tests.rs, tests/rust/unit/window_tests.rs, tests/rust/ext/graphics_runtime_smoke_tests.rs, plus runtime-focused unit coverage embedded in src/runtime/messages.rs
-- Lua test path(s): tests/lua_reorg/config/test_config.lua, tests/lua_reorg/unit/test_runtime_core_unit.lua
+- Lua test path(s): tests/lua/config/test_config.lua, tests/lua/unit/test_runtime_core_unit.lua
 
 ## Summary
 

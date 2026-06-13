@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -5766,7 +5766,14 @@
 
 <h1 id="color">Color<a class="headerlink" href="#color" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>The color module provides fundamental color representations, space conversions, blending mathematics, and curated palettes for Lurek2D, supporting UI, rendering, and effects. It manages RGBA colors, supplying conversions between RGB, HSL, and HSV spaces, alongside Hex string parsing. For rendering, it computes clamped linear interpolations, alpha compositing (Porter-Duff), channel inversions, perceived luminance, gamma-to-linear conversions, and multiple blend modes. It also includes retro palettes like PICO-8, Game Boy, and NES.</p>
+<ul>
+<li>The color module gives scripts one toolbox for creation, conversion, blending, and palette-based styling.</li>
+<li>It supports RGB, HSL, HSV, and hex workflows so designers can work in the representation that fits the task.</li>
+<li>Predictable interpolation and compositing support fades, highlights, and layered UI rendering.</li>
+<li>Blend modes and luminance helpers help with effects tuning and contrast-aware presentation.</li>
+<li>Retro palettes accelerate thematic prototyping without manual color picking.</li>
+<li>The module bridges art-facing color intent with runtime-safe numeric operations.</li>
+</ul>
 <p>This module is mostly self-contained inside the <code>Foundations</code> group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekcoloradditive"><code>lurek.color.additive</code><a class="headerlink" href="#lurekcoloradditive" title="Permanent link">&para;</a></h3>

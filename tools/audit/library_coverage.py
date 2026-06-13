@@ -11,7 +11,7 @@ Measures:
       ``docs/api/lureksome.md`` (the generated human-readable API reference).
 
   3. **Test coverage** — What % of public functions are exercised by the
-      corresponding ``tests/lua_reorg/library/test_<name>_library.lua``. The audit
+      corresponding ``tests/lua/library/test_<name>_library.lua``. The audit
       accepts legacy ``@library`` markers, modern ``@covers`` markers, and
       falls back to name matching in the test body.
 
@@ -38,7 +38,7 @@ from typing import List, Optional
 
 REPO = Path(__file__).resolve().parent.parent.parent
 LIB_DIR = REPO / "library"
-TEST_LIB_DIR = REPO / "tests" / "lua_reorg" / "library"
+TEST_LIB_DIR = REPO / "tests" / "lua" / "library"
 API_MD = REPO / "docs" / "api" / "lureksome.md"
 
 # ── Lua source parsers ────────────────────────────────────────────────────────

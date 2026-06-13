@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6626,7 +6626,12 @@
 
 <h1 id="midi">Midi<a class="headerlink" href="#midi" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module handles MIDI playback and software synthesis by managing SoundFont resources. It implements a stateful transport player to control files, seeking, and loops. Additionally, it exposes per-channel mix properties like instrument selection, volume, mute, and solo controls, routing audio to the mixer.</p>
+<ul>
+<li>The midi module provides MIDI-focused playback and synthesis control backed by SoundFont rendering.</li>
+<li>It exposes transport operations such as load, play, pause, stop, seek, and loop.</li>
+<li>Channel and track controls support mute, solo, volume shaping, and instrument-level adjustment.</li>
+<li>The module gives users scriptable MIDI sequencing that plugs cleanly into the engine audio runtime.</li>
+</ul>
 <p>This module primarily collaborates with <code>audio</code>, <code>runtime</code>. Its responsibility should stay inside the <code>Platform Services</code> group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekmidiclearsoundfont"><code>lurek.midi.clearSoundFont</code><a class="headerlink" href="#lurekmidiclearsoundfont" title="Permanent link">&para;</a></h3>
@@ -6636,11 +6641,14 @@
 <p><strong>Example</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kr">do</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;content/examples/assets/audio/sample_soundfont.sf2&quot;</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">loadSoundFont</span><span class="p">(</span><span class="nv">path</span><span class="p">)</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;before clear = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">hasSoundFont</span><span class="p">()))</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">clearSoundFont</span><span class="p">()</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;after clear = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">hasSoundFont</span><span class="p">()))</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="kr">end</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">ok</span><span class="p">,</span><span class="w"> </span><span class="nv">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">pcall</span><span class="p">(</span><span class="kr">function</span><span class="p">()</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">        </span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">loadSoundFont</span><span class="p">(</span><span class="nv">path</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="kr">end</span><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;loadSoundFont skipped: &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">err</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;before clear = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">hasSoundFont</span><span class="p">()))</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">clearSoundFont</span><span class="p">()</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;after clear = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">hasSoundFont</span><span class="p">()))</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h3 id="lurekmidihassoundfont"><code>lurek.midi.hasSoundFont</code><a class="headerlink" href="#lurekmidihassoundfont" title="Permanent link">&para;</a></h3>
@@ -6667,10 +6675,14 @@
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;content/examples/assets/audio/sample_soundfont.sf2&quot;</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">clearSoundFont</span><span class="p">()</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;before load = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">hasSoundFont</span><span class="p">()))</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">loadSoundFont</span><span class="p">(</span><span class="nv">path</span><span class="p">)</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;after load = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">hasSoundFont</span><span class="p">()))</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">clearSoundFont</span><span class="p">()</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="kr">end</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">ok</span><span class="p">,</span><span class="w"> </span><span class="nv">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">pcall</span><span class="p">(</span><span class="kr">function</span><span class="p">()</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">loadSoundFont</span><span class="p">(</span><span class="nv">path</span><span class="p">)</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="kr">end</span><span class="p">)</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;load ok = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">ok</span><span class="p">))</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;loadSoundFont skipped: &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">err</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;after load = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">hasSoundFont</span><span class="p">()))</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">midi</span><span class="p">.</span><span class="nf">clearSoundFont</span><span class="p">()</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h3 id="lurekmidiloadsoundfont"><code>lurek.midi.loadSoundFont</code><a class="headerlink" href="#lurekmidiloadsoundfont" title="Permanent link">&para;</a></h3>

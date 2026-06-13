@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6696,10 +6696,29 @@
 
 <h1 id="input">Input<a class="headerlink" href="#input" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides a unified control-state and input-processing subsystem, bridging raw host hardware events into clean gameplay inputs. It monitors physical inputs across keyboards, mice, gamepads, and multi-touch panels. By translating hardware-specific codes and controller layouts into stable logical naming conventions, the system exposes a consistent, cross-platform interface for all polling and event dispatch pathways.</p>
-<p>At the device level, the keyboard system tracks held keys, layout transitions, modifier bitmasks, and repeat parameters, alongside text buffering for chat and UI fields. The mouse system tracks screen coordinates, wheel scroll deltas, and cursor settings, supporting pointer locking, warp requests, and custom hotspots. The gamepad manager handles device connection slotting, axis calibration, virtual d-pad mapping, and motor vibration commands.</p>
-<p>To support advanced gameplay actions, the system includes a serialized action-binding mapping model. Developers can bind complex logical commands to multiple physical keys or buttons, compiling configurations into shared JSON presets that support user rebinding. The action engine monitors transition events per frame, offering convenient checks for whether bindings were recently triggered, held down, or released.</p>
-<p>Specialized input handlers manage gesture detection and automation workflows. A sequential combo recognizer detects timed pattern gestures, evaluating transition deadlines and feeding progress states to gameplay scripts. Additionally, an input recorder captures sparse, frame-indexed events during gameplay. These sequences can be serialized to JSON, replayed deterministically, and seeked, supporting game automation and debug workflows.</p>
+<ul>
+<li>This module gives users a unified input layer across keyboard, mouse, gamepad, and touch devices.</li>
+<li>It normalizes hardware-specific events into stable runtime-facing controls.</li>
+<li>Keyboard state includes held/pressed/released tracking, modifiers, and optional text input behavior.</li>
+<li>Mouse APIs cover position, wheel, visibility, lock/grab state, and cursor management.</li>
+<li>Gamepad support includes connection lifecycle, axis/button polling, mapping, and vibration requests.</li>
+<li>Touch APIs expose active points, pressure, and per-frame transition state.</li>
+<li>Action bindings map logical commands to multiple physical inputs.</li>
+<li>Binding definitions can be serialized and restored, enabling rebindable controls and user presets.</li>
+<li>Action query helpers support common checks like down, pressed, released, and timing-window variants.</li>
+<li>Combo detection enables timed gesture sequences for fighting-game or rhythm-style interactions.</li>
+<li>Input recording and playback support deterministic replay for automation and debugging.</li>
+<li>Frame-indexed replay helps reproduce issues without manual re-entry.</li>
+<li>Category and conflict helpers support tooling around control-map maintenance.</li>
+<li>The module is useful for gameplay, UI navigation, accessibility mapping, and test automation.</li>
+<li>For users, it centralizes all input concerns into one scriptable control surface.</li>
+<li>It reduces per-device branching code and keeps behavior consistent across platforms.</li>
+<li>The practical value is faster control iteration and more reliable input diagnostics.</li>
+<li>It also supports robust QA through record/replay and deterministic input timelines.</li>
+<li>Overall, users get both ergonomic control APIs and advanced tooling hooks in one module.</li>
+<li>This makes input behavior easier to tune, test, and ship confidently.</li>
+</ul>
+<p>This module primarily collaborates with <code>runtime</code>. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekinputadvanceplayback"><code>lurek.input.advancePlayback</code><a class="headerlink" href="#lurekinputadvanceplayback" title="Permanent link">&para;</a></h3>
 <p>Advances playback by one frame and returns events for that frame.</p>
@@ -7718,9 +7737,9 @@
 </table>
 <p><strong>Example</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="kr">do</span>
-<a id="__codelineno-59-2" name="__codelineno-59-2" href="#__codelineno-59-2"></a><span class="w">    </span><span class="c1">-- wasPressed() is true on the first frame the key goes down; call inside event callback</span>
-<a id="__codelineno-59-3" name="__codelineno-59-3" href="#__codelineno-59-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">input</span><span class="p">.</span><span class="nf">wasPressed</span><span class="p">()</span>
-<a id="__codelineno-59-4" name="__codelineno-59-4" href="#__codelineno-59-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;wasPressed available = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="nv">lurek</span><span class="p">.</span><span class="py">input</span><span class="p">.</span><span class="py">wasPressed</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="p">))</span>
+<a id="__codelineno-59-2" name="__codelineno-59-2" href="#__codelineno-59-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">has_was_pressed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">lurek</span><span class="p">.</span><span class="py">input</span><span class="p">.</span><span class="py">wasPressed</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;function&quot;</span>
+<a id="__codelineno-59-3" name="__codelineno-59-3" href="#__codelineno-59-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">has_was_pressed</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">input</span><span class="p">.</span><span class="nf">wasPressed</span><span class="p">()</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="kc">false</span>
+<a id="__codelineno-59-4" name="__codelineno-59-4" href="#__codelineno-59-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;wasPressed available = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">has_was_pressed</span><span class="p">))</span>
 <a id="__codelineno-59-5" name="__codelineno-59-5" href="#__codelineno-59-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;result type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">v</span><span class="p">))</span>
 <a id="__codelineno-59-6" name="__codelineno-59-6" href="#__codelineno-59-6"></a><span class="kr">end</span>
 </code></pre></div>
@@ -7746,9 +7765,9 @@
 </table>
 <p><strong>Example</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a><span class="kr">do</span>
-<a id="__codelineno-61-2" name="__codelineno-61-2" href="#__codelineno-61-2"></a><span class="w">    </span><span class="c1">-- wasReleased(key) is true on the first frame the key goes up</span>
-<a id="__codelineno-61-3" name="__codelineno-61-3" href="#__codelineno-61-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">input</span><span class="p">.</span><span class="nf">wasReleased</span><span class="p">()</span>
-<a id="__codelineno-61-4" name="__codelineno-61-4" href="#__codelineno-61-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;wasReleased available = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="nv">lurek</span><span class="p">.</span><span class="py">input</span><span class="p">.</span><span class="py">wasReleased</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="p">))</span>
+<a id="__codelineno-61-2" name="__codelineno-61-2" href="#__codelineno-61-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">has_was_released</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">lurek</span><span class="p">.</span><span class="py">input</span><span class="p">.</span><span class="py">wasReleased</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;function&quot;</span>
+<a id="__codelineno-61-3" name="__codelineno-61-3" href="#__codelineno-61-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">has_was_released</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">input</span><span class="p">.</span><span class="nf">wasReleased</span><span class="p">()</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="kc">false</span>
+<a id="__codelineno-61-4" name="__codelineno-61-4" href="#__codelineno-61-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;wasReleased available = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">has_was_released</span><span class="p">))</span>
 <a id="__codelineno-61-5" name="__codelineno-61-5" href="#__codelineno-61-5"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;space released = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">v</span><span class="p">))</span>
 <a id="__codelineno-61-6" name="__codelineno-61-6" href="#__codelineno-61-6"></a><span class="kr">end</span>
 </code></pre></div>

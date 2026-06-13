@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -5702,8 +5702,19 @@
 
 <h1 id="validator">Validator<a class="headerlink" href="#validator" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides a static analysis engine designed to inspect Lua projects before runtime. By scanning source files statically, it identifies API compliance issues, broken module imports, and missing asset references early. The validation orchestrator lets teams enforce clean code standards by combining built-in checks with customizable rules.</p>
-<p>To handle large projects, the system runs checks across parallel threads and aggregates findings into structured diagnostic reports. These reports capture the location, severity, and context of each violation, feeding directly into local workflows and automated quality pipelines. Extensible rules can be loaded from TOML files or custom scripts.</p>
+<ul>
+<li>The validator module provides static pre-runtime checks for Lua project quality.</li>
+<li>It runs composable rules through a central validation engine.</li>
+<li>Built-in checks cover API usage, import resolution, and asset path existence.</li>
+<li>Violations include severity, location, identifier, and human-readable message.</li>
+<li>Report models support filtering and summary views for large result sets.</li>
+<li>Parallel execution support improves throughput on large script sets.</li>
+<li>Single-thread fallback preserves predictable behavior in constrained environments.</li>
+<li>TOML-defined rules support data-driven policy extension.</li>
+<li>Lua-backed rule adapters support project-specific checks without engine rebuild.</li>
+<li>The module performs static analysis only and does not execute scripts.</li>
+</ul>
+<p>This module is mostly self-contained inside the <code>Edge/Integration</code> group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekvalidatornewengine"><code>lurek.validator.newEngine</code><a class="headerlink" href="#lurekvalidatornewengine" title="Permanent link">&para;</a></h3>
 <p>Creates a new validation engine rooted at the given filesystem path.</p>

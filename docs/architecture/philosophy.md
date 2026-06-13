@@ -162,11 +162,11 @@ These constraints formalise test placement and layering rules. They are binding.
 
 | ID | Status | Constraint |
 |----|--------|-----------|
-| **TST-01** | Active | **Lua-first testing.** Any behaviour reachable through the `lurek.*` API must be tested in `tests/lua_reorg/`. Rust tests must not duplicate `lurek.*`-reachable coverage. |
+| **TST-01** | Active | **Lua-first testing.** Any behaviour reachable through the `lurek.*` API must be tested in `tests/lua/`. Rust tests must not duplicate `lurek.*`-reachable coverage. |
 | **TST-02** | Active | **Centralised Rust unit tests.** Rust unit tests live in `tests/rust/unit/<module>_tests.rs`. Inline `#[cfg(test)]` blocks inside `src/**/*.rs` are banned. |
 | **TST-03** | Active | **Thin Lua API wrappers.** `src/lua_api/<module>_api.rs` contains only `impl LuaUserData`, registration, and type conversions. Business logic lives in `src/<module>/` as pure Rust. |
 | **TST-04** | Active | **Thin `mod.rs`.** Every `mod.rs` contains only `pub mod X`, `pub use X::*`, module-level attributes, and doc comments. Definitions live in sibling files. |
-| **TST-05** | Active | Demo tests: headless Lua tests live in `tests/lua_reorg/demos/` (one file per demo, named `test_<name>.lua`). Screenshot tests live in `tests/demo_smoke_tests.rs` with `#[ignore]`. |
+| **TST-05** | Active | Demo tests: headless Lua tests live next to the game as `content/games/**/test.lua`. Screenshot tests live in `tests/demo_smoke_tests.rs` with `#[ignore]`. |
 | **TST-06** | Active | One test file per module per layer: `test_<module>_<layer>.lua`. No split per-sub-feature files within a layer. |
 
 See [test-framework.md](test-framework.md) for the decision tree and enforcement audit scripts.

@@ -17,7 +17,7 @@ from pathlib import Path
 from lua_artifact_lock import lua_artifact_lock
 
 ROOT = Path(__file__).resolve().parents[2]
-GOLDEN_DIR = ROOT / "tests" / "lua_reorg" / "golden"
+GOLDEN_DIR = ROOT / "tests" / "lua" / "golden"
 ARTIFACTS_DIR = ROOT / "tests" / "artifacts"
 CURRENT_DIR = ARTIFACTS_DIR / "current"
 BASELINES_DIR = ARTIFACTS_DIR / "baselines"

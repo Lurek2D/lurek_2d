@@ -13,7 +13,7 @@
 - Namespace: `lurek.overlay`
 - Lua API surface: `2` functions, `3` types, `88` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua_reorg/unit/test_overlay_unit.lua
+- Lua test path(s): tests/lua/unit/test_overlay_unit.lua
 
 ## Summary
 

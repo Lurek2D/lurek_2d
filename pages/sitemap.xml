@@ -1,599 +1,339 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://lurek2d.github.io/lurek_2d/CHANGELOG.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <loc>https://lurek2d.github.io/lurek_2d/AGENTS.html</loc>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/callbacks.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lurek2d.github.io/lurek_2d/howto.html</loc>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/rust-api.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
+    </url>
+    <url>
+         <loc>https://lurek2d.github.io/lurek_2d/architecture/AGENTS.html</loc>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/build-and-distribution.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/cag-system.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/developer-ecosystem.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/developer-workflow.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/engine-core.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/market-positioning.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/modularity-plugins.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/philosophy.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/quality-assurance.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/render-pipeline.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/scripting-bridge.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/architecture/use_cases.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/agent.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/ai.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/animation.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/app.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/audio.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/automation.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/binary.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/camera.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/charts.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/color.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/compute.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/cursor.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/dataframe.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/debugbridge.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/devtools.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/dialog.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/docs.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/dsp.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/ecs.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/effect.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/event.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/filesystem.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/flownet.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/font.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/globe.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/grep.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/html.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/i18n.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/image.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/input.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/layout.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/learning.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/light.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/log.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/mapblock.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/math.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/midi.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/minimap.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/mods.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/network.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/overlay.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/parallax.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/particle.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/pathfind.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/patterns.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/physics.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/pipeline.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/procgen.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/province.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/raycaster.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/render.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/repl.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/runtime.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/save.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/scene.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/serialize.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/spine.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/sprite.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/terminal.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/thread.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/tilemap.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/timer.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/tween.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/ui.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/validator.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/visibility.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
     <url>
          <loc>https://lurek2d.github.io/lurek_2d/modules/window.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/agent.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/ai.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/animation.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/app.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/audio.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/automation.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/binary.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/camera.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/charts.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/color.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/compute.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/cursor.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/dataframe.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/debugbridge.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/devtools.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/dialog.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/docs.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/dsp.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/ecs.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/effect.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/event.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/filesystem.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/flownet.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/font.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/globe.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/grep.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/html.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/i18n.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/image.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/input.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/layout.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/learning.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/light.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/log.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/mapblock.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/math.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/midi.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/minimap.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/mods.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/network.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/overlay.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/parallax.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/particle.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/pathfind.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/patterns.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/physics.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/pipeline.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/procgen.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/province.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/raycaster.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/render.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/repl.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/runtime.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/save.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/scene.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/serialize.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/spine.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/sprite.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/terminal.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/thread.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/tilemap.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/timer.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/tween.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/ui.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/validator.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/visibility.html</loc>
-         <lastmod>2026-06-07</lastmod>
-    </url>
-    <url>
-         <loc>https://lurek2d.github.io/lurek_2d/pages/modules/window.html</loc>
-         <lastmod>2026-06-07</lastmod>
+         <lastmod>2026-06-13</lastmod>
     </url>
 </urlset>

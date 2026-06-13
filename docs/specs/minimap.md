@@ -12,7 +12,7 @@
 - Namespace: `lurek.minimap`
 - Lua API surface: `1` functions, `1` types, `86` methods
 - Rust test path(s): tests/rust/game/minimap_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_minimap.lua, tests/lua_reorg/evidence/test_evidence_minimap.lua
+- Lua test path(s): tests/lua/unit/test_minimap.lua, tests/lua/evidence/test_evidence_minimap.lua
 
 ## Summary
 

@@ -12,7 +12,7 @@
 - Namespace: `lurek.grep`
 - Lua API surface: `7` functions, `2` types, `9` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua_reorg/unit/test_grep_unit.lua
+- Lua test path(s): tests/lua/unit/test_grep_unit.lua
 
 ## Summary
 

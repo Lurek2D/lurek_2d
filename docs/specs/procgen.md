@@ -14,7 +14,7 @@
 - Namespace: `lurek.procgen`
 - Lua API surface: `33` functions, `15` types, `37` methods
 - Rust test path(s): src/procgen/noise_tests.rs (sibling), plus inline #[cfg(test)] in all other .rs files
-- Lua test path(s): tests/lua_reorg/unit/test_procgen_unit.lua
+- Lua test path(s): tests/lua/unit/test_procgen_unit.lua
 
 ## Summary
 

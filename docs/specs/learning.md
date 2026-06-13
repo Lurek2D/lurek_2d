@@ -13,7 +13,7 @@
 - Namespace: `lurek.learning`
 - Lua API surface: `21` functions, `19` types, `137` methods
 - Rust test path(s): tests/rust/unit/learning_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_learning_core_unit.lua
+- Lua test path(s): tests/lua/unit/test_learning_core_unit.lua
 
 ## Summary
 

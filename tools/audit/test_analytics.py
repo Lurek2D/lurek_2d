@@ -3,7 +3,7 @@
 test_analytics.py — Lurek2D comprehensive test analytics.
 
 Aggregates coverage data from multiple sources (markers, describe-blocks,
-heuristics, evidence tags) into grouped, categorized reports with per-module
+heuristics, evidence files) into grouped, categorized reports with per-module
 and per-method breakdowns, letter grades, and trend comparison.
 
 Usage:
@@ -32,9 +32,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent
 LUA_API_DATA = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
-DEFAULT_LUA_TESTS_DIR = WORKSPACE_ROOT / "tests" / "lua_reorg"
-LEGACY_LUA_TESTS_DIR = WORKSPACE_ROOT / "tests" / "lua"
-LUA_TESTS_DIR = DEFAULT_LUA_TESTS_DIR if DEFAULT_LUA_TESTS_DIR.exists() else LEGACY_LUA_TESTS_DIR
+LUA_TESTS_DIR = WORKSPACE_ROOT / "tests" / "lua"
 COVERAGE_JSON = WORKSPACE_ROOT / "logs" / "data" / "lua_api_test_coverage.json"
 OUTPUT_JSON = WORKSPACE_ROOT / "logs" / "data" / "test_analytics.json"
 OUTPUT_HTML = WORKSPACE_ROOT / "logs" / "reports" / "test_analytics.html"
@@ -42,7 +40,6 @@ OUTPUT_HTML = WORKSPACE_ROOT / "logs" / "reports" / "test_analytics.html"
 # ── Regex patterns ────────────────────────────────────────────────────────────
 
 COVERS_RE = re.compile(r"^--\s*@covers\s+((?:lurek\.\w+\.\w+)|(?:\w+:\w+))\s*$")
-EVIDENCE_RE = re.compile(r"^--\s*@evidence\s+(\w+):(.+)\s*$")
 STRESS_RE = re.compile(r"^--\s*@stress\b")
 GOLDEN_RE = re.compile(r"^--\s*@golden\b")
 
@@ -207,20 +204,31 @@ def scan_markers(test_files: Dict[str, str]) -> Dict[str, Set[str]]:
 
 
 def scan_evidence(test_files: Dict[str, str]) -> Dict[str, List[str]]:
-    """Scan for @evidence markers.
+    """Collect module-owned evidence file contents.
 
-    Returns: {test_file: [evidence_type, ...]}
+    Returns: {module_name: [file_content, ...]}
     """
-    result: Dict[str, List[str]] = {}
+    result: Dict[str, List[str]] = defaultdict(list)
     for file_path, content in test_files.items():
-        evidence = []
-        for line in content.splitlines():
-            m = EVIDENCE_RE.match(line.strip())
-            if m:
-                evidence.append(f"{m.group(1)}:{m.group(2).strip()}")
-        if evidence:
-            result[file_path] = evidence
-    return result
+        if "/evidence/" not in file_path:
+            continue
+        match = re.search(r"/evidence/test_([a-z0-9_]+)_evidence\.lua$", file_path)
+        if not match:
+            continue
+        result[match.group(1)].append(content)
+    return dict(result)
+
+
+def evidence_mentions_api(content: str, lua_name: str, fn_name: str, owner_type: str) -> bool:
+    """Heuristic: does a module-owned evidence file mention this API?"""
+    lc = content.lower()
+    if lua_name.lower() in lc:
+        return True
+    if owner_type and f":{fn_name.lower()}" in lc:
+        return True
+    if f".{fn_name.lower()}" in lc or f'"{fn_name.lower()}"' in lc:
+        return True
+    return False
 
 
 def scan_describe_blocks(test_files: Dict[str, str]) -> Dict[str, Dict]:
@@ -389,15 +397,6 @@ def build_report(
     file_counts = count_test_files(LUA_TESTS_DIR)
     total_its = count_it_blocks(test_files)
 
-    # All evidence functions (flattened)
-    evidence_funcs: Set[str] = set()
-    for _file, ev_list in evidence_map.items():
-        for ev in ev_list:
-            # Extract function name from evidence if possible
-            parts = ev.split(":")
-            if len(parts) >= 2:
-                evidence_funcs.add(parts[1].strip())
-
     # Check for stress / golden test files
     stress_modules: Set[str] = set()
     golden_modules: Set[str] = set()
@@ -466,7 +465,10 @@ def build_report(
                     err_count += 1
 
             # Evidence (check if function name appears in evidence list)
-            if lua_name in evidence_funcs or fn["name"] in evidence_funcs:
+            if any(
+                evidence_mentions_api(content, lua_name, fn["name"], fn.get("owner_type", ""))
+                for content in evidence_map.get(mod_name, [])
+            ):
                 ev_count += 1
 
             if not is_marker and not is_heuristic:

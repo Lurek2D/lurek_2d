@@ -13,7 +13,7 @@
 - Namespace: `lurek.globe`
 - Lua API surface: `12` functions, `4` types, `72` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua_reorg/unit/test_globe_unit.lua
+- Lua test path(s): tests/lua/unit/test_globe_unit.lua
 
 ## Summary
 

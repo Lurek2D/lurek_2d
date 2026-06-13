@@ -13,7 +13,7 @@
 - Namespace: `lurek.dialog`
 - Lua API surface: `10` functions, `4` types, `48` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua_reorg/unit/test_dialog_sequencer_unit.lua
+- Lua test path(s): tests/lua/unit/test_dialog_sequencer_unit.lua
 
 ## Summary
 

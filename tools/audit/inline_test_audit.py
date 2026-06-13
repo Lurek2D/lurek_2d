@@ -127,17 +127,17 @@ def classify(path: Path, src_root: Path) -> tuple[str, list[str]]:
     else:
         module = parts[0]
     # Strip lua_api special case: a file src/lua_api/foo_api.rs should
-    # suggest tests/lua_reorg/unit/test_foo_unit.lua as a Lua candidate.
+    # suggest tests/lua/unit/test_foo_unit.lua as a Lua candidate.
     targets: list[str] = []
     if module == "lua_api" and path.stem.endswith("_api"):
         base = path.stem[: -len("_api")]
         targets.append(f"tests/rust/unit/{base}_tests.rs")
-        targets.append(f"tests/lua_reorg/unit/test_{base}_unit.lua")
+        targets.append(f"tests/lua/unit/test_{base}_unit.lua")
     else:
         targets.append(f"tests/rust/unit/{module}_tests.rs")
         lua_api_file = src_root / "lua_api" / f"{module}_api.rs"
         if lua_api_file.is_file():
-            targets.append(f"tests/lua_reorg/unit/test_{module}_unit.lua")
+            targets.append(f"tests/lua/unit/test_{module}_unit.lua")
     return (module, targets)
 
 

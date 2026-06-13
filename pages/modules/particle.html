@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -9006,10 +9006,29 @@
 
 <h1 id="particle">Particle<a class="headerlink" href="#particle" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module delivers a robust particle simulation subsystem designed to model dynamic visual effects like fire, smoke, rain, and explosions. At its core, the system utilizes high-performance pooling to recycle and manage thousands of active particles efficiently. Emitters control the lifecycle, spawning particles continuously or in sudden bursts, updating their positions, velocities, rotations, and lifetimes over each frame, and supporting warm-up cycles to start scenes in a fully settled state.</p>
-<p>Visual behavior is highly configurable through detailed shape distributions and environmental forces. Emitters spawn particles from diverse spatial shapes, including circles, cones, spirals, and custom user callbacks, and direct their paths using linear, radial, and tangential acceleration. The simulation integrates physical forces such as gravity, drag, orbit, and wind turbulence, and can apply gravity-based attractors or axis-aligned bounce boundaries to steer particle trajectories.</p>
-<p>For advanced presentations, the module features color and size keyframe interpolation, ribbon trails, and nested hierarchies. Particles animate their size, opacity, and color over their lifespan, rendering as textured or untextured batches. Ribbon trails track motion paths with tapered widths and smooth color gradients. Emitters can also spawn nested sub-emitters on particle death, enabling complex chain reactions like exploding firework sparks.</p>
-<p>The subsystem also integrates with physics colliders and offline visualization utilities. Particles can collide and bounce off solid shapes in the physics world, reflecting velocity with custom bounce parameters. Additionally, diagnostic tools let developers export particle snapshots and lifetime charts directly into CPU-side image buffers. This simplifies testing, tuning, and asset design processes without affecting the active simulation loops.</p>
+<ul>
+<li>This module gives users a high-volume particle simulation system for gameplay VFX and atmospheric effects.</li>
+<li>Pool-based runtime management keeps large particle counts efficient and stable.</li>
+<li>Emitters support continuous, burst, and warm-up driven spawning patterns.</li>
+<li>Shape controls support varied spawn distributions, including custom callback-defined emission.</li>
+<li>Force models include gravity, drag, turbulence, orbit, and attractor behavior.</li>
+<li>Bounce and bounds controls shape movement within scene constraints.</li>
+<li>Keyframe-driven color, alpha, and size interpolation support expressive lifetime animation.</li>
+<li>Trail systems provide ribbon-style motion accents for fast-moving effects.</li>
+<li>Sub-emitter support enables chained effects like secondary bursts on particle death.</li>
+<li>Physics collision integration supports particle responses to world colliders.</li>
+<li>Preset constructors speed up authoring for common effects such as fire, smoke, and rain.</li>
+<li>Render paths support textured and non-textured particle output.</li>
+<li>Debug draw-to-image tools help tune effects and capture evidence artifacts.</li>
+<li>Lifecycle chart output improves observability of spawn and decay dynamics.</li>
+<li>Optional emitter seeds make particle playback deterministic for tests, evidence, and replay capture.</li>
+<li>The module is useful for combat impacts, weather, ambient motion, and UI accents.</li>
+<li>For users, it centralizes particle behavior rather than scattering custom emitter logic.</li>
+<li>It balances artistic flexibility with deterministic, test-friendly controls.</li>
+<li>Overall, users get a production-ready VFX runtime in one script API.</li>
+<li>This enables richer scenes with less effect-specific boilerplate.</li>
+</ul>
+<p>This module primarily collaborates with <code>color</code>, <code>image</code>, <code>math</code>, <code>physics</code>, <code>render</code>, <code>runtime</code>. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekparticledrawlifecycletoimage"><code>lurek.particle.drawLifecycleToImage</code><a class="headerlink" href="#lurekparticledrawlifecycletoimage" title="Permanent link">&para;</a></h3>
 <p>Draws a lifecycle chart image from <code>(step, count)</code> snapshot tables.</p>
@@ -9065,9 +9084,9 @@
 <p><strong>Example</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kr">do</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">snapshots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nv">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">},</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nv">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="p">},</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nv">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="p">},</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">},</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="p">}</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">particle</span><span class="p">.</span><span class="nf">drawLifecycleToImage</span><span class="p">(</span><span class="nv">snapshots</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">)</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lifecycle type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">image</span><span class="p">:</span><span class="nf">type</span><span class="p">())</span>
@@ -9092,7 +9111,7 @@
 <tr>
 <td><code>path</code></td>
 <td>string</td>
-<td>TOML file path.</td>
+<td>TOML file path. The TOML config may include <code>seed</code> for deterministic emission.</td>
 </tr>
 </tbody>
 </table>
@@ -9113,8 +9132,8 @@
 </table>
 <p><strong>Example</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kr">do</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;logs/particle_example.toml&quot;</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">filesystem</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="nv">path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;max_particles = 96</span><span class="se">\n</span><span class="s2">emission_rate = 18.0</span><span class="se">\n</span><span class="s2">lifetime_min = 0.2</span><span class="se">\n</span><span class="s2">lifetime_max = 0.8</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;save/particle_example.toml&quot;</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nv">lurek</span><span class="p">.</span><span class="py">filesystem</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="nv">path</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;seed = 42</span><span class="se">\n</span><span class="s2">max_particles = 96</span><span class="se">\n</span><span class="s2">emission_rate = 18.0</span><span class="se">\n</span><span class="s2">lifetime_min = 0.2</span><span class="se">\n</span><span class="s2">lifetime_max = 0.8</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">ps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">particle</span><span class="p">.</span><span class="nf">fromTOML</span><span class="p">(</span><span class="nv">path</span><span class="p">)</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">ps</span><span class="p">:</span><span class="nf">type</span><span class="p">())</span>
@@ -9185,7 +9204,7 @@
 <tr>
 <td><code>config?</code></td>
 <td>table</td>
-<td>Particle config table.</td>
+<td>Particle config table. Supports <code>seed</code> for deterministic emission and reset behavior.</td>
 </tr>
 </tbody>
 </table>
@@ -9207,15 +9226,16 @@
 <p><strong>Example</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kr">do</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">ps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">particle</span><span class="p">.</span><span class="nf">newSystem</span><span class="p">({</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">        </span><span class="nv">maxParticles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">128</span><span class="p">,</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">        </span><span class="nv">emissionRate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">        </span><span class="nv">lifetimeMin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.25</span><span class="p">,</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">        </span><span class="nv">lifetimeMax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.75</span><span class="p">,</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="p">})</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">ps</span><span class="p">:</span><span class="nf">type</span><span class="p">())</span>
-<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;buffer = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">ps</span><span class="p">:</span><span class="nf">getBufferSize</span><span class="p">())</span>
-<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="kr">end</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">        </span><span class="nv">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">        </span><span class="nv">maxParticles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">128</span><span class="p">,</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">        </span><span class="nv">emissionRate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">        </span><span class="nv">lifetimeMin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.25</span><span class="p">,</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">        </span><span class="nv">lifetimeMax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.75</span><span class="p">,</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="p">})</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">ps</span><span class="p">:</span><span class="nf">type</span><span class="p">())</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;buffer = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">ps</span><span class="p">:</span><span class="nf">getBufferSize</span><span class="p">())</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
 <h3 id="lurekparticlenewtrail"><code>lurek.particle.newTrail</code><a class="headerlink" href="#lurekparticlenewtrail" title="Permanent link">&para;</a></h3>
@@ -10680,7 +10700,7 @@
 <tr>
 <td><code>config_tbl</code></td>
 <td>table</td>
-<td>Particle config table.</td>
+<td>Particle config table. Supports <code>seed</code> for deterministic sub-emission.</td>
 </tr>
 <tr>
 <td><code>burst_count?</code></td>
@@ -10723,7 +10743,7 @@
 <tr>
 <td><code>config_tbl</code></td>
 <td>table</td>
-<td>Particle config table.</td>
+<td>Particle config table. Supports <code>seed</code> for deterministic sub-systems.</td>
 </tr>
 </tbody>
 </table>

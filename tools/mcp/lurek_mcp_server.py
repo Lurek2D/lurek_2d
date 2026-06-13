@@ -903,7 +903,7 @@ TOOLS: dict[str, ToolSpec] = {
     ),
     "lua_api_test_coverage": ToolSpec(
         name="lua_api_test_coverage",
-        description="Measure Lua API coverage in `tests/lua_reorg/unit` using explicit `@covers` markers, describe() targets, and optional heuristic fallback.",
+        description="Measure Lua API coverage in `tests/lua/unit` using explicit `@covers` markers, describe() targets, and optional heuristic fallback.",
         input_schema={
             "type": "object",
             "properties": {

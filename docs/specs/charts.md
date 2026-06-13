@@ -12,7 +12,7 @@
 - Namespace: `lurek.charts`
 - Lua API surface: `7` functions, `5` types, `32` methods
 - Rust test path(s): tests/rust/unit/charts_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_charts_core_unit.lua
+- Lua test path(s): tests/lua/unit/test_charts_core_unit.lua
 
 ## Summary
 

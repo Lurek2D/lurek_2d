@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -7158,12 +7158,42 @@
 
 <h1 id="procgen">Procgen<a class="headerlink" href="#procgen" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides a deterministic procedural generation subsystem that powers the repeatable synthesis of terrain, layouts, names, and networks. All operations revolve around a compact, seeded linear congruential generator that provides dependable randomness. The core noise engines deliver multi-dimensional Perlin, Simplex, and cellular Worley noise. They support fractal octave combinators for rugged textures, domain warping, tileable loops, and multi-threaded parallel generation for massive maps.</p>
-<p>Terrain elevation and climate systems are built from these raw scalar fields. The heightmap generator stacks noise octaves and simulates simple hydraulic erosion to form realistic hills and river basins. These heightmaps feed into a stateless biome classifier, which maps temperature, elevation, and moisture thresholds onto geographical regions like forests, deserts, and oceans. The classifier supports palette color mappings to facilitate direct visual previews.</p>
-<p>For indoor environments, the toolkit features structured dungeon layouts. The Binary Space Partitioning algorithm splits rectangular zones recursively, placing rooms inside qualifying leaves and carving connecting corridors. In contrast, the scatter dungeon generator arranges independent rooms randomly before connecting them. Both generators support seeded reproducibility and stamp handcrafted prefab templates into qualifying rooms.</p>
-<p>Natural and emergent simulations are modeled using cellular systems. Organic cave-in rules use flat-grid cellular automata to refine noisy initial states into smooth caverns. Additionally, a stateful sandbox material simulator simulates falling sand, spreading fire, rising gas, and flowing liquids. This simulator uses alternating directional sweeps to avoid structural bias, and supports direct grid painting, byte serialization, and image exports.</p>
-<p>Branching growth and spatial placements are handled by grammatical and sampling models. The L-system engine expands symbolic axioms through production rules, interpreting strings as turtle-graphics instructions to generate trees or rivers. Poisson disk sampling generates evenly spaced coordinate points to place foliage or loot without clustering. A Voronoi field generator partitions grids into regional cells based on nearest feature points, which is useful for political borders.</p>
-<p>Finally, the module provides constraint-based collapses, overworld graph synthesis, and name generators. The Wave Function Collapse engine generates intricate tile matrices based on adjacency constraints and tile frequencies. Overworld graphs map regional nodes, wire travel links, and calculate minimum spanning trees to organize quests. For narrative flavor, a Markov chain name generator learns character transitions from source corpora to invent novel, stable names.</p>
+<ul>
+<li>The procgen module provides deterministic synthesis of maps, structures, names, and procedural data fields.</li>
+<li>Seeded randomness is centralized so outputs are reproducible across runs and test pipelines.</li>
+<li>Noise primitives include Perlin, Simplex, and Worley generation.</li>
+<li>Fractal combinations support richer terrain and texture-like scalar fields.</li>
+<li>Domain warping and tileable variants support seamless looping and stylized maps.</li>
+<li>Parallel generation paths support large grid workloads.</li>
+<li>Heightmap generation converts sampled fields into usable elevation surfaces.</li>
+<li>Optional erosion passes add terrain smoothing and channel-like shaping.</li>
+<li>Biome classification maps elevation, moisture, and temperature into discrete categories.</li>
+<li>Biome outputs include visual-friendly color mapping.</li>
+<li>BSP dungeon generation creates partitioned room-and-corridor structures.</li>
+<li>Room-scatter generation provides alternative stochastic dungeon layouts.</li>
+<li>Prefab stamping blends authored motifs into procedural results.</li>
+<li>Cellular automata generation supports cave-like map structures.</li>
+<li>Cellular worlds support emergent sand/liquid/gas/fire style simulations.</li>
+<li>Flood-fill helpers support region extraction and connectivity tooling.</li>
+<li>Poisson disk sampling supports evenly spaced placement patterns.</li>
+<li>Voronoi support partitions space into nearest-seed regions.</li>
+<li>L-systems support grammar-based branching structures and turtle output.</li>
+<li>Wave Function Collapse supports adjacency-constrained tile synthesis.</li>
+<li>WFC includes weighted tile selection and contradiction retry behavior.</li>
+<li>World graph generation supports region topology and route analysis.</li>
+<li>Graph tools include shortest-path and spanning-tree utilities.</li>
+<li>Markov name generation supports synthetic naming from sample corpora.</li>
+<li>The module exposes both low-level primitives and high-level generators.</li>
+<li>It is designed for both rapid prototyping and production content pipelines.</li>
+<li>The module owns generation logic, not gameplay interpretation.</li>
+<li>It does not own renderer policy, but supports preview-oriented outputs.</li>
+<li>Determinism and parameterization are core quality goals.</li>
+<li>APIs are script-friendly and suitable for automated regression checks.</li>
+<li>The module remains in Foundations for broad reuse across genres.</li>
+<li>Overall, procgen is the data-synthesis backbone for procedural world workflows.</li>
+<li>It lets teams scale content variety without proportional authoring cost.</li>
+</ul>
+<p>This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekprocgenbiomecolor"><code>lurek.procgen.biomeColor</code><a class="headerlink" href="#lurekprocgenbiomecolor" title="Permanent link">&para;</a></h3>
 <p>Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.</p>
@@ -9747,7 +9777,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-95-1" name="__codelineno-95-1" href="#__codelineno-95-1"></a><span class="kr">do</span>
 <a id="__codelineno-95-2" name="__codelineno-95-2" href="#__codelineno-95-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">ca</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">procgen</span><span class="p">.</span><span class="nf">newCellular</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
 <a id="__codelineno-95-3" name="__codelineno-95-3" href="#__codelineno-95-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">img</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ca</span><span class="p">:</span><span class="nf">toImageData</span><span class="p">()</span>
-<a id="__codelineno-95-4" name="__codelineno-95-4" href="#__codelineno-95-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;toImageData type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">img</span><span class="p">:</span><span class="nf">type</span><span class="p">())</span>
+<a id="__codelineno-95-4" name="__codelineno-95-4" href="#__codelineno-95-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;toImageData bytes = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="o">#</span><span class="nv">img</span><span class="p">)</span>
 <a id="__codelineno-95-5" name="__codelineno-95-5" href="#__codelineno-95-5"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />
@@ -9806,7 +9836,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-97-1" name="__codelineno-97-1" href="#__codelineno-97-1"></a><span class="kr">do</span>
 <a id="__codelineno-97-2" name="__codelineno-97-2" href="#__codelineno-97-2"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">ca</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">procgen</span><span class="p">.</span><span class="nf">newCellular</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span>
 <a id="__codelineno-97-3" name="__codelineno-97-3" href="#__codelineno-97-3"></a><span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">img</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ca</span><span class="p">:</span><span class="nf">toImageDataRegion</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
-<a id="__codelineno-97-4" name="__codelineno-97-4" href="#__codelineno-97-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;toImageDataRegion type = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">img</span><span class="p">:</span><span class="nf">type</span><span class="p">())</span>
+<a id="__codelineno-97-4" name="__codelineno-97-4" href="#__codelineno-97-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;toImageDataRegion bytes = &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="o">#</span><span class="nv">img</span><span class="p">)</span>
 <a id="__codelineno-97-5" name="__codelineno-97-5" href="#__codelineno-97-5"></a><span class="kr">end</span>
 </code></pre></div>
 <hr />

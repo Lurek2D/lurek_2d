@@ -246,7 +246,7 @@ The entire engine source is a teaching artefact: 5-tier module architecture, DAG
 
 ### Module Combination
 
-Students only touch `lurek.*` Lua API. Instructors optionally explore `src/` Rust modules, `tests/lua_reorg/`, `tests/rust/`, `docs/specs/`.
+Students only touch `lurek.*` Lua API. Instructors optionally explore `src/` Rust modules, `tests/lua/`, `tests/rust/`, `docs/specs/`.
 
 ### Benefits
 
@@ -505,7 +505,7 @@ GPU modules (`render`, `audio`, `physics`) are disabled in headless mode.
 - `dataframe` provides pandas-like in-memory data processing without Python.
 - `thread` enables parallel worker VMs for embarrassingly parallel jobs.
 - `agent` connects to local Ollama for LLM-augmented pipelines.
-- Existing test harness (`tests/lua_reorg_tests.rs`) demonstrates the headless pattern.
+- Existing test harness (`tests/lua_tests.rs`) demonstrates the headless pattern.
 
 ### Constraints
 
@@ -1426,7 +1426,7 @@ Workflow:
 
 ### Description
 
-Lurek2D already ships a headless Lua test harness (`tests/lua_reorg_tests.rs`) used by its own CI. The same pattern can be adopted by external projects: run Lua scripts headlessly to test game logic, simulate player input, validate save/load round-trips, or benchmark frame time.
+Lurek2D already ships a headless Lua test harness (`tests/lua_tests.rs`) used by its own CI. The same pattern can be adopted by external projects: run Lua scripts headlessly to test game logic, simulate player input, validate save/load round-trips, or benchmark frame time.
 
 The `automation` module (`lurek.automation.*`) records and replays input sequences — enabling regression tests that verify pixel-accurate game behaviour.
 

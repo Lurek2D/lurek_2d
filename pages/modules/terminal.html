@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -8330,12 +8330,25 @@
 
 <h1 id="terminal">Terminal<a class="headerlink" href="#terminal" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module introduces a highly interactive, character-grid emulator that maps text-based layouts directly into the visual window. By translating virtual screen positions into structured cell matrices, it allows developers to build classic console-like displays and terminal environments within the game runtime. The system stores detailed cell attributes including glyphs, foreground and background colors, and custom styles, serving as the foundational layer for text-mode graphics.</p>
-<p>To drive dynamic interactions, the terminal incorporates an advanced ANSI parser that extracts rich styling flags, bold formatting, and full RGB colors from incoming byte streams. This parser coexists with a lightweight syntax highlighter that applies regex-based rules to colorize text on the fly. Furthermore, an intelligent completion engine processes command histories and cycles candidates, offering console navigation and text-entry assistance.</p>
-<p>Beyond simple character output, the module features an interactive widget framework built specifically for cell-bound layouts. Standard components include labels, action buttons, scrollable lists, text input fields, and decorative border panels drawn with box characters. These widgets share a unified event model and input dispatcher that maps raw mouse coordinates and key presses to the active widget layout, keeping keyboard focus and mouse interactions intuitive.</p>
-<p>Finally, the terminal integrates a powerful render path that projects the active cells and widget compositions directly onto the screen. This system also handles software image snapshots and exports terminal content to static files. When cell metrics or display scales shift, the engine refits the main window to maintain crisp, pixel-perfect text presentation, completing the module's role as a self-contained environment.</p>
-<p>Recent runtime work keeps that composition path cheaper by reusing a scratch buffer instead of cloning the full grid for each render-oriented export. Public behavior is unchanged, but the module now does less transient allocation while flattening widgets onto the cell surface.</p>
-<p>The widget interaction contract is also locked down more explicitly by regression coverage around focus changes, overlapping widgets, widget removal, and nested panel composition. The module still treats focus and nesting rules as first-class terminal behavior rather than incidental UI details.</p>
+<ul>
+<li>This module gives users an in-engine terminal surface built on a styled character-cell grid.</li>
+<li>Cell state tracks glyphs and color attributes for text-mode rendering and interaction.</li>
+<li>ANSI parsing support enables rich styled output from terminal-like streams.</li>
+<li>Syntax highlighting support applies rule-driven color spans for readable text contexts.</li>
+<li>Completion support improves command-entry ergonomics with candidate cycling.</li>
+<li>Scrollback and command history support persistent console workflows.</li>
+<li>Widget support includes labels, buttons, lists, text boxes, borders, and panels.</li>
+<li>Focus and input routing keep keyboard and mouse behavior coherent across widget compositions.</li>
+<li>Cell-to-pixel rendering keeps terminal output crisp under scale and resize changes.</li>
+<li>Auto-resize and cell-size controls support predictable layout fitting to window dimensions.</li>
+<li>Render-to-image paths support terminal snapshots for tooling and evidence.</li>
+<li>Utility APIs support ANSI strip/parse and command-history operations.</li>
+<li>The module is useful for in-game consoles, debug UIs, and text-heavy tool interfaces.</li>
+<li>For users, it centralizes terminal behavior rather than reimplementing ad-hoc text UI layers.</li>
+<li>It supports both low-level cell drawing and higher-level widget composition.</li>
+<li>Overall, users get a complete interactive terminal runtime with rendering and input integration.</li>
+</ul>
+<p>This module primarily collaborates with <code>image</code>, <code>render</code>, <code>runtime</code>. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekterminaladdcompletion"><code>lurek.terminal.addCompletion</code><a class="headerlink" href="#lurekterminaladdcompletion" title="Permanent link">&para;</a></h3>
 <p>Registers a candidate string for tab-completion in the shared completion engine.</p>

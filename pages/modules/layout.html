@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -5458,8 +5458,15 @@
 
 <h1 id="layout">Layout<a class="headerlink" href="#layout" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides graph and hierarchy layouts to compute 2D coordinates for nodes. It offers layered placement for directed graphs to reduce crossings, recursive allocations for compact trees, and force-directed simulations that arrange relation webs organically.</p>
-<p>For visual polish, the system features grid snapping and centering. These snap coordinates to consistent grids and center diagrams inside view targets without altering topology, ensuring clean, readable node arrangements.</p>
+<ul>
+<li>The layout module gives users automatic 2D node placement for graph-like and tree-like visuals.</li>
+<li>It supports layered DAG layout, recursive tree layout, and force layout for organic relation maps.</li>
+<li>Shared result formats make it easy to swap strategies without changing integration code.</li>
+<li>Grid snapping and centering helpers polish raw coordinates for editor and HUD presentation.</li>
+<li>The module is useful for tech trees, dialog graphs, dependency maps, and debug topology views.</li>
+<li>It replaces manual positioning with repeatable, scriptable layout computation.</li>
+</ul>
+<p>This module is mostly self-contained inside the <code>Edge/Integration</code> group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lureklayoutcenterinarea"><code>lurek.layout.centerInArea</code><a class="headerlink" href="#lureklayoutcenterinarea" title="Permanent link">&para;</a></h3>
 <p>Centers the layout within a given area.</p>

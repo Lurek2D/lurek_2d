@@ -3,7 +3,7 @@
 Checks every library directory for required structure and conventions:
   - Has init.lua (the entry point loaded by require()).
   - Has example.lua demonstrating usage.
-  - Has a corresponding test at tests/lua_reorg/library/test_<name>_library.lua.
+  - Has a corresponding test at tests/lua/library/test_<name>_library.lua.
   - init.lua returns a table (scans for 'return' at file end).
   - init.lua contains at least one LDoc-style tag (--- @, --- @module, etc.).
   - No library uses raw global writes (enforces local-only exports).
@@ -27,18 +27,19 @@ from pathlib import Path
 
 ROOT = Path(".").resolve()
 LIBRARY_DIR = ROOT / "library"
-TESTS_DIR = ROOT / "tests" / "lua_reorg" / "library"
+TESTS_DIR = ROOT / "tests" / "lua" / "library"
 
 
 def validate_one(lib_dir: Path, strict: bool = False) -> list[dict]:
     """Validate a single library directory. Returns findings list."""
     findings: list[dict] = []
     name = lib_dir.name
+    test_stem = re.sub(r"[^A-Za-z0-9]+", "_", name).strip("_")
 
     # --- Required files ---
     init_lua = lib_dir / "init.lua"
     example_lua = lib_dir / "example.lua"
-    test_file = TESTS_DIR / f"test_{name}_library.lua"
+    test_file = TESTS_DIR / f"test_{test_stem}_library.lua"
 
     if not init_lua.exists():
         findings.append({
@@ -58,7 +59,18 @@ def validate_one(lib_dir: Path, strict: bool = False) -> list[dict]:
 
     # --- init.lua quality checks ---
     if init_lua.exists():
-        text = init_lua.read_text(encoding="utf-8")
+        try:
+            text = init_lua.read_text(encoding="utf-8")
+        except UnicodeDecodeError as exc:
+            findings.append({
+                "level": "ERROR" if strict else "WARN",
+                "library": name,
+                "message": (
+                    "init.lua is not valid UTF-8 "
+                    f"({exc.reason} at byte {exc.start})"
+                ),
+            })
+            return findings
         lines = text.splitlines()
 
         # Check returns a table

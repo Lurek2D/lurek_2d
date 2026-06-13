@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -5744,8 +5744,17 @@
 
 <h1 id="log">Log<a class="headerlink" href="#log" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module provides structured logging, letting developers filter and route runtime messages. It hosts a logging facade that dispatches level-tagged entries and key-value fields. Enforcing severity gates early minimizes performance overhead, keeping diagnostics highly efficient.</p>
-<p>To direct outputs, the system manages a sink registry. Logs can target console streams, memory buffers, or rotating files in plain text, JSON, or NDJSON formats, serving both human inspectors and automated analysis tools.</p>
+<ul>
+<li>This module gives users structured runtime logging with severity control and flexible output routing.</li>
+<li>It supports tagged messages and key-value fields for machine-friendly and human-friendly diagnostics.</li>
+<li>Global level gates reduce noise and overhead by filtering early.</li>
+<li>Sink management supports console, memory, file, rotating-file, and callback outputs.</li>
+<li>Multiple output formats enable both readable logs and ingestion-ready streams.</li>
+<li>Memory sink access supports in-game debug panels and test assertions.</li>
+<li>File rotation controls support long sessions without unbounded log growth.</li>
+<li>For users, this module centralizes diagnostics flow instead of scattering print logic across scripts.</li>
+</ul>
+<p>This module primarily collaborates with <code>binary</code>, <code>runtime</code>. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lureklogaddsink"><code>lurek.log.addSink</code><a class="headerlink" href="#lureklogaddsink" title="Permanent link">&para;</a></h3>
 <p>Adds a memory, file, rotating, or callback sink from a config table.</p>

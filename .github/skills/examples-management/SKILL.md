@@ -1,6 +1,6 @@
-﻿---
+---
 name: examples-management
-description: "Load this skill when adding or reviewing content/examples/, content/snippets/, content/games/, or tests/lua_reorg/evidence files that demonstrate lurek API usage and output artifacts. Skip it for engine Rust, docs/, or CAG work."
+description: "Load this skill when adding or reviewing content/examples/, content/snippets/, content/games/, or tests/lua/evidence files that demonstrate lurek API usage and output artifacts. Skip it for engine Rust, docs/, or CAG work."
 ---
 # examples-management
 
@@ -13,7 +13,7 @@ description: "Load this skill when adding or reviewing content/examples/, conten
 - Review content/games/ example content.
 - Check example README or conf files.
 - Improve API coverage through examples.
-- Add or update API evidence generators in tests/lua_reorg/evidence/.
+- Add or update API evidence generators in tests/lua/evidence/.
 
 ## When To Skip
 - Engine Rust code.
@@ -33,7 +33,7 @@ description: "Load this skill when adding or reviewing content/examples/, conten
 - Use VS Code placeholders in snippet bodies so non-AI users can tab through parameters and variable names after insertion.
 - Snippet coverage is module-level, not per-function parity. Use `tools/python.cmd tools/audit/snippet_coverage.py` to check how many snippets exist for each Lua API module and snippet density against API item counts.
 - Source of truth is `content/snippets/*.lua`; generated extension artifact is `extension/vscode/data/snippets.json` via `tools/python.cmd tools/snippets/gen_vscode_snippets.py`.
-- Evidence workflow for `tests/lua_reorg/evidence/`: keep setup small, call the real `lurek.*` API being proven, and write one deterministic artifact per case under `tests/artifacts/current/<module>/`.
+- Evidence workflow for `tests/lua/evidence/`: keep setup small, call the real `lurek.*` API being proven, and write one deterministic artifact per case under `tests/artifacts/current/<module>/`.
 - Evidence artifacts must be produced by engine API output paths. Do not replace missing engine output paths with handmade chart drawing that hides API behavior.
 - If a module has no image output method, write a deterministic text/JSON artifact from real API state instead of synthetic pixel rendering.
 - Prefer one clear concept per evidence case. Avoid giant merged files with repeated blocks and avoid copying the same scaffold into many tests.
@@ -45,7 +45,7 @@ description: "Load this skill when adding or reviewing content/examples/, conten
 - content/examples/
 - content/snippets/
 - content/games/
-- tests/lua_reorg/evidence/
+- tests/lua/evidence/
 - tools/audit/example_coverage.py
 - tools/audit/snippet_coverage.py
 - logs/reports/coverage_gaps.md

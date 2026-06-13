@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-lua_nonunit_test_coverage.py - Audit canonical non-unit Lua tests in tests/lua_reorg.
+lua_nonunit_test_coverage.py - Audit canonical non-unit Lua tests in tests/lua.
 
 Unit tests remain the only category that must reach 100% public API coverage.
 This tool audits the remaining canonical Lua suites so they can still be
@@ -9,9 +9,8 @@ tracked consistently:
 - integration: markers should name the APIs actually exercised by the scenario
 - stress:      1 API = 1 @stress marker = 1 it() block
 - security:    1 API = 1 @security marker = 1 it() block
-- evidence:    one it() block may declare one or more @evidence markers,
-               but each marker must point at an API the block actually
-               generates evidence for
+- evidence:    one module-owned file should demonstrate one module and each
+               it() block should produce a meaningful artifact for that module
 
 The report also builds a non-unit API ownership map:
     API -> category -> file -> it() description
@@ -20,7 +19,7 @@ Usage:
     python tools/audit/lua_nonunit_test_coverage.py
     python tools/audit/lua_nonunit_test_coverage.py --json
     python tools/audit/lua_nonunit_test_coverage.py --category stress
-    python tools/audit/lua_nonunit_test_coverage.py --path tests/lua_reorg/evidence
+    python tools/audit/lua_nonunit_test_coverage.py --path tests/lua/evidence
 """
 
 from __future__ import annotations
@@ -46,7 +45,7 @@ def _configure_stdout_utf8() -> None:
 
 ROOT = Path(__file__).resolve().parents[2]
 API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
-TESTS_ROOT = ROOT / "tests" / "lua_reorg"
+TESTS_ROOT = ROOT / "tests" / "lua"
 
 
 class ApiEntry(NamedTuple):
@@ -132,6 +131,7 @@ CATEGORY_RULES: dict[str, CategoryRule] = {
         name_pattern=r"^test_[a-z0-9_]+_evidence\.lua$",
         require_exactly_one=False,
         validate_against_known_api=True,
+        require_min_markers=0,
     ),
     "golden": CategoryRule(
         name="golden",
@@ -377,11 +377,19 @@ def detect_category(path: Path) -> Optional[str]:
     return None
 
 
+def evidence_owner_from_name(path: Path) -> Optional[str]:
+    match = re.match(r"^test_([a-z0-9_]+)_evidence\.lua$", path.name)
+    if not match:
+        return None
+    return match.group(1)
+
+
 def audit_file(
     path: Path,
     known_apis: Set[str],
     return_types: dict[str, str],
     heuristic_body_check: bool,
+    api_to_module: dict[str, str],
 ) -> tuple[List[Finding], List[MarkerOccurrence], dict[str, object]]:
     category = detect_category(path)
     if not category:
@@ -416,17 +424,36 @@ def audit_file(
         )
 
     seen_primary: dict[str, List[tuple[int, str]]] = defaultdict(list)
+    evidence_owner = evidence_owner_from_name(path) if category == "evidence" else None
 
     for block in blocks:
         markers = collect_preceding_markers(lines, block.line)
         primary_refs = [ref for name, ref in markers if name == rule.marker]
         marker_names = [name for name, _ in markers]
         used_apis = heuristic_api_refs(block.body, return_types, known_apis)
+        if category == "evidence" and evidence_owner:
+            primary_refs = sorted(
+                api_ref
+                for api_ref in used_apis
+                if api_to_module.get(api_ref) == evidence_owner
+            )
 
         if primary_refs:
             stats["marked_blocks"] += 1
 
-        if not primary_refs and rule.require_min_markers > 0:
+        if category == "evidence":
+            if any(name == "evidence" for name in marker_names):
+                findings.append(
+                    Finding(
+                        file=rel,
+                        line=block.line,
+                        category=category,
+                        code="legacy-evidence-marker",
+                        message="Remove legacy -- @evidence markers; evidence ownership comes from the module-owned file and rationale comments.",
+                        it_description=block.description,
+                    )
+                )
+        elif not primary_refs and rule.require_min_markers > 0:
             findings.append(
                 Finding(
                     file=rel,
@@ -601,7 +628,7 @@ def render_text(report: dict[str, object]) -> str:
         "Rules:",
         "- unit tests alone must reach 100% public API coverage",
         "- stress/security: 1 API = 1 marker = 1 it()",
-        "- evidence: one it() may carry multiple @evidence markers for APIs that the artifact actually demonstrates",
+        "- evidence: module-owned files should use rationale comments above each it() and demonstrate the owner module with produced artifacts",
         "- integration: markers should match the APIs actually used in the scenario",
         "",
         "Category summary:",
@@ -631,7 +658,7 @@ def render_text(report: dict[str, object]) -> str:
 def main() -> int:
     _configure_stdout_utf8()
 
-    parser = argparse.ArgumentParser(description="Audit canonical non-unit Lua tests in tests/lua_reorg.")
+    parser = argparse.ArgumentParser(description="Audit canonical non-unit Lua tests in tests/lua.")
     parser.add_argument("--json", action="store_true", help="Print the full report as JSON.")
     parser.add_argument("--path", metavar="PATH", help="Limit audit to a file or directory relative to repo root.")
     parser.add_argument(
@@ -649,6 +676,7 @@ def main() -> int:
     entries = load_api()
     known_apis = {entry.lua_name for entry in entries}
     return_types = build_return_type_map(entries)
+    api_to_module = {entry.lua_name: entry.module for entry in entries}
 
     findings: List[Finding] = []
     occurrences: List[MarkerOccurrence] = []
@@ -658,7 +686,7 @@ def main() -> int:
         category = detect_category(path)
         if category is None:
             continue
-        f, o, stats = audit_file(path, known_apis, return_types, args.heuristic_body_check)
+        f, o, stats = audit_file(path, known_apis, return_types, args.heuristic_body_check, api_to_module)
         findings.extend(f)
         occurrences.extend(o)
         if stats:

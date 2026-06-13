@@ -6,10 +6,10 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
 
 ## Mission
 - Audit and fix Lua test coverage and structure for public `lurek.*` APIs.
-- Enforce canonical ownership in `tests/lua_reorg/unit/`: `1 API = 1 unit it() = 1 directly-adjacent @covers`.
+- Enforce canonical ownership in `tests/lua/unit/`: `1 API = 1 unit it() = 1 directly-adjacent @covers`.
 - For canonical non-unit suites, enforce:
   - `stress/security`: `1 API = 1 family marker = 1 it()`
-  - `evidence`: one `it()` may carry multiple `@evidence` markers if the artifact truly demonstrates each marked API; this category is about producing evidence artifacts successfully
+  - `evidence`: module-owned files should use prose rationale comments above each `it()` and produce artifacts that genuinely demonstrate the owner module
   - `golden`: compare current artifacts to stored reference artifacts or baselines and fail on unacceptable drift
   - `integration`: markers should match the APIs actually exercised by each scenario
 
@@ -30,12 +30,12 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
 ## Workflow
 - Run Lua API coverage and structure audits before reading many test files.
 - Start unit-suite status with `tools/python.cmd tools/audit/unit_test_api_coverage.py` and read these counts first: total Lua APIs, APIs with exactly one unit owner test, APIs with no Lua unit owner test, APIs duplicated across multiple unit `it()` blocks.
-- For non-unit suites, run `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py` and read these counts first: category totals, duplicate primary markers in `stress/security`, evidence marker validity, and integration marker mismatches.
-- Compare audit output with `tests/lua_reorg/` canonical files and harness registration.
+- For non-unit suites, run `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py` and read these counts first: category totals, duplicate primary markers in `stress/security`, evidence file ownership and rationale compliance, and integration marker mismatches.
+- Compare audit output with `tests/lua/` canonical files and harness registration.
 - Report missing `@covers`, structure issues, uncovered public APIs, and duplicated API owners first.
-- For non-unit findings, report file naming issues, missing family markers, duplicate primary markers in `stress/security`, invalid or unknown `@evidence` markers, and integration marker mismatches.
+- For non-unit findings, report file naming issues, missing family markers, duplicate primary markers in `stress/security`, stale evidence markers or weak rationale blocks, and integration marker mismatches.
 - Keep canonical unit ownership module-local: one `test_<module>_unit.lua` file per module, with `lurek.<module>.*` tests before userdata/object method coverage.
-- If edit-capable, fix tests and rerun coverage, structure audit, and `cargo test --test lua_reorg_tests`.
+- If edit-capable, fix tests and rerun coverage, structure audit, and `cargo test --test lua_tests`.
 - If read-only, hand off to `tester` with exact missing API coverage.
 - Finish by reporting changed files and validation evidence.
 
@@ -50,16 +50,16 @@ description: "Load this skill when auditing and fixing Lua unit test coverage, s
 - Fixing a finding would require changing unrelated user work or widening scope beyond the requested surface.
 
 ## Companion File Index
-- Contracts: `AGENTS.md`, `tests/AGENTS.md`, `tests/lua_reorg/AGENTS.md`
-- Primary tools: `tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10`, `tools/python.cmd tools/audit/unit_test_api_coverage.py`, `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py`, `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua_reorg/unit`, `cargo test --test lua_reorg_tests`
+- Contracts: `AGENTS.md`, `tests/AGENTS.md`, `tests/lua/AGENTS.md`
+- Primary tools: `tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10`, `tools/python.cmd tools/audit/unit_test_api_coverage.py`, `tools/python.cmd tools/audit/lua_nonunit_test_coverage.py`, `tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/unit`, `cargo test --test lua_tests`
 - Owner profile: `tester`
 
 ## Common RAG Queries
 - Start with: `Lua test coverage structure harness public API`, `Lua unit tests public API coverage`, `tests contract Lua API coverage harness`
-- Focus areas first: `tests/lua_reorg/unit/`, `tests/lua_reorg/`, `tests/`, `content/examples/`, `docs/specs/`
+- Focus areas first: `tests/lua/unit/`, `tests/lua/`, `tests/`, `content/examples/`, `docs/specs/`
 - Append the target module, API path, or failing test file before broad reads
 
 ## References
-- `contracts: AGENTS.md, tests/AGENTS.md, tests/lua_reorg/AGENTS.md`
-- `tools: tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10, tools/python.cmd tools/audit/unit_test_api_coverage.py, tools/python.cmd tools/audit/lua_nonunit_test_coverage.py, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua_reorg/unit, cargo test --test lua_reorg_tests`
+- `contracts: AGENTS.md, tests/AGENTS.md, tests/lua/AGENTS.md`
+- `tools: tools/python.cmd tools/rag/query.py "Lua test coverage structure harness public API" --profile game --limit 10, tools/python.cmd tools/audit/unit_test_api_coverage.py, tools/python.cmd tools/audit/lua_nonunit_test_coverage.py, tools/python.cmd tools/audit/lua_test_structure_audit.py --path tests/lua/unit, cargo test --test lua_tests`
 - `agent: tester`

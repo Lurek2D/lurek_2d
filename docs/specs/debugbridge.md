@@ -12,7 +12,7 @@
 - Namespace: `lurek.debugbridge`
 - Lua API surface: `16` functions, `2` types, `0` methods
 - Rust test path(s): tests/rust/unit/debugbridge_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_debugbridge.lua
+- Lua test path(s): tests/lua/unit/test_debugbridge.lua
 
 ## Summary
 

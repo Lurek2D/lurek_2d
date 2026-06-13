@@ -14,7 +14,7 @@
 - Namespace: `lurek.animation`
 - Lua API surface: `7` functions, `8` types, `65` methods
 - Rust test path(s): tests/rust/unit/animation_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_animation.lua, tests/lua_reorg/stress/test_animation_stress.lua, tests/lua_reorg/integration/test_tween_animation.lua, tests/lua_reorg/integration/test_render_animation.lua, tests/lua_reorg/integration/test_animation_timer.lua, tests/lua_reorg/golden/test_animation_golden.lua
+- Lua test path(s): tests/lua/unit/test_animation.lua, tests/lua/stress/test_animation_stress.lua, tests/lua/integration/test_tween_animation.lua, tests/lua/integration/test_render_animation.lua, tests/lua/integration/test_animation_timer.lua, tests/lua/golden/test_animation_golden.lua
 
 ## Summary
 

@@ -104,8 +104,8 @@ def fix_file(file_path):
     return False
 
 def main():
-    """Fix all test files in tests/lua_reorg directory."""
-    base_path = Path('tests/lua_reorg')
+    """Fix all test files in tests/lua directory."""
+    base_path = Path('tests/lua')
     fixed_count = 0
 
     for test_file in base_path.rglob('test_*.lua'):

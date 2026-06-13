@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6054,8 +6054,17 @@
 
 <h1 id="event">Event<a class="headerlink" href="#event" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>This module serves as the runtime messaging hub, decoupling subsystems through asynchronous signaling. It implements a dual-priority queue ensuring critical tasks process ahead of standard events. The system handles data marshalling between Rust and Lua, supporting both immediate pushes and deferred buffering to coordinate events across frames.</p>
-<p>Additionally, the system manages a signal registry supporting exact and wildcard subscriber patterns. Listeners connect to named signals with lifecycle controls. To aid diagnostics, the module retains a configurable history of pushed events, allowing developers to inspect past messages to trace game flows and simplify debugging.</p>
+<ul>
+<li>The event module provides a central messaging layer so systems can communicate without tight coupling.</li>
+<li>Priority-aware queueing lets critical events run ahead of routine traffic when timing matters.</li>
+<li>Deferred push paths help schedule cross-frame dispatch cleanly.</li>
+<li>Signal subscriptions support exact names and wildcard patterns for flexible event routing.</li>
+<li>Listener lifecycle controls keep registration and cleanup explicit.</li>
+<li>Optional history retention helps trace event flow during debugging.</li>
+<li>Rust-Lua marshalling keeps payload transfer practical across the boundary.</li>
+<li>The module delivers deterministic, inspectable runtime event orchestration.</li>
+</ul>
+<p>This module primarily collaborates with <code>runtime</code>. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekeventclear"><code>lurek.event.clear</code><a class="headerlink" href="#lurekeventclear" title="Permanent link">&para;</a></h3>
 <p>Clears all pending events from the shared event queue.</p>

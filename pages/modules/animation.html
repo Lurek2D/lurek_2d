@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -7382,10 +7382,27 @@
 
 <h1 id="animation">Animation<a class="headerlink" href="#animation" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>The animation module provides a complete control and playback layer for sprite-based and skeletal animations. It acts as the import and execution pipeline for asset files, translating grid layouts, manual rectangles, and Aseprite JSON metadata into optimized runtime clips. The frame-animation engine supports diverse playback behaviors, including loop, reverse, ping-pong, and one-shot progression, while scaling speeds dynamically.</p>
-<p>To coordinate character states, the module implements a parameter-driven animation state machine. This framework permits organizers to arrange individual clips into state networks, governing transitions using parameter checks and timeline triggers. Transitions are softened by automated crossfades that calculate blend states and transition weights, preventing visual jerks and ensuring fluid behavior across state boundaries.</p>
-<p>For complex movements, the module features a layered animation blending architecture. Multiple clip streams can combine dynamically using ordered layering, stacking weights, and custom bone masks that restrict blend influences to specific skeletal sub-regions. Skeletal animations are supported by a Spine integration bridge that keeps skeleton hierarchies and coordinate transformations synchronized with state transitions.</p>
-<p>Coordinated elements can be grouped into synchronization groups to enforce identical playback phases across entities. Additionally, the system provides standalone parameter curves that interpolate values over keyframed timelines using stepped, linear, or custom ease callbacks. These systems bridge abstract timing states with textured coordinates, generating render-ready draw payloads for visual execution.</p>
+<ul>
+<li>Use <code>lurek.animation</code> when runtime animation needs to be controlled as a system, not frame swapping.</li>
+<li>The module turns authored timelines into deterministic playback and transition behavior.</li>
+<li>It supports frame clips, state-machine switching, blend layers, and Spine bridging in one API.</li>
+<li>Clip sources include grid slicing, explicit frame rectangles, and Aseprite JSON imports.</li>
+<li>Imported durations, tags, and clip metadata map directly to runtime controllers.</li>
+<li>Playback supports loop, reverse, ping-pong, pause, restart, and one-shot modes.</li>
+<li>Timeline milestones emit events for gameplay synchronization points.</li>
+<li>This makes animation useful for combat timing, effects, and state transitions, not only visuals.</li>
+<li>State-machine control supports named states and parameter-driven transition rules.</li>
+<li>Crossfades smooth clip handoffs and preserve readability during fast state changes.</li>
+<li>Blend layers allow multiple animation streams to compose into one result.</li>
+<li>Bone masks support partial-body overrides like upper-body aim and additive reactions.</li>
+<li>Curves provide keyed numeric animation beyond sprite frames.</li>
+<li>Interpolation modes include stepped, linear, eased, and custom callback-driven easing.</li>
+<li>Sync groups keep multiple instances phase-aligned for crowds and linked props.</li>
+<li>The module owns playback, transition governance, blending, import normalization, and frame sampling.</li>
+<li>It collaborates with image/render/runtime/spine, but animation state policy lives here.</li>
+<li>Use it when animation must be authorable, queryable, synchronized, and blendable at runtime.</li>
+</ul>
+<p>This module primarily collaborates with <code>image</code>, <code>math</code>, <code>render</code>, <code>runtime</code>, <code>spine</code>. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekanimationbuildcharacter"><code>lurek.animation.buildCharacter</code><a class="headerlink" href="#lurekanimationbuildcharacter" title="Permanent link">&para;</a></h3>
 <p>Builds a character animation bundle from grid frame and clip configuration.</p>

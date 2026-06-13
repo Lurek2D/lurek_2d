@@ -12,7 +12,7 @@
 - Namespace: `lurek.visibility`
 - Lua API surface: `2` functions, `2` types, `27` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua_reorg/unit/test_visibility_unit.lua
+- Lua test path(s): tests/lua/unit/test_visibility_unit.lua
 
 ## Summary
 

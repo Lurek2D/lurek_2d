@@ -13,7 +13,7 @@
 - Namespace: `lurek.terminal`
 - Lua API surface: `29` functions, `3` types, `59` methods
 - Rust test path(s): tests/rust/unit/terminal_tests.rs, tests/rust/ext/terminal_demo_smoke_tests.rs
-- Lua test path(s): tests/lua_reorg/unit/test_terminal_core_unit.lua
+- Lua test path(s): tests/lua/unit/test_terminal_core_unit.lua
 
 ## Summary
 

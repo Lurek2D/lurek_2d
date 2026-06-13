@@ -1,4 +1,4 @@
-﻿---
+---
 name: create-test-stress
 description: "Load this skill when creating or modifying stress tests, ceilings, or heavy-load validation for a module. Skip it for normal unit tests, integration tests, or benchmark-free code reviews."
 ---
@@ -37,7 +37,7 @@ description: "Load this skill when creating or modifying stress tests, ceilings,
 
 # References
 - skills: `.codex/skills/create-test-stress/SKILL.md`
-- contracts: tests/AGENTS.md, tests/lua_reorg/AGENTS.md, tools/audit/AGENTS.md, work/AGENTS.md
+- contracts: tests/AGENTS.md, tests/lua/AGENTS.md, tools/audit/AGENTS.md, work/AGENTS.md
 - tools: tools/python.cmd tools/rag/query.py "stress tests performance ceilings" --profile engine --limit 10, tools/python.cmd tools/audit/stress_report.py
 - agent: tester
 

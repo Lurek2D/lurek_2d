@@ -2,7 +2,7 @@
 """
 stress_report.py — Lurek2D stress test runner and reporter.
 
-Runs stress tests in tests/lua_reorg/stress/ and reports results including
+Runs stress tests in tests/lua/stress/ and reports results including
 timing information for performance regression tracking.
 
 Usage:
@@ -113,10 +113,10 @@ def generate_report(results: list) -> str:
     lines.append("")
     lines.append("```powershell")
     lines.append("# Run all stress tests via the engine")
-    lines.append("cargo run -- tests/lua_reorg/stress/")
+    lines.append("cargo run -- tests/lua/stress/")
     lines.append("")
     lines.append("# Run a specific stress test")
-    lines.append("cargo run -- tests/lua_reorg/stress/test_physics_stress.lua")
+    lines.append("cargo run -- tests/lua/stress/test_physics_stress.lua")
     lines.append("```")
     lines.append("")
 
@@ -144,7 +144,7 @@ Examples:
 
     test_files = find_stress_tests()
     if not test_files:
-        print("[WARN] No stress tests found in tests/lua_reorg/stress/", file=sys.stderr)
+        print("[WARN] No stress tests found in tests/lua/stress/", file=sys.stderr)
 
     results = []
     for tf in test_files:

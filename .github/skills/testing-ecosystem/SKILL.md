@@ -1,4 +1,4 @@
-﻿---
+---
 name: testing-ecosystem
 description: "Load this skill when writing or reviewing Rust unit tests, Lua API tests, Lua game logic tests, or test coverage rules. Skip it for feature implementation or non-test game scripting."
 ---
@@ -11,7 +11,7 @@ Own the testing strategy, file layout, assertion patterns, and coverage tooling 
 ## When To Load
 
 - Writing Rust unit tests for internal code in tests/rust/unit/
-- Writing Lua tests for lurek.* API surface in tests/lua_reorg/
+- Writing Lua tests for lurek.* API surface in tests/lua/
 - Understanding which test layer to use for a given behaviour
 - Checking test coverage metrics
 
@@ -21,22 +21,22 @@ Own the testing strategy, file layout, assertion patterns, and coverage tooling 
 - Lua scripting unrelated to tests -> use lua-scripting skill
 
 ## Domain Knowledge
-- Lua-first split: behavior reachable through `lurek.*` belongs in `tests/lua_reorg/unit/test_<module>_<layer>.lua`, Rust-only private internals in `tests/rust/unit/<module>_tests.rs`. When in doubt, the Lua layer is preferred â€” if it can be tested via the public API, it must be.
+- Lua-first split: behavior reachable through `lurek.*` belongs in `tests/lua/unit/test_<module>_<layer>.lua`, Rust-only private internals in `tests/rust/unit/<module>_tests.rs`. When in doubt, the Lua layer is preferred â€” if it can be tested via the public API, it must be.
 - Never put `#[cfg(test)]` in `src/`. Every test that uses `src/` code but is about private internals lives in `tests/rust/unit/<module>_tests.rs` as a separate binary target.
 - File naming is enforced: Rust test files are `<module>_tests.rs`, Lua unit test files are `test_<module>_<layer>.lua`. A file that does not follow the naming convention is not discoverable by `parallel_cargo.py` or the Lua harness.
 - Lua test file structure: each file ends with `test_summary()` and every test case uses `assert_equal`, `assert_true`, `assert_near`, or `assert_error` from the harness â€” not bare `assert()`. Missing `test_summary()` means the harness reports 0 tests, not a pass.
-- New Lua test files must be registered in `tests/lua_reorg_tests.rs` under the correct suite. New Rust test binaries must be added to `Cargo.toml` as `[[test]]` targets with the correct `name` and `path`.
+- New Lua test files must be registered in `tests/lua_tests.rs` under the correct suite. New Rust test binaries must be added to `Cargo.toml` as `[[test]]` targets with the correct `name` and `path`.
 - Float comparison: use `assert_near(a, b, epsilon)` always. Direct `==` on floats in tests is a defect â€” CI will catch it intermittently on different build profiles or OS.
 - Determinism checklist: fixed random seed, fixed `dt` value, no filesystem reads outside `tests/fixtures/`, no wall-clock time, no window.
 - Test granularity: one failing reason per test. `test_body_position_after_one_step()` tests exactly that.
 - Evidence strength: prefer state-readback assertions over side-effect checks. `assert_equal(body.position.x, 5.0)` is stronger than `assert_true(on_contact_called)`.
 - After adding tests, run `tools/python.cmd tools/audit/test_coverage.py` and `tools/python.cmd tools/audit/lua_api_test_coverage.py` to confirm that coverage registration matches the touched suite.
 - Folder marker rules:
-  - `tests/lua_reorg/unit/` -> `-- @covers ...`
-  - `tests/lua_reorg/security/` -> `-- @security ...`
-    - `tests/lua_reorg/integration/` -> `-- @integration ...`
-  - `tests/lua_reorg/stress/` -> `-- @stress ...`
-  - `tests/lua_reorg/evidence/` -> `-- @evidence ...`
+  - `tests/lua/unit/` -> `-- @covers ...`
+  - `tests/lua/security/` -> `-- @security ...`
+    - `tests/lua/integration/` -> `-- @integration ...`
+  - `tests/lua/stress/` -> `-- @stress ...`
+  - `tests/lua/evidence/` -> `-- @evidence ...`
     - Marker lines must sit directly above the `it()` they annotate and be indented exactly like that `it()`.
     - For `@covers` in unit tests: mark only symbols that are called and assertion-backed in that same `it()`.
   - `-- @tests` is **forbidden**.
@@ -46,19 +46,19 @@ Own the testing strategy, file layout, assertion patterns, and coverage tooling 
     - Apply **manual** marker corrections.
     - After each 3-file batch, run `tools/python.cmd tools/audit/lua_test_structure_audit.py --path <file>` for each touched file and proceed only if all pass.
     - Use helper scripts only for detection/reporting, not for blind mass edits.
-- Demo tests go in `tests/lua_reorg/demos/test_<name>.lua` and `tests/demo_smoke_tests.rs` â€” not in `tests/lua_reorg/unit/`. Optional colocated `content/games/**/test.lua` files run via `lua_demo_colocated_games`.
+- Demo tests go in colocated `content/games/**/test.lua` and `tests/demo_smoke_tests.rs` â€” not in `tests/lua/unit/`. Colocated files run via `lua_demo_colocated_games`.
 
 ## Test Type Matrix (Authoritative)
 
 Each Lua test family has a distinct goal, marker set, and acceptance rule. Do not mix them.
 
-- **Lua Unit (`tests/lua_reorg/unit/`)**
+- **Lua Unit (`tests/lua/unit/`)**
     - Goal: verify single public module contracts in isolation-level scenarios.
   - Marker above each `it()`: `-- @covers ...`
     - Required style: mark only symbols whose behavior is validated by assertions inside that `it()`.
     - Not allowed: integration-only markers as the primary marker.
 
-- **Lua Integration (`tests/lua_reorg/integration/`)**
+- **Lua Integration (`tests/lua/integration/`)**
     - Goal: verify behavior across at least two subsystems.
   - Marker above each `it()`: `-- @integration ...`
     - Multiple `-- @integration` lines above one `it()` are valid when the test asserts multiple integration symbols.
@@ -66,19 +66,19 @@ Each Lua test family has a distinct goal, marker set, and acceptance rule. Do no
     - Required style: assert cross-module contract effects, not internal algorithm shape.
     - Not allowed: brittle route-shape assumptions unless engine spec guarantees exact shape.
 
-- **Lua Security (`tests/lua_reorg/security/`)**
+- **Lua Security (`tests/lua/security/`)**
     - Goal: reject malformed or hostile inputs; verify safe failure behavior.
   - Marker above each `it()`: `-- @security ...`
     - Required style: explicit invalid input + explicit expected safe outcome.
     - Not allowed: assertions based on assumptions that conflict with current supported API contracts.
 
-- **Lua Stress (`tests/lua_reorg/stress/`)**
+- **Lua Stress (`tests/lua/stress/`)**
   - Goal: throughput/stability under high load.
   - Marker above each `it()`: `-- @stress ...`
     - Required style: deterministic loops and bounded checks.
     - Not allowed: "no crash = pass" without at least one measurable post-condition.
 
-- **Lua Evidence (`tests/lua_reorg/evidence/`)**
+- **Lua Evidence (`tests/lua/evidence/`)**
     - Goal: produce reproducible artifacts/output to support behavior claims.
   - Marker above each `it()`: `-- @evidence ...`
     - Required style: explicit evidence path/content checks where available.
@@ -125,14 +125,14 @@ Each Lua test family has a distinct goal, marker set, and acceptance rule. Do no
 
 ## Integration Test Design Rules
 
-- **File placement rule**: Only place tests in `tests/lua_reorg/integration/` if they test behavior across at least TWO modules from different subsystems.
+- **File placement rule**: Only place tests in `tests/lua/integration/` if they test behavior across at least TWO modules from different subsystems.
     - Example valid integration: animation drives sprite on screen.
     - Example invalid: animation frame counter increments.
     - Example valid integration: input changes active animation.
     - Example invalid: calling `lurek.animation.new()` and asserting it returns a table.
 
 - Integration tests must prove subsystem interaction, not internal path geometry.
-- Avoid testing single-module contracts through integration files â€” those belong in `tests/lua_reorg/unit/`.
+- Avoid testing single-module contracts through integration files â€” those belong in `tests/lua/unit/`.
 - Prefer stable invariants:
   - endpoint correctness,
   - object lifecycle (`create`, `replace`, `clear`),
@@ -171,7 +171,7 @@ Each Lua test family has a distinct goal, marker set, and acceptance rule. Do no
 None - all guidance is inline.
 
 ## References
-- tests/lua_reorg/
+- tests/lua/
 - tests/rust/unit/
 - tools/audit/test_coverage.py
 - tools/audit/lua_api_test_coverage.py

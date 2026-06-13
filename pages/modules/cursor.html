@@ -245,7 +245,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../CHANGELOG.html" class="md-tabs__link">
+      <a href="../CHANGELOG.md" class="md-tabs__link">
         
   
   
@@ -404,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG.md" class="md-nav__link">
         
   
   
@@ -6366,8 +6366,20 @@
 
 <h1 id="cursor">Cursor<a class="headerlink" href="#cursor" title="Permanent link">&para;</a></h1>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<p>The cursor module manages pointer presentation, custom cursor assets, context-sensitive switching policies, and visual pointer feedback effects in Lurek2D. Its core purpose is to provide scripts with highly responsive, interactive cursor customizations that adapt to game states, UI contexts, and player actions.</p>
-<p>It handles cross-platform platform-native system cursor shapes alongside fully custom cursors built from RGBA pixel buffers and coordinate hotspots. Cursors can be animated through time-stepped frame sequences and standalone scale pulse animations. Additionally, the cursor manager orchestrates context-sensitive style transitions, and applies aesthetic and functional trail feedback overlays (fading points, connected strokes) and cursor-following post-process zoom magnifiers.</p>
+<ul>
+<li>Lets users shape pointer behavior as part of UX, not just rely on default OS cursor visuals.</li>
+<li>Supports switching between native system cursors and fully custom pixel cursors per context.</li>
+<li>Enables animated cursor states for interactive menus, crafting, drag-drop, and tool modes.</li>
+<li>Provides rule-based context mapping so cursor style follows current game interaction state.</li>
+<li>Adds trail effects that improve motion readability and perceived responsiveness.</li>
+<li>Includes cursor-follow zoom for precision interactions and accessibility-friendly inspection.</li>
+<li>Exposes lock and visibility controls for gameplay modes that need constrained pointer behavior.</li>
+<li>Gives UI-heavy projects a consistent pointer presentation layer across features.</li>
+<li>Helps teams build cursor feedback that is both functional and stylistically aligned with the game.</li>
+<li>Centralizes cursor logic so interaction polish does not fragment across unrelated scripts.</li>
+<li>Serves as the module for delivering intentional, state-aware pointer UX in-engine.</li>
+</ul>
+<p>This module is mostly self-contained inside the <code>Edge/Integration</code> group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="lurekcursornewanimated"><code>lurek.cursor.newAnimated</code><a class="headerlink" href="#lurekcursornewanimated" title="Permanent link">&para;</a></h3>
 <p>Creates a new animated cursor that can cycle through frames.</p>

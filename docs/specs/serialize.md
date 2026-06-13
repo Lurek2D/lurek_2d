@@ -13,7 +13,7 @@
 - Namespace: `lurek.serial`
 - Lua API surface: `15` functions, `0` types, `0` methods
 - Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua_reorg/unit/test_serialize_unit.lua
+- Lua test path(s): tests/lua/unit/test_serialize_unit.lua
 
 ## Summary
 
