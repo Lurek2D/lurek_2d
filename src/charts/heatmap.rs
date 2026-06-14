@@ -128,14 +128,20 @@ impl HeatmapChart {
                 _ => continue,
             };
 
-            let row_index = match row_labels.iter().position(|existing| existing == &row_label) {
+            let row_index = match row_labels
+                .iter()
+                .position(|existing| existing == &row_label)
+            {
                 Some(index) => index,
                 None => {
                     row_labels.push(row_label);
                     row_labels.len() - 1
                 }
             };
-            let col_index = match col_labels.iter().position(|existing| existing == &col_label) {
+            let col_index = match col_labels
+                .iter()
+                .position(|existing| existing == &col_label)
+            {
                 Some(index) => index,
                 None => {
                     col_labels.push(col_label);
@@ -278,11 +284,29 @@ impl HeatmapChart {
         if self.config.show_grid {
             for row in 0..=self.rows {
                 let y = plot_y + cell_h * row as f32;
-                draw_line(buffer, width, height, plot_x, y, plot_x + plot_w, y, self.config.grid_color);
+                draw_line(
+                    buffer,
+                    width,
+                    height,
+                    plot_x,
+                    y,
+                    plot_x + plot_w,
+                    y,
+                    self.config.grid_color,
+                );
             }
             for col in 0..=self.cols {
                 let x = plot_x + cell_w * col as f32;
-                draw_line(buffer, width, height, x, plot_y, x, plot_y + plot_h, self.config.grid_color);
+                draw_line(
+                    buffer,
+                    width,
+                    height,
+                    x,
+                    plot_y,
+                    x,
+                    plot_y + plot_h,
+                    self.config.grid_color,
+                );
             }
         }
 
@@ -350,7 +374,8 @@ impl HeatmapChart {
                 continue;
             }
             let short = trim_label(label, 10);
-            let x = (plot_x + cell_w * col as f32 + cell_w * 0.5 - (short.len() as f32 * 3.0)) as i32;
+            let x =
+                (plot_x + cell_w * col as f32 + cell_w * 0.5 - (short.len() as f32 * 3.0)) as i32;
             let y = (plot_y + plot_h + 8.0) as i32;
             img.draw_label(&short, x.max(0), y.max(0), lr, lg, lb);
         }
@@ -361,8 +386,8 @@ impl HeatmapChart {
                     let idx = row * self.cols + col;
                     let value = self.values.get(idx).copied().unwrap_or(0.0);
                     let label = trim_label(&format_value(value), 6);
-                    let x =
-                        (plot_x + cell_w * col as f32 + cell_w * 0.5 - (label.len() as f32 * 3.0)) as i32;
+                    let x = (plot_x + cell_w * col as f32 + cell_w * 0.5
+                        - (label.len() as f32 * 3.0)) as i32;
                     let y = (plot_y + cell_h * row as f32 + cell_h * 0.5 - 4.0) as i32;
                     img.draw_label(&label, x.max(0), y.max(0), lr, lg, lb);
                 }
@@ -373,7 +398,14 @@ impl HeatmapChart {
             let legend_x = (width as f32 - legend_reserve + 10.0).max(plot_x + plot_w + 8.0) as i32;
             let legend_top = plot_y.max(0.0) as u32 + 16;
             let legend_bottom = (plot_y + plot_h).max(0.0) as u32;
-            img.draw_label("Scale", legend_x, (legend_top as i32 - 12).max(0), lr, lg, lb);
+            img.draw_label(
+                "Scale",
+                legend_x,
+                (legend_top as i32 - 12).max(0),
+                lr,
+                lg,
+                lb,
+            );
             if legend_bottom > legend_top {
                 for py in legend_top..legend_bottom {
                     let frac = 1.0 - (py - legend_top) as f32 / (legend_bottom - legend_top) as f32;
@@ -384,7 +416,14 @@ impl HeatmapChart {
                         }
                     }
                 }
-                img.draw_label(&format_value(max_value), legend_x + 18, legend_top as i32, lr, lg, lb);
+                img.draw_label(
+                    &format_value(max_value),
+                    legend_x + 18,
+                    legend_top as i32,
+                    lr,
+                    lg,
+                    lb,
+                );
                 img.draw_label(
                     &format_value(min_value),
                     legend_x + 18,

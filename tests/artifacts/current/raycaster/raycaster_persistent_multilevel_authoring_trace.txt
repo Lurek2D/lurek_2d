@@ -1,4 +1,6 @@
 active_level=1
+floor_offset=1.2000000476837
+ceiling_height=2.4000000953674
 floor_texture=4294967301
 ceiling_texture=4294967301
 floor_cell_texture=4294967301
@@ -6,7 +8,7 @@ ceiling_cell_texture=4294967301
 pit_depth=0.34999999403954
 pit_blocked=false
 quad_count=62
-wall_pick=wall@5@1@3.500@5.000@1.500@0.500@0.500@1
+wall_pick=wall@5@1@3.500@5.000@1.500@0.500@0.417@1
 floor_pick=floor@3@1@1.650@3.150@1.500@0.150@0.500@1
 lighting_samples=30
 lighting_cache_hits=5

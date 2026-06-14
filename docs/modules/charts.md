@@ -583,17 +583,8 @@ LAreaChart:typeOf(name)
 #### `LBarChart:addCategoriesFromDataFrame`
 
 ```lua
-LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts)
+LBarChart:addCategoriesFromDataFrame()
 ```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `df` | any |  |
-| `label_col` | any |  |
-| `value_cols` | any |  |
-| `opts?` | any |  |
 
 ---
 
@@ -1061,18 +1052,8 @@ LHeatmapChart:setMatrix(matrix, row_labels, col_labels)
 #### `LHeatmapChart:setMatrixFromDataFrame`
 
 ```lua
-LHeatmapChart:setMatrixFromDataFrame(df, row_col, col_col, value_col, opts)
+LHeatmapChart:setMatrixFromDataFrame()
 ```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `df` | any |  |
-| `row_col` | any |  |
-| `col_col` | any |  |
-| `value_col` | any |  |
-| `opts?` | any |  |
 
 ---
 
@@ -1866,17 +1847,8 @@ LPieChart:addSegment(label, value, color)
 #### `LPieChart:addSegmentsFromDataFrame`
 
 ```lua
-LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts)
+LPieChart:addSegmentsFromDataFrame()
 ```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `df` | any |  |
-| `label_col` | any |  |
-| `value_col` | any |  |
-| `opts?` | any |  |
 
 ---
 

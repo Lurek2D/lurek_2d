@@ -31,10 +31,10 @@ pub mod projection;
 pub mod ray_hit;
 /// Top-level render dispatch for a raycaster frame.
 pub mod render;
-/// Runtime adapter for mapping static or physics-backed 2D entities into raycaster scene inputs.
-pub mod scene_adapter;
 /// `RaycasterScene` and its constituent quad/sprite/mesh types.
 pub mod scene;
+/// Runtime adapter for mapping static or physics-backed 2D entities into raycaster scene inputs.
+pub mod scene_adapter;
 /// 2D line segment and `cast_ray_2d` entry point.
 pub mod segment;
 /// Sprite registry and frustum-sorted sprite list.
@@ -62,14 +62,14 @@ pub use lighting::{apply_lit_shade, compute_lighting, PointLight};
 pub use multilevel::{MultiLevelGrid, RaycasterLevel};
 pub use projection::{distance_shade, project_column};
 pub use ray_hit::RayHit;
-pub use scene_adapter::{
-    ResolvedSceneTransform, SceneAdapter, SceneAdapterLight, SceneAdapterSprite, SceneTransform,
-};
-#[cfg(feature = "obj-loader")]
-pub use scene_adapter::{ResolvedSceneModel, SceneAdapterModel};
 pub use scene::{
     BillboardSprite, CeilingQuad, EntityPickKind, EntityPickResult, FloorQuad, ModelMesh,
     RaycasterBuildStats, RaycasterScene, WallQuad,
+};
+#[cfg(feature = "obj-loader")]
+pub use scene_adapter::{ResolvedSceneModel, SceneAdapterModel};
+pub use scene_adapter::{
+    ResolvedSceneTransform, SceneAdapter, SceneAdapterLight, SceneAdapterSprite, SceneTransform,
 };
 pub use segment::{cast_ray_2d, Segment};
 pub use sprite_manager::{

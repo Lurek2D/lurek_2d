@@ -160,14 +160,16 @@ fn apply_global_light_tint(
 
 #[derive(Default)]
 struct LightingSampleCache {
-    samples: HashMap<(i32, i32, bool), [f32; 3]>,
+    samples: HashMap<(usize, i32, i32, bool), [f32; 3]>,
     hits: u32,
     misses: u32,
 }
 
 impl LightingSampleCache {
+    #[allow(clippy::too_many_arguments)]
     fn sample(
         &mut self,
+        level_index: usize,
         x: f32,
         y: f32,
         roofed: bool,
@@ -177,7 +179,7 @@ impl LightingSampleCache {
     ) -> [f32; 3] {
         let cell_x = x.floor() as i32;
         let cell_y = y.floor() as i32;
-        let key = (cell_x, cell_y, roofed);
+        let key = (level_index, cell_x, cell_y, roofed);
         if let Some(light) = self.samples.get(&key).copied() {
             self.hits = self.hits.saturating_add(1);
             return light;
@@ -282,6 +284,7 @@ fn snap_half(v: f32) -> f32 {
 #[allow(clippy::too_many_arguments)]
 fn build_floor_tiles(
     raycaster: &Raycaster2D,
+    level_index: usize,
     params: &SceneBuildParams,
     proj_dist: f32,
     planes: VerticalPlanes,
@@ -385,8 +388,15 @@ fn build_floor_tiles(
             } else {
                 None
             };
-            let light_rgb =
-                lighting_cache.sample(tile_cx, tile_cy, roofed_here, params, lights, wall_at);
+            let light_rgb = lighting_cache.sample(
+                level_index,
+                tile_cx,
+                tile_cy,
+                roofed_here,
+                params,
+                lights,
+                wall_at,
+            );
             let floor_base = if let Some(cell) = lowered {
                 Color::new(cell.tint[0], cell.tint[1], cell.tint[2], 1.0)
             } else {
@@ -710,6 +720,7 @@ fn build_floor_tiles(
 #[allow(clippy::too_many_arguments)]
 fn push_feature_face_segment(
     walls: &mut Vec<WallQuad>,
+    level_index: usize,
     params: &SceneBuildParams,
     lights: &[PointLight],
     wall_at: &dyn Fn(i32, i32) -> bool,
@@ -749,7 +760,15 @@ fn push_feature_face_segment(
     let gx = face_cx.floor().clamp(0.0, (map_w - 1) as f32) as u32;
     let gy = face_cy.floor().clamp(0.0, (map_h - 1) as f32) as u32;
     let roofed_here = roofed_at(gx, gy);
-    let light_rgb = lighting_cache.sample(face_cx, face_cy, roofed_here, params, lights, wall_at);
+    let light_rgb = lighting_cache.sample(
+        level_index,
+        face_cx,
+        face_cy,
+        roofed_here,
+        params,
+        lights,
+        wall_at,
+    );
     let mut wall_color = lit_surface_color(&Color::WHITE, light_rgb, 1.0);
     wall_color.a *= alpha.clamp(0.0, 1.0);
     let top_plane = floor_plane - top_height.clamp(0.0, 1.0);
@@ -822,6 +841,7 @@ fn push_feature_face_segment(
 #[allow(clippy::too_many_arguments)]
 fn build_wall_faces(
     raycaster: &Raycaster2D,
+    level_index: usize,
     params: &SceneBuildParams,
     proj_dist: f32,
     planes: VerticalPlanes,
@@ -909,7 +929,15 @@ fn build_wall_faces(
         let gx = face_cx.floor().clamp(0.0, (map_w - 1) as f32) as u32;
         let gy = face_cy.floor().clamp(0.0, (map_h - 1) as f32) as u32;
         let roofed_here = roofed_at(gx, gy);
-        let light_rgb = lighting_cache.sample(face_cx, face_cy, roofed_here, params, lights, wall_at);
+        let light_rgb = lighting_cache.sample(
+            level_index,
+            face_cx,
+            face_cy,
+            roofed_here,
+            params,
+            lights,
+            wall_at,
+        );
         let wall_color = lit_surface_color(&Color::WHITE, light_rgb, 1.0);
         Some(WallQuad {
             corners: [
@@ -945,6 +973,7 @@ fn build_wall_faces(
                         if ty == 0 || !wall_at(tx, ty - 1) {
                             push_feature_face_segment(
                                 walls,
+                                level_index,
                                 params,
                                 lights,
                                 wall_at,
@@ -976,6 +1005,7 @@ fn build_wall_faces(
                         if ty == map_h - 1 || !wall_at(tx, ty + 1) {
                             push_feature_face_segment(
                                 walls,
+                                level_index,
                                 params,
                                 lights,
                                 wall_at,
@@ -1007,6 +1037,7 @@ fn build_wall_faces(
                         if tx == 0 || !wall_at(tx - 1, ty) {
                             push_feature_face_segment(
                                 walls,
+                                level_index,
                                 params,
                                 lights,
                                 wall_at,
@@ -1038,6 +1069,7 @@ fn build_wall_faces(
                         if tx == map_w - 1 || !wall_at(tx + 1, ty) {
                             push_feature_face_segment(
                                 walls,
+                                level_index,
                                 params,
                                 lights,
                                 wall_at,
@@ -1076,6 +1108,7 @@ fn build_wall_faces(
                             |ax: f32, ay: f32, bx: f32, by: f32, face_cx: f32, face_cy: f32| {
                                 push_feature_face_segment(
                                     walls,
+                                    level_index,
                                     params,
                                     lights,
                                     wall_at,
@@ -1105,6 +1138,7 @@ fn build_wall_faces(
                                 );
                                 push_feature_face_segment(
                                     walls,
+                                    level_index,
                                     params,
                                     lights,
                                     wall_at,
@@ -1184,6 +1218,7 @@ fn build_wall_faces(
                             crate::raycaster::doors::DoorDirection::Horizontal => {
                                 push_feature_face_segment(
                                     walls,
+                                    level_index,
                                     params,
                                     lights,
                                     wall_at,
@@ -1215,6 +1250,7 @@ fn build_wall_faces(
                             crate::raycaster::doors::DoorDirection::Vertical => {
                                 push_feature_face_segment(
                                     walls,
+                                    level_index,
                                     params,
                                     lights,
                                     wall_at,
@@ -1258,8 +1294,7 @@ fn build_wall_faces(
                     center_x,
                     ty as f32,
                     lighting_cache,
-                )
-                {
+                ) {
                     walls.push(face);
                 }
             }
@@ -1287,8 +1322,7 @@ fn build_wall_faces(
                     tx as f32,
                     center_y,
                     lighting_cache,
-                )
-                {
+                ) {
                     walls.push(face);
                 }
             }
@@ -1321,6 +1355,7 @@ fn build_wall_faces(
                 {
                     let roofed_here = roofed_at(tx as u32, ty as u32);
                     let light_rgb = lighting_cache.sample(
+                        level_index,
                         center_x,
                         center_y,
                         roofed_here,
@@ -1556,6 +1591,7 @@ impl RaycasterScene {
     fn build_level_sprites(
         &mut self,
         raycaster: &Raycaster2D,
+        level_index: usize,
         params: &SceneBuildParams,
         lights: &[PointLight],
         wall_at: &dyn Fn(i32, i32) -> bool,
@@ -1621,6 +1657,7 @@ impl RaycasterScene {
                 as u32;
             let roofed_here = roofed_at(gx, gy);
             let sprite_light = lighting_cache.sample(
+                level_index,
                 ws.world_x,
                 ws.world_y,
                 roofed_here,
@@ -1670,6 +1707,7 @@ impl RaycasterScene {
     fn build_scene_into(
         &mut self,
         raycaster: &Raycaster2D,
+        level_index: usize,
         params: &SceneBuildParams,
         lights: &[PointLight],
         sprites: &[WorldSprite],
@@ -1690,6 +1728,7 @@ impl RaycasterScene {
         };
         build_floor_tiles(
             raycaster,
+            level_index,
             params,
             proj_dist,
             planes,
@@ -1708,6 +1747,7 @@ impl RaycasterScene {
         );
         build_wall_faces(
             raycaster,
+            level_index,
             params,
             proj_dist,
             planes,
@@ -1724,6 +1764,7 @@ impl RaycasterScene {
         );
         self.build_level_sprites(
             raycaster,
+            level_index,
             params,
             lights,
             &wall_at,
@@ -1750,6 +1791,7 @@ impl RaycasterScene {
         let mut lighting_cache = LightingSampleCache::default();
         scene.build_scene_into(
             raycaster,
+            0,
             params,
             lights,
             sprites,
@@ -1820,6 +1862,7 @@ impl RaycasterScene {
             let _ = grid.with_runtime_level(level_index, |level, raycaster| {
                 scene.build_scene_into(
                     raycaster,
+                    level_index,
                     params,
                     &lights_by_level[level_index],
                     &sprites_by_level[level_index],

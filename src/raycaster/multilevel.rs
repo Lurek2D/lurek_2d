@@ -244,12 +244,7 @@ impl RaycasterLevel {
         false
     }
 
-    fn has_visible_floor_hole(
-        &self,
-        camera_x: f32,
-        camera_y: f32,
-        max_view_distance: f32,
-    ) -> bool {
+    fn has_visible_floor_hole(&self, camera_x: f32, camera_y: f32, max_view_distance: f32) -> bool {
         self.has_visible_hole(&self.floor_holes, camera_x, camera_y, max_view_distance)
     }
 

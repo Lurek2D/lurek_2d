@@ -89,8 +89,8 @@ mod segment_tests {
 mod scene_tests {
     use super::*;
     use lurek2d::raycaster::scene::{CeilingQuad, FloorQuad, WallQuad};
-    use lurek2d::runtime::resource_keys::TextureKey;
     use lurek2d::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
+    use lurek2d::runtime::resource_keys::TextureKey;
     use slotmap::KeyData;
 
     fn unit_corners(x: f32, y: f32, w: f32, h: f32) -> [Vec2; 4] {
@@ -249,9 +249,7 @@ mod scene_tests {
             world_y: 2.0,
         });
 
-        let opaque_pick = scene
-            .pick_entity(24.0, 18.0)
-            .expect("expected opaque pick");
+        let opaque_pick = scene.pick_entity(24.0, 18.0).expect("expected opaque pick");
         assert_eq!(opaque_pick.entity_id, Some(111));
 
         let masked_pick = scene
@@ -1807,7 +1805,9 @@ mod build_scene_tests {
             max_distance: 20.0,
         };
 
-        let hit = grid.pick_screen(&params, 160.0, 190.0).expect("active floor pick");
+        let hit = grid
+            .pick_screen(&params, 160.0, 190.0)
+            .expect("active floor pick");
         assert_eq!(hit.surface, PickSurface::Floor);
         assert_eq!(hit.level_index, 0);
     }

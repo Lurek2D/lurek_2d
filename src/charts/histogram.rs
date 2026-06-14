@@ -81,7 +81,11 @@ impl HistogramChart {
 
     pub fn replace_series(&mut self, name: &str, values: &[f32], color: Color) {
         let color = [color.r, color.g, color.b, color.a];
-        let mut clean_values: Vec<f32> = values.iter().copied().filter(|value| value.is_finite()).collect();
+        let mut clean_values: Vec<f32> = values
+            .iter()
+            .copied()
+            .filter(|value| value.is_finite())
+            .collect();
         trim_values_to_window(&mut clean_values, self.config.max_points);
         if let Some(series) = self.series.iter_mut().find(|series| series.name == name) {
             series.color = color;
@@ -295,7 +299,8 @@ impl HistogramChart {
                     continue;
                 }
                 let group_x = plot_x + group_step * bin_idx as f32;
-                let bar_x = group_x + (group_step - bar_band) * 0.5 + series_idx as f32 * (per_bar + gap);
+                let bar_x =
+                    group_x + (group_step - bar_band) * 0.5 + series_idx as f32 * (per_bar + gap);
                 let bar_top = plot_y + plot_h - world_to_screen(count, 0.0, max_y, plot_h);
                 let bar_height = (plot_y + plot_h - bar_top).max(1.0);
                 draw_rect_filled(

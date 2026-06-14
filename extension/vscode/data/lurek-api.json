@@ -40773,34 +40773,9 @@
         {
           "name": "addCategoriesFromDataFrame",
           "fullPath": "LBarChart:addCategoriesFromDataFrame",
-          "signature": "(df, label_col, value_cols, [opts])",
+          "signature": "LBarChart:addCategoriesFromDataFrame()",
           "description": "",
-          "parameters": [
-            {
-              "name": "df",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "label_col",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "value_cols",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "any",
-              "description": "",
-              "optional": true
-            }
-          ],
+          "parameters": [],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -73130,40 +73105,9 @@
         {
           "name": "setMatrixFromDataFrame",
           "fullPath": "LHeatmapChart:setMatrixFromDataFrame",
-          "signature": "(df, row_col, col_col, value_col, [opts])",
+          "signature": "LHeatmapChart:setMatrixFromDataFrame()",
           "description": "",
-          "parameters": [
-            {
-              "name": "df",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "row_col",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "col_col",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "value_col",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "any",
-              "description": "",
-              "optional": true
-            }
-          ],
+          "parameters": [],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -107865,34 +107809,9 @@
         {
           "name": "addSegmentsFromDataFrame",
           "fullPath": "LPieChart:addSegmentsFromDataFrame",
-          "signature": "(df, label_col, value_col, [opts])",
+          "signature": "LPieChart:addSegmentsFromDataFrame()",
           "description": "",
-          "parameters": [
-            {
-              "name": "df",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "label_col",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "value_col",
-              "type": "any",
-              "description": "",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "any",
-              "description": "",
-              "optional": true
-            }
-          ],
+          "parameters": [],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,

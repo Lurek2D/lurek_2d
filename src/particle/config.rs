@@ -357,7 +357,8 @@ impl ParticleConfig {
         self.emission_rate = non_negative_finite_or(self.emission_rate, 0.0);
 
         let life_min = non_negative_finite_or(self.lifetime_min, 1.0).max(MIN_PARTICLE_LIFETIME);
-        let life_max = non_negative_finite_or(self.lifetime_max, life_min).max(MIN_PARTICLE_LIFETIME);
+        let life_max =
+            non_negative_finite_or(self.lifetime_max, life_min).max(MIN_PARTICLE_LIFETIME);
         self.lifetime_min = life_min.min(life_max);
         self.lifetime_max = life_min.max(life_max);
 
@@ -376,7 +377,8 @@ impl ParticleConfig {
             self.sizes = vec![4.0, 1.0];
         }
 
-        self.colors.retain(|rgba| rgba.iter().all(|channel| channel.is_finite()));
+        self.colors
+            .retain(|rgba| rgba.iter().all(|channel| channel.is_finite()));
         if self.colors.is_empty() {
             self.colors = vec![[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 0.0]];
         } else {
@@ -419,10 +421,12 @@ impl ParticleConfig {
             std::mem::swap(&mut self.radial_accel_min, &mut self.radial_accel_max);
         }
         self.tangential_accel_min = finite_or(self.tangential_accel_min, 0.0);
-        self.tangential_accel_max =
-            finite_or(self.tangential_accel_max, self.tangential_accel_min);
+        self.tangential_accel_max = finite_or(self.tangential_accel_max, self.tangential_accel_min);
         if self.tangential_accel_min > self.tangential_accel_max {
-            std::mem::swap(&mut self.tangential_accel_min, &mut self.tangential_accel_max);
+            std::mem::swap(
+                &mut self.tangential_accel_min,
+                &mut self.tangential_accel_max,
+            );
         }
 
         self.linear_damping_min = non_negative_finite_or(self.linear_damping_min, 0.0);
@@ -504,7 +508,10 @@ impl ParticleConfig {
                 *outer_radius = non_negative_finite_or(*outer_radius, 50.0);
                 *inner_radius = non_negative_finite_or(*inner_radius, 25.0).min(*outer_radius);
             }
-            EmissionShape::Spiral { revolutions, radius } => {
+            EmissionShape::Spiral {
+                revolutions,
+                radius,
+            } => {
                 *revolutions = non_negative_finite_or(*revolutions, 2.0);
                 *radius = non_negative_finite_or(*radius, 50.0);
             }

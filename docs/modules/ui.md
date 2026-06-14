@@ -3986,17 +3986,8 @@ end
 #### `LBarChart:addCategoriesFromDataFrame`
 
 ```lua
-LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts)
+LBarChart:addCategoriesFromDataFrame()
 ```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `df` | any |  |
-| `label_col` | any |  |
-| `value_cols` | any |  |
-| `opts?` | any |  |
 
 **Example**
 
@@ -10326,17 +10317,8 @@ end
 #### `LPieChart:addSegmentsFromDataFrame`
 
 ```lua
-LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts)
+LPieChart:addSegmentsFromDataFrame()
 ```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `df` | any |  |
-| `label_col` | any |  |
-| `value_col` | any |  |
-| `opts?` | any |  |
 
 **Example**
 

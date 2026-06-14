@@ -7,8 +7,7 @@
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
 use crate::charts::render_utils::{
     annotate_cartesian_chart, auto_range, draw_circle_filled, draw_line, fill_buffer,
-    trim_points_to_window,
-    world_to_screen,
+    trim_points_to_window, world_to_screen,
 };
 use crate::color::Color;
 use crate::dataframe::frame::DataFrame;

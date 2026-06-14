@@ -21,7 +21,7 @@ pub fn field_of_view(ox: f32, oy: f32, segments: &[Segment], radius: f32) -> Vec
             angles.push(angle + epsilon);
         }
     }
-    angles.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    angles.sort_by(|a, b| a.total_cmp(b));
     angles.dedup_by(|a, b| (*a - *b).abs() < epsilon * 0.1);
     let mut polygon = Vec::new();
     for &angle in &angles {
@@ -33,7 +33,7 @@ pub fn field_of_view(ox: f32, oy: f32, segments: &[Segment], radius: f32) -> Vec
             polygon.push((angle, ox + rdx * radius, oy + rdy * radius));
         }
     }
-    polygon.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+    polygon.sort_by(|a, b| a.0.total_cmp(&b.0));
     let mut result = Vec::with_capacity(polygon.len() * 2);
     for (_, x, y) in polygon {
         result.push(x);

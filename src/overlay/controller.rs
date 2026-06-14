@@ -293,7 +293,12 @@ impl Overlay {
         let duration = sanitize_duration(duration, self.fade.duration);
         self.fade.start_alpha = self.fade.color[3];
         self.fade.active = true;
-        self.fade.color = [clamp_unit(r), clamp_unit(g), clamp_unit(b), self.fade.start_alpha];
+        self.fade.color = [
+            clamp_unit(r),
+            clamp_unit(g),
+            clamp_unit(b),
+            self.fade.start_alpha,
+        ];
         self.fade.target_alpha = clamp_unit(target_alpha);
         self.fade.duration = duration;
         self.fade.elapsed = 0.0;

@@ -91,7 +91,10 @@ mod extensibility_tests {
         ps.update(0.01);
 
         assert_eq!(ps.count(), 0, "parent particles should be dead");
-        assert!(ps.sub_system_count() > 0, "death emitter should spawn a child system");
+        assert!(
+            ps.sub_system_count() > 0,
+            "death emitter should spawn a child system"
+        );
 
         let cmds = ps.build_render_commands(0.0, 0.0);
         assert!(
@@ -114,7 +117,11 @@ mod extensibility_tests {
         ps.set_max_particles(4);
 
         assert_eq!(ps.config.max_particles, 4);
-        assert_eq!(ps.count(), 4, "live particles should be truncated to the new limit");
+        assert_eq!(
+            ps.count(),
+            4,
+            "live particles should be truncated to the new limit"
+        );
     }
 }
 

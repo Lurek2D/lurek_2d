@@ -29,11 +29,7 @@ pub struct ResolvedSceneTransform {
 #[derive(Clone)]
 pub enum SceneTransform {
     /// Fixed transform authored directly by gameplay code.
-    Static {
-        x: f32,
-        y: f32,
-        angle: f32,
-    },
+    Static { x: f32, y: f32, angle: f32 },
     /// Transform sampled from a live physics body with optional local offsets.
     Body {
         world: Rc<RefCell<World>>,
@@ -284,17 +280,26 @@ impl SceneAdapter {
 
     /// Resolve all visible sprite bindings.
     pub fn resolve_sprites(&self) -> Vec<WorldSprite> {
-        self.sprites.iter().filter_map(SceneAdapterSprite::resolve).collect()
+        self.sprites
+            .iter()
+            .filter_map(SceneAdapterSprite::resolve)
+            .collect()
     }
 
     /// Resolve all live light bindings.
     pub fn resolve_lights(&self) -> Vec<PointLight> {
-        self.lights.iter().filter_map(SceneAdapterLight::resolve).collect()
+        self.lights
+            .iter()
+            .filter_map(SceneAdapterLight::resolve)
+            .collect()
     }
 
     /// Resolve all live model bindings.
     #[cfg(feature = "obj-loader")]
     pub fn resolve_models(&self) -> Vec<ResolvedSceneModel> {
-        self.models.iter().filter_map(SceneAdapterModel::resolve).collect()
+        self.models
+            .iter()
+            .filter_map(SceneAdapterModel::resolve)
+            .collect()
     }
 }

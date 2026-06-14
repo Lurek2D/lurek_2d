@@ -1,9 +1,9 @@
 //! File: src/lua_api/raycaster_api.rs
 
 use super::SharedState;
-use crate::lua_api::physics_api::LuaBody;
 use crate::color::Color;
 use crate::image::ImageData;
+use crate::lua_api::physics_api::LuaBody;
 use crate::lua_api::render_api::LuaImage;
 #[cfg(feature = "obj-loader")]
 use crate::lua_api::render_api::LuaObjModel;
@@ -11,16 +11,16 @@ use crate::minimap::raycaster_overlay::extract_minimap;
 use crate::minimap::{build_minimap_tile_window, compute_tile_light, reveal_cells_from_rays};
 use crate::raycaster::lighting::{apply_global_light, apply_lit_shade};
 use crate::raycaster::sprite_manager::SpriteManager;
+#[cfg(feature = "obj-loader")]
+use crate::raycaster::SceneAdapterModel;
 use crate::raycaster::{
     compute_lighting, dir4_delta, distance_shade, project_column, try_move,
     DirectionalSpriteTextures, DoorDirection, DoorManager, DoorState, EntityPickResult,
     GridMoveAction, HeightMap, LevelSprite, ModelMesh, MultiLevelGrid, PickResult, PickSurface,
-    PointLight, RayHit, Raycaster2D, RaycasterBuildStats, RaycasterLevel, RaycasterScene, SceneAdapter,
-    SceneAdapterLight, SceneAdapterSprite, SceneTransform, SceneBuildParams, ScreenPickParams,
-    WallFeature, WallFeatureKind, WorldSprite,
+    PointLight, RayHit, Raycaster2D, RaycasterBuildStats, RaycasterLevel, RaycasterScene,
+    SceneAdapter, SceneAdapterLight, SceneAdapterSprite, SceneBuildParams, SceneTransform,
+    ScreenPickParams, WallFeature, WallFeatureKind, WorldSprite,
 };
-#[cfg(feature = "obj-loader")]
-use crate::raycaster::SceneAdapterModel;
 #[cfg(feature = "obj-loader")]
 use crate::render::obj_loader::Vec3;
 use crate::runtime::resource_keys::TextureKey;
@@ -1548,6 +1548,13 @@ impl LuaUserData for LuaRaycaster {
         /// @param | x | integer | Grid column.
         /// @param | y | integer | Grid row.
         /// @return | table | Feature table {kind, alpha, ...} or nil.
+        /// @field | kind | string | "half", "window", or "door".
+        /// @field | alpha | number | Feature alpha/transparency override.
+        /// @field | height | number | Half-wall height in cell units when `kind == "half"`.
+        /// @field | sill_height | number | Window sill height when `kind == "window"`.
+        /// @field | lintel_height | number | Window lintel height when `kind == "window"`.
+        /// @field | direction | string | "horizontal" or "vertical" when `kind == "door"`.
+        /// @field | open_amount | number | Door openness in 0.0..1.0 when `kind == "door"`.
         methods.add_method("getWallFeatureCell", |lua, this, (x, y): (u32, u32)| {
             let Some(feature) = this.inner.wall_feature(x, y) else {
                 return Ok(LuaValue::Nil);
@@ -2307,6 +2314,8 @@ impl LuaUserData for LuaRaycaster {
         /// @field | texture | integer | Raw floor/ceiling texture id when available.
         /// @field | ray_angle | number | Ray angle used to resolve this pick.
         /// @field | id | integer | Optional caller-supplied entity id for sprite/model hits.
+        /// @field | wall_height | number | Local wall height in cell units for wall hits against partial-height features.
+        /// @field | feature | table | Optional wall feature table mirroring `getWallFeatureCell()` plus `section` for the solid band or door panel that was hit.
         methods.add_method(
             "pickScreen",
             |lua,
@@ -2459,10 +2468,8 @@ impl LuaUserData for LuaRaycaster {
         methods.add_method(
             "pickScreenFromAdapter",
             |lua, this, (sx, sy, params_tbl, adapter_ud): (f32, f32, LuaTable, LuaAnyUserData)| {
-                let params = parse_scene_build_params(
-                    &params_tbl,
-                    "lurek.raycaster.pickScreenFromAdapter",
-                )?;
+                let params =
+                    parse_scene_build_params(&params_tbl, "lurek.raycaster.pickScreenFromAdapter")?;
                 let (_lights_tbl, sprites_tbl, models_tbl) = scene_input_tables_from_adapter(
                     lua,
                     &adapter_ud,
@@ -2505,8 +2512,7 @@ impl LuaUserData for LuaRaycaster {
                 );
                 #[cfg(feature = "obj-loader")]
                 {
-                    let cam_pos =
-                        Vec3::new(params.player_x, params.camera_height, params.player_y);
+                    let cam_pos = Vec3::new(params.player_x, params.camera_height, params.player_y);
                     let cam_target = Vec3::new(
                         params.player_x + params.player_angle.cos(),
                         params.camera_height,
@@ -2958,6 +2964,13 @@ impl LuaUserData for LuaMultiLevelGrid {
         /// @param | x | integer | Grid column.
         /// @param | y | integer | Grid row.
         /// @return | table | Feature table {kind, alpha, ...} or nil.
+        /// @field | kind | string | "half", "window", or "door".
+        /// @field | alpha | number | Feature alpha/transparency override.
+        /// @field | height | number | Half-wall height in cell units when `kind == "half"`.
+        /// @field | sill_height | number | Window sill height when `kind == "window"`.
+        /// @field | lintel_height | number | Window lintel height when `kind == "window"`.
+        /// @field | direction | string | "horizontal" or "vertical" when `kind == "door"`.
+        /// @field | open_amount | number | Door openness in 0.0..1.0 when `kind == "door"`.
         methods.add_method("getWallFeatureCell", |lua, this, (x, y): (u32, u32)| {
             let grid = this.inner.borrow();
             let level = active_multilevel_level(
@@ -2978,9 +2991,11 @@ impl LuaUserData for LuaMultiLevelGrid {
                 &mut grid,
                 "lurek.raycaster.LMultiLevelGrid:setFloorTexture",
             )?;
-            level.floor_texture =
-                parse_texture_key_value(&texture, "lurek.raycaster.LMultiLevelGrid:setFloorTexture")?
-                    .map(|(key, _)| key);
+            level.floor_texture = parse_texture_key_value(
+                &texture,
+                "lurek.raycaster.LMultiLevelGrid:setFloorTexture",
+            )?
+            .map(|(key, _)| key);
             Ok(())
         });
         // -- getFloorTexture --
@@ -2988,10 +3003,8 @@ impl LuaUserData for LuaMultiLevelGrid {
         /// @return | integer | Raw texture id or nil.
         methods.add_method("getFloorTexture", |_, this, ()| {
             let grid = this.inner.borrow();
-            let level = active_multilevel_level(
-                &grid,
-                "lurek.raycaster.LMultiLevelGrid:getFloorTexture",
-            )?;
+            let level =
+                active_multilevel_level(&grid, "lurek.raycaster.LMultiLevelGrid:getFloorTexture")?;
             Ok(level.floor_texture.map(|texture| texture.data().as_ffi()))
         });
         // -- setFloorTextureCell --
@@ -3031,8 +3044,10 @@ impl LuaUserData for LuaMultiLevelGrid {
             if x as usize >= level.width || y as usize >= level.height {
                 return Ok(None);
             }
-            Ok(level.floor_cell_textures[y as usize * level.width + x as usize]
-                .map(|key| key.data().as_ffi()))
+            Ok(
+                level.floor_cell_textures[y as usize * level.width + x as usize]
+                    .map(|key| key.data().as_ffi()),
+            )
         });
         // -- setCeilingTexture --
         /// Sets the default ceiling texture used by the active level. Pass nil to clear it.
@@ -3098,8 +3113,10 @@ impl LuaUserData for LuaMultiLevelGrid {
             if x as usize >= level.width || y as usize >= level.height {
                 return Ok(None);
             }
-            Ok(level.ceiling_cell_textures[y as usize * level.width + x as usize]
-                .map(|key| key.data().as_ffi()))
+            Ok(
+                level.ceiling_cell_textures[y as usize * level.width + x as usize]
+                    .map(|key| key.data().as_ffi()),
+            )
         });
         // -- setLoweredFloorCell --
         /// Marks an active-level cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
@@ -3270,10 +3287,8 @@ impl LuaUserData for LuaMultiLevelGrid {
         /// @return | number | Active-level floor offset.
         methods.add_method("getFloorOffset", |_, this, ()| {
             let grid = this.inner.borrow();
-            let level = active_multilevel_level(
-                &grid,
-                "lurek.raycaster.LMultiLevelGrid:getFloorOffset",
-            )?;
+            let level =
+                active_multilevel_level(&grid, "lurek.raycaster.LMultiLevelGrid:getFloorOffset")?;
             Ok(level.floor_offset)
         });
         // -- setFloorOffset --
@@ -3297,10 +3312,8 @@ impl LuaUserData for LuaMultiLevelGrid {
         /// @return | number | Active-level ceiling height.
         methods.add_method("getCeilingHeight", |_, this, ()| {
             let grid = this.inner.borrow();
-            let level = active_multilevel_level(
-                &grid,
-                "lurek.raycaster.LMultiLevelGrid:getCeilingHeight",
-            )?;
+            let level =
+                active_multilevel_level(&grid, "lurek.raycaster.LMultiLevelGrid:getCeilingHeight")?;
             Ok(level.ceiling_height)
         });
         // -- setCeilingHeight --
@@ -3504,6 +3517,8 @@ impl LuaUserData for LuaMultiLevelGrid {
         /// @param | sprites | table|LSpriteManager? | Optional sprite tables or sprite manager used to resolve clickable billboard hits.
         /// @param | models | table? | Optional model instance tables used to resolve clickable projected model hits.
         /// @return | table | Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors `getWallFeatureCell()` and adds `section` for the solid band/panel that was hit.
+        /// @field | wall_height | number | Local wall height in cell units for wall hits against partial-height features.
+        /// @field | feature | table | Optional wall feature table mirroring `getWallFeatureCell()` plus `section` for the solid band or door panel that was hit.
         methods.add_method(
             "pickScreen",
             |lua,
@@ -3603,7 +3618,8 @@ impl LuaUserData for LuaMultiLevelGrid {
                                                 mt.get::<_, f32>("y")?.floor().max(0.0) as usize;
                                             let roofed = model_cell_x < level.width
                                                 && model_cell_y < level.height
-                                                && !level.is_ceiling_hole(model_cell_x, model_cell_y);
+                                                && !level
+                                                    .is_ceiling_hole(model_cell_x, model_cell_y);
                                             let model_ambient = if roofed {
                                                 params.ambient_light * params.roofed_ambient_factor
                                             } else {
@@ -3757,8 +3773,11 @@ impl LuaUserData for LuaMultiLevelGrid {
                         camera_world_z,
                         params.player_y + params.player_angle.sin(),
                     );
-                    let models_by_level =
-                        collect_model_tables_by_level(&models_tbl, active_level, grid.level_count())?;
+                    let models_by_level = collect_model_tables_by_level(
+                        &models_tbl,
+                        active_level,
+                        grid.level_count(),
+                    )?;
                     let visible_levels = grid.visible_level_indices(
                         params.player_x,
                         params.player_y,
@@ -4024,12 +4043,14 @@ fn scene_input_tables_from_adapter<'lua>(
     adapter_ud: &LuaAnyUserData,
     api_name: &str,
 ) -> LuaResult<(LuaTable<'lua>, LuaTable<'lua>, LuaTable<'lua>)> {
-    let adapter = adapter_ud.borrow::<LuaRaycasterSceneAdapter>().map_err(|_| {
-        LuaError::RuntimeError(format!(
-            "{}: adapter must be LSceneAdapter from lurek.raycaster.newSceneAdapter()",
-            api_name
-        ))
-    })?;
+    let adapter = adapter_ud
+        .borrow::<LuaRaycasterSceneAdapter>()
+        .map_err(|_| {
+            LuaError::RuntimeError(format!(
+                "{}: adapter must be LSceneAdapter from lurek.raycaster.newSceneAdapter()",
+                api_name
+            ))
+        })?;
     let inputs = adapter.scene_inputs(lua)?;
     Ok((
         inputs.get::<_, LuaTable>("lights")?,
@@ -4124,8 +4145,11 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
         methods.add_method_mut(
             "addSprite",
             |_, this, (x, y, texture, opts): (f32, f32, LuaValue, Option<LuaTable>)| {
-                let texture_key =
-                    parse_scene_adapter_texture(&texture, "lurek.raycaster.LSceneAdapter:addSprite", "texture")?;
+                let texture_key = parse_scene_adapter_texture(
+                    &texture,
+                    "lurek.raycaster.LSceneAdapter:addSprite",
+                    "texture",
+                )?;
                 let size = match opts.as_ref() {
                     Some(opts) => table_opt_f32(opts, "size")?.unwrap_or(1.0),
                     None => 1.0,
@@ -5633,7 +5657,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     .map(|scene| scene.build_stats)
             };
             match stats {
-                Some(stats) => Ok(LuaValue::Table(raycaster_build_stats_to_table(lua, &stats)?)),
+                Some(stats) => Ok(LuaValue::Table(raycaster_build_stats_to_table(
+                    lua, &stats,
+                )?)),
                 None => Ok(LuaValue::Nil),
             }
         })?,

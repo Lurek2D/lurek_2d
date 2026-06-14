@@ -618,6 +618,255 @@ do
     print("sprite pos = " .. string.format("%.2f,%.2f", inputs.sprites[1].x, inputs.sprites[1].y))
     print("adapter buildScene quads = " .. quad_count)
     print("adapter pick = " .. tostring(pick and pick.surface or "nil"))
+    if pick then
+        print("adapter pick hit = " .. string.format("%.2f,%.2f", pick.hit_x, pick.hit_y))
+        print("adapter pick angle = " .. tostring(pick.ray_angle))
+    end
+end
+
+--@api-stub: LSceneAdapter:sceneInputs
+do
+    local adapter = lurek.raycaster.newSceneAdapter()
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    adapter:addSprite(4.5, 3.5, tex, { id = 31, level = 1, size = 1.2 })
+    adapter:addLight(5.0, 3.5, 4.0, {
+        intensity = 1.1,
+        color = { 1.0, 0.7, 0.4 },
+        level = 1,
+    })
+    local inputs = adapter:sceneInputs()
+    print("sceneInputs sprites = " .. #inputs.sprites)
+    print("sceneInputs lights = " .. #inputs.lights)
+end
+
+--@api-stub: LSceneAdapter:addSprite
+do
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:addSprite(
+        4.5,
+        3.5,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 31, level = 1, size = 1.2 }
+    )
+    local sprite = adapter:sceneInputs().sprites[1]
+    print("static sprite id = " .. sprite.id)
+    print("static sprite pos = " .. string.format("%.2f,%.2f", sprite.x, sprite.y))
+end
+
+--@api-stub: LSceneAdapter:addDirectionalSprite
+do
+    local adapter = lurek.raycaster.newSceneAdapter()
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    adapter:addDirectionalSprite(6.0, 3.5, tex, tex, tex, tex, {
+        id = 32,
+        level = 1,
+        size = 1.0,
+        angle = math.pi / 4,
+    })
+    local sprite = adapter:sceneInputs().sprites[1]
+    print("directional front tex = " .. tostring(sprite.front_texture))
+    print("directional angle = " .. string.format("%.3f", sprite.angle))
+end
+
+--@api-stub: LSceneAdapter:addLight
+do
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:addLight(5.0, 3.5, 4.0, {
+        intensity = 1.1,
+        color = { 1.0, 0.7, 0.4 },
+        level = 1,
+    })
+    local light = adapter:sceneInputs().lights[1]
+    print("static light radius = " .. light.radius)
+    print("static light intensity = " .. light.intensity)
+end
+
+--@api-stub: LSceneAdapter:addModel
+do
+    local adapter = lurek.raycaster.newSceneAdapter()
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    adapter:addModel(
+        lurek.render.loadModel("content/examples/assets/models/sample_tank.obj"),
+        7.0,
+        3.5,
+        { id = 33, level = 1, yaw = 0.3, z = 0.1, scale = 0.2 }
+    )
+    local model = adapter:sceneInputs().models[1]
+    print("static model id = " .. model.id)
+    print("static model yaw = " .. string.format("%.2f", model.yaw))
+end
+
+--@api-stub: LSceneAdapter:bindBodyDirectionalSprite
+do
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(3.0, 3.0, "dynamic")
+    body:setAngle(math.pi / 2)
+
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodyDirectionalSprite(body, tex, tex, tex, tex, {
+        id = 34,
+        offset_y = 0.5,
+        angle_offset = 0.25,
+    })
+
+    local sprite = adapter:sceneInputs().sprites[1]
+    print("body directional id = " .. sprite.id)
+    print("body directional pos = " .. string.format("%.2f,%.2f", sprite.x, sprite.y))
+    print("body directional angle = " .. string.format("%.3f", sprite.angle))
+end
+
+--@api-stub: LSceneAdapter:bindBodySprite
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(2.0, 2.0, "dynamic")
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodySprite(
+        body,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 36, offset_x = 0.5 }
+    )
+    body:setPosition(3.0, 2.0)
+    local sprite = adapter:sceneInputs().sprites[1]
+    print("body sprite pos = " .. string.format("%.2f,%.2f", sprite.x, sprite.y))
+end
+
+--@api-stub: LSceneAdapter:bindBodyLight
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(2.0, 2.0, "dynamic")
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodyLight(body, 3.0, { intensity = 0.8, offset_y = 0.25 })
+    body:setPosition(3.0, 2.0)
+    local light = adapter:sceneInputs().lights[1]
+    print("body light pos = " .. string.format("%.2f,%.2f", light.x, light.y))
+end
+
+--@api-stub: LSceneAdapter:bindBodyModel
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(2.0, 2.0, "dynamic")
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodyModel(
+        body,
+        lurek.render.loadModel("content/examples/assets/models/sample_tank.obj"),
+        { id = 37, offset_x = 0.5, yaw_offset = 0.2, scale = 0.25 }
+    )
+    body:setPosition(3.0, 2.0)
+    local model = adapter:sceneInputs().models[1]
+    print("body model yaw = " .. string.format("%.2f", model.yaw))
+end
+
+--@api-stub: LRaycaster:buildSceneFromAdapter
+do
+    local map = lurek.raycaster.new(8, 8)
+    for i = 0, 7 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 7, 1)
+        map:setCell(0, i, 1)
+        map:setCell(7, i, 1)
+    end
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:addSprite(
+        4.5,
+        4.0,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 38, size = 1.0 }
+    )
+    local count = map:buildSceneFromAdapter({
+        px = 2.5,
+        py = 4.0,
+        angle = 0.0,
+        fov = math.pi / 3,
+        rays = 32,
+        max_dist = 12.0,
+        screen_w = 160,
+        screen_h = 100,
+    }, adapter, {})
+    print("adapter scene quads = " .. count)
+end
+
+--@api-stub: LRaycaster:pickScreenFromAdapter
+do
+    local map = lurek.raycaster.new(8, 8)
+    for i = 0, 7 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 7, 1)
+        map:setCell(0, i, 1)
+        map:setCell(7, i, 1)
+    end
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:addSprite(
+        4.5,
+        4.0,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 39, size = 1.0 }
+    )
+    local hit = map:pickScreenFromAdapter(80, 50, {
+        px = 2.5,
+        py = 4.0,
+        angle = 0.0,
+        fov = math.pi / 3,
+        rays = 32,
+        max_dist = 12.0,
+        screen_w = 160,
+        screen_h = 100,
+    }, adapter)
+    if hit then
+        print("adapter pick id = " .. tostring(hit.id))
+        print("adapter pick point = " .. string.format("%.2f,%.2f", hit.hit_x, hit.hit_y))
+    end
+end
+
+--@api-stub: LSceneAdapter:clear
+do
+    local adapter = lurek.raycaster.newSceneAdapter()
+    local tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    adapter:addSprite(1.0, 1.0, tex)
+    adapter:addLight(1.0, 1.0, 2.0)
+    adapter:addModel(lurek.render.loadModel("content/examples/assets/models/sample_tank.obj"), 1.0, 1.0)
+    adapter:clear()
+    print("adapter cleared sprites = " .. #adapter:sceneInputs().sprites)
+end
+
+--@api-stub: LSceneAdapter:clearSprites
+do
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:addSprite(
+        1.0,
+        1.0,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    )
+    adapter:clearSprites()
+    print("adapter sprite count = " .. #adapter:sceneInputs().sprites)
+end
+
+--@api-stub: LSceneAdapter:clearLights
+do
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:addLight(1.0, 1.0, 2.0)
+    adapter:clearLights()
+    print("adapter light count = " .. #adapter:sceneInputs().lights)
+end
+
+--@api-stub: LSceneAdapter:clearModels
+do
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:addModel(lurek.render.loadModel("content/examples/assets/models/sample_tank.obj"), 1.0, 1.0)
+    adapter:clearModels()
+    print("adapter model count = " .. #adapter:sceneInputs().models)
+end
+
+--@api-stub: LSceneAdapter:type
+do
+    local adapter = lurek.raycaster.newSceneAdapter()
+    print("adapter type = " .. adapter:type())
+end
+
+--@api-stub: LSceneAdapter:typeOf
+do
+    local adapter = lurek.raycaster.newSceneAdapter()
+    print("adapter is scene adapter = " .. tostring(adapter:typeOf("LSceneAdapter")))
 end
 
 --@api-stub: LSpriteManager:sortAndProject
@@ -1465,6 +1714,120 @@ do
     )
     if hit then
         print("persistent pick = " .. hit.surface .. " @ level " .. hit.level)
+    end
+end
+
+--@api-stub: LMultiLevelGrid:buildSceneFromAdapter
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        {
+            width = 4,
+            height = 4,
+            cells = {
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+            },
+            floor_offset = 0,
+            ceiling_height = 1,
+        },
+        {
+            width = 4,
+            height = 4,
+            cells = {
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+            },
+            floor_offset = 1,
+            ceiling_height = 2,
+        },
+    })
+    grid:setActiveLevel(1)
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(2.5, 1.5, "dynamic")
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodySprite(
+        body,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 35, level = 1, size = 1.0 }
+    )
+    local quad_count = grid:buildSceneFromAdapter({
+        px = 0.5,
+        py = 1.5,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 32,
+        max_dist = 8,
+        screen_w = 160,
+        screen_h = 100,
+        active_level = 1,
+    }, adapter, {})
+    print("persistent adapter quads = " .. quad_count)
+end
+
+--@api-stub: LMultiLevelGrid:pickScreenFromAdapter
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        {
+            width = 4,
+            height = 4,
+            cells = {
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+            },
+            floor_offset = 0,
+            ceiling_height = 1,
+        },
+        {
+            width = 4,
+            height = 4,
+            cells = {
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+            },
+            floor_offset = 1,
+            ceiling_height = 2,
+        },
+    })
+    grid:setActiveLevel(1)
+
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(2.5, 1.5, "dynamic")
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodySprite(
+        body,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 35, level = 1, size = 1.0 }
+    )
+    adapter:bindBodyLight(body, 4.0, {
+        level = 1,
+        intensity = 1.0,
+        color = { 1.0, 0.8, 0.6 },
+    })
+
+    local params = {
+        px = 0.5,
+        py = 1.5,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 32,
+        max_dist = 8,
+        screen_w = 160,
+        screen_h = 100,
+        active_level = 1,
+    }
+    local hit = grid:pickScreenFromAdapter(80, 50, params, {}, adapter)
+    if hit then
+        print("persistent adapter hit = " .. hit.surface .. " #" .. tostring(hit.id))
+        print("persistent adapter hit point = " .. string.format("%.2f,%.2f", hit.hit_x, hit.hit_y))
     end
 end
 

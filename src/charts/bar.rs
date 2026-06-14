@@ -54,12 +54,7 @@ impl BarChart {
     }
 
     /// Add or replace a named series with direct `(x, y)` point data.
-    pub fn add_series_data(
-        &mut self,
-        name: &str,
-        data: &[(f32, f32)],
-        color: crate::color::Color,
-    ) {
+    pub fn add_series_data(&mut self, name: &str, data: &[(f32, f32)], color: crate::color::Color) {
         let color = [color.r, color.g, color.b, color.a];
         if let Some(series) = self.series.iter_mut().find(|series| series.name == name) {
             series.color = color;

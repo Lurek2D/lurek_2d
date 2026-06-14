@@ -4,8 +4,12 @@
 
 use super::dataframe_api::LuaDataFrame;
 use super::SharedState;
-use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartMargin, ChartSeries, DEFAULT_PALETTE};
-use crate::charts::{AreaChart, BarChart, HeatmapChart, HistogramChart, LineChart, PieChart, ScatterPlot};
+use crate::charts::config::{
+    ChartConfig, ChartDataFrameOptions, ChartMargin, ChartSeries, DEFAULT_PALETTE,
+};
+use crate::charts::{
+    AreaChart, BarChart, HeatmapChart, HistogramChart, LineChart, PieChart, ScatterPlot,
+};
 use crate::color::Color;
 use crate::image::{ImageData, Texture};
 use crate::render::renderer::RenderCommand;
@@ -51,8 +55,15 @@ impl ChartTextureCache {
         if let Some(old_key) = self.key.borrow_mut().take() {
             release_texture(&mut state, old_key);
         }
-        let texture = Texture::from_rgba(width, height, std::mem::take(&mut pixels), &mut state.textures)
-            .map_err(|err| LuaError::RuntimeError(format!("{api_name}: failed to upload chart texture: {err}")))?;
+        let texture = Texture::from_rgba(
+            width,
+            height,
+            std::mem::take(&mut pixels),
+            &mut state.textures,
+        )
+        .map_err(|err| {
+            LuaError::RuntimeError(format!("{api_name}: failed to upload chart texture: {err}"))
+        })?;
         state
             .released_texture_handles
             .remove(&texture.key.data().as_ffi());
@@ -319,7 +330,10 @@ fn parse_margin(tbl: &LuaTable) -> LuaResult<ChartMargin> {
     Ok(ChartMargin {
         top: tbl.get::<_, Option<f32>>("top")?.unwrap_or(30.0).max(0.0),
         right: tbl.get::<_, Option<f32>>("right")?.unwrap_or(20.0).max(0.0),
-        bottom: tbl.get::<_, Option<f32>>("bottom")?.unwrap_or(40.0).max(0.0),
+        bottom: tbl
+            .get::<_, Option<f32>>("bottom")?
+            .unwrap_or(40.0)
+            .max(0.0),
         left: tbl.get::<_, Option<f32>>("left")?.unwrap_or(50.0).max(0.0),
     })
 }
@@ -347,7 +361,9 @@ fn parse_chart_config(config: Option<LuaTable>) -> LuaResult<ChartConfig> {
         .get::<_, Option<u32>>("yTickCount")?
         .unwrap_or(cfg.y_tick_count)
         .max(2);
-    cfg.show_grid = tbl.get::<_, Option<bool>>("showGrid")?.unwrap_or(cfg.show_grid);
+    cfg.show_grid = tbl
+        .get::<_, Option<bool>>("showGrid")?
+        .unwrap_or(cfg.show_grid);
     cfg.show_legend = tbl
         .get::<_, Option<bool>>("showLegend")?
         .unwrap_or(cfg.show_legend);
@@ -470,9 +486,10 @@ fn nearest_cartesian_point<'a>(
             if !x.is_finite() || !y.is_finite() {
                 continue;
             }
-            let screen_x = plot_x + crate::charts::render_utils::world_to_screen(x, min_x, max_x, plot_w);
-            let screen_y =
-                plot_y + plot_h - crate::charts::render_utils::world_to_screen(y, min_y, max_y, plot_h);
+            let screen_x =
+                plot_x + crate::charts::render_utils::world_to_screen(x, min_x, max_x, plot_w);
+            let screen_y = plot_y + plot_h
+                - crate::charts::render_utils::world_to_screen(y, min_y, max_y, plot_h);
             let distance = ((screen_x - query_x).powi(2) + (screen_y - query_y).powi(2)).sqrt();
             let candidate = NearestPoint {
                 series_name: chart_series.name.as_str(),
@@ -547,7 +564,14 @@ impl LuaUserData for LuaLineChart {
                 let added = this
                     .inner
                     .borrow_mut()
-                    .add_series_from_dataframe(&name, &dataframe, &x_col, &y_col, rgba_color(rgba), options)
+                    .add_series_from_dataframe(
+                        &name,
+                        &dataframe,
+                        &x_col,
+                        &y_col,
+                        rgba_color(rgba),
+                        options,
+                    )
                     .map_err(|err| {
                         LuaError::RuntimeError(format!(
                             "lurek.charts.LLineChart:addSeriesFromDataFrame: {err}"
@@ -643,16 +667,23 @@ impl LuaUserData for LuaLineChart {
             let chart = this.inner.borrow();
             let width = chart.config.width;
             let height = chart.config.height;
-            let buffer = render_chart_buffer("lurek.charts.LLineChart:render", width, height, |buffer| {
-                chart.render(buffer);
-            })?;
+            let buffer =
+                render_chart_buffer("lurek.charts.LLineChart:render", width, height, |buffer| {
+                    chart.render(buffer);
+                })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
-            chart_image_userdata(lua, "lurek.charts.LLineChart:renderImage", chart.config.width, chart.config.height, |buffer| {
-                chart.render(buffer);
-            })
+            chart_image_userdata(
+                lua,
+                "lurek.charts.LLineChart:renderImage",
+                chart.config.width,
+                chart.config.height,
+                |buffer| {
+                    chart.render(buffer);
+                },
+            )
         });
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
@@ -665,18 +696,21 @@ impl LuaUserData for LuaLineChart {
                 |buffer| chart.render(buffer),
             )
         });
-        methods.add_method("draw", |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
-            let transform = RenderDrawTransform::parse(x, y, opts)?;
-            let chart = this.inner.borrow();
-            this.cache.draw(
-                "lurek.charts.LLineChart:draw",
-                chart.config.width,
-                chart.config.height,
-                &this.dirty,
-                transform,
-                |buffer| chart.render(buffer),
-            )
-        });
+        methods.add_method(
+            "draw",
+            |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
+                let transform = RenderDrawTransform::parse(x, y, opts)?;
+                let chart = this.inner.borrow();
+                this.cache.draw(
+                    "lurek.charts.LLineChart:draw",
+                    chart.config.width,
+                    chart.config.height,
+                    &this.dirty,
+                    transform,
+                    |buffer| chart.render(buffer),
+                )
+            },
+        );
         methods.add_method("nearest", |lua, this, (x, y): (f32, f32)| {
             let chart = this.inner.borrow();
             let margin = chart.config.margin;
@@ -692,9 +726,18 @@ impl LuaUserData for LuaLineChart {
             if plot_w <= 0.0 || plot_h <= 0.0 {
                 return Ok(LuaValue::Nil);
             }
-            let (min_x, auto_max_x, min_y, auto_max_y) = crate::charts::render_utils::auto_range(chart.series());
-            let max_x = if chart.x_max > min_x { chart.x_max } else { auto_max_x };
-            let max_y = if chart.y_max > min_y { chart.y_max } else { auto_max_y };
+            let (min_x, auto_max_x, min_y, auto_max_y) =
+                crate::charts::render_utils::auto_range(chart.series());
+            let max_x = if chart.x_max > min_x {
+                chart.x_max
+            } else {
+                auto_max_x
+            };
+            let max_y = if chart.y_max > min_y {
+                chart.y_max
+            } else {
+                auto_max_y
+            };
             push_nearest_point(
                 lua,
                 nearest_cartesian_point(
@@ -712,8 +755,12 @@ impl LuaUserData for LuaLineChart {
                 ),
             )
         });
-        methods.add_method("getWidth", |_, this, ()| Ok(this.inner.borrow().config.width));
-        methods.add_method("getHeight", |_, this, ()| Ok(this.inner.borrow().config.height));
+        methods.add_method("getWidth", |_, this, ()| {
+            Ok(this.inner.borrow().config.width)
+        });
+        methods.add_method("getHeight", |_, this, ()| {
+            Ok(this.inner.borrow().config.height)
+        });
         methods.add_method("type", |_, _, ()| Ok("LLineChart"));
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LLineChart" || name == "LObject")
@@ -736,15 +783,25 @@ impl LuaUserData for LuaBarChart {
                 Ok(())
             },
         );
-        methods.add_method("addCategory", |_, this, (label, values): (String, LuaTable)| {
-            let values = parse_value_list(&values, "lurek.charts.LBarChart:addCategory")?;
-            this.inner.borrow_mut().add_category(&label, &values);
-            this.dirty.set(true);
-            Ok(())
-        });
+        methods.add_method(
+            "addCategory",
+            |_, this, (label, values): (String, LuaTable)| {
+                let values = parse_value_list(&values, "lurek.charts.LBarChart:addCategory")?;
+                this.inner.borrow_mut().add_category(&label, &values);
+                this.dirty.set(true);
+                Ok(())
+            },
+        );
         methods.add_method(
             "addCategoriesFromDataFrame",
-            |_, this, (df, label_col, value_cols, opts): (LuaAnyUserData, String, LuaTable, Option<LuaTable>)| {
+            |_,
+             this,
+             (df, label_col, value_cols, opts): (
+                LuaAnyUserData,
+                String,
+                LuaTable,
+                Option<LuaTable>,
+            )| {
                 let value_cols = lua_table_to_strings(value_cols)?;
                 let options = parse_chart_dataframe_options(opts)?;
                 let df = df.borrow::<LuaDataFrame>()?;
@@ -809,16 +866,23 @@ impl LuaUserData for LuaBarChart {
             let chart = this.inner.borrow();
             let width = chart.config.width;
             let height = chart.config.height;
-            let buffer = render_chart_buffer("lurek.charts.LBarChart:render", width, height, |buffer| {
-                chart.render(buffer);
-            })?;
+            let buffer =
+                render_chart_buffer("lurek.charts.LBarChart:render", width, height, |buffer| {
+                    chart.render(buffer);
+                })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
-            chart_image_userdata(lua, "lurek.charts.LBarChart:renderImage", chart.config.width, chart.config.height, |buffer| {
-                chart.render(buffer);
-            })
+            chart_image_userdata(
+                lua,
+                "lurek.charts.LBarChart:renderImage",
+                chart.config.width,
+                chart.config.height,
+                |buffer| {
+                    chart.render(buffer);
+                },
+            )
         });
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
@@ -831,20 +895,27 @@ impl LuaUserData for LuaBarChart {
                 |buffer| chart.render(buffer),
             )
         });
-        methods.add_method("draw", |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
-            let transform = RenderDrawTransform::parse(x, y, opts)?;
-            let chart = this.inner.borrow();
-            this.cache.draw(
-                "lurek.charts.LBarChart:draw",
-                chart.config.width,
-                chart.config.height,
-                &this.dirty,
-                transform,
-                |buffer| chart.render(buffer),
-            )
+        methods.add_method(
+            "draw",
+            |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
+                let transform = RenderDrawTransform::parse(x, y, opts)?;
+                let chart = this.inner.borrow();
+                this.cache.draw(
+                    "lurek.charts.LBarChart:draw",
+                    chart.config.width,
+                    chart.config.height,
+                    &this.dirty,
+                    transform,
+                    |buffer| chart.render(buffer),
+                )
+            },
+        );
+        methods.add_method("getWidth", |_, this, ()| {
+            Ok(this.inner.borrow().config.width)
         });
-        methods.add_method("getWidth", |_, this, ()| Ok(this.inner.borrow().config.width));
-        methods.add_method("getHeight", |_, this, ()| Ok(this.inner.borrow().config.height));
+        methods.add_method("getHeight", |_, this, ()| {
+            Ok(this.inner.borrow().config.height)
+        });
         methods.add_method("type", |_, _, ()| Ok("LBarChart"));
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LBarChart" || name == "LObject")
@@ -886,7 +957,14 @@ impl LuaUserData for LuaScatterPlot {
                 let added = this
                     .inner
                     .borrow_mut()
-                    .add_series_from_dataframe(&name, &dataframe, &x_col, &y_col, rgba_color(rgba), options)
+                    .add_series_from_dataframe(
+                        &name,
+                        &dataframe,
+                        &x_col,
+                        &y_col,
+                        rgba_color(rgba),
+                        options,
+                    )
                     .map_err(|err| {
                         LuaError::RuntimeError(format!(
                             "lurek.charts.LScatterPlot:addSeriesFromDataFrame: {err}"
@@ -987,10 +1065,14 @@ impl LuaUserData for LuaScatterPlot {
             let chart = this.inner.borrow();
             let width = chart.config.width;
             let height = chart.config.height;
-            let buffer =
-                render_chart_buffer("lurek.charts.LScatterPlot:render", width, height, |buffer| {
+            let buffer = render_chart_buffer(
+                "lurek.charts.LScatterPlot:render",
+                width,
+                height,
+                |buffer| {
                     chart.render(buffer);
-                })?;
+                },
+            )?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
         methods.add_method("renderImage", |lua, this, ()| {
@@ -1014,18 +1096,21 @@ impl LuaUserData for LuaScatterPlot {
                 |buffer| chart.render(buffer),
             )
         });
-        methods.add_method("draw", |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
-            let transform = RenderDrawTransform::parse(x, y, opts)?;
-            let chart = this.inner.borrow();
-            this.cache.draw(
-                "lurek.charts.LScatterPlot:draw",
-                chart.config.width,
-                chart.config.height,
-                &this.dirty,
-                transform,
-                |buffer| chart.render(buffer),
-            )
-        });
+        methods.add_method(
+            "draw",
+            |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
+                let transform = RenderDrawTransform::parse(x, y, opts)?;
+                let chart = this.inner.borrow();
+                this.cache.draw(
+                    "lurek.charts.LScatterPlot:draw",
+                    chart.config.width,
+                    chart.config.height,
+                    &this.dirty,
+                    transform,
+                    |buffer| chart.render(buffer),
+                )
+            },
+        );
         methods.add_method("nearest", |lua, this, (x, y): (f32, f32)| {
             let chart = this.inner.borrow();
             let margin = chart.config.margin;
@@ -1070,8 +1155,12 @@ impl LuaUserData for LuaScatterPlot {
                 ),
             )
         });
-        methods.add_method("getWidth", |_, this, ()| Ok(this.inner.borrow().config.width));
-        methods.add_method("getHeight", |_, this, ()| Ok(this.inner.borrow().config.height));
+        methods.add_method("getWidth", |_, this, ()| {
+            Ok(this.inner.borrow().config.width)
+        });
+        methods.add_method("getHeight", |_, this, ()| {
+            Ok(this.inner.borrow().config.height)
+        });
         methods.add_method("type", |_, _, ()| Ok("LScatterPlot"));
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LScatterPlot" || name == "LObject")
@@ -1086,7 +1175,9 @@ impl LuaUserData for LuaPieChart {
             |_, this, (label, value, color): (String, f32, Option<LuaTable>)| {
                 let rgba = color_from_optional_table(color, this.count.get())?;
                 this.count.set(this.count.get() + 1);
-                this.inner.borrow_mut().add_slice(&label, value.max(0.0), rgba);
+                this.inner
+                    .borrow_mut()
+                    .add_slice(&label, value.max(0.0), rgba);
                 this.dirty.set(true);
                 Ok(())
             },
@@ -1105,7 +1196,14 @@ impl LuaUserData for LuaPieChart {
         );
         methods.add_method(
             "addSegmentsFromDataFrame",
-            |_, this, (df, label_col, value_col, opts): (LuaAnyUserData, String, String, Option<LuaTable>)| {
+            |_,
+             this,
+             (df, label_col, value_col, opts): (
+                LuaAnyUserData,
+                String,
+                String,
+                Option<LuaTable>,
+            )| {
                 let options = parse_chart_dataframe_options(opts)?;
                 let df = df.borrow::<LuaDataFrame>()?;
                 let dataframe = df.borrow_dataframe();
@@ -1145,16 +1243,23 @@ impl LuaUserData for LuaPieChart {
             let chart = this.inner.borrow();
             let width = chart.config.width;
             let height = chart.config.height;
-            let buffer = render_chart_buffer("lurek.charts.LPieChart:render", width, height, |buffer| {
-                chart.render(buffer);
-            })?;
+            let buffer =
+                render_chart_buffer("lurek.charts.LPieChart:render", width, height, |buffer| {
+                    chart.render(buffer);
+                })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
-            chart_image_userdata(lua, "lurek.charts.LPieChart:renderImage", chart.config.width, chart.config.height, |buffer| {
-                chart.render(buffer);
-            })
+            chart_image_userdata(
+                lua,
+                "lurek.charts.LPieChart:renderImage",
+                chart.config.width,
+                chart.config.height,
+                |buffer| {
+                    chart.render(buffer);
+                },
+            )
         });
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
@@ -1167,20 +1272,27 @@ impl LuaUserData for LuaPieChart {
                 |buffer| chart.render(buffer),
             )
         });
-        methods.add_method("draw", |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
-            let transform = RenderDrawTransform::parse(x, y, opts)?;
-            let chart = this.inner.borrow();
-            this.cache.draw(
-                "lurek.charts.LPieChart:draw",
-                chart.config.width,
-                chart.config.height,
-                &this.dirty,
-                transform,
-                |buffer| chart.render(buffer),
-            )
+        methods.add_method(
+            "draw",
+            |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
+                let transform = RenderDrawTransform::parse(x, y, opts)?;
+                let chart = this.inner.borrow();
+                this.cache.draw(
+                    "lurek.charts.LPieChart:draw",
+                    chart.config.width,
+                    chart.config.height,
+                    &this.dirty,
+                    transform,
+                    |buffer| chart.render(buffer),
+                )
+            },
+        );
+        methods.add_method("getWidth", |_, this, ()| {
+            Ok(this.inner.borrow().config.width)
         });
-        methods.add_method("getWidth", |_, this, ()| Ok(this.inner.borrow().config.width));
-        methods.add_method("getHeight", |_, this, ()| Ok(this.inner.borrow().config.height));
+        methods.add_method("getHeight", |_, this, ()| {
+            Ok(this.inner.borrow().config.height)
+        });
         methods.add_method("type", |_, _, ()| Ok("LPieChart"));
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LPieChart" || name == "LObject")
@@ -1236,7 +1348,13 @@ impl LuaUserData for LuaAreaChart {
                 let added = this
                     .inner
                     .borrow_mut()
-                    .add_layer_from_dataframe(&name, &dataframe, &value_col, rgba_color(rgba), options)
+                    .add_layer_from_dataframe(
+                        &name,
+                        &dataframe,
+                        &value_col,
+                        rgba_color(rgba),
+                        options,
+                    )
                     .map_err(|err| {
                         LuaError::RuntimeError(format!(
                             "lurek.charts.LAreaChart:addLayerFromDataFrame: {err}"
@@ -1315,16 +1433,23 @@ impl LuaUserData for LuaAreaChart {
             let chart = this.inner.borrow();
             let width = chart.config.width;
             let height = chart.config.height;
-            let buffer = render_chart_buffer("lurek.charts.LAreaChart:render", width, height, |buffer| {
-                chart.render(buffer);
-            })?;
+            let buffer =
+                render_chart_buffer("lurek.charts.LAreaChart:render", width, height, |buffer| {
+                    chart.render(buffer);
+                })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
-            chart_image_userdata(lua, "lurek.charts.LAreaChart:renderImage", chart.config.width, chart.config.height, |buffer| {
-                chart.render(buffer);
-            })
+            chart_image_userdata(
+                lua,
+                "lurek.charts.LAreaChart:renderImage",
+                chart.config.width,
+                chart.config.height,
+                |buffer| {
+                    chart.render(buffer);
+                },
+            )
         });
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
@@ -1337,20 +1462,27 @@ impl LuaUserData for LuaAreaChart {
                 |buffer| chart.render(buffer),
             )
         });
-        methods.add_method("draw", |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
-            let transform = RenderDrawTransform::parse(x, y, opts)?;
-            let chart = this.inner.borrow();
-            this.cache.draw(
-                "lurek.charts.LAreaChart:draw",
-                chart.config.width,
-                chart.config.height,
-                &this.dirty,
-                transform,
-                |buffer| chart.render(buffer),
-            )
+        methods.add_method(
+            "draw",
+            |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
+                let transform = RenderDrawTransform::parse(x, y, opts)?;
+                let chart = this.inner.borrow();
+                this.cache.draw(
+                    "lurek.charts.LAreaChart:draw",
+                    chart.config.width,
+                    chart.config.height,
+                    &this.dirty,
+                    transform,
+                    |buffer| chart.render(buffer),
+                )
+            },
+        );
+        methods.add_method("getWidth", |_, this, ()| {
+            Ok(this.inner.borrow().config.width)
         });
-        methods.add_method("getWidth", |_, this, ()| Ok(this.inner.borrow().config.width));
-        methods.add_method("getHeight", |_, this, ()| Ok(this.inner.borrow().config.height));
+        methods.add_method("getHeight", |_, this, ()| {
+            Ok(this.inner.borrow().config.height)
+        });
         methods.add_method("type", |_, _, ()| Ok("LAreaChart"));
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LAreaChart" || name == "LObject")
@@ -1383,7 +1515,7 @@ impl LuaUserData for LuaHistogramChart {
         );
         methods.add_method(
             "addSeriesFromDataFrame",
-            |_ ,
+            |_,
              this,
              (name, df, value_col, color, opts): (
                 String,
@@ -1405,7 +1537,13 @@ impl LuaUserData for LuaHistogramChart {
                 let added = this
                     .inner
                     .borrow_mut()
-                    .add_series_from_dataframe(&name, &dataframe, &value_col, rgba_color(rgba), options)
+                    .add_series_from_dataframe(
+                        &name,
+                        &dataframe,
+                        &value_col,
+                        rgba_color(rgba),
+                        options,
+                    )
                     .map_err(|err| {
                         LuaError::RuntimeError(format!(
                             "lurek.charts.LHistogramChart:addSeriesFromDataFrame: {err}"
@@ -1532,10 +1670,14 @@ impl LuaUserData for LuaHistogramChart {
             let chart = this.inner.borrow();
             let width = chart.config.width;
             let height = chart.config.height;
-            let buffer =
-                render_chart_buffer("lurek.charts.LHistogramChart:render", width, height, |buffer| {
+            let buffer = render_chart_buffer(
+                "lurek.charts.LHistogramChart:render",
+                width,
+                height,
+                |buffer| {
                     chart.render(buffer);
-                })?;
+                },
+            )?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
         methods.add_method("renderImage", |lua, this, ()| {
@@ -1559,20 +1701,27 @@ impl LuaUserData for LuaHistogramChart {
                 |buffer| chart.render(buffer),
             )
         });
-        methods.add_method("draw", |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
-            let transform = RenderDrawTransform::parse(x, y, opts)?;
-            let chart = this.inner.borrow();
-            this.cache.draw(
-                "lurek.charts.LHistogramChart:draw",
-                chart.config.width,
-                chart.config.height,
-                &this.dirty,
-                transform,
-                |buffer| chart.render(buffer),
-            )
+        methods.add_method(
+            "draw",
+            |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
+                let transform = RenderDrawTransform::parse(x, y, opts)?;
+                let chart = this.inner.borrow();
+                this.cache.draw(
+                    "lurek.charts.LHistogramChart:draw",
+                    chart.config.width,
+                    chart.config.height,
+                    &this.dirty,
+                    transform,
+                    |buffer| chart.render(buffer),
+                )
+            },
+        );
+        methods.add_method("getWidth", |_, this, ()| {
+            Ok(this.inner.borrow().config.width)
         });
-        methods.add_method("getWidth", |_, this, ()| Ok(this.inner.borrow().config.width));
-        methods.add_method("getHeight", |_, this, ()| Ok(this.inner.borrow().config.height));
+        methods.add_method("getHeight", |_, this, ()| {
+            Ok(this.inner.borrow().config.height)
+        });
         methods.add_method("type", |_, _, ()| Ok("LHistogramChart"));
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LHistogramChart" || name == "LObject")
@@ -1606,7 +1755,15 @@ impl LuaUserData for LuaHeatmapChart {
         );
         methods.add_method(
             "setMatrixFromDataFrame",
-            |_, this, (df, row_col, col_col, value_col, opts): (LuaAnyUserData, String, String, String, Option<LuaTable>)| {
+            |_,
+             this,
+             (df, row_col, col_col, value_col, opts): (
+                LuaAnyUserData,
+                String,
+                String,
+                String,
+                Option<LuaTable>,
+            )| {
                 let options = parse_chart_dataframe_options(opts)?;
                 let df = df.borrow::<LuaDataFrame>()?;
                 let dataframe = df.borrow_dataframe();
@@ -1651,12 +1808,16 @@ impl LuaUserData for LuaHeatmapChart {
             Ok(())
         });
         methods.add_method("setRowLabels", |_, this, labels: LuaTable| {
-            this.inner.borrow_mut().set_row_labels(lua_table_to_strings(labels)?);
+            this.inner
+                .borrow_mut()
+                .set_row_labels(lua_table_to_strings(labels)?);
             this.dirty.set(true);
             Ok(())
         });
         methods.add_method("setColumnLabels", |_, this, labels: LuaTable| {
-            this.inner.borrow_mut().set_col_labels(lua_table_to_strings(labels)?);
+            this.inner
+                .borrow_mut()
+                .set_col_labels(lua_table_to_strings(labels)?);
             this.dirty.set(true);
             Ok(())
         });
@@ -1699,10 +1860,14 @@ impl LuaUserData for LuaHeatmapChart {
             let chart = this.inner.borrow();
             let width = chart.config.width;
             let height = chart.config.height;
-            let buffer =
-                render_chart_buffer("lurek.charts.LHeatmapChart:render", width, height, |buffer| {
+            let buffer = render_chart_buffer(
+                "lurek.charts.LHeatmapChart:render",
+                width,
+                height,
+                |buffer| {
                     chart.render(buffer);
-                })?;
+                },
+            )?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
         methods.add_method("renderImage", |lua, this, ()| {
@@ -1726,20 +1891,27 @@ impl LuaUserData for LuaHeatmapChart {
                 |buffer| chart.render(buffer),
             )
         });
-        methods.add_method("draw", |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
-            let transform = RenderDrawTransform::parse(x, y, opts)?;
-            let chart = this.inner.borrow();
-            this.cache.draw(
-                "lurek.charts.LHeatmapChart:draw",
-                chart.config.width,
-                chart.config.height,
-                &this.dirty,
-                transform,
-                |buffer| chart.render(buffer),
-            )
+        methods.add_method(
+            "draw",
+            |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
+                let transform = RenderDrawTransform::parse(x, y, opts)?;
+                let chart = this.inner.borrow();
+                this.cache.draw(
+                    "lurek.charts.LHeatmapChart:draw",
+                    chart.config.width,
+                    chart.config.height,
+                    &this.dirty,
+                    transform,
+                    |buffer| chart.render(buffer),
+                )
+            },
+        );
+        methods.add_method("getWidth", |_, this, ()| {
+            Ok(this.inner.borrow().config.width)
         });
-        methods.add_method("getWidth", |_, this, ()| Ok(this.inner.borrow().config.width));
-        methods.add_method("getHeight", |_, this, ()| Ok(this.inner.borrow().config.height));
+        methods.add_method("getHeight", |_, this, ()| {
+            Ok(this.inner.borrow().config.height)
+        });
         methods.add_method("type", |_, _, ()| Ok("LHeatmapChart"));
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LHeatmapChart" || name == "LObject")

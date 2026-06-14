@@ -639,6 +639,21 @@ LModManagerGetModsByCapabilityResult = {}
 ---@field version string Version string.
 LModManagerScanFolderResult = {}
 
+---@class LMultiLevelGridGetWallFeatureCellResult
+---@field alpha number Feature alpha/transparency override.
+---@field direction string "horizontal" or "vertical" when `kind == "door"`.
+---@field height number Half-wall height in cell units when `kind == "half"`.
+---@field kind string "half", "window", or "door".
+---@field lintel_height number Window lintel height when `kind == "window"`.
+---@field open_amount number Door openness in 0.0..1.0 when `kind == "door"`.
+---@field sill_height number Window sill height when `kind == "window"`.
+LMultiLevelGridGetWallFeatureCellResult = {}
+
+---@class LMultiLevelGridPickScreenResult
+---@field feature table Optional wall feature table mirroring `getWallFeatureCell()` plus `section` for the solid band or door panel that was hit.
+---@field wall_height number Local wall height in cell units for wall hits against partial-height features.
+LMultiLevelGridPickScreenResult = {}
+
 ---@class LNavMeshFindPathResult
 ---@field x number X.
 ---@field y number Y.
@@ -1072,9 +1087,20 @@ LRaycasterGetLastBuildStatsResult = {}
 ---@field texture number Texture id.
 LRaycasterGetLoweredFloorCellResult = {}
 
+---@class LRaycasterGetWallFeatureCellResult
+---@field alpha number Feature alpha/transparency override.
+---@field direction string "horizontal" or "vertical" when `kind == "door"`.
+---@field height number Half-wall height in cell units when `kind == "half"`.
+---@field kind string "half", "window", or "door".
+---@field lintel_height number Window lintel height when `kind == "window"`.
+---@field open_amount number Door openness in 0.0..1.0 when `kind == "door"`.
+---@field sill_height number Window sill height when `kind == "window"`.
+LRaycasterGetWallFeatureCellResult = {}
+
 ---@class LRaycasterPickScreenResult
 ---@field cell_value number Cell value at the picked tile.
 ---@field distance number Camera-space distance to the picked point.
+---@field feature table Optional wall feature table mirroring `getWallFeatureCell()` plus `section` for the solid band or door panel that was hit.
 ---@field hit_x number World hit X.
 ---@field hit_y number World hit Y.
 ---@field id number Optional caller-supplied entity id for sprite/model hits.
@@ -1085,6 +1111,7 @@ LRaycasterGetLoweredFloorCellResult = {}
 ---@field texture number Raw floor/ceiling texture id when available.
 ---@field u number Surface U coordinate in 0.0..1.0.
 ---@field v number Surface V coordinate in 0.0..1.0.
+---@field wall_height number Local wall height in cell units for wall hits against partial-height features.
 ---@field x number Grid X coordinate.
 ---@field y number Grid Y coordinate.
 LRaycasterPickScreenResult = {}
@@ -7536,11 +7563,7 @@ function LAreaChart:type() end
 ---@param name any
 function LAreaChart:typeOf(name) end
 
----@param df any
----@param label_col any
----@param value_cols any
----@param opts? any
-function LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts) end
+function LBarChart:addCategoriesFromDataFrame() end
 
 ---@param label any
 ---@param values any
@@ -7636,12 +7659,7 @@ function LHeatmapChart:setColumnLabels(labels) end
 ---@param col_labels? any
 function LHeatmapChart:setMatrix(matrix, row_labels, col_labels) end
 
----@param df any
----@param row_col any
----@param col_col any
----@param value_col any
----@param opts? any
-function LHeatmapChart:setMatrixFromDataFrame(df, row_col, col_col, value_col, opts) end
+function LHeatmapChart:setMatrixFromDataFrame() end
 
 ---@param labels any
 function LHeatmapChart:setRowLabels(labels) end
@@ -7814,11 +7832,7 @@ function LLineChart:typeOf(name) end
 ---@param color? any
 function LPieChart:addSegment(label, value, color) end
 
----@param df any
----@param label_col any
----@param value_col any
----@param opts? any
-function LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts) end
+function LPieChart:addSegmentsFromDataFrame() end
 
 ---@param label any
 ---@param value any
@@ -24419,7 +24433,7 @@ function LMultiLevelGrid:getLoweredFloorCell(x, y) end
 --- Returns the wall feature attached to an active-level cell, or nil when none is set.
 ---@param x number Grid column.
 ---@param y number Grid row.
----@return table Feature table {kind, alpha, ...} or nil.
+---@return LMultiLevelGridGetWallFeatureCellResult Feature table {kind, alpha, ...} or nil.
 function LMultiLevelGrid:getWallFeatureCell(x, y) end
 
 --- Returns true when an active-level cell is open to the level above.
@@ -24445,7 +24459,7 @@ function LMultiLevelGrid:levelCount() end
 ---@param wallTextures? table Optional map of cell_value -> texture for wall surfaces.
 ---@param sprites? table|LSpriteManager Optional sprite tables or sprite manager used to resolve clickable billboard hits.
 ---@param models? table Optional model instance tables used to resolve clickable projected model hits.
----@return table Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors `getWallFeatureCell()` and adds `section` for the solid band/panel that was hit.
+---@return LMultiLevelGridPickScreenResult Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors `getWallFeatureCell()` and adds `section` for the solid band/panel that was hit.
 function LMultiLevelGrid:pickScreen(sx, sy, params, wallTextures, sprites, models) end
 
 --- Resolves a screen-space click against this multilevel world using a runtime scene adapter.
@@ -24788,7 +24802,7 @@ function LRaycaster:getWallAlpha(tileType) end
 --- Returns the wall feature attached to a cell, or nil when none is set.
 ---@param x number Grid column.
 ---@param y number Grid row.
----@return table Feature table {kind, alpha, ...} or nil.
+---@return LRaycasterGetWallFeatureCellResult Feature table {kind, alpha, ...} or nil.
 function LRaycaster:getWallFeatureCell(x, y) end
 
 --- Performs a discrete grid-step movement in one of 4 cardinal directions with collision.

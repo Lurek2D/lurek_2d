@@ -4,8 +4,8 @@
 //! The result reports both tile identity and hit character so callers can tell which cell was reached and from which side it was approached.
 //! This makes the file the practical bridge between first-person view coordinates and gameplay selection on the underlying map.
 
-use super::doors::DoorDirection;
 use super::dda::Raycaster2D;
+use super::doors::DoorDirection;
 use super::multilevel::MultiLevelGrid;
 use super::wall_feature::{WallFeature, WallFeatureKind};
 
@@ -302,7 +302,8 @@ fn wall_height_at_screen_y(
     corrected_distance: f32,
 ) -> f32 {
     let world_z = camera_world_z
-        - (screen_y - params.horizon()) * corrected_distance / params.projection_distance().max(1e-4);
+        - (screen_y - params.horizon()) * corrected_distance
+            / params.projection_distance().max(1e-4);
     world_z - floor_world_z
 }
 
@@ -498,24 +499,26 @@ impl Raycaster2D {
                 } else if local_height >= lintel_height - 1e-4 && local_height <= 1.0 + 1e-4 {
                     (
                         WallPickDecision::Hit,
-                        Some(self.make_wall_pick_result(
-                            params,
-                            level_index,
-                            ray_angle,
-                            grid_x,
-                            grid_y,
-                            boundary_distance,
-                            side,
-                            boundary_hit_x,
-                            boundary_hit_y,
-                            boundary_tex_u,
-                            ((local_height - lintel_height) / (1.0 - lintel_height).max(1e-4))
-                                .clamp(0.0, 1.0),
-                            local_height.clamp(0.0, 1.0),
-                            cell_value,
-                            Some(feature),
-                            Some(PickWallSection::Upper),
-                        )),
+                        Some(
+                            self.make_wall_pick_result(
+                                params,
+                                level_index,
+                                ray_angle,
+                                grid_x,
+                                grid_y,
+                                boundary_distance,
+                                side,
+                                boundary_hit_x,
+                                boundary_hit_y,
+                                boundary_tex_u,
+                                ((local_height - lintel_height) / (1.0 - lintel_height).max(1e-4))
+                                    .clamp(0.0, 1.0),
+                                local_height.clamp(0.0, 1.0),
+                                cell_value,
+                                Some(feature),
+                                Some(PickWallSection::Upper),
+                            ),
+                        ),
                     )
                 } else {
                     (WallPickDecision::Continue, None)
@@ -665,7 +668,10 @@ impl Raycaster2D {
             if boundary_distance > params.max_distance {
                 return None;
             }
-            if map_x < 0 || map_y < 0 || map_x >= self.width() as i32 || map_y >= self.height() as i32
+            if map_x < 0
+                || map_y < 0
+                || map_x >= self.width() as i32
+                || map_y >= self.height() as i32
             {
                 return None;
             }

@@ -290,9 +290,9 @@ impl ParallaxLayer {
         screen_h: f32,
     ) -> ParallaxLayerStats {
         let (tile_width, tile_height) = self.resolved_tile_dimensions();
-        let autoscroll_speed =
-            (self.autoscroll[0] * self.autoscroll[0] + self.autoscroll[1] * self.autoscroll[1])
-                .sqrt();
+        let autoscroll_speed = (self.autoscroll[0] * self.autoscroll[0]
+            + self.autoscroll[1] * self.autoscroll[1])
+            .sqrt();
         if let Some(batch) = self.build_draw_calls(cam_x, cam_y, screen_w, screen_h) {
             return ParallaxLayerStats {
                 visible_tile_count: batch.tiles.len(),

@@ -212,7 +212,12 @@ impl ParticleSystem {
             p.life -= dt;
         }
         let dead_data = self.collect_dead_particles();
-        if let Some(death_cfg) = self.config.death_emitter.as_ref().filter(|_| self.config.death_burst_count > 0) {
+        if let Some(death_cfg) = self
+            .config
+            .death_emitter
+            .as_ref()
+            .filter(|_| self.config.death_burst_count > 0)
+        {
             let burst = self.config.death_burst_count;
             for &(dx, dy, _, _) in &dead_data {
                 let mut sub = ParticleSystem::new((**death_cfg).clone());

@@ -85,8 +85,7 @@ impl LuaUserData for LuaOverlay {
         methods.add_method_mut(
             "triggerShake",
             |_, this, (intensity, duration): (f32, f32)| {
-                let intensity =
-                    non_negative_f32("LOverlay:triggerShake", "intensity", intensity)?;
+                let intensity = non_negative_f32("LOverlay:triggerShake", "intensity", intensity)?;
                 let duration = non_negative_f32("LOverlay:triggerShake", "duration", duration)?;
                 this.inner.trigger_shake(intensity, duration);
                 Ok(())
@@ -105,8 +104,7 @@ impl LuaUserData for LuaOverlay {
                 let r = unit_f32("LOverlay:triggerFade", "r", r)?;
                 let g = unit_f32("LOverlay:triggerFade", "g", g)?;
                 let b = unit_f32("LOverlay:triggerFade", "b", b)?;
-                let target_alpha =
-                    unit_f32("LOverlay:triggerFade", "target_alpha", target_alpha)?;
+                let target_alpha = unit_f32("LOverlay:triggerFade", "target_alpha", target_alpha)?;
                 let duration = non_negative_f32("LOverlay:triggerFade", "duration", duration)?;
                 this.inner.trigger_fade(r, g, b, target_alpha, duration);
                 Ok(())
@@ -391,8 +389,7 @@ impl LuaUserData for LuaOverlay {
         /// Sets overlay film grain intensity.
         /// @param | v | number | Film grain intensity value.
         methods.add_method_mut("setFilmGrainIntensity", |_, this, v: f32| {
-            this.inner.film_grain.intensity =
-                unit_f32("LOverlay:setFilmGrainIntensity", "v", v)?;
+            this.inner.film_grain.intensity = unit_f32("LOverlay:setFilmGrainIntensity", "v", v)?;
             Ok(())
         });
         // -- getFilmGrainIntensity --
@@ -750,11 +747,9 @@ impl mlua::UserData for LuaScreenTransition {
         /// @param | dt | number | Delta time in seconds.
         /// @return | boolean | True when the transition is still active after the update.
         methods.add_method_mut("update", |_, this, dt: f32| {
-            Ok(this.inner.update(non_negative_f32(
-                "LScreenTransition:update",
-                "dt",
-                dt,
-            )?))
+            Ok(this
+                .inner
+                .update(non_negative_f32("LScreenTransition:update", "dt", dt)?))
         });
         // -- progress --
         /// Returns normalized transition progress.

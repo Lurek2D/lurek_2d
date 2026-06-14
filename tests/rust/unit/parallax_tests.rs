@@ -197,7 +197,10 @@ mod layer_tests {
         let batch = layer
             .build_draw_calls(500.0, 500.0, 128.0, 128.0)
             .expect("batch should exist after clamp normalization");
-        assert!(!batch.tiles.is_empty(), "expected visible tiles after normalization");
+        assert!(
+            !batch.tiles.is_empty(),
+            "expected visible tiles after normalization"
+        );
 
         let stats = layer.stats_for_view(500.0, 500.0, 128.0, 128.0);
         assert!(stats.visible_tile_count > 0);

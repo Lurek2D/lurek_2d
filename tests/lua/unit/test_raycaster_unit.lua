@@ -54,6 +54,65 @@ local function scene_params()
     }
 end
 
+local function make_scene_adapter_fixture(x, y, angle)
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(x or 10.0, y or 8.0, "dynamic")
+    if angle ~= nil then
+        body:setAngle(angle)
+    end
+    local adapter = lurek.raycaster.newSceneAdapter()
+    return world, body, adapter
+end
+
+local function multilevel_params()
+    return {
+        px = 0.5,
+        py = 1.5,
+        angle = 0.0,
+        fov = math.pi / 3,
+        rays = 32,
+        max_dist = 8.0,
+        screen_w = 160,
+        screen_h = 100,
+        active_level = 1,
+    }
+end
+
+local function multilevel_levels()
+    return {
+        {
+            width = 4,
+            height = 4,
+            cells = {
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+            },
+            floor_offset = 0.0,
+            ceiling_height = 1.0,
+        },
+        {
+            width = 4,
+            height = 4,
+            cells = {
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+            },
+            floor_offset = 1.0,
+            ceiling_height = 2.0,
+        },
+    }
+end
+
+local function make_persistent_multilevel_grid()
+    local grid = lurek.raycaster.newMultiLevelGrid(multilevel_levels())
+    grid:setActiveLevel(1)
+    return grid
+end
+
 -- @describe lurek.raycaster functions
 describe("lurek.raycaster functions", function()
     -- @covers lurek.raycaster.applyLitShade
@@ -119,13 +178,18 @@ describe("lurek.raycaster functions", function()
     end)
 
     -- @covers lurek.raycaster.newSceneAdapter
-    -- @covers LSceneAdapter:sceneInputs
-    it("newSceneAdapter snapshots sprite, light, and model inputs from a moved physics body", function()
-        local world = lurek.physics.newWorld(0, 0)
-        local body = world:newBody(10.0, 8.0, "dynamic")
-        body:setAngle(math.pi / 2)
-
+    it("newSceneAdapter returns an empty adapter userdata", function()
         local adapter = lurek.raycaster.newSceneAdapter()
+        expect_equal("LSceneAdapter", adapter:type())
+        local inputs = adapter:sceneInputs()
+        expect_equal(0, #inputs.sprites)
+        expect_equal(0, #inputs.lights)
+        expect_equal(0, #inputs.models)
+    end)
+
+    -- @covers LSceneAdapter:sceneInputs
+    it("sceneInputs snapshots sprite, light, and model inputs from a moved physics body", function()
+        local _, body, adapter = make_scene_adapter_fixture(10.0, 8.0, math.pi / 2)
         adapter:bindBodySprite(body, load_texture(), {
             id = 41,
             level = 1,
@@ -475,11 +539,8 @@ describe("lurek.raycaster functions", function()
     end)
 
     -- @covers lurek.raycaster.buildMultiLevelSceneFromAdapter
-    -- @covers lurek.raycaster.pickScreenMultiLevelFromAdapter
-    it("top-level multilevel adapter build and pick resolve physics-backed entities", function()
-        local world = lurek.physics.newWorld(0, 0)
-        local body = world:newBody(2.5, 1.5, "dynamic")
-        local adapter = lurek.raycaster.newSceneAdapter()
+    it("buildMultiLevelSceneFromAdapter projects adapter-backed entities into stacked levels", function()
+        local _, body, adapter = make_scene_adapter_fixture(2.5, 1.5)
         adapter:bindBodySprite(body, load_texture(), {
             id = 701,
             level = 1,
@@ -490,49 +551,31 @@ describe("lurek.raycaster functions", function()
             intensity = 1.0,
             color = { 1.0, 0.85, 0.6 },
         })
-
-        local params = {
-            px = 0.5,
-            py = 1.5,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 32,
-            max_dist = 8.0,
-            screen_w = 160,
-            screen_h = 100,
-            active_level = 1,
-        }
-        local levels = {
-            {
-                width = 4,
-                height = 4,
-                cells = {
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                },
-                floor_offset = 0.0,
-                ceiling_height = 1.0,
-            },
-            {
-                width = 4,
-                height = 4,
-                cells = {
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                },
-                floor_offset = 1.0,
-                ceiling_height = 2.0,
-            },
-        }
-
-        local count = lurek.raycaster.buildMultiLevelSceneFromAdapter(params, levels, adapter, {})
+        local count = lurek.raycaster.buildMultiLevelSceneFromAdapter(
+            multilevel_params(),
+            multilevel_levels(),
+            adapter,
+            {}
+        )
         expect_true(count > 0)
+    end)
 
-        local hit = lurek.raycaster.pickScreenMultiLevelFromAdapter(80, 50, params, levels, {}, adapter)
+    -- @covers lurek.raycaster.pickScreenMultiLevelFromAdapter
+    it("pickScreenMultiLevelFromAdapter resolves the owning stacked level and id", function()
+        local _, body, adapter = make_scene_adapter_fixture(2.5, 1.5)
+        adapter:bindBodySprite(body, load_texture(), {
+            id = 701,
+            level = 1,
+            size = 1.0,
+        })
+        local hit = lurek.raycaster.pickScreenMultiLevelFromAdapter(
+            80,
+            50,
+            multilevel_params(),
+            multilevel_levels(),
+            {},
+            adapter
+        )
         expect_not_nil(hit)
         expect_equal("sprite", hit.surface)
         expect_equal(1, hit.level)
@@ -906,6 +949,216 @@ describe("lurek.raycaster functions", function()
         expect_equal(6, feature_hit.x)
         expect_equal("window", feature_hit.feature.kind)
         expect_equal("lower", feature_hit.feature.section)
+    end)
+end)
+
+-- @describe LSceneAdapter methods
+describe("LSceneAdapter methods", function()
+    -- @covers LSceneAdapter:addSprite
+    it("addSprite stores a static billboard entry", function()
+        local adapter = lurek.raycaster.newSceneAdapter()
+        adapter:addSprite(6.5, 4.0, load_texture(), {
+            id = 91,
+            level = 1,
+            size = 1.25,
+            angle = 0.3,
+        })
+        local sprite = adapter:sceneInputs().sprites[1]
+        expect_equal(91, sprite.id)
+        expect_equal(1, sprite.level)
+        expect_near(6.5, sprite.x, 1e-5)
+        expect_near(4.0, sprite.y, 1e-5)
+        expect_near(1.25, sprite.size, 1e-5)
+        expect_type("number", sprite.texture)
+    end)
+
+    -- @covers LSceneAdapter:addDirectionalSprite
+    it("addDirectionalSprite stores directional texture handles and facing angle", function()
+        local adapter = lurek.raycaster.newSceneAdapter()
+        local front = load_texture()
+        local right = load_texture()
+        local back = load_texture()
+        local left = load_texture()
+        adapter:addDirectionalSprite(6.0, 5.0, front, right, back, left, {
+            id = 92,
+            level = 2,
+            size = 1.1,
+            angle = math.pi / 4,
+        })
+        local sprite = adapter:sceneInputs().sprites[1]
+        expect_equal(92, sprite.id)
+        expect_equal(2, sprite.level)
+        expect_type("number", sprite.front_texture)
+        expect_type("number", sprite.right_texture)
+        expect_type("number", sprite.back_texture)
+        expect_type("number", sprite.left_texture)
+        expect_near(math.pi / 4, sprite.angle, 1e-5)
+    end)
+
+    -- @covers LSceneAdapter:bindBodySprite
+    it("bindBodySprite follows a moved physics body", function()
+        local _, body, adapter = make_scene_adapter_fixture(4.0, 3.0)
+        adapter:bindBodySprite(body, load_texture(), {
+            id = 93,
+            offset_x = 0.5,
+            size = 1.0,
+        })
+        body:setPosition(5.0, 3.5)
+        local sprite = adapter:sceneInputs().sprites[1]
+        expect_equal(93, sprite.id)
+        expect_near(5.5, sprite.x, 1e-5)
+        expect_near(3.5, sprite.y, 1e-5)
+    end)
+
+    -- @covers LSceneAdapter:bindBodyDirectionalSprite
+    it("bindBodyDirectionalSprite resolves body angle into the directional snapshot", function()
+        local _, body, adapter = make_scene_adapter_fixture(4.0, 3.0, math.pi / 2)
+        adapter:bindBodyDirectionalSprite(
+            body,
+            load_texture(),
+            load_texture(),
+            load_texture(),
+            load_texture(),
+            {
+                id = 94,
+                offset_y = 0.5,
+                angle_offset = 0.25,
+            }
+        )
+        local sprite = adapter:sceneInputs().sprites[1]
+        expect_equal(94, sprite.id)
+        expect_near(3.5, sprite.x, 1e-5)
+        expect_near(3.0, sprite.y, 1e-5)
+        expect_near(math.pi / 2 + 0.25, sprite.angle, 1e-5)
+    end)
+
+    -- @covers LSceneAdapter:addLight
+    it("addLight stores a static point light entry", function()
+        local adapter = lurek.raycaster.newSceneAdapter()
+        adapter:addLight(7.0, 2.5, 5.0, {
+            intensity = 1.4,
+            color = { 0.8, 0.7, 0.6 },
+            level = 1,
+        })
+        local light = adapter:sceneInputs().lights[1]
+        expect_equal(1, light.level)
+        expect_near(7.0, light.x, 1e-5)
+        expect_near(2.5, light.y, 1e-5)
+        expect_near(5.0, light.radius, 1e-5)
+        expect_near(1.4, light.intensity, 1e-5)
+        expect_near(0.7, light.color[2], 1e-5)
+    end)
+
+    -- @covers LSceneAdapter:bindBodyLight
+    it("bindBodyLight follows a moved physics body", function()
+        local _, body, adapter = make_scene_adapter_fixture(3.0, 6.0)
+        adapter:bindBodyLight(body, 3.5, {
+            intensity = 0.9,
+            offset_y = -0.25,
+        })
+        body:setPosition(4.0, 5.0)
+        local light = adapter:sceneInputs().lights[1]
+        expect_near(4.0, light.x, 1e-5)
+        expect_near(4.75, light.y, 1e-5)
+        expect_near(3.5, light.radius, 1e-5)
+    end)
+
+    -- @covers LSceneAdapter:addModel
+    it("addModel stores a static OBJ instance entry", function()
+        local adapter = lurek.raycaster.newSceneAdapter()
+        adapter:addModel(load_model(), 6.5, 2.5, {
+            id = 95,
+            level = 1,
+            yaw = 0.4,
+            z = 0.2,
+            scale = 0.3,
+        })
+        local model = adapter:sceneInputs().models[1]
+        expect_equal(95, model.id)
+        expect_equal(1, model.level)
+        expect_near(6.5, model.x, 1e-5)
+        expect_near(2.5, model.y, 1e-5)
+        expect_near(0.4, model.yaw, 1e-5)
+        expect_near(0.2, model.z, 1e-5)
+        expect_near(0.3, model.scale, 1e-5)
+        expect_type("userdata", model.model)
+    end)
+
+    -- @covers LSceneAdapter:bindBodyModel
+    it("bindBodyModel follows a moved physics body", function()
+        local _, body, adapter = make_scene_adapter_fixture(4.0, 4.0, 0.5)
+        adapter:bindBodyModel(body, load_model(), {
+            id = 96,
+            offset_x = 0.5,
+            yaw_offset = 0.2,
+            z = 0.1,
+            scale = 0.25,
+        })
+        body:setPosition(5.0, 4.0)
+        local model = adapter:sceneInputs().models[1]
+        expect_equal(96, model.id)
+        expect_near(5.438791, model.x, 1e-5)
+        expect_near(4.239713, model.y, 1e-5)
+        expect_near(0.7, model.yaw, 1e-5)
+    end)
+
+    -- @covers LSceneAdapter:clear
+    it("clear removes every tracked entry class at once", function()
+        local adapter = lurek.raycaster.newSceneAdapter()
+        adapter:addSprite(1.0, 1.0, load_texture())
+        adapter:addLight(1.0, 1.0, 2.0)
+        adapter:addModel(load_model(), 1.0, 1.0)
+        adapter:clear()
+        local inputs = adapter:sceneInputs()
+        expect_equal(0, #inputs.sprites)
+        expect_equal(0, #inputs.lights)
+        expect_equal(0, #inputs.models)
+    end)
+
+    -- @covers LSceneAdapter:clearSprites
+    it("clearSprites removes only sprite entries", function()
+        local adapter = lurek.raycaster.newSceneAdapter()
+        adapter:addSprite(1.0, 1.0, load_texture())
+        adapter:addLight(1.0, 1.0, 2.0)
+        adapter:clearSprites()
+        local inputs = adapter:sceneInputs()
+        expect_equal(0, #inputs.sprites)
+        expect_equal(1, #inputs.lights)
+    end)
+
+    -- @covers LSceneAdapter:clearLights
+    it("clearLights removes only light entries", function()
+        local adapter = lurek.raycaster.newSceneAdapter()
+        adapter:addSprite(1.0, 1.0, load_texture())
+        adapter:addLight(1.0, 1.0, 2.0)
+        adapter:clearLights()
+        local inputs = adapter:sceneInputs()
+        expect_equal(1, #inputs.sprites)
+        expect_equal(0, #inputs.lights)
+    end)
+
+    -- @covers LSceneAdapter:clearModels
+    it("clearModels removes only model entries", function()
+        local adapter = lurek.raycaster.newSceneAdapter()
+        adapter:addModel(load_model(), 1.0, 1.0)
+        adapter:addLight(1.0, 1.0, 2.0)
+        adapter:clearModels()
+        local inputs = adapter:sceneInputs()
+        expect_equal(0, #inputs.models)
+        expect_equal(1, #inputs.lights)
+    end)
+
+    -- @covers LSceneAdapter:type
+    it("type returns the scene adapter userdata name", function()
+        local adapter = lurek.raycaster.newSceneAdapter()
+        expect_equal("LSceneAdapter", adapter:type())
+    end)
+
+    -- @covers LSceneAdapter:typeOf
+    it("typeOf accepts the scene adapter type name", function()
+        local adapter = lurek.raycaster.newSceneAdapter()
+        expect_true(adapter:typeOf("LSceneAdapter"))
+        expect_true(adapter:typeOf("LObject"))
     end)
 end)
 
@@ -1416,39 +1669,9 @@ describe("LMultiLevelGrid methods", function()
     end)
 
     -- @covers LMultiLevelGrid:buildSceneFromAdapter
-    -- @covers LMultiLevelGrid:pickScreenFromAdapter
-    it("adapter-aware multilevel build and pick resolve level-owned entities", function()
-        local grid = lurek.raycaster.newMultiLevelGrid({
-            {
-                width = 4,
-                height = 4,
-                cells = {
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                },
-                floor_offset = 0.0,
-                ceiling_height = 1.0,
-            },
-            {
-                width = 4,
-                height = 4,
-                cells = {
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, 0, 0, 0,
-                },
-                floor_offset = 1.0,
-                ceiling_height = 2.0,
-            },
-        })
-        grid:setActiveLevel(1)
-
-        local world = lurek.physics.newWorld(0, 0)
-        local body = world:newBody(2.5, 1.5, "dynamic")
-        local adapter = lurek.raycaster.newSceneAdapter()
+    it("buildSceneFromAdapter resolves adapter-backed entities on the active level", function()
+        local grid = make_persistent_multilevel_grid()
+        local _, body, adapter = make_scene_adapter_fixture(2.5, 1.5)
         adapter:bindBodySprite(body, load_texture(), {
             id = 601,
             level = 1,
@@ -1459,22 +1682,20 @@ describe("LMultiLevelGrid methods", function()
             intensity = 1.0,
             color = { 1.0, 0.8, 0.6 },
         })
-
-        local params = {
-            px = 0.5,
-            py = 1.5,
-            angle = 0.0,
-            fov = math.pi / 3,
-            rays = 32,
-            max_dist = 8.0,
-            screen_w = 160,
-            screen_h = 100,
-            active_level = 1,
-        }
-        local count = grid:buildSceneFromAdapter(params, adapter, {})
+        local count = grid:buildSceneFromAdapter(multilevel_params(), adapter, {})
         expect_true(count > 0)
+    end)
 
-        local hit = grid:pickScreenFromAdapter(80, 50, params, {}, adapter)
+    -- @covers LMultiLevelGrid:pickScreenFromAdapter
+    it("pickScreenFromAdapter resolves the active-level sprite id", function()
+        local grid = make_persistent_multilevel_grid()
+        local _, body, adapter = make_scene_adapter_fixture(2.5, 1.5)
+        adapter:bindBodySprite(body, load_texture(), {
+            id = 601,
+            level = 1,
+            size = 1.0,
+        })
+        local hit = grid:pickScreenFromAdapter(80, 50, multilevel_params(), {}, adapter)
         expect_not_nil(hit)
         expect_equal("sprite", hit.surface)
         expect_equal(601, hit.id)
@@ -1751,12 +1972,9 @@ describe("LRaycaster methods", function()
     end)
 
     -- @covers LRaycaster:buildSceneFromAdapter
-    -- @covers LRaycaster:pickScreenFromAdapter
-    it("buildSceneFromAdapter and pickScreenFromAdapter resolve physics-backed sprite and model inputs", function()
+    it("buildSceneFromAdapter includes adapter-backed sprites and models in the scene", function()
         local map = make_map(16, 16)
-        local world = lurek.physics.newWorld(0, 0)
-        local body = world:newBody(10.5, 8.0, "dynamic")
-        local adapter = lurek.raycaster.newSceneAdapter()
+        local _, body, adapter = make_scene_adapter_fixture(10.5, 8.0)
         adapter:bindBodySprite(body, load_texture(), {
             id = 501,
             size = 1.0,
@@ -1775,7 +1993,16 @@ describe("LRaycaster methods", function()
         local baseline = map:buildScene(scene_params(), {}, {}, {})
         local count = map:buildSceneFromAdapter(scene_params(), adapter, {})
         expect_true(count > baseline)
+    end)
 
+    -- @covers LRaycaster:pickScreenFromAdapter
+    it("pickScreenFromAdapter resolves the adapter-backed sprite id", function()
+        local map = make_map(16, 16)
+        local _, body, adapter = make_scene_adapter_fixture(10.5, 8.0)
+        adapter:bindBodySprite(body, load_texture(), {
+            id = 501,
+            size = 1.0,
+        })
         local hit = map:pickScreenFromAdapter(80, 50, scene_params(), adapter)
         expect_not_nil(hit)
         expect_equal("sprite", hit.surface)

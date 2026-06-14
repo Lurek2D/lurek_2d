@@ -1698,7 +1698,7 @@ LAreaChart:typeOf(name: any)
 ### LBarChart
 
 ```lua
-LBarChart:addCategoriesFromDataFrame(df: any, label_col: any, value_cols: any, [opts]: any)
+LBarChart:addCategoriesFromDataFrame()
 LBarChart:addCategory(label: any, values: any)
 LBarChart:addSeries(name: any, data: any, [color]: any)
 LBarChart:clear()
@@ -1735,7 +1735,7 @@ LHeatmapChart:setCell(row: any, col: any, value: any)
 LHeatmapChart:setColorRange(low: any, high: any)
 LHeatmapChart:setColumnLabels(labels: any)
 LHeatmapChart:setMatrix(matrix: any, [row_labels]: any, [col_labels]: any)
-LHeatmapChart:setMatrixFromDataFrame(df: any, row_col: any, col_col: any, value_col: any, [opts]: any)
+LHeatmapChart:setMatrixFromDataFrame()
 LHeatmapChart:setRowLabels(labels: any)
 LHeatmapChart:setShowLegend(value: any)
 LHeatmapChart:setShowValues(value: any)
@@ -1806,7 +1806,7 @@ LLineChart:typeOf(name: any)
 
 ```lua
 LPieChart:addSegment(label: any, value: any, [color]: any)
-LPieChart:addSegmentsFromDataFrame(df: any, label_col: any, value_col: any, [opts]: any)
+LPieChart:addSegmentsFromDataFrame()
 LPieChart:addSlice(label: any, value: any, [color]: any)
 LPieChart:clear()
 LPieChart:draw(x: any, y: any, [opts]: any)

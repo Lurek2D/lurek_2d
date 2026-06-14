@@ -7,8 +7,7 @@
 use crate::charts::config::{ChartConfig, ChartSeries};
 use crate::charts::render_utils::{
     annotate_cartesian_chart, auto_range, draw_circle_filled, draw_line, fill_buffer,
-    trim_points_to_window,
-    world_to_screen,
+    trim_points_to_window, world_to_screen,
 };
 
 /// A line chart that renders one or more series as connected polylines.
@@ -96,12 +95,7 @@ impl LineChart {
     }
 
     /// Replace or create a series using the provided point buffer.
-    pub fn replace_series(
-        &mut self,
-        name: &str,
-        pts: &[(f32, f32)],
-        color: crate::color::Color,
-    ) {
+    pub fn replace_series(&mut self, name: &str, pts: &[(f32, f32)], color: crate::color::Color) {
         let color = [color.r, color.g, color.b, color.a];
         if let Some(series) = self.series.iter_mut().find(|series| series.name == name) {
             series.color = color;
