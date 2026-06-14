@@ -7,6 +7,7 @@
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
 use crate::charts::render_utils::{
     annotate_cartesian_chart, auto_range, draw_circle_filled, draw_line, fill_buffer,
+    trim_points_to_window,
     world_to_screen,
 };
 use crate::color::Color;
@@ -42,6 +43,8 @@ impl ScatterPlot {
 
     /// Add a pre-built series entry directly.
     pub fn push_series_raw(&mut self, series: ChartSeries) {
+        let mut series = series;
+        trim_points_to_window(&mut series.data, self.config.max_points);
         self.series.push(series);
     }
 
@@ -95,6 +98,53 @@ impl ScatterPlot {
     /// Remove all series from the chart.
     pub fn clear(&mut self) {
         self.series.clear();
+    }
+
+    /// Return all chart series for inspection helpers.
+    pub fn series(&self) -> &[ChartSeries] {
+        &self.series
+    }
+
+    /// Replace or create a series using the provided point buffer.
+    pub fn replace_series(&mut self, name: &str, data: &[(f32, f32)], color: Color) {
+        let color = [color.r, color.g, color.b, color.a];
+        if let Some(series) = self.series.iter_mut().find(|series| series.name == name) {
+            series.color = color;
+            series.data.clear();
+            series.data.extend_from_slice(data);
+            trim_points_to_window(&mut series.data, self.config.max_points);
+            return;
+        }
+        self.push_series_raw(ChartSeries {
+            name: name.to_string(),
+            color,
+            data: data.to_vec(),
+        });
+    }
+
+    /// Append one point to a named series, creating the series when needed.
+    pub fn append_point(&mut self, name: &str, x: f32, y: f32, color: Color) {
+        if !x.is_finite() || !y.is_finite() {
+            return;
+        }
+        if let Some(series) = self.series.iter_mut().find(|series| series.name == name) {
+            series.data.push((x, y));
+            trim_points_to_window(&mut series.data, self.config.max_points);
+            return;
+        }
+        self.push_series_raw(ChartSeries {
+            name: name.to_string(),
+            color: [color.r, color.g, color.b, color.a],
+            data: vec![(x, y)],
+        });
+    }
+
+    /// Set the streaming window size and trim all series immediately.
+    pub fn set_max_points(&mut self, max_points: Option<usize>) {
+        self.config.max_points = max_points;
+        for series in &mut self.series {
+            trim_points_to_window(&mut series.data, self.config.max_points);
+        }
     }
 
     /// Set the scatter dot radius in pixels.
@@ -193,6 +243,9 @@ impl ScatterPlot {
         // Draw each series as dots.
         for s in &self.series {
             for &(x, y) in &s.data {
+                if !x.is_finite() || !y.is_finite() {
+                    continue;
+                }
                 let sx = plot_x + world_to_screen(x, min_x, max_x, plot_w);
                 let sy = plot_y + plot_h - world_to_screen(y, min_y, max_y, plot_h);
                 draw_circle_filled(buffer, w, h, sx, sy, self.dot_radius, s.color);

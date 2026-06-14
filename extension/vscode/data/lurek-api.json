@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-13",
+  "generated": "2026-06-14",
   "modules": [
     {
       "name": "agent",
@@ -4445,23 +4445,23 @@
     },
     {
       "name": "charts",
-      "description": "File: src/lua_api/charts_api.rs",
+      "description": "Registers the `lurek.charts` Lua API and keeps chart userdata wrappers thin.\nParses chart config/data inputs at the Lua boundary, delegates rendering to `src/charts`,\nand bridges CPU-generated chart images into the engine's texture-backed draw queue.",
       "functions": [
         {
           "name": "newLine",
           "fullPath": "lurek.charts.newLine",
           "signature": "([config])",
-          "description": "Create a new line chart exposed by the lurek engine.",
+          "description": "",
           "parameters": [
             {
               "name": "config",
-              "type": "table|nil",
-              "description": "Optional chart configuration table.",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
-          "returns": "LLineChart",
-          "returnType": "LLineChart",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         },
@@ -4469,17 +4469,17 @@
           "name": "newBar",
           "fullPath": "lurek.charts.newBar",
           "signature": "([config])",
-          "description": "Create a new bar chart exposed by the lurek engine.",
+          "description": "",
           "parameters": [
             {
               "name": "config",
-              "type": "table|nil",
-              "description": "Optional chart configuration table.",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
-          "returns": "LBarChart",
-          "returnType": "LBarChart",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         },
@@ -4487,17 +4487,17 @@
           "name": "newScatter",
           "fullPath": "lurek.charts.newScatter",
           "signature": "([config])",
-          "description": "Create a new scatter plot exposed by the lurek engine.",
+          "description": "",
           "parameters": [
             {
               "name": "config",
-              "type": "table|nil",
-              "description": "Optional chart configuration table.",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
-          "returns": "LScatterPlot",
-          "returnType": "LScatterPlot",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         },
@@ -4505,17 +4505,17 @@
           "name": "newPie",
           "fullPath": "lurek.charts.newPie",
           "signature": "([config])",
-          "description": "Create a new pie chart exposed by the lurek engine.",
+          "description": "",
           "parameters": [
             {
               "name": "config",
-              "type": "table|nil",
-              "description": "Optional chart configuration table.",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
-          "returns": "LPieChart",
-          "returnType": "LPieChart",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         },
@@ -4523,17 +4523,53 @@
           "name": "newArea",
           "fullPath": "lurek.charts.newArea",
           "signature": "([config])",
-          "description": "Create a new area chart exposed by the lurek engine.",
+          "description": "",
           "parameters": [
             {
               "name": "config",
-              "type": "table|nil",
-              "description": "Optional chart configuration table.",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
-          "returns": "LAreaChart",
-          "returnType": "LAreaChart",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newHistogram",
+          "fullPath": "lurek.charts.newHistogram",
+          "signature": "([config])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "config",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newHeatmap",
+          "fullPath": "lurek.charts.newHeatmap",
+          "signature": "([config])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "config",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         },
@@ -4541,10 +4577,10 @@
           "name": "defaultPalette",
           "fullPath": "lurek.charts.defaultPalette",
           "signature": "()",
-          "description": "Get the default 8-color series palette.",
+          "description": "",
           "parameters": [],
-          "returns": "table",
-          "returnType": "table",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         },
@@ -4552,17 +4588,17 @@
           "name": "seriesColor",
           "fullPath": "lurek.charts.seriesColor",
           "signature": "(index)",
-          "description": "Get a palette color by 1-based index (wraps around for index > 8).",
+          "description": "",
           "parameters": [
             {
               "name": "index",
-              "type": "integer",
-              "description": "1-based palette index.",
+              "type": "any",
+              "description": "",
               "optional": false
             }
           ],
-          "returns": "table",
-          "returnType": "table",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         }
@@ -10294,7 +10330,7 @@
             {
               "name": "path",
               "type": "string",
-              "description": "TOML file path to load.",
+              "description": "TOML file path to load. Provinces may use either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.",
               "optional": false
             },
             {
@@ -10324,7 +10360,7 @@
             {
               "name": "toml_src",
               "type": "string",
-              "description": "TOML province document source.",
+              "description": "TOML province document source supporting either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.",
               "optional": false
             },
             {
@@ -21396,6 +21432,221 @@
           "objectType": null
         },
         {
+          "name": "newMultiLevelGrid",
+          "fullPath": "lurek.raycaster.newMultiLevelGrid",
+          "signature": "(levels, )",
+          "description": "Creates a persistent multi-level raycaster world from plain Lua level tables or as an empty container.",
+          "parameters": [
+            {
+              "name": "levels",
+              "type": "table|LMultiLevelGrid",
+              "description": "Optional array of level tables or another LMultiLevelGrid to clone.",
+              "optional": true
+            }
+          ],
+          "returns": "LMultiLevelGrid",
+          "returnType": "LMultiLevelGrid",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "pickScreenMultiLevel",
+          "fullPath": "lurek.raycaster.pickScreenMultiLevel",
+          "signature": "lurek.raycaster.pickScreenMultiLevel(sx, sy, params, levels, [wallTextures], [sprites], [models])",
+          "description": "Resolves a screen-space click against a stack of plain Lua level tables and returns the owning level.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen X in pixels.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen Y in pixels.",
+              "optional": false
+            },
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Camera params plus optional active_level.",
+              "optional": false
+            },
+            {
+              "name": "levels",
+              "type": "table|LMultiLevelGrid",
+              "description": "Array of level tables or a persistent LMultiLevelGrid.",
+              "optional": false
+            },
+            {
+              "name": "wallTextures",
+              "type": "table",
+              "description": "Optional map of cell_value -> texture for wall surfaces.",
+              "optional": true
+            },
+            {
+              "name": "sprites",
+              "type": "table|LSpriteManager",
+              "description": "Optional sprite tables or sprite manager used to resolve clickable billboard hits.",
+              "optional": true
+            },
+            {
+              "name": "models",
+              "type": "table",
+              "description": "Optional model instance tables used to resolve clickable projected model hits.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "pickScreenMultiLevelFromAdapter",
+          "fullPath": "lurek.raycaster.pickScreenMultiLevelFromAdapter",
+          "signature": "lurek.raycaster.pickScreenMultiLevelFromAdapter(sx, sy, params, levels, [wallTextures], adapter)",
+          "description": "Resolves a screen-space click against a stack of plain Lua level tables using a runtime scene adapter.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen X in pixels.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen Y in pixels.",
+              "optional": false
+            },
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Camera params plus optional active_level.",
+              "optional": false
+            },
+            {
+              "name": "levels",
+              "type": "table|LMultiLevelGrid",
+              "description": "Array of level tables or a persistent LMultiLevelGrid.",
+              "optional": false
+            },
+            {
+              "name": "wallTextures",
+              "type": "table",
+              "description": "Optional map of cell_value -> texture for wall surfaces.",
+              "optional": true
+            },
+            {
+              "name": "adapter",
+              "type": "LSceneAdapter",
+              "description": "Runtime scene adapter providing sprites and models.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "buildMultiLevelScene",
+          "fullPath": "lurek.raycaster.buildMultiLevelScene",
+          "signature": "lurek.raycaster.buildMultiLevelScene(params, levels, [lights], [sprites], [wallTextures], [models])",
+          "description": "Builds a multilevel raycaster scene from a stack of plain Lua level tables.",
+          "parameters": [
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Scene params plus optional active_level.",
+              "optional": false
+            },
+            {
+              "name": "levels",
+              "type": "table|LMultiLevelGrid",
+              "description": "Array of level tables or a persistent LMultiLevelGrid.",
+              "optional": false
+            },
+            {
+              "name": "lights",
+              "type": "table",
+              "description": "Array of point-light tables or LPointLight userdata values.",
+              "optional": true
+            },
+            {
+              "name": "sprites",
+              "type": "table|LSpriteManager",
+              "description": "Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager whose sprites use their own optional level indices and default to active_level.",
+              "optional": true
+            },
+            {
+              "name": "wallTextures",
+              "type": "table",
+              "description": "Map of cell_value -> texture for wall surfaces.",
+              "optional": true
+            },
+            {
+              "name": "models",
+              "type": "table",
+              "description": "Array of model instance tables {model, x, y, level?, rotation?, yaw?, z?, scale?}; instances default to `active_level`.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "buildMultiLevelSceneFromAdapter",
+          "fullPath": "lurek.raycaster.buildMultiLevelSceneFromAdapter",
+          "signature": "lurek.raycaster.buildMultiLevelSceneFromAdapter(params, levels, adapter, [wallTextures])",
+          "description": "Builds a multilevel raycaster scene from a stack of plain Lua level tables using a runtime scene adapter.",
+          "parameters": [
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Scene params plus optional active_level.",
+              "optional": false
+            },
+            {
+              "name": "levels",
+              "type": "table|LMultiLevelGrid",
+              "description": "Array of level tables or a persistent LMultiLevelGrid.",
+              "optional": false
+            },
+            {
+              "name": "adapter",
+              "type": "LSceneAdapter",
+              "description": "Runtime scene adapter providing lights, sprites, and models.",
+              "optional": false
+            },
+            {
+              "name": "wallTextures",
+              "type": "table",
+              "description": "Map of cell_value -> texture for wall surfaces.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getLastBuildStats",
+          "fullPath": "lurek.raycaster.getLastBuildStats",
+          "signature": "()",
+          "description": "Returns stats for the last stored raycaster scene build.",
+          "parameters": [],
+          "returns": "table?",
+          "returnType": "table?",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "projectColumn",
           "fullPath": "lurek.raycaster.projectColumn",
           "signature": "(distance, fov, screen_height)",
@@ -21523,7 +21774,7 @@
         {
           "name": "newPointLight",
           "fullPath": "lurek.raycaster.newPointLight",
-          "signature": "(x, y, r, g, b, radius, intensity)",
+          "signature": "lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity, [level])",
           "description": "Creates a new point light with position, color, radius, and intensity.",
           "parameters": [
             {
@@ -21567,6 +21818,12 @@
               "type": "number",
               "description": "Brightness multiplier.",
               "optional": false
+            },
+            {
+              "name": "level",
+              "type": "integer",
+              "description": "Optional multilevel slice index that owns this light.",
+              "optional": true
             }
           ],
           "returns": "LPointLight",
@@ -21582,6 +21839,17 @@
           "parameters": [],
           "returns": "LSpriteManager",
           "returnType": "LSpriteManager",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newSceneAdapter",
+          "fullPath": "lurek.raycaster.newSceneAdapter",
+          "signature": "()",
+          "description": "Creates a runtime adapter for sprites, lights, and models that can follow physics bodies.",
+          "parameters": [],
+          "returns": "LSceneAdapter",
+          "returnType": "LSceneAdapter",
           "isMethod": false,
           "objectType": null
         }
@@ -36481,30 +36749,125 @@
     },
     {
       "name": "LAreaChart",
-      "description": "Lua userdata for rendering a stacked area series chart.",
+      "description": "Lua-exposed area chart for data visualization.",
       "methods": [
         {
           "name": "addSeries",
           "fullPath": "LAreaChart:addSeries",
           "signature": "(name, data, [color])",
-          "description": "Add a named data series to the area chart (stacked above previous).",
+          "description": "",
           "parameters": [
             {
               "name": "name",
-              "type": "string",
-              "description": "Display name of the series.",
+              "type": "any",
+              "description": "",
               "optional": false
             },
             {
               "name": "data",
-              "type": "table",
-              "description": "Array of {x, y} point tables.",
+              "type": "any",
+              "description": "",
               "optional": false
             },
             {
               "name": "color",
-              "type": "table|nil",
-              "description": "Optional RGBA color {r, g, b, a}.",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "addLayer",
+          "fullPath": "LAreaChart:addLayer",
+          "signature": "(name, values, [color])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "values",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "addLayerFromDataFrame",
+          "fullPath": "LAreaChart:addLayerFromDataFrame",
+          "signature": "LAreaChart:addLayerFromDataFrame()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "appendPoint",
+          "fullPath": "LAreaChart:appendPoint",
+          "signature": "(name, x, y, [color])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "setWindow",
+          "fullPath": "LAreaChart:setWindow",
+          "signature": "([max_points])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "max_points",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
@@ -36517,7 +36880,7 @@
           "name": "clear",
           "fullPath": "LAreaChart:clear",
           "signature": "()",
-          "description": "Removes all data series from this chart.",
+          "description": "",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -36528,12 +36891,120 @@
           "name": "setTitle",
           "fullPath": "LAreaChart:setTitle",
           "signature": "(title)",
-          "description": "Set or update the chart's displayed title.",
+          "description": "",
           "parameters": [
             {
               "name": "title",
-              "type": "string",
-              "description": "New chart title text.",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "setYMax",
+          "fullPath": "LAreaChart:setYMax",
+          "signature": "(value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "setXLabel",
+          "fullPath": "LAreaChart:setXLabel",
+          "signature": "(label)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "setYLabel",
+          "fullPath": "LAreaChart:setYLabel",
+          "signature": "(label)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "setXTickCount",
+          "fullPath": "LAreaChart:setXTickCount",
+          "signature": "(count)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "setYTickCount",
+          "fullPath": "LAreaChart:setYTickCount",
+          "signature": "(count)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LAreaChart:setShowLegend",
+          "signature": "(value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
               "optional": false
             }
           ],
@@ -36546,10 +37017,69 @@
           "name": "render",
           "fullPath": "LAreaChart:render",
           "signature": "()",
-          "description": "Renders the chart contents into a new pixel buffer.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LAreaChart:renderImage",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LAreaChart:drawToImage",
+          "signature": "(target)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LAreaChart:draw",
+          "signature": "(x, y, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LAreaChart"
         },
@@ -36557,10 +37087,10 @@
           "name": "getWidth",
           "fullPath": "LAreaChart:getWidth",
           "signature": "()",
-          "description": "Get the chart output width in pixels.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LAreaChart"
         },
@@ -36568,10 +37098,39 @@
           "name": "getHeight",
           "fullPath": "LAreaChart:getHeight",
           "signature": "()",
-          "description": "Get the chart output height in pixels.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "type",
+          "fullPath": "LAreaChart:type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LAreaChart"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LAreaChart:typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LAreaChart"
         },
@@ -40155,30 +40714,90 @@
     },
     {
       "name": "LBarChart",
-      "description": "Lua userdata for rendering a vertical bar series chart.",
+      "description": "Lua-exposed bar chart for data visualization.",
       "methods": [
         {
           "name": "addSeries",
           "fullPath": "LBarChart:addSeries",
           "signature": "(name, data, [color])",
-          "description": "Add a named data series to the bar chart.",
+          "description": "",
           "parameters": [
             {
               "name": "name",
-              "type": "string",
-              "description": "Display name of the series.",
+              "type": "any",
+              "description": "",
               "optional": false
             },
             {
               "name": "data",
-              "type": "table",
-              "description": "Array of {x, y} point tables.",
+              "type": "any",
+              "description": "",
               "optional": false
             },
             {
               "name": "color",
-              "type": "table|nil",
-              "description": "Optional RGBA color {r, g, b, a}.",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "addCategory",
+          "fullPath": "LBarChart:addCategory",
+          "signature": "(label, values)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "values",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "addCategoriesFromDataFrame",
+          "fullPath": "LBarChart:addCategoriesFromDataFrame",
+          "signature": "(df, label_col, value_cols, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "df",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "label_col",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value_cols",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
@@ -40191,7 +40810,7 @@
           "name": "clear",
           "fullPath": "LBarChart:clear",
           "signature": "()",
-          "description": "Removes all data series from this chart.",
+          "description": "",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -40202,12 +40821,12 @@
           "name": "setBarWidth",
           "fullPath": "LBarChart:setBarWidth",
           "signature": "(width)",
-          "description": "Set the pixel width of individual bars in this chart.",
+          "description": "",
           "parameters": [
             {
               "name": "width",
-              "type": "number",
-              "description": "Bar width in pixels (minimum 1).",
+              "type": "any",
+              "description": "",
               "optional": false
             }
           ],
@@ -40220,12 +40839,102 @@
           "name": "setTitle",
           "fullPath": "LBarChart:setTitle",
           "signature": "(title)",
-          "description": "Set or update the chart's displayed title.",
+          "description": "",
           "parameters": [
             {
               "name": "title",
-              "type": "string",
-              "description": "New chart title text.",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "setXLabel",
+          "fullPath": "LBarChart:setXLabel",
+          "signature": "(label)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "setYLabel",
+          "fullPath": "LBarChart:setYLabel",
+          "signature": "(label)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "setXTickCount",
+          "fullPath": "LBarChart:setXTickCount",
+          "signature": "(count)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "setYTickCount",
+          "fullPath": "LBarChart:setYTickCount",
+          "signature": "(count)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LBarChart:setShowLegend",
+          "signature": "(value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
               "optional": false
             }
           ],
@@ -40238,10 +40947,69 @@
           "name": "render",
           "fullPath": "LBarChart:render",
           "signature": "()",
-          "description": "Renders the chart contents into a new pixel buffer.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LBarChart:renderImage",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LBarChart:drawToImage",
+          "signature": "(target)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LBarChart:draw",
+          "signature": "(x, y, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LBarChart"
         },
@@ -40249,10 +41017,10 @@
           "name": "getWidth",
           "fullPath": "LBarChart:getWidth",
           "signature": "()",
-          "description": "Get the chart output width in pixels.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LBarChart"
         },
@@ -40260,10 +41028,39 @@
           "name": "getHeight",
           "fullPath": "LBarChart:getHeight",
           "signature": "()",
-          "description": "Get the chart output height in pixels.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "type",
+          "fullPath": "LBarChart:type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBarChart"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LBarChart:typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LBarChart"
         },
@@ -64599,12 +65396,12 @@
           "name": "addProvince",
           "fullPath": "LGlobe:addProvince",
           "signature": "(p)",
-          "description": "Adds a province described by id, centroid, vertices, neighbors, and optional base color.",
+          "description": "Adds a province described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.",
           "parameters": [
             {
               "name": "p",
               "type": "table",
-              "description": "Province table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`.",
+              "description": "Province table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`.",
               "optional": false
             }
           ],
@@ -64635,12 +65432,12 @@
           "name": "addRegion",
           "fullPath": "LGlobe:addRegion",
           "signature": "(p)",
-          "description": "Adds a region described by id, centroid, vertices, neighbors, and optional base color.",
+          "description": "Adds a region described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.",
           "parameters": [
             {
               "name": "p",
               "type": "table",
-              "description": "Region table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`.",
+              "description": "Region table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`.",
               "optional": false
             }
           ],
@@ -64671,7 +65468,7 @@
           "name": "provinceCount",
           "fullPath": "LGlobe:provinceCount",
           "signature": "()",
-          "description": "Returns the number of regions in this globe.",
+          "description": "Returns the number of rendered provinces in this globe.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -64682,7 +65479,7 @@
           "name": "regionCount",
           "fullPath": "LGlobe:regionCount",
           "signature": "()",
-          "description": "Returns the number of regions in this globe.",
+          "description": "Returns the number of stored semantic regions in this globe.",
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
@@ -64704,6 +65501,60 @@
           ],
           "returns": "integer[]",
           "returnType": "integer[]",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "setEdgeTags",
+          "fullPath": "LGlobe:setEdgeTags",
+          "signature": "(a, b, tags)",
+          "description": "Replaces the tag set stored on an existing province edge.",
+          "parameters": [
+            {
+              "name": "a",
+              "type": "integer",
+              "description": "First province id.",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "integer",
+              "description": "Second province id.",
+              "optional": false
+            },
+            {
+              "name": "tags",
+              "type": "string[]",
+              "description": "Sequential table of edge tag strings.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "getEdgeTags",
+          "fullPath": "LGlobe:getEdgeTags",
+          "signature": "(a, b)",
+          "description": "Returns the sorted tag strings stored on a province edge.",
+          "parameters": [
+            {
+              "name": "a",
+              "type": "integer",
+              "description": "First province id.",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "integer",
+              "description": "Second province id.",
+              "optional": false
+            }
+          ],
+          "returns": "string[]",
+          "returnType": "string[]",
           "isMethod": true,
           "objectType": "LGlobe"
         },
@@ -64747,6 +65598,60 @@
               "name": "id",
               "type": "integer",
               "description": "Province id.",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Attribute key.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "setRegionAttr",
+          "fullPath": "LGlobe:setRegionAttr",
+          "signature": "(id, key, val)",
+          "description": "Sets a string attribute on a semantic region.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Region id.",
+              "optional": false
+            },
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Attribute key.",
+              "optional": false
+            },
+            {
+              "name": "val",
+              "type": "string",
+              "description": "Attribute value.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "getRegionAttr",
+          "fullPath": "LGlobe:getRegionAttr",
+          "signature": "(id, key)",
+          "description": "Reads a string attribute from a semantic region.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Region id.",
               "optional": false
             },
             {
@@ -65031,6 +65936,84 @@
           "objectType": "LGlobe"
         },
         {
+          "name": "screenDeltaToPan",
+          "fullPath": "LGlobe:screenDeltaToPan",
+          "signature": "(dx, dy)",
+          "description": "Converts a screen-space drag delta into latitude and longitude pan deltas.",
+          "parameters": [
+            {
+              "name": "dx",
+              "type": "number",
+              "description": "Screen-space x delta in pixels.",
+              "optional": false
+            },
+            {
+              "name": "dy",
+              "type": "number",
+              "description": "Screen-space y delta in pixels.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "applyMouseDrag",
+          "fullPath": "LGlobe:applyMouseDrag",
+          "signature": "(start_x, start_y, end_x, end_y)",
+          "description": "Applies a pointer drag to the globe camera using screen-space deltas.",
+          "parameters": [
+            {
+              "name": "start_x",
+              "type": "number",
+              "description": "Drag start x.",
+              "optional": false
+            },
+            {
+              "name": "start_y",
+              "type": "number",
+              "description": "Drag start y.",
+              "optional": false
+            },
+            {
+              "name": "end_x",
+              "type": "number",
+              "description": "Drag end x.",
+              "optional": false
+            },
+            {
+              "name": "end_y",
+              "type": "number",
+              "description": "Drag end y.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "applyWheelZoom",
+          "fullPath": "LGlobe:applyWheelZoom",
+          "signature": "(delta)",
+          "description": "Applies a wheel delta using an exponential zoom scale.",
+          "parameters": [
+            {
+              "name": "delta",
+              "type": "number",
+              "description": "Wheel delta where positive zooms in and negative zooms out.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
           "name": "getLod",
           "fullPath": "LGlobe:getLod",
           "signature": "()",
@@ -65066,40 +66049,10 @@
           "objectType": "LGlobe"
         },
         {
-          "name": "pickRaycast",
-          "fullPath": "LGlobe:pickRaycast",
-          "signature": "(sx, sy, [steps])",
-          "description": "Samples along a screen ray from the camera center and returns the first hit province.",
-          "parameters": [
-            {
-              "name": "sx",
-              "type": "number",
-              "description": "Target screen x coordinate.",
-              "optional": false
-            },
-            {
-              "name": "sy",
-              "type": "number",
-              "description": "Target screen y coordinate.",
-              "optional": false
-            },
-            {
-              "name": "steps",
-              "type": "integer",
-              "description": "Number of samples along the ray, defaulting to 24.",
-              "optional": true
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LGlobe"
-        },
-        {
-          "name": "pickLatLon",
-          "fullPath": "LGlobe:pickLatLon",
+          "name": "screenToLatLon",
+          "fullPath": "LGlobe:screenToLatLon",
           "signature": "(sx, sy)",
-          "description": "Picks at screen coordinates and returns the hit province centroid screen coordinates.",
+          "description": "Converts a visible screen position into globe latitude, longitude, and unit-sphere coordinates.",
           "parameters": [
             {
               "name": "sx",
@@ -65116,6 +66069,168 @@
           ],
           "returns": "number",
           "returnType": "number",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "pickRaycast",
+          "fullPath": "LGlobe:pickRaycast",
+          "signature": "(sx, sy, [steps])",
+          "description": "Samples along the screen-space line from the globe center to the target and returns the first hit province.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Target screen x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Target screen y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "steps",
+              "type": "integer",
+              "description": "Number of screen-space samples along the line, defaulting to 24.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "pickLatLon",
+          "fullPath": "LGlobe:pickLatLon",
+          "signature": "(sx, sy)",
+          "description": "Picks at screen coordinates and returns the hit surface latitude and longitude.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "pickRegions",
+          "fullPath": "LGlobe:pickRegions",
+          "signature": "(sx, sy)",
+          "description": "Returns semantic region ids under a screen-space hit.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "integer[]",
+          "returnType": "integer[]",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "regionsAtLatLon",
+          "fullPath": "LGlobe:regionsAtLatLon",
+          "signature": "(lat, lon)",
+          "description": "Returns semantic region ids containing a latitude-longitude point.",
+          "parameters": [
+            {
+              "name": "lat",
+              "type": "number",
+              "description": "Latitude in degrees.",
+              "optional": false
+            },
+            {
+              "name": "lon",
+              "type": "number",
+              "description": "Longitude in degrees.",
+              "optional": false
+            }
+          ],
+          "returns": "integer[]",
+          "returnType": "integer[]",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "pickMarker",
+          "fullPath": "LGlobe:pickMarker",
+          "signature": "(sx, sy, [radius])",
+          "description": "Returns the nearest visible marker at a screen position within an optional pixel radius.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "Maximum marker distance in pixels, default 12.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "pickSurface",
+          "fullPath": "LGlobe:pickSurface",
+          "signature": "(sx, sy, [marker_radius])",
+          "description": "Resolves a screen-space hit into globe surface data plus province, marker, and semantic-region hits.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen x coordinate.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen y coordinate.",
+              "optional": false
+            },
+            {
+              "name": "marker_radius",
+              "type": "number",
+              "description": "Maximum marker distance in pixels when testing marker hits.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LGlobe"
         },
@@ -65540,6 +66655,144 @@
           "objectType": "LGlobe"
         },
         {
+          "name": "setMarkerColor",
+          "fullPath": "LGlobe:setMarkerColor",
+          "signature": "(id, r, g, b, [a])",
+          "description": "Sets marker tint color.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Marker id.",
+              "optional": false
+            },
+            {
+              "name": "r",
+              "type": "number",
+              "description": "Red channel.",
+              "optional": false
+            },
+            {
+              "name": "g",
+              "type": "number",
+              "description": "Green channel.",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "number",
+              "description": "Blue channel.",
+              "optional": false
+            },
+            {
+              "name": "a",
+              "type": "number",
+              "description": "Alpha channel, defaulting to 1.0.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "setMarkerSize",
+          "fullPath": "LGlobe:setMarkerSize",
+          "signature": "(id, size)",
+          "description": "Sets marker size in screen units.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Marker id.",
+              "optional": false
+            },
+            {
+              "name": "size",
+              "type": "number",
+              "description": "Marker size, clamped to at least 1.0.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "setMarkerShape",
+          "fullPath": "LGlobe:setMarkerShape",
+          "signature": "(id, shape)",
+          "description": "Sets the vector fallback shape used by a marker.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Marker id.",
+              "optional": false
+            },
+            {
+              "name": "shape",
+              "type": "string",
+              "description": "One of `circle`, `square`, `diamond`, `triangle`, or `cross`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "setMarkerIconTexture",
+          "fullPath": "LGlobe:setMarkerIconTexture",
+          "signature": "(id, [tex_raw])",
+          "description": "Assigns or clears a raw texture handle for a marker icon.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Marker id.",
+              "optional": false
+            },
+            {
+              "name": "tex_raw",
+              "type": "integer",
+              "description": "Raw texture handle, or nil to clear the icon.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "distanceBetweenMarkers",
+          "fullPath": "LGlobe:distanceBetweenMarkers",
+          "signature": "(a, b)",
+          "description": "Computes great-circle distance between two markers on the unit sphere.",
+          "parameters": [
+            {
+              "name": "a",
+              "type": "integer",
+              "description": "First marker id.",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "integer",
+              "description": "Second marker id.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
           "name": "addLabel",
           "fullPath": "LGlobe:addLabel",
           "signature": "(ltype, lat, lon, text)",
@@ -65881,6 +67134,24 @@
           "objectType": "LGlobe"
         },
         {
+          "name": "draw",
+          "fullPath": "LGlobe:draw",
+          "signature": "([opts])",
+          "description": "Emits the globe's render commands into the shared renderer command queue.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional draw settings with `screen_cx` and `screen_cy`.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
           "name": "findPath",
           "fullPath": "LGlobe:findPath",
           "signature": "(from_id, to_id)",
@@ -65899,8 +67170,38 @@
               "optional": false
             }
           ],
-          "returns": "string[]",
-          "returnType": "string[]",
+          "returns": "integer[]",
+          "returnType": "integer[]",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "findPathWithCosts",
+          "fullPath": "LGlobe:findPathWithCosts",
+          "signature": "(from_id, to_id, [opts])",
+          "description": "Finds a province path using caller-supplied traversal costs, blocked ids, and edge-tag surcharges.",
+          "parameters": [
+            {
+              "name": "from_id",
+              "type": "integer",
+              "description": "Start province id.",
+              "optional": false
+            },
+            {
+              "name": "to_id",
+              "type": "integer",
+              "description": "Target province id.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional cost table with `default_cost`, `province_costs`, `tag_costs`, and `blocked_ids`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LGlobe"
         },
@@ -65921,6 +67222,36 @@
               "type": "number",
               "description": "Maximum traversal cost.",
               "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LGlobe"
+        },
+        {
+          "name": "reachableWithCosts",
+          "fullPath": "LGlobe:reachableWithCosts",
+          "signature": "(start_id, max_cost, [opts])",
+          "description": "Returns provinces reachable under caller-supplied traversal costs, blocked ids, and edge-tag surcharges.",
+          "parameters": [
+            {
+              "name": "start_id",
+              "type": "integer",
+              "description": "Start province id.",
+              "optional": false
+            },
+            {
+              "name": "max_cost",
+              "type": "number",
+              "description": "Maximum traversal cost.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional cost table with `default_cost`, `province_costs`, `tag_costs`, and `blocked_ids`.",
+              "optional": true
             }
           ],
           "returns": "table",
@@ -65980,7 +67311,7 @@
           "name": "exportProvinceMeshOBJ",
           "fullPath": "LGlobe:exportProvinceMeshOBJ",
           "signature": "()",
-          "description": "Exports province geometry as Wavefront OBJ text.",
+          "description": "Exports province geometry as Wavefront OBJ text, preserving multipart boundaries and hole loops.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -71763,6 +73094,419 @@
       ]
     },
     {
+      "name": "LHeatmapChart",
+      "description": "",
+      "methods": [
+        {
+          "name": "setMatrix",
+          "fullPath": "LHeatmapChart:setMatrix",
+          "signature": "(matrix, [row_labels], [col_labels])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "matrix",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "row_labels",
+              "type": "any",
+              "description": "",
+              "optional": true
+            },
+            {
+              "name": "col_labels",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "setMatrixFromDataFrame",
+          "fullPath": "LHeatmapChart:setMatrixFromDataFrame",
+          "signature": "(df, row_col, col_col, value_col, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "df",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "row_col",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "col_col",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value_col",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "resize",
+          "fullPath": "LHeatmapChart:resize",
+          "signature": "(rows, cols)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "rows",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "cols",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "setCell",
+          "fullPath": "LHeatmapChart:setCell",
+          "signature": "(row, col, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "row",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "col",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LHeatmapChart:clear",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "setRowLabels",
+          "fullPath": "LHeatmapChart:setRowLabels",
+          "signature": "(labels)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "labels",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "setColumnLabels",
+          "fullPath": "LHeatmapChart:setColumnLabels",
+          "signature": "(labels)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "labels",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "setValueRange",
+          "fullPath": "LHeatmapChart:setValueRange",
+          "signature": "(min, max)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "min",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "max",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "clearValueRange",
+          "fullPath": "LHeatmapChart:clearValueRange",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "setColorRange",
+          "fullPath": "LHeatmapChart:setColorRange",
+          "signature": "(low, high)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "low",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "high",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "setShowValues",
+          "fullPath": "LHeatmapChart:setShowValues",
+          "signature": "(value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "setTitle",
+          "fullPath": "LHeatmapChart:setTitle",
+          "signature": "(title)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "title",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LHeatmapChart:setShowLegend",
+          "signature": "(value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "render",
+          "fullPath": "LHeatmapChart:render",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LHeatmapChart:renderImage",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LHeatmapChart:drawToImage",
+          "signature": "(target)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LHeatmapChart:draw",
+          "signature": "(x, y, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "getWidth",
+          "fullPath": "LHeatmapChart:getWidth",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "getHeight",
+          "fullPath": "LHeatmapChart:getHeight",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "type",
+          "fullPath": "LHeatmapChart:type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LHeatmapChart:typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHeatmapChart"
+        }
+      ]
+    },
+    {
       "name": "LHeightMap",
       "description": "Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.",
       "methods": [
@@ -72242,6 +73986,442 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LHexGrid"
+        }
+      ]
+    },
+    {
+      "name": "LHistogramChart",
+      "description": "",
+      "methods": [
+        {
+          "name": "addSeries",
+          "fullPath": "LHistogramChart:addSeries",
+          "signature": "(name, values, [color])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "values",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "addSeriesFromDataFrame",
+          "fullPath": "LHistogramChart:addSeriesFromDataFrame",
+          "signature": "LHistogramChart:addSeriesFromDataFrame()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "replaceSeries",
+          "fullPath": "LHistogramChart:replaceSeries",
+          "signature": "(name, values, [color])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "values",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "appendValue",
+          "fullPath": "LHistogramChart:appendValue",
+          "signature": "(name, value, [color])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "setWindow",
+          "fullPath": "LHistogramChart:setWindow",
+          "signature": "([max_points])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "max_points",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LHistogramChart:clear",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "setBinCount",
+          "fullPath": "LHistogramChart:setBinCount",
+          "signature": "(bins)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "bins",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "setRange",
+          "fullPath": "LHistogramChart:setRange",
+          "signature": "(min, max)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "min",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "max",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "clearRange",
+          "fullPath": "LHistogramChart:clearRange",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "setDensity",
+          "fullPath": "LHistogramChart:setDensity",
+          "signature": "(enabled)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "enabled",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "setTitle",
+          "fullPath": "LHistogramChart:setTitle",
+          "signature": "(title)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "title",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "setXLabel",
+          "fullPath": "LHistogramChart:setXLabel",
+          "signature": "(label)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "setYLabel",
+          "fullPath": "LHistogramChart:setYLabel",
+          "signature": "(label)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "setXTickCount",
+          "fullPath": "LHistogramChart:setXTickCount",
+          "signature": "(count)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "setYTickCount",
+          "fullPath": "LHistogramChart:setYTickCount",
+          "signature": "(count)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LHistogramChart:setShowLegend",
+          "signature": "(value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "render",
+          "fullPath": "LHistogramChart:render",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LHistogramChart:renderImage",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LHistogramChart:drawToImage",
+          "signature": "(target)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LHistogramChart:draw",
+          "signature": "(x, y, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "getWidth",
+          "fullPath": "LHistogramChart:getWidth",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "getHeight",
+          "fullPath": "LHistogramChart:getHeight",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "type",
+          "fullPath": "LHistogramChart:type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LHistogramChart:typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LHistogramChart"
         }
       ]
     },
@@ -83092,30 +85272,125 @@
     },
     {
       "name": "LLineChart",
-      "description": "Lua userdata for rendering a connected line series chart.",
+      "description": "Lua-exposed line chart for data visualization.",
       "methods": [
         {
           "name": "addSeries",
           "fullPath": "LLineChart:addSeries",
           "signature": "(name, data, [color])",
-          "description": "Add a named data series to the line chart.",
+          "description": "",
           "parameters": [
             {
               "name": "name",
-              "type": "string",
-              "description": "Display name of the series.",
+              "type": "any",
+              "description": "",
               "optional": false
             },
             {
               "name": "data",
-              "type": "table",
-              "description": "Array of {x, y} point tables.",
+              "type": "any",
+              "description": "",
               "optional": false
             },
             {
               "name": "color",
-              "type": "table|nil",
-              "description": "Optional RGBA color {r, g, b, a}.",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "addSeriesFromDataFrame",
+          "fullPath": "LLineChart:addSeriesFromDataFrame",
+          "signature": "LLineChart:addSeriesFromDataFrame()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "replaceSeries",
+          "fullPath": "LLineChart:replaceSeries",
+          "signature": "(name, data, [color])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "data",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "appendPoint",
+          "fullPath": "LLineChart:appendPoint",
+          "signature": "(name, x, y, [color])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setWindow",
+          "fullPath": "LLineChart:setWindow",
+          "signature": "([max_points])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "max_points",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
@@ -83128,7 +85403,7 @@
           "name": "clear",
           "fullPath": "LLineChart:clear",
           "signature": "()",
-          "description": "Removes all data series from this chart.",
+          "description": "",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -83139,12 +85414,138 @@
           "name": "setTitle",
           "fullPath": "LLineChart:setTitle",
           "signature": "(title)",
-          "description": "Set or update the chart's displayed title.",
+          "description": "",
           "parameters": [
             {
               "name": "title",
-              "type": "string",
-              "description": "New chart title text.",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setYMax",
+          "fullPath": "LLineChart:setYMax",
+          "signature": "(value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setXMax",
+          "fullPath": "LLineChart:setXMax",
+          "signature": "(value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setXLabel",
+          "fullPath": "LLineChart:setXLabel",
+          "signature": "(label)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setYLabel",
+          "fullPath": "LLineChart:setYLabel",
+          "signature": "(label)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setXTickCount",
+          "fullPath": "LLineChart:setXTickCount",
+          "signature": "(count)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setYTickCount",
+          "fullPath": "LLineChart:setYTickCount",
+          "signature": "(count)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LLineChart:setShowLegend",
+          "signature": "(value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
               "optional": false
             }
           ],
@@ -83157,10 +85558,93 @@
           "name": "render",
           "fullPath": "LLineChart:render",
           "signature": "()",
-          "description": "Renders the chart contents into a new pixel buffer.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LLineChart:renderImage",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LLineChart:drawToImage",
+          "signature": "(target)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LLineChart:draw",
+          "signature": "(x, y, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "nearest",
+          "fullPath": "LLineChart:nearest",
+          "signature": "(x, y)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LLineChart"
         },
@@ -83168,10 +85652,10 @@
           "name": "getWidth",
           "fullPath": "LLineChart:getWidth",
           "signature": "()",
-          "description": "Get the chart output width in pixels.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LLineChart"
         },
@@ -83179,10 +85663,39 @@
           "name": "getHeight",
           "fullPath": "LLineChart:getHeight",
           "signature": "()",
-          "description": "Get the chart output height in pixels.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "type",
+          "fullPath": "LLineChart:type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLineChart"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LLineChart:typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LLineChart"
         },
@@ -85749,6 +88262,136 @@
           "objectType": "LMapBlock"
         },
         {
+          "name": "getWeight",
+          "fullPath": "LMapBlock:getWeight",
+          "signature": "()",
+          "description": "Get block weight for random selection.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LMapBlock"
+        },
+        {
+          "name": "setFootprint",
+          "fullPath": "LMapBlock:setFootprint",
+          "signature": "(cells)",
+          "description": "Replace the placement footprint with a custom cell list.",
+          "parameters": [
+            {
+              "name": "cells",
+              "type": "table",
+              "description": "Array of {x, y} cells.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMapBlock"
+        },
+        {
+          "name": "getFootprintCellCount",
+          "fullPath": "LMapBlock:getFootprintCellCount",
+          "signature": "()",
+          "description": "Get the number of occupied footprint cells.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMapBlock"
+        },
+        {
+          "name": "isFootprintCell",
+          "fullPath": "LMapBlock:isFootprintCell",
+          "signature": "(x, y)",
+          "description": "Check whether a local footprint cell exists.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Cell X.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Cell Y.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMapBlock"
+        },
+        {
+          "name": "setSocket",
+          "fullPath": "LMapBlock:setSocket",
+          "signature": "(x, y, edge_str, edge_type)",
+          "description": "Set a per-cell socket type for one edge of the footprint.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Footprint cell X.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Footprint cell Y.",
+              "optional": false
+            },
+            {
+              "name": "edge",
+              "type": "string",
+              "description": "Edge direction.",
+              "optional": false
+            },
+            {
+              "name": "edge_type",
+              "type": "integer",
+              "description": "Socket type identifier.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMapBlock"
+        },
+        {
+          "name": "getSocket",
+          "fullPath": "LMapBlock:getSocket",
+          "signature": "(x, y, edge_str)",
+          "description": "Get a previously stored per-cell socket type.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Footprint cell X.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Footprint cell Y.",
+              "optional": false
+            },
+            {
+              "name": "edge",
+              "type": "string",
+              "description": "Edge direction.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMapBlock"
+        },
+        {
           "name": "setEdgeOnly",
           "fullPath": "LMapBlock:setEdgeOnly",
           "signature": "(edge_only)",
@@ -86269,6 +88912,24 @@
           "objectType": "LMapBlockGenerator"
         },
         {
+          "name": "setGrid",
+          "fullPath": "LMapBlockGenerator:setGrid",
+          "signature": "(grid)",
+          "description": "Set the placement grid from a prepared PlacementGrid object.",
+          "parameters": [
+            {
+              "name": "grid",
+              "type": "PlacementGrid",
+              "description": "Grid to clone into the generator.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMapBlockGenerator"
+        },
+        {
           "name": "setOrientation",
           "fullPath": "LMapBlockGenerator:setOrientation",
           "signature": "(orientation)",
@@ -86522,6 +89183,17 @@
           "parameters": [],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMapBlockResult"
+        },
+        {
+          "name": "getPlacements",
+          "fullPath": "LMapBlockResult:getPlacements",
+          "signature": "()",
+          "description": "Get placement summaries from the last generation run.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LMapBlockResult"
         }
@@ -93240,6 +95912,857 @@
       ]
     },
     {
+      "name": "LMultiLevelGrid",
+      "description": "Lua-visible persistent multi-level raycaster world used for repeated build/pick calls.",
+      "methods": [
+        {
+          "name": "setCell",
+          "fullPath": "LMultiLevelGrid:setCell",
+          "signature": "(x, y, val)",
+          "description": "Sets the wall type value at a grid cell on the active level. Non-zero values are solid walls.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "val",
+              "type": "integer",
+              "description": "Wall type (0 = empty, 1+ = wall texture index).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "getCell",
+          "fullPath": "LMultiLevelGrid:getCell",
+          "signature": "(x, y)",
+          "description": "Returns the wall type value at a grid cell on the active level.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setHalfWallCell",
+          "fullPath": "LMultiLevelGrid:setHalfWallCell",
+          "signature": "(x, y, height)",
+          "description": "Attaches a half-height wall feature to a blocking cell on the active level.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "number",
+              "description": "Solid wall height from floor, 0.0..1.0.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setWindowCell",
+          "fullPath": "LMultiLevelGrid:setWindowCell",
+          "signature": "(x, y, sill_height, lintel_height, [alpha])",
+          "description": "Attaches a window feature to a blocking cell on the active level, leaving a visible opening between sill and lintel.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "sillHeight",
+              "type": "number",
+              "description": "Bottom of the opening from the floor, 0.0..1.0.",
+              "optional": false
+            },
+            {
+              "name": "lintelHeight",
+              "type": "number",
+              "description": "Top of the opening from the floor, 0.0..1.0.",
+              "optional": false
+            },
+            {
+              "name": "alpha",
+              "type": "number",
+              "description": "Wall alpha multiplier for the solid bands.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setDoorCell",
+          "fullPath": "LMultiLevelGrid:setDoorCell",
+          "signature": "(x, y, dir_str, open_amount, [alpha])",
+          "description": "Attaches a sliding door feature to a blocking cell on the active level.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "direction",
+              "type": "string",
+              "description": "\"horizontal\" or \"vertical\".",
+              "optional": false
+            },
+            {
+              "name": "openAmount",
+              "type": "number",
+              "description": "Door open amount, 0.0..1.0.",
+              "optional": false
+            },
+            {
+              "name": "alpha",
+              "type": "number",
+              "description": "Optional alpha multiplier.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "clearWallFeatureCell",
+          "fullPath": "LMultiLevelGrid:clearWallFeatureCell",
+          "signature": "(x, y)",
+          "description": "Removes any per-cell wall feature override from the active level.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "getWallFeatureCell",
+          "fullPath": "LMultiLevelGrid:getWallFeatureCell",
+          "signature": "(x, y)",
+          "description": "Returns the wall feature attached to an active-level cell, or nil when none is set.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setFloorTexture",
+          "fullPath": "LMultiLevelGrid:setFloorTexture",
+          "signature": "(texture)",
+          "description": "Sets the default floor texture used by the active level. Pass nil to clear it.",
+          "parameters": [
+            {
+              "name": "texture",
+              "type": "LImage",
+              "description": "Texture image, integer id, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "getFloorTexture",
+          "fullPath": "LMultiLevelGrid:getFloorTexture",
+          "signature": "()",
+          "description": "Returns the default floor texture id used by the active level, or nil when none is set.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setFloorTextureCell",
+          "fullPath": "LMultiLevelGrid:setFloorTextureCell",
+          "signature": "(x, y, texture)",
+          "description": "Assigns a per-cell floor texture override on the active level. Pass nil to remove the override.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "texture",
+              "type": "LImage",
+              "description": "Texture image, integer id, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "getFloorTextureCell",
+          "fullPath": "LMultiLevelGrid:getFloorTextureCell",
+          "signature": "(x, y)",
+          "description": "Returns the per-cell floor texture id assigned on the active level, or nil if none is set.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setCeilingTexture",
+          "fullPath": "LMultiLevelGrid:setCeilingTexture",
+          "signature": "(texture)",
+          "description": "Sets the default ceiling texture used by the active level. Pass nil to clear it.",
+          "parameters": [
+            {
+              "name": "texture",
+              "type": "LImage",
+              "description": "Texture image, integer id, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "getCeilingTexture",
+          "fullPath": "LMultiLevelGrid:getCeilingTexture",
+          "signature": "()",
+          "description": "Returns the default ceiling texture id used by the active level, or nil when none is set.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setCeilingTextureCell",
+          "fullPath": "LMultiLevelGrid:setCeilingTextureCell",
+          "signature": "(x, y, texture)",
+          "description": "Assigns a per-cell ceiling texture override on the active level. Pass nil to remove the override.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "texture",
+              "type": "LImage",
+              "description": "Texture image, integer id, or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "getCeilingTextureCell",
+          "fullPath": "LMultiLevelGrid:getCeilingTextureCell",
+          "signature": "(x, y)",
+          "description": "Returns the per-cell ceiling texture id assigned on the active level, or nil if none is set.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setLoweredFloorCell",
+          "fullPath": "LMultiLevelGrid:setLoweredFloorCell",
+          "signature": "(x, y, opts)",
+          "description": "Marks an active-level cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options table {texture, depth?, r?, g?, b?, blocked?} or nil to clear.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "getLoweredFloorCell",
+          "fullPath": "LMultiLevelGrid:getLoweredFloorCell",
+          "signature": "(x, y)",
+          "description": "Returns the lowered-floor configuration at an active-level cell, or nil if the cell is normal.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setFloorHole",
+          "fullPath": "LMultiLevelGrid:setFloorHole",
+          "signature": "(x, y, hole)",
+          "description": "Sets whether an active-level cell is open to the level below.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "hole",
+              "type": "boolean",
+              "description": "True when the floor should be open at this cell.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "isFloorHole",
+          "fullPath": "LMultiLevelGrid:isFloorHole",
+          "signature": "(x, y)",
+          "description": "Returns true when an active-level cell is open to the level below.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setCeilingHole",
+          "fullPath": "LMultiLevelGrid:setCeilingHole",
+          "signature": "(x, y, hole)",
+          "description": "Sets whether an active-level cell is open to the level above.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "hole",
+              "type": "boolean",
+              "description": "True when the ceiling should be open at this cell.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "isCeilingHole",
+          "fullPath": "LMultiLevelGrid:isCeilingHole",
+          "signature": "(x, y)",
+          "description": "Returns true when an active-level cell is open to the level above.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "addLevel",
+          "fullPath": "LMultiLevelGrid:addLevel",
+          "signature": "(level_tbl)",
+          "description": "Appends one level described with the same table format accepted by buildMultiLevelScene.",
+          "parameters": [
+            {
+              "name": "level",
+              "type": "table",
+              "description": "Level table {width, height, cells, floor_offset?, ceiling_height?, floor_holes?, ceiling_holes?, floor_texture?, ceiling_texture?, floor_cell_textures?, ceiling_cell_textures?, lowered_floor_cells?, wall_features?}.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "levelCount",
+          "fullPath": "LMultiLevelGrid:levelCount",
+          "signature": "()",
+          "description": "Returns the total number of stored levels.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "activeLevel",
+          "fullPath": "LMultiLevelGrid:activeLevel",
+          "signature": "()",
+          "description": "Returns the currently active level index used for stacked camera height.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "getFloorOffset",
+          "fullPath": "LMultiLevelGrid:getFloorOffset",
+          "signature": "()",
+          "description": "Returns the floor height offset of the active level in world units.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setFloorOffset",
+          "fullPath": "LMultiLevelGrid:setFloorOffset",
+          "signature": "(offset)",
+          "description": "Sets the floor height offset of the active level in world units.",
+          "parameters": [
+            {
+              "name": "offset",
+              "type": "number",
+              "description": "New floor offset in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "getCeilingHeight",
+          "fullPath": "LMultiLevelGrid:getCeilingHeight",
+          "signature": "()",
+          "description": "Returns the ceiling height of the active level in world units.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setCeilingHeight",
+          "fullPath": "LMultiLevelGrid:setCeilingHeight",
+          "signature": "(height)",
+          "description": "Sets the ceiling height of the active level in world units.",
+          "parameters": [
+            {
+              "name": "height",
+              "type": "number",
+              "description": "New ceiling height in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "setActiveLevel",
+          "fullPath": "LMultiLevelGrid:setActiveLevel",
+          "signature": "(level)",
+          "description": "Sets the currently active level index used for stacked camera height.",
+          "parameters": [
+            {
+              "name": "level",
+              "type": "integer",
+              "description": "Zero-based active level index.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "buildScene",
+          "fullPath": "LMultiLevelGrid:buildScene",
+          "signature": "LMultiLevelGrid:buildScene(params, [lights], [sprites], [wallTextures])",
+          "description": "Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.",
+          "parameters": [
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Scene params for the current camera.",
+              "optional": false
+            },
+            {
+              "name": "lights",
+              "type": "table",
+              "description": "Array of point-light tables or LPointLight userdata values.",
+              "optional": true
+            },
+            {
+              "name": "sprites",
+              "type": "table|LSpriteManager",
+              "description": "Array of level sprite tables or an LSpriteManager.",
+              "optional": true
+            },
+            {
+              "name": "wallTextures",
+              "type": "table",
+              "description": "Map of cell_value -> texture for wall surfaces.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "buildSceneFromAdapter",
+          "fullPath": "LMultiLevelGrid:buildSceneFromAdapter",
+          "signature": "(params_tbl, adapter_ud, wall_tex_tbl)",
+          "description": "Builds a textured multilevel raycaster scene from a runtime scene adapter that may follow physics bodies.",
+          "parameters": [
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Scene params for the current camera.",
+              "optional": false
+            },
+            {
+              "name": "adapter",
+              "type": "LSceneAdapter",
+              "description": "Runtime scene adapter providing lights, sprites, and models.",
+              "optional": false
+            },
+            {
+              "name": "wallTextures",
+              "type": "table",
+              "description": "Map of cell_value -> texture for wall surfaces.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "pickScreen",
+          "fullPath": "LMultiLevelGrid:pickScreen",
+          "signature": "LMultiLevelGrid:pickScreen(sx, sy, params, [wallTextures], [sprites], [models])",
+          "description": "Resolves a screen-space click against this persistent multi-level world and returns the owning level.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen X in pixels.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen Y in pixels.",
+              "optional": false
+            },
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Camera params for the current frame.",
+              "optional": false
+            },
+            {
+              "name": "wallTextures",
+              "type": "table",
+              "description": "Optional map of cell_value -> texture for wall surfaces.",
+              "optional": true
+            },
+            {
+              "name": "sprites",
+              "type": "table|LSpriteManager",
+              "description": "Optional sprite tables or sprite manager used to resolve clickable billboard hits.",
+              "optional": true
+            },
+            {
+              "name": "models",
+              "type": "table",
+              "description": "Optional model instance tables used to resolve clickable projected model hits.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "pickScreenFromAdapter",
+          "fullPath": "LMultiLevelGrid:pickScreenFromAdapter",
+          "signature": "LMultiLevelGrid:pickScreenFromAdapter(sx, sy, params, [wallTextures], adapter)",
+          "description": "Resolves a screen-space click against this multilevel world using a runtime scene adapter.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen X in pixels.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen Y in pixels.",
+              "optional": false
+            },
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Camera params for the current frame.",
+              "optional": false
+            },
+            {
+              "name": "wallTextures",
+              "type": "table",
+              "description": "Optional map of cell_value -> texture for wall surfaces.",
+              "optional": true
+            },
+            {
+              "name": "adapter",
+              "type": "LSceneAdapter",
+              "description": "Runtime scene adapter providing sprites and models.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "type",
+          "fullPath": "LMultiLevelGrid:type",
+          "signature": "()",
+          "description": "Returns the type name of this object (\"LMultiLevelGrid\").",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LMultiLevelGrid:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this object matches the given type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to test against.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMultiLevelGrid"
+        }
+      ]
+    },
+    {
       "name": "LNavGrid",
       "description": "Lua-side wrapper for a navigation grid and optional abstract graph cache.",
       "methods": [
@@ -98634,6 +102157,17 @@
           "objectType": "LOverlay"
         },
         {
+          "name": "getStats",
+          "fullPath": "LOverlay:getStats",
+          "signature": "()",
+          "description": "Returns a telemetry snapshot for dashboard and debug workflows.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LOverlay"
+        },
+        {
           "name": "clear",
           "fullPath": "LOverlay:clear",
           "signature": "()",
@@ -101799,6 +105333,17 @@
           "objectType": "LParallaxLayer"
         },
         {
+          "name": "getStats",
+          "fullPath": "LParallaxLayer:getStats",
+          "signature": "()",
+          "description": "Returns telemetry for the current runtime camera and viewport.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LParallaxLayer"
+        },
+        {
           "name": "setMotionStretch",
           "fullPath": "LParallaxLayer:setMotionStretch",
           "signature": "(enabled, strength, max_scale)",
@@ -102042,6 +105587,17 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LParallaxSet"
+        },
+        {
+          "name": "getStats",
+          "fullPath": "LParallaxSet:getStats",
+          "signature": "()",
+          "description": "Returns aggregated telemetry for all layers in the set.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LParallaxSet"
         }
       ]
     },
@@ -102183,6 +105739,17 @@
           "parameters": [],
           "returns": "boolean",
           "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LParticleSystem"
+        },
+        {
+          "name": "getStats",
+          "fullPath": "LParticleSystem:getStats",
+          "signature": "()",
+          "description": "Returns a telemetry snapshot for dashboard and debug workflows.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LParticleSystem"
         },
@@ -104233,30 +107800,96 @@
     },
     {
       "name": "LPieChart",
-      "description": "Lua userdata for rendering a pie slice chart.",
+      "description": "Lua-exposed pie chart for data visualization.",
       "methods": [
         {
           "name": "addSlice",
           "fullPath": "LPieChart:addSlice",
           "signature": "(label, value, [color])",
-          "description": "Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.",
+          "description": "",
           "parameters": [
             {
               "name": "label",
-              "type": "string",
-              "description": "Display label for the slice.",
+              "type": "any",
+              "description": "",
               "optional": false
             },
             {
               "name": "value",
-              "type": "number",
-              "description": "Numeric value determining the slice proportion.",
+              "type": "any",
+              "description": "",
               "optional": false
             },
             {
               "name": "color",
-              "type": "table|nil",
-              "description": "Optional RGBA color {r, g, b, a}. Auto-assigned from palette if nil.",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPieChart"
+        },
+        {
+          "name": "addSegment",
+          "fullPath": "LPieChart:addSegment",
+          "signature": "(label, value, [color])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPieChart"
+        },
+        {
+          "name": "addSegmentsFromDataFrame",
+          "fullPath": "LPieChart:addSegmentsFromDataFrame",
+          "signature": "(df, label_col, value_col, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "df",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "label_col",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value_col",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
@@ -104269,7 +107902,7 @@
           "name": "clear",
           "fullPath": "LPieChart:clear",
           "signature": "()",
-          "description": "Removes all pie data slices from this chart.",
+          "description": "",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -104280,12 +107913,30 @@
           "name": "setTitle",
           "fullPath": "LPieChart:setTitle",
           "signature": "(title)",
-          "description": "Set or update the chart's displayed title.",
+          "description": "",
           "parameters": [
             {
               "name": "title",
-              "type": "string",
-              "description": "New chart title text.",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPieChart"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LPieChart:setShowLegend",
+          "signature": "(value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
               "optional": false
             }
           ],
@@ -104298,10 +107949,69 @@
           "name": "render",
           "fullPath": "LPieChart:render",
           "signature": "()",
-          "description": "Renders the chart contents into a new pixel buffer.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPieChart"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LPieChart:renderImage",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPieChart"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LPieChart:drawToImage",
+          "signature": "(target)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPieChart"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LPieChart:draw",
+          "signature": "(x, y, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LPieChart"
         },
@@ -104309,10 +108019,10 @@
           "name": "getWidth",
           "fullPath": "LPieChart:getWidth",
           "signature": "()",
-          "description": "Get the chart output width in pixels.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LPieChart"
         },
@@ -104320,10 +108030,39 @@
           "name": "getHeight",
           "fullPath": "LPieChart:getHeight",
           "signature": "()",
-          "description": "Get the chart output height in pixels.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPieChart"
+        },
+        {
+          "name": "type",
+          "fullPath": "LPieChart:type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPieChart"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LPieChart:typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LPieChart"
         },
@@ -105634,6 +109373,30 @@
           "objectType": "LPlacementGrid"
         },
         {
+          "name": "removePosition",
+          "fullPath": "LPlacementGrid:removePosition",
+          "signature": "(x, y)",
+          "description": "Remove an available position from the grid.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPlacementGrid"
+        },
+        {
           "name": "isAvailable",
           "fullPath": "LPlacementGrid:isAvailable",
           "signature": "(x, y)",
@@ -105665,6 +109428,30 @@
           "parameters": [],
           "returns": "integer",
           "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LPlacementGrid"
+        },
+        {
+          "name": "isEdgePosition",
+          "fullPath": "LPlacementGrid:isEdgePosition",
+          "signature": "(x, y)",
+          "description": "Check whether a cell touches the placement-shape boundary.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "X coordinate.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Y coordinate.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LPlacementGrid"
         },
@@ -105708,6 +109495,17 @@
           "objectType": "LPointLight"
         },
         {
+          "name": "level",
+          "fullPath": "LPointLight:level",
+          "signature": "()",
+          "description": "Returns the optional multilevel slice index that owns this light.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LPointLight"
+        },
+        {
           "name": "radius",
           "fullPath": "LPointLight:radius",
           "signature": "()",
@@ -105743,7 +109541,7 @@
         {
           "name": "set",
           "fullPath": "LPointLight:set",
-          "signature": "(x, y, r, g, b, radius, intensity)",
+          "signature": "LPointLight:set(x, y, r, g, b, radius, intensity, [level])",
           "description": "Overwrites all properties of this point light in a single call.",
           "parameters": [
             {
@@ -105787,6 +109585,30 @@
               "type": "number",
               "description": "Brightness multiplier.",
               "optional": false
+            },
+            {
+              "name": "level",
+              "type": "integer",
+              "description": "Optional multilevel slice index that owns this light.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPointLight"
+        },
+        {
+          "name": "setLevel",
+          "fullPath": "LPointLight:setLevel",
+          "signature": "([level])",
+          "description": "Updates the optional multilevel slice index that owns this light.",
+          "parameters": [
+            {
+              "name": "level",
+              "type": "integer",
+              "description": "Level index, or nil to let this light affect every level.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -112008,6 +115830,192 @@
           "objectType": "LRaycaster"
         },
         {
+          "name": "setHalfWallCell",
+          "fullPath": "LRaycaster:setHalfWallCell",
+          "signature": "(x, y, height)",
+          "description": "Attaches a half-height wall feature to a blocking cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "number",
+              "description": "Solid wall height from floor, 0.0..1.0.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "setWindowCell",
+          "fullPath": "LRaycaster:setWindowCell",
+          "signature": "(x, y, sill_height, lintel_height, [alpha])",
+          "description": "Attaches a window feature to a blocking cell, leaving a visible opening between sill and lintel.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "sillHeight",
+              "type": "number",
+              "description": "Bottom of the opening from the floor, 0.0..1.0.",
+              "optional": false
+            },
+            {
+              "name": "lintelHeight",
+              "type": "number",
+              "description": "Top of the opening from the floor, 0.0..1.0.",
+              "optional": false
+            },
+            {
+              "name": "alpha",
+              "type": "number",
+              "description": "Wall alpha multiplier for the solid bands.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "setDoorCell",
+          "fullPath": "LRaycaster:setDoorCell",
+          "signature": "(x, y, dir_str, open_amount, [alpha])",
+          "description": "Attaches a sliding door feature to a blocking cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            },
+            {
+              "name": "direction",
+              "type": "string",
+              "description": "\"horizontal\" or \"vertical\".",
+              "optional": false
+            },
+            {
+              "name": "openAmount",
+              "type": "number",
+              "description": "Door open amount, 0.0..1.0.",
+              "optional": false
+            },
+            {
+              "name": "alpha",
+              "type": "number",
+              "description": "Optional alpha multiplier.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "applyDoorManager",
+          "fullPath": "LRaycaster:applyDoorManager",
+          "signature": "(doors_ud, [alpha])",
+          "description": "Synchronizes animated doors from an `LDoorManager` into this map's per-cell wall features.",
+          "parameters": [
+            {
+              "name": "doors",
+              "type": "LDoorManager",
+              "description": "Door manager holding animated open amounts.",
+              "optional": false
+            },
+            {
+              "name": "alpha",
+              "type": "number",
+              "description": "Optional alpha multiplier for the synchronized door slabs.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "clearWallFeatureCell",
+          "fullPath": "LRaycaster:clearWallFeatureCell",
+          "signature": "(x, y)",
+          "description": "Removes any per-cell wall feature override from a blocking cell.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "getWallFeatureCell",
+          "fullPath": "LRaycaster:getWallFeatureCell",
+          "signature": "(x, y)",
+          "description": "Returns the wall feature attached to a cell, or nil when none is set.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Grid column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Grid row.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
           "name": "setCells",
           "fullPath": "LRaycaster:setCells",
           "signature": "(cells_tbl)",
@@ -112584,7 +116592,7 @@
             {
               "name": "lights",
               "type": "table",
-              "description": "Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}.",
+              "description": "Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or LPointLight userdata values.",
               "optional": true
             }
           ],
@@ -112626,7 +116634,7 @@
             {
               "name": "lights",
               "type": "table",
-              "description": "Array of point-light tables.",
+              "description": "Array of point-light tables or LPointLight userdata values.",
               "optional": true
             }
           ],
@@ -113116,6 +117124,84 @@
           "objectType": "LRaycaster"
         },
         {
+          "name": "pickScreen",
+          "fullPath": "LRaycaster:pickScreen",
+          "signature": "LRaycaster:pickScreen(sx, sy, params, [sprites], [models])",
+          "description": "Resolves a screen-space click back into the raycaster world using the same camera semantics as scene building.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen X in pixels.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen Y in pixels.",
+              "optional": false
+            },
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Camera params {px, py, angle, fov, max_dist, screen_w, screen_h, camera_height?, horizon_offset?}.",
+              "optional": false
+            },
+            {
+              "name": "sprites",
+              "type": "table|LSpriteManager",
+              "description": "Optional sprite tables or sprite manager used to resolve clickable billboard hits.",
+              "optional": true
+            },
+            {
+              "name": "models",
+              "type": "table",
+              "description": "Optional model instance tables used to resolve clickable projected model hits.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "pickScreenFromAdapter",
+          "fullPath": "LRaycaster:pickScreenFromAdapter",
+          "signature": "(sx, sy, params_tbl, adapter_ud)",
+          "description": "Resolves a screen-space click using sprite/model inputs sourced from a runtime scene adapter.",
+          "parameters": [
+            {
+              "name": "sx",
+              "type": "number",
+              "description": "Screen X in pixels.",
+              "optional": false
+            },
+            {
+              "name": "sy",
+              "type": "number",
+              "description": "Screen Y in pixels.",
+              "optional": false
+            },
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Camera params (same as pickScreen).",
+              "optional": false
+            },
+            {
+              "name": "adapter",
+              "type": "LSceneAdapter",
+              "description": "Runtime scene adapter providing sprites and models.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
           "name": "buildScene",
           "fullPath": "LRaycaster:buildScene",
           "signature": "LRaycaster:buildScene(params, [lights], [sprites], [wallTextures])",
@@ -113130,14 +117216,44 @@
             {
               "name": "lights",
               "type": "table",
-              "description": "Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}.",
+              "description": "Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or LPointLight userdata values.",
               "optional": true
             },
             {
               "name": "sprites",
-              "type": "table",
-              "description": "Array of sprite tables {x, y, texture, size?}.",
+              "type": "table|LSpriteManager",
+              "description": "Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.",
               "optional": true
+            },
+            {
+              "name": "wallTextures",
+              "type": "table",
+              "description": "Map of cell_value -> texture for wall surfaces.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LRaycaster"
+        },
+        {
+          "name": "buildSceneFromAdapter",
+          "fullPath": "LRaycaster:buildSceneFromAdapter",
+          "signature": "(params_tbl, adapter_ud, wall_tex_tbl)",
+          "description": "Builds a textured raycaster scene from a runtime scene adapter that may follow physics bodies.",
+          "parameters": [
+            {
+              "name": "params",
+              "type": "table",
+              "description": "Scene params (same as buildScene).",
+              "optional": false
+            },
+            {
+              "name": "adapter",
+              "type": "LSceneAdapter",
+              "description": "Runtime scene adapter providing lights, sprites, and models.",
+              "optional": false
             },
             {
               "name": "wallTextures",
@@ -113166,13 +117282,13 @@
             {
               "name": "lights",
               "type": "table",
-              "description": "Array of point-light tables.",
+              "description": "Array of point-light tables or LPointLight userdata values.",
               "optional": true
             },
             {
               "name": "sprites",
-              "type": "table",
-              "description": "Array of sprite tables.",
+              "type": "table|LSpriteManager",
+              "description": "Array of sprite tables with billboard or 4-direction textures, or an LSpriteManager with integer/LImage textures.",
               "optional": true
             },
             {
@@ -113184,7 +117300,7 @@
             {
               "name": "models",
               "type": "table",
-              "description": "Array of model instance tables {model, x, y, rotation?, scale?}.",
+              "description": "Array of model instance tables {model, x, y, rotation?, yaw?, z?, scale?}.",
               "optional": true
             }
           ],
@@ -114440,30 +118556,125 @@
     },
     {
       "name": "LScatterPlot",
-      "description": "Lua-visible scatter plot userdata.",
+      "description": "Lua-exposed scatter plot for data visualization.",
       "methods": [
         {
           "name": "addSeries",
           "fullPath": "LScatterPlot:addSeries",
           "signature": "(name, data, [color])",
-          "description": "Add a named data series to the scatter plot.",
+          "description": "",
           "parameters": [
             {
               "name": "name",
-              "type": "string",
-              "description": "Display name of the series.",
+              "type": "any",
+              "description": "",
               "optional": false
             },
             {
               "name": "data",
-              "type": "table",
-              "description": "Array of {x, y} point tables.",
+              "type": "any",
+              "description": "",
               "optional": false
             },
             {
               "name": "color",
-              "type": "table|nil",
-              "description": "Optional RGBA color {r, g, b, a}.",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "addSeriesFromDataFrame",
+          "fullPath": "LScatterPlot:addSeriesFromDataFrame",
+          "signature": "LScatterPlot:addSeriesFromDataFrame()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "replaceSeries",
+          "fullPath": "LScatterPlot:replaceSeries",
+          "signature": "(name, data, [color])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "data",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "appendPoint",
+          "fullPath": "LScatterPlot:appendPoint",
+          "signature": "(name, x, y, [color])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "color",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setWindow",
+          "fullPath": "LScatterPlot:setWindow",
+          "signature": "([max_points])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "max_points",
+              "type": "any",
+              "description": "",
               "optional": true
             }
           ],
@@ -114476,7 +118687,7 @@
           "name": "clear",
           "fullPath": "LScatterPlot:clear",
           "signature": "()",
-          "description": "Removes all data series from this chart.",
+          "description": "",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -114486,13 +118697,13 @@
         {
           "name": "setDotRadius",
           "fullPath": "LScatterPlot:setDotRadius",
-          "signature": "(r)",
-          "description": "Set the radius of the dot drawn for each data point.",
+          "signature": "(radius)",
+          "description": "",
           "parameters": [
             {
-              "name": "r",
-              "type": "number",
-              "description": "Dot radius in pixels (minimum 1).",
+              "name": "radius",
+              "type": "any",
+              "description": "",
               "optional": false
             }
           ],
@@ -114505,12 +118716,150 @@
           "name": "setTitle",
           "fullPath": "LScatterPlot:setTitle",
           "signature": "(title)",
-          "description": "Set or update the chart's displayed title.",
+          "description": "",
           "parameters": [
             {
               "name": "title",
-              "type": "string",
-              "description": "New chart title text.",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setXRange",
+          "fullPath": "LScatterPlot:setXRange",
+          "signature": "(min_x, max_x)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "min_x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "max_x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setYRange",
+          "fullPath": "LScatterPlot:setYRange",
+          "signature": "(min_y, max_y)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "min_y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "max_y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setXLabel",
+          "fullPath": "LScatterPlot:setXLabel",
+          "signature": "(label)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setYLabel",
+          "fullPath": "LScatterPlot:setYLabel",
+          "signature": "(label)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "label",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setXTickCount",
+          "fullPath": "LScatterPlot:setXTickCount",
+          "signature": "(count)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setYTickCount",
+          "fullPath": "LScatterPlot:setYTickCount",
+          "signature": "(count)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "count",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "setShowLegend",
+          "fullPath": "LScatterPlot:setShowLegend",
+          "signature": "(value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
               "optional": false
             }
           ],
@@ -114523,10 +118872,93 @@
           "name": "render",
           "fullPath": "LScatterPlot:render",
           "signature": "()",
-          "description": "Renders the chart contents into a new pixel buffer.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "renderImage",
+          "fullPath": "LScatterPlot:renderImage",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "drawToImage",
+          "fullPath": "LScatterPlot:drawToImage",
+          "signature": "(target)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "draw",
+          "fullPath": "LScatterPlot:draw",
+          "signature": "(x, y, [opts])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "nearest",
+          "fullPath": "LScatterPlot:nearest",
+          "signature": "(x, y)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LScatterPlot"
         },
@@ -114534,10 +118966,10 @@
           "name": "getWidth",
           "fullPath": "LScatterPlot:getWidth",
           "signature": "()",
-          "description": "Get the chart output width in pixels.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LScatterPlot"
         },
@@ -114545,10 +118977,39 @@
           "name": "getHeight",
           "fullPath": "LScatterPlot:getHeight",
           "signature": "()",
-          "description": "Get the chart output height in pixels.",
+          "description": "",
           "parameters": [],
-          "returns": "number",
-          "returnType": "number",
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "type",
+          "fullPath": "LScatterPlot:type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LScatterPlot"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LScatterPlot:typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": true,
           "objectType": "LScatterPlot"
         },
@@ -114838,6 +119299,396 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LScatterPlot"
+        }
+      ]
+    },
+    {
+      "name": "LSceneAdapter",
+      "description": "Lua-visible adapter that snapshots sprites, lights, and models from static data and physics bodies.",
+      "methods": [
+        {
+          "name": "addSprite",
+          "fullPath": "LSceneAdapter:addSprite",
+          "signature": "(x, y, texture, [opts])",
+          "description": "Adds a static billboard sprite entry.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "World X position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "World Y position.",
+              "optional": false
+            },
+            {
+              "name": "texture",
+              "type": "LImage|integer",
+              "description": "Sprite texture.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional {size?, id?, level?, angle?}.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "addDirectionalSprite",
+          "fullPath": "LSceneAdapter:addDirectionalSprite",
+          "signature": "LSceneAdapter:addDirectionalSprite(x, y, front, right, back, [left], [opts])",
+          "description": "Adds a static directional billboard sprite entry.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "World X position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "World Y position.",
+              "optional": false
+            },
+            {
+              "name": "front",
+              "type": "LImage|integer",
+              "description": "Front-facing texture.",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "LImage|integer",
+              "description": "Right-facing texture.",
+              "optional": false
+            },
+            {
+              "name": "back",
+              "type": "LImage|integer",
+              "description": "Back-facing texture.",
+              "optional": false
+            },
+            {
+              "name": "left",
+              "type": "LImage|integer",
+              "description": "Left-facing texture (defaults to `right`).",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional {size?, id?, level?, angle?}.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "bindBodySprite",
+          "fullPath": "LSceneAdapter:bindBodySprite",
+          "signature": "(body, texture, [opts])",
+          "description": "Binds a billboard sprite to a live physics body.",
+          "parameters": [
+            {
+              "name": "body",
+              "type": "LBody",
+              "description": "Physics body handle.",
+              "optional": false
+            },
+            {
+              "name": "texture",
+              "type": "LImage|integer",
+              "description": "Sprite texture.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional {size?, id?, level?, offset_x?, offset_y?, angle_offset?}.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "bindBodyDirectionalSprite",
+          "fullPath": "LSceneAdapter:bindBodyDirectionalSprite",
+          "signature": "LSceneAdapter:bindBodyDirectionalSprite(body, front, right, back, [left], [opts])",
+          "description": "Binds a directional billboard sprite to a live physics body.",
+          "parameters": [
+            {
+              "name": "body",
+              "type": "LBody",
+              "description": "Physics body handle.",
+              "optional": false
+            },
+            {
+              "name": "front",
+              "type": "LImage|integer",
+              "description": "Front-facing texture.",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "LImage|integer",
+              "description": "Right-facing texture.",
+              "optional": false
+            },
+            {
+              "name": "back",
+              "type": "LImage|integer",
+              "description": "Back-facing texture.",
+              "optional": false
+            },
+            {
+              "name": "left",
+              "type": "LImage|integer",
+              "description": "Left-facing texture (defaults to `right`).",
+              "optional": true
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional {size?, id?, level?, offset_x?, offset_y?, angle_offset?}.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "addLight",
+          "fullPath": "LSceneAdapter:addLight",
+          "signature": "(x, y, radius, [opts])",
+          "description": "Adds a static point light entry.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "World X position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "World Y position.",
+              "optional": false
+            },
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "Light falloff radius.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional {intensity?, color?, r?, g?, b?, level?}.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "bindBodyLight",
+          "fullPath": "LSceneAdapter:bindBodyLight",
+          "signature": "(body, radius, [opts])",
+          "description": "Binds a point light to a live physics body.",
+          "parameters": [
+            {
+              "name": "body",
+              "type": "LBody",
+              "description": "Physics body handle.",
+              "optional": false
+            },
+            {
+              "name": "radius",
+              "type": "number",
+              "description": "Light falloff radius.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional {intensity?, color?, r?, g?, b?, level?, offset_x?, offset_y?}.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "addModel",
+          "fullPath": "LSceneAdapter:addModel",
+          "signature": "(model_ud, x, y, [opts])",
+          "description": "Adds a static OBJ model instance entry.",
+          "parameters": [
+            {
+              "name": "model",
+              "type": "LObjModel",
+              "description": "OBJ model handle.",
+              "optional": false
+            },
+            {
+              "name": "x",
+              "type": "number",
+              "description": "World X position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "World Y position.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional {id?, level?, yaw?, z?, scale?}.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "bindBodyModel",
+          "fullPath": "LSceneAdapter:bindBodyModel",
+          "signature": "(body, model_ud, [opts])",
+          "description": "Binds an OBJ model instance to a live physics body.",
+          "parameters": [
+            {
+              "name": "body",
+              "type": "LBody",
+              "description": "Physics body handle.",
+              "optional": false
+            },
+            {
+              "name": "model",
+              "type": "LObjModel",
+              "description": "OBJ model handle.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional {id?, level?, yaw_offset?, offset_x?, offset_y?, z?, scale?}.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "sceneInputs",
+          "fullPath": "LSceneAdapter:sceneInputs",
+          "signature": "()",
+          "description": "Resolves the current runtime snapshot into `{ lights, sprites, models }` tables.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LSceneAdapter:clear",
+          "signature": "()",
+          "description": "Removes every tracked entry from the adapter.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "clearSprites",
+          "fullPath": "LSceneAdapter:clearSprites",
+          "signature": "()",
+          "description": "Removes every tracked sprite entry from the adapter.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "clearLights",
+          "fullPath": "LSceneAdapter:clearLights",
+          "signature": "()",
+          "description": "Removes every tracked light entry from the adapter.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "clearModels",
+          "fullPath": "LSceneAdapter:clearModels",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "type",
+          "fullPath": "LSceneAdapter:type",
+          "signature": "()",
+          "description": "Returns the type name of this object.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LSceneAdapter:typeOf",
+          "signature": "(name)",
+          "description": "Checks whether this object matches the given type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LSceneAdapter"
         }
       ]
     },
@@ -129184,8 +134035,8 @@
         {
           "name": "add",
           "fullPath": "LSpriteManager:add",
-          "signature": "(x, y, texture, [scale])",
-          "description": "Adds a new sprite to the manager at a world position with a texture name and optional scale.",
+          "signature": "LSpriteManager:add(x, y, texture, [scale], [level])",
+          "description": "Adds a new sprite to the manager at a world position with a texture label, raw id, or image handle.",
           "parameters": [
             {
               "name": "x",
@@ -129201,14 +134052,86 @@
             },
             {
               "name": "texture",
-              "type": "string",
-              "description": "Texture asset name.",
+              "type": "any",
+              "description": "Texture asset label, integer texture id, or LImage.",
               "optional": false
             },
             {
               "name": "scale",
               "type": "number",
               "description": "Sprite size multiplier (default 1.0).",
+              "optional": true
+            },
+            {
+              "name": "level",
+              "type": "integer",
+              "description": "Optional multilevel slice index used by buildMultiLevelScene.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LSpriteManager"
+        },
+        {
+          "name": "addDirectional",
+          "fullPath": "LSpriteManager:addDirectional",
+          "signature": "LSpriteManager:addDirectional(x, y, front, right, back, [left], [angle], [scale], [level])",
+          "description": "Adds a new sprite with front/right/back/left textures and a world-facing angle.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "World X position.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "World Y position.",
+              "optional": false
+            },
+            {
+              "name": "front",
+              "type": "any",
+              "description": "Texture shown when viewed from the front.",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "any",
+              "description": "Texture shown from the right side.",
+              "optional": false
+            },
+            {
+              "name": "back",
+              "type": "any",
+              "description": "Texture shown from behind.",
+              "optional": false
+            },
+            {
+              "name": "left",
+              "type": "any",
+              "description": "Texture shown from the left side (defaults to `right`).",
+              "optional": true
+            },
+            {
+              "name": "angle",
+              "type": "number",
+              "description": "World-space facing angle in radians (default 0.0).",
+              "optional": true
+            },
+            {
+              "name": "scale",
+              "type": "number",
+              "description": "Sprite size multiplier (default 1.0).",
+              "optional": true
+            },
+            {
+              "name": "level",
+              "type": "integer",
+              "description": "Optional multilevel slice index used by buildMultiLevelScene.",
               "optional": true
             }
           ],
@@ -129258,6 +134181,102 @@
               "type": "number",
               "description": "New world Y.",
               "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpriteManager"
+        },
+        {
+          "name": "setLevel",
+          "fullPath": "LSpriteManager:setLevel",
+          "signature": "(id, level)",
+          "description": "Updates the multilevel slice index for an existing sprite.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Sprite id.",
+              "optional": false
+            },
+            {
+              "name": "level",
+              "type": "integer",
+              "description": "New level index used by buildMultiLevelScene.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpriteManager"
+        },
+        {
+          "name": "setFacing",
+          "fullPath": "LSpriteManager:setFacing",
+          "signature": "(id, angle)",
+          "description": "Updates the facing angle of an existing directional sprite.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Sprite id.",
+              "optional": false
+            },
+            {
+              "name": "angle",
+              "type": "number",
+              "description": "New facing angle in radians.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LSpriteManager"
+        },
+        {
+          "name": "setDirectionalTextures",
+          "fullPath": "LSpriteManager:setDirectionalTextures",
+          "signature": "LSpriteManager:setDirectionalTextures(id, front, right, back, [left], [angle])",
+          "description": "Replaces the directional bitmap set for an existing sprite and optionally updates its facing angle.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "integer",
+              "description": "Sprite id.",
+              "optional": false
+            },
+            {
+              "name": "front",
+              "type": "any",
+              "description": "Texture shown when viewed from the front.",
+              "optional": false
+            },
+            {
+              "name": "right",
+              "type": "any",
+              "description": "Texture shown from the right side.",
+              "optional": false
+            },
+            {
+              "name": "back",
+              "type": "any",
+              "description": "Texture shown from behind.",
+              "optional": false
+            },
+            {
+              "name": "left",
+              "type": "any",
+              "description": "Texture shown from the left side (defaults to `right`).",
+              "optional": true
+            },
+            {
+              "name": "angle",
+              "type": "number",
+              "description": "Optional new facing angle in radians.",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -129321,7 +134340,7 @@
             {
               "name": "camAngle",
               "type": "number",
-              "description": "Camera facing angle (unused, reserved).",
+              "description": "Camera facing angle (reserved for future projection expansion).",
               "optional": false
             }
           ],

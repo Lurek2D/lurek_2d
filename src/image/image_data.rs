@@ -23,13 +23,36 @@ pub struct ImageData {
 }
 /// Methods for constructing, querying, mutating, drawing on, and encoding image buffers.
 impl ImageData {
-    /// Create a zero-filled RGBA image buffer of the given size.
-    pub fn new(width: u32, height: u32) -> Self {
-        Self {
+    /// Return the exact RGBA byte length for a width/height pair, or an error when it overflows `usize`.
+    pub(crate) fn rgba_byte_len(width: u32, height: u32) -> Result<usize, String> {
+        let pixels = u64::from(width)
+            .checked_mul(u64::from(height))
+            .ok_or_else(|| format!("image dimensions {}x{} overflow pixel count", width, height))?;
+        let bytes = pixels.checked_mul(4).ok_or_else(|| {
+            format!(
+                "image dimensions {}x{} overflow RGBA byte count",
+                width, height
+            )
+        })?;
+        usize::try_from(bytes).map_err(|_| {
+            format!(
+                "image dimensions {}x{} exceed addressable RGBA buffer size",
+                width, height
+            )
+        })
+    }
+    /// Create a zero-filled RGBA image buffer of the given size, or return an error when allocation sizing overflows.
+    pub fn try_new(width: u32, height: u32) -> Result<Self, String> {
+        let len = Self::rgba_byte_len(width, height)?;
+        Ok(Self {
             width,
             height,
-            pixels: vec![0; (width * height * 4) as usize],
-        }
+            pixels: vec![0; len],
+        })
+    }
+    /// Create a zero-filled RGBA image buffer of the given size.
+    pub fn new(width: u32, height: u32) -> Self {
+        Self::try_new(width, height).expect("ImageData::new dimensions overflow RGBA buffer length")
     }
     /// Load an image from disk and return decoded RGBA bytes, or an error on failure.
     pub fn from_file(path: &str) -> Result<Self, String> {
@@ -59,7 +82,7 @@ impl ImageData {
     }
     /// Build an image from exact RGBA bytes, or return an error on length mismatch.
     pub fn from_bytes(width: u32, height: u32, bytes: Vec<u8>) -> Result<Self, String> {
-        let expected = (width * height * 4) as usize;
+        let expected = Self::rgba_byte_len(width, height)?;
         if bytes.len() != expected {
             log_msg!(
                 error,
@@ -543,7 +566,7 @@ impl ImageData {
     }
     /// Replace pixel data with new raw bytes and return an error on length mismatch.
     pub fn set_raw_data(&mut self, bytes: &[u8]) -> Result<(), String> {
-        let expected = (self.width * self.height * 4) as usize;
+        let expected = Self::rgba_byte_len(self.width, self.height)?;
         if bytes.len() != expected {
             return Err(format!(
                 "setRawData: expected {} bytes for {}x{} RGBA image, got {}",

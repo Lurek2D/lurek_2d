@@ -49,6 +49,21 @@ describe("lurek.animation functions", function()
         expect_not_nil(char.stateMachine)
     end)
 
+    -- @covers lurek.animation.buildCharacter
+    it("buildCharacter rejects non-positive clip fps", function()
+        expect_error(function()
+            lurek.animation.buildCharacter({
+                texW = 64,
+                texH = 16,
+                frameW = 16,
+                frameH = 16,
+                clips = {
+                    { name = "idle", start = 0, count = 2, fps = 0, looping = true, mode = "forward" },
+                },
+            })
+        end)
+    end)
+
     -- @covers lurek.animation.fromAseprite
     it("fromAseprite parses a minimal Aseprite JSON export", function()
         local json = '{"frames":[{"filename":"f0","frame":{"x":0,"y":0,"w":16,"h":16}}],"meta":{"size":{"w":16,"h":16},"frameTags":[]}}'
@@ -97,6 +112,14 @@ describe("LAnimCurve methods", function()
         curve:addKeyframe(0.0, 0.0)
         curve:addKeyframe(1.0, 10.0)
         expect_equal(2, curve:keyframeCount())
+    end)
+
+    -- @covers LAnimCurve:addKeyframe
+    it("addKeyframe rejects non-finite times", function()
+        local curve = lurek.animation.newCurve()
+        expect_error(function()
+            curve:addKeyframe(0 / 0, 1.0)
+        end)
     end)
 
     -- @covers LAnimCurve:clear
@@ -296,12 +319,29 @@ describe("LAnimation methods", function()
         expect_equal(1, anim:getClipCount())
     end)
 
+    -- @covers LAnimation:addClip
+    it("addClip rejects missing frame indices", function()
+        local anim = lurek.animation.new()
+        anim:addFramesFromGrid(128, 32, 32, 32, 0, 1)
+        expect_error(function()
+            anim:addClip("walk", { 0, 9 }, 10, true, "forward")
+        end)
+    end)
+
     -- @covers LAnimation:addClipFromGrid
     it("addClipFromGrid creates frames and a clip in one call", function()
         local anim = lurek.animation.new()
         anim:addClipFromGrid("sprint", 256, 64, 32, 32, 0, 8, 15, true)
         expect_true(anim:getFrameCount() >= 8)
         expect_equal(1, anim:getClipCount())
+    end)
+
+    -- @covers LAnimation:addClipFromGrid
+    it("addClipFromGrid rejects non-positive fps", function()
+        local anim = lurek.animation.new()
+        expect_error(function()
+            anim:addClipFromGrid("sprint", 256, 64, 32, 32, 0, 8, 0, true)
+        end)
     end)
 
     -- @covers LAnimation:addFrame
@@ -335,6 +375,15 @@ describe("LAnimation methods", function()
         local anim = make_basic_animation()
         anim:play("idle")
         expect_true(anim:crossfade("run", 0.3))
+    end)
+
+    -- @covers LAnimation:crossfade
+    it("crossfade rejects negative duration", function()
+        local anim = make_basic_animation()
+        anim:play("idle")
+        expect_error(function()
+            anim:crossfade("run", -0.3)
+        end)
     end)
 
     -- @covers LAnimation:draw
@@ -495,6 +544,14 @@ describe("LAnimation methods", function()
         expect_near(2.0, anim:getSpeed(), 1e-5)
     end)
 
+    -- @covers LAnimation:setSpeed
+    it("setSpeed rejects negative values", function()
+        local anim = lurek.animation.new()
+        expect_error(function()
+            anim:setSpeed(-1.0)
+        end)
+    end)
+
     -- @covers LAnimation:stop
     it("stop halts playback and resets animation state", function()
         local anim = make_basic_animation()
@@ -521,6 +578,15 @@ describe("LAnimation methods", function()
         anim:play("idle")
         anim:update(0.6)
         expect_type("number", anim:getCurrentFrame())
+    end)
+
+    -- @covers LAnimation:update
+    it("update rejects negative delta time", function()
+        local anim = make_basic_animation()
+        anim:play("idle")
+        expect_error(function()
+            anim:update(-0.1)
+        end)
     end)
 end)
 

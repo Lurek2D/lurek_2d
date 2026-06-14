@@ -1,0 +1,4 @@
+route_points=80
+distance=1.7028613090515
+unit_basis=1.0000,0.0000,0.0000
+ray_hit=4

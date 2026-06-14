@@ -116,6 +116,11 @@ impl PieChart {
         self.slices.clear();
     }
 
+    /// Return all slices for inspection helpers.
+    pub fn slices(&self) -> &[PieSlice] {
+        &self.slices
+    }
+
     /// Render the chart into an RGBA8 pixel buffer.
     ///
     /// The buffer must be exactly `width * height * 4` bytes.

@@ -1,4 +1,4 @@
---- Lurek2D quest system — objectives, stages, journal, and quest log.
+--- Lurek2D quest system â€” objectives, stages, journal, and quest log.
 --
 -- A pure-Lua replacement for the former `lurek.quest` Rust binding.
 -- No engine dependencies; works in headless test VMs.
@@ -13,7 +13,7 @@
 --
 -- All other transitions are rejected and return false.
 --
--- **Engine integrations** (all optional — inject from your game code):
+-- **Engine integrations** (all optional â€” inject from your game code):
 --
 -- * Event bus: attach `lurek.patterns.newEventBus()` via `QuestLog:setEventBus`
 --   to receive `quest_started` / `quest_advanced` / `quest_completed` /
@@ -714,7 +714,7 @@ end
 
 
 -- -----------------------------------------------------------------------
--- PARITY ADDITIONS — Phase 2A  (quest)
+-- PARITY ADDITIONS â€” Phase 2A  (quest)
 -- -----------------------------------------------------------------------
 
 --- Quest lifecycle status enum.

@@ -47,7 +47,10 @@ impl AnimCurve {
         }
     }
     /// Insert or replace a keyframe while keeping the list sorted.
-    pub fn add_keyframe(&mut self, time: f32, value: f32) {
+    pub fn add_keyframe(&mut self, time: f32, value: f32) -> Result<(), String> {
+        if !time.is_finite() || !value.is_finite() {
+            return Err("curve keyframe time and value must be finite".to_string());
+        }
         match self
             .keyframes
             .binary_search_by(|(t, _)| t.partial_cmp(&time).unwrap_or(std::cmp::Ordering::Equal))
@@ -55,6 +58,7 @@ impl AnimCurve {
             Ok(pos) => self.keyframes[pos] = (time, value),
             Err(pos) => self.keyframes.insert(pos, (time, value)),
         }
+        Ok(())
     }
     /// Return the number of keyframes.
     pub fn keyframe_count(&self) -> usize {

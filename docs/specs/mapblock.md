@@ -10,21 +10,23 @@
 - Source path: `src/mapblock/`
 - Binding: `src/lua_api/mapblock_api.rs`
 - Namespace: `lurek.mapblock`
-- Lua API surface: `10` functions, `9` types, `53` methods
-- Rust test path(s): None found in the workspace
-- Lua test path(s): tests/lua/unit/test_mapblock_unit.lua
+- Lua API surface: `10` functions, `9` types, `63` methods
+- Rust test path(s): tests/rust/unit/mapblock_tests.rs
+- Lua test path(s): tests/lua/unit/test_mapblock_unit.lua, tests/lua/evidence/test_mapblock_evidence.lua, content/games/puzzle/mapblock_labyrinth/test.lua
 
 ## Summary
 
 - This module gives users procedural map assembly from reusable authored blocks.
 - Blocks package tile data, sockets, and metadata so placement remains data-driven.
 - Neighbor constraints enforce legal block adjacency and prevent invalid seams.
-- Scripted generation steps support fill, targeted placement, random placement, and repeats.
-- Placement grids track occupancy and legality during generation.
+- Scripted generation steps support fill, targeted placement, random placement, backtracking shape solving, and repeats.
+- Placement grids track occupancy and legality during generation, including arbitrary non-rectangular shapes.
 - Multi-level support enables stacked floors and vertical map structures.
 - Orientation support covers top-down and isometric output expectations.
 - Weighted groups support biome or theme-biased block selection.
+- Footprint-aware blocks can express polyomino and province-style shapes with rotation and mirroring.
 - Deterministic seeded generation supports reproducible builds.
+- Placement exports expose block names, transforms, and covered cells for downstream tools and demos.
 - Tileset references map block slots into concrete output tile identifiers.
 - Output conversion produces renderer-ready layered tilemap structures.
 - This module is useful for dungeons, city chunks, and modular world assembly.
@@ -190,15 +192,21 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 ##### Methods
 
 - `LMapBlock:getHeight() -> integer`: Get height in tiles for this object.
+- `LMapBlock:getFootprintCellCount() -> integer`: Get the number of occupied footprint cells.
 - `LMapBlock:getLayerCount() -> integer`: Get the number of tile layers in this map block.
 - `LMapBlock:getName() -> string`: Get the map block's display or lookup name string value.
+- `LMapBlock:getSocket(x, y, edge) -> integer`: Get a previously stored per-cell socket type.
 - `LMapBlock:getTile(layer, x, y, slot) -> integer`: Get the tile GID at a specified row and column position.
+- `LMapBlock:getWeight() -> number`: Get block weight for random selection.
 - `LMapBlock:getWidth() -> integer`: Get the block width measured in tile grid units.
+- `LMapBlock:isFootprintCell(x, y) -> boolean`: Check whether a local footprint cell exists.
 - `LMapBlock:setEdge(edge, segment, edge_type) -> nil`: Set edge type for a side and segment.
 - `LMapBlock:setEdgeOnly(edge_only) -> nil`: Set whether block must be on map edge.
+- `LMapBlock:setFootprint(cells) -> nil`: Replace the placement footprint with a custom cell list.
 - `LMapBlock:setInteriorOnly(interior_only) -> nil`: Set whether block must be in interior.
 - `LMapBlock:setLevelSpan(levels) -> nil`: Set multi-level span for this object.
 - `LMapBlock:setName(name) -> nil`: Set the map block's display or lookup name string value.
+- `LMapBlock:setSocket(x, y, edge, edge_type) -> nil`: Set a per-cell socket type for one edge of the footprint.
 - `LMapBlock:setTile(layer, x, y, slot, tileset_id, gid) -> nil`: Set a tile slot value â€” Lua userdata object exposed by the engine.
 - `LMapBlock:setWeight(weight) -> nil`: Set block weight for random selection.
 
@@ -231,6 +239,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LMapBlockGenerator:addGroup(group) -> nil`: Add a named block group definition to this map generator.
 - `LMapBlockGenerator:generate(script) -> MapBlockResult`: Generate map using a script for this object.
 - `LMapBlockGenerator:getLastPlacedCount() -> integer`: Get last placement count for this object.
+- `LMapBlockGenerator:setGrid(grid) -> nil`: Set the placement grid from a prepared PlacementGrid object.
 - `LMapBlockGenerator:setMaxLevels(levels) -> nil`: Set the number of vertical levels or storeys to generate.
 - `LMapBlockGenerator:setOrientation(orientation) -> nil`: Set rendering orientation for this object.
 - `LMapBlockGenerator:setRectShape(width, height) -> nil`: Set rectangular map shape â€” Lua userdata object exposed by the engine.
@@ -254,6 +263,7 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LMapBlockResult:getHeight() -> integer`: Get total height in tiles â€” Lua userdata object exposed by the engine.
 - `LMapBlockResult:getLayerCount() -> integer`: Get number of layers for this object.
 - `LMapBlockResult:getLevelCount() -> integer`: Get number of levels for this object.
+- `LMapBlockResult:getPlacements() -> table`: Get placement summaries from the last generation run.
 - `LMapBlockResult:getWidth() -> integer`: Get total width in tiles for this object.
 - `LMapBlockResult:isEmpty() -> boolean`: Check if result is empty for this object.
 
@@ -315,7 +325,9 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LPlacementGrid:addPosition(x, y) -> nil`: Add a position to the grid â€” Lua userdata object exposed by the engine.
 - `LPlacementGrid:clear() -> nil`: Clear all positions and placed blocks.
 - `LPlacementGrid:getAvailableCount() -> integer`: Get available position count for this object.
+- `LPlacementGrid:isEdgePosition(x, y) -> boolean`: Check whether a cell touches the placement-shape boundary.
 - `LPlacementGrid:isAvailable(x, y) -> boolean`: Check whether a placement grid position is currently available.
+- `LPlacementGrid:removePosition(x, y) -> nil`: Remove an available position from the grid.
 
 #### LTilesetRef Type
 

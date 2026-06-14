@@ -190,6 +190,22 @@ mod layer_tests {
     }
 
     #[test]
+    fn reversed_clamp_bounds_are_normalized_without_panicking() {
+        let mut layer = ParallaxLayer::new(dummy_key(), 64.0, 64.0);
+        layer.set_clamp_bounds([120.0, 90.0], [-40.0, -30.0]);
+
+        let batch = layer
+            .build_draw_calls(500.0, 500.0, 128.0, 128.0)
+            .expect("batch should exist after clamp normalization");
+        assert!(!batch.tiles.is_empty(), "expected visible tiles after normalization");
+
+        let stats = layer.stats_for_view(500.0, 500.0, 128.0, 128.0);
+        assert!(stats.visible_tile_count > 0);
+        assert!(stats.tile_width >= 16.0);
+        assert!(stats.tile_height >= 16.0);
+    }
+
+    #[test]
     fn build_draw_calls_keeps_effect_chain() {
         let mut layer = ParallaxLayer::new(dummy_key(), 64.0, 64.0);
         layer.set_effect_chain(vec![ShaderPassDescriptor::new("blur")]);

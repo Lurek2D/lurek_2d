@@ -17,6 +17,7 @@
 - Debug draw-to-image tools help tune effects and capture evidence artifacts.
 - Lifecycle chart output improves observability of spawn and decay dynamics.
 - Optional emitter seeds make particle playback deterministic for tests, evidence, and replay capture.
+- Runtime telemetry snapshots expose pool pressure, sub-emitter activity, attractor load, and age for dashboard workflows.
 - The module is useful for combat impacts, weather, ambient motion, and UI accents.
 - For users, it centralizes particle behavior rather than scattering custom emitter logic.
 - It balances artistic flexibility with deterministic, test-friendly controls.
@@ -2226,6 +2227,22 @@ do
     print("spread = " .. ps:getSpread())
 end
 ```
+
+---
+
+#### `LParticleSystem:getStats`
+
+Returns a telemetry snapshot for dashboard and debug workflows.
+
+```lua
+LParticleSystem:getStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Particle-system telemetry fields. |
 
 ---
 

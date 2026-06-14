@@ -1722,6 +1722,17 @@ pub struct LuaBody {
     world: Rc<RefCell<World>>,
     id: BodyId,
 }
+impl LuaBody {
+    /// Shared world handle for internal cross-module integrations.
+    pub(crate) fn world_handle(&self) -> Rc<RefCell<World>> {
+        self.world.clone()
+    }
+
+    /// Numeric body id for internal cross-module integrations.
+    pub(crate) fn body_id(&self) -> usize {
+        self.id.0
+    }
+}
 impl LuaUserData for LuaBody {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- getId --

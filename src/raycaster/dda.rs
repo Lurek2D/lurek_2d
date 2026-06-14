@@ -7,12 +7,15 @@
 //! Floor and ceiling sampling utilities expose screen-to-world relationships without forcing higher layers to re-derive projection math.
 //! This file is the computational core of the raycaster, where map occupancy becomes reliable spatial hits and camera-facing depth data.
 
+use super::doors::DoorManager;
 use super::ray_hit::RayHit;
 use super::sprite_projection::SpriteProjection;
+use super::wall_feature::WallFeature;
 use crate::log_msg;
 use crate::runtime::log_messages::RC01;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 /// 2D grid map and DDA ray-stepping engine used by the raycaster subsystem.
+#[derive(Debug)]
 pub struct Raycaster2D {
     /// Map width in tiles.
     width: u32,
@@ -22,6 +25,10 @@ pub struct Raycaster2D {
     cells: Vec<u32>,
     /// Per-tile-type alpha overrides for transparent walls; default 1.0 (opaque).
     wall_alphas: HashMap<u8, f32>,
+    /// Per-cell wall feature descriptors used by rendering and gameplay queries.
+    wall_features: HashMap<(u32, u32), WallFeature>,
+    /// Door cells last synchronized from a `DoorManager`.
+    synced_door_cells: HashSet<(u32, u32)>,
 }
 /// Core DDA grid map implementation with ray-casting, visibility, and projection methods.
 impl Raycaster2D {
@@ -33,6 +40,8 @@ impl Raycaster2D {
             height,
             cells: vec![0; (width * height) as usize],
             wall_alphas: HashMap::new(),
+            wall_features: HashMap::new(),
+            synced_door_cells: HashSet::new(),
         }
     }
     /// Set the value of cell `(x, y)`; silently ignores out-of-bounds coordinates.
@@ -57,7 +66,38 @@ impl Raycaster2D {
     }
     /// Return true when cell `(x, y)` has a non-zero value (solid wall).
     pub fn is_blocked(&self, x: u32, y: u32) -> bool {
-        self.get_cell(x, y) > 0
+        if self.get_cell(x, y) == 0 {
+            return false;
+        }
+        self.wall_features
+            .get(&(x, y))
+            .copied()
+            .map(|feature| feature.blocks_movement())
+            .unwrap_or(true)
+    }
+    /// Return true when cell `(x, y)` stops line of sight.
+    pub fn blocks_visibility_at(&self, x: u32, y: u32) -> bool {
+        let cell = self.get_cell(x, y);
+        if cell == 0 {
+            return false;
+        }
+        self.wall_features
+            .get(&(x, y))
+            .copied()
+            .map(|feature| feature.blocks_visibility())
+            .unwrap_or_else(|| self.get_wall_alpha(cell as u8) >= 1.0)
+    }
+    /// Return true when cell `(x, y)` stops tile-level light propagation.
+    pub fn blocks_light_at(&self, x: u32, y: u32) -> bool {
+        let cell = self.get_cell(x, y);
+        if cell == 0 {
+            return false;
+        }
+        self.wall_features
+            .get(&(x, y))
+            .copied()
+            .map(|feature| feature.blocks_light())
+            .unwrap_or_else(|| self.get_wall_alpha(cell as u8) >= 1.0)
     }
     /// Return the map width in tiles.
     pub fn width(&self) -> u32 {
@@ -71,6 +111,61 @@ impl Raycaster2D {
     pub fn cells(&self) -> &[u32] {
         &self.cells
     }
+    /// Attach a per-cell wall feature descriptor.
+    pub fn set_wall_feature(&mut self, x: u32, y: u32, feature: WallFeature) {
+        if x < self.width && y < self.height {
+            self.wall_features.insert((x, y), feature);
+        }
+    }
+    /// Remove any per-cell wall feature descriptor from `(x, y)`.
+    pub fn clear_wall_feature(&mut self, x: u32, y: u32) {
+        self.wall_features.remove(&(x, y));
+    }
+    /// Return the wall feature descriptor at `(x, y)`, if present.
+    pub fn wall_feature(&self, x: u32, y: u32) -> Option<WallFeature> {
+        self.wall_features.get(&(x, y)).copied()
+    }
+    /// Synchronize door wall-features from `doors`, leaving underlying cell values unchanged.
+    ///
+    /// Door cells are expected to keep their non-zero tile identity in the base map while the
+    /// door manager controls openness over time. Cells that were previously synchronized but are
+    /// no longer present in `doors` have their door feature removed.
+    pub fn sync_doors(&mut self, doors: &DoorManager, alpha: f32) {
+        let mut next_cells = HashSet::new();
+        let alpha = alpha.clamp(0.0, 1.0);
+
+        for door in doors.doors() {
+            let pos = (door.x, door.y);
+            next_cells.insert(pos);
+            if self.get_cell(door.x, door.y) == 0 {
+                continue;
+            }
+            self.set_wall_feature(
+                door.x,
+                door.y,
+                WallFeature::door(door.direction, door.open_amount, alpha),
+            );
+        }
+
+        for pos in self.synced_door_cells.drain() {
+            if next_cells.contains(&pos) {
+                continue;
+            }
+            if matches!(self.wall_features.get(&pos), Some(feature) if feature.kind.is_door()) {
+                self.wall_features.remove(&pos);
+            }
+        }
+
+        self.synced_door_cells = next_cells;
+    }
+    /// Remove every door feature previously synchronized from a `DoorManager`.
+    pub fn clear_synced_doors(&mut self) {
+        for pos in self.synced_door_cells.drain() {
+            if matches!(self.wall_features.get(&pos), Some(feature) if feature.kind.is_door()) {
+                self.wall_features.remove(&pos);
+            }
+        }
+    }
     /// Set the alpha for walls of `tile_type`; clamped to 0.0..1.0.
     pub fn set_wall_alpha(&mut self, tile_type: u8, alpha: f32) {
         self.wall_alphas.insert(tile_type, alpha.clamp(0.0, 1.0));
@@ -78,6 +173,12 @@ impl Raycaster2D {
     /// Return the wall alpha for `tile_type`; defaults to 1.0 if not set.
     pub fn get_wall_alpha(&self, tile_type: u8) -> f32 {
         self.wall_alphas.get(&tile_type).copied().unwrap_or(1.0)
+    }
+    #[inline]
+    fn cell_alpha(&self, x: u32, y: u32, cell: u32) -> f32 {
+        self.wall_feature(x, y)
+            .map(|feature| feature.alpha())
+            .unwrap_or_else(|| self.wall_alphas.get(&(cell as u8)).copied().unwrap_or(1.0))
     }
     /// Cast a single DDA ray from `(ox, oy)` in direction `angle`; return the first solid hit or `None`.
     pub fn cast_ray(&self, ox: f32, oy: f32, angle: f32, max_dist: f32) -> Option<RayHit> {
@@ -129,6 +230,12 @@ impl Raycaster2D {
             }
             let cell = self.cells[(map_y as u32 * self.width + map_x as u32) as usize];
             if cell > 0 {
+                if self
+                    .wall_feature(map_x as u32, map_y as u32)
+                    .is_some_and(|feature| !feature.blocks_movement())
+                {
+                    continue;
+                }
                 let hit_x = ox + dir_x * perp_dist;
                 let hit_y = oy + dir_y * perp_dist;
                 let tex_u = if side == 0 {
@@ -137,7 +244,7 @@ impl Raycaster2D {
                     (hit_x - hit_x.floor()).abs()
                 };
                 let raw_distance = perp_dist;
-                let alpha = self.wall_alphas.get(&(cell as u8)).copied().unwrap_or(1.0);
+                let alpha = self.cell_alpha(map_x as u32, map_y as u32, cell);
                 return Some(RayHit {
                     distance: perp_dist,
                     raw_distance,
@@ -204,7 +311,13 @@ impl Raycaster2D {
                 }
                 let cell = self.cells[(map_y as u32 * self.width + map_x as u32) as usize];
                 if cell > 0 {
-                    let alpha = self.wall_alphas.get(&(cell as u8)).copied().unwrap_or(1.0);
+                    if self
+                        .wall_feature(map_x as u32, map_y as u32)
+                        .is_some_and(|feature| !feature.blocks_movement())
+                    {
+                        continue;
+                    }
+                    let alpha = self.cell_alpha(map_x as u32, map_y as u32, cell);
                     let hit_x = ox + dir_x * perp_dist;
                     let hit_y = oy + dir_y * perp_dist;
                     let tex_u = (hit_y - hit_y.floor()).abs();
@@ -239,7 +352,13 @@ impl Raycaster2D {
                 }
                 let cell = self.cells[(map_y as u32 * self.width + map_x as u32) as usize];
                 if cell > 0 {
-                    let alpha = self.wall_alphas.get(&(cell as u8)).copied().unwrap_or(1.0);
+                    if self
+                        .wall_feature(map_x as u32, map_y as u32)
+                        .is_some_and(|feature| !feature.blocks_movement())
+                    {
+                        continue;
+                    }
+                    let alpha = self.cell_alpha(map_x as u32, map_y as u32, cell);
                     let hit_x = ox + dir_x * perp_dist;
                     let hit_y = oy + dir_y * perp_dist;
                     let tex_u = (hit_x - hit_x.floor()).abs();
@@ -373,7 +492,11 @@ impl Raycaster2D {
             if map_x < 0 || map_y < 0 || map_x >= self.width as i32 || map_y >= self.height as i32 {
                 return true;
             }
-            if self.cells[(map_y as u32 * self.width + map_x as u32) as usize] > 0 {
+            let cell = self.cells[(map_y as u32 * self.width + map_x as u32) as usize];
+            if cell > 0 {
+                if !self.blocks_visibility_at(map_x as u32, map_y as u32) {
+                    continue;
+                }
                 let perp = if side_dist_x - delta_dist_x < side_dist_y - delta_dist_y {
                     side_dist_x - delta_dist_x
                 } else {

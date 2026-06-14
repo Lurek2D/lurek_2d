@@ -32,6 +32,7 @@
 - Debug draw-to-image tools help tune effects and capture evidence artifacts.
 - Lifecycle chart output improves observability of spawn and decay dynamics.
 - Optional emitter seeds make particle playback deterministic for tests, evidence, and replay capture.
+- Runtime telemetry snapshots expose pool pressure, sub-emitter activity, attractor load, and age for dashboard workflows.
 - The module is useful for combat impacts, weather, ambient motion, and UI accents.
 - For users, it centralizes particle behavior rather than scattering custom emitter logic.
 - It balances artistic flexibility with deterministic, test-friendly controls.
@@ -214,6 +215,7 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LParticleSystem:getSizeVariation() -> number`: Returns size variation. This method is available to Lua scripts.
 - `LParticleSystem:getSizes() -> number[]`: Returns particle size keyframes. This method is available to Lua scripts.
 - `LParticleSystem:getSpeed() -> number`: Returns particle speed range. This method is available to Lua scripts.
+- `LParticleSystem:getStats() -> table`: Returns a telemetry snapshot for dashboard and debug workflows.
 - `LParticleSystem:getSpin() -> number`: Returns particle spin range. This method is available to Lua scripts.
 - `LParticleSystem:getSpinVariation() -> number`: Returns spin variation. This method is available to Lua scripts.
 - `LParticleSystem:getSpread() -> number`: Returns emission spread. This method is available to Lua scripts.

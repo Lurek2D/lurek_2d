@@ -72,6 +72,8 @@ pub struct ChartConfig {
     pub show_legend: bool,
     /// Width reserved for the legend panel in pixels.
     pub legend_width: f32,
+    /// Optional maximum number of points retained per series for streaming charts.
+    pub max_points: Option<usize>,
 }
 
 impl Default for ChartConfig {
@@ -92,6 +94,7 @@ impl Default for ChartConfig {
             show_grid: true,
             show_legend: false,
             legend_width: 80.0,
+            max_points: None,
         }
     }
 }

@@ -2,7 +2,7 @@
 
 use super::SharedState;
 use crate::mapblock::{
-    MapBlock, MapBlockConfig, MapBlockGenerator, MapGroup, MapOrientation, MapScript,
+    Edge, MapBlock, MapBlockConfig, MapBlockGenerator, MapGroup, MapOrientation, MapScript,
     NeighborRules, PlacementGrid, ScriptStep, StepType, TilesetRef,
 };
 use mlua::prelude::*;
@@ -54,6 +54,27 @@ struct LuaTilesetRef {
 /// Lua-facing generation result exposed by the lurek engine.
 struct LuaMapBlockResult {
     inner: Rc<crate::mapblock::MapBlockResult>,
+}
+
+fn parse_edge(edge_str: &str) -> LuaResult<Edge> {
+    match edge_str.to_lowercase().as_str() {
+        "north" | "n" => Ok(Edge::North),
+        "east" | "e" => Ok(Edge::East),
+        "south" | "s" => Ok(Edge::South),
+        "west" | "w" => Ok(Edge::West),
+        _ => Err(LuaError::RuntimeError(format!("Invalid edge: {edge_str}"))),
+    }
+}
+
+fn read_cell_list(table: LuaTable) -> LuaResult<Vec<(i32, i32)>> {
+    let mut cells = Vec::new();
+    for entry in table.sequence_values::<LuaTable>() {
+        let cell = entry?;
+        let x = cell.get::<_, i32>(1).or_else(|_| cell.get("x"))?;
+        let y = cell.get::<_, i32>(2).or_else(|_| cell.get("y"))?;
+        cells.push((x, y));
+    }
+    Ok(cells)
 }
 
 impl LuaUserData for LuaMapBlockConfig {
@@ -150,13 +171,7 @@ impl LuaUserData for LuaMapBlock {
         methods.add_method_mut(
             "setEdge",
             |_, this, (edge_str, segment, edge_type): (String, u32, u32)| {
-                let edge = match edge_str.to_lowercase().as_str() {
-                    "north" | "n" => crate::mapblock::block::Edge::North,
-                    "east" | "e" => crate::mapblock::block::Edge::East,
-                    "south" | "s" => crate::mapblock::block::Edge::South,
-                    "west" | "w" => crate::mapblock::block::Edge::West,
-                    _ => return Err(LuaError::RuntimeError(format!("Invalid edge: {edge_str}"))),
-                };
+                let edge = parse_edge(&edge_str)?;
                 this.inner.borrow_mut().set_edge(edge, segment, edge_type);
                 Ok(())
             },
@@ -181,9 +196,70 @@ impl LuaUserData for LuaMapBlock {
         /// Set block weight for random selection.
         /// @param | weight | number | Weight value (higher = more likely).
         methods.add_method_mut("setWeight", |_, this, weight: f32| {
-            this.inner.borrow_mut().weight = weight;
+            this.inner.borrow_mut().set_weight(weight);
             Ok(())
         });
+
+        // -- getWeight --
+        /// Get block weight for random selection.
+        /// @return | number | Weight value.
+        methods.add_method("getWeight", |_, this, ()| {
+            Ok(this.inner.borrow().get_weight())
+        });
+
+        // -- setFootprint --
+        /// Replace the placement footprint with a custom cell list.
+        /// @param | cells | table | Array of {x, y} cells.
+        methods.add_method_mut("setFootprint", |_, this, cells: LuaTable| {
+            let cells = read_cell_list(cells)?;
+            this.inner.borrow_mut().set_footprint(&cells);
+            Ok(())
+        });
+
+        // -- getFootprintCellCount --
+        /// Get the number of occupied footprint cells.
+        /// @return | integer | Occupied footprint cell count.
+        methods.add_method("getFootprintCellCount", |_, this, ()| {
+            Ok(this.inner.borrow().footprint().len())
+        });
+
+        // -- isFootprintCell --
+        /// Check whether a local footprint cell exists.
+        /// @param | x | integer | Cell X.
+        /// @param | y | integer | Cell Y.
+        /// @return | boolean | True if occupied by the footprint.
+        methods.add_method("isFootprintCell", |_, this, (x, y): (i32, i32)| {
+            Ok(this.inner.borrow().is_footprint_cell(x, y))
+        });
+
+        // -- setSocket --
+        /// Set a per-cell socket type for one edge of the footprint.
+        /// @param | x | integer | Footprint cell X.
+        /// @param | y | integer | Footprint cell Y.
+        /// @param | edge | string | Edge direction.
+        /// @param | edge_type | integer | Socket type identifier.
+        methods.add_method_mut(
+            "setSocket",
+            |_, this, (x, y, edge_str, edge_type): (i32, i32, String, u32)| {
+                let edge = parse_edge(&edge_str)?;
+                this.inner.borrow_mut().set_socket(x, y, edge, edge_type);
+                Ok(())
+            },
+        );
+
+        // -- getSocket --
+        /// Get a previously stored per-cell socket type.
+        /// @param | x | integer | Footprint cell X.
+        /// @param | y | integer | Footprint cell Y.
+        /// @param | edge | string | Edge direction.
+        /// @return | integer | Socket type or 0 when missing.
+        methods.add_method(
+            "getSocket",
+            |_, this, (x, y, edge_str): (i32, i32, String)| {
+                let edge = parse_edge(&edge_str)?;
+                Ok(this.inner.borrow().get_socket(x, y, edge).unwrap_or(0))
+            },
+        );
 
         // -- setEdgeOnly --
         /// Set whether block must be on map edge.
@@ -292,6 +368,7 @@ impl LuaUserData for LuaMapScript {
                     "fill_rect" | "fillrect" => StepType::FillRect,
                     "fill_edges" | "filledges" => StepType::FillEdges,
                     "auto_place" | "autoplace" => StepType::AutoPlace,
+                    "solve_shape" | "solveshape" => StepType::SolveShape,
                     _ => {
                         return Err(LuaError::RuntimeError(format!(
                             "Unknown step type: {step_type_str}"
@@ -313,9 +390,11 @@ impl LuaUserData for LuaMapScript {
                     }
                     if let Ok(x) = opts.get::<_, i32>("x") {
                         step.x = x;
+                        step.has_position = true;
                     }
                     if let Ok(y) = opts.get::<_, i32>("y") {
                         step.y = y;
+                        step.has_position = true;
                     }
                     if let Ok(w) = opts.get::<_, u32>("width") {
                         step.width = w;
@@ -355,6 +434,9 @@ impl LuaUserData for LuaMapScript {
                     }
                     if let Ok(l) = opts.get::<_, u32>("layer") {
                         step.layer = l;
+                    }
+                    if let Ok(tileset_id) = opts.get::<_, u32>("tileset_id") {
+                        step.tileset_id = tileset_id;
                     }
                     if let Ok(lv) = opts.get::<_, u32>("level") {
                         step.level = lv;
@@ -438,6 +520,15 @@ impl LuaUserData for LuaPlacementGrid {
             Ok(())
         });
 
+        // -- removePosition --
+        /// Remove an available position from the grid.
+        /// @param | x | integer | X coordinate.
+        /// @param | y | integer | Y coordinate.
+        methods.add_method_mut("removePosition", |_, this, (x, y): (i32, i32)| {
+            this.inner.borrow_mut().remove_position(x, y);
+            Ok(())
+        });
+
         // -- isAvailable --
         /// Check whether a placement grid position is currently available.
         /// @param | x | integer | X coordinate.
@@ -452,6 +543,15 @@ impl LuaUserData for LuaPlacementGrid {
         /// @return | integer | Number of available positions.
         methods.add_method("getAvailableCount", |_, this, ()| {
             Ok(this.inner.borrow().available_count())
+        });
+
+        // -- isEdgePosition --
+        /// Check whether a cell touches the placement-shape boundary.
+        /// @param | x | integer | X coordinate.
+        /// @param | y | integer | Y coordinate.
+        /// @return | boolean | True if the cell lies on the shape edge.
+        methods.add_method("isEdgePosition", |_, this, (x, y): (i32, i32)| {
+            Ok(this.inner.borrow().is_edge_position(x, y))
         });
 
         // -- clear --
@@ -478,14 +578,19 @@ impl LuaUserData for LuaMapBlockGenerator {
         /// Set the generator map shape using a list of tile positions.
         /// @param | positions | table | Array of {x, y} positions.
         methods.add_method_mut("setShape", |_, this, positions: LuaTable| {
-            let mut pos_vec = Vec::new();
-            for pair in positions.sequence_values::<LuaTable>() {
-                let pair = pair?;
-                let x: i32 = pair.get(1)?;
-                let y: i32 = pair.get(2)?;
-                pos_vec.push((x, y));
-            }
+            let pos_vec = read_cell_list(positions)?;
             this.inner.borrow_mut().set_shape(&pos_vec);
+            Ok(())
+        });
+
+        // -- setGrid --
+        /// Set the placement grid from a prepared PlacementGrid object.
+        /// @param | grid | PlacementGrid | Grid to clone into the generator.
+        methods.add_method_mut("setGrid", |_, this, grid: LuaAnyUserData| {
+            let lua_grid = grid.borrow::<LuaPlacementGrid>()?;
+            this.inner
+                .borrow_mut()
+                .set_grid(lua_grid.inner.borrow().clone());
             Ok(())
         });
 
@@ -616,6 +721,35 @@ impl LuaUserData for LuaMapBlockResult {
         /// Check if result is empty for this object.
         /// @return | boolean | True if no blocks placed.
         methods.add_method("isEmpty", |_, this, ()| Ok(this.inner.is_empty()));
+
+        // -- getPlacements --
+        /// Get placement summaries from the last generation run.
+        /// @return | table | Array of placement records.
+        methods.add_method("getPlacements", |lua, this, ()| {
+            let placements = lua.create_table()?;
+            for (index, placement) in this.inner.placements().iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.set("group_name", placement.group_name.clone())?;
+                entry.set("block_name", placement.block_name.clone())?;
+                entry.set("block_index", placement.block_index)?;
+                entry.set("grid_x", placement.grid_x)?;
+                entry.set("grid_y", placement.grid_y)?;
+                entry.set("level", placement.level)?;
+                entry.set("rotation", placement.rotation)?;
+                entry.set("mirrored", placement.mirrored)?;
+
+                let cells = lua.create_table()?;
+                for (cell_index, (x, y)) in placement.cells.iter().copied().enumerate() {
+                    let cell = lua.create_table()?;
+                    cell.set("x", x)?;
+                    cell.set("y", y)?;
+                    cells.set(cell_index + 1, cell)?;
+                }
+                entry.set("cells", cells)?;
+                placements.set(index + 1, entry)?;
+            }
+            Ok(placements)
+        });
     }
 }
 

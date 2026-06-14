@@ -9,8 +9,13 @@ use crate::render::BlendMode;
 
 /// Render-command generation for a fully built raycaster scene.
 impl RaycasterScene {
-    /// Build a `Vec<RenderCommand>` for the full scene: ceilings, floors, walls, then sprites back-to-front.
+    /// Build a `Vec<RenderCommand>` for the full scene: ceilings, floors, walls, then transparent entities back-to-front.
     pub fn generate_render_commands(&self) -> Vec<RenderCommand> {
+        enum TransparentItem<'a> {
+            Sprite(&'a crate::raycaster::scene::BillboardSprite),
+            Model(&'a crate::raycaster::scene::ModelMesh),
+        }
+
         let mut cmds = Vec::with_capacity(self.quad_count() + 2);
         cmds.push(RenderCommand::SetBlendMode(BlendMode::Alpha));
         for ceil in &self.ceilings {
@@ -85,14 +90,48 @@ impl RaycasterScene {
                 }
             }
         }
+        let mut transparent_items = Vec::with_capacity(self.sprites.len() + self.models.len());
         for sprite in &self.sprites {
-            cmds.push(RenderCommand::DrawTexturedQuad {
-                corners: sprite.corners,
-                uvs: sprite.uvs,
-                corner_w: [1.0, 1.0, 1.0, 1.0],
-                texture_key: sprite.texture_key,
-                color: sprite.light,
-            });
+            transparent_items.push(TransparentItem::Sprite(sprite));
+        }
+        for model in &self.models {
+            transparent_items.push(TransparentItem::Model(model));
+        }
+        transparent_items.sort_by(|a, b| {
+            let ad = match a {
+                TransparentItem::Sprite(sprite) => sprite.depth,
+                TransparentItem::Model(model) => model.depth,
+            };
+            let bd = match b {
+                TransparentItem::Sprite(sprite) => sprite.depth,
+                TransparentItem::Model(model) => model.depth,
+            };
+            bd.partial_cmp(&ad).unwrap_or(std::cmp::Ordering::Equal)
+        });
+        for item in transparent_items {
+            match item {
+                TransparentItem::Sprite(sprite) => {
+                    cmds.push(RenderCommand::DrawTexturedQuad {
+                        corners: sprite.corners,
+                        uvs: sprite.uvs,
+                        corner_w: [1.0, 1.0, 1.0, 1.0],
+                        texture_key: sprite.texture_key,
+                        color: sprite.light,
+                    });
+                }
+                TransparentItem::Model(model) => {
+                    cmds.push(RenderCommand::DrawMeshTransient {
+                        mesh: model.mesh.clone(),
+                        x: 0.0,
+                        y: 0.0,
+                        rotation: 0.0,
+                        sx: 1.0,
+                        sy: 1.0,
+                        ox: 0.0,
+                        oy: 0.0,
+                    });
+                }
+            }
         }
         cmds
     }

@@ -182,7 +182,7 @@ impl Skeleton {
     }
     /// Advance anim_time by dt and apply the current animation to bone poses; loops or stops at duration.
     pub fn update_animation(&mut self, dt: f32) {
-        if !self.anim_playing {
+        if !self.anim_playing || !dt.is_finite() || dt < 0.0 {
             return;
         }
         let anim_idx = match &self.current_animation {
@@ -197,6 +197,11 @@ impl Skeleton {
             let anim = &self.animations[anim_idx];
             (anim.duration, self.anim_loop)
         };
+        if !duration.is_finite() || duration <= 0.0 {
+            self.anim_time = 0.0;
+            self.anim_playing = false;
+            return;
+        }
         if looping && duration > 0.0 {
             self.anim_time %= duration;
         } else if self.anim_time >= duration {
@@ -295,7 +300,7 @@ impl Skeleton {
                     self.bones[i].world_scale_x = self.scale_x * local_sx;
                     self.bones[i].world_scale_y = self.scale_y * local_sy;
                 }
-                Some(pi) => {
+                Some(pi) if pi < i => {
                     let (pw_x, pw_y, pw_rot, pw_sx, pw_sy) = {
                         let p = &self.bones[pi];
                         (
@@ -315,6 +320,13 @@ impl Skeleton {
                     self.bones[i].world_rotation = pw_rot + local_rot;
                     self.bones[i].world_scale_x = pw_sx * local_sx;
                     self.bones[i].world_scale_y = pw_sy * local_sy;
+                }
+                Some(_) => {
+                    self.bones[i].world_x = self.x + local_x * self.scale_x;
+                    self.bones[i].world_y = self.y + local_y * self.scale_y;
+                    self.bones[i].world_rotation = local_rot;
+                    self.bones[i].world_scale_x = self.scale_x * local_sx;
+                    self.bones[i].world_scale_y = self.scale_y * local_sy;
                 }
             }
         }

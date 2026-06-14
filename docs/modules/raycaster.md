@@ -14,6 +14,7 @@
 - Depth-aware ordering prevents billboard leakage through wall columns.
 - Scene building composes walls, floors, ceilings, sprites, and optional mesh inserts.
 - Lighting combines ambient and point-light effects with occlusion checks.
+- Last-build diagnostics expose lighting sample counts and cache reuse for scene-build profiling.
 - Depth buffers track wall ownership per screen column.
 - GPU path emits render commands for shared backend composition.
 - CPU software path supports snapshots, tests, and tool previews.
@@ -80,6 +81,220 @@ end
 
 ---
 
+### `lurek.raycaster.buildMultiLevelScene`
+
+Builds a multilevel raycaster scene from a stack of plain Lua level tables.
+
+```lua
+lurek.raycaster.buildMultiLevelScene(params, levels, lights, sprites, wallTextures, models)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `params` | table | Scene params plus optional active_level. |
+| `levels` | table|[LMultiLevelGrid](#lmultilevelgrid) | Array of level tables or a persistent [LMultiLevelGrid](#lmultilevelgrid). |
+| `lights?` | table | Array of point-light tables or [LPointLight](#lpointlight) userdata values. |
+| `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an [LSpriteManager](#lspritemanager) whose sprites use their own optional level indices and default to active_level. |
+| `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
+| `models?` | table | Array of model instance tables {model, x, y, level?, rotation?, yaw?, z?, scale?}; instances default to `active_level`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total number of quads in the built scene. |
+
+**Example**
+
+```lua
+do
+    local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local floor_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local ceil_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local pit_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
+    local quad_count = lurek.raycaster.buildMultiLevelScene(
+        {
+            px = 0.5,
+            py = 1.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            active_level = 1,
+            sun_r = 0.9,
+            sun_g = 0.95,
+            sun_b = 1.0,
+            sun_intensity = 0.8,
+            sun_angle = 0.0,
+        },
+        {
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 0,
+                ceiling_height = 1,
+            },
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 1,
+                ceiling_height = 2,
+                floor_holes = {
+                    false, false, false, false,
+                    false, false, false, false,
+                    false, false, false, false,
+                    false, false, false, false,
+                },
+                floor_texture = wall_tex,
+                floor_cell_textures = {
+                    { x = 0, y = 0, texture = floor_tex },
+                },
+                ceiling_cell_textures = {
+                    { x = 0, y = 0, texture = ceil_tex },
+                },
+                lowered_floor_cells = {
+                    {
+                        x = 0,
+                        y = 0,
+                        texture = pit_tex,
+                        depth = 0.35,
+                        r = 0.8,
+                        g = 0.7,
+                        b = 0.6,
+                        blocked = true,
+                    },
+                },
+                wall_features = {
+                    {
+                        x = 1,
+                        y = 0,
+                        kind = "window",
+                        sill_height = 0.25,
+                        lintel_height = 0.8,
+                        alpha = 0.4,
+                    },
+                },
+            },
+        },
+        {},
+        {},
+        {},
+        {
+            { model = model, x = 2.5, y = 1.5, level = 1, yaw = math.pi / 6, z = 0.2, scale = 0.22 },
+        }
+    )
+
+    print("stacked quad count = " .. quad_count)
+end
+```
+
+---
+
+### `lurek.raycaster.buildMultiLevelSceneFromAdapter`
+
+Builds a multilevel raycaster scene from a stack of plain Lua level tables using a runtime scene adapter.
+
+```lua
+lurek.raycaster.buildMultiLevelSceneFromAdapter(params, levels, adapter, wallTextures)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `params` | table | Scene params plus optional active_level. |
+| `levels` | table|[LMultiLevelGrid](#lmultilevelgrid) | Array of level tables or a persistent [LMultiLevelGrid](#lmultilevelgrid). |
+| `adapter` | [LSceneAdapter](#lsceneadapter) | Runtime scene adapter providing lights, sprites, and models. |
+| `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total number of quads in the built scene. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(2.5, 1.5, "dynamic")
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodySprite(
+        body,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 21, level = 1, size = 1.0 }
+    )
+    adapter:bindBodyLight(body, 4.0, {
+        level = 1,
+        intensity = 1.0,
+        color = { 1.0, 0.85, 0.6 },
+    })
+    local quad_count = lurek.raycaster.buildMultiLevelSceneFromAdapter(
+        {
+            px = 0.5,
+            py = 1.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            active_level = 1,
+        },
+        {
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 0,
+                ceiling_height = 1,
+            },
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 1,
+                ceiling_height = 2,
+            },
+        },
+        adapter,
+        {}
+    )
+
+    print("stacked adapter quad count = " .. quad_count)
+end
+```
+
+---
+
 ### `lurek.raycaster.distanceShade`
 
 Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
@@ -112,6 +327,64 @@ do
     print("near = " .. string.format("%.2f", near))
     print("mid = " .. string.format("%.2f", mid))
     print("far = " .. string.format("%.2f", far))
+end
+```
+
+---
+
+### `lurek.raycaster.getLastBuildStats`
+
+Returns stats for the last stored raycaster scene build.
+
+```lua
+lurek.raycaster.getLastBuildStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table? | Nil if no raycaster scene has been built yet; otherwise a stats table. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.raycaster.new(8, 8)
+    local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    for i = 0, 7 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 7, 1)
+        map:setCell(0, i, 1)
+        map:setCell(7, i, 1)
+    end
+    for y = 1, 6 do
+        for x = 1, 6 do
+            map:setCeilingTextureCell(x, y, wall_tex)
+        end
+    end
+
+    map:buildScene({
+        px = 4,
+        py = 4,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 64,
+        max_dist = 10,
+        screen_w = 320,
+        screen_h = 200,
+    }, {
+        lurek.raycaster.newPointLight(4.0, 4.0, 1.0, 0.9, 0.8, 4.0, 1.25),
+    }, {}, {
+        [1] = wall_tex,
+    })
+
+    local stats = lurek.raycaster.getLastBuildStats()
+    if stats then
+        print("lighting samples = " .. stats.lightingSamples)
+        print("lighting cache hits = " .. stats.lightingCacheHits)
+        print("lighting cache misses = " .. stats.lightingCacheMisses)
+    end
 end
 ```
 
@@ -251,12 +524,49 @@ end
 
 ---
 
+### `lurek.raycaster.newMultiLevelGrid`
+
+Creates a persistent multi-level raycaster world from plain Lua level tables or as an empty container.
+
+```lua
+lurek.raycaster.newMultiLevelGrid(levels)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `levels?` | table|[LMultiLevelGrid](#lmultilevelgrid) | Optional array of level tables or another [LMultiLevelGrid](#lmultilevelgrid) to clone. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LMultiLevelGrid](#lmultilevelgrid) | Persistent multi-level world handle. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        {
+            width = 2,
+            height = 2,
+            cells = { 0, 0, 0, 0 },
+        },
+    })
+    print("persistent grid levels = " .. grid:levelCount())
+end
+```
+
+---
+
 ### `lurek.raycaster.newPointLight`
 
 Creates a new point light with position, color, radius, and intensity.
 
 ```lua
-lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity)
+lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity, level)
 ```
 
 **Parameters**
@@ -270,6 +580,7 @@ lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity)
 | `b` | number | Blue channel (0.0..1.0). |
 | `radius` | number | Light falloff radius in world units. |
 | `intensity` | number | Brightness multiplier. |
+| `level?` | number | Optional multilevel slice index that owns this light. |
 
 **Returns**
 
@@ -281,12 +592,85 @@ lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity)
 
 ```lua
 do
-    local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 4.0, 1.5)
+    local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 4.0, 1.5, 1)
     local r, g, b = torch:color()
 
     print("pos = " .. torch:x() .. "," .. torch:y())
     print("color = " .. r .. "," .. g .. "," .. b)
     print("radius = " .. torch:radius() .. " intensity = " .. torch:intensity())
+    print("level = " .. tostring(torch:level()))
+end
+```
+
+---
+
+### `lurek.raycaster.newSceneAdapter`
+
+Creates a runtime adapter for sprites, lights, and models that can follow physics bodies.
+
+```lua
+lurek.raycaster.newSceneAdapter()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LSceneAdapter](#lsceneadapter) | A new empty scene adapter. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(5.0, 4.0, "dynamic")
+    body:setAngle(math.pi / 2)
+
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodySprite(
+        body,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 7, size = 1.3, level = 1, offset_x = 0.5 }
+    )
+    adapter:bindBodyLight(body, 4.0, {
+        intensity = 1.2,
+        color = { 1.0, 0.85, 0.5 },
+        level = 1,
+        offset_y = 0.4,
+    })
+    adapter:bindBodyModel(
+        body,
+        lurek.render.loadModel("content/examples/assets/models/sample_tank.obj"),
+        { id = 8, level = 1, yaw_offset = 0.2, z = 0.15, scale = 0.22 }
+    )
+
+    body:setPosition(6.0, 4.5)
+    local inputs = adapter:sceneInputs()
+    local demo_map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        demo_map:setCell(i, 0, 1)
+        demo_map:setCell(i, 15, 1)
+        demo_map:setCell(0, i, 1)
+        demo_map:setCell(15, i, 1)
+    end
+    local params = {
+        px = 4.5,
+        py = 4.5,
+        angle = 0.0,
+        fov = math.pi / 3,
+        rays = 32,
+        max_dist = 16.0,
+        screen_w = 160,
+        screen_h = 100,
+    }
+    local quad_count = demo_map:buildSceneFromAdapter(params, adapter, {})
+    local pick = demo_map:pickScreenFromAdapter(80, 50, params, adapter)
+    print("scene adapter sprites = " .. #inputs.sprites)
+    print("scene adapter lights = " .. #inputs.lights)
+    print("scene adapter models = " .. #inputs.models)
+    print("sprite pos = " .. string.format("%.2f,%.2f", inputs.sprites[1].x, inputs.sprites[1].y))
+    print("adapter buildScene quads = " .. quad_count)
+    print("adapter pick = " .. tostring(pick and pick.surface or "nil"))
 end
 ```
 
@@ -312,7 +696,7 @@ lurek.raycaster.newSpriteManager()
 do
     local sprites = lurek.raycaster.newSpriteManager()
     local barrel = sprites:add(5.5, 3.5, "content/examples/assets/images/sample_texture.png", 1.0)
-    local torch = sprites:add(8.5, 2.5, "content/examples/assets/images/sample_texture.png", 0.5)
+    local torch = sprites:add(8.5, 2.5, "content/examples/assets/images/sample_texture.png", 0.5, 1)
     local enemy = sprites:add(10.5, 7.5, "content/examples/assets/images/sample_texture.png", 1.2)
 
     sprites:setPosition(enemy, 11, 8)
@@ -321,6 +705,209 @@ do
 
     print("torch id = " .. torch)
     print("enemy id = " .. enemy)
+end
+```
+
+---
+
+### `lurek.raycaster.pickScreenMultiLevel`
+
+Resolves a screen-space click against a stack of plain Lua level tables and returns the owning level.
+
+```lua
+lurek.raycaster.pickScreenMultiLevel(sx, sy, params, levels, wallTextures, sprites, models)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen X in pixels. |
+| `sy` | number | Screen Y in pixels. |
+| `params` | table | Camera params plus optional active_level. |
+| `levels` | table|[LMultiLevelGrid](#lmultilevelgrid) | Array of level tables or a persistent [LMultiLevelGrid](#lmultilevelgrid). |
+| `wallTextures?` | table | Optional map of cell_value -> texture for wall surfaces. |
+| `sprites?` | table|[LSpriteManager](#lspritemanager) | Optional sprite tables or sprite manager used to resolve clickable billboard hits. |
+| `models?` | table | Optional model instance tables used to resolve clickable projected model hits. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors the owning wall-feature descriptor and adds `section` for the solid band/panel that was hit. |
+
+**Example**
+
+```lua
+do
+    local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local hit = lurek.raycaster.pickScreenMultiLevel(
+        160,
+        190,
+        {
+            px = 1.5,
+            py = 1.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            active_level = 1,
+            camera_height = 0.5,
+        },
+        {
+            {
+                width = 8,
+                height = 8,
+                cells = {
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                },
+                floor_offset = 0,
+                ceiling_height = 1,
+                ceiling_holes = {
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, true, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                },
+            },
+            {
+                width = 8,
+                height = 8,
+                cells = {
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                },
+                floor_offset = 1,
+                ceiling_height = 2,
+                floor_holes = {
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, true, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                },
+                floor_texture = wall_tex,
+            },
+        },
+        {}
+    )
+
+    if hit then
+        print("stacked pick level = " .. hit.level)
+        print("stacked pick surface = " .. hit.surface)
+        print("stacked pick cell = " .. hit.x .. "," .. hit.y)
+    end
+end
+```
+
+---
+
+### `lurek.raycaster.pickScreenMultiLevelFromAdapter`
+
+Resolves a screen-space click against a stack of plain Lua level tables using a runtime scene adapter.
+
+```lua
+lurek.raycaster.pickScreenMultiLevelFromAdapter(sx, sy, params, levels, wallTextures, adapter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen X in pixels. |
+| `sy` | number | Screen Y in pixels. |
+| `params` | table | Camera params plus optional active_level. |
+| `levels` | table|[LMultiLevelGrid](#lmultilevelgrid) | Array of level tables or a persistent [LMultiLevelGrid](#lmultilevelgrid). |
+| `wallTextures?` | table | Optional map of cell_value -> texture for wall surfaces. |
+| `adapter` | [LSceneAdapter](#lsceneadapter) | Runtime scene adapter providing sprites and models. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors the owning wall-feature descriptor and adds `section` for the solid band/panel that was hit. |
+
+**Example**
+
+```lua
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(2.5, 1.5, "dynamic")
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodySprite(
+        body,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 22, level = 1, size = 1.0 }
+    )
+    local hit = lurek.raycaster.pickScreenMultiLevelFromAdapter(
+        160,
+        100,
+        {
+            px = 0.5,
+            py = 1.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            active_level = 1,
+        },
+        {
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 0,
+                ceiling_height = 1,
+            },
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 1,
+                ceiling_height = 2,
+            },
+        },
+        {},
+        adapter
+    )
+
+    if hit then
+        print("adapter stacked pick = " .. hit.surface .. " @ level " .. hit.level)
+    end
 end
 ```
 
@@ -378,8 +965,10 @@ end
 
 - [LDoorManager](#ldoormanager)
 - [LHeightMap](#lheightmap)
+- [LMultiLevelGrid](#lmultilevelgrid)
 - [LPointLight](#lpointlight)
 - [LRaycaster](#lraycaster)
+- [LSceneAdapter](#lsceneadapter)
 - [LSpriteManager](#lspritemanager)
 
 ## LDoorManager
@@ -845,6 +1434,1209 @@ end
 
 ---
 
+## LMultiLevelGrid
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LMultiLevelGrid:activeLevel`
+
+Returns the currently active level index used for stacked camera height.
+
+```lua
+LMultiLevelGrid:activeLevel()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Active level index. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 1, ceiling_height = 2 },
+    })
+    grid:setActiveLevel(1)
+    print("active level = " .. grid:activeLevel())
+end
+```
+
+---
+
+#### `LMultiLevelGrid:addLevel`
+
+Appends one level described with the same table format accepted by buildMultiLevelScene.
+
+```lua
+LMultiLevelGrid:addLevel(level)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `level` | table | Level table {width, height, cells, floor_offset?, ceiling_height?, floor_holes?, ceiling_holes?, floor_texture?, ceiling_texture?, floor_cell_textures?, ceiling_cell_textures?, lowered_floor_cells?, wall_features?}. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Zero-based level index of the appended level. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid()
+    local index = grid:addLevel({
+        width = 2,
+        height = 2,
+        cells = { 0, 0, 0, 0 },
+    })
+    print("added level = " .. index)
+end
+```
+
+---
+
+#### `LMultiLevelGrid:buildScene`
+
+Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.
+
+```lua
+LMultiLevelGrid:buildScene(params, lights, sprites, wallTextures)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `params` | table | Scene params for the current camera. |
+| `lights?` | table | Array of point-light tables or [LPointLight](#lpointlight) userdata values. |
+| `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of level sprite tables or an [LSpriteManager](#lspritemanager). |
+| `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total number of quads in the built scene. |
+
+**Example**
+
+```lua
+do
+    local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        {
+            width = 2,
+            height = 2,
+            cells = { 0, 1, 0, 0 },
+            floor_offset = 1,
+            ceiling_height = 2,
+            floor_texture = wall_tex,
+        },
+    })
+    grid:setActiveLevel(1)
+    local count = grid:buildScene(
+        {
+            px = 0.5,
+            py = 0.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            camera_height = 0.5,
+        },
+        {},
+        {},
+        { [1] = wall_tex }
+    )
+    print("persistent scene quads = " .. count)
+end
+```
+
+---
+
+#### `LMultiLevelGrid:buildSceneFromAdapter`
+
+Builds a textured multilevel raycaster scene from a runtime scene adapter that may follow physics bodies.
+
+```lua
+LMultiLevelGrid:buildSceneFromAdapter(params, adapter, wallTextures)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `params` | table | Scene params for the current camera. |
+| `adapter` | [LSceneAdapter](#lsceneadapter) | Runtime scene adapter providing lights, sprites, and models. |
+| `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total number of quads in the built scene. |
+
+---
+
+#### `LMultiLevelGrid:clearWallFeatureCell`
+
+Removes any per-cell wall feature override from the active level.
+
+```lua
+LMultiLevelGrid:clearWallFeatureCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
+    })
+    grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
+    grid:clearWallFeatureCell(0, 0)
+    print("feature cleared = " .. tostring(grid:getWallFeatureCell(0, 0) == nil))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:getCeilingHeight`
+
+Returns the ceiling height of the active level in world units.
+
+```lua
+LMultiLevelGrid:getCeilingHeight()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Active-level ceiling height. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 0.5, ceiling_height = 2.25 },
+    })
+    print("ceiling height = " .. grid:getCeilingHeight())
+end
+```
+
+---
+
+#### `LMultiLevelGrid:getCeilingTexture`
+
+Returns the default ceiling texture id used by the active level, or nil when none is set.
+
+```lua
+LMultiLevelGrid:getCeilingTexture()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Raw texture id or nil. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setCeilingTexture(lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("ceiling texture id = " .. tostring(grid:getCeilingTexture()))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:getCeilingTextureCell`
+
+Returns the per-cell ceiling texture id assigned on the active level, or nil if none is set.
+
+```lua
+LMultiLevelGrid:getCeilingTextureCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Raw texture id or nil. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setCeilingTextureCell(0, 0, lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("ceiling(0,0) texture id = " .. tostring(grid:getCeilingTextureCell(0, 0)))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:getCell`
+
+Returns the wall type value at a grid cell on the active level.
+
+```lua
+LMultiLevelGrid:getCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Cell value (0 = empty, 1+ = wall type). |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 5, 0, 0 } },
+    })
+    grid:setActiveLevel(1)
+    print("active cell = " .. grid:getCell(1, 0))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:getFloorOffset`
+
+Returns the floor height offset of the active level in world units.
+
+```lua
+LMultiLevelGrid:getFloorOffset()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Active-level floor offset. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 1.25, ceiling_height = 2.5 },
+    })
+    grid:setActiveLevel(1)
+    print("floor offset = " .. grid:getFloorOffset())
+end
+```
+
+---
+
+#### `LMultiLevelGrid:getFloorTexture`
+
+Returns the default floor texture id used by the active level, or nil when none is set.
+
+```lua
+LMultiLevelGrid:getFloorTexture()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Raw texture id or nil. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setFloorTexture(lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("floor texture id = " .. tostring(grid:getFloorTexture()))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:getFloorTextureCell`
+
+Returns the per-cell floor texture id assigned on the active level, or nil if none is set.
+
+```lua
+LMultiLevelGrid:getFloorTextureCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Raw texture id or nil. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setFloorTextureCell(1, 0, lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("floor(1,0) texture id = " .. tostring(grid:getFloorTextureCell(1, 0)))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:getLoweredFloorCell`
+
+Returns the lowered-floor configuration at an active-level cell, or nil if the cell is normal.
+
+```lua
+LMultiLevelGrid:getLoweredFloorCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Table {texture, depth, r, g, b, blocked} or nil. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 4, height = 4, cells = {
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+        } },
+    })
+    grid:setLoweredFloorCell(1, 1, {
+        texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        depth = 0.25,
+        blocked = true,
+    })
+    local pit = grid:getLoweredFloorCell(1, 1)
+    print("pit blocked = " .. tostring(pit.blocked))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:getWallFeatureCell`
+
+Returns the wall feature attached to an active-level cell, or nil when none is set.
+
+```lua
+LMultiLevelGrid:getWallFeatureCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Feature table {kind, alpha, ...} or nil. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
+    })
+    print("feature absent = " .. tostring(grid:getWallFeatureCell(1, 1) == nil))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:isCeilingHole`
+
+Returns true when an active-level cell is open to the level above.
+
+```lua
+LMultiLevelGrid:isCeilingHole(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the ceiling is open at this cell. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, ceiling_holes = { false, false, false, true } },
+    })
+    grid:setActiveLevel(1)
+    print("imported ceiling hole = " .. tostring(grid:isCeilingHole(1, 1)))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:isFloorHole`
+
+Returns true when an active-level cell is open to the level below.
+
+```lua
+LMultiLevelGrid:isFloorHole(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the floor is open at this cell. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_holes = { false, true, false, false } },
+    })
+    grid:setActiveLevel(1)
+    print("imported floor hole = " .. tostring(grid:isFloorHole(1, 0)))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:levelCount`
+
+Returns the total number of stored levels.
+
+```lua
+LMultiLevelGrid:levelCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Level count. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid()
+    grid:addLevel({
+        width = 2,
+        height = 2,
+        cells = { 0, 0, 0, 0 },
+    })
+    print("level count = " .. grid:levelCount())
+end
+```
+
+---
+
+#### `LMultiLevelGrid:pickScreen`
+
+Resolves a screen-space click against this persistent multi-level world and returns the owning level.
+
+```lua
+LMultiLevelGrid:pickScreen(sx, sy, params, wallTextures, sprites, models)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen X in pixels. |
+| `sy` | number | Screen Y in pixels. |
+| `params` | table | Camera params for the current frame. |
+| `wallTextures?` | table | Optional map of cell_value -> texture for wall surfaces. |
+| `sprites?` | table|[LSpriteManager](#lspritemanager) | Optional sprite tables or sprite manager used to resolve clickable billboard hits. |
+| `models?` | table | Optional model instance tables used to resolve clickable projected model hits. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors `getWallFeatureCell()` and adds `section` for the solid band/panel that was hit. |
+
+**Example**
+
+```lua
+do
+    local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        {
+            width = 8,
+            height = 8,
+            cells = {
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+            },
+        },
+        {
+            width = 8,
+            height = 8,
+            cells = {
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 1, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+            },
+            floor_offset = 1,
+            ceiling_height = 2,
+        },
+    })
+    grid:setActiveLevel(1)
+    local hit = grid:pickScreen(
+        160,
+        100,
+        {
+            px = 1.5,
+            py = 2.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            camera_height = 0.5,
+        },
+        { [1] = wall_tex }
+    )
+    if hit then
+        print("persistent pick = " .. hit.surface .. " @ level " .. hit.level)
+    end
+end
+```
+
+---
+
+#### `LMultiLevelGrid:pickScreenFromAdapter`
+
+Resolves a screen-space click against this multilevel world using a runtime scene adapter.
+
+```lua
+LMultiLevelGrid:pickScreenFromAdapter(sx, sy, params, wallTextures, adapter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen X in pixels. |
+| `sy` | number | Screen Y in pixels. |
+| `params` | table | Camera params for the current frame. |
+| `wallTextures?` | table | Optional map of cell_value -> texture for wall surfaces. |
+| `adapter` | [LSceneAdapter](#lsceneadapter) | Runtime scene adapter providing sprites and models. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Pick result or nil when nothing was hit. Wall hits may also include `wall_height` plus `feature = {kind, section, ...}` for half walls, windows, and doors. |
+
+---
+
+#### `LMultiLevelGrid:setActiveLevel`
+
+Sets the currently active level index used for stacked camera height.
+
+```lua
+LMultiLevelGrid:setActiveLevel(level)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `level` | number | Zero-based active level index. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 1, ceiling_height = 2 },
+    })
+    grid:setActiveLevel(1)
+    print("active after set = " .. grid:activeLevel())
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setCeilingHeight`
+
+Sets the ceiling height of the active level in world units.
+
+```lua
+LMultiLevelGrid:setCeilingHeight(height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `height` | number | New ceiling height in world units. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 0.5, ceiling_height = 1.5 },
+    })
+    grid:setCeilingHeight(0.55)
+    print("clamped ceiling height = " .. grid:getCeilingHeight())
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setCeilingHole`
+
+Sets whether an active-level cell is open to the level above.
+
+```lua
+LMultiLevelGrid:setCeilingHole(x, y, hole)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `hole` | boolean | True when the ceiling should be open at this cell. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setActiveLevel(1)
+    grid:setCeilingHole(1, 1, true)
+    print("ceiling hole after set = " .. tostring(grid:isCeilingHole(1, 1)))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setCeilingTexture`
+
+Sets the default ceiling texture used by the active level. Pass nil to clear it.
+
+```lua
+LMultiLevelGrid:setCeilingTexture(texture)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `texture?` | [LImage](render.md#limage) | Texture image, integer id, or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    local ceil_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    grid:setCeilingTexture(ceil_tex)
+    print("default ceiling texture = " .. tostring(grid:getCeilingTexture()))
+    grid:setCeilingTexture(nil)
+    print("default ceiling cleared = " .. tostring(grid:getCeilingTexture() == nil))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setCeilingTextureCell`
+
+Assigns a per-cell ceiling texture override on the active level. Pass nil to remove the override.
+
+```lua
+LMultiLevelGrid:setCeilingTextureCell(x, y, texture)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `texture?` | [LImage](render.md#limage) | Texture image, integer id, or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setCeilingTextureCell(0, 1, lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("ceiling cell texture = " .. tostring(grid:getCeilingTextureCell(0, 1)))
+    grid:setCeilingTextureCell(0, 1, nil)
+    print("ceiling cell cleared = " .. tostring(grid:getCeilingTextureCell(0, 1) == nil))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setCell`
+
+Sets the wall type value at a grid cell on the active level. Non-zero values are solid walls.
+
+```lua
+LMultiLevelGrid:setCell(x, y, val)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `val` | number | Wall type (0 = empty, 1+ = wall texture index). |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setActiveLevel(1)
+    grid:setCell(1, 0, 7)
+    print("active cell after set = " .. grid:getCell(1, 0))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setDoorCell`
+
+Attaches a sliding door feature to a blocking cell on the active level.
+
+```lua
+LMultiLevelGrid:setDoorCell(x, y, direction, openAmount, alpha)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `direction` | string | "horizontal" or "vertical". |
+| `openAmount` | number | Door open amount, 0.0..1.0. |
+| `alpha?` | number | Optional alpha multiplier. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
+    })
+    grid:setDoorCell(0, 0, "vertical", 0.6, 0.9)
+    print("door open amount = " .. grid:getWallFeatureCell(0, 0).open_amount)
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setFloorHole`
+
+Sets whether an active-level cell is open to the level below.
+
+```lua
+LMultiLevelGrid:setFloorHole(x, y, hole)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `hole` | boolean | True when the floor should be open at this cell. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setActiveLevel(1)
+    grid:setFloorHole(1, 0, true)
+    print("floor hole after set = " .. tostring(grid:isFloorHole(1, 0)))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setFloorOffset`
+
+Sets the floor height offset of the active level in world units.
+
+```lua
+LMultiLevelGrid:setFloorOffset(offset)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `offset` | number | New floor offset in world units. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 0, ceiling_height = 1 },
+    })
+    grid:setFloorOffset(0.75)
+    print("updated floor offset = " .. grid:getFloorOffset())
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setFloorTexture`
+
+Sets the default floor texture used by the active level. Pass nil to clear it.
+
+```lua
+LMultiLevelGrid:setFloorTexture(texture)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `texture?` | [LImage](render.md#limage) | Texture image, integer id, or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    local floor_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    grid:setFloorTexture(floor_tex)
+    print("default floor texture = " .. tostring(grid:getFloorTexture()))
+    grid:setFloorTexture(nil)
+    print("default floor cleared = " .. tostring(grid:getFloorTexture() == nil))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setFloorTextureCell`
+
+Assigns a per-cell floor texture override on the active level. Pass nil to remove the override.
+
+```lua
+LMultiLevelGrid:setFloorTextureCell(x, y, texture)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `texture?` | [LImage](render.md#limage) | Texture image, integer id, or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setFloorTextureCell(1, 1, lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("floor cell texture = " .. tostring(grid:getFloorTextureCell(1, 1)))
+    grid:setFloorTextureCell(1, 1, nil)
+    print("floor cell cleared = " .. tostring(grid:getFloorTextureCell(1, 1) == nil))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setHalfWallCell`
+
+Attaches a half-height wall feature to a blocking cell on the active level.
+
+```lua
+LMultiLevelGrid:setHalfWallCell(x, y, height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `height` | number | Solid wall height from floor, 0.0..1.0. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
+    })
+    grid:setHalfWallCell(0, 0, 0.5)
+    print("half feature kind = " .. grid:getWallFeatureCell(0, 0).kind)
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setLoweredFloorCell`
+
+Marks an active-level cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
+
+```lua
+LMultiLevelGrid:setLoweredFloorCell(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `opts?` | table | Options table {texture, depth?, r?, g?, b?, blocked?} or nil to clear. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 4, height = 4, cells = {
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+        } },
+    })
+    grid:setLoweredFloorCell(2, 2, {
+        texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        depth = 0.3,
+        r = 0.8,
+        g = 0.7,
+        b = 0.6,
+        blocked = false,
+    })
+    local pit = grid:getLoweredFloorCell(2, 2)
+    print("pit depth = " .. pit.depth)
+    grid:setLoweredFloorCell(2, 2, nil)
+    print("pit cleared = " .. tostring(grid:getLoweredFloorCell(2, 2) == nil))
+end
+```
+
+---
+
+#### `LMultiLevelGrid:setWindowCell`
+
+Attaches a window feature to a blocking cell on the active level, leaving a visible opening between sill and lintel.
+
+```lua
+LMultiLevelGrid:setWindowCell(x, y, sillHeight, lintelHeight, alpha)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `sillHeight` | number | Bottom of the opening from the floor, 0.0..1.0. |
+| `lintelHeight` | number | Top of the opening from the floor, 0.0..1.0. |
+| `alpha?` | number | Wall alpha multiplier for the solid bands. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
+    })
+    grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
+    print("window sill = " .. grid:getWallFeatureCell(0, 0).sill_height)
+end
+```
+
+---
+
+#### `LMultiLevelGrid:type`
+
+Returns the type name of this object ("[LMultiLevelGrid](#lmultilevelgrid)").
+
+```lua
+LMultiLevelGrid:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Type name string. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid()
+    print("persistent type = " .. grid:type())
+end
+```
+
+---
+
+#### `LMultiLevelGrid:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LMultiLevelGrid:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to test against. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if this object is of the given type. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.raycaster.newMultiLevelGrid()
+    print("persistent typeOf = " .. tostring(grid:typeOf("LMultiLevelGrid")))
+end
+```
+
+---
+
 ## LPointLight
 
 ### Type Fields
@@ -908,6 +2700,31 @@ end
 
 ---
 
+#### `LPointLight:level`
+
+Returns the optional multilevel slice index that owns this light.
+
+```lua
+LPointLight:level()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Level index, or nil when this light is global across levels. |
+
+**Example**
+
+```lua
+do
+    local light = lurek.raycaster.newPointLight(1, 1, 1, 1, 1, 2, 0.5, 3)
+    print("light level = " .. tostring(light:level()))
+end
+```
+
+---
+
 #### `LPointLight:radius`
 
 Returns the light's falloff radius in world units.
@@ -939,7 +2756,7 @@ end
 Overwrites all properties of this point light in a single call.
 
 ```lua
-LPointLight:set(x, y, r, g, b, radius, intensity)
+LPointLight:set(x, y, r, g, b, radius, intensity, level)
 ```
 
 **Parameters**
@@ -953,18 +2770,48 @@ LPointLight:set(x, y, r, g, b, radius, intensity)
 | `b` | number | Blue color channel (0.0..1.0). |
 | `radius` | number | Falloff radius in world units. |
 | `intensity` | number | Brightness multiplier. |
+| `level?` | number | Optional multilevel slice index that owns this light. |
 
 **Example**
 
 ```lua
 do
     local light = lurek.raycaster.newPointLight(2, 2, 1, 1, 1, 3, 1.0)
-    light:set(8, 8, 0, 0, 1, 6, 2.0)
+    light:set(8, 8, 0, 0, 1, 6, 2.0, 2)
     local r, g, b = light:color()
 
     print("pos = " .. light:x() .. "," .. light:y())
     print("color = " .. r .. "," .. g .. "," .. b)
     print("radius = " .. light:radius() .. " intensity = " .. light:intensity())
+    print("level = " .. tostring(light:level()))
+end
+```
+
+---
+
+#### `LPointLight:setLevel`
+
+Updates the optional multilevel slice index that owns this light.
+
+```lua
+LPointLight:setLevel(level)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `level?` | number | Level index, or nil to let this light affect every level. |
+
+**Example**
+
+```lua
+do
+    local light = lurek.raycaster.newPointLight(1, 1, 1, 1, 1, 2, 0.5)
+    light:setLevel(1)
+    print("light level after set = " .. tostring(light:level()))
+    light:setLevel(nil)
+    print("light level after clear = " .. tostring(light:level()))
 end
 ```
 
@@ -1087,6 +2934,46 @@ end
 
 ### Type Methods
 
+#### `LRaycaster:applyDoorManager`
+
+Synchronizes animated doors from an `[LDoorManager](#ldoormanager)` into this map's per-cell wall features.
+
+```lua
+LRaycaster:applyDoorManager(doors, alpha)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `doors` | [LDoorManager](#ldoormanager) | Door manager holding animated open amounts. |
+| `alpha?` | number | Optional alpha multiplier for the synchronized door slabs. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.raycaster.new(8, 8)
+    local doors = lurek.raycaster.newDoorManager()
+    map:setCell(3, 3, 2)
+
+    local id = doors:addDoor(3, 3, "vertical", 1.0)
+    map:applyDoorManager(doors)
+    print("closed blocked = " .. tostring(map:isBlocked(3, 3)))
+
+    doors:openDoor(id)
+    doors:update(1.0)
+    map:applyDoorManager(doors, 0.8)
+
+    local feature = map:getWallFeatureCell(3, 3)
+    print("kind = " .. feature.kind)
+    print("blocked after open = " .. tostring(map:isBlocked(3, 3)))
+    print("open amount = " .. string.format("%.2f", feature.open_amount))
+end
+```
+
+---
+
 #### `LRaycaster:buildMinimapWindow`
 
 Generates a grid of minimap tile samples around a center point with lighting info.
@@ -1103,7 +2990,7 @@ LRaycaster:buildMinimapWindow(centerX, centerY, radius, ambient, lights)
 | `centerY` | number | Center Y in world coordinates. |
 | `radius` | number | Tile radius around the center to sample. |
 | `ambient` | number | Ambient light level (0.0..1.0). |
-| `lights?` | table | Array of point-light tables. |
+| `lights?` | table | Array of point-light tables or [LPointLight](#lpointlight) userdata values. |
 
 **Returns**
 
@@ -1152,8 +3039,8 @@ LRaycaster:buildScene(params, lights, sprites, wallTextures)
 | Name | Type | Description |
 |------|------|-------------|
 | `params` | table | Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}. |
-| `lights?` | table | Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}. |
-| `sprites?` | table | Array of sprite tables {x, y, texture, size?}. |
+| `lights?` | table | Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or [LPointLight](#lpointlight) userdata values. |
+| `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an [LSpriteManager](#lspritemanager) with integer/[LImage](render.md#limage) textures. |
 | `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
 
 **Returns**
@@ -1186,21 +3073,65 @@ do
         max_dist = 16,
         screen_w = 320,
         screen_h = 200,
+        sun_r = 0.75,
+        sun_g = 0.8,
+        sun_b = 1.0,
+        sun_intensity = 0.85,
+        sun_angle = 0.0,
+        roof_darkness = 0.35,
     }
     local lights = {
         { x = 8, y = 8, r = 1.0, g = 0.9, b = 0.8, radius = 4.0, intensity = 1.5 },
     }
     local sprites = {
-        { x = 10.5, y = 8.0, texture = sprite_tex, size = 1.0 },
+        {
+            x = 10.5,
+            y = 8.0,
+            size = 1.0,
+            angle = math.pi,
+            front_texture = sprite_tex,
+            right_texture = sprite_tex,
+            back_texture = sprite_tex,
+            left_texture = sprite_tex,
+        },
     }
     local wall_textures = {
         [1] = wall_tex,
     }
     local quad_count = map:buildScene(params, lights, sprites, wall_textures)
+    local managed = lurek.raycaster.newSpriteManager()
+    managed:addDirectional(10.5, 8.0, sprite_tex, sprite_tex, sprite_tex, sprite_tex, math.pi, 1.0)
+    local managed_quad_count = map:buildScene(params, lights, managed, wall_textures)
 
     print("quad count = " .. quad_count)
+    print("managed quad count = " .. managed_quad_count)
+    print("directional sprite count = " .. #sprites)
 end
 ```
+
+---
+
+#### `LRaycaster:buildSceneFromAdapter`
+
+Builds a textured raycaster scene from a runtime scene adapter that may follow physics bodies.
+
+```lua
+LRaycaster:buildSceneFromAdapter(params, adapter, wallTextures)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `params` | table | Scene params (same as buildScene). |
+| `adapter` | [LSceneAdapter](#lsceneadapter) | Runtime scene adapter providing lights, sprites, and models. |
+| `wallTextures?` | table | Map of cell_value -> texture for wall surfaces. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Total number of quads in the built scene. |
 
 ---
 
@@ -1217,10 +3148,10 @@ LRaycaster:buildSceneWithModels(params, lights, sprites, wallTextures, models)
 | Name | Type | Description |
 |------|------|-------------|
 | `params` | table | Scene params (same as buildScene). |
-| `lights?` | table | Array of point-light tables. |
-| `sprites?` | table | Array of sprite tables. |
+| `lights?` | table | Array of point-light tables or [LPointLight](#lpointlight) userdata values. |
+| `sprites?` | table|[LSpriteManager](#lspritemanager) | Array of sprite tables with billboard or 4-direction textures, or an [LSpriteManager](#lspritemanager) with integer/[LImage](render.md#limage) textures. |
 | `wallTextures?` | table | Map of cell_value -> texture. |
-| `models?` | table | Array of model instance tables {model, x, y, rotation?, scale?}. |
+| `models?` | table | Array of model instance tables {model, x, y, rotation?, yaw?, z?, scale?}. |
 
 **Returns**
 
@@ -1233,6 +3164,7 @@ LRaycaster:buildSceneWithModels(params, lights, sprites, wallTextures, models)
 ```lua
 do
     local rc = lurek.raycaster.new(80, 60)
+    local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local params = {
         px = 8,
         py = 8,
@@ -1241,11 +3173,24 @@ do
         rays = 40,
         max_dist = 20,
         screen_w = 160,
-        screen_h = 90,
+        screen_h = 100,
     }
-    local count = rc:buildSceneWithModels(params, nil, nil, nil, nil)
+    local baseline = rc:buildScene(params)
+    local count = rc:buildSceneWithModels(params, nil, nil, nil, {
+        { model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
+    })
+    local model_pick = rc:pickScreen(80, 60, params, nil, {
+        { id = 42, model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
+    })
 
-    print("quad count = " .. count)
+    print("quad count without model = " .. baseline)
+    print("quad count with model = " .. count)
+    if model_pick then
+        print("model pick surface = " .. model_pick.surface)
+        print("model pick id = " .. tostring(model_pick.id))
+        print("model pick distance = " .. string.format("%.2f", model_pick.distance))
+        print("model pick uv = " .. string.format("%.2f", model_pick.u) .. "," .. string.format("%.2f", model_pick.v))
+    end
 end
 ```
 
@@ -1479,6 +3424,35 @@ end
 
 ---
 
+#### `LRaycaster:clearWallFeatureCell`
+
+Removes any per-cell wall feature override from a blocking cell.
+
+```lua
+LRaycaster:clearWallFeatureCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+    map:setWindowCell(3, 3, 0.25, 0.75, 0.35)
+    map:clearWallFeatureCell(3, 3)
+    print("feature cleared = " .. tostring(map:getWallFeatureCell(3, 3) == nil))
+end
+```
+
+---
+
 #### `LRaycaster:computeTileLight`
 
 Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
@@ -1494,7 +3468,7 @@ LRaycaster:computeTileLight(x, y, ambient, lights)
 | `x` | number | Tile grid column. |
 | `y` | number | Tile grid row. |
 | `ambient` | number | Base ambient light level (0.0..1.0). |
-| `lights?` | table | Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}. |
+| `lights?` | table | Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or [LPointLight](#lpointlight) userdata values. |
 
 **Returns**
 
@@ -1986,6 +3960,84 @@ end
 
 ---
 
+#### `LRaycaster:getWallFeatureCell`
+
+Returns the wall feature attached to a cell, or nil when none is set.
+
+```lua
+LRaycaster:getWallFeatureCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Feature table {kind, alpha, ...} or nil. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    map:setCell(7, 5, 1)
+    map:setHalfWallCell(7, 5, 0.5)
+    map:setCell(7, 7, 1)
+    map:setWindowCell(7, 7, 0.25, 0.78, 0.35)
+    map:setCell(7, 9, 1)
+    map:setDoorCell(7, 9, "vertical", 1.0)
+
+    local params = {
+        px = 2.5,
+        py = 7.5,
+        angle = 0.0,
+        fov = math.pi / 3,
+        rays = 64,
+        max_dist = 20.0,
+        screen_w = 320,
+        screen_h = 200,
+    }
+    local picked = map:pickScreen(160, 100, params)
+    local hit = map:castRay(2.5, 9.5, 0.0, 20.0)
+    local solid = lurek.raycaster.new(8, 3)
+    solid:setCell(4, 1, 1)
+    local solid_r = select(1, solid:computeTileLight(2, 1, 0.0, {
+        { x = 5.5, y = 1.5, radius = 8.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
+    }))
+    local through_window = lurek.raycaster.new(8, 3)
+    through_window:setCell(4, 1, 1)
+    through_window:setWindowCell(4, 1, 0.25, 0.8, 0.35)
+    local window_r = select(1, through_window:computeTileLight(2, 1, 0.0, {
+        { x = 5.5, y = 1.5, radius = 8.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
+    }))
+
+    print("window los = " .. tostring(map:lineOfSight(2.5, 7.5, 12.5, 7.5)))
+    print("half wall blocked = " .. tostring(map:isBlocked(7, 5)))
+    print("open door hit cell = " .. tostring(hit and hit.cell_value or "nil"))
+    print("solid light r = " .. string.format("%.3f", solid_r))
+    print("window light r = " .. string.format("%.3f", window_r))
+    if picked then
+        print("pick surface = " .. picked.surface)
+        print("pick tile = " .. picked.x .. "," .. picked.y)
+    end
+end
+```
+
+---
+
 #### `LRaycaster:gridMove`
 
 Performs a discrete grid-step movement in one of 4 cardinal directions with collision.
@@ -2177,6 +4229,138 @@ end
 
 ---
 
+#### `LRaycaster:pickScreen`
+
+Resolves a screen-space click back into the raycaster world using the same camera semantics as scene building.
+
+```lua
+LRaycaster:pickScreen(sx, sy, params, sprites, models)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen X in pixels. |
+| `sy` | number | Screen Y in pixels. |
+| `params` | table | Camera params {px, py, angle, fov, max_dist, screen_w, screen_h, camera_height?, horizon_offset?}. |
+| `sprites?` | table|[LSpriteManager](#lspritemanager) | Optional sprite tables or sprite manager used to resolve clickable billboard hits. |
+| `models?` | table | Optional model instance tables used to resolve clickable projected model hits. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LRaycasterPickScreenResult | Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors `getWallFeatureCell()` and adds `section` for the solid band/panel that was hit. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    local params = {
+        px = 8,
+        py = 8,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 64,
+        max_dist = 16,
+        screen_w = 320,
+        screen_h = 200,
+    }
+    local hit = map:pickScreen(160, 100, params)
+    local sprite_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
+    local sprite_hit = map:pickScreen(160, 100, params, {
+        { id = 7, x = 10.5, y = 8.0, texture = sprite_tex, size = 1.0 },
+    })
+    local model_hit = map:pickScreen(160, 120, params, nil, {
+        { id = 8, model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
+    })
+    local half_map = lurek.raycaster.new(12, 10)
+    for i = 0, 11 do
+        half_map:setCell(i, 0, 1)
+        half_map:setCell(i, 9, 1)
+    end
+    for i = 0, 9 do
+        half_map:setCell(0, i, 1)
+        half_map:setCell(11, i, 1)
+    end
+    half_map:setCell(7, 5, 1)
+    half_map:setHalfWallCell(7, 5, 0.5)
+    local feature_hit = half_map:pickScreen(160, 100, {
+        px = 2.5,
+        py = 5.5,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 64,
+        max_dist = 20,
+        screen_w = 320,
+        screen_h = 200,
+    })
+
+    if hit then
+        print("surface = " .. hit.surface)
+        print("cell = " .. hit.x .. "," .. hit.y)
+        print("distance = " .. string.format("%.2f", hit.distance))
+        print("hit = " .. string.format("%.2f", hit.hit_x) .. "," .. string.format("%.2f", hit.hit_y))
+        print("ray angle = " .. string.format("%.3f", hit.ray_angle))
+        print("uv = " .. string.format("%.2f", hit.u) .. "," .. string.format("%.2f", hit.v))
+    end
+    if sprite_hit then
+        print("sprite surface = " .. sprite_hit.surface)
+        print("sprite id = " .. tostring(sprite_hit.id))
+        print("sprite distance = " .. string.format("%.2f", sprite_hit.distance))
+        print("sprite uv = " .. string.format("%.2f", sprite_hit.u) .. "," .. string.format("%.2f", sprite_hit.v))
+    end
+    if model_hit then
+        print("model surface = " .. model_hit.surface)
+        print("model id = " .. tostring(model_hit.id))
+        print("model distance = " .. string.format("%.2f", model_hit.distance))
+        print("model uv = " .. string.format("%.2f", model_hit.u) .. "," .. string.format("%.2f", model_hit.v))
+    end
+    if feature_hit and feature_hit.feature then
+        print("feature kind = " .. feature_hit.feature.kind)
+        print("feature section = " .. feature_hit.feature.section)
+        print("feature wall height = " .. string.format("%.2f", feature_hit.wall_height))
+    end
+end
+```
+
+---
+
+#### `LRaycaster:pickScreenFromAdapter`
+
+Resolves a screen-space click using sprite/model inputs sourced from a runtime scene adapter.
+
+```lua
+LRaycaster:pickScreenFromAdapter(sx, sy, params, adapter)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen X in pixels. |
+| `sy` | number | Screen Y in pixels. |
+| `params` | table | Camera params (same as pickScreen). |
+| `adapter` | [LSceneAdapter](#lsceneadapter) | Runtime scene adapter providing sprites and models. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Pick result or nil when nothing was hit. Wall hits may also include `wall_height` plus `feature = {kind, section, ...}` for half walls, windows, and doors. |
+
+---
+
 #### `LRaycaster:projectSprite`
 
 Projects a world-space sprite to screen coordinates for billboard rendering.
@@ -2365,6 +4549,41 @@ end
 
 ---
 
+#### `LRaycaster:setDoorCell`
+
+Attaches a sliding door feature to a blocking cell.
+
+```lua
+LRaycaster:setDoorCell(x, y, direction, openAmount, alpha)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `direction` | string | "horizontal" or "vertical". |
+| `openAmount` | number | Door open amount, 0.0..1.0. |
+| `alpha?` | number | Optional alpha multiplier. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+    map:setDoorCell(3, 3, "horizontal", 1.0)
+    local feature = map:getWallFeatureCell(3, 3)
+
+    print("kind = " .. feature.kind)
+    print("direction = " .. feature.direction)
+    print("blocked = " .. tostring(map:isBlocked(3, 3)))
+end
+```
+
+---
+
 #### `LRaycaster:setFloorTextureCell`
 
 Assigns a per-cell floor texture override. Pass nil to remove the override.
@@ -2391,6 +4610,38 @@ do
     map:setFloorTextureCell(3, 3, floor_tex)
 
     print("raw id = " .. tostring(map:getFloorTextureCell(3, 3)))
+end
+```
+
+---
+
+#### `LRaycaster:setHalfWallCell`
+
+Attaches a half-height wall feature to a blocking cell.
+
+```lua
+LRaycaster:setHalfWallCell(x, y, height)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `height` | number | Solid wall height from floor, 0.0..1.0. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+    map:setHalfWallCell(3, 3, 0.5)
+    local feature = map:getWallFeatureCell(3, 3)
+
+    print("kind = " .. feature.kind)
+    print("height = " .. string.format("%.2f", feature.height))
 end
 ```
 
@@ -2460,6 +4711,41 @@ do
     map:setWallAlpha(2, 0.5)
 
     print("alpha(2) = " .. map:getWallAlpha(2))
+end
+```
+
+---
+
+#### `LRaycaster:setWindowCell`
+
+Attaches a window feature to a blocking cell, leaving a visible opening between sill and lintel.
+
+```lua
+LRaycaster:setWindowCell(x, y, sillHeight, lintelHeight, alpha)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Grid column. |
+| `y` | number | Grid row. |
+| `sillHeight` | number | Bottom of the opening from the floor, 0.0..1.0. |
+| `lintelHeight` | number | Top of the opening from the floor, 0.0..1.0. |
+| `alpha?` | number | Wall alpha multiplier for the solid bands. |
+
+**Example**
+
+```lua
+do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+    map:setWindowCell(3, 3, 0.3, 0.75, 0.4)
+    local feature = map:getWallFeatureCell(3, 3)
+
+    print("kind = " .. feature.kind)
+    print("los = " .. tostring(map:lineOfSight(1.5, 3.5, 6.5, 3.5)))
+    print("alpha = " .. string.format("%.2f", feature.alpha))
 end
 ```
 
@@ -2596,6 +4882,260 @@ end
 
 ---
 
+## LSceneAdapter
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LSceneAdapter:addDirectionalSprite`
+
+Adds a static directional billboard sprite entry.
+
+```lua
+LSceneAdapter:addDirectionalSprite(x, y, front, right, back, left, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | World X position. |
+| `y` | number | World Y position. |
+| `front` | [LImage](render.md#limage)|number | Front-facing texture. |
+| `right` | [LImage](render.md#limage)|number | Right-facing texture. |
+| `back` | [LImage](render.md#limage)|number | Back-facing texture. |
+| `left?` | [LImage](render.md#limage)|number | Left-facing texture (defaults to `right`). |
+| `opts?` | table | Optional {size?, id?, level?, angle?}. |
+
+---
+
+#### `LSceneAdapter:addLight`
+
+Adds a static point light entry.
+
+```lua
+LSceneAdapter:addLight(x, y, radius, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | World X position. |
+| `y` | number | World Y position. |
+| `radius` | number | Light falloff radius. |
+| `opts?` | table | Optional {intensity?, color?, r?, g?, b?, level?}. |
+
+---
+
+#### `LSceneAdapter:addModel`
+
+Adds a static OBJ model instance entry.
+
+```lua
+LSceneAdapter:addModel(model, x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `model` | [LObjModel](render.md#lobjmodel) | OBJ model handle. |
+| `x` | number | World X position. |
+| `y` | number | World Y position. |
+| `opts?` | table | Optional {id?, level?, yaw?, z?, scale?}. |
+
+---
+
+#### `LSceneAdapter:addSprite`
+
+Adds a static billboard sprite entry.
+
+```lua
+LSceneAdapter:addSprite(x, y, texture, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | World X position. |
+| `y` | number | World Y position. |
+| `texture` | [LImage](render.md#limage)|number | Sprite texture. |
+| `opts?` | table | Optional {size?, id?, level?, angle?}. |
+
+---
+
+#### `LSceneAdapter:bindBodyDirectionalSprite`
+
+Binds a directional billboard sprite to a live physics body.
+
+```lua
+LSceneAdapter:bindBodyDirectionalSprite(body, front, right, back, left, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `body` | [LBody](physics.md#lbody) | Physics body handle. |
+| `front` | [LImage](render.md#limage)|number | Front-facing texture. |
+| `right` | [LImage](render.md#limage)|number | Right-facing texture. |
+| `back` | [LImage](render.md#limage)|number | Back-facing texture. |
+| `left?` | [LImage](render.md#limage)|number | Left-facing texture (defaults to `right`). |
+| `opts?` | table | Optional {size?, id?, level?, offset_x?, offset_y?, angle_offset?}. |
+
+---
+
+#### `LSceneAdapter:bindBodyLight`
+
+Binds a point light to a live physics body.
+
+```lua
+LSceneAdapter:bindBodyLight(body, radius, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `body` | [LBody](physics.md#lbody) | Physics body handle. |
+| `radius` | number | Light falloff radius. |
+| `opts?` | table | Optional {intensity?, color?, r?, g?, b?, level?, offset_x?, offset_y?}. |
+
+---
+
+#### `LSceneAdapter:bindBodyModel`
+
+Binds an OBJ model instance to a live physics body.
+
+```lua
+LSceneAdapter:bindBodyModel(body, model, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `body` | [LBody](physics.md#lbody) | Physics body handle. |
+| `model` | [LObjModel](render.md#lobjmodel) | OBJ model handle. |
+| `opts?` | table | Optional {id?, level?, yaw_offset?, offset_x?, offset_y?, z?, scale?}. |
+
+---
+
+#### `LSceneAdapter:bindBodySprite`
+
+Binds a billboard sprite to a live physics body.
+
+```lua
+LSceneAdapter:bindBodySprite(body, texture, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `body` | [LBody](physics.md#lbody) | Physics body handle. |
+| `texture` | [LImage](render.md#limage)|number | Sprite texture. |
+| `opts?` | table | Optional {size?, id?, level?, offset_x?, offset_y?, angle_offset?}. |
+
+---
+
+#### `LSceneAdapter:clear`
+
+Removes every tracked entry from the adapter.
+
+```lua
+LSceneAdapter:clear()
+```
+
+---
+
+#### `LSceneAdapter:clearLights`
+
+Removes every tracked light entry from the adapter.
+
+```lua
+LSceneAdapter:clearLights()
+```
+
+---
+
+#### `LSceneAdapter:clearModels`
+
+```lua
+LSceneAdapter:clearModels()
+```
+
+---
+
+#### `LSceneAdapter:clearSprites`
+
+Removes every tracked sprite entry from the adapter.
+
+```lua
+LSceneAdapter:clearSprites()
+```
+
+---
+
+#### `LSceneAdapter:sceneInputs`
+
+Resolves the current runtime snapshot into `{ lights, sprites, models }` tables.
+
+```lua
+LSceneAdapter:sceneInputs()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Snapshot table for build/pick calls. |
+
+---
+
+#### `LSceneAdapter:type`
+
+Returns the type name of this object.
+
+```lua
+LSceneAdapter:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Always "[LSceneAdapter](#lsceneadapter)". |
+
+---
+
+#### `LSceneAdapter:typeOf`
+
+Checks whether this object matches the given type name.
+
+```lua
+LSceneAdapter:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to check. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the name matches this userdata type. |
+
+---
+
 ## LSpriteManager
 
 ### Type Fields
@@ -2606,10 +5146,10 @@ end
 
 #### `LSpriteManager:add`
 
-Adds a new sprite to the manager at a world position with a texture name and optional scale.
+Adds a new sprite to the manager at a world position with a texture label, raw id, or image handle.
 
 ```lua
-LSpriteManager:add(x, y, texture, scale)
+LSpriteManager:add(x, y, texture, scale, level)
 ```
 
 **Parameters**
@@ -2618,8 +5158,9 @@ LSpriteManager:add(x, y, texture, scale)
 |------|------|-------------|
 | `x` | number | World X position. |
 | `y` | number | World Y position. |
-| `texture` | string | Texture asset name. |
+| `texture` | any | Texture asset label, integer texture id, or [LImage](render.md#limage). |
 | `scale?` | number | Sprite size multiplier (default 1.0). |
+| `level?` | number | Optional multilevel slice index used by buildMultiLevelScene. |
 
 **Returns**
 
@@ -2635,6 +5176,59 @@ do
     local id = sm:add(5, 5, "content/examples/assets/images/sample_texture.png", 1.0)
 
     print("sprite id = " .. id)
+end
+```
+
+---
+
+#### `LSpriteManager:addDirectional`
+
+Adds a new sprite with front/right/back/left textures and a world-facing angle.
+
+```lua
+LSpriteManager:addDirectional(x, y, front, right, back, left, angle, scale, level)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | World X position. |
+| `y` | number | World Y position. |
+| `front` | any | Texture shown when viewed from the front. |
+| `right` | any | Texture shown from the right side. |
+| `back` | any | Texture shown from behind. |
+| `left?` | any | Texture shown from the left side (defaults to `right`). |
+| `angle?` | number | World-space facing angle in radians (default 0.0). |
+| `scale?` | number | Sprite size multiplier (default 1.0). |
+| `level?` | number | Optional multilevel slice index used by buildMultiLevelScene. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Unique sprite id for later manipulation. |
+
+**Example**
+
+```lua
+do
+    local sprites = lurek.raycaster.newSpriteManager()
+    local id = sprites:addDirectional(
+        2.0,
+        0.0,
+        "front.png",
+        "right.png",
+        "back.png",
+        "left.png",
+        math.pi,
+        1.0
+    )
+    local order = sprites:sortAndProject(0, 0, 0)
+
+    print("sprite id = " .. id)
+    print("texture = " .. order[1].texture)
+    print("variant = " .. tostring(order[1].variant))
 end
 ```
 
@@ -2690,6 +5284,103 @@ do
     local projected = sm:sortAndProject(0, 0, 0)
 
     print("remaining projected = " .. #projected)
+end
+```
+
+---
+
+#### `LSpriteManager:setDirectionalTextures`
+
+Replaces the directional bitmap set for an existing sprite and optionally updates its facing angle.
+
+```lua
+LSpriteManager:setDirectionalTextures(id, front, right, back, left, angle)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Sprite id. |
+| `front` | any | Texture shown when viewed from the front. |
+| `right` | any | Texture shown from the right side. |
+| `back` | any | Texture shown from behind. |
+| `left?` | any | Texture shown from the left side (defaults to `right`). |
+| `angle?` | number | Optional new facing angle in radians. |
+
+**Example**
+
+```lua
+do
+    local sprites = lurek.raycaster.newSpriteManager()
+    local id = sprites:add(2.0, 0.0, "old.png", 1.0)
+    sprites:setDirectionalTextures(id, "front2.png", "right2.png", "back2.png", "left2.png", math.pi)
+    local order = sprites:sortAndProject(0, 0, 0)
+
+    print("texture = " .. order[1].texture)
+    print("variant = " .. tostring(order[1].variant))
+end
+```
+
+---
+
+#### `LSpriteManager:setFacing`
+
+Updates the facing angle of an existing directional sprite.
+
+```lua
+LSpriteManager:setFacing(id, angle)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Sprite id. |
+| `angle` | number | New facing angle in radians. |
+
+**Example**
+
+```lua
+do
+    local sprites = lurek.raycaster.newSpriteManager()
+    local id = sprites:addDirectional(2.0, 0.0, "front.png", "right.png", "back.png", "left.png", math.pi, 1.0)
+    sprites:setFacing(id, 0.0)
+    local order = sprites:sortAndProject(0, 0, 0)
+
+    print("texture = " .. order[1].texture)
+    print("variant = " .. tostring(order[1].variant))
+end
+```
+
+---
+
+#### `LSpriteManager:setLevel`
+
+Updates the multilevel slice index for an existing sprite.
+
+```lua
+LSpriteManager:setLevel(id, level)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Sprite id. |
+| `level` | number | New level index used by buildMultiLevelScene. |
+
+**Example**
+
+```lua
+do
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(5, 5, "content/examples/assets/images/sample_texture.png", 1.0)
+    sm:setLevel(id, 2)
+
+    local projected = sm:sortAndProject(0, 0, 0)
+
+    print("level = " .. tostring(projected[1].level))
 end
 ```
 
@@ -2773,13 +5464,13 @@ LSpriteManager:sortAndProject(camX, camY, camAngle)
 |------|------|-------------|
 | `camX` | number | Camera X position. |
 | `camY` | number | Camera Y position. |
-| `camAngle` | number | Camera facing angle (unused, reserved). |
+| `camAngle` | number | Camera facing angle (reserved for future projection expansion). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| number[] | Array of {id, x, y, texture, scale, distance} sorted back-to-front. |
+| number[] | Array of {id, x, y, level?, texture?, texture_id?, scale, distance, variant?, facing_angle?} sorted back-to-front. |
 
 **Example**
 

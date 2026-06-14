@@ -26,28 +26,12 @@ pub struct MinimapTileSample {
 }
 /// Return true when the Bresenham grid path from `(x0,y0)` to `(x1,y1)` is unobstructed.
 fn tile_line_of_sight(raycaster: &Raycaster2D, x0: i32, y0: i32, x1: i32, y1: i32) -> bool {
-    let mut x = x0;
-    let mut y = y0;
-    let dx = (x1 - x0).abs();
-    let dy = (y1 - y0).abs();
-    let sx = if x0 < x1 { 1 } else { -1 };
-    let sy = if y0 < y1 { 1 } else { -1 };
-    let mut err = dx - dy;
-    while !(x == x1 && y == y1) {
-        let e2 = 2 * err;
-        if e2 > -dy {
-            err -= dy;
-            x += sx;
-        }
-        if e2 < dx {
-            err += dx;
-            y += sy;
-        }
-        if (x != x1 || y != y1) && (x < 0 || y < 0 || raycaster.get_cell(x as u32, y as u32) > 0) {
-            return false;
-        }
-    }
-    true
+    raycaster.line_of_sight(
+        x0 as f32 + 0.5,
+        y0 as f32 + 0.5,
+        x1 as f32 + 0.5,
+        y1 as f32 + 0.5,
+    )
 }
 /// Compute accumulated RGB light for the center of tile `(x, y)` using `compute_lighting`.
 pub fn compute_tile_light(
@@ -64,7 +48,7 @@ pub fn compute_tile_light(
     let wx = x as f32 + 0.5;
     let wy = y as f32 + 0.5;
     let wall_at = |cx: i32, cy: i32| -> bool {
-        cx < 0 || cy < 0 || raycaster.get_cell(cx as u32, cy as u32) > 0
+        cx < 0 || cy < 0 || raycaster.blocks_light_at(cx as u32, cy as u32)
     };
     compute_lighting(wx, wy, ambient, lights, &wall_at)
 }
@@ -91,7 +75,7 @@ pub fn build_minimap_tile_window(
             if ux >= raycaster.width() || uy >= raycaster.height() {
                 continue;
             }
-            let blocked = raycaster.get_cell(ux, uy) > 0;
+            let blocked = raycaster.is_blocked(ux, uy);
             let visible = tile_line_of_sight(raycaster, cx, cy, gx, gy);
             let light = compute_tile_light(raycaster, ux, uy, ambient, lights);
             let luma = ((light[0] + light[1] + light[2]) / 3.0).clamp(0.0, 1.0);

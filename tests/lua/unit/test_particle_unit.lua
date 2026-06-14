@@ -93,6 +93,22 @@ describe("lurek.particle lifecycle", function()
         local ps = lurek.particle.newSystem()
         expect_true(lurek.particle.isActive(ps), "new system should be active")
     end)
+    -- @covers LParticleSystem:getStats
+    it("getStats reports emitter telemetry through the module wrapper", function()
+        local ps = lurek.particle.newSystem({ emissionRate = 40, maxParticles = 32, lifetimeMin = 2.0, lifetimeMax = 2.0 })
+        ps:addAttractor(32, 32, 80, 64)
+        ps:setBounds(64, -64, 48, -48, 0.5)
+        ps:emit(6)
+        ps:update(0.1)
+        local stats = lurek.particle.getStats(ps)
+        expect_type("table", stats)
+        expect_equal(32, stats.max_particles)
+        expect_equal(1, stats.attractor_count)
+        expect_true(stats.has_bounds)
+        expect_true(stats.live_particles > 0)
+        expect_true(stats.total_live_particles >= stats.live_particles)
+        expect_equal("active", stats.state)
+    end)
     -- @covers LParticleSystem:isPaused
     it("isPaused returns false for new system", function()
         local ps = lurek.particle.newSystem()
@@ -377,6 +393,20 @@ describe("lurek.particle rendering settings", function()
         local ps = lurek.particle.newSystem({ maxParticles = 50 })
         lurek.particle.setBufferSize(ps, 200)
         expect_equal(200, lurek.particle.getBufferSize(ps), "buffer size")
+    end)
+
+    it("setBufferSize truncates live particles when shrinking the pool", function()
+        local ps = lurek.particle.newSystem({
+            emissionRate = 0,
+            maxParticles = 32,
+            lifetimeMin = 5,
+            lifetimeMax = 5,
+        })
+        ps:emit(12)
+        expect_equal(12, ps:getCount())
+        ps:setBufferSize(4)
+        expect_equal(4, ps:getBufferSize())
+        expect_equal(4, ps:getCount())
     end)
 end)
 

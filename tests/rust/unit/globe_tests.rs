@@ -671,6 +671,7 @@ mod loader_tests {
 mod topology_tests {
     use lurek2d::globe::topology::ProvinceGraph;
     use lurek2d::globe::types::{GlobeError, Province, RegionId};
+    use std::collections::HashSet;
 
     fn make_province(id: u32, neighbors: Vec<u32>) -> Province {
         let mut p = Province::new(
@@ -735,6 +736,24 @@ mod topology_tests {
         assert!(g.remove(RegionId(99)).is_none());
     }
 
+    #[test]
+    fn remove_existing_cleans_neighbor_backrefs_and_edge_tags() {
+        let mut g = ProvinceGraph::new();
+        let mut a = make_province(1, vec![2]);
+        let mut b = make_province(2, vec![1]);
+        let tags = HashSet::from(["road".to_string()]);
+        a.edge_tags.insert((RegionId(1), RegionId(2)), tags.clone());
+        b.edge_tags.insert((RegionId(1), RegionId(2)), tags);
+        g.insert(a).unwrap();
+        g.insert(b).unwrap();
+        g.remove(RegionId(2)).expect("province should be removed");
+        assert!(g.neighbors_of(RegionId(1)).is_empty());
+        let remaining = g.get(RegionId(1)).expect("province 1 should remain");
+        assert!(remaining.neighbors.is_empty());
+        assert!(remaining.edge_tags.is_empty());
+        assert!(g.edge_tags(RegionId(1), RegionId(2)).is_empty());
+    }
+
     // ProvinceGraph::neighbors_of
 
     #[test]
@@ -793,6 +812,26 @@ mod topology_tests {
         assert_eq!(g.get_attr(RegionId(1), "owner"), Some("blue"));
     }
 
+    #[test]
+    fn set_edge_tags_updates_cached_and_stored_tags() {
+        let mut g = ProvinceGraph::new();
+        g.insert(make_province(1, vec![2])).unwrap();
+        g.insert(make_province(2, vec![1])).unwrap();
+        let tags = HashSet::from(["land".to_string(), "road".to_string()]);
+        assert!(g
+            .set_edge_tags(RegionId(2), RegionId(1), tags)
+            .expect("regions should exist"));
+        assert_eq!(
+            g.edge_tags(RegionId(1), RegionId(2)),
+            vec!["land".to_string(), "road".to_string()]
+        );
+        assert!(g
+            .get(RegionId(1))
+            .expect("province should exist")
+            .edge_tags
+            .contains_key(&(RegionId(1), RegionId(2))));
+    }
+
     // ProvinceGraph::reachable_default
 
     // ProvinceGraph::rebuild_caches
@@ -813,5 +852,433 @@ mod topology_tests {
         let mut g = ProvinceGraph::new();
         g.rebuild_caches(); // Should not panic.
         assert!(g.is_empty());
+    }
+}
+
+mod registry_and_picking_tests {
+    use lurek2d::globe::export::export_regions_to_obj;
+    use lurek2d::globe::loader::{load_from_province_grid, load_from_toml_str};
+    use lurek2d::globe::picking::{point_in_geo_polygon, point_in_geo_region, screen_to_surface};
+    use lurek2d::globe::projection::{project_region, OrbitCamera};
+    use lurek2d::globe::registry::Globe;
+    use lurek2d::globe::types::{GlobeSpec, MarkerStyle, Region, RegionId, RegionPart};
+    use lurek2d::image::ImageData;
+    use lurek2d::province::ProvinceGrid;
+    use lurek2d::render::renderer::RenderCommand;
+
+    fn make_region(id: u32, centroid: (f32, f32), verts: Vec<(f32, f32)>) -> Region {
+        Region::with_data(
+            RegionId(id),
+            centroid,
+            verts,
+            Vec::new(),
+            [0.5, 0.5, 0.5, 1.0],
+        )
+    }
+
+    #[test]
+    fn screen_to_surface_center_maps_to_front_hemisphere() {
+        let spec = GlobeSpec::default();
+        let camera = lurek2d::globe::projection::OrbitCamera::default();
+        let hit = screen_to_surface(camera.screen_cx, camera.screen_cy, &spec, &camera)
+            .expect("screen centre should hit the globe");
+        assert!(hit.lat_deg.is_finite());
+        assert!(hit.lon_deg.is_finite());
+        assert!((-90.0..=90.0).contains(&hit.lat_deg));
+        assert!((-180.0..=180.0).contains(&hit.lon_deg));
+        assert!(hit.depth > 0.0);
+    }
+
+    #[test]
+    fn point_in_geo_polygon_handles_dateline_wrapped_query_space() {
+        let verts = vec![(-5.0, 170.0), (-5.0, -170.0), (5.0, -170.0), (5.0, 170.0)];
+        assert!(point_in_geo_polygon(0.0, 180.0, &verts));
+        assert!(point_in_geo_polygon(0.0, -179.0, &verts));
+        assert!(!point_in_geo_polygon(20.0, 180.0, &verts));
+    }
+
+    #[test]
+    fn point_in_geo_region_respects_holes_and_multipart_geometry() {
+        let region = Region::with_parts_data(
+            RegionId(50),
+            (0.0, 0.0),
+            vec![
+                RegionPart {
+                    outer: vec![(-6.0, -6.0), (-6.0, 6.0), (6.0, 6.0), (6.0, -6.0)],
+                    holes: vec![vec![(-2.0, -2.0), (-2.0, 2.0), (2.0, 2.0), (2.0, -2.0)]],
+                },
+                RegionPart::new(vec![(10.0, 10.0), (10.0, 14.0), (14.0, 14.0), (14.0, 10.0)]),
+            ],
+            Vec::new(),
+            [0.5, 0.5, 0.5, 1.0],
+        );
+        assert!(point_in_geo_region(&region, 5.0, 5.0));
+        assert!(!point_in_geo_region(&region, 0.0, 0.0));
+        assert!(point_in_geo_region(&region, 12.0, 12.0));
+    }
+
+    #[test]
+    fn region_new_derives_centroid_across_dateline_on_the_correct_side() {
+        let region = Region::new(
+            RegionId(51),
+            vec![(-5.0, 170.0), (-5.0, -170.0), (5.0, -170.0), (5.0, 170.0)],
+        );
+        assert!(region.centroid.0.abs() < 1.0);
+        assert!(region.centroid.1.abs() > 150.0);
+    }
+
+    #[test]
+    fn load_from_toml_str_parses_multipart_geometry_with_holes() {
+        let src = r#"
+[[province]]
+id = 1
+parts = [{ outer = [[-12.0, 78.0], [-12.0, 102.0], [12.0, 102.0], [12.0, 78.0]], holes = [[[-4.0, 86.0], [-4.0, 94.0], [4.0, 94.0], [4.0, 86.0]]] }]
+neighbors = [2]
+
+[province.attrs]
+owner = "player"
+"#;
+        let regions = load_from_toml_str(src).expect("TOML should parse");
+        assert_eq!(regions.len(), 1);
+        let region = &regions[0];
+        assert_eq!(region.parts.len(), 1);
+        assert_eq!(region.parts[0].holes.len(), 1);
+        assert_eq!(region.neighbors, vec![RegionId(2)]);
+        assert_eq!(region.attrs.get("owner"), Some(&"player".to_string()));
+        assert!(!point_in_geo_region(region, 0.0, 90.0));
+        assert!(point_in_geo_region(region, 8.0, 90.0));
+    }
+
+    #[test]
+    fn globe_keeps_provinces_and_regions_in_separate_stores() {
+        let mut globe = Globe::new("test", GlobeSpec::default());
+        globe
+            .add_province(make_region(
+                1,
+                (0.0, 90.0),
+                vec![(-5.0, 85.0), (-5.0, 95.0), (5.0, 95.0), (5.0, 85.0)],
+            ))
+            .unwrap();
+        globe
+            .add_region(make_region(
+                100,
+                (0.0, 90.0),
+                vec![(-8.0, 82.0), (-8.0, 98.0), (8.0, 98.0), (8.0, 82.0)],
+            ))
+            .unwrap();
+        assert_eq!(globe.province_count(), 1);
+        assert_eq!(globe.region_count(), 1);
+        assert!(globe.get_province(RegionId(1)).is_some());
+        assert!(globe.get_region(RegionId(100)).is_some());
+        assert!(globe.get_region(RegionId(1)).is_none());
+    }
+
+    #[test]
+    fn pick_regions_at_screen_returns_semantic_region_ids_only() {
+        let mut globe = Globe::new("pick", GlobeSpec::default());
+        globe.spec.axial_tilt_deg = 0.0;
+        globe.camera.lat_deg = 0.0;
+        globe.camera.lon_deg = 0.0;
+        globe
+            .add_province(make_region(
+                1,
+                (0.0, 90.0),
+                vec![(-5.0, 85.0), (-5.0, 95.0), (5.0, 95.0), (5.0, 85.0)],
+            ))
+            .unwrap();
+        globe
+            .add_region(make_region(
+                100,
+                (0.0, 90.0),
+                vec![(-7.0, 83.0), (-7.0, 97.0), (7.0, 97.0), (7.0, 83.0)],
+            ))
+            .unwrap();
+        let ids = globe.pick_regions_at_screen(globe.camera.screen_cx, globe.camera.screen_cy);
+        assert_eq!(ids, vec![RegionId(100)]);
+    }
+
+    #[test]
+    fn pick_regions_at_screen_ignores_semantic_region_hole() {
+        let mut globe = Globe::new("pick_hole", GlobeSpec::default());
+        globe.spec.axial_tilt_deg = 0.0;
+        globe.camera.lat_deg = 0.0;
+        globe.camera.lon_deg = 0.0;
+        globe
+            .add_region(Region::with_parts_data(
+                RegionId(300),
+                (0.0, 90.0),
+                vec![RegionPart {
+                    outer: vec![(-12.0, 78.0), (-12.0, 102.0), (12.0, 102.0), (12.0, 78.0)],
+                    holes: vec![vec![(-4.0, 86.0), (-4.0, 94.0), (4.0, 94.0), (4.0, 86.0)]],
+                }],
+                Vec::new(),
+                [0.5, 0.5, 0.5, 1.0],
+            ))
+            .unwrap();
+        let ids = globe.pick_regions_at_screen(globe.camera.screen_cx, globe.camera.screen_cy);
+        assert!(ids.is_empty());
+    }
+
+    #[test]
+    fn marker_distance_returns_quarter_turn_for_orthogonal_markers() {
+        let mut globe = Globe::new("markers", GlobeSpec::default());
+        let a = globe.markers.add("a", 0.0, 0.0, None, Default::default());
+        let b = globe.markers.add("b", 0.0, 90.0, None, Default::default());
+        let distance = globe.marker_distance(a, b).expect("markers should exist");
+        assert!((distance - std::f32::consts::FRAC_PI_2).abs() < 0.01);
+    }
+
+    #[test]
+    fn apply_mouse_drag_keeps_surface_anchor_close_to_pointer() {
+        let mut globe = Globe::new("drag", GlobeSpec::default());
+        globe.spec.axial_tilt_deg = 0.0;
+        let sx = globe.camera.screen_cx;
+        let sy = globe.camera.screen_cy;
+        let ex = sx + 40.0;
+        let ey = sy;
+        let start = globe
+            .screen_to_surface(sx, sy)
+            .expect("drag start should hit the globe");
+        globe.apply_mouse_drag(sx, sy, ex, ey);
+        let end = globe
+            .screen_to_surface(ex, ey)
+            .expect("drag end should hit the globe");
+        assert!((start.lat_deg - end.lat_deg).abs() < 2.0);
+        assert!((start.lon_deg - end.lon_deg).abs() < 2.0);
+    }
+
+    #[test]
+    fn rotating_icon_markers_emit_non_zero_image_rotation() {
+        let mut globe = Globe::new("marker_rotation", GlobeSpec::default());
+        globe.spec.axial_tilt_deg = 0.0;
+        globe.sim_time_sec = 1.0;
+        let style = MarkerStyle {
+            icon_texture: Some("1".to_string()),
+            rotation_deg_per_sec: 90.0,
+            ..Default::default()
+        };
+        globe.markers.add("icon", 0.0, 90.0, None, style);
+        let cmds = globe.emit_frame(None);
+        let rotation = cmds.iter().find_map(|cmd| match cmd {
+            RenderCommand::DrawImageEx { rotation, .. } => Some(*rotation),
+            _ => None,
+        });
+        let rotation = rotation.expect("marker icon should emit DrawImageEx");
+        assert!(rotation > 1.0);
+    }
+
+    #[test]
+    fn draw_emits_stencil_mask_for_provinces_with_holes() {
+        let mut globe = Globe::new("draw_holes", GlobeSpec::default());
+        globe.spec.axial_tilt_deg = 0.0;
+        globe.camera.lat_deg = 0.0;
+        globe.camera.lon_deg = 90.0;
+        globe
+            .add_province(Region::with_parts_data(
+                RegionId(400),
+                (0.0, 90.0),
+                vec![RegionPart {
+                    outer: vec![(-12.0, 78.0), (-12.0, 102.0), (12.0, 102.0), (12.0, 78.0)],
+                    holes: vec![vec![(-4.0, 86.0), (-4.0, 94.0), (4.0, 94.0), (4.0, 86.0)]],
+                }],
+                Vec::new(),
+                [0.6, 0.6, 0.7, 1.0],
+            ))
+            .unwrap();
+        let cmds = globe.emit_frame(None);
+        assert!(cmds
+            .iter()
+            .any(|cmd| matches!(cmd, RenderCommand::SetColorMask(false, false, false, false))));
+        assert!(cmds.iter().any(|cmd| matches!(
+            cmd,
+            RenderCommand::StencilBegin {
+                action: lurek2d::render::renderer::StencilAction::Replace,
+                value: 1
+            }
+        )));
+        assert!(cmds.iter().any(|cmd| matches!(
+            cmd,
+            RenderCommand::StencilBegin {
+                action: lurek2d::render::renderer::StencilAction::Zero,
+                ..
+            }
+        )));
+        assert!(cmds.iter().any(|cmd| matches!(
+            cmd,
+            RenderCommand::SetStencilTest(Some((lurek2d::render::renderer::CompareMode::Equal, 1)))
+        )));
+    }
+
+    #[test]
+    fn project_region_clips_polygons_that_cross_the_horizon() {
+        let spec = GlobeSpec::default();
+        let camera = OrbitCamera::default();
+        let view = lurek2d::globe::projection::build_view_matrix(&spec, &camera);
+        let region = make_region(
+            7,
+            (0.0, 45.0),
+            vec![(-20.0, -30.0), (-20.0, 90.0), (20.0, 90.0), (20.0, -30.0)],
+        );
+        let projected = project_region(&region, &view, &spec, &camera, 1.0)
+            .expect("partially visible region should be clipped, not dropped");
+        assert!(projected.screen_verts.len() >= 3);
+        assert_eq!(projected.screen_verts.len(), projected.surface_points.len());
+    }
+
+    #[test]
+    fn load_from_province_grid_traces_contours_instead_of_bounding_boxes() {
+        let bytes = vec![
+            255, 0, 0, 255, 255, 0, 0, 255, 0, 0, 0, 0, 255, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0,
+            255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255,
+        ];
+        let image = ImageData::from_bytes(3, 3, bytes).expect("image bytes should be valid");
+        let grid = ProvinceGrid::from_image(&image);
+        let regions = load_from_province_grid(&grid);
+        assert_eq!(regions.len(), 1);
+        let region = &regions[0];
+        assert!(region.vertices.len() > 4);
+        let lats: Vec<f32> = region.vertices.iter().map(|(lat, _)| *lat).collect();
+        let lons: Vec<f32> = region.vertices.iter().map(|(_, lon)| *lon).collect();
+        let lat_levels: std::collections::BTreeSet<i32> = lats
+            .iter()
+            .map(|lat| (*lat * 100.0).round() as i32)
+            .collect();
+        let lon_levels: std::collections::BTreeSet<i32> = lons
+            .iter()
+            .map(|lon| (*lon * 100.0).round() as i32)
+            .collect();
+        assert!(lat_levels.len() >= 3);
+        assert!(lon_levels.len() >= 3);
+    }
+
+    #[test]
+    fn load_from_province_grid_preserves_holes_as_region_parts() {
+        let mut bytes = vec![0_u8; 5 * 5 * 4];
+        for y in 0..5 {
+            for x in 0..5 {
+                if x == 2 && y == 2 {
+                    continue;
+                }
+                let index = (y * 5 + x) * 4;
+                bytes[index] = 255;
+                bytes[index + 3] = 255;
+            }
+        }
+        let image = ImageData::from_bytes(5, 5, bytes).expect("image bytes should be valid");
+        let grid = ProvinceGrid::from_image(&image);
+        let regions = load_from_province_grid(&grid);
+        assert_eq!(regions.len(), 1);
+        let region = &regions[0];
+        assert_eq!(region.parts.len(), 1);
+        assert_eq!(region.parts[0].holes.len(), 1);
+        assert!(region.parts[0].outer.len() >= 4);
+        assert!(region.parts[0].holes[0].len() >= 4);
+    }
+
+    #[test]
+    fn export_obj_emits_part_and_hole_groups_for_multipart_geometry() {
+        let mut globe = Globe::new("export_holes", GlobeSpec::default());
+        globe
+            .add_province(Region::with_parts_data(
+                RegionId(401),
+                (0.0, 90.0),
+                vec![RegionPart {
+                    outer: vec![(-12.0, 78.0), (-12.0, 102.0), (12.0, 102.0), (12.0, 78.0)],
+                    holes: vec![vec![(-4.0, 86.0), (-4.0, 94.0), (4.0, 94.0), (4.0, 86.0)]],
+                }],
+                Vec::new(),
+                [0.5, 0.5, 0.5, 1.0],
+            ))
+            .unwrap();
+        let obj = export_regions_to_obj(&globe);
+        assert!(obj.contains("o region_401_part_0"));
+        assert!(obj.contains("g region_401_part_0_outer"));
+        assert!(obj.contains("g region_401_part_0_hole_0"));
+        assert!(obj.contains("\nl "));
+    }
+}
+
+mod sync_tests {
+    use lurek2d::globe::sync::{apply_snapshot, build_snapshot};
+    use lurek2d::globe::types::{GlobeSpec, Region, RegionId};
+    use lurek2d::globe::Globe;
+
+    fn make_region(id: u32, centroid: (f32, f32), verts: Vec<(f32, f32)>) -> Region {
+        Region::with_data(
+            RegionId(id),
+            centroid,
+            verts,
+            Vec::new(),
+            [0.5, 0.5, 0.5, 1.0],
+        )
+    }
+
+    #[test]
+    fn snapshot_round_trip_restores_visual_and_semantic_state() {
+        let mut source = Globe::new("source", GlobeSpec::default());
+        source.spec.rotation_deg = 45.0;
+        source.spec.time_of_day = 18.5;
+        source.camera.lat_deg = 12.0;
+        source.camera.lon_deg = 34.0;
+        source.camera.zoom = 2.25;
+        source
+            .add_province(make_region(
+                1,
+                (0.0, 0.0),
+                vec![(-5.0, -5.0), (-5.0, 5.0), (5.0, 5.0), (5.0, -5.0)],
+            ))
+            .unwrap();
+        source
+            .add_region(make_region(
+                200,
+                (0.0, 0.0),
+                vec![(-8.0, -8.0), (-8.0, 8.0), (8.0, 8.0), (8.0, -8.0)],
+            ))
+            .unwrap();
+        source.fog.reveal("player", RegionId(1));
+        let marker_id =
+            source
+                .markers
+                .add("poi", 0.0, 0.0, Some("A".to_string()), Default::default());
+        source
+            .markers
+            .set_attr(marker_id, "owner".to_string(), "blue".to_string());
+        source.add_arc(lurek2d::globe::types::Arc {
+            id: 0,
+            arc_type: "flight".to_string(),
+            screen_points: Vec::new(),
+            color: [1.0, 0.5, 0.2, 1.0],
+            width: 2.0,
+            from: (0.0, 0.0),
+            to: (10.0, 10.0),
+            steps: 8,
+            visible: true,
+        });
+        source.active_viewer = Some("player".to_string());
+        source.sim_time_sec = 42.0;
+
+        let snapshot = build_snapshot(&source);
+        let mut restored = Globe::new("restored", GlobeSpec::default());
+        apply_snapshot(&mut restored, &snapshot);
+
+        assert_eq!(restored.name, "source");
+        assert_eq!(restored.spec.rotation_deg, 45.0);
+        assert_eq!(restored.spec.time_of_day, 18.5);
+        assert_eq!(restored.camera.lat_deg, 12.0);
+        assert_eq!(restored.camera.lon_deg, 34.0);
+        assert_eq!(restored.camera.zoom, 2.25);
+        assert!(restored.get_province(RegionId(1)).is_some());
+        assert!(restored.get_region(RegionId(200)).is_some());
+        assert!(restored.fog.is_visible("player", RegionId(1)));
+        assert_eq!(
+            restored
+                .markers
+                .get(marker_id)
+                .and_then(|m| m.attrs.get("owner")),
+            Some(&"blue".to_string())
+        );
+        assert_eq!(restored.arcs.len(), 1);
+        assert_eq!(restored.active_viewer.as_deref(), Some("player"));
+        assert_eq!(restored.sim_time_sec, 42.0);
     }
 }

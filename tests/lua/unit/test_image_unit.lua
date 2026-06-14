@@ -110,6 +110,13 @@ describe("lurek.image module functions", function()
         expect_pixel(img, 0, 0, 0, 0, 0, 0)
     end)
 
+    -- @covers lurek.image.newImageData
+    it("newImageData rejects negative dimensions", function()
+        expect_error(function()
+            lurek.image.newImageData(-1, 3)
+        end)
+    end)
+
     -- @covers lurek.image.newImageDataFromBytes
     it("newImageDataFromBytes decodes RGBA byte payloads", function()
         local bytes = string.char(
@@ -128,6 +135,13 @@ describe("lurek.image module functions", function()
         expect_equal(7, stack:getWidth())
         expect_equal(9, stack:getHeight())
         expect_equal(0, stack:layerCount())
+    end)
+
+    -- @covers lurek.image.newLayeredImage
+    it("newLayeredImage rejects negative dimensions", function()
+        expect_error(function()
+            lurek.image.newLayeredImage(-2, 9)
+        end)
     end)
 
     -- @covers lurek.image.newPaletteLut
@@ -518,6 +532,14 @@ describe("LImageData methods", function()
         local w, h = out:getDimensions()
         expect_equal(3, w)
         expect_equal(5, h)
+    end)
+
+    -- @covers LImageData:resize
+    it("resize rejects negative output dimensions", function()
+        local img = solid_image(4, 4, 255, 0, 0, 255)
+        expect_error(function()
+            img:resize(-1, 5, "lanczos3")
+        end)
     end)
 
     -- @covers LImageData:resizeNearest

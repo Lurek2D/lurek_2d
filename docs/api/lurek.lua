@@ -1057,6 +1057,12 @@ LRaycasterCastRayResult = {}
 ---@field tex_u number Texture u coordinate.
 LRaycasterCastRaysResult = {}
 
+---@class LRaycasterGetLastBuildStatsResult
+---@field lightingCacheHits number Number of reused lighting samples served from the per-build cache.
+---@field lightingCacheMisses number Number of unique lighting samples computed during the last build.
+---@field lightingSamples number Total lighting samples requested during the last build.
+LRaycasterGetLastBuildStatsResult = {}
+
 ---@class LRaycasterGetLoweredFloorCellResult
 ---@field b number Blue component.
 ---@field blocked boolean Blocked.
@@ -1065,6 +1071,23 @@ LRaycasterCastRaysResult = {}
 ---@field r number Red component.
 ---@field texture number Texture id.
 LRaycasterGetLoweredFloorCellResult = {}
+
+---@class LRaycasterPickScreenResult
+---@field cell_value number Cell value at the picked tile.
+---@field distance number Camera-space distance to the picked point.
+---@field hit_x number World hit X.
+---@field hit_y number World hit Y.
+---@field id number Optional caller-supplied entity id for sprite/model hits.
+---@field level number Level index. For a single `LRaycaster` map this is always 0.
+---@field ray_angle number Ray angle used to resolve this pick.
+---@field side number Wall side for wall hits only (0=x, 1=y).
+---@field surface string "wall", "floor", "ceiling", "sprite", or "model".
+---@field texture number Raw floor/ceiling texture id when available.
+---@field u number Surface U coordinate in 0.0..1.0.
+---@field v number Surface V coordinate in 0.0..1.0.
+---@field x number Grid X coordinate.
+---@field y number Grid Y coordinate.
+LRaycasterPickScreenResult = {}
 
 ---@class LRaycasterProjectSpriteResult
 ---@field distance number Distance.
@@ -1982,23 +2005,24 @@ LCameraRig = {}
 ---@class LCameraWalker
 LCameraWalker = {}
 
---- Lua userdata for rendering a stacked area series chart.
 ---@class LAreaChart
 LAreaChart = {}
 
---- Lua userdata for rendering a vertical bar series chart.
 ---@class LBarChart
 LBarChart = {}
 
---- Lua userdata for rendering a connected line series chart.
+---@class LHeatmapChart
+LHeatmapChart = {}
+
+---@class LHistogramChart
+LHistogramChart = {}
+
 ---@class LLineChart
 LLineChart = {}
 
---- Lua userdata for rendering a pie slice chart.
 ---@class LPieChart
 LPieChart = {}
 
---- Lua-visible scatter plot userdata.
 ---@class LScatterPlot
 LScatterPlot = {}
 
@@ -2647,6 +2671,10 @@ LDoorManager = {}
 ---@class LHeightMap
 LHeightMap = {}
 
+--- Lua-visible persistent multi-level raycaster world used for repeated build/pick calls.
+---@class LMultiLevelGrid
+LMultiLevelGrid = {}
+
 --- Lua-visible point light that illuminates nearby raycaster tiles and sprites with colored light and falloff.
 ---@class LPointLight
 LPointLight = {}
@@ -2654,6 +2682,10 @@ LPointLight = {}
 --- Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
 ---@class LRaycaster
 LRaycaster = {}
+
+--- Lua-visible adapter that snapshots sprites, lights, and models from static data and physics bodies.
+---@class LSceneAdapter
+LSceneAdapter = {}
 
 --- Lua-visible sprite manager that tracks world-space billboard sprites for sorting and projection.
 ---@class LSpriteManager
@@ -7439,181 +7471,490 @@ lurek.camera.newRig = function() end
 ---@return LCameraWalker New walker handle.
 lurek.camera.newWalker = function(map, opts) end
 
---- Add a named data series to the area chart (stacked above previous).
----@param name string Display name of the series.
----@param data table Array of {x, y} point tables.
----@param color? table Optional RGBA color {r, g, b, a}.
+---@param name any
+---@param values any
+---@param color? any
+function LAreaChart:addLayer(name, values, color) end
+
+function LAreaChart:addLayerFromDataFrame() end
+
+---@param name any
+---@param data any
+---@param color? any
 function LAreaChart:addSeries(name, data, color) end
 
---- Removes all data series from this chart.
+---@param name any
+---@param x any
+---@param y any
+---@param color? any
+function LAreaChart:appendPoint(name, x, y, color) end
+
 function LAreaChart:clear() end
 
---- Get the chart output height in pixels.
----@return number Height in pixels.
+---@param x any
+---@param y any
+---@param opts? any
+function LAreaChart:draw(x, y, opts) end
+
+---@param target any
+function LAreaChart:drawToImage(target) end
+
 function LAreaChart:getHeight() end
 
---- Get the chart output width in pixels.
----@return number Width in pixels.
 function LAreaChart:getWidth() end
 
---- Renders the chart contents into a new pixel buffer.
----@return number Output width in pixels.
----@return number Output height in pixels.
----@return string RGBA8 pixel data as a binary string.
 function LAreaChart:render() end
 
---- Set or update the chart's displayed title.
----@param title string New chart title text.
+function LAreaChart:renderImage() end
+
+---@param value any
+function LAreaChart:setShowLegend(value) end
+
+---@param title any
 function LAreaChart:setTitle(title) end
 
---- Add a named data series to the bar chart.
----@param name string Display name of the series.
----@param data table Array of {x, y} point tables.
----@param color? table Optional RGBA color {r, g, b, a}.
+---@param max_points? any
+function LAreaChart:setWindow(max_points) end
+
+---@param label any
+function LAreaChart:setXLabel(label) end
+
+---@param count any
+function LAreaChart:setXTickCount(count) end
+
+---@param label any
+function LAreaChart:setYLabel(label) end
+
+---@param value any
+function LAreaChart:setYMax(value) end
+
+---@param count any
+function LAreaChart:setYTickCount(count) end
+
+function LAreaChart:type() end
+
+---@param name any
+function LAreaChart:typeOf(name) end
+
+---@param df any
+---@param label_col any
+---@param value_cols any
+---@param opts? any
+function LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts) end
+
+---@param label any
+---@param values any
+function LBarChart:addCategory(label, values) end
+
+---@param name any
+---@param data any
+---@param color? any
 function LBarChart:addSeries(name, data, color) end
 
---- Removes all data series from this chart.
 function LBarChart:clear() end
 
---- Get the chart output height in pixels.
----@return number Height in pixels.
+---@param x any
+---@param y any
+---@param opts? any
+function LBarChart:draw(x, y, opts) end
+
+---@param target any
+function LBarChart:drawToImage(target) end
+
 function LBarChart:getHeight() end
 
---- Get the chart output width in pixels.
----@return number Width in pixels.
 function LBarChart:getWidth() end
 
---- Renders the chart contents into a new pixel buffer.
----@return number Output width in pixels.
----@return number Output height in pixels.
----@return string RGBA8 pixel data as a binary string.
 function LBarChart:render() end
 
---- Set the pixel width of individual bars in this chart.
----@param width number Bar width in pixels (minimum 1).
+function LBarChart:renderImage() end
+
+---@param width any
 function LBarChart:setBarWidth(width) end
 
---- Set or update the chart's displayed title.
----@param title string New chart title text.
+---@param value any
+function LBarChart:setShowLegend(value) end
+
+---@param title any
 function LBarChart:setTitle(title) end
 
---- Add a named data series to the line chart.
----@param name string Display name of the series.
----@param data table Array of {x, y} point tables.
----@param color? table Optional RGBA color {r, g, b, a}.
+---@param label any
+function LBarChart:setXLabel(label) end
+
+---@param count any
+function LBarChart:setXTickCount(count) end
+
+---@param label any
+function LBarChart:setYLabel(label) end
+
+---@param count any
+function LBarChart:setYTickCount(count) end
+
+function LBarChart:type() end
+
+---@param name any
+function LBarChart:typeOf(name) end
+
+function LHeatmapChart:clear() end
+
+function LHeatmapChart:clearValueRange() end
+
+---@param x any
+---@param y any
+---@param opts? any
+function LHeatmapChart:draw(x, y, opts) end
+
+---@param target any
+function LHeatmapChart:drawToImage(target) end
+
+function LHeatmapChart:getHeight() end
+
+function LHeatmapChart:getWidth() end
+
+function LHeatmapChart:render() end
+
+function LHeatmapChart:renderImage() end
+
+---@param rows any
+---@param cols any
+function LHeatmapChart:resize(rows, cols) end
+
+---@param row any
+---@param col any
+---@param value any
+function LHeatmapChart:setCell(row, col, value) end
+
+---@param low any
+---@param high any
+function LHeatmapChart:setColorRange(low, high) end
+
+---@param labels any
+function LHeatmapChart:setColumnLabels(labels) end
+
+---@param matrix any
+---@param row_labels? any
+---@param col_labels? any
+function LHeatmapChart:setMatrix(matrix, row_labels, col_labels) end
+
+---@param df any
+---@param row_col any
+---@param col_col any
+---@param value_col any
+---@param opts? any
+function LHeatmapChart:setMatrixFromDataFrame(df, row_col, col_col, value_col, opts) end
+
+---@param labels any
+function LHeatmapChart:setRowLabels(labels) end
+
+---@param value any
+function LHeatmapChart:setShowLegend(value) end
+
+---@param value any
+function LHeatmapChart:setShowValues(value) end
+
+---@param title any
+function LHeatmapChart:setTitle(title) end
+
+---@param min any
+---@param max any
+function LHeatmapChart:setValueRange(min, max) end
+
+function LHeatmapChart:type() end
+
+---@param name any
+function LHeatmapChart:typeOf(name) end
+
+---@param name any
+---@param values any
+---@param color? any
+function LHistogramChart:addSeries(name, values, color) end
+
+function LHistogramChart:addSeriesFromDataFrame() end
+
+---@param name any
+---@param value any
+---@param color? any
+function LHistogramChart:appendValue(name, value, color) end
+
+function LHistogramChart:clear() end
+
+function LHistogramChart:clearRange() end
+
+---@param x any
+---@param y any
+---@param opts? any
+function LHistogramChart:draw(x, y, opts) end
+
+---@param target any
+function LHistogramChart:drawToImage(target) end
+
+function LHistogramChart:getHeight() end
+
+function LHistogramChart:getWidth() end
+
+function LHistogramChart:render() end
+
+function LHistogramChart:renderImage() end
+
+---@param name any
+---@param values any
+---@param color? any
+function LHistogramChart:replaceSeries(name, values, color) end
+
+---@param bins any
+function LHistogramChart:setBinCount(bins) end
+
+---@param enabled any
+function LHistogramChart:setDensity(enabled) end
+
+---@param min any
+---@param max any
+function LHistogramChart:setRange(min, max) end
+
+---@param value any
+function LHistogramChart:setShowLegend(value) end
+
+---@param title any
+function LHistogramChart:setTitle(title) end
+
+---@param max_points? any
+function LHistogramChart:setWindow(max_points) end
+
+---@param label any
+function LHistogramChart:setXLabel(label) end
+
+---@param count any
+function LHistogramChart:setXTickCount(count) end
+
+---@param label any
+function LHistogramChart:setYLabel(label) end
+
+---@param count any
+function LHistogramChart:setYTickCount(count) end
+
+function LHistogramChart:type() end
+
+---@param name any
+function LHistogramChart:typeOf(name) end
+
+---@param name any
+---@param data any
+---@param color? any
 function LLineChart:addSeries(name, data, color) end
 
---- Removes all data series from this chart.
+function LLineChart:addSeriesFromDataFrame() end
+
+---@param name any
+---@param x any
+---@param y any
+---@param color? any
+function LLineChart:appendPoint(name, x, y, color) end
+
 function LLineChart:clear() end
 
---- Get the chart output height in pixels.
----@return number Height in pixels.
+---@param x any
+---@param y any
+---@param opts? any
+function LLineChart:draw(x, y, opts) end
+
+---@param target any
+function LLineChart:drawToImage(target) end
+
 function LLineChart:getHeight() end
 
---- Get the chart output width in pixels.
----@return number Width in pixels.
 function LLineChart:getWidth() end
 
---- Renders the chart contents into a new pixel buffer.
----@return number Output width in pixels.
----@return number Output height in pixels.
----@return string RGBA8 pixel data as a binary string.
+---@param x any
+---@param y any
+function LLineChart:nearest(x, y) end
+
 function LLineChart:render() end
 
---- Set or update the chart's displayed title.
----@param title string New chart title text.
+function LLineChart:renderImage() end
+
+---@param name any
+---@param data any
+---@param color? any
+function LLineChart:replaceSeries(name, data, color) end
+
+---@param value any
+function LLineChart:setShowLegend(value) end
+
+---@param title any
 function LLineChart:setTitle(title) end
 
---- Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.
----@param label string Display label for the slice.
----@param value number Numeric value determining the slice proportion.
----@param color? table Optional RGBA color {r, g, b, a}. Auto-assigned from palette if nil.
+---@param max_points? any
+function LLineChart:setWindow(max_points) end
+
+---@param label any
+function LLineChart:setXLabel(label) end
+
+---@param value any
+function LLineChart:setXMax(value) end
+
+---@param count any
+function LLineChart:setXTickCount(count) end
+
+---@param label any
+function LLineChart:setYLabel(label) end
+
+---@param value any
+function LLineChart:setYMax(value) end
+
+---@param count any
+function LLineChart:setYTickCount(count) end
+
+function LLineChart:type() end
+
+---@param name any
+function LLineChart:typeOf(name) end
+
+---@param label any
+---@param value any
+---@param color? any
+function LPieChart:addSegment(label, value, color) end
+
+---@param df any
+---@param label_col any
+---@param value_col any
+---@param opts? any
+function LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts) end
+
+---@param label any
+---@param value any
+---@param color? any
 function LPieChart:addSlice(label, value, color) end
 
---- Removes all pie data slices from this chart.
 function LPieChart:clear() end
 
---- Get the chart output height in pixels.
----@return number Height in pixels.
+---@param x any
+---@param y any
+---@param opts? any
+function LPieChart:draw(x, y, opts) end
+
+---@param target any
+function LPieChart:drawToImage(target) end
+
 function LPieChart:getHeight() end
 
---- Get the chart output width in pixels.
----@return number Width in pixels.
 function LPieChart:getWidth() end
 
---- Renders the chart contents into a new pixel buffer.
----@return number Output width in pixels.
----@return number Output height in pixels.
----@return string RGBA8 pixel data as a binary string.
 function LPieChart:render() end
 
---- Set or update the chart's displayed title.
----@param title string New chart title text.
+function LPieChart:renderImage() end
+
+---@param value any
+function LPieChart:setShowLegend(value) end
+
+---@param title any
 function LPieChart:setTitle(title) end
 
---- Add a named data series to the scatter plot.
----@param name string Display name of the series.
----@param data table Array of {x, y} point tables.
----@param color? table Optional RGBA color {r, g, b, a}.
+function LPieChart:type() end
+
+---@param name any
+function LPieChart:typeOf(name) end
+
+---@param name any
+---@param data any
+---@param color? any
 function LScatterPlot:addSeries(name, data, color) end
 
---- Removes all data series from this chart.
+function LScatterPlot:addSeriesFromDataFrame() end
+
+---@param name any
+---@param x any
+---@param y any
+---@param color? any
+function LScatterPlot:appendPoint(name, x, y, color) end
+
 function LScatterPlot:clear() end
 
---- Get the chart output height in pixels.
----@return number Height in pixels.
+---@param x any
+---@param y any
+---@param opts? any
+function LScatterPlot:draw(x, y, opts) end
+
+---@param target any
+function LScatterPlot:drawToImage(target) end
+
 function LScatterPlot:getHeight() end
 
---- Get the chart output width in pixels.
----@return number Width in pixels.
 function LScatterPlot:getWidth() end
 
---- Renders the chart contents into a new pixel buffer.
----@return number Output width in pixels.
----@return number Output height in pixels.
----@return string RGBA8 pixel data as a binary string.
+---@param x any
+---@param y any
+function LScatterPlot:nearest(x, y) end
+
 function LScatterPlot:render() end
 
---- Set the radius of the dot drawn for each data point.
----@param r number Dot radius in pixels (minimum 1).
-function LScatterPlot:setDotRadius(r) end
+function LScatterPlot:renderImage() end
 
---- Set or update the chart's displayed title.
----@param title string New chart title text.
+---@param name any
+---@param data any
+---@param color? any
+function LScatterPlot:replaceSeries(name, data, color) end
+
+---@param radius any
+function LScatterPlot:setDotRadius(radius) end
+
+---@param value any
+function LScatterPlot:setShowLegend(value) end
+
+---@param title any
 function LScatterPlot:setTitle(title) end
 
---- Get the default 8-color series palette.
----@return table Array of 8 color tables, each {r, g, b, a}.
+---@param max_points? any
+function LScatterPlot:setWindow(max_points) end
+
+---@param label any
+function LScatterPlot:setXLabel(label) end
+
+---@param min_x any
+---@param max_x any
+function LScatterPlot:setXRange(min_x, max_x) end
+
+---@param count any
+function LScatterPlot:setXTickCount(count) end
+
+---@param label any
+function LScatterPlot:setYLabel(label) end
+
+---@param min_y any
+---@param max_y any
+function LScatterPlot:setYRange(min_y, max_y) end
+
+---@param count any
+function LScatterPlot:setYTickCount(count) end
+
+function LScatterPlot:type() end
+
+---@param name any
+function LScatterPlot:typeOf(name) end
+
 lurek.charts.defaultPalette = function() end
 
---- Create a new area chart exposed by the lurek engine.
----@param config? table Optional chart configuration table.
----@return LAreaChart A area chart userdata object.
+---@param config? any
 lurek.charts.newArea = function(config) end
 
---- Create a new bar chart exposed by the lurek engine.
----@param config? table Optional chart configuration table.
----@return LBarChart A bar chart userdata object.
+---@param config? any
 lurek.charts.newBar = function(config) end
 
---- Create a new line chart exposed by the lurek engine.
----@param config? table Optional chart configuration table.
----@return LLineChart A line chart userdata object.
+---@param config? any
+lurek.charts.newHeatmap = function(config) end
+
+---@param config? any
+lurek.charts.newHistogram = function(config) end
+
+---@param config? any
 lurek.charts.newLine = function(config) end
 
---- Create a new pie chart exposed by the lurek engine.
----@param config? table Optional chart configuration table.
----@return LPieChart A pie chart userdata object.
+---@param config? any
 lurek.charts.newPie = function(config) end
 
---- Create a new scatter plot exposed by the lurek engine.
----@param config? table Optional chart configuration table.
----@return LScatterPlot A scatter plot userdata object.
+---@param config? any
 lurek.charts.newScatter = function(config) end
 
---- Get a palette color by 1-based index (wraps around for index > 8).
----@param index number 1-based palette index.
----@return table Color table {r, g, b, a}.
+---@param index any
 lurek.charts.seriesColor = function(index) end
 
 --- Appends a timed cut to the cinematic timeline.
@@ -12446,15 +12787,26 @@ function LGlobe:addLayer(name, z_order) end
 ---@return number New marker id.
 function LGlobe:addMarker(mtype, lat, lon, label) end
 
---- Adds a province described by id, centroid, vertices, neighbors, and optional base color.
----@param p table Province table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`.
+--- Adds a province described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
+---@param p table Province table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`.
 ---@return boolean True when the province was accepted by the globe.
 function LGlobe:addProvince(p) end
 
---- Adds a region described by id, centroid, vertices, neighbors, and optional base color.
----@param p table Region table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`.
+--- Adds a region described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
+---@param p table Region table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`.
 ---@return boolean True when the region was accepted by the globe.
 function LGlobe:addRegion(p) end
+
+--- Applies a pointer drag to the globe camera using screen-space deltas.
+---@param start_x number Drag start x.
+---@param start_y number Drag start y.
+---@param end_x number Drag end x.
+---@param end_y number Drag end y.
+function LGlobe:applyMouseDrag(start_x, start_y, end_x, end_y) end
+
+--- Applies a wheel delta using an exponential zoom scale.
+---@param delta number Wheel delta where positive zooms in and negative zooms out.
+function LGlobe:applyWheelZoom(delta) end
 
 --- Caches default-cost reachability for a named faction.
 ---@param faction string Faction cache key.
@@ -12473,20 +12825,37 @@ function LGlobe:clearProvinceTexture(id) end
 ---@return boolean True when the payload was decoded.
 function LGlobe:decodeFogBase64(viewer, payload) end
 
+--- Computes great-circle distance between two markers on the unit sphere.
+---@param a number First marker id.
+---@param b number Second marker id.
+---@return number Great-circle distance, or nil when either marker is missing.
+function LGlobe:distanceBetweenMarkers(a, b) end
+
+--- Emits the globe's render commands into the shared renderer command queue.
+---@param opts? table Optional draw settings with `screen_cx` and `screen_cy`.
+function LGlobe:draw(opts) end
+
 --- Serializes one viewer's fog state to a base64 string.
 ---@param viewer string Viewer name.
 ---@return string Base64-encoded fog state, or an empty string on encode failure.
 function LGlobe:encodeFogBase64(viewer) end
 
---- Exports province geometry as Wavefront OBJ text.
----@return string OBJ mesh text for the current provinces.
+--- Exports province geometry as Wavefront OBJ text, preserving multipart boundaries and hole loops.
+---@return string OBJ text for the current provinces, including grouped boundary loops and any available fill geometry.
 function LGlobe:exportProvinceMeshOBJ() end
 
 --- Finds a default-cost province path between two province ids.
 ---@param from_id number Start province id.
 ---@param to_id number Target province id.
----@return string[] Province ids, or nil when no path exists.
+---@return number[] Province ids, or nil when no path exists.
 function LGlobe:findPath(from_id, to_id) end
+
+--- Finds a province path using caller-supplied traversal costs, blocked ids, and edge-tag surcharges.
+---@param from_id number Start province id.
+---@param to_id number Target province id.
+---@param opts? table Optional cost table with `default_cost`, `province_costs`, `tag_costs`, and `blocked_ids`.
+---@return table Result table with `ids` and `total_cost`, or nil when no path exists.
+function LGlobe:findPathWithCosts(from_id, to_id, opts) end
 
 --- Returns cached reachability costs for a faction.
 ---@param faction string Faction cache key.
@@ -12498,6 +12867,12 @@ function LGlobe:getCachedReachability(faction) end
 ---@return number Camera longitude in degrees.
 ---@return number Camera zoom.
 function LGlobe:getCamera() end
+
+--- Returns the sorted tag strings stored on a province edge.
+---@param a number First province id.
+---@param b number Second province id.
+---@return string[] Sequential table of edge tag strings, empty when none are set.
+function LGlobe:getEdgeTags(a, b) end
 
 --- Returns fog-of-war state for one viewer and province.
 ---@param viewer string Viewer name.
@@ -12534,6 +12909,12 @@ function LGlobe:getProvinceAttr(id, key) end
 ---@param id number Province id.
 ---@return string Sector string, or nil when absent.
 function LGlobe:getProvinceSector(id) end
+
+--- Reads a string attribute from a semantic region.
+---@param id number Region id.
+---@param key string Attribute key.
+---@return string Attribute string, or nil when the region or key is missing.
+function LGlobe:getRegionAttr(id, key) end
 
 --- Returns province ids assigned to a sector.
 ---@param sector string Sector name.
@@ -12573,22 +12954,42 @@ function LGlobe:pan(dlat, dlon) end
 ---@return number Province id, or nil when nothing is hit.
 function LGlobe:pick(sx, sy) end
 
---- Picks at screen coordinates and returns the hit province centroid screen coordinates.
+--- Picks at screen coordinates and returns the hit surface latitude and longitude.
 ---@param sx number Screen x coordinate.
 ---@param sy number Screen y coordinate.
----@return number Centroid x coordinate; or nil when nothing is hit.
----@return number Centroid y coordinate; or nil when nothing is hit.
+---@return number Latitude in degrees; or nil when nothing is hit.
+---@return number Longitude in degrees; or nil when nothing is hit.
 function LGlobe:pickLatLon(sx, sy) end
 
---- Samples along a screen ray from the camera center and returns the first hit province.
+--- Returns the nearest visible marker at a screen position within an optional pixel radius.
+---@param sx number Screen x coordinate.
+---@param sy number Screen y coordinate.
+---@param radius? number Maximum marker distance in pixels, default 12.
+---@return number Marker id, or nil when no visible marker is within range.
+function LGlobe:pickMarker(sx, sy, radius) end
+
+--- Samples along the screen-space line from the globe center to the target and returns the first hit province.
 ---@param sx number Target screen x coordinate.
 ---@param sy number Target screen y coordinate.
----@param steps? number Number of samples along the ray, defaulting to 24.
+---@param steps? number Number of screen-space samples along the line, defaulting to 24.
 ---@return number Province id, or nil when no sample hits.
 function LGlobe:pickRaycast(sx, sy, steps) end
 
---- Returns the number of regions in this globe.
----@return number Region count.
+--- Returns semantic region ids under a screen-space hit.
+---@param sx number Screen x coordinate.
+---@param sy number Screen y coordinate.
+---@return number[] Array table of semantic region ids.
+function LGlobe:pickRegions(sx, sy) end
+
+--- Resolves a screen-space hit into globe surface data plus province, marker, and semantic-region hits.
+---@param sx number Screen x coordinate.
+---@param sy number Screen y coordinate.
+---@param marker_radius? number Maximum marker distance in pixels when testing marker hits.
+---@return table Pick result table, or nil when the screen point is off the globe.
+function LGlobe:pickSurface(sx, sy, marker_radius) end
+
+--- Returns the number of rendered provinces in this globe.
+---@return number Province count.
 function LGlobe:provinceCount() end
 
 --- Returns provinces reachable from a start province within a cost budget.
@@ -12597,9 +12998,22 @@ function LGlobe:provinceCount() end
 ---@return table Map table from province id (integer key) to accumulated traversal cost (number).
 function LGlobe:reachable(start_id, max_cost) end
 
---- Returns the number of regions in this globe.
----@return number Region count.
+--- Returns provinces reachable under caller-supplied traversal costs, blocked ids, and edge-tag surcharges.
+---@param start_id number Start province id.
+---@param max_cost number Maximum traversal cost.
+---@param opts? table Optional cost table with `default_cost`, `province_costs`, `tag_costs`, and `blocked_ids`.
+---@return table Map table from province id (integer key) to accumulated traversal cost (number).
+function LGlobe:reachableWithCosts(start_id, max_cost, opts) end
+
+--- Returns the number of stored semantic regions in this globe.
+---@return number Semantic region count.
 function LGlobe:regionCount() end
+
+--- Returns semantic region ids containing a latitude-longitude point.
+---@param lat number Latitude in degrees.
+---@param lon number Longitude in degrees.
+---@return number[] Array table of semantic region ids.
+function LGlobe:regionsAtLatLon(lat, lon) end
 
 --- Removes an arc by id. This method is available to Lua scripts.
 ---@param id number Arc id.
@@ -12645,6 +13059,23 @@ function LGlobe:revealAll(viewer) end
 ---@param id number Province id.
 function LGlobe:revealProvince(viewer, id) end
 
+--- Converts a screen-space drag delta into latitude and longitude pan deltas.
+---@param dx number Screen-space x delta in pixels.
+---@param dy number Screen-space y delta in pixels.
+---@return number Latitude delta in degrees.
+---@return number Longitude delta in degrees.
+function LGlobe:screenDeltaToPan(dx, dy) end
+
+--- Converts a visible screen position into globe latitude, longitude, and unit-sphere coordinates.
+---@param sx number Screen x coordinate.
+---@param sy number Screen y coordinate.
+---@return number Latitude in degrees; or nil when the point is off the globe.
+---@return number Longitude in degrees; or nil when the point is off the globe.
+---@return number Unit-sphere x coordinate; or nil when the point is off the globe.
+---@return number Unit-sphere y coordinate; or nil when the point is off the globe.
+---@return number Unit-sphere z coordinate; or nil when the point is off the globe.
+function LGlobe:screenToLatLon(sx, sy) end
+
 --- Sets the active fog-of-war viewer name or clears it.
 ---@param viewer? string Viewer name.
 function LGlobe:setActiveViewer(viewer) end
@@ -12662,6 +13093,13 @@ function LGlobe:setBorders(show) end
 ---@param lon number Camera longitude in degrees.
 ---@param z number Camera zoom, clamped to at least 0.1.
 function LGlobe:setCamera(lat, lon, z) end
+
+--- Replaces the tag set stored on an existing province edge.
+---@param a number First province id.
+---@param b number Second province id.
+---@param tags string[] Sequential table of edge tag strings.
+---@return boolean True when the edge exists and the tags were stored.
+function LGlobe:setEdgeTags(a, b, tags) end
 
 --- Sets fog-of-war state for one viewer and province.
 ---@param viewer string Viewer name.
@@ -12718,6 +13156,21 @@ function LGlobe:setLayerVisible(name, vis) end
 ---@return boolean True when the marker exists.
 function LGlobe:setMarkerAttr(id, key, val) end
 
+--- Sets marker tint color.
+---@param id number Marker id.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaulting to 1.0.
+---@return boolean True when the marker exists.
+function LGlobe:setMarkerColor(id, r, g, b, a) end
+
+--- Assigns or clears a raw texture handle for a marker icon.
+---@param id number Marker id.
+---@param tex_raw? number Raw texture handle, or nil to clear the icon.
+---@return boolean True when the marker exists.
+function LGlobe:setMarkerIconTexture(id, tex_raw) end
+
 --- Sets marker pulse frequency and amplitude.
 ---@param id number Marker id.
 ---@param hz number Pulse frequency in hertz, clamped to at least zero.
@@ -12730,6 +13183,18 @@ function LGlobe:setMarkerPulse(id, hz, amp) end
 ---@param dps number Rotation speed in degrees per second.
 ---@return boolean True when the marker exists.
 function LGlobe:setMarkerRotation(id, dps) end
+
+--- Sets the vector fallback shape used by a marker.
+---@param id number Marker id.
+---@param shape string One of `circle`, `square`, `diamond`, `triangle`, or `cross`.
+---@return boolean True when the marker exists.
+function LGlobe:setMarkerShape(id, shape) end
+
+--- Sets marker size in screen units.
+---@param id number Marker id.
+---@param size number Marker size, clamped to at least 1.0.
+---@return boolean True when the marker exists.
+function LGlobe:setMarkerSize(id, size) end
 
 --- Shows or hides a marker. This method is available to Lua scripts.
 ---@param id number Marker id.
@@ -12759,6 +13224,13 @@ function LGlobe:setProvinceSector(id, sector) end
 ---@param v1 number Bottom UV coordinate.
 ---@return boolean True when the province exists.
 function LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1) end
+
+--- Sets a string attribute on a semantic region.
+---@param id number Region id.
+---@param key string Attribute key.
+---@param val string Attribute value.
+---@return boolean True when the region exists.
+function LGlobe:setRegionAttr(id, key, val) end
 
 --- Sets globe rotation angle. This method is available to Lua scripts.
 ---@param deg number Rotation in degrees.
@@ -12858,14 +13330,14 @@ lurek.globe.loadFromPNG = function(name, png_path, spec_tbl) end
 
 --- Creates a globe and populates provinces from TOML source text.
 ---@param name string Globe registry name.
----@param toml_src string TOML province document source.
+---@param toml_src string TOML province document source supporting either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.
 ---@param spec_tbl? table Globe specification table.
 ---@return LGlobe New populated globe handle.
 lurek.globe.loadFromTOML = function(name, toml_src, spec_tbl) end
 
 --- Creates a globe and populates provinces from a TOML file path.
 ---@param name string Globe registry name.
----@param path string TOML file path to load.
+---@param path string TOML file path to load. Provinces may use either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.
 ---@param spec_tbl? table Globe specification table.
 ---@return LGlobe New populated globe handle.
 lurek.globe.loadFromTOMLFile = function(name, path, spec_tbl) end
@@ -15768,6 +16240,10 @@ lurek.log.warn = function(message, tag) end
 ---@param fields_tbl table Scalar field table converted to strings.
 lurek.log.warn_fields = function(message, fields_tbl) end
 
+--- Get the number of occupied footprint cells.
+---@return number Occupied footprint cell count.
+function LMapBlock:getFootprintCellCount() end
+
 --- Get height in tiles for this object.
 ---@return number Block height.
 function LMapBlock:getHeight() end
@@ -15780,6 +16256,13 @@ function LMapBlock:getLayerCount() end
 ---@return string Block name.
 function LMapBlock:getName() end
 
+--- Get a previously stored per-cell socket type.
+---@param x number Footprint cell X.
+---@param y number Footprint cell Y.
+---@param edge string Edge direction.
+---@return number Socket type or 0 when missing.
+function LMapBlock:getSocket(x, y, edge) end
+
 --- Get the tile GID at a specified row and column position.
 ---@param layer number Layer index.
 ---@param x number Tile X.
@@ -15788,9 +16271,19 @@ function LMapBlock:getName() end
 ---@return number Tile GID.
 function LMapBlock:getTile(layer, x, y, slot) end
 
+--- Get block weight for random selection.
+---@return number Weight value.
+function LMapBlock:getWeight() end
+
 --- Get the block width measured in tile grid units.
 ---@return number Block width.
 function LMapBlock:getWidth() end
+
+--- Check whether a local footprint cell exists.
+---@param x number Cell X.
+---@param y number Cell Y.
+---@return boolean True if occupied by the footprint.
+function LMapBlock:isFootprintCell(x, y) end
 
 --- Set edge type for a side and segment.
 ---@param edge string Edge direction: "north", "east", "south", "west".
@@ -15801,6 +16294,10 @@ function LMapBlock:setEdge(edge, segment, edge_type) end
 --- Set whether block must be on map edge.
 ---@param edge_only boolean True if edge-only.
 function LMapBlock:setEdgeOnly(edge_only) end
+
+--- Replace the placement footprint with a custom cell list.
+---@param cells table Array of {x, y} cells.
+function LMapBlock:setFootprint(cells) end
 
 --- Set whether block must be in interior.
 ---@param interior_only boolean True if interior-only.
@@ -15813,6 +16310,13 @@ function LMapBlock:setLevelSpan(levels) end
 --- Set the map block's display or lookup name string value.
 ---@param name string Block name.
 function LMapBlock:setName(name) end
+
+--- Set a per-cell socket type for one edge of the footprint.
+---@param x number Footprint cell X.
+---@param y number Footprint cell Y.
+---@param edge string Edge direction.
+---@param edge_type number Socket type identifier.
+function LMapBlock:setSocket(x, y, edge, edge_type) end
 
 --- Set a tile slot value â€” Lua userdata object exposed by the engine.
 ---@param layer number Layer index (0-based).
@@ -15862,6 +16366,10 @@ function LMapBlockGenerator:generate(script) end
 --- Get last placement count for this object.
 ---@return number Blocks placed in last generation.
 function LMapBlockGenerator:getLastPlacedCount() end
+
+--- Set the placement grid from a prepared PlacementGrid object.
+---@param grid LPlacementGrid Grid to clone into the generator.
+function LMapBlockGenerator:setGrid(grid) end
 
 --- Set the number of vertical levels or storeys to generate.
 ---@param levels number Max levels (1-10).
@@ -15917,6 +16425,10 @@ function LMapBlockResult:getLayerCount() end
 --- Get number of levels for this object.
 ---@return number Level count.
 function LMapBlockResult:getLevelCount() end
+
+--- Get placement summaries from the last generation run.
+---@return table Array of placement records.
+function LMapBlockResult:getPlacements() end
 
 --- Get total width in tiles for this object.
 ---@return number Width.
@@ -15994,6 +16506,17 @@ function LPlacementGrid:getAvailableCount() end
 ---@param y number Y coordinate.
 ---@return boolean True if available.
 function LPlacementGrid:isAvailable(x, y) end
+
+--- Check whether a cell touches the placement-shape boundary.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@return boolean True if the cell lies on the shape edge.
+function LPlacementGrid:isEdgePosition(x, y) end
+
+--- Remove an available position from the grid.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+function LPlacementGrid:removePosition(x, y) end
 
 --- Get the numeric tileset ID for this tileset reference.
 ---@return number Tileset ID.
@@ -18781,6 +19304,10 @@ function LOverlay:getLightningColor() end
 ---@return number Current y offset.
 function LOverlay:getShakeOffset() end
 
+--- Returns a telemetry snapshot for dashboard and debug workflows.
+---@return table Overlay telemetry fields.
+function LOverlay:getStats() end
+
 --- Returns the overlay time-of-day value.
 ---@return number Current time-of-day value.
 function LOverlay:getTimeOfDay() end
@@ -19143,6 +19670,10 @@ function LParallaxLayer:getOpacity() end
 ---@return number Y scroll factor.
 function LParallaxLayer:getScrollFactor() end
 
+--- Returns telemetry for the current runtime camera and viewport.
+---@return table Parallax layer telemetry fields.
+function LParallaxLayer:getStats() end
+
 --- Returns whether layer tiling is enabled.
 ---@return boolean True when tiling is enabled.
 function LParallaxLayer:getTiling() end
@@ -19267,6 +19798,10 @@ function LParallaxSet:getLayerZAt(index) end
 --- Returns this set name from this object.
 ---@return string Set name.
 function LParallaxSet:getName() end
+
+--- Returns aggregated telemetry for all layers in the set.
+---@return table Set-level telemetry fields.
+function LParallaxSet:getStats() end
 
 --- Returns set visibility and returns a boolean.
 ---@return boolean True when visible.
@@ -19506,6 +20041,10 @@ function LParticleSystem:getSpinVariation() end
 --- Returns emission spread. This method is available to Lua scripts.
 ---@return number Spread angle.
 function LParticleSystem:getSpread() end
+
+--- Returns a telemetry snapshot for dashboard and debug workflows.
+---@return table Particle-system telemetry fields.
+function LParticleSystem:getStats() end
 
 --- Returns tangential acceleration range.
 ---@return number Minimum acceleration.
@@ -23808,6 +24347,203 @@ function LHeightMap:type() end
 ---@return boolean True if the name matches this userdata type.
 function LHeightMap:typeOf(name) end
 
+--- Returns the currently active level index used for stacked camera height.
+---@return number Active level index.
+function LMultiLevelGrid:activeLevel() end
+
+--- Appends one level described with the same table format accepted by buildMultiLevelScene.
+---@param level table Level table {width, height, cells, floor_offset?, ceiling_height?, floor_holes?, ceiling_holes?, floor_texture?, ceiling_texture?, floor_cell_textures?, ceiling_cell_textures?, lowered_floor_cells?, wall_features?}.
+---@return number Zero-based level index of the appended level.
+function LMultiLevelGrid:addLevel(level) end
+
+--- Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.
+---@param params table Scene params for the current camera.
+---@param lights? table Array of point-light tables or LPointLight userdata values.
+---@param sprites? table|LSpriteManager Array of level sprite tables or an LSpriteManager.
+---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
+---@return number Total number of quads in the built scene.
+function LMultiLevelGrid:buildScene(params, lights, sprites, wallTextures) end
+
+--- Builds a textured multilevel raycaster scene from a runtime scene adapter that may follow physics bodies.
+---@param params table Scene params for the current camera.
+---@param adapter LSceneAdapter Runtime scene adapter providing lights, sprites, and models.
+---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
+---@return number Total number of quads in the built scene.
+function LMultiLevelGrid:buildSceneFromAdapter(params, adapter, wallTextures) end
+
+--- Removes any per-cell wall feature override from the active level.
+---@param x number Grid column.
+---@param y number Grid row.
+function LMultiLevelGrid:clearWallFeatureCell(x, y) end
+
+--- Returns the ceiling height of the active level in world units.
+---@return number Active-level ceiling height.
+function LMultiLevelGrid:getCeilingHeight() end
+
+--- Returns the default ceiling texture id used by the active level, or nil when none is set.
+---@return number Raw texture id or nil.
+function LMultiLevelGrid:getCeilingTexture() end
+
+--- Returns the per-cell ceiling texture id assigned on the active level, or nil if none is set.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return number Raw texture id or nil.
+function LMultiLevelGrid:getCeilingTextureCell(x, y) end
+
+--- Returns the wall type value at a grid cell on the active level.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return number Cell value (0 = empty, 1+ = wall type).
+function LMultiLevelGrid:getCell(x, y) end
+
+--- Returns the floor height offset of the active level in world units.
+---@return number Active-level floor offset.
+function LMultiLevelGrid:getFloorOffset() end
+
+--- Returns the default floor texture id used by the active level, or nil when none is set.
+---@return number Raw texture id or nil.
+function LMultiLevelGrid:getFloorTexture() end
+
+--- Returns the per-cell floor texture id assigned on the active level, or nil if none is set.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return number Raw texture id or nil.
+function LMultiLevelGrid:getFloorTextureCell(x, y) end
+
+--- Returns the lowered-floor configuration at an active-level cell, or nil if the cell is normal.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return table Table {texture, depth, r, g, b, blocked} or nil.
+function LMultiLevelGrid:getLoweredFloorCell(x, y) end
+
+--- Returns the wall feature attached to an active-level cell, or nil when none is set.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return table Feature table {kind, alpha, ...} or nil.
+function LMultiLevelGrid:getWallFeatureCell(x, y) end
+
+--- Returns true when an active-level cell is open to the level above.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return boolean True when the ceiling is open at this cell.
+function LMultiLevelGrid:isCeilingHole(x, y) end
+
+--- Returns true when an active-level cell is open to the level below.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return boolean True when the floor is open at this cell.
+function LMultiLevelGrid:isFloorHole(x, y) end
+
+--- Returns the total number of stored levels.
+---@return number Level count.
+function LMultiLevelGrid:levelCount() end
+
+--- Resolves a screen-space click against this persistent multi-level world and returns the owning level.
+---@param sx number Screen X in pixels.
+---@param sy number Screen Y in pixels.
+---@param params table Camera params for the current frame.
+---@param wallTextures? table Optional map of cell_value -> texture for wall surfaces.
+---@param sprites? table|LSpriteManager Optional sprite tables or sprite manager used to resolve clickable billboard hits.
+---@param models? table Optional model instance tables used to resolve clickable projected model hits.
+---@return table Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors `getWallFeatureCell()` and adds `section` for the solid band/panel that was hit.
+function LMultiLevelGrid:pickScreen(sx, sy, params, wallTextures, sprites, models) end
+
+--- Resolves a screen-space click against this multilevel world using a runtime scene adapter.
+---@param sx number Screen X in pixels.
+---@param sy number Screen Y in pixels.
+---@param params table Camera params for the current frame.
+---@param wallTextures? table Optional map of cell_value -> texture for wall surfaces.
+---@param adapter LSceneAdapter Runtime scene adapter providing sprites and models.
+---@return table Pick result or nil when nothing was hit. Wall hits may also include `wall_height` plus `feature = {kind, section, ...}` for half walls, windows, and doors.
+function LMultiLevelGrid:pickScreenFromAdapter(sx, sy, params, wallTextures, adapter) end
+
+--- Sets the currently active level index used for stacked camera height.
+---@param level number Zero-based active level index.
+function LMultiLevelGrid:setActiveLevel(level) end
+
+--- Sets the ceiling height of the active level in world units.
+---@param height number New ceiling height in world units.
+function LMultiLevelGrid:setCeilingHeight(height) end
+
+--- Sets whether an active-level cell is open to the level above.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param hole boolean True when the ceiling should be open at this cell.
+function LMultiLevelGrid:setCeilingHole(x, y, hole) end
+
+--- Sets the default ceiling texture used by the active level. Pass nil to clear it.
+---@param texture? LImage Texture image, integer id, or nil to clear.
+function LMultiLevelGrid:setCeilingTexture(texture) end
+
+--- Assigns a per-cell ceiling texture override on the active level. Pass nil to remove the override.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param texture? LImage Texture image, integer id, or nil to clear.
+function LMultiLevelGrid:setCeilingTextureCell(x, y, texture) end
+
+--- Sets the wall type value at a grid cell on the active level. Non-zero values are solid walls.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param val number Wall type (0 = empty, 1+ = wall texture index).
+function LMultiLevelGrid:setCell(x, y, val) end
+
+--- Attaches a sliding door feature to a blocking cell on the active level.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param direction string "horizontal" or "vertical".
+---@param openAmount number Door open amount, 0.0..1.0.
+---@param alpha? number Optional alpha multiplier.
+function LMultiLevelGrid:setDoorCell(x, y, direction, openAmount, alpha) end
+
+--- Sets whether an active-level cell is open to the level below.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param hole boolean True when the floor should be open at this cell.
+function LMultiLevelGrid:setFloorHole(x, y, hole) end
+
+--- Sets the floor height offset of the active level in world units.
+---@param offset number New floor offset in world units.
+function LMultiLevelGrid:setFloorOffset(offset) end
+
+--- Sets the default floor texture used by the active level. Pass nil to clear it.
+---@param texture? LImage Texture image, integer id, or nil to clear.
+function LMultiLevelGrid:setFloorTexture(texture) end
+
+--- Assigns a per-cell floor texture override on the active level. Pass nil to remove the override.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param texture? LImage Texture image, integer id, or nil to clear.
+function LMultiLevelGrid:setFloorTextureCell(x, y, texture) end
+
+--- Attaches a half-height wall feature to a blocking cell on the active level.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param height number Solid wall height from floor, 0.0..1.0.
+function LMultiLevelGrid:setHalfWallCell(x, y, height) end
+
+--- Marks an active-level cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param opts? table Options table {texture, depth?, r?, g?, b?, blocked?} or nil to clear.
+function LMultiLevelGrid:setLoweredFloorCell(x, y, opts) end
+
+--- Attaches a window feature to a blocking cell on the active level, leaving a visible opening between sill and lintel.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param sillHeight number Bottom of the opening from the floor, 0.0..1.0.
+---@param lintelHeight number Top of the opening from the floor, 0.0..1.0.
+---@param alpha? number Wall alpha multiplier for the solid bands.
+function LMultiLevelGrid:setWindowCell(x, y, sillHeight, lintelHeight, alpha) end
+
+--- Returns the type name of this object ("LMultiLevelGrid").
+---@return string Type name string.
+function LMultiLevelGrid:type() end
+
+--- Checks whether this object matches the given type name.
+---@param name string Type name to test against.
+---@return boolean True if this object is of the given type.
+function LMultiLevelGrid:typeOf(name) end
+
 --- Returns the RGB color components of this light.
 ---@return number Red channel (0.0..1.0).
 ---@return number Green channel (0.0..1.0).
@@ -23817,6 +24553,10 @@ function LPointLight:color() end
 --- Returns the brightness multiplier of this light.
 ---@return number Intensity.
 function LPointLight:intensity() end
+
+--- Returns the optional multilevel slice index that owns this light.
+---@return number Level index, or nil when this light is global across levels.
+function LPointLight:level() end
 
 --- Returns the light's falloff radius in world units.
 ---@return number Radius.
@@ -23830,7 +24570,12 @@ function LPointLight:radius() end
 ---@param b number Blue color channel (0.0..1.0).
 ---@param radius number Falloff radius in world units.
 ---@param intensity number Brightness multiplier.
-function LPointLight:set(x, y, r, g, b, radius, intensity) end
+---@param level? number Optional multilevel slice index that owns this light.
+function LPointLight:set(x, y, r, g, b, radius, intensity, level) end
+
+--- Updates the optional multilevel slice index that owns this light.
+---@param level? number Level index, or nil to let this light affect every level.
+function LPointLight:setLevel(level) end
 
 --- Returns the type name of this object ("LPointLight").
 ---@return string Type name string.
@@ -23849,29 +24594,41 @@ function LPointLight:x() end
 ---@return number Y coordinate.
 function LPointLight:y() end
 
+--- Synchronizes animated doors from an `LDoorManager` into this map's per-cell wall features.
+---@param doors LDoorManager Door manager holding animated open amounts.
+---@param alpha? number Optional alpha multiplier for the synchronized door slabs.
+function LRaycaster:applyDoorManager(doors, alpha) end
+
 --- Generates a grid of minimap tile samples around a center point with lighting info.
 ---@param centerX number Center X in world coordinates.
 ---@param centerY number Center Y in world coordinates.
 ---@param radius number Tile radius around the center to sample.
 ---@param ambient number Ambient light level (0.0..1.0).
----@param lights? table Array of point-light tables.
+---@param lights? table Array of point-light tables or LPointLight userdata values.
 ---@return LRaycasterBuildMinimapWindowResult Array of {x, y, blocked, visible, r, g, b, luma} tables.
 function LRaycaster:buildMinimapWindow(centerX, centerY, radius, ambient, lights) end
 
 --- Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
 ---@param params table Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}.
----@param lights? table Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}.
----@param sprites? table Array of sprite tables {x, y, texture, size?}.
+---@param lights? table Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or LPointLight userdata values.
+---@param sprites? table|LSpriteManager Array of sprite tables {x, y, texture?, size?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager with integer/LImage textures.
 ---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
 ---@return number Total number of quads in the built scene.
 function LRaycaster:buildScene(params, lights, sprites, wallTextures) end
 
+--- Builds a textured raycaster scene from a runtime scene adapter that may follow physics bodies.
+---@param params table Scene params (same as buildScene).
+---@param adapter LSceneAdapter Runtime scene adapter providing lights, sprites, and models.
+---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
+---@return number Total number of quads in the built scene.
+function LRaycaster:buildSceneFromAdapter(params, adapter, wallTextures) end
+
 --- Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
 ---@param params table Scene params (same as buildScene).
----@param lights? table Array of point-light tables.
----@param sprites? table Array of sprite tables.
+---@param lights? table Array of point-light tables or LPointLight userdata values.
+---@param sprites? table|LSpriteManager Array of sprite tables with billboard or 4-direction textures, or an LSpriteManager with integer/LImage textures.
 ---@param wallTextures? table Map of cell_value -> texture.
----@param models? table Array of model instance tables {model, x, y, rotation?, scale?}.
+---@param models? table Array of model instance tables {model, x, y, rotation?, yaw?, z?, scale?}.
 ---@return number Total number of quads in the built scene.
 function LRaycaster:buildSceneWithModels(params, lights, sprites, wallTextures, models) end
 
@@ -23923,11 +24680,16 @@ function LRaycaster:castRays(ox, oy, angle, fov, count, maxDist) end
 ---@return number[] Flat array of corrected distance values.
 function LRaycaster:castRaysFlat(ox, oy, angle, fov, count, maxDist) end
 
+--- Removes any per-cell wall feature override from a blocking cell.
+---@param x number Grid column.
+---@param y number Grid row.
+function LRaycaster:clearWallFeatureCell(x, y) end
+
 --- Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
 ---@param x number Tile grid column.
 ---@param y number Tile grid row.
 ---@param ambient number Base ambient light level (0.0..1.0).
----@param lights? table Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}.
+---@param lights? table Array of point-light tables {x, y, radius, r?, g?, b?, color?, intensity?, level?} or LPointLight userdata values.
 ---@return number Red light channel.
 ---@return number Green light channel.
 ---@return number Blue light channel.
@@ -24023,6 +24785,12 @@ function LRaycaster:getLoweredFloorCell(x, y) end
 ---@return number Alpha value (0.0..1.0).
 function LRaycaster:getWallAlpha(tileType) end
 
+--- Returns the wall feature attached to a cell, or nil when none is set.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return table Feature table {kind, alpha, ...} or nil.
+function LRaycaster:getWallFeatureCell(x, y) end
+
 --- Performs a discrete grid-step movement in one of 4 cardinal directions with collision.
 ---@param px number Current X position.
 ---@param py number Current Y position.
@@ -24057,6 +24825,23 @@ function LRaycaster:isWalkBlocked(x, y) end
 ---@param y2 number End Y.
 ---@return boolean True if the path is unobstructed.
 function LRaycaster:lineOfSight(x1, y1, x2, y2) end
+
+--- Resolves a screen-space click back into the raycaster world using the same camera semantics as scene building.
+---@param sx number Screen X in pixels.
+---@param sy number Screen Y in pixels.
+---@param params table Camera params {px, py, angle, fov, max_dist, screen_w, screen_h, camera_height?, horizon_offset?}.
+---@param sprites? table|LSpriteManager Optional sprite tables or sprite manager used to resolve clickable billboard hits.
+---@param models? table Optional model instance tables used to resolve clickable projected model hits.
+---@return LRaycasterPickScreenResult Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors `getWallFeatureCell()` and adds `section` for the solid band/panel that was hit.
+function LRaycaster:pickScreen(sx, sy, params, sprites, models) end
+
+--- Resolves a screen-space click using sprite/model inputs sourced from a runtime scene adapter.
+---@param sx number Screen X in pixels.
+---@param sy number Screen Y in pixels.
+---@param params table Camera params (same as pickScreen).
+---@param adapter LSceneAdapter Runtime scene adapter providing sprites and models.
+---@return table Pick result or nil when nothing was hit. Wall hits may also include `wall_height` plus `feature = {kind, section, ...}` for half walls, windows, and doors.
+function LRaycaster:pickScreenFromAdapter(sx, sy, params, adapter) end
 
 --- Projects a world-space sprite to screen coordinates for billboard rendering.
 ---@param sx number Sprite world X.
@@ -24096,11 +24881,25 @@ function LRaycaster:setCell(x, y, val) end
 ---@param cells table Flat array of numbers with width*height elements.
 function LRaycaster:setCells(cells) end
 
+--- Attaches a sliding door feature to a blocking cell.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param direction string "horizontal" or "vertical".
+---@param openAmount number Door open amount, 0.0..1.0.
+---@param alpha? number Optional alpha multiplier.
+function LRaycaster:setDoorCell(x, y, direction, openAmount, alpha) end
+
 --- Assigns a per-cell floor texture override. Pass nil to remove the override.
 ---@param x number Grid column.
 ---@param y number Grid row.
 ---@param texture? LImage Texture image, integer id, or nil to clear.
 function LRaycaster:setFloorTextureCell(x, y, texture) end
+
+--- Attaches a half-height wall feature to a blocking cell.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param height number Solid wall height from floor, 0.0..1.0.
+function LRaycaster:setHalfWallCell(x, y, height) end
 
 --- Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
 ---@param x number Grid column.
@@ -24112,6 +24911,14 @@ function LRaycaster:setLoweredFloorCell(x, y, opts) end
 ---@param tileType number The cell value (1..255) whose alpha to change.
 ---@param alpha number Opacity (0.0 = fully transparent, 1.0 = fully opaque).
 function LRaycaster:setWallAlpha(tileType, alpha) end
+
+--- Attaches a window feature to a blocking cell, leaving a visible opening between sill and lintel.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param sillHeight number Bottom of the opening from the floor, 0.0..1.0.
+---@param lintelHeight number Top of the opening from the floor, 0.0..1.0.
+---@param alpha? number Wall alpha multiplier for the solid bands.
+function LRaycaster:setWindowCell(x, y, sillHeight, lintelHeight, alpha) end
 
 --- Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.
 ---@param px number Current X position in world space.
@@ -24136,13 +24943,109 @@ function LRaycaster:typeOf(name) end
 ---@return number Map width.
 function LRaycaster:width() end
 
---- Adds a new sprite to the manager at a world position with a texture name and optional scale.
+--- Adds a static directional billboard sprite entry.
 ---@param x number World X position.
 ---@param y number World Y position.
----@param texture string Texture asset name.
+---@param front LImage|number Front-facing texture.
+---@param right LImage|number Right-facing texture.
+---@param back LImage|number Back-facing texture.
+---@param left? LImage|number Left-facing texture (defaults to `right`).
+---@param opts? table Optional {size?, id?, level?, angle?}.
+function LSceneAdapter:addDirectionalSprite(x, y, front, right, back, left, opts) end
+
+--- Adds a static point light entry.
+---@param x number World X position.
+---@param y number World Y position.
+---@param radius number Light falloff radius.
+---@param opts? table Optional {intensity?, color?, r?, g?, b?, level?}.
+function LSceneAdapter:addLight(x, y, radius, opts) end
+
+--- Adds a static OBJ model instance entry.
+---@param model LObjModel OBJ model handle.
+---@param x number World X position.
+---@param y number World Y position.
+---@param opts? table Optional {id?, level?, yaw?, z?, scale?}.
+function LSceneAdapter:addModel(model, x, y, opts) end
+
+--- Adds a static billboard sprite entry.
+---@param x number World X position.
+---@param y number World Y position.
+---@param texture LImage|number Sprite texture.
+---@param opts? table Optional {size?, id?, level?, angle?}.
+function LSceneAdapter:addSprite(x, y, texture, opts) end
+
+--- Binds a directional billboard sprite to a live physics body.
+---@param body LBody Physics body handle.
+---@param front LImage|number Front-facing texture.
+---@param right LImage|number Right-facing texture.
+---@param back LImage|number Back-facing texture.
+---@param left? LImage|number Left-facing texture (defaults to `right`).
+---@param opts? table Optional {size?, id?, level?, offset_x?, offset_y?, angle_offset?}.
+function LSceneAdapter:bindBodyDirectionalSprite(body, front, right, back, left, opts) end
+
+--- Binds a point light to a live physics body.
+---@param body LBody Physics body handle.
+---@param radius number Light falloff radius.
+---@param opts? table Optional {intensity?, color?, r?, g?, b?, level?, offset_x?, offset_y?}.
+function LSceneAdapter:bindBodyLight(body, radius, opts) end
+
+--- Binds an OBJ model instance to a live physics body.
+---@param body LBody Physics body handle.
+---@param model LObjModel OBJ model handle.
+---@param opts? table Optional {id?, level?, yaw_offset?, offset_x?, offset_y?, z?, scale?}.
+function LSceneAdapter:bindBodyModel(body, model, opts) end
+
+--- Binds a billboard sprite to a live physics body.
+---@param body LBody Physics body handle.
+---@param texture LImage|number Sprite texture.
+---@param opts? table Optional {size?, id?, level?, offset_x?, offset_y?, angle_offset?}.
+function LSceneAdapter:bindBodySprite(body, texture, opts) end
+
+--- Removes every tracked entry from the adapter.
+function LSceneAdapter:clear() end
+
+--- Removes every tracked light entry from the adapter.
+function LSceneAdapter:clearLights() end
+
+function LSceneAdapter:clearModels() end
+
+--- Removes every tracked sprite entry from the adapter.
+function LSceneAdapter:clearSprites() end
+
+--- Resolves the current runtime snapshot into `{ lights, sprites, models }` tables.
+---@return table Snapshot table for build/pick calls.
+function LSceneAdapter:sceneInputs() end
+
+--- Returns the type name of this object.
+---@return string Always "LSceneAdapter".
+function LSceneAdapter:type() end
+
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check.
+---@return boolean True if the name matches this userdata type.
+function LSceneAdapter:typeOf(name) end
+
+--- Adds a new sprite to the manager at a world position with a texture label, raw id, or image handle.
+---@param x number World X position.
+---@param y number World Y position.
+---@param texture any Texture asset label, integer texture id, or LImage.
 ---@param scale? number Sprite size multiplier (default 1.0).
+---@param level? number Optional multilevel slice index used by buildMultiLevelScene.
 ---@return number Unique sprite id for later manipulation.
-function LSpriteManager:add(x, y, texture, scale) end
+function LSpriteManager:add(x, y, texture, scale, level) end
+
+--- Adds a new sprite with front/right/back/left textures and a world-facing angle.
+---@param x number World X position.
+---@param y number World Y position.
+---@param front any Texture shown when viewed from the front.
+---@param right any Texture shown from the right side.
+---@param back any Texture shown from behind.
+---@param left? any Texture shown from the left side (defaults to `right`).
+---@param angle? number World-space facing angle in radians (default 0.0).
+---@param scale? number Sprite size multiplier (default 1.0).
+---@param level? number Optional multilevel slice index used by buildMultiLevelScene.
+---@return number Unique sprite id for later manipulation.
+function LSpriteManager:addDirectional(x, y, front, right, back, left, angle, scale, level) end
 
 --- Removes all sprites from the manager.
 function LSpriteManager:clear() end
@@ -24150,6 +25053,25 @@ function LSpriteManager:clear() end
 --- Removes a sprite by its id. This method is available to Lua scripts.
 ---@param id number Sprite id returned by add().
 function LSpriteManager:remove(id) end
+
+--- Replaces the directional bitmap set for an existing sprite and optionally updates its facing angle.
+---@param id number Sprite id.
+---@param front any Texture shown when viewed from the front.
+---@param right any Texture shown from the right side.
+---@param back any Texture shown from behind.
+---@param left? any Texture shown from the left side (defaults to `right`).
+---@param angle? number Optional new facing angle in radians.
+function LSpriteManager:setDirectionalTextures(id, front, right, back, left, angle) end
+
+--- Updates the facing angle of an existing directional sprite.
+---@param id number Sprite id.
+---@param angle number New facing angle in radians.
+function LSpriteManager:setFacing(id, angle) end
+
+--- Updates the multilevel slice index for an existing sprite.
+---@param id number Sprite id.
+---@param level number New level index used by buildMultiLevelScene.
+function LSpriteManager:setLevel(id, level) end
 
 --- Updates the world position of an existing sprite.
 ---@param id number Sprite id.
@@ -24165,8 +25087,8 @@ function LSpriteManager:setVisible(id, visible) end
 --- Sorts all visible sprites by distance from the camera and returns projection data.
 ---@param camX number Camera X position.
 ---@param camY number Camera Y position.
----@param camAngle number Camera facing angle (unused, reserved).
----@return number[] Array of {id, x, y, texture, scale, distance} sorted back-to-front.
+---@param camAngle number Camera facing angle (reserved for future projection expansion).
+---@return number[] Array of {id, x, y, level?, texture?, texture_id?, scale, distance, variant?, facing_angle?} sorted back-to-front.
 function LSpriteManager:sortAndProject(camX, camY, camAngle) end
 
 --- Returns the type name of this object ("LSpriteManager").
@@ -24188,11 +25110,33 @@ function LSpriteManager:typeOf(name) end
 ---@return number Shaded blue channel.
 lurek.raycaster.applyLitShade = function(baseShade, r, g, b) end
 
+--- Builds a multilevel raycaster scene from a stack of plain Lua level tables.
+---@param params table Scene params plus optional active_level.
+---@param levels table|LMultiLevelGrid Array of level tables or a persistent LMultiLevelGrid.
+---@param lights? table Array of point-light tables or LPointLight userdata values.
+---@param sprites? table|LSpriteManager Array of sprite tables {x, y, texture?, size?, level?, front_texture?, right_texture?, back_texture?, left_texture?, angle?} or an LSpriteManager whose sprites use their own optional level indices and default to active_level.
+---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
+---@param models? table Array of model instance tables {model, x, y, level?, rotation?, yaw?, z?, scale?}; instances default to `active_level`.
+---@return number Total number of quads in the built scene.
+lurek.raycaster.buildMultiLevelScene = function(params, levels, lights, sprites, wallTextures, models) end
+
+--- Builds a multilevel raycaster scene from a stack of plain Lua level tables using a runtime scene adapter.
+---@param params table Scene params plus optional active_level.
+---@param levels table|LMultiLevelGrid Array of level tables or a persistent LMultiLevelGrid.
+---@param adapter LSceneAdapter Runtime scene adapter providing lights, sprites, and models.
+---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
+---@return number Total number of quads in the built scene.
+lurek.raycaster.buildMultiLevelSceneFromAdapter = function(params, levels, adapter, wallTextures) end
+
 --- Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
 ---@param distance number Distance to shade.
 ---@param maxDistance number Distance at which shade reaches zero.
 ---@return number Shade factor (1.0 at distance 0, approaching 0.0 at maxDistance).
 lurek.raycaster.distanceShade = function(distance, maxDistance) end
+
+--- Returns stats for the last stored raycaster scene build.
+---@return table? Nil if no raycaster scene has been built yet; otherwise a stats table.
+lurek.raycaster.getLastBuildStats = function() end
 
 --- Creates a new raycaster map with the given grid dimensions.
 ---@param w number Map width in cells.
@@ -24216,6 +25160,11 @@ lurek.raycaster.newHeightMap = function(w, h) end
 ---@return LRaycaster A new raycaster map instance.
 lurek.raycaster.newMap = function(w, h) end
 
+--- Creates a persistent multi-level raycaster world from plain Lua level tables or as an empty container.
+---@param levels? table|LMultiLevelGrid Optional array of level tables or another LMultiLevelGrid to clone.
+---@return LMultiLevelGrid Persistent multi-level world handle.
+lurek.raycaster.newMultiLevelGrid = function(levels) end
+
 --- Creates a new point light with position, color, radius, and intensity.
 ---@param x number World X position.
 ---@param y number World Y position.
@@ -24224,12 +25173,38 @@ lurek.raycaster.newMap = function(w, h) end
 ---@param b number Blue channel (0.0..1.0).
 ---@param radius number Light falloff radius in world units.
 ---@param intensity number Brightness multiplier.
+---@param level? number Optional multilevel slice index that owns this light.
 ---@return LPointLight A new point light instance.
-lurek.raycaster.newPointLight = function(x, y, r, g, b, radius, intensity) end
+lurek.raycaster.newPointLight = function(x, y, r, g, b, radius, intensity, level) end
+
+--- Creates a runtime adapter for sprites, lights, and models that can follow physics bodies.
+---@return LSceneAdapter A new empty scene adapter.
+lurek.raycaster.newSceneAdapter = function() end
 
 --- Creates a new sprite manager for tracking and projecting billboard sprites.
 ---@return LSpriteManager A new empty sprite manager.
 lurek.raycaster.newSpriteManager = function() end
+
+--- Resolves a screen-space click against a stack of plain Lua level tables and returns the owning level.
+---@param sx number Screen X in pixels.
+---@param sy number Screen Y in pixels.
+---@param params table Camera params plus optional active_level.
+---@param levels table|LMultiLevelGrid Array of level tables or a persistent LMultiLevelGrid.
+---@param wallTextures? table Optional map of cell_value -> texture for wall surfaces.
+---@param sprites? table|LSpriteManager Optional sprite tables or sprite manager used to resolve clickable billboard hits.
+---@param models? table Optional model instance tables used to resolve clickable projected model hits.
+---@return table Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors the owning wall-feature descriptor and adds `section` for the solid band/panel that was hit.
+lurek.raycaster.pickScreenMultiLevel = function(sx, sy, params, levels, wallTextures, sprites, models) end
+
+--- Resolves a screen-space click against a stack of plain Lua level tables using a runtime scene adapter.
+---@param sx number Screen X in pixels.
+---@param sy number Screen Y in pixels.
+---@param params table Camera params plus optional active_level.
+---@param levels table|LMultiLevelGrid Array of level tables or a persistent LMultiLevelGrid.
+---@param wallTextures? table Optional map of cell_value -> texture for wall surfaces.
+---@param adapter LSceneAdapter Runtime scene adapter providing sprites and models.
+---@return table Pick result {x, y, level, surface, distance, hit_x, hit_y, u, v, cell_value?, side?, texture?, ray_angle, id?, wall_height?, feature?} or nil. `feature` mirrors the owning wall-feature descriptor and adds `section` for the solid band/panel that was hit.
+lurek.raycaster.pickScreenMultiLevelFromAdapter = function(sx, sy, params, levels, wallTextures, adapter) end
 
 --- Computes the projected wall-column height for a given distance, FOV, and screen height.
 ---@param distance number Perpendicular distance to the wall.

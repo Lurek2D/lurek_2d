@@ -93,14 +93,12 @@ local flight_arc_id  = nil         -- temporary arc drawn on click
 local is_dragging    = false
 local drag_mx        = 0
 local drag_my        = 0
-local drag_lat       = 0.0
-local drag_lon       = 0.0
 local lmb_prev       = false       -- previous frame left-button state
 
 -- HUD state
 local hud_province   = ""          -- province name shown in HUD
 local hud_lod        = ""
-local hud_status     = "Lua fallback renderer active"
+local hud_status     = "Rust globe renderer active"
 
 local province_cache = {}
 local projected_cache = {}
@@ -379,8 +377,13 @@ REGION_COLORS = {
 function lurek.init()
     -- Verify the API is reachable and print the province cap
     assert(lurek.globe ~= nil, "lurek.globe module not loaded")
-    print("Globe API ready. MAX_PROVINCES =", lurek.globe.MAX_PROVINCES)
-    print("LOD tiers:", lurek.globe.LOD_FAR, lurek.globe.LOD_MID, lurek.globe.LOD_NEAR)
+    lurek.log.info("Globe API ready. MAX_PROVINCES = " .. tostring(lurek.globe.MAX_PROVINCES))
+    lurek.log.info(
+        "LOD tiers: "
+            .. tostring(lurek.globe.LOD_FAR) .. ", "
+            .. tostring(lurek.globe.LOD_MID) .. ", "
+            .. tostring(lurek.globe.LOD_NEAR)
+    )
 
     -- Create the globe
     g = lurek.globe.new("earth", {
@@ -395,7 +398,7 @@ function lurek.init()
     -- Confirm retrieval by name works
     local g_check = lurek.globe.get("earth")
     assert(g_check ~= nil, "globe.get('earth') failed immediately after creation")
-    print("Globe name via get():", g_check:getName())
+    lurek.log.info("Globe name via get(): " .. tostring(g_check:getName()))
 
     -- Generate ~200 provinces across 7 continental regions
     -- Regions: rows × cols  => total provinces
@@ -408,7 +411,7 @@ function lurek.init()
     generate_grid_provinces("Antarctica",    -90,-60, -180, 180, 1, 10, 0.78, 0.88, 0.98)  -- 10
 
     local total = g:provinceCount()
-    print(string.format("Provinces generated: %d", total))
+    lurek.log.info(string.format("Provinces generated: %d", total))
     assert(total == 200, string.format("expected 200 provinces, got %d", total))
 
     -- Thematic layer: political overlay (one color per region)
@@ -465,7 +468,7 @@ function lurek.init()
 
     rebuild_projection_cache()
 
-    print("Globe demo loaded successfully.")
+    lurek.log.info("Globe demo loaded successfully.")
 end
 
 -- ---------------------------------------------------------------------------
@@ -487,17 +490,16 @@ function lurek.process(dt)
 
     -- ── Mouse wheel zoom ──────────────────────────────────────────────────
     if wdy and wdy ~= 0 then
-        local factor = wdy > 0 and 1.20 or (1.0 / 1.20)
-        cam_zoom     = clamp(cam_zoom * factor, ZOOM_MIN, ZOOM_MAX)
-        g:setCamera(cam_lat, cam_lon, cam_zoom)
+        g:applyWheelZoom(wdy)
+        cam_lat, cam_lon, cam_zoom = g:getCamera()
     end
 
     if pad_zoom_in then
-        cam_zoom = clamp(cam_zoom * (1.0 + dt * 1.6), ZOOM_MIN, ZOOM_MAX)
-        g:setCamera(cam_lat, cam_lon, cam_zoom)
+        g:applyWheelZoom(dt * 6.0)
+        cam_lat, cam_lon, cam_zoom = g:getCamera()
     elseif pad_zoom_out then
-        cam_zoom = clamp(cam_zoom / (1.0 + dt * 1.6), ZOOM_MIN, ZOOM_MAX)
-        g:setCamera(cam_lat, cam_lon, cam_zoom)
+        g:applyWheelZoom(-dt * 6.0)
+        cam_lat, cam_lon, cam_zoom = g:getCamera()
     end
 
     -- ── Left-drag pan ────────────────────────────────────────────────────
@@ -506,15 +508,11 @@ function lurek.process(dt)
             -- Start drag: record anchor
             is_dragging = true
             drag_mx, drag_my = mx, my
-            drag_lat, drag_lon = cam_lat, cam_lon
         else
-            -- Continue drag: accumulate delta
-            local ddeg = PAN_SCALE / cam_zoom
-            local dlat = -(my - drag_my) * ddeg
-            local dlon = -(mx - drag_mx) * ddeg
-            cam_lat = clamp(drag_lat + dlat, -85.0, 85.0)
-            cam_lon = drag_lon + dlon
-            g:setCamera(cam_lat, cam_lon, cam_zoom)
+            -- Continue drag using the public globe helper and re-anchor incrementally.
+            g:applyMouseDrag(drag_mx, drag_my, mx, my)
+            cam_lat, cam_lon, cam_zoom = g:getCamera()
+            drag_mx, drag_my = mx, my
         end
     else
         is_dragging = false
@@ -536,7 +534,8 @@ function lurek.process(dt)
     lmb_prev = lmb
     local target_x = controller_active and GLOBE_CX or mx
     local target_y = controller_active and GLOBE_CY or my
-    hovered_id = pick_projected_province(target_x, target_y)
+    local hover_hit = g:pickSurface(target_x, target_y, 16.0)
+    hovered_id = hover_hit and hover_hit.province_id or nil
 
     local select_pressed = lurek.input.wasActionPressed("select")
     if lmb_just_released or select_pressed then
@@ -582,35 +581,7 @@ function lurek.draw()
     -- (background filled automatically via setBackgroundColor set in init)
     rebuild_projection_cache()
 
-    lurek.render.setColor(0.05, 0.08, 0.16, 1.0)
-    circ("fill", GLOBE_CX, GLOBE_CY, GLOBE_R * cam_zoom)
-    lurek.render.setColor(0.12, 0.18, 0.28, 1.0)
-    circ("line", GLOBE_CX, GLOBE_CY, GLOBE_R * cam_zoom)
-
-    for _, pid in ipairs(projected_order) do
-        local item = projected_cache[pid]
-        local r, g2, b = province_color(item.meta, pid)
-        lurek.render.setColor(r, g2, b, 0.95)
-        lurek.render.polygon("fill", _unpack(item.points))
-        lurek.render.setColor(0.02, 0.04, 0.08, 0.45)
-        lurek.render.polygon("line", _unpack(item.points))
-    end
-
-    for _, cap in ipairs(CAPITALS) do
-        local sx, sy = orthographic_project(cap[1], cap[2])
-        if sx then
-            lurek.render.setColor(1.0, 0.92, 0.55, 0.95)
-            circ("fill", sx, sy, 3 + cam_zoom * 0.5)
-        end
-    end
-
-    for _, lbl in ipairs(CONTINENT_LABELS) do
-        local sx, sy = orthographic_project(lbl[1], lbl[2])
-        if sx then
-            lurek.render.setColor(0.92, 0.96, 1.0, 0.72)
-            text_(lbl[3], sx - 38, sy, 12)
-        end
-    end
+    g:draw({ screen_cx = GLOBE_CX, screen_cy = GLOBE_CY })
 
     local cmd_count = #projected_order
 

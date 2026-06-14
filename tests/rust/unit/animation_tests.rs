@@ -266,8 +266,8 @@ mod spine_bridge_tests {
         let mut anim = Animation::new();
         anim.add_frame(Rect::new(0.0, 0.0, 16.0, 16.0));
         anim.add_frame(Rect::new(16.0, 0.0, 16.0, 16.0));
-        anim.add_clip("idle", vec![0], 8.0, true);
-        anim.add_clip("run", vec![1], 8.0, true);
+        anim.add_clip("idle", vec![0], 8.0, true).unwrap();
+        anim.add_clip("run", vec![1], 8.0, true).unwrap();
 
         let mut sm = AnimStateMachine::new(anim, "idle".to_string());
         sm.add_state("idle", "idle", true);
@@ -317,5 +317,40 @@ mod spine_bridge_tests {
         assert_eq!(sm.get_state(), "run");
         assert_eq!(bridge.last_applied_state(), "run");
         assert_eq!(bridge.skeleton().current_animation, None);
+    }
+
+    #[test]
+    fn force_state_applies_state_looping_override() {
+        let mut anim = Animation::new();
+        anim.add_frame(Rect::new(0.0, 0.0, 16.0, 16.0));
+        anim.add_clip("once", vec![0], 8.0, true).unwrap();
+
+        let mut sm = AnimStateMachine::new(anim, "idle".to_string());
+        sm.add_state("once", "once", false);
+
+        assert!(sm.force_state("once"));
+        assert!(!sm.get_animation().is_looping());
+    }
+}
+
+mod validation_tests {
+    use super::*;
+
+    #[test]
+    fn add_clip_rejects_missing_frame_indices() {
+        let mut anim = Animation::new();
+        anim.add_frame(Rect::new(0.0, 0.0, 16.0, 16.0));
+
+        let err = anim.add_clip("bad", vec![1], 8.0, true).unwrap_err();
+        assert!(err.contains("missing frame index"));
+    }
+
+    #[test]
+    fn add_clip_rejects_non_positive_fps() {
+        let mut anim = Animation::new();
+        anim.add_frame(Rect::new(0.0, 0.0, 16.0, 16.0));
+
+        let err = anim.add_clip("bad", vec![0], 0.0, true).unwrap_err();
+        assert!(err.contains("fps"));
     }
 }

@@ -67,6 +67,24 @@ describe("lurek.charts palette helpers", function()
     end)
 end)
 
+local function image_has_drawn_pixels(img)
+    for y = 0, img:getHeight() - 1 do
+        for x = 0, img:getWidth() - 1 do
+            local r, g, b, a = img:getPixel(x, y)
+            if r ~= 0 or g ~= 0 or b ~= 0 or a ~= 0 then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function expect_chart_draws(chart, width, height)
+    local img = lurek.image.newImageData(width, height)
+    chart:drawToImage(img)
+    expect_true(image_has_drawn_pixels(img))
+end
+
 -- @describe LuaLineChart methods
 describe("LuaLineChart methods", function()
     -- @covers LLineChart:getWidth
@@ -117,6 +135,23 @@ describe("LuaLineChart methods", function()
         chart:setTitle("My Line Chart")
         local w = chart:render()
         expect_true(w > 0)
+    end)
+
+    -- @covers LLineChart:appendPoint
+    -- @covers LLineChart:setWindow
+    -- @covers LLineChart:nearest
+    it("streaming line helpers keep recent points and expose nearest point metadata", function()
+        local chart = lurek.charts.newLine({ width = 96, height = 72, maxPoints = 3 })
+        chart:appendPoint("loss", 1, 0.9)
+        chart:appendPoint("loss", 2, 0.7)
+        chart:appendPoint("loss", 3, 0.5)
+        chart:appendPoint("loss", 4, 0.4)
+        chart:setWindow(2)
+        local nearest = chart:nearest(70, 32)
+        expect_type("table", nearest)
+        expect_equal("loss", nearest.series)
+        expect_true(nearest.index >= 1)
+        expect_chart_draws(chart, 96, 72)
     end)
 end)
 
@@ -180,6 +215,21 @@ describe("LuaBarChart methods", function()
         local w = chart:render()
         expect_true(w > 0)
     end)
+
+    -- @covers LBarChart:addCategory
+    -- @covers LBarChart:addCategoriesFromDataFrame
+    it("category-based bar charts support dataframe ingestion", function()
+        local df = lurek.dataframe.fromRows({ "month", "revenue", "cost" }, {
+            { "Jan", 120, 80 },
+            { "Feb", 150, 95 },
+        })
+        local chart = lurek.charts.newBar({ width = 96, height = 72 })
+        chart:addSeries("Revenue", {})
+        chart:addSeries("Cost", {})
+        chart:addCategory("Seed", { 100, 60 })
+        expect_equal(2, chart:addCategoriesFromDataFrame(df, "month", { "revenue", "cost" }))
+        expect_chart_draws(chart, 96, 72)
+    end)
 end)
 
 -- @describe LuaScatterPlot methods
@@ -241,6 +291,92 @@ describe("LuaScatterPlot methods", function()
     it("getHeight returns configured scatter height", function()
         local chart = lurek.charts.newScatter({ width = 700, height = 350 })
         expect_equal(350, chart:getHeight())
+    end)
+end)
+
+-- @describe LuaHistogramChart methods
+describe("LuaHistogramChart methods", function()
+    -- @covers lurek.charts.newHistogram
+    it("newHistogram returns userdata", function()
+        local chart = lurek.charts.newHistogram()
+        expect_type("userdata", chart)
+    end)
+
+    -- @covers LHistogramChart:addSeries
+    -- @covers LHistogramChart:setBinCount
+    -- @covers LHistogramChart:setDensity
+    it("histogram charts render grouped distributions", function()
+        local chart = lurek.charts.newHistogram({ width = 96, height = 72, showLegend = true })
+        chart:setBinCount(6)
+        chart:setDensity(true)
+        chart:addSeries("train", { 0.1, 0.2, 0.2, 0.4, 0.6, 0.9 })
+        chart:addSeries("valid", { 0.15, 0.18, 0.5, 0.55, 0.8 })
+        expect_chart_draws(chart, 96, 72)
+    end)
+
+    -- @covers LHistogramChart:addSeriesFromDataFrame
+    -- @covers LHistogramChart:appendValue
+    -- @covers LHistogramChart:setWindow
+    it("histogram charts support dataframe ingestion and streaming samples", function()
+        local df = lurek.dataframe.fromRows({ "latency_ms" }, {
+            { 12 },
+            { 18 },
+            { "bad" },
+            { 30 },
+        })
+        local chart = lurek.charts.newHistogram({ width = 96, height = 72, maxPoints = 4 })
+        expect_equal(3, chart:addSeriesFromDataFrame("latency", df, "latency_ms"))
+        chart:appendValue("latency", 45)
+        chart:setWindow(2)
+        local w, h, bytes = chart:render()
+        expect_equal(96, w)
+        expect_equal(72, h)
+        expect_true(#bytes > 0)
+    end)
+end)
+
+-- @describe LuaHeatmapChart methods
+describe("LuaHeatmapChart methods", function()
+    -- @covers lurek.charts.newHeatmap
+    it("newHeatmap returns userdata", function()
+        local chart = lurek.charts.newHeatmap()
+        expect_type("userdata", chart)
+    end)
+
+    -- @covers LHeatmapChart:setMatrix
+    -- @covers LHeatmapChart:setColorRange
+    -- @covers LHeatmapChart:setShowValues
+    it("heatmap charts render matrix data with labels", function()
+        local chart = lurek.charts.newHeatmap({ width = 120, height = 90, showLegend = true, title = "Confusion" })
+        chart:setMatrix({
+            { 22, 3, 1 },
+            { 4, 18, 2 },
+            { 0, 2, 26 },
+        }, { "cat", "dog", "fox" }, { "cat", "dog", "fox" })
+        chart:setColorRange({ 0.1, 0.3, 0.9, 1.0 }, { 0.9, 0.2, 0.2, 1.0 })
+        chart:setShowValues(true)
+        expect_chart_draws(chart, 120, 90)
+    end)
+
+    -- @covers LHeatmapChart:setCell
+    -- @covers LHeatmapChart:setMatrixFromDataFrame
+    -- @covers LHeatmapChart:setValueRange
+    it("heatmap charts support dataframe pivots and per-cell updates", function()
+        local df = lurek.dataframe.fromRows({ "actual", "predicted", "count" }, {
+            { "spam", "spam", 17 },
+            { "spam", "ham", 3 },
+            { "ham", "spam", 2 },
+            { "ham", "ham", 21 },
+        })
+        local chart = lurek.charts.newHeatmap({ width = 120, height = 90 })
+        local copied = chart:setMatrixFromDataFrame(df, "actual", "predicted", "count")
+        expect_equal(4, copied)
+        chart:setCell(1, 2, 5)
+        chart:setValueRange(0, 25)
+        local w, h, bytes = chart:render()
+        expect_equal(120, w)
+        expect_equal(90, h)
+        expect_true(#bytes > 0)
     end)
 end)
 

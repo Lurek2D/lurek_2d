@@ -530,3 +530,105 @@ do
     script:addStep("fill_edges", { tile_id = 2, slot = 0, layer = 0 })
     print("getStepCount=" .. script:getStepCount())
 end
+
+--@api-stub: LMapBlock:getWeight
+do
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setWeight(3.0)
+    print("getWeight=" .. tostring(block:getWeight()))
+end
+
+--@api-stub: LMapBlock:setFootprint
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setFootprint({ { 0, 0 }, { 1, 0 }, { 0, 1 } })
+    print("setFootprint cells=" .. tostring(block:getFootprintCellCount()))
+end
+
+--@api-stub: LMapBlock:getFootprintCellCount
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setFootprint({ { 0, 0 }, { 1, 0 }, { 0, 1 } })
+    print("getFootprintCellCount=" .. tostring(block:getFootprintCellCount()))
+end
+
+--@api-stub: LMapBlock:isFootprintCell
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setFootprint({ { 0, 0 }, { 1, 0 }, { 0, 1 } })
+    print("isFootprintCell=" .. tostring(block:isFootprintCell(1, 0)))
+end
+
+--@api-stub: LMapBlock:setSocket
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setFootprint({ { 0, 0 }, { 1, 0 }, { 0, 1 } })
+    block:setSocket(1, 0, "east", 9)
+    print("setSocket ok")
+end
+
+--@api-stub: LMapBlock:getSocket
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setFootprint({ { 0, 0 }, { 1, 0 }, { 0, 1 } })
+    block:setSocket(1, 0, "east", 9)
+    print("getSocket=" .. tostring(block:getSocket(1, 0, "east")))
+end
+
+--@api-stub: LPlacementGrid:removePosition
+do
+    local grid = lurek.mapblock.newEmptyGrid()
+    grid:addPosition(1, 1)
+    grid:removePosition(1, 1)
+    print("LPlacementGrid:removePosition availCount=" .. grid:getAvailableCount())
+end
+
+--@api-stub: LPlacementGrid:isEdgePosition
+do
+    local grid = lurek.mapblock.newEmptyGrid()
+    grid:addPosition(0, 0)
+    grid:addPosition(1, 0)
+    grid:addPosition(1, 1)
+    print("LPlacementGrid:isEdgePosition=" .. tostring(grid:isEdgePosition(1, 1)))
+end
+
+--@api-stub: LMapBlockGenerator:setGrid
+do
+    local cfg = lurek.mapblock.newConfig()
+    local gen = lurek.mapblock.newGenerator(cfg)
+    local grid = lurek.mapblock.newEmptyGrid()
+    grid:addPosition(0, 0)
+    grid:addPosition(1, 0)
+    grid:addPosition(1, 1)
+    gen:setGrid(grid)
+    print("LMapBlockGenerator:setGrid ready=true")
+end
+
+--@api-stub: LMapBlockResult:getPlacements
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(1, 1, 1, cfg)
+    block:setName("seed")
+    block:setTile(0, 0, 0, 0, 1, 4)
+    local group = lurek.mapblock.newGroup("terrain")
+    group:addBlock(block)
+    local script = lurek.mapblock.newScript("place_once")
+    script:addStep("place_block", { group = "terrain", block_index = 0, x = 0, y = 0 })
+    local gen = lurek.mapblock.newGenerator(cfg)
+    gen:setRectShape(1, 1)
+    gen:addGroup(group)
+    local result = gen:generate(script)
+    print("LMapBlockResult:getPlacements count=" .. tostring(#result:getPlacements()))
+end

@@ -19,6 +19,7 @@ mod visualization_tests {
 
 mod extensibility_tests {
     use lurek2d::particle::{EmissionShape, ParticleConfig, ParticleSystem};
+    use lurek2d::render::renderer::RenderCommand;
 
     #[test]
     fn custom_emission_shape_variant_exists() {
@@ -62,6 +63,58 @@ mod extensibility_tests {
             ps.drain_custom_offsets().is_empty(),
             "second drain should be empty"
         );
+    }
+
+    #[test]
+    fn build_render_commands_keeps_sub_emitter_output_when_parent_is_empty() {
+        let death_emitter = ParticleConfig {
+            emission_rate: 0.0,
+            max_particles: 8,
+            lifetime_min: 1.0,
+            lifetime_max: 1.0,
+            speed_min: 0.0,
+            speed_max: 0.0,
+            ..ParticleConfig::default()
+        };
+        let config = ParticleConfig {
+            emission_rate: 0.0,
+            max_particles: 4,
+            lifetime_min: 0.001,
+            lifetime_max: 0.001,
+            death_burst_count: 3,
+            death_emitter: Some(Box::new(death_emitter)),
+            ..ParticleConfig::default()
+        };
+
+        let mut ps = ParticleSystem::new(config);
+        ps.emit(1);
+        ps.update(0.01);
+
+        assert_eq!(ps.count(), 0, "parent particles should be dead");
+        assert!(ps.sub_system_count() > 0, "death emitter should spawn a child system");
+
+        let cmds = ps.build_render_commands(0.0, 0.0);
+        assert!(
+            cmds.iter()
+                .any(|cmd| matches!(cmd, RenderCommand::DrawParticleSystem { .. })),
+            "sub-system particles should still render"
+        );
+    }
+
+    #[test]
+    fn set_max_particles_truncates_live_pool_when_shrinking() {
+        let mut ps = ParticleSystem::new(ParticleConfig {
+            emission_rate: 0.0,
+            max_particles: 16,
+            ..ParticleConfig::default()
+        });
+        ps.emit(10);
+        assert_eq!(ps.count(), 10);
+
+        ps.set_max_particles(4);
+
+        assert_eq!(ps.config.max_particles, 4);
+        assert_eq!(ps.count(), 4, "live particles should be truncated to the new limit");
     }
 }
 

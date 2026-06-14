@@ -25,6 +25,7 @@
 - Preset layers provide quick-start setups for common depth planes.
 - Motion-stretch options add velocity-driven style cues.
 - Per-layer effect chains support stylized post-processing on background planes.
+- Layer and set telemetry expose tile counts, effect pressure, and autoscroll state for runtime dashboards.
 - Layer sets help organize multiple planes into reusable scene groups.
 - For users, this module turns depth presentation into a configurable runtime system.
 
@@ -119,6 +120,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LParallaxLayer:getOffset() -> number`: Returns layer offset for this object.
 - `LParallaxLayer:getOpacity() -> number`: Returns layer opacity from this object.
 - `LParallaxLayer:getScrollFactor() -> number`: Returns layer scroll factor from this object.
+- `LParallaxLayer:getStats() -> table`: Returns telemetry for the current runtime camera and viewport.
 - `LParallaxLayer:getTiling() -> boolean`: Returns whether layer tiling is enabled.
 - `LParallaxLayer:getTint() -> number`: Returns layer tint color from this object.
 - `LParallaxLayer:getZ() -> integer`: Returns layer z order from this object.
@@ -157,6 +159,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LParallaxSet:addLayer(layer) -> nil`: Adds a parallax layer to this set handle.
 - `LParallaxSet:getLayerZAt(index) -> integer`: Returns z order for a layer by one-based index, or nil when out of range.
 - `LParallaxSet:getName() -> string`: Returns this set name from this object.
+- `LParallaxSet:getStats() -> table`: Returns aggregated telemetry for all layers in the set.
 - `LParallaxSet:isVisible() -> boolean`: Returns set visibility and returns a boolean.
 - `LParallaxSet:layerCount() -> integer`: Returns the number of layers in this set.
 - `LParallaxSet:removeLayerAt(index) -> boolean`: Removes a layer by one-based index.

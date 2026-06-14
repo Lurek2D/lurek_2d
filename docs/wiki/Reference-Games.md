@@ -495,9 +495,9 @@ _Rotate and stack falling tetrominoes — classic arcade puzzle with hold piece,
 
 ### [mapblock_labyrinth](../tree/main/content/games/puzzle/mapblock_labyrinth)
 
-**Category:** puzzle / procedural maps **Status:** skeleton
+**Category:** puzzle / procedural maps **Status:** playable
 
-**Modules:** [event](Module-event), [input](Module-input), [mapblock](Module-mapblock), [pathfind](Module-pathfind), [procgen](Module-procgen), [render](Module-render), [tilemap](Module-tilemap), [visibility](Module-visibility), +1
+**Modules:** [event](Module-event), [render](Module-render), [window](Module-window)
 
 
 ## retro
@@ -816,7 +816,7 @@ Interactive API documentation browser and viewer: navigate 12 lurek.* namespaces
 
 A showcase of the lurek.globe.* API: an interactive world globe with ~200
 
-**Modules:** [automation](Module-automation), [event](Module-event), [globe](Module-globe), [input](Module-input), [render](Module-render)
+**Modules:** [automation](Module-automation), [event](Module-event), [globe](Module-globe), [input](Module-input), [log](Module-log), [render](Module-render)
 
 ### [hacking_game](../tree/main/content/games/showcase/hacking_game)
 

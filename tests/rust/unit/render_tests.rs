@@ -12,11 +12,11 @@ use lurek2d::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
 use lurek2d::render::postfx_pipeline::params_to_uniform;
 use lurek2d::render::province_map_pipeline::ProvinceMapUniforms;
 use lurek2d::render::renderer::{
-    adaptive_circle_ellipse_segments, BlendMode, DepthMode, PhysicsDebugConfig, StencilAction,
-    StencilMode, TextSpan, TextureData,
+    adaptive_circle_ellipse_segments, BlendMode, CompareMode, DepthMode, DrawMode,
+    PhysicsDebugConfig, RenderCommand, StencilAction, StencilMode, TextSpan, TextureData,
 };
 use lurek2d::render::shape::{CompoundShape, ShapeCommand};
-use lurek2d::render::DrawMode;
+use lurek2d::render::software_capture::capture_commands_to_image;
 
 mod province_map_pipeline_tests {
     use super::*;
@@ -574,6 +574,50 @@ mod renderer_tests {
 }
 
 // Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬ postfx_pipeline tests (from src/render/postfx_pipeline_tests.rs) Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬Ă„â€šĂ‹ÂÄ‚ËĂ˘â€šÂ¬ÄąÄ„Ä‚ËĂ˘â‚¬ĹˇĂ‚Â¬
+
+mod software_capture_tests {
+    use super::*;
+
+    #[test]
+    fn stencil_write_and_test_mask_color_output() {
+        let image = capture_commands_to_image(
+            &[
+                RenderCommand::SetColorMask(false, false, false, false),
+                RenderCommand::StencilBegin {
+                    action: StencilAction::Replace,
+                    value: 1,
+                },
+                RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    x: 10.0,
+                    y: 10.0,
+                    w: 20.0,
+                    h: 20.0,
+                },
+                RenderCommand::StencilEnd,
+                RenderCommand::SetColorMask(true, true, true, true),
+                RenderCommand::SetStencilTest(Some((CompareMode::Equal, 1))),
+                RenderCommand::SetColor(1.0, 0.0, 0.0, 1.0),
+                RenderCommand::Rectangle {
+                    mode: DrawMode::Fill,
+                    x: 0.0,
+                    y: 0.0,
+                    w: 40.0,
+                    h: 40.0,
+                },
+                RenderCommand::SetStencilTest(None),
+            ],
+            [0.0, 0.0, 0.0, 1.0],
+        );
+        let pixel = |x: u32, y: u32| {
+            let bytes = image.as_bytes();
+            let i = ((y * image.width() + x) * 4) as usize;
+            [bytes[i], bytes[i + 1], bytes[i + 2], bytes[i + 3]]
+        };
+        assert_eq!(pixel(15, 15), [255, 0, 0, 255]);
+        assert_eq!(pixel(5, 5), [0, 0, 0, 255]);
+    }
+}
 
 mod postfx_pipeline_tests {
     use super::*;

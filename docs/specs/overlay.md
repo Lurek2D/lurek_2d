@@ -27,6 +27,7 @@
 - Water distortion and tint controls support stylized surface-screen effects.
 - Overlay state updates run as one controller, reducing per-feature timing glue.
 - Render-command generation keeps overlay composition aligned with the main render path.
+- Runtime telemetry snapshots expose effect load, weather occupancy, and alpha state for dashboards and debug tooling.
 - Image output support enables overlay previews and debug evidence generation.
 - The module is useful for cutscenes, weather systems, UX transitions, and dramatic pacing.
 - For users, it centralizes post-world presentation behavior in one script API.
@@ -155,6 +156,7 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:getHeight() -> integer`: Returns the overlay height. This method is available to Lua scripts.
 - `LOverlay:getLightningAlpha() -> number`: Returns the current lightning alpha.
 - `LOverlay:getLightningColor() -> number`: Returns overlay lightning RGBA color.
+- `LOverlay:getStats() -> table`: Returns a telemetry snapshot for dashboard and debug workflows.
 - `LOverlay:getShakeOffset() -> number`: Returns the current screen shake offset.
 - `LOverlay:getTimeOfDay() -> number`: Returns the overlay time-of-day value.
 - `LOverlay:getVignetteStrength() -> number`: Returns overlay vignette strength.

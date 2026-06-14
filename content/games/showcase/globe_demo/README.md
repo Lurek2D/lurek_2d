@@ -32,8 +32,8 @@ cargo run -- content/games/showcase/globe_demo
 | --------------------- | --------------------------------------------------------------- |
 | Globe creation        | `globe.new`, `globe.get`, `g:getName`                           |
 | Province generation   | `g:addProvince`, `g:provinceCount`, `g:setProvinceAttr`         |
-| Camera               | `g:setCamera`, `g:getCamera`, `g:pan`, `g:zoom`, `g:getLod`     |
-| Picking              | `g:pick`, `g:pickLatLon`                                        |
+| Camera               | `g:setCamera`, `g:getCamera`, `g:applyMouseDrag`, `g:applyWheelZoom`, `g:getLod` |
+| Picking              | `g:pickSurface` for province hover/selection and surface hit data |
 | Fog of war           | `g:revealAll`, `g:setActiveViewer`                              |
 | Markers              | `g:addMarker`, `g:setMarkerAttr`, `g:setMarkerVisible`          |
 | Labels               | `g:addLabel`, `g:addLabel` (continent), `g:setLabelVisible`     |
@@ -42,7 +42,7 @@ cargo run -- content/games/showcase/globe_demo
 | Simulation           | `g:update`, `g:setTimeOfDay`, `g:getTimeOfDay`, `g:setRotation` |
 | Borders              | `g:setBorders`                                                  |
 | Constants            | `globe.MAX_PROVINCES`, `globe.LOD_FAR/MID/NEAR`                 |
-| Rendering            | Lua-side orthographic globe preview synchronized with `g:setCamera`, `g:getCamera`, and `g:getTimeOfDay` |
+| Rendering            | Rust-side `g:draw()` globe rendering synchronized with camera, markers, labels, layers, and time-of-day |
 
 ## Province generation
 
@@ -53,6 +53,6 @@ grid-adjacent neighbors assigned automatically.
 
 ## Note
 
-This build currently uses a Lua-side fallback renderer for the visible globe.
-The underlying `lurek.globe` data model, camera, picking state, markers, and
-time-of-day simulation still run through the globe API.
+This build now renders the visible globe through `LGlobe:draw()`. The Lua
+layer still owns the game-specific HUD and selection overlays, but the globe
+surface, markers, labels, and lighting come from the engine module.

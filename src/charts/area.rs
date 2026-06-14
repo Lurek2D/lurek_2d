@@ -7,7 +7,8 @@
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
 use crate::charts::render_utils::{
-    annotate_cartesian_chart, auto_range, draw_line, fill_buffer, set_pixel, world_to_screen,
+    annotate_cartesian_chart, auto_range, draw_line, fill_buffer, set_pixel, trim_points_to_window,
+    world_to_screen,
 };
 use crate::color::Color;
 use crate::dataframe::frame::DataFrame;
@@ -36,6 +37,8 @@ impl AreaChart {
 
     /// Add a data series to the chart (drawn stacked above previous series).
     pub fn add_series(&mut self, series: ChartSeries) {
+        let mut series = series;
+        trim_points_to_window(&mut series.data, self.config.max_points);
         self.series.push(series);
     }
 
@@ -93,6 +96,36 @@ impl AreaChart {
     /// Remove all series from the chart.
     pub fn clear(&mut self) {
         self.series.clear();
+    }
+
+    /// Return all chart series for inspection helpers.
+    pub fn series(&self) -> &[ChartSeries] {
+        &self.series
+    }
+
+    /// Append one point to a named series, creating the series when needed.
+    pub fn append_point(&mut self, name: &str, x: f32, y: f32, color: Color) {
+        if !x.is_finite() || !y.is_finite() {
+            return;
+        }
+        if let Some(series) = self.series.iter_mut().find(|series| series.name == name) {
+            series.data.push((x, y));
+            trim_points_to_window(&mut series.data, self.config.max_points);
+            return;
+        }
+        self.add_series(ChartSeries {
+            name: name.to_string(),
+            color: [color.r, color.g, color.b, color.a],
+            data: vec![(x, y)],
+        });
+    }
+
+    /// Set the streaming window size and trim all series immediately.
+    pub fn set_max_points(&mut self, max_points: Option<usize>) {
+        self.config.max_points = max_points;
+        for series in &mut self.series {
+            trim_points_to_window(&mut series.data, self.config.max_points);
+        }
     }
 
     /// Render the chart into an RGBA8 pixel buffer.

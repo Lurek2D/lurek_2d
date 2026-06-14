@@ -1,6 +1,7 @@
 #![cfg(any())]
 
-//! File: tests/lua_tests.rs
+//! Template for `tests/lua_tests.rs`.
+//! Not registered in `Cargo.toml`; keep as a manual scaffold only.
 
 use std::cell::RefCell;
 use std::path::Path;

@@ -41,6 +41,15 @@ impl Mat3x3 {
         let c2 = self.mul_vec(Vec3::new(oc[2][0], oc[2][1], oc[2][2]));
         Mat3x3::from_cols([c0.x, c0.y, c0.z], [c1.x, c1.y, c1.z], [c2.x, c2.y, c2.z])
     }
+    /// Return the transpose of this matrix.
+    pub fn transpose(&self) -> Mat3x3 {
+        let c = &self.cols;
+        Mat3x3::from_cols(
+            [c[0][0], c[1][0], c[2][0]],
+            [c[0][1], c[1][1], c[2][1]],
+            [c[0][2], c[1][2], c[2][2]],
+        )
+    }
 }
 
 /// Convert latitude/longitude in degrees to a unit sphere Vec3 (Y-up, Z-east convention).

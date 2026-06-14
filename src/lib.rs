@@ -94,10 +94,10 @@ pub mod light;
 pub mod log;
 /// Exposes the Lua API bridge subsystem module.
 pub mod lua_api;
-/// Exposes the map block generation subsystem module.
-pub mod mapblock;
 /// Exposes the legacy province-graph map helpers module.
 pub mod map;
+/// Exposes the map block generation subsystem module.
+pub mod mapblock;
 /// Exposes the math subsystem module.
 pub mod math;
 /// Exposes the MIDI playback and SoundFont management module.

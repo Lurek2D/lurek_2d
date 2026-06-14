@@ -8,6 +8,13 @@ local function save_png(img, path)
     expect_evidence_created(path)
 end
 
+local function chart_to_image(chart, width, height)
+    local img = lurek.image.newImageData(width, height)
+    img:fill(18, 20, 28, 255)
+    chart:drawToImage(img)
+    return img
+end
+
 local function draw_outline(img, x, y, w, h, r, g, b, a)
     img:drawLine(x, y, x + w - 1, y, r, g, b, a or 255)
     img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, a or 255)
@@ -23,6 +30,7 @@ local function reset_particle_outputs()
         "particle_emitter_burst.png",
         "particle_emitter_cluster_snapshot.png",
         "particle_lifecycle_chart.png",
+        "particle_runtime_dashboard.png",
         "particle_positions.png",
         "particle_trail.png",
         "particle_trail_wave_ribbon.png",
@@ -305,6 +313,115 @@ describe("Evidence: lurek.particle API", function()
         lurek.particle.release(rain)
         lurek.particle.release(spark)
         lurek.particle.release(over)
+    end)
+    -- Does: Runs "particle telemetry dashboard" and turns the owner-module result into inspectable chart artifacts.
+    -- Shows: The artifact should expose the behavior produced by LParticleSystem:getStats, lurek.dataframe.fromRows, and lurek.charts dashboard renderers.
+    -- Artifact: tests/artifacts/current/particle/particle_runtime_dashboard.png
+    -- Why: This is meaningful only if the visible output comes from sampled particle-system runtime telemetry.
+
+    it("PNG: particle telemetry dashboard", function()
+        local ps = lurek.particle.newSystem({
+            seed = 1301,
+            maxParticles = 220,
+            emissionRate = 140,
+            shape = "circle",
+            lifetimeMin = 0.7,
+            lifetimeMax = 1.6,
+            sizeMin = 2,
+            sizeMax = 5,
+            speedMin = 28,
+            speedMax = 95,
+        })
+        ps:setPosition(96, 96)
+        ps:addAttractor(96, 96, 180, 84)
+        ps:start()
+        ps:warmUp(0.25)
+
+        local rows = {}
+        local live_samples = {}
+        local occupancy = {
+            { 0, 0, 0 },
+            { 0, 0, 0 },
+            { 0, 0, 0 },
+        }
+        local peak = { live = 0, total = 0, rate = 0, age = 0 }
+        local sum = { live = 0, total = 0, rate = 0, age = 0 }
+
+        for frame = 1, 54 do
+            if frame == 20 then
+                ps:setEmissionRate(80)
+            end
+            if frame == 38 then
+                ps:stop()
+            end
+
+            ps:update(1 / 30)
+            local stats = ps:getStats()
+            rows[#rows + 1] = {
+                frame,
+                stats.live_particles,
+                stats.total_live_particles,
+                stats.emission_rate,
+                stats.emitter_age,
+            }
+            live_samples[#live_samples + 1] = stats.live_particles
+
+            peak.live = math.max(peak.live, stats.live_particles)
+            peak.total = math.max(peak.total, stats.total_live_particles)
+            peak.rate = math.max(peak.rate, stats.emission_rate)
+            peak.age = math.max(peak.age, stats.emitter_age)
+            sum.live = sum.live + stats.live_particles
+            sum.total = sum.total + stats.total_live_particles
+            sum.rate = sum.rate + stats.emission_rate
+            sum.age = sum.age + stats.emitter_age
+
+            local phase = frame <= 18 and 1 or (frame <= 36 and 2 or 3)
+            local band = stats.live_particles < 60 and 1 or (stats.live_particles < 120 and 2 or 3)
+            occupancy[phase][band] = occupancy[phase][band] + 1
+        end
+
+        local df = lurek.dataframe.fromRows(
+            { "frame", "live_particles", "total_live_particles", "emission_rate", "emitter_age" },
+            rows
+        )
+
+        local line = lurek.charts.newLine({ width = 340, height = 180, title = "particle-population" })
+        line:addSeriesFromDataFrame("live", df, "frame", "live_particles")
+        line:addSeriesFromDataFrame("total", df, "frame", "total_live_particles")
+
+        local histogram = lurek.charts.newHistogram({ width = 180, height = 180, showLegend = true, title = "population-dist" })
+        histogram:setBinCount(8)
+        histogram:addSeries("live", live_samples)
+
+        local phases = lurek.charts.newHeatmap({ width = 180, height = 180, showLegend = true, title = "phase-occupancy" })
+        phases:setMatrix(occupancy, { "warmup", "burst", "decay" }, { "low", "mid", "high" })
+        phases:setValueRange(0, 18)
+        phases:setShowValues(true)
+
+        local summary = lurek.charts.newBar({ width = 180, height = 180, title = "particle-summary" })
+        summary:addSeries("peak", {})
+        summary:addSeries("mean", {})
+        summary:addCategory("live", { peak.live, sum.live / #rows })
+        summary:addCategory("total", { peak.total, sum.total / #rows })
+        summary:addCategory("rate", { peak.rate, sum.rate / #rows })
+        summary:addCategory("age", { peak.age, sum.age / #rows })
+
+        local canvas = lurek.image.newImageData(560, 416)
+        canvas:fill(12, 14, 20, 255)
+        local cards = {
+            { chart_to_image(line, 340, 180), 16, 16, 340, 180 },
+            { chart_to_image(summary, 180, 180), 364, 16, 180, 180 },
+            { chart_to_image(histogram, 180, 180), 16, 220, 180, 180 },
+            { chart_to_image(phases, 180, 180), 204, 220, 180, 180 },
+        }
+        for _, card in ipairs(cards) do
+            canvas:drawRect(card[2] - 4, card[3] - 4, card[4] + 8, card[5] + 8, 24, 28, 36, 255)
+            canvas:paste(card[1], card[2], card[3])
+            draw_outline(canvas, card[2], card[3], card[4], card[5], 232, 236, 244, 255)
+        end
+
+        save_png(canvas, OUT .. "particle_runtime_dashboard.png")
+        lurek.particle.release(ps)
     end)
 end)
 test_summary()

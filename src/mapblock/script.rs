@@ -27,6 +27,8 @@ pub enum StepType {
     FillEdges,
     /// Place blocks that satisfy neighbor constraints automatically.
     AutoPlace,
+    /// Solve the remaining region with footprint-aware backtracking.
+    SolveShape,
 }
 
 /// A single step in a map generation script.
@@ -42,6 +44,8 @@ pub struct ScriptStep {
     pub x: i32,
     /// Y position for placement (if applicable).
     pub y: i32,
+    /// Whether the step explicitly requested a fixed anchor position.
+    pub has_position: bool,
     /// Width for area operations.
     pub width: u32,
     /// Height for area operations.
@@ -82,6 +86,7 @@ impl Default for ScriptStep {
             block_index: -1,
             x: 0,
             y: 0,
+            has_position: false,
             width: 0,
             height: 0,
             count: 1,

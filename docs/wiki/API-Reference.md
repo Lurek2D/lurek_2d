@@ -72,6 +72,8 @@
 - [lurek.charts](#lurekcharts)
   - [LAreaChart](#lareachart)
   - [LBarChart](#lbarchart)
+  - [LHeatmapChart](#lheatmapchart)
+  - [LHistogramChart](#lhistogramchart)
   - [LLineChart](#llinechart)
   - [LPieChart](#lpiechart)
   - [LScatterPlot](#lscatterplot)
@@ -278,8 +280,10 @@
 - [lurek.raycaster](#lurekraycaster)
   - [LDoorManager](#ldoormanager)
   - [LHeightMap](#lheightmap)
+  - [LMultiLevelGrid](#lmultilevelgrid)
   - [LPointLight](#lpointlight)
   - [LRaycaster](#lraycaster)
+  - [LSceneAdapter](#lsceneadapter)
   - [LSpriteManager](#lspritemanager)
 - [lurek.render](#lurekrender)
   - [LCanvas](#lcanvas)
@@ -1654,70 +1658,196 @@ LCameraWalker:update([dt]: number) -- Updates camera state and advances smooth i
 [Module page](Module-charts)
 
 ```lua
-lurek.charts.defaultPalette() -> table -- Get the default 8-color series palette.
-lurek.charts.newArea([config]: table|nil) -> LAreaChart -- Create a new area chart exposed by the lurek engine.
-lurek.charts.newBar([config]: table|nil) -> LBarChart -- Create a new bar chart exposed by the lurek engine.
-lurek.charts.newLine([config]: table|nil) -> LLineChart -- Create a new line chart exposed by the lurek engine.
-lurek.charts.newPie([config]: table|nil) -> LPieChart -- Create a new pie chart exposed by the lurek engine.
-lurek.charts.newScatter([config]: table|nil) -> LScatterPlot -- Create a new scatter plot exposed by the lurek engine.
-lurek.charts.seriesColor(index: integer) -> table -- Get a palette color by 1-based index (wraps around for index > 8).
+lurek.charts.defaultPalette()
+lurek.charts.newArea([config]: any)
+lurek.charts.newBar([config]: any)
+lurek.charts.newHeatmap([config]: any)
+lurek.charts.newHistogram([config]: any)
+lurek.charts.newLine([config]: any)
+lurek.charts.newPie([config]: any)
+lurek.charts.newScatter([config]: any)
+lurek.charts.seriesColor(index: any)
 ```
 
 ### LAreaChart
 
 ```lua
-LAreaChart:addSeries(name: string, data: table, [color]: table|nil) -- Add a named data series to the area chart (stacked above previous).
-LAreaChart:clear() -- Removes all data series from this chart.
-LAreaChart:getHeight() -> number -- Get the chart output height in pixels.
-LAreaChart:getWidth() -> number -- Get the chart output width in pixels.
-LAreaChart:render() -> number -- Renders the chart contents into a new pixel buffer.
-LAreaChart:setTitle(title: string) -- Set or update the chart's displayed title.
+LAreaChart:addLayer(name: any, values: any, [color]: any)
+LAreaChart:addLayerFromDataFrame()
+LAreaChart:addSeries(name: any, data: any, [color]: any)
+LAreaChart:appendPoint(name: any, x: any, y: any, [color]: any)
+LAreaChart:clear()
+LAreaChart:draw(x: any, y: any, [opts]: any)
+LAreaChart:drawToImage(target: any)
+LAreaChart:getHeight()
+LAreaChart:getWidth()
+LAreaChart:render()
+LAreaChart:renderImage()
+LAreaChart:setShowLegend(value: any)
+LAreaChart:setTitle(title: any)
+LAreaChart:setWindow([max_points]: any)
+LAreaChart:setXLabel(label: any)
+LAreaChart:setXTickCount(count: any)
+LAreaChart:setYLabel(label: any)
+LAreaChart:setYMax(value: any)
+LAreaChart:setYTickCount(count: any)
+LAreaChart:type()
+LAreaChart:typeOf(name: any)
 ```
 
 ### LBarChart
 
 ```lua
-LBarChart:addSeries(name: string, data: table, [color]: table|nil) -- Add a named data series to the bar chart.
-LBarChart:clear() -- Removes all data series from this chart.
-LBarChart:getHeight() -> number -- Get the chart output height in pixels.
-LBarChart:getWidth() -> number -- Get the chart output width in pixels.
-LBarChart:render() -> number -- Renders the chart contents into a new pixel buffer.
-LBarChart:setBarWidth(width: number) -- Set the pixel width of individual bars in this chart.
-LBarChart:setTitle(title: string) -- Set or update the chart's displayed title.
+LBarChart:addCategoriesFromDataFrame(df: any, label_col: any, value_cols: any, [opts]: any)
+LBarChart:addCategory(label: any, values: any)
+LBarChart:addSeries(name: any, data: any, [color]: any)
+LBarChart:clear()
+LBarChart:draw(x: any, y: any, [opts]: any)
+LBarChart:drawToImage(target: any)
+LBarChart:getHeight()
+LBarChart:getWidth()
+LBarChart:render()
+LBarChart:renderImage()
+LBarChart:setBarWidth(width: any)
+LBarChart:setShowLegend(value: any)
+LBarChart:setTitle(title: any)
+LBarChart:setXLabel(label: any)
+LBarChart:setXTickCount(count: any)
+LBarChart:setYLabel(label: any)
+LBarChart:setYTickCount(count: any)
+LBarChart:type()
+LBarChart:typeOf(name: any)
+```
+
+### LHeatmapChart
+
+```lua
+LHeatmapChart:clear()
+LHeatmapChart:clearValueRange()
+LHeatmapChart:draw(x: any, y: any, [opts]: any)
+LHeatmapChart:drawToImage(target: any)
+LHeatmapChart:getHeight()
+LHeatmapChart:getWidth()
+LHeatmapChart:render()
+LHeatmapChart:renderImage()
+LHeatmapChart:resize(rows: any, cols: any)
+LHeatmapChart:setCell(row: any, col: any, value: any)
+LHeatmapChart:setColorRange(low: any, high: any)
+LHeatmapChart:setColumnLabels(labels: any)
+LHeatmapChart:setMatrix(matrix: any, [row_labels]: any, [col_labels]: any)
+LHeatmapChart:setMatrixFromDataFrame(df: any, row_col: any, col_col: any, value_col: any, [opts]: any)
+LHeatmapChart:setRowLabels(labels: any)
+LHeatmapChart:setShowLegend(value: any)
+LHeatmapChart:setShowValues(value: any)
+LHeatmapChart:setTitle(title: any)
+LHeatmapChart:setValueRange(min: any, max: any)
+LHeatmapChart:type()
+LHeatmapChart:typeOf(name: any)
+```
+
+### LHistogramChart
+
+```lua
+LHistogramChart:addSeries(name: any, values: any, [color]: any)
+LHistogramChart:addSeriesFromDataFrame()
+LHistogramChart:appendValue(name: any, value: any, [color]: any)
+LHistogramChart:clear()
+LHistogramChart:clearRange()
+LHistogramChart:draw(x: any, y: any, [opts]: any)
+LHistogramChart:drawToImage(target: any)
+LHistogramChart:getHeight()
+LHistogramChart:getWidth()
+LHistogramChart:render()
+LHistogramChart:renderImage()
+LHistogramChart:replaceSeries(name: any, values: any, [color]: any)
+LHistogramChart:setBinCount(bins: any)
+LHistogramChart:setDensity(enabled: any)
+LHistogramChart:setRange(min: any, max: any)
+LHistogramChart:setShowLegend(value: any)
+LHistogramChart:setTitle(title: any)
+LHistogramChart:setWindow([max_points]: any)
+LHistogramChart:setXLabel(label: any)
+LHistogramChart:setXTickCount(count: any)
+LHistogramChart:setYLabel(label: any)
+LHistogramChart:setYTickCount(count: any)
+LHistogramChart:type()
+LHistogramChart:typeOf(name: any)
 ```
 
 ### LLineChart
 
 ```lua
-LLineChart:addSeries(name: string, data: table, [color]: table|nil) -- Add a named data series to the line chart.
-LLineChart:clear() -- Removes all data series from this chart.
-LLineChart:getHeight() -> number -- Get the chart output height in pixels.
-LLineChart:getWidth() -> number -- Get the chart output width in pixels.
-LLineChart:render() -> number -- Renders the chart contents into a new pixel buffer.
-LLineChart:setTitle(title: string) -- Set or update the chart's displayed title.
+LLineChart:addSeries(name: any, data: any, [color]: any)
+LLineChart:addSeriesFromDataFrame()
+LLineChart:appendPoint(name: any, x: any, y: any, [color]: any)
+LLineChart:clear()
+LLineChart:draw(x: any, y: any, [opts]: any)
+LLineChart:drawToImage(target: any)
+LLineChart:getHeight()
+LLineChart:getWidth()
+LLineChart:nearest(x: any, y: any)
+LLineChart:render()
+LLineChart:renderImage()
+LLineChart:replaceSeries(name: any, data: any, [color]: any)
+LLineChart:setShowLegend(value: any)
+LLineChart:setTitle(title: any)
+LLineChart:setWindow([max_points]: any)
+LLineChart:setXLabel(label: any)
+LLineChart:setXMax(value: any)
+LLineChart:setXTickCount(count: any)
+LLineChart:setYLabel(label: any)
+LLineChart:setYMax(value: any)
+LLineChart:setYTickCount(count: any)
+LLineChart:type()
+LLineChart:typeOf(name: any)
 ```
 
 ### LPieChart
 
 ```lua
-LPieChart:addSlice(label: string, value: number, [color]: table|nil) -- Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.
-LPieChart:clear() -- Removes all pie data slices from this chart.
-LPieChart:getHeight() -> number -- Get the chart output height in pixels.
-LPieChart:getWidth() -> number -- Get the chart output width in pixels.
-LPieChart:render() -> number -- Renders the chart contents into a new pixel buffer.
-LPieChart:setTitle(title: string) -- Set or update the chart's displayed title.
+LPieChart:addSegment(label: any, value: any, [color]: any)
+LPieChart:addSegmentsFromDataFrame(df: any, label_col: any, value_col: any, [opts]: any)
+LPieChart:addSlice(label: any, value: any, [color]: any)
+LPieChart:clear()
+LPieChart:draw(x: any, y: any, [opts]: any)
+LPieChart:drawToImage(target: any)
+LPieChart:getHeight()
+LPieChart:getWidth()
+LPieChart:render()
+LPieChart:renderImage()
+LPieChart:setShowLegend(value: any)
+LPieChart:setTitle(title: any)
+LPieChart:type()
+LPieChart:typeOf(name: any)
 ```
 
 ### LScatterPlot
 
 ```lua
-LScatterPlot:addSeries(name: string, data: table, [color]: table|nil) -- Add a named data series to the scatter plot.
-LScatterPlot:clear() -- Removes all data series from this chart.
-LScatterPlot:getHeight() -> number -- Get the chart output height in pixels.
-LScatterPlot:getWidth() -> number -- Get the chart output width in pixels.
-LScatterPlot:render() -> number -- Renders the chart contents into a new pixel buffer.
-LScatterPlot:setDotRadius(r: number) -- Set the radius of the dot drawn for each data point.
-LScatterPlot:setTitle(title: string) -- Set or update the chart's displayed title.
+LScatterPlot:addSeries(name: any, data: any, [color]: any)
+LScatterPlot:addSeriesFromDataFrame()
+LScatterPlot:appendPoint(name: any, x: any, y: any, [color]: any)
+LScatterPlot:clear()
+LScatterPlot:draw(x: any, y: any, [opts]: any)
+LScatterPlot:drawToImage(target: any)
+LScatterPlot:getHeight()
+LScatterPlot:getWidth()
+LScatterPlot:nearest(x: any, y: any)
+LScatterPlot:render()
+LScatterPlot:renderImage()
+LScatterPlot:replaceSeries(name: any, data: any, [color]: any)
+LScatterPlot:setDotRadius(radius: any)
+LScatterPlot:setShowLegend(value: any)
+LScatterPlot:setTitle(title: any)
+LScatterPlot:setWindow([max_points]: any)
+LScatterPlot:setXLabel(label: any)
+LScatterPlot:setXRange(min_x: any, max_x: any)
+LScatterPlot:setXTickCount(count: any)
+LScatterPlot:setYLabel(label: any)
+LScatterPlot:setYRange(min_y: any, max_y: any)
+LScatterPlot:setYTickCount(count: any)
+LScatterPlot:type()
+LScatterPlot:typeOf(name: any)
 ```
 
 ## lurek.cinematic
@@ -3087,16 +3217,22 @@ LGlobe:addArc(lat1: number, lon1: number, lat2: number, lon2: number, [steps]: i
 LGlobe:addLabel(ltype: string, lat: number, lon: number, text: string) -> integer -- Adds a text label at latitude and longitude.
 LGlobe:addLayer(name: string, [z_order]: integer) -- Adds a render layer with optional z-order.
 LGlobe:addMarker(mtype: string, lat: number, lon: number, [label]: string) -> integer -- Adds a marker at latitude and longitude with an optional label.
-LGlobe:addProvince(p: table) -> boolean -- Adds a province described by id, centroid, vertices, neighbors, and optional base color.
-LGlobe:addRegion(p: table) -> boolean -- Adds a region described by id, centroid, vertices, neighbors, and optional base color.
+LGlobe:addProvince(p: table) -> boolean -- Adds a province described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional...
+LGlobe:addRegion(p: table) -> boolean -- Adds a region described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional ba...
+LGlobe:applyMouseDrag(start_x: number, start_y: number, end_x: number, end_y: number) -- Applies a pointer drag to the globe camera using screen-space deltas.
+LGlobe:applyWheelZoom(delta: number) -- Applies a wheel delta using an exponential zoom scale.
 LGlobe:cacheReachability(faction: string, start_id: integer, max_cost: number) -- Caches default-cost reachability for a named faction.
 LGlobe:clearProvinceTexture(id: integer) -> boolean -- Removes texture metadata from a province.
 LGlobe:decodeFogBase64(viewer: string, payload: string) -> boolean -- Loads one viewer's fog state from a base64 string.
+LGlobe:distanceBetweenMarkers(a: integer, b: integer) -> number -- Computes great-circle distance between two markers on the unit sphere.
+LGlobe:draw([opts]: table) -- Emits the globe's render commands into the shared renderer command queue.
 LGlobe:encodeFogBase64(viewer: string) -> string -- Serializes one viewer's fog state to a base64 string.
-LGlobe:exportProvinceMeshOBJ() -> string -- Exports province geometry as Wavefront OBJ text.
-LGlobe:findPath(from_id: integer, to_id: integer) -> string[] -- Finds a default-cost province path between two province ids.
+LGlobe:exportProvinceMeshOBJ() -> string -- Exports province geometry as Wavefront OBJ text, preserving multipart boundaries and hole loops.
+LGlobe:findPath(from_id: integer, to_id: integer) -> integer[] -- Finds a default-cost province path between two province ids.
+LGlobe:findPathWithCosts(from_id: integer, to_id: integer, [opts]: table) -> table -- Finds a province path using caller-supplied traversal costs, blocked ids, and edge-tag surcharges.
 LGlobe:getCachedReachability(faction: string) -> table -- Returns cached reachability costs for a faction.
 LGlobe:getCamera() -> number -- Returns camera latitude, longitude, and zoom.
+LGlobe:getEdgeTags(a: integer, b: integer) -> string[] -- Returns the sorted tag strings stored on a province edge.
 LGlobe:getFogState(viewer: string, id: integer) -> string -- Returns fog-of-war state for one viewer and province.
 LGlobe:getLod() -> string -- Returns the camera-derived level-of-detail tier name.
 LGlobe:getMarkerAttr(id: integer, key: string) -> string -- Reads a string attribute from a marker.
@@ -3104,6 +3240,7 @@ LGlobe:getName() -> string -- Returns the registry name of this globe.
 LGlobe:getNeighbors(id: integer) -> integer[] -- Returns neighboring province ids for a province.
 LGlobe:getProvinceAttr(id: integer, key: string) -> string -- Reads a string attribute from a province.
 LGlobe:getProvinceSector(id: integer) -> string -- Returns the sector name assigned to a province.
+LGlobe:getRegionAttr(id: integer, key: string) -> string -- Reads a string attribute from a semantic region.
 LGlobe:getSectorProvinces(sector: string) -> integer[] -- Returns province ids assigned to a sector.
 LGlobe:getTimeOfDay() -> number -- Returns globe time of day. This method is available to Lua scripts.
 LGlobe:hideProvince(viewer: string, id: integer) -- Hides a province for one fog-of-war viewer.
@@ -3111,11 +3248,16 @@ LGlobe:isVisible(viewer: string, id: integer) -> boolean -- Returns whether a pr
 LGlobe:moveMarker(id: integer, lat: number, lon: number) -> boolean -- Moves a marker to latitude and longitude coordinates.
 LGlobe:pan(dlat: number, dlon: number) -- Pans the globe camera by latitude and longitude deltas.
 LGlobe:pick(sx: number, sy: number) -> integer -- Picks a province at screen coordinates.
-LGlobe:pickLatLon(sx: number, sy: number) -> number -- Picks at screen coordinates and returns the hit province centroid screen coordinates.
-LGlobe:pickRaycast(sx: number, sy: number, [steps]: integer) -> integer -- Samples along a screen ray from the camera center and returns the first hit province.
-LGlobe:provinceCount() -> integer -- Returns the number of regions in this globe.
+LGlobe:pickLatLon(sx: number, sy: number) -> number -- Picks at screen coordinates and returns the hit surface latitude and longitude.
+LGlobe:pickMarker(sx: number, sy: number, [radius]: number) -> integer -- Returns the nearest visible marker at a screen position within an optional pixel radius.
+LGlobe:pickRaycast(sx: number, sy: number, [steps]: integer) -> integer -- Samples along the screen-space line from the globe center to the target and returns the first hit province.
+LGlobe:pickRegions(sx: number, sy: number) -> integer[] -- Returns semantic region ids under a screen-space hit.
+LGlobe:pickSurface(sx: number, sy: number, [marker_radius]: number) -> table -- Resolves a screen-space hit into globe surface data plus province, marker, and semantic-region hits.
+LGlobe:provinceCount() -> integer -- Returns the number of rendered provinces in this globe.
 LGlobe:reachable(start_id: integer, max_cost: number) -> table -- Returns provinces reachable from a start province within a cost budget.
-LGlobe:regionCount() -> integer -- Returns the number of regions in this globe.
+LGlobe:reachableWithCosts(start_id: integer, max_cost: number, [opts]: table) -> table -- Returns provinces reachable under caller-supplied traversal costs, blocked ids, and edge-tag surcharges.
+LGlobe:regionCount() -> integer -- Returns the number of stored semantic regions in this globe.
+LGlobe:regionsAtLatLon(lat: number, lon: number) -> integer[] -- Returns semantic region ids containing a latitude-longitude point.
 LGlobe:removeArc(id: integer) -> boolean -- Removes an arc by id. This method is available to Lua scripts.
 LGlobe:removeHeatLayer(name: string) -> boolean -- Removes a heat layer by name. This method is available to Lua scripts.
 LGlobe:removeLabel(id: integer) -> boolean -- Removes a label by id. This method is available to Lua scripts.
@@ -3125,10 +3267,13 @@ LGlobe:removeProvince(id: integer) -> boolean -- Removes a region by id. This me
 LGlobe:removeRegion(id: integer) -> boolean -- Removes a region by id. This method is available to Lua scripts.
 LGlobe:revealAll(viewer: string) -- Reveals every province for one fog-of-war viewer.
 LGlobe:revealProvince(viewer: string, id: integer) -- Reveals a province for one fog-of-war viewer.
+LGlobe:screenDeltaToPan(dx: number, dy: number) -> number -- Converts a screen-space drag delta into latitude and longitude pan deltas.
+LGlobe:screenToLatLon(sx: number, sy: number) -> number -- Converts a visible screen position into globe latitude, longitude, and unit-sphere coordinates.
 LGlobe:setActiveViewer([viewer]: string) -- Sets the active fog-of-war viewer name or clears it.
 LGlobe:setAutoRotationSpeed(dps: number) -- Sets automatic globe rotation speed.
 LGlobe:setBorders(show: boolean) -- Enables or disables province border rendering.
 LGlobe:setCamera(lat: number, lon: number, z: number) -- Sets camera latitude, longitude, and zoom.
+LGlobe:setEdgeTags(a: integer, b: integer, tags: string[]) -> boolean -- Replaces the tag set stored on an existing province edge.
 LGlobe:setFogState(viewer: string, id: integer, state: string) -- Sets fog-of-war state for one viewer and province.
 LGlobe:setHeatLayer(name: string, attr_key: string, min: number, max: number, alpha: number) -- Creates or replaces a heat layer that maps province attributes into colors.
 LGlobe:setLabelText(id: integer, text: string) -> boolean -- Changes text for an existing label.
@@ -3137,12 +3282,17 @@ LGlobe:setLayerAlpha(name: string, alpha: number) -> boolean -- Sets render laye
 LGlobe:setLayerColor(layer: string, id: integer, r: number, g: number, b: number, a: number) -> boolean -- Sets a province color override inside a render layer.
 LGlobe:setLayerVisible(name: string, vis: boolean) -> boolean -- Shows or hides a render layer. This method is available to Lua scripts.
 LGlobe:setMarkerAttr(id: integer, key: string, val: string) -> boolean -- Sets a string attribute on a marker.
+LGlobe:setMarkerColor(id: integer, r: number, g: number, b: number, [a]: number) -> boolean -- Sets marker tint color.
+LGlobe:setMarkerIconTexture(id: integer, [tex_raw]: integer) -> boolean -- Assigns or clears a raw texture handle for a marker icon.
 LGlobe:setMarkerPulse(id: integer, hz: number, amp: number) -> boolean -- Sets marker pulse frequency and amplitude.
 LGlobe:setMarkerRotation(id: integer, dps: number) -> boolean -- Sets marker rotation speed. This method is available to Lua scripts.
+LGlobe:setMarkerShape(id: integer, shape: string) -> boolean -- Sets the vector fallback shape used by a marker.
+LGlobe:setMarkerSize(id: integer, size: number) -> boolean -- Sets marker size in screen units.
 LGlobe:setMarkerVisible(id: integer, vis: boolean) -> boolean -- Shows or hides a marker. This method is available to Lua scripts.
 LGlobe:setProvinceAttr(id: integer, key: string, val: string) -> boolean -- Sets a string attribute on a province.
 LGlobe:setProvinceSector(id: integer, sector: string) -> boolean -- Assigns a province to a named sector.
 LGlobe:setProvinceTexture(id: integer, tex_raw: integer, u0: number, v0: number, u1: number, v1: number) -> boolean -- Assigns a raw texture handle and UV rectangle to a province.
+LGlobe:setRegionAttr(id: integer, key: string, val: string) -> boolean -- Sets a string attribute on a semantic region.
 LGlobe:setRotation(deg: number) -- Sets globe rotation angle. This method is available to Lua scripts.
 LGlobe:setTimeOfDay(t: number) -- Sets globe time of day modulo 24 hours.
 LGlobe:type() -> string -- Returns the Lua-visible type name for this globe handle.
@@ -4012,16 +4162,22 @@ lurek.mapblock.newTilesetRef(id: integer, name: string, tile_count: integer, col
 ### LMapBlock
 
 ```lua
+LMapBlock:getFootprintCellCount() -> integer -- Get the number of occupied footprint cells.
 LMapBlock:getHeight() -> integer -- Get height in tiles for this object.
 LMapBlock:getLayerCount() -> integer -- Get the number of tile layers in this map block.
 LMapBlock:getName() -> string -- Get the map block's display or lookup name string value.
+LMapBlock:getSocket(x: integer, y: integer, edge: string) -> integer -- Get a previously stored per-cell socket type.
 LMapBlock:getTile(layer: integer, x: integer, y: integer, slot: integer) -> integer -- Get the tile GID at a specified row and column position.
+LMapBlock:getWeight() -> number -- Get block weight for random selection.
 LMapBlock:getWidth() -> integer -- Get the block width measured in tile grid units.
+LMapBlock:isFootprintCell(x: integer, y: integer) -> boolean -- Check whether a local footprint cell exists.
 LMapBlock:setEdge(edge: string, segment: integer, edge_type: integer) -- Set edge type for a side and segment.
 LMapBlock:setEdgeOnly(edge_only: boolean) -- Set whether block must be on map edge.
+LMapBlock:setFootprint(cells: table) -- Replace the placement footprint with a custom cell list.
 LMapBlock:setInteriorOnly(interior_only: boolean) -- Set whether block must be in interior.
 LMapBlock:setLevelSpan(levels: integer) -- Set multi-level span for this object.
 LMapBlock:setName(name: string) -- Set the map block's display or lookup name string value.
+LMapBlock:setSocket(x: integer, y: integer, edge: string, edge_type: integer) -- Set a per-cell socket type for one edge of the footprint.
 LMapBlock:setTile(layer: integer, x: integer, y: integer, slot: integer, tileset_id: integer, gid: integer) -- Set a tile slot value â€” Lua userdata object exposed by the engine.
 LMapBlock:setWeight(weight: number) -- Set block weight for random selection.
 ```
@@ -4042,6 +4198,7 @@ LMapBlockConfig:setMaxLayers(max: integer) -- Set maximum layers per block for t
 LMapBlockGenerator:addGroup(group: MapGroup) -- Add a named block group definition to this map generator.
 LMapBlockGenerator:generate(script: MapScript) -> MapBlockResult -- Generate map using a script for this object.
 LMapBlockGenerator:getLastPlacedCount() -> integer -- Get last placement count for this object.
+LMapBlockGenerator:setGrid(grid: PlacementGrid) -- Set the placement grid from a prepared PlacementGrid object.
 LMapBlockGenerator:setMaxLevels(levels: integer) -- Set the number of vertical levels or storeys to generate.
 LMapBlockGenerator:setOrientation(orientation: string) -- Set rendering orientation for this object.
 LMapBlockGenerator:setRectShape(width: integer, height: integer) -- Set rectangular map shape â€” Lua userdata object exposed by the engine.
@@ -4059,6 +4216,7 @@ LMapBlockResult:getGid(level: integer, layer: integer, x: integer, y: integer, s
 LMapBlockResult:getHeight() -> integer -- Get total height in tiles â€” Lua userdata object exposed by the engine.
 LMapBlockResult:getLayerCount() -> integer -- Get number of layers for this object.
 LMapBlockResult:getLevelCount() -> integer -- Get number of levels for this object.
+LMapBlockResult:getPlacements() -> table -- Get placement summaries from the last generation run.
 LMapBlockResult:getWidth() -> integer -- Get total width in tiles for this object.
 LMapBlockResult:isEmpty() -> boolean -- Check if result is empty for this object.
 ```
@@ -4097,6 +4255,8 @@ LPlacementGrid:addPosition(x: integer, y: integer) -- Add a position to the grid
 LPlacementGrid:clear() -- Clear all positions and placed blocks.
 LPlacementGrid:getAvailableCount() -> integer -- Get available position count for this object.
 LPlacementGrid:isAvailable(x: integer, y: integer) -> boolean -- Check whether a placement grid position is currently available.
+LPlacementGrid:isEdgePosition(x: integer, y: integer) -> boolean -- Check whether a cell touches the placement-shape boundary.
+LPlacementGrid:removePosition(x: integer, y: integer) -- Remove an available position from the grid.
 ```
 
 ### LTilesetRef
@@ -4776,6 +4936,7 @@ LOverlay:getHeight() -> integer -- Returns the overlay height. This method is av
 LOverlay:getLightningAlpha() -> number -- Returns the current lightning alpha.
 LOverlay:getLightningColor() -> number -- Returns overlay lightning RGBA color.
 LOverlay:getShakeOffset() -> number -- Returns the current screen shake offset.
+LOverlay:getStats() -> table -- Returns a telemetry snapshot for dashboard and debug workflows.
 LOverlay:getTimeOfDay() -> number -- Returns the overlay time-of-day value.
 LOverlay:getVignetteStrength() -> number -- Returns overlay vignette strength.
 LOverlay:getWater() -> table -- Returns a table describing the current water effect settings.
@@ -4876,6 +5037,7 @@ LParallaxLayer:getMotionStretch() -> boolean -- Returns the current motion stret
 LParallaxLayer:getOffset() -> number -- Returns layer offset for this object.
 LParallaxLayer:getOpacity() -> number -- Returns layer opacity from this object.
 LParallaxLayer:getScrollFactor() -> number -- Returns layer scroll factor from this object.
+LParallaxLayer:getStats() -> table -- Returns telemetry for the current runtime camera and viewport.
 LParallaxLayer:getTiling() -> boolean -- Returns whether layer tiling is enabled.
 LParallaxLayer:getTint() -> number -- Returns layer tint color from this object.
 LParallaxLayer:getZ() -> integer -- Returns layer z order from this object.
@@ -4908,6 +5070,7 @@ LParallaxLayer:update(dt: number) -- Advances parallax layer autoscroll by delta
 LParallaxSet:addLayer(layer: LParallaxLayer) -- Adds a parallax layer to this set handle.
 LParallaxSet:getLayerZAt(index: integer) -> integer -- Returns z order for a layer by one-based index, or nil when out of range.
 LParallaxSet:getName() -> string -- Returns this set name from this object.
+LParallaxSet:getStats() -> table -- Returns aggregated telemetry for all layers in the set.
 LParallaxSet:isVisible() -> boolean -- Returns set visibility and returns a boolean.
 LParallaxSet:layerCount() -> integer -- Returns the number of layers in this set.
 LParallaxSet:removeLayerAt(index: integer) -> boolean -- Removes a layer by one-based index.
@@ -4974,6 +5137,7 @@ LParticleSystem:getSpeed() -> number -- Returns particle speed range. This metho
 LParticleSystem:getSpin() -> number -- Returns particle spin range. This method is available to Lua scripts.
 LParticleSystem:getSpinVariation() -> number -- Returns spin variation. This method is available to Lua scripts.
 LParticleSystem:getSpread() -> number -- Returns emission spread. This method is available to Lua scripts.
+LParticleSystem:getStats() -> table -- Returns a telemetry snapshot for dashboard and debug workflows.
 LParticleSystem:getTangentialAcceleration() -> number -- Returns tangential acceleration range.
 LParticleSystem:hasCollidesWithPhysics() -> boolean -- Returns whether particle physics collision is enabled.
 LParticleSystem:hasRelativeRotation() -> boolean -- Returns whether relative rotation is enabled.
@@ -6064,13 +6228,20 @@ LProvinceRegistry:typeOf(name: string) -> boolean -- Checks whether this object 
 
 ```lua
 lurek.raycaster.applyLitShade(baseShade: number, r: number, g: number, b: number) -> number -- Applies an RGB light color to a scalar shade value.
+lurek.raycaster.buildMultiLevelScene(params: table, levels: table|LMultiLevelGrid, [lights]: table, [sprites]: table|LSpriteManager, [wallTextures]: table, [models]: table) -> integer -- Builds a multilevel raycaster scene from a stack of plain Lua level tables.
+lurek.raycaster.buildMultiLevelSceneFromAdapter(params: table, levels: table|LMultiLevelGrid, adapter: LSceneAdapter, [wallTextures]: table) -> integer -- Builds a multilevel raycaster scene from a stack of plain Lua level tables using a runtime scene adapter.
 lurek.raycaster.distanceShade(distance: number, maxDistance: number) -> number -- Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
+lurek.raycaster.getLastBuildStats() -> table? -- Returns stats for the last stored raycaster scene build.
 lurek.raycaster.new(w: integer, h: integer) -> LRaycaster -- Creates a new raycaster map with the given grid dimensions.
 lurek.raycaster.newDoorManager() -> LDoorManager -- Creates a new door manager for tracking and animating sliding doors.
 lurek.raycaster.newHeightMap(w: integer, h: integer) -> LHeightMap -- Creates a new height map for variable floor/ceiling heights across the grid.
 lurek.raycaster.newMap(w: integer, h: integer) -> LRaycaster -- Creates a new raycaster map (alias for `new`).
-lurek.raycaster.newPointLight(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number) -> LPointLight -- Creates a new point light with position, color, radius, and intensity.
+lurek.raycaster.newMultiLevelGrid([levels]: table|LMultiLevelGrid) -> LMultiLevelGrid -- Creates a persistent multi-level raycaster world from plain Lua level tables or as an empty container.
+lurek.raycaster.newPointLight(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number, [level]: integer) -> LPointLight -- Creates a new point light with position, color, radius, and intensity.
+lurek.raycaster.newSceneAdapter() -> LSceneAdapter -- Creates a runtime adapter for sprites, lights, and models that can follow physics bodies.
 lurek.raycaster.newSpriteManager() -> LSpriteManager -- Creates a new sprite manager for tracking and projecting billboard sprites.
+lurek.raycaster.pickScreenMultiLevel(sx: number, sy: number, params: table, levels: table|LMultiLevelGrid, [wallTextures]: table, [sprites]: table|LSpriteManager, [models]: table) -> table -- Resolves a screen-space click against a stack of plain Lua level tables and returns the owning level.
+lurek.raycaster.pickScreenMultiLevelFromAdapter(sx: number, sy: number, params: table, levels: table|LMultiLevelGrid, [wallTextures]: table, adapter: LSceneAdapter) -> table -- Resolves a screen-space click against a stack of plain Lua level tables using a runtime scene adapter.
 lurek.raycaster.projectColumn(distance: number, fov: number, screenHeight: number) -> number -- Computes the projected wall-column height for a given distance, FOV, and screen height.
 ```
 
@@ -6098,13 +6269,55 @@ LHeightMap:type() -> string -- Returns the type name of this object.
 LHeightMap:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
 
+### LMultiLevelGrid
+
+```lua
+LMultiLevelGrid:activeLevel() -> integer -- Returns the currently active level index used for stacked camera height.
+LMultiLevelGrid:addLevel(level: table) -> integer -- Appends one level described with the same table format accepted by buildMultiLevelScene.
+LMultiLevelGrid:buildScene(params: table, [lights]: table, [sprites]: table|LSpriteManager, [wallTextures]: table) -> integer -- Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.
+LMultiLevelGrid:buildSceneFromAdapter(params: table, adapter: LSceneAdapter, [wallTextures]: table) -> integer -- Builds a textured multilevel raycaster scene from a runtime scene adapter that may follow physics bodies.
+LMultiLevelGrid:clearWallFeatureCell(x: integer, y: integer) -- Removes any per-cell wall feature override from the active level.
+LMultiLevelGrid:getCeilingHeight() -> number -- Returns the ceiling height of the active level in world units.
+LMultiLevelGrid:getCeilingTexture() -> integer -- Returns the default ceiling texture id used by the active level, or nil when none is set.
+LMultiLevelGrid:getCeilingTextureCell(x: integer, y: integer) -> integer -- Returns the per-cell ceiling texture id assigned on the active level, or nil if none is set.
+LMultiLevelGrid:getCell(x: integer, y: integer) -> integer -- Returns the wall type value at a grid cell on the active level.
+LMultiLevelGrid:getFloorOffset() -> number -- Returns the floor height offset of the active level in world units.
+LMultiLevelGrid:getFloorTexture() -> integer -- Returns the default floor texture id used by the active level, or nil when none is set.
+LMultiLevelGrid:getFloorTextureCell(x: integer, y: integer) -> integer -- Returns the per-cell floor texture id assigned on the active level, or nil if none is set.
+LMultiLevelGrid:getLoweredFloorCell(x: integer, y: integer) -> table -- Returns the lowered-floor configuration at an active-level cell, or nil if the cell is normal.
+LMultiLevelGrid:getWallFeatureCell(x: integer, y: integer) -> table -- Returns the wall feature attached to an active-level cell, or nil when none is set.
+LMultiLevelGrid:isCeilingHole(x: integer, y: integer) -> boolean -- Returns true when an active-level cell is open to the level above.
+LMultiLevelGrid:isFloorHole(x: integer, y: integer) -> boolean -- Returns true when an active-level cell is open to the level below.
+LMultiLevelGrid:levelCount() -> integer -- Returns the total number of stored levels.
+LMultiLevelGrid:pickScreen(sx: number, sy: number, params: table, [wallTextures]: table, [sprites]: table|LSpriteManager, [models]: table) -> table -- Resolves a screen-space click against this persistent multi-level world and returns the owning level.
+LMultiLevelGrid:pickScreenFromAdapter(sx: number, sy: number, params: table, [wallTextures]: table, adapter: LSceneAdapter) -> table -- Resolves a screen-space click against this multilevel world using a runtime scene adapter.
+LMultiLevelGrid:setActiveLevel(level: integer) -- Sets the currently active level index used for stacked camera height.
+LMultiLevelGrid:setCeilingHeight(height: number) -- Sets the ceiling height of the active level in world units.
+LMultiLevelGrid:setCeilingHole(x: integer, y: integer, hole: boolean) -- Sets whether an active-level cell is open to the level above.
+LMultiLevelGrid:setCeilingTexture([texture]: LImage) -- Sets the default ceiling texture used by the active level. Pass nil to clear it.
+LMultiLevelGrid:setCeilingTextureCell(x: integer, y: integer, [texture]: LImage) -- Assigns a per-cell ceiling texture override on the active level. Pass nil to remove the override.
+LMultiLevelGrid:setCell(x: integer, y: integer, val: integer) -- Sets the wall type value at a grid cell on the active level. Non-zero values are solid walls.
+LMultiLevelGrid:setDoorCell(x: integer, y: integer, direction: string, openAmount: number, [alpha]: number) -- Attaches a sliding door feature to a blocking cell on the active level.
+LMultiLevelGrid:setFloorHole(x: integer, y: integer, hole: boolean) -- Sets whether an active-level cell is open to the level below.
+LMultiLevelGrid:setFloorOffset(offset: number) -- Sets the floor height offset of the active level in world units.
+LMultiLevelGrid:setFloorTexture([texture]: LImage) -- Sets the default floor texture used by the active level. Pass nil to clear it.
+LMultiLevelGrid:setFloorTextureCell(x: integer, y: integer, [texture]: LImage) -- Assigns a per-cell floor texture override on the active level. Pass nil to remove the override.
+LMultiLevelGrid:setHalfWallCell(x: integer, y: integer, height: number) -- Attaches a half-height wall feature to a blocking cell on the active level.
+LMultiLevelGrid:setLoweredFloorCell(x: integer, y: integer, [opts]: table) -- Marks an active-level cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
+LMultiLevelGrid:setWindowCell(x: integer, y: integer, sillHeight: number, lintelHeight: number, [alpha]: number) -- Attaches a window feature to a blocking cell on the active level, leaving a visible opening between sill an...
+LMultiLevelGrid:type() -> string -- Returns the type name of this object ("LMultiLevelGrid").
+LMultiLevelGrid:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
+```
+
 ### LPointLight
 
 ```lua
 LPointLight:color() -> number -- Returns the RGB color components of this light.
 LPointLight:intensity() -> number -- Returns the brightness multiplier of this light.
+LPointLight:level() -> integer -- Returns the optional multilevel slice index that owns this light.
 LPointLight:radius() -> number -- Returns the light's falloff radius in world units.
-LPointLight:set(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number) -- Overwrites all properties of this point light in a single call.
+LPointLight:set(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number, [level]: integer) -- Overwrites all properties of this point light in a single call.
+LPointLight:setLevel([level]: integer) -- Updates the optional multilevel slice index that owns this light.
 LPointLight:type() -> string -- Returns the type name of this object ("LPointLight").
 LPointLight:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 LPointLight:x() -> number -- Returns the X world position of this light.
@@ -6114,14 +6327,17 @@ LPointLight:y() -> number -- Returns the Y world position of this light.
 ### LRaycaster
 
 ```lua
+LRaycaster:applyDoorManager(doors: LDoorManager, [alpha]: number) -- Synchronizes animated doors from an `LDoorManager` into this map's per-cell wall features.
 LRaycaster:buildMinimapWindow(centerX: number, centerY: number, radius: integer, ambient: number, [lights]: table) -> table -- Generates a grid of minimap tile samples around a center point with lighting info.
-LRaycaster:buildScene(params: table, [lights]: table, [sprites]: table, [wallTextures]: table) -> integer -- Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
-LRaycaster:buildSceneWithModels(params: table, [lights]: table, [sprites]: table, [wallTextures]: table, [models]: table) -> integer -- Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
+LRaycaster:buildScene(params: table, [lights]: table, [sprites]: table|LSpriteManager, [wallTextures]: table) -> integer -- Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
+LRaycaster:buildSceneFromAdapter(params: table, adapter: LSceneAdapter, [wallTextures]: table) -> integer -- Builds a textured raycaster scene from a runtime scene adapter that may follow physics bodies.
+LRaycaster:buildSceneWithModels(params: table, [lights]: table, [sprites]: table|LSpriteManager, [wallTextures]: table, [models]: table) -> integer -- Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
 LRaycaster:castFloorRow(camX: number, camY: number, dirX: number, dirY: number, planeX: number, planeY: number, row: integer) -> table -- Computes floor/ceiling texture UV coordinates for a single scanline row.
 LRaycaster:castRay(ox: number, oy: number, angle: number, maxDist: number) -> table -- Casts a single ray from (ox,oy) at the given angle and returns hit info or nil.
 LRaycaster:castRayMulti(ox: number, oy: number, angle: number, maxDist: number, [maxHits]: integer) -> table -- Casts a single ray that passes through transparent walls, returning multiple hits.
 LRaycaster:castRays(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number) -> table -- Casts multiple rays across a field of view and returns an array of hit tables.
 LRaycaster:castRaysFlat(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number) -> number[] -- Casts multiple rays and returns only the corrected distances as a flat array.
+LRaycaster:clearWallFeatureCell(x: integer, y: integer) -- Removes any per-cell wall feature override from a blocking cell.
 LRaycaster:computeTileLight(x: integer, y: integer, ambient: number, [lights]: table) -> number -- Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
 LRaycaster:drawCameraSweep(x: number, y: number, fov: number, maxDist: number, numFrames: integer, fw: integer, fh: integer) -> LImageData -- Renders multiple frames of a rotating camera sweep as a single combined image.
 LRaycaster:drawDepthMap(px: number, py: number, angle: number, fov: number, numRays: integer, w: integer, h: integer, maxDist: number) -> LImageData -- Renders a grayscale depth map showing distance-to-wall for each column.
@@ -6134,31 +6350,61 @@ LRaycaster:getCell(x: integer, y: integer) -> integer -- Returns the wall type v
 LRaycaster:getFloorTextureCell(x: integer, y: integer) -> integer -- Returns the raw texture id assigned to this floor cell, or nil if none.
 LRaycaster:getLoweredFloorCell(x: integer, y: integer) -> table -- Returns the lowered floor configuration at a cell, or nil if the cell is normal.
 LRaycaster:getWallAlpha(tileType: integer) -> number -- Returns the current transparency value for a wall tile type.
+LRaycaster:getWallFeatureCell(x: integer, y: integer) -> table -- Returns the wall feature attached to a cell, or nil when none is set.
 LRaycaster:gridMove(px: number, py: number, dir: integer, action: string, step: number) -> number -- Performs a discrete grid-step movement in one of 4 cardinal directions with collision.
 LRaycaster:height() -> integer -- Returns the map height in grid cells.
 LRaycaster:isBlocked(x: integer, y: integer) -> boolean -- Returns true if the grid cell is a solid wall (non-zero value).
 LRaycaster:isWalkBlocked(x: integer, y: integer) -> boolean -- Returns true if the cell blocks walking (solid wall OR blocked lowered-floor cell).
 LRaycaster:lineOfSight(x1: number, y1: number, x2: number, y2: number) -> boolean -- Tests whether there is a clear line of sight between two world points (no walls in between).
+LRaycaster:pickScreen(sx: number, sy: number, params: table, [sprites]: table|LSpriteManager, [models]: table) -> table -- Resolves a screen-space click back into the raycaster world using the same camera semantics as scene building.
+LRaycaster:pickScreenFromAdapter(sx: number, sy: number, params: table, adapter: LSceneAdapter) -> table -- Resolves a screen-space click using sprite/model inputs sourced from a runtime scene adapter.
 LRaycaster:projectSprite(sx: number, sy: number, px: number, py: number, pa: number, fov: number, screenW: number) -> table -- Projects a world-space sprite to screen coordinates for billboard rendering.
 LRaycaster:revealCellsFromRays(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number, [step]: number) -> table -- Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).
 LRaycaster:setCeilingTextureCell(x: integer, y: integer, [texture]: LImage) -- Assigns a per-cell ceiling texture override. Pass nil to remove the override.
 LRaycaster:setCell(x: integer, y: integer, val: integer) -- Sets the wall type value at a grid cell. Non-zero values are solid walls.
 LRaycaster:setCells(cells: table) -- Replaces the entire map grid with a flat array of cell values (row-major order).
+LRaycaster:setDoorCell(x: integer, y: integer, direction: string, openAmount: number, [alpha]: number) -- Attaches a sliding door feature to a blocking cell.
 LRaycaster:setFloorTextureCell(x: integer, y: integer, [texture]: LImage) -- Assigns a per-cell floor texture override. Pass nil to remove the override.
+LRaycaster:setHalfWallCell(x: integer, y: integer, height: number) -- Attaches a half-height wall feature to a blocking cell.
 LRaycaster:setLoweredFloorCell(x: integer, y: integer, [opts]: table) -- Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
 LRaycaster:setWallAlpha(tileType: integer, alpha: number) -- Sets the transparency for a specific wall tile type, enabling see-through walls.
+LRaycaster:setWindowCell(x: integer, y: integer, sillHeight: number, lintelHeight: number, [alpha]: number) -- Attaches a window feature to a blocking cell, leaving a visible opening between sill and lintel.
 LRaycaster:tryMove(px: number, py: number, dx: number, dy: number) -> number -- Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.
 LRaycaster:type() -> string -- Returns the type name of this object ("LRaycaster").
 LRaycaster:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 LRaycaster:width() -> integer -- Returns the map width in grid cells.
 ```
 
+### LSceneAdapter
+
+```lua
+LSceneAdapter:addDirectionalSprite(x: number, y: number, front: LImage|integer, right: LImage|integer, back: LImage|integer, [left]: LImage|integer, [opts]: table) -- Adds a static directional billboard sprite entry.
+LSceneAdapter:addLight(x: number, y: number, radius: number, [opts]: table) -- Adds a static point light entry.
+LSceneAdapter:addModel(model: LObjModel, x: number, y: number, [opts]: table) -- Adds a static OBJ model instance entry.
+LSceneAdapter:addSprite(x: number, y: number, texture: LImage|integer, [opts]: table) -- Adds a static billboard sprite entry.
+LSceneAdapter:bindBodyDirectionalSprite(body: LBody, front: LImage|integer, right: LImage|integer, back: LImage|integer, [left]: LImage|integer, [opts]: table) -- Binds a directional billboard sprite to a live physics body.
+LSceneAdapter:bindBodyLight(body: LBody, radius: number, [opts]: table) -- Binds a point light to a live physics body.
+LSceneAdapter:bindBodyModel(body: LBody, model: LObjModel, [opts]: table) -- Binds an OBJ model instance to a live physics body.
+LSceneAdapter:bindBodySprite(body: LBody, texture: LImage|integer, [opts]: table) -- Binds a billboard sprite to a live physics body.
+LSceneAdapter:clear() -- Removes every tracked entry from the adapter.
+LSceneAdapter:clearLights() -- Removes every tracked light entry from the adapter.
+LSceneAdapter:clearModels()
+LSceneAdapter:clearSprites() -- Removes every tracked sprite entry from the adapter.
+LSceneAdapter:sceneInputs() -> table -- Resolves the current runtime snapshot into `{ lights, sprites, models }` tables.
+LSceneAdapter:type() -> string -- Returns the type name of this object.
+LSceneAdapter:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
+```
+
 ### LSpriteManager
 
 ```lua
-LSpriteManager:add(x: number, y: number, texture: string, [scale]: number) -> integer -- Adds a new sprite to the manager at a world position with a texture name and optional scale.
+LSpriteManager:add(x: number, y: number, texture: any, [scale]: number, [level]: integer) -> integer -- Adds a new sprite to the manager at a world position with a texture label, raw id, or image handle.
+LSpriteManager:addDirectional(x: number, y: number, front: any, right: any, back: any, [left]: any, [angle]: number, [scale]: number, [level]: integer) -> integer -- Adds a new sprite with front/right/back/left textures and a world-facing angle.
 LSpriteManager:clear() -- Removes all sprites from the manager.
 LSpriteManager:remove(id: integer) -- Removes a sprite by its id. This method is available to Lua scripts.
+LSpriteManager:setDirectionalTextures(id: integer, front: any, right: any, back: any, [left]: any, [angle]: number) -- Replaces the directional bitmap set for an existing sprite and optionally updates its facing angle.
+LSpriteManager:setFacing(id: integer, angle: number) -- Updates the facing angle of an existing directional sprite.
+LSpriteManager:setLevel(id: integer, level: integer) -- Updates the multilevel slice index for an existing sprite.
 LSpriteManager:setPosition(id: integer, x: number, y: number) -- Updates the world position of an existing sprite.
 LSpriteManager:setVisible(id: integer, visible: boolean) -- Shows or hides a sprite without removing it.
 LSpriteManager:sortAndProject(camX: number, camY: number, camAngle: number) -> integer[] -- Sorts all visible sprites by distance from the camera and returns projection data.

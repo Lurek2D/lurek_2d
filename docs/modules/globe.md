@@ -248,7 +248,7 @@ lurek.globe.loadFromTOML(name, toml_src, spec_tbl)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | Globe registry name. |
-| `toml_src` | string | TOML province document source. |
+| `toml_src` | string | TOML province document source supporting either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`. |
 | `spec_tbl?` | table | Globe specification table. |
 
 **Returns**
@@ -282,7 +282,7 @@ lurek.globe.loadFromTOMLFile(name, path, spec_tbl)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | string | Globe registry name. |
-| `path` | string | TOML file path to load. |
+| `path` | string | TOML file path to load. Provinces may use either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`. |
 | `spec_tbl?` | table | Globe specification table. |
 
 **Returns**
@@ -594,7 +594,7 @@ end
 
 #### `LGlobe:addProvince`
 
-Adds a province described by id, centroid, vertices, neighbors, and optional base color.
+Adds a province described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
 
 ```lua
 LGlobe:addProvince(p)
@@ -604,7 +604,7 @@ LGlobe:addProvince(p)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `p` | table | Province table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`. |
+| `p` | table | Province table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`. |
 
 **Returns**
 
@@ -626,7 +626,7 @@ end
 
 #### `LGlobe:addRegion`
 
-Adds a region described by id, centroid, vertices, neighbors, and optional base color.
+Adds a region described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
 
 ```lua
 LGlobe:addRegion(p)
@@ -636,7 +636,7 @@ LGlobe:addRegion(p)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `p` | table | Region table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`. |
+| `p` | table | Region table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`. |
 
 **Returns**
 
@@ -658,6 +658,41 @@ do
     print("region count = " .. g:regionCount())
 end
 ```
+
+---
+
+#### `LGlobe:applyMouseDrag`
+
+Applies a pointer drag to the globe camera using screen-space deltas.
+
+```lua
+LGlobe:applyMouseDrag(start_x, start_y, end_x, end_y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `start_x` | number | Drag start x. |
+| `start_y` | number | Drag start y. |
+| `end_x` | number | Drag end x. |
+| `end_y` | number | Drag end y. |
+
+---
+
+#### `LGlobe:applyWheelZoom`
+
+Applies a wheel delta using an exponential zoom scale.
+
+```lua
+LGlobe:applyWheelZoom(delta)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `delta` | number | Wheel delta where positive zooms in and negative zooms out. |
 
 ---
 
@@ -758,6 +793,45 @@ end
 
 ---
 
+#### `LGlobe:distanceBetweenMarkers`
+
+Computes great-circle distance between two markers on the unit sphere.
+
+```lua
+LGlobe:distanceBetweenMarkers(a, b)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `a` | number | First marker id. |
+| `b` | number | Second marker id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Great-circle distance, or nil when either marker is missing. |
+
+---
+
+#### `LGlobe:draw`
+
+Emits the globe's render commands into the shared renderer command queue.
+
+```lua
+LGlobe:draw(opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `opts?` | table | Optional draw settings with `screen_cx` and `screen_cy`. |
+
+---
+
 #### `LGlobe:encodeFogBase64`
 
 Serializes one viewer's fog state to a base64 string.
@@ -792,7 +866,7 @@ end
 
 #### `LGlobe:exportProvinceMeshOBJ`
 
-Exports province geometry as Wavefront OBJ text.
+Exports province geometry as Wavefront OBJ text, preserving multipart boundaries and hole loops.
 
 ```lua
 LGlobe:exportProvinceMeshOBJ()
@@ -802,7 +876,7 @@ LGlobe:exportProvinceMeshOBJ()
 
 | Type | Description |
 |------|-------------|
-| string | OBJ mesh text for the current provinces. |
+| string | OBJ text for the current provinces, including grouped boundary loops and any available fill geometry. |
 
 **Example**
 
@@ -836,7 +910,7 @@ LGlobe:findPath(from_id, to_id)
 
 | Type | Description |
 |------|-------------|
-| string[] | Province ids, or nil when no path exists. |
+| number[] | Province ids, or nil when no path exists. |
 
 **Example**
 
@@ -848,6 +922,30 @@ do
     print("path length = " .. #(g:findPath(1, 2) or {}))
 end
 ```
+
+---
+
+#### `LGlobe:findPathWithCosts`
+
+Finds a province path using caller-supplied traversal costs, blocked ids, and edge-tag surcharges.
+
+```lua
+LGlobe:findPathWithCosts(from_id, to_id, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `from_id` | number | Start province id. |
+| `to_id` | number | Target province id. |
+| `opts?` | table | Optional cost table with `default_cost`, `province_costs`, `tag_costs`, and `blocked_ids`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Result table with `ids` and `total_cost`, or nil when no path exists. |
 
 ---
 
@@ -912,6 +1010,29 @@ do
     print("camera: " .. lat .. "," .. lon .. " z=" .. z)
 end
 ```
+
+---
+
+#### `LGlobe:getEdgeTags`
+
+Returns the sorted tag strings stored on a province edge.
+
+```lua
+LGlobe:getEdgeTags(a, b)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `a` | number | First province id. |
+| `b` | number | Second province id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Sequential table of edge tag strings, empty when none are set. |
 
 ---
 
@@ -1138,6 +1259,29 @@ end
 
 ---
 
+#### `LGlobe:getRegionAttr`
+
+Reads a string attribute from a semantic region.
+
+```lua
+LGlobe:getRegionAttr(id, key)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Region id. |
+| `key` | string | Attribute key. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | Attribute string, or nil when the region or key is missing. |
+
+---
+
 #### `LGlobe:getSectorProvinces`
 
 Returns province ids assigned to a sector.
@@ -1360,7 +1504,7 @@ end
 
 #### `LGlobe:pickLatLon`
 
-Picks at screen coordinates and returns the hit province centroid screen coordinates.
+Picks at screen coordinates and returns the hit surface latitude and longitude.
 
 ```lua
 LGlobe:pickLatLon(sx, sy)
@@ -1377,8 +1521,8 @@ LGlobe:pickLatLon(sx, sy)
 
 | Type | Description |
 |------|-------------|
-| number | Centroid x coordinate; or nil when nothing is hit. |
-| number | Centroid y coordinate; or nil when nothing is hit. |
+| number | Latitude in degrees; or nil when nothing is hit. |
+| number | Longitude in degrees; or nil when nothing is hit. |
 
 **Example**
 
@@ -1392,9 +1536,33 @@ end
 
 ---
 
+#### `LGlobe:pickMarker`
+
+Returns the nearest visible marker at a screen position within an optional pixel radius.
+
+```lua
+LGlobe:pickMarker(sx, sy, radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
+| `radius?` | number | Maximum marker distance in pixels, default 12. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Marker id, or nil when no visible marker is within range. |
+
+---
+
 #### `LGlobe:pickRaycast`
 
-Samples along a screen ray from the camera center and returns the first hit province.
+Samples along the screen-space line from the globe center to the target and returns the first hit province.
 
 ```lua
 LGlobe:pickRaycast(sx, sy, steps)
@@ -1406,7 +1574,7 @@ LGlobe:pickRaycast(sx, sy, steps)
 |------|------|-------------|
 | `sx` | number | Target screen x coordinate. |
 | `sy` | number | Target screen y coordinate. |
-| `steps?` | number | Number of samples along the ray, defaulting to 24. |
+| `steps?` | number | Number of screen-space samples along the line, defaulting to 24. |
 
 **Returns**
 
@@ -1426,9 +1594,56 @@ end
 
 ---
 
+#### `LGlobe:pickRegions`
+
+Returns semantic region ids under a screen-space hit.
+
+```lua
+LGlobe:pickRegions(sx, sy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Array table of semantic region ids. |
+
+---
+
+#### `LGlobe:pickSurface`
+
+Resolves a screen-space hit into globe surface data plus province, marker, and semantic-region hits.
+
+```lua
+LGlobe:pickSurface(sx, sy, marker_radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
+| `marker_radius?` | number | Maximum marker distance in pixels when testing marker hits. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Pick result table, or nil when the screen point is off the globe. |
+
+---
+
 #### `LGlobe:provinceCount`
 
-Returns the number of regions in this globe.
+Returns the number of rendered provinces in this globe.
 
 ```lua
 LGlobe:provinceCount()
@@ -1438,7 +1653,7 @@ LGlobe:provinceCount()
 
 | Type | Description |
 |------|-------------|
-| number | Region count. |
+| number | Province count. |
 
 **Example**
 
@@ -1487,9 +1702,33 @@ end
 
 ---
 
+#### `LGlobe:reachableWithCosts`
+
+Returns provinces reachable under caller-supplied traversal costs, blocked ids, and edge-tag surcharges.
+
+```lua
+LGlobe:reachableWithCosts(start_id, max_cost, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `start_id` | number | Start province id. |
+| `max_cost` | number | Maximum traversal cost. |
+| `opts?` | table | Optional cost table with `default_cost`, `province_costs`, `tag_costs`, and `blocked_ids`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Map table from province id (integer key) to accumulated traversal cost (number). |
+
+---
+
 #### `LGlobe:regionCount`
 
-Returns the number of regions in this globe.
+Returns the number of stored semantic regions in this globe.
 
 ```lua
 LGlobe:regionCount()
@@ -1499,7 +1738,7 @@ LGlobe:regionCount()
 
 | Type | Description |
 |------|-------------|
-| number | Region count. |
+| number | Semantic region count. |
 
 **Example**
 
@@ -1519,6 +1758,29 @@ do
     print("region count = " .. g:regionCount())
 end
 ```
+
+---
+
+#### `LGlobe:regionsAtLatLon`
+
+Returns semantic region ids containing a latitude-longitude point.
+
+```lua
+LGlobe:regionsAtLatLon(lat, lon)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `lat` | number | Latitude in degrees. |
+| `lon` | number | Longitude in degrees. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Array table of semantic region ids. |
 
 ---
 
@@ -1812,6 +2074,57 @@ end
 
 ---
 
+#### `LGlobe:screenDeltaToPan`
+
+Converts a screen-space drag delta into latitude and longitude pan deltas.
+
+```lua
+LGlobe:screenDeltaToPan(dx, dy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `dx` | number | Screen-space x delta in pixels. |
+| `dy` | number | Screen-space y delta in pixels. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Latitude delta in degrees. |
+| number | Longitude delta in degrees. |
+
+---
+
+#### `LGlobe:screenToLatLon`
+
+Converts a visible screen position into globe latitude, longitude, and unit-sphere coordinates.
+
+```lua
+LGlobe:screenToLatLon(sx, sy)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `sx` | number | Screen x coordinate. |
+| `sy` | number | Screen y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Latitude in degrees; or nil when the point is off the globe. |
+| number | Longitude in degrees; or nil when the point is off the globe. |
+| number | Unit-sphere x coordinate; or nil when the point is off the globe. |
+| number | Unit-sphere y coordinate; or nil when the point is off the globe. |
+| number | Unit-sphere z coordinate; or nil when the point is off the globe. |
+
+---
+
 #### `LGlobe:setActiveViewer`
 
 Sets the active fog-of-war viewer name or clears it.
@@ -1915,6 +2228,30 @@ do
     print("camera set")
 end
 ```
+
+---
+
+#### `LGlobe:setEdgeTags`
+
+Replaces the tag set stored on an existing province edge.
+
+```lua
+LGlobe:setEdgeTags(a, b, tags)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `a` | number | First province id. |
+| `b` | number | Second province id. |
+| `tags` | string[] | Sequential table of edge tag strings. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the edge exists and the tags were stored. |
 
 ---
 
@@ -2187,6 +2524,55 @@ end
 
 ---
 
+#### `LGlobe:setMarkerColor`
+
+Sets marker tint color.
+
+```lua
+LGlobe:setMarkerColor(id, r, g, b, a)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+| `r` | number | Red channel. |
+| `g` | number | Green channel. |
+| `b` | number | Blue channel. |
+| `a?` | number | Alpha channel, defaulting to 1.0. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the marker exists. |
+
+---
+
+#### `LGlobe:setMarkerIconTexture`
+
+Assigns or clears a raw texture handle for a marker icon.
+
+```lua
+LGlobe:setMarkerIconTexture(id, tex_raw)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+| `tex_raw?` | number | Raw texture handle, or nil to clear the icon. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the marker exists. |
+
+---
+
 #### `LGlobe:setMarkerPulse`
 
 Sets marker pulse frequency and amplitude.
@@ -2253,6 +2639,52 @@ do
     print("rotation = 90 dps")
 end
 ```
+
+---
+
+#### `LGlobe:setMarkerShape`
+
+Sets the vector fallback shape used by a marker.
+
+```lua
+LGlobe:setMarkerShape(id, shape)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+| `shape` | string | One of `circle`, `square`, `diamond`, `triangle`, or `cross`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the marker exists. |
+
+---
+
+#### `LGlobe:setMarkerSize`
+
+Sets marker size in screen units.
+
+```lua
+LGlobe:setMarkerSize(id, size)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Marker id. |
+| `size` | number | Marker size, clamped to at least 1.0. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the marker exists. |
 
 ---
 
@@ -2394,6 +2826,30 @@ do
     print("province texture set")
 end
 ```
+
+---
+
+#### `LGlobe:setRegionAttr`
+
+Sets a string attribute on a semantic region.
+
+```lua
+LGlobe:setRegionAttr(id, key, val)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | number | Region id. |
+| `key` | string | Attribute key. |
+| `val` | string | Attribute value. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the region exists. |
 
 ---
 

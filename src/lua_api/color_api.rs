@@ -6,12 +6,36 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+fn finite_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{}: {} must be finite",
+            api, arg_name
+        )))
+    }
+}
+
+fn unit_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    Ok(finite_f32(api, arg_name, value)?.clamp(0.0, 1.0))
+}
+
+fn normalized_hue_degrees(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    let value = finite_f32(api, arg_name, value)?;
+    Ok(value.rem_euclid(360.0))
+}
+
 /// Extracts RGBA floats from a Lua table at indices 1-4 (alpha defaults to 1.0).
 fn color_from_table(t: &LuaTable) -> LuaResult<(f32, f32, f32, f32)> {
     let r: f32 = t.get(1)?;
     let g: f32 = t.get(2)?;
     let b: f32 = t.get(3)?;
     let a: f32 = t.get(4).unwrap_or(1.0);
+    let r = unit_f32("lurek.color", "color[1]", r)?;
+    let g = unit_f32("lurek.color", "color[2]", g)?;
+    let b = unit_f32("lurek.color", "color[3]", b)?;
+    let a = unit_f32("lurek.color", "color[4]", a)?;
     Ok((r, g, b, a))
 }
 
@@ -57,7 +81,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "new",
         lua.create_function(|lua, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
-            color_to_table(lua, r, g, b, a.unwrap_or(1.0))
+            let r = unit_f32("lurek.color.new", "r", r)?;
+            let g = unit_f32("lurek.color.new", "g", g)?;
+            let b = unit_f32("lurek.color.new", "b", b)?;
+            let a = unit_f32("lurek.color.new", "a", a.unwrap_or(1.0))?;
+            color_to_table(lua, r, g, b, a)
         })?,
     )?;
 
@@ -98,6 +126,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "fromHsl",
         lua.create_function(|lua, (h, s, l): (f32, f32, f32)| {
+            let h = normalized_hue_degrees("lurek.color.fromHsl", "h", h)?;
+            let s = unit_f32("lurek.color.fromHsl", "s", s)?;
+            let l = unit_f32("lurek.color.fromHsl", "l", l)?;
             let c = hsl_to_rgb(h, s, l);
             color_struct_to_table(lua, &c)
         })?,
@@ -112,7 +143,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "fromHsv",
         lua.create_function(|lua, (h, s, v): (f32, f32, f32)| {
-            let (r, g, b) = hsv_to_rgb((h as u16).min(359), s, v);
+            let h = normalized_hue_degrees("lurek.color.fromHsv", "h", h)?;
+            let s = unit_f32("lurek.color.fromHsv", "s", s)?;
+            let v = unit_f32("lurek.color.fromHsv", "v", v)?;
+            let (r, g, b) = hsv_to_rgb(h.round() as u16 % 360, s, v);
             color_to_table(
                 lua,
                 r as f32 / 255.0,
@@ -134,6 +168,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "toHsl",
         lua.create_function(|_, (r, g, b): (f32, f32, f32)| {
+            let r = unit_f32("lurek.color.toHsl", "r", r)?;
+            let g = unit_f32("lurek.color.toHsl", "g", g)?;
+            let b = unit_f32("lurek.color.toHsl", "b", b)?;
             let c = Color::new(r, g, b, 1.0);
             let (h, s, l) = c.to_hsl();
             Ok((h, s, l))
@@ -150,7 +187,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "toHex",
         lua.create_function(|_, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
-            let c = Color::new(r, g, b, a.unwrap_or(1.0));
+            let r = unit_f32("lurek.color.toHex", "r", r)?;
+            let g = unit_f32("lurek.color.toHex", "g", g)?;
+            let b = unit_f32("lurek.color.toHex", "b", b)?;
+            let a = unit_f32("lurek.color.toHex", "a", a.unwrap_or(1.0))?;
+            let c = Color::new(r, g, b, a);
             Ok(c.to_hex())
         })?,
     )?;
@@ -168,6 +209,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(|lua, (c1, c2, t): (LuaTable, LuaTable, f32)| {
             let (r1, g1, b1, a1) = color_from_table(&c1)?;
             let (r2, g2, b2, a2) = color_from_table(&c2)?;
+            let t = unit_f32("lurek.color.lerp", "t", t)?;
             let a = Color::new(r1, g1, b1, a1);
             let b = Color::new(r2, g2, b2, a2);
             let result = blend::lerp_color(&a, &b, t);
@@ -272,7 +314,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "invert",
         lua.create_function(|lua, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
-            let c = Color::new(r, g, b, a.unwrap_or(1.0));
+            let r = unit_f32("lurek.color.invert", "r", r)?;
+            let g = unit_f32("lurek.color.invert", "g", g)?;
+            let b = unit_f32("lurek.color.invert", "b", b)?;
+            let a = unit_f32("lurek.color.invert", "a", a.unwrap_or(1.0))?;
+            let c = Color::new(r, g, b, a);
             let inv = c.invert();
             color_struct_to_table(lua, &inv)
         })?,
@@ -287,6 +333,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "brightness",
         lua.create_function(|_, (r, g, b): (f32, f32, f32)| {
+            let r = unit_f32("lurek.color.brightness", "r", r)?;
+            let g = unit_f32("lurek.color.brightness", "g", g)?;
+            let b = unit_f32("lurek.color.brightness", "b", b)?;
             let c = Color::new(r, g, b, 1.0);
             Ok(c.brightness())
         })?,
@@ -303,6 +352,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "withAlpha",
         lua.create_function(|lua, (r, g, b, _a, new_alpha): (f32, f32, f32, f32, f32)| {
+            let r = unit_f32("lurek.color.withAlpha", "r", r)?;
+            let g = unit_f32("lurek.color.withAlpha", "g", g)?;
+            let b = unit_f32("lurek.color.withAlpha", "b", b)?;
+            let new_alpha = unit_f32("lurek.color.withAlpha", "newAlpha", new_alpha)?;
             color_to_table(lua, r, g, b, new_alpha)
         })?,
     )?;
@@ -313,7 +366,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | number | Linear value.
     tbl.set(
         "gammaToLinear",
-        lua.create_function(|_, c: f32| Ok(gamma_to_linear(c)))?,
+        lua.create_function(|_, c: f32| {
+            let c = unit_f32("lurek.color.gammaToLinear", "c", c)?;
+            Ok(gamma_to_linear(c))
+        })?,
     )?;
 
     // -- linearToGamma --
@@ -322,7 +378,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | number | Gamma-encoded value.
     tbl.set(
         "linearToGamma",
-        lua.create_function(|_, c: f32| Ok(linear_to_gamma(c)))?,
+        lua.create_function(|_, c: f32| {
+            let c = unit_f32("lurek.color.linearToGamma", "c", c)?;
+            Ok(linear_to_gamma(c))
+        })?,
     )?;
 
     // -- palette --

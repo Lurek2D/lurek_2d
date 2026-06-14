@@ -33,6 +33,7 @@ This file is a short contributor guide. The architecture source of truth is docs
 - tests/rust/security/: sandbox and path safety tests.
 - tests/rust/ext/: cross-module Rust smoke tests.
 - tests/lua_tests.rs: explicit registration of Lua test files.
+- tests/lua_harness_template.rs: manual scaffold for regenerating the Lua harness; not a Cargo test target.
 - tests/python/: stdlib `unittest` self-tests for repo audit and validation tools.
 - tests/lua/unit/: one file per module for lurek.* API contracts.
 - tests/lua/library/: canonical one file per pure-Lua library.

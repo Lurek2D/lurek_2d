@@ -9,6 +9,42 @@ use crate::render::{BlendMode, RenderCommand};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+fn finite_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be finite"
+        )))
+    }
+}
+
+fn non_negative_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    let value = finite_f32(api, arg_name, value)?;
+    if value >= 0.0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be >= 0"
+        )))
+    }
+}
+
+fn positive_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    let value = finite_f32(api, arg_name, value)?;
+    if value > 0.0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be > 0"
+        )))
+    }
+}
+
+fn unit_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    Ok(finite_f32(api, arg_name, value)?.clamp(0.0, 1.0))
+}
 /// Parses a Lua blend mode string into a render blend mode.
 fn blend_from_str(s: &str) -> LuaResult<BlendMode> {
     match s {
@@ -100,6 +136,7 @@ impl LuaUserData for LuaParallaxLayer {
         /// Advances parallax layer autoscroll by delta time.
         /// @param | dt | number | Delta time in seconds.
         methods.add_method("update", |_, this, dt: f32| {
+            let dt = non_negative_f32("LParallaxLayer:update", "dt", dt)?;
             this.layer.borrow_mut().update(dt);
             Ok(())
         });
@@ -108,6 +145,8 @@ impl LuaUserData for LuaParallaxLayer {
         /// @param | cam_x | number | Camera x coordinate.
         /// @param | cam_y | number | Camera y coordinate.
         methods.add_method("render", |_, this, (cam_x, cam_y): (f32, f32)| {
+            let cam_x = finite_f32("LParallaxLayer:render", "cam_x", cam_x)?;
+            let cam_y = finite_f32("LParallaxLayer:render", "cam_y", cam_y)?;
             let layer = this.layer.borrow();
             let mut st = this.state.borrow_mut();
             Self::push_render_commands_internal(&layer, &mut st, cam_x, cam_y);
@@ -140,7 +179,10 @@ impl LuaUserData for LuaParallaxLayer {
         /// @param | y | number | Y scroll factor.
         methods.add_method("setScrollFactor", |_, this, (x, y): (f32, f32)| {
             let mut l = this.layer.borrow_mut();
-            l.scroll_factor = [x, y];
+            l.scroll_factor = [
+                finite_f32("LParallaxLayer:setScrollFactor", "x", x)?,
+                finite_f32("LParallaxLayer:setScrollFactor", "y", y)?,
+            ];
             Ok(())
         });
         // -- getScrollFactor --
@@ -157,7 +199,10 @@ impl LuaUserData for LuaParallaxLayer {
         /// @param | y | number | Y offset.
         methods.add_method("setOffset", |_, this, (x, y): (f32, f32)| {
             let mut l = this.layer.borrow_mut();
-            l.offset = [x, y];
+            l.offset = [
+                finite_f32("LParallaxLayer:setOffset", "x", x)?,
+                finite_f32("LParallaxLayer:setOffset", "y", y)?,
+            ];
             Ok(())
         });
         // -- getOffset --
@@ -174,7 +219,10 @@ impl LuaUserData for LuaParallaxLayer {
         /// @param | vy | number | Y autoscroll velocity.
         methods.add_method("setAutoscroll", |_, this, (vx, vy): (f32, f32)| {
             let mut l = this.layer.borrow_mut();
-            l.autoscroll = [vx, vy];
+            l.autoscroll = [
+                finite_f32("LParallaxLayer:setAutoscroll", "vx", vx)?,
+                finite_f32("LParallaxLayer:setAutoscroll", "vy", vy)?,
+            ];
             Ok(())
         });
         // -- getAutoscroll --
@@ -201,7 +249,10 @@ impl LuaUserData for LuaParallaxLayer {
         /// @param | sy | number | Y scale factor.
         methods.add_method("setScale", |_, this, (sx, sy): (f32, f32)| {
             let mut l = this.layer.borrow_mut();
-            l.scale = [sx, sy];
+            l.scale = [
+                positive_f32("LParallaxLayer:setScale", "sx", sx)?,
+                positive_f32("LParallaxLayer:setScale", "sy", sy)?,
+            ];
             Ok(())
         });
         // -- setZ --
@@ -219,7 +270,7 @@ impl LuaUserData for LuaParallaxLayer {
         /// Sets layer opacity, clamped to 0..1.
         /// @param | a | number | Opacity value.
         methods.add_method("setOpacity", |_, this, a: f32| {
-            this.layer.borrow_mut().opacity = a.clamp(0.0, 1.0);
+            this.layer.borrow_mut().opacity = unit_f32("LParallaxLayer:setOpacity", "a", a)?;
             Ok(())
         });
         // -- getOpacity --
@@ -233,7 +284,12 @@ impl LuaUserData for LuaParallaxLayer {
         /// @param | b | number | Blue channel (0â€“1).
         /// @param | a | number | Alpha channel (0â€“1).
         methods.add_method("setTint", |_, this, (r, g, b, a): (f32, f32, f32, f32)| {
-            this.layer.borrow_mut().tint = [r, g, b, a];
+            this.layer.borrow_mut().tint = [
+                unit_f32("LParallaxLayer:setTint", "r", r)?,
+                unit_f32("LParallaxLayer:setTint", "g", g)?,
+                unit_f32("LParallaxLayer:setTint", "b", b)?,
+                unit_f32("LParallaxLayer:setTint", "a", a)?,
+            ];
             Ok(())
         });
         // -- getTint --
@@ -280,8 +336,16 @@ impl LuaUserData for LuaParallaxLayer {
             "setClamp",
             |_, this, (min_x, min_y, max_x, max_y): (f32, f32, f32, f32)| {
                 let mut l = this.layer.borrow_mut();
-                l.clamp_min = Some([min_x, min_y]);
-                l.clamp_max = Some([max_x, max_y]);
+                l.set_clamp_bounds(
+                    [
+                        finite_f32("LParallaxLayer:setClamp", "min_x", min_x)?,
+                        finite_f32("LParallaxLayer:setClamp", "min_y", min_y)?,
+                    ],
+                    [
+                        finite_f32("LParallaxLayer:setClamp", "max_x", max_x)?,
+                        finite_f32("LParallaxLayer:setClamp", "max_y", max_y)?,
+                    ],
+                );
                 Ok(())
             },
         );
@@ -311,14 +375,19 @@ impl LuaUserData for LuaParallaxLayer {
         /// @param | w | number | Tile width.
         /// @param | h | number | Tile height.
         methods.add_method("setTileSize", |_, this, (w, h): (f32, f32)| {
-            this.layer.borrow_mut().set_tile_size(w, h);
+            this.layer.borrow_mut().set_tile_size(
+                finite_f32("LParallaxLayer:setTileSize", "w", w)?,
+                finite_f32("LParallaxLayer:setTileSize", "h", h)?,
+            );
             Ok(())
         });
         // -- setDepth --
         /// Sets parallax depth for this object.
         /// @param | z | number | Depth value.
         methods.add_method("setDepth", |_, this, z: f32| {
-            this.layer.borrow_mut().set_depth(z);
+            this.layer
+                .borrow_mut()
+                .set_depth(finite_f32("LParallaxLayer:setDepth", "z", z)?);
             Ok(())
         });
         // -- getDepth --
@@ -339,7 +408,10 @@ impl LuaUserData for LuaParallaxLayer {
                     let pairs = tbl.pairs::<String, f32>();
                     for pair in pairs {
                         let (k, v) = pair?;
-                        pass.params.insert(k, v);
+                        pass.params.insert(
+                            k.clone(),
+                            finite_f32("LParallaxLayer:addEffectPass", &k, v)?,
+                        );
                     }
                 }
                 let mut layer = this.layer.borrow_mut();
@@ -361,6 +433,37 @@ impl LuaUserData for LuaParallaxLayer {
         methods.add_method("effectCount", |_, this, ()| {
             Ok(this.layer.borrow().effect_count() as i64)
         });
+        // -- getStats --
+        /// Returns telemetry for the current runtime camera and viewport.
+        /// @return | table | Parallax layer telemetry fields.
+        methods.add_method("getStats", |lua, this, ()| {
+            let (cam_x, cam_y, screen_w, screen_h) = {
+                let st = this.state.borrow();
+                (
+                    st.camera.position.x,
+                    st.camera.position.y,
+                    st.window_state.game_width,
+                    st.window_state.game_height,
+                )
+            };
+            let stats = this
+                .layer
+                .borrow()
+                .stats_for_view(cam_x, cam_y, screen_w, screen_h);
+            let table = lua.create_table()?;
+            table.set("visible_tile_count", stats.visible_tile_count)?;
+            table.set("tile_width", stats.tile_width)?;
+            table.set("tile_height", stats.tile_height)?;
+            table.set("draw_scale_x", stats.draw_scale_x)?;
+            table.set("draw_scale_y", stats.draw_scale_y)?;
+            table.set("effect_pass_count", stats.effect_pass_count)?;
+            table.set("z", stats.z)?;
+            table.set("depth", stats.depth)?;
+            table.set("visible", stats.visible)?;
+            table.set("motion_stretch_enabled", stats.motion_stretch_enabled)?;
+            table.set("autoscroll_speed", stats.autoscroll_speed)?;
+            Ok(table)
+        });
         // -- setMotionStretch --
         /// Sets the motion stretch settings for this layer.
         /// @param | enabled | boolean | Motion stretch flag.
@@ -369,9 +472,11 @@ impl LuaUserData for LuaParallaxLayer {
         methods.add_method(
             "setMotionStretch",
             |_, this, (enabled, strength, max_scale): (bool, f32, f32)| {
-                this.layer
-                    .borrow_mut()
-                    .set_motion_stretch(enabled, strength, max_scale);
+                this.layer.borrow_mut().set_motion_stretch(
+                    enabled,
+                    non_negative_f32("LParallaxLayer:setMotionStretch", "strength", strength)?,
+                    positive_f32("LParallaxLayer:setMotionStretch", "max_scale", max_scale)?,
+                );
                 Ok(())
             },
         );
@@ -481,6 +586,7 @@ impl LuaUserData for LuaParallaxSet {
         /// Updates all layers in this parallax set.
         /// @param | dt | number | Delta time in seconds.
         methods.add_method_mut("update", |_, this, dt: f32| {
+            let dt = non_negative_f32("LParallaxSet:update", "dt", dt)?;
             for l in &this.layers {
                 l.layer.borrow_mut().update(dt);
             }
@@ -491,6 +597,8 @@ impl LuaUserData for LuaParallaxSet {
         /// @param | cam_x | number | Camera x coordinate.
         /// @param | cam_y | number | Camera y coordinate.
         methods.add_method("render", |_, this, (cam_x, cam_y): (f32, f32)| {
+            let cam_x = finite_f32("LParallaxSet:render", "cam_x", cam_x)?;
+            let cam_y = finite_f32("LParallaxSet:render", "cam_y", cam_y)?;
             if !this.visible {
                 return Ok(());
             }
@@ -529,6 +637,37 @@ impl LuaUserData for LuaParallaxSet {
             this.name = name;
             Ok(())
         });
+        // -- getStats --
+        /// Returns aggregated telemetry for all layers in the set.
+        /// @return | table | Set-level telemetry fields.
+        methods.add_method("getStats", |lua, this, ()| {
+            let (cam_x, cam_y, screen_w, screen_h) = {
+                let st = this.state.borrow();
+                (
+                    st.camera.position.x,
+                    st.camera.position.y,
+                    st.window_state.game_width,
+                    st.window_state.game_height,
+                )
+            };
+            let mut visible_tile_count = 0_usize;
+            let mut effect_pass_count = 0_usize;
+            for layer in &this.layers {
+                let stats = layer
+                    .layer
+                    .borrow()
+                    .stats_for_view(cam_x, cam_y, screen_w, screen_h);
+                visible_tile_count += stats.visible_tile_count;
+                effect_pass_count += stats.effect_pass_count;
+            }
+            let table = lua.create_table()?;
+            table.set("name", this.name.clone())?;
+            table.set("layer_count", this.layers.len())?;
+            table.set("visible", this.visible)?;
+            table.set("visible_tile_count", visible_tile_count)?;
+            table.set("effect_pass_count", effect_pass_count)?;
+            Ok(table)
+        });
     }
 }
 /// Registers the `lurek.parallax` module.
@@ -561,22 +700,26 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             };
             let mut layer = ParallaxLayer::new(tex_key, tex_w, tex_h);
             if let Ok(v) = opts.get::<_, f32>("scroll_factor_x") {
-                layer.scroll_factor[0] = v;
+                layer.scroll_factor[0] =
+                    finite_f32("lurek.parallax.newLayer", "scroll_factor_x", v)?;
             }
             if let Ok(v) = opts.get::<_, f32>("scroll_factor_y") {
-                layer.scroll_factor[1] = v;
+                layer.scroll_factor[1] =
+                    finite_f32("lurek.parallax.newLayer", "scroll_factor_y", v)?;
             }
             if let Ok(v) = opts.get::<_, f32>("offset_x") {
-                layer.offset[0] = v;
+                layer.offset[0] = finite_f32("lurek.parallax.newLayer", "offset_x", v)?;
             }
             if let Ok(v) = opts.get::<_, f32>("offset_y") {
-                layer.offset[1] = v;
+                layer.offset[1] = finite_f32("lurek.parallax.newLayer", "offset_y", v)?;
             }
             if let Ok(v) = opts.get::<_, f32>("autoscroll_x") {
-                layer.autoscroll[0] = v;
+                layer.autoscroll[0] =
+                    finite_f32("lurek.parallax.newLayer", "autoscroll_x", v)?;
             }
             if let Ok(v) = opts.get::<_, f32>("autoscroll_y") {
-                layer.autoscroll[1] = v;
+                layer.autoscroll[1] =
+                    finite_f32("lurek.parallax.newLayer", "autoscroll_y", v)?;
             }
             if let Ok(Some(v)) = opts.get::<_, Option<bool>>("repeat_x") {
                 layer.repeat_x = v;
@@ -588,19 +731,19 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 layer.z = v;
             }
             if let Ok(v) = opts.get::<_, f32>("opacity") {
-                layer.opacity = v.clamp(0.0, 1.0);
+                layer.opacity = unit_f32("lurek.parallax.newLayer", "opacity", v)?;
             }
             if let Ok(r) = opts.get::<_, f32>("tint_r") {
-                layer.tint[0] = r;
+                layer.tint[0] = unit_f32("lurek.parallax.newLayer", "tint_r", r)?;
             }
             if let Ok(g) = opts.get::<_, f32>("tint_g") {
-                layer.tint[1] = g;
+                layer.tint[1] = unit_f32("lurek.parallax.newLayer", "tint_g", g)?;
             }
             if let Ok(b) = opts.get::<_, f32>("tint_b") {
-                layer.tint[2] = b;
+                layer.tint[2] = unit_f32("lurek.parallax.newLayer", "tint_b", b)?;
             }
             if let Ok(a) = opts.get::<_, f32>("tint_a") {
-                layer.tint[3] = a;
+                layer.tint[3] = unit_f32("lurek.parallax.newLayer", "tint_a", a)?;
             }
             if let Ok(v) = opts.get::<_, String>("blend_mode") {
                 layer.blend_mode = blend_from_str(&v)?;
@@ -609,28 +752,33 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 layer.visible = v;
             }
             if let Ok(v) = opts.get::<_, f32>("scale_x") {
-                layer.scale[0] = v;
+                layer.scale[0] = positive_f32("lurek.parallax.newLayer", "scale_x", v)?;
             }
             if let Ok(v) = opts.get::<_, f32>("scale_y") {
-                layer.scale[1] = v;
+                layer.scale[1] = positive_f32("lurek.parallax.newLayer", "scale_y", v)?;
             }
             if let Ok(Some(v)) = opts.get::<_, Option<bool>>("tiling") {
                 layer.set_tiling(v);
             }
             if let Ok(v) = opts.get::<_, f32>("depth") {
-                layer.set_depth(v);
+                layer.set_depth(finite_f32("lurek.parallax.newLayer", "depth", v)?);
             }
             if let (Ok(w), Ok(h)) = (opts.get::<_, f32>("tile_w"), opts.get::<_, f32>("tile_h")) {
-                layer.set_tile_size(w, h);
+                layer.set_tile_size(
+                    finite_f32("lurek.parallax.newLayer", "tile_w", w)?,
+                    finite_f32("lurek.parallax.newLayer", "tile_h", h)?,
+                );
             }
             if let Ok(Some(v)) = opts.get::<_, Option<bool>>("motion_stretch") {
                 layer.motion_stretch_enabled = v;
             }
             if let Ok(v) = opts.get::<_, f32>("motion_stretch_strength") {
-                layer.motion_stretch_strength = v.max(0.0);
+                layer.motion_stretch_strength =
+                    non_negative_f32("lurek.parallax.newLayer", "motion_stretch_strength", v)?;
             }
             if let Ok(v) = opts.get::<_, f32>("motion_stretch_max") {
-                layer.motion_stretch_max_scale = v.max(1.0);
+                layer.motion_stretch_max_scale =
+                    positive_f32("lurek.parallax.newLayer", "motion_stretch_max", v)?.max(1.0);
             }
             if let Ok(tbl) = opts.get::<_, LuaTable>("effects") {
                 let mut chain = Vec::new();
@@ -645,7 +793,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                             if let Ok(params_tbl) = pass_tbl.get::<_, LuaTable>("params") {
                                 for pair in params_tbl.pairs::<String, f32>() {
                                     let (k, v) = pair?;
-                                    pass.params.insert(k, v);
+                                    pass.params.insert(
+                                        k.clone(),
+                                        finite_f32("lurek.parallax.newLayer", &k, v)?,
+                                    );
                                 }
                             }
                             chain.push(pass);

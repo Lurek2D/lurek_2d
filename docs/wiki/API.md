@@ -17,14 +17,14 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8909 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (31670 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9145 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32645 lines)
 
 ## Coverage
 
 - 70 modules
-- 5833 functions and methods
-- 100.0% documented
+- 6055 functions and methods
+- 97.4% documented
 
 ## API Module Index
 
@@ -38,7 +38,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.automation](Module-automation) | 32 | 0 | Automated input simulation for headless tests, QA replay, recorded sessions. |
 | [lurek.binary](Module-binary) | 22 | 4 | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack. |
 | [lurek.camera](Module-camera) | 4 | 3 | 2D camera and viewport types. Pure data; no GPU resources. |
-| [lurek.charts](Module-charts) | 7 | 5 | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers. |
+| [lurek.charts](Module-charts) | 9 | 7 | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers. |
 | [lurek.cinematic](Module-cinematic) | 2 | 2 | The cinematic module provides scriptable timelines for cutscenes and other authored sequences. |
 | [lurek.color](Module-color) | 19 | 0 | RGBA color primitives with color-space conversions, blending modes, and predefined palettes. |
 | [lurek.compute](Module-compute) | 13 | 1 | Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads. |
@@ -81,7 +81,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.pipeline](Module-pipeline) | 3 | 2 | DAG-based workflow orchestration: analytics, test sequences, asset / mod processing. |
 | [lurek.procgen](Module-procgen) | 33 | 3 | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen, cellular worlds. |
 | [lurek.province](Module-province) | 15 | 1 | Engine-native province runtime: topology, style state, revisioned deltas, geometry cache, Lua bridge. |
-| [lurek.raycaster](Module-raycaster) | 9 | 5 | Wolfenstein-style 2D grid raycaster: textured walls, billboard sprites, doors, lighting. |
+| [lurek.raycaster](Module-raycaster) | 16 | 7 | Wolfenstein-style 2D grid raycaster: textured walls, billboard sprites, doors, lighting. |
 | [lurek.render](Module-render) | 117 | 12 | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |
 | [lurek.repl](Module-repl) | 1 | 1 | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. |
 | [lurek.save](Module-save) | 1 | 1 | Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to serial. |

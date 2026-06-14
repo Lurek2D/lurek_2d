@@ -44,7 +44,7 @@ The glossary collects terms that appear across module and API pages.
 - `LAnimStateMachine` ([lurek.animation](Module-animation)) - Lua-side animation state machine that switches clips from named states and parameters.
 - `LAnimSyncGroup` ([lurek.animation](Module-animation)) - Lua-side animation synchronization group for coordinating multiple animation handles.
 - `LApiCatalog` ([lurek.docs](Module-docs)) - Provides Lua methods for querying, merging, filtering, and exporting catalog data.
-- `LAreaChart` ([lurek.charts](Module-charts)) - Lua userdata for rendering a stacked area series chart.
+- `LAreaChart` ([lurek.charts](Module-charts))
 - `LAreaChart` ([lurek.ui](Module-ui)) - Lua-exposed area chart for data visualization.
 - `LArray` ([lurek.compute](Module-compute)) - Lua-side multidimensional numeric array handle.
 - `LAssetHandle` ([lurek.asset](Module-asset)) - Lua-side handle for a single cached asset entry.
@@ -52,7 +52,7 @@ The glossary collects terms that appear across module and API pages.
 - `LAutoTileSheet` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
 - `LBadge` ([lurek.ui](Module-ui)) - Adds badge-specific methods to a notification badge widget table.
 - `LBandit` ([lurek.learning](Module-learning)) - Lua handle for multi-armed bandit action selection.
-- `LBarChart` ([lurek.charts](Module-charts)) - Lua userdata for rendering a vertical bar series chart.
+- `LBarChart` ([lurek.charts](Module-charts))
 - `LBarChart` ([lurek.ui](Module-ui)) - Lua-exposed bar chart for data visualization.
 - `LBeatClock` ([lurek.audio](Module-audio)) - Lua-side wrapper for a musical beat clock.
 - `LBehaviorTree` ([lurek.ai](Module-ai)) - Lua handle for a behavior tree root and its most recent execution status.
@@ -138,9 +138,9 @@ The glossary collects terms that appear across module and API pages.
 - `LGRU` ([lurek.learning](Module-learning)) - Stateful Lua wrapper over `GruLayer` with a mutable recurrent hidden-state buffer.
 - `LGuiTable` ([lurek.ui](Module-ui)) - Adds GUI-table-specific methods to a table widget.
 - `LGuiWindow` ([lurek.ui](Module-ui)) - Adds GUI-window-specific methods to a window widget table.
+- `LHeatmapChart` ([lurek.charts](Module-charts))
 - `LHeightMap` ([lurek.raycaster](Module-raycaster)) - Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
 - `LHermite` ([lurek.math](Module-math)) - Lua-side wrapper for a Hermite spline.
 - `LHexGrid` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a hexagonal grid.
+- `LHistogramChart` ([lurek.charts](Module-charts))
 - `LHtmlDocument` ([lurek.html](Module-html)) - Lua-side HTML document handle with DOM state, callbacks, and render command access.
-- `LHtmlElement` ([lurek.html](Module-html)) - Lua-side DOM element handle with stale-generation detection.
-- `LHTNDomain` ([lurek.ai](Module-ai)) - Lua handle for a hierarchical task network domain.

@@ -86,7 +86,10 @@ impl Animation {
         let rows = (tex_h / frame_h) as usize;
         let total_cells = cols * rows;
         let mut added = 0;
-        for i in start..start + count {
+        let Some(end) = start.checked_add(count) else {
+            return 0;
+        };
+        for i in start..end {
             if i >= total_cells {
                 break;
             }
@@ -113,8 +116,14 @@ impl Animation {
         quads.len()
     }
     /// Add a forward-playing clip. This function is part of the public API.
-    pub fn add_clip(&mut self, name: &str, frame_indices: Vec<usize>, fps: f32, looping: bool) {
-        self.add_clip_with_mode(name, frame_indices, fps, looping, ClipPlaybackMode::Forward);
+    pub fn add_clip(
+        &mut self,
+        name: &str,
+        frame_indices: Vec<usize>,
+        fps: f32,
+        looping: bool,
+    ) -> Result<(), String> {
+        self.add_clip_with_mode(name, frame_indices, fps, looping, ClipPlaybackMode::Forward)
     }
     /// Add a clip with an explicit playback mode.
     pub fn add_clip_with_mode(
@@ -124,18 +133,41 @@ impl Animation {
         fps: f32,
         looping: bool,
         mode: ClipPlaybackMode,
-    ) {
+    ) -> Result<(), String> {
+        if frame_indices.is_empty() {
+            return Err(format!(
+                "clip '{}' must contain at least one frame index",
+                name
+            ));
+        }
+        if !fps.is_finite() || fps <= 0.0 {
+            return Err(format!(
+                "clip '{}' fps must be finite and greater than zero",
+                name
+            ));
+        }
+        for &frame_index in &frame_indices {
+            if frame_index >= self.frames.len() {
+                return Err(format!(
+                    "clip '{}' references missing frame index {} (frame count {})",
+                    name,
+                    frame_index,
+                    self.frames.len()
+                ));
+            }
+        }
         log_msg!(debug, AN02_CLIP_ADDED, "{}", name);
         self.clips.insert(
             name.to_string(),
             AnimClip {
                 name: name.to_string(),
                 frame_indices,
-                fps: if fps > 0.0 { fps } else { 1.0 },
+                fps,
                 looping,
                 mode,
             },
         );
+        Ok(())
     }
     #[allow(clippy::too_many_arguments)]
     /// Create frames from a grid and register a clip that references them.
@@ -150,11 +182,31 @@ impl Animation {
         count: usize,
         fps: f32,
         looping: bool,
-    ) {
+    ) -> Result<(), String> {
+        if !fps.is_finite() || fps <= 0.0 {
+            return Err(format!(
+                "clip '{}' fps must be finite and greater than zero",
+                name
+            ));
+        }
         let base = self.frames.len();
         let added = self.add_frames_from_grid(tex_w, tex_h, frame_w, frame_h, start, count);
+        if added == 0 {
+            log_msg!(debug, AN02_CLIP_ADDED, "{}", name);
+            self.clips.insert(
+                name.to_string(),
+                AnimClip {
+                    name: name.to_string(),
+                    frame_indices: Vec::new(),
+                    fps,
+                    looping,
+                    mode: ClipPlaybackMode::Forward,
+                },
+            );
+            return Ok(());
+        }
         let indices: Vec<usize> = (base..base + added).collect();
-        self.add_clip(name, indices, fps, looping);
+        self.add_clip(name, indices, fps, looping)
     }
     /// Start playing a named clip; returns `false` when the clip is missing.
     pub fn play(&mut self, name: &str) -> bool {
@@ -187,10 +239,15 @@ impl Animation {
     /// Advance playback timers and emit frame events.
     pub fn update(&mut self, dt: f32) {
         self.pending_events.clear();
-        if self.crossfade_duration > 0.0 {
+        if dt.is_finite() && self.crossfade_duration > 0.0 {
             self.crossfade_timer = (self.crossfade_timer + dt).min(self.crossfade_duration);
         }
-        if !self.playing || dt <= 0.0 {
+        if !self.playing
+            || !dt.is_finite()
+            || dt <= 0.0
+            || !self.speed.is_finite()
+            || self.speed <= 0.0
+        {
             return;
         }
         let clip_name = match self.current_clip.clone() {
@@ -357,7 +414,11 @@ impl Animation {
     }
     /// Set the playback speed multiplier.
     pub fn set_speed(&mut self, speed: f32) {
-        self.speed = speed.max(0.0);
+        self.speed = if speed.is_finite() {
+            speed.max(0.0)
+        } else {
+            0.0
+        };
     }
     /// Return the number of loaded frames.
     pub fn get_frame_count(&self) -> usize {
@@ -394,6 +455,17 @@ impl Animation {
             }
         }
     }
+    /// Override the current clip looping flag; returns false when no clip is active.
+    pub fn set_current_clip_looping(&mut self, looping: bool) -> bool {
+        let Some(clip_name) = self.current_clip.clone() else {
+            return false;
+        };
+        let Some(clip) = self.clips.get_mut(&clip_name) else {
+            return false;
+        };
+        clip.looping = looping;
+        true
+    }
     /// Start a crossfade to another clip; returns `false` if the clip is missing.
     pub fn crossfade(&mut self, clip_name: &str, duration: f32) -> bool {
         if !self.clips.contains_key(clip_name) {
@@ -401,7 +473,11 @@ impl Animation {
         }
         self.crossfade_from_quad = self.current_quad();
         self.crossfade_timer = 0.0;
-        self.crossfade_duration = duration.max(0.0);
+        self.crossfade_duration = if duration.is_finite() {
+            duration.max(0.0)
+        } else {
+            0.0
+        };
         self.play(clip_name)
     }
     /// Return the active crossfade state as `(from, to, blend)` when a blend is running.
@@ -554,7 +630,7 @@ impl Animation {
                     10.0
                 }
             };
-            anim.add_clip_with_mode(&tag.name, indices, fps, true, mode);
+            let _ = anim.add_clip_with_mode(&tag.name, indices, fps, true, mode);
         }
         anim
     }

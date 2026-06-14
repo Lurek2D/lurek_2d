@@ -22,6 +22,35 @@ use crate::log_msg;
 use crate::particle::shapes::ParticleShape;
 use crate::render::renderer::{ParticleInstance, ParticleRenderShape, RenderCommand};
 use crate::runtime::log_messages::{PE01, PE02, PE03, PE04};
+
+const MIN_LIFETIME_EPSILON: f32 = 1.0e-4;
+
+/// Snapshot of particle-system runtime state for telemetry and dashboard surfaces.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ParticleSystemStats {
+    /// Live particles in this emitter only.
+    pub live_particles: usize,
+    /// Total live particles across this emitter and all sub-systems.
+    pub total_live_particles: usize,
+    /// Configured maximum live particles for the direct emitter.
+    pub max_particles: u32,
+    /// Active attractor count.
+    pub attractor_count: usize,
+    /// Active child sub-system count.
+    pub sub_system_count: usize,
+    /// Current emission rate in particles per second.
+    pub emission_rate: f32,
+    /// Current emitter age in seconds.
+    pub emitter_age: f32,
+    /// Number of queued custom-offset callbacks waiting to be applied.
+    pub pending_custom_offsets: usize,
+    /// Number of queued death records waiting to be consumed.
+    pub pending_deaths: usize,
+    /// Whether a bounce bounds volume is active.
+    pub has_bounds: bool,
+    /// Current emitter state.
+    pub state: EmitterState,
+}
 /// Live particle emitter containing the active particle pool, physics state, and sub-system list.
 #[derive(Clone, Debug)]
 pub struct ParticleSystem {
@@ -61,6 +90,7 @@ pub struct ParticleSystem {
 impl ParticleSystem {
     /// Create a new system from `config`; allocates the particle pool upfront.
     pub fn new(config: ParticleConfig) -> Self {
+        let config = config.normalized();
         log_msg!(debug, PE01, "max {} particles", config.max_particles);
         let rng_initial_state = config.seed.unwrap_or_else(|| fastrand::u64(..));
         Self {
@@ -85,6 +115,9 @@ impl ParticleSystem {
     /// Advance all particles by `dt` seconds: integrate physics, retire dead particles, and spawn new ones.
     #[allow(clippy::unnecessary_unwrap)]
     pub fn update(&mut self, dt: f32) {
+        if !dt.is_finite() || dt <= 0.0 {
+            return;
+        }
         if self.state == EmitterState::Paused {
             return;
         }
@@ -178,41 +211,19 @@ impl ParticleSystem {
             }
             p.life -= dt;
         }
-        if self.config.death_emitter.is_some() && self.config.death_burst_count > 0 {
-            let death_cfg = self.config.death_emitter.as_ref().unwrap().as_ref().clone();
+        let dead_data = self.collect_dead_particles();
+        if let Some(death_cfg) = self.config.death_emitter.as_ref().filter(|_| self.config.death_burst_count > 0) {
             let burst = self.config.death_burst_count;
-            let ex = self.emitter_x;
-            let ey = self.emitter_y;
-            let mut dead_data: Vec<(f32, f32, f32, f32)> = Vec::new();
-            self.particles.retain(|p| {
-                if p.life <= 0.0 {
-                    dead_data.push((ex + p.x, ey + p.y, p.vx, p.vy));
-                    false
-                } else {
-                    true
-                }
-            });
             for &(dx, dy, _, _) in &dead_data {
-                let mut sub = ParticleSystem::new(death_cfg.clone());
+                let mut sub = ParticleSystem::new((**death_cfg).clone());
                 sub.emitter_x = dx;
                 sub.emitter_y = dy;
                 sub.emit(burst);
                 sub.stop();
                 self.sub_systems.push(sub);
             }
-            self.pending_deaths.extend(dead_data);
-        } else {
-            let ex = self.emitter_x;
-            let ey = self.emitter_y;
-            let mut dead_data: Vec<(f32, f32, f32, f32)> = Vec::new();
-            self.particles.retain(|p| {
-                if p.life <= 0.0 {
-                    dead_data.push((ex + p.x, ey + p.y, p.vx, p.vy));
-                    false
-                } else {
-                    true
-                }
-            });
+        }
+        if !dead_data.is_empty() {
             self.pending_deaths.extend(dead_data);
         }
         self.sub_systems.retain_mut(|sub| {
@@ -232,6 +243,20 @@ impl ParticleSystem {
         }
         self.prev_emitter_x = self.emitter_x;
         self.prev_emitter_y = self.emitter_y;
+    }
+    fn collect_dead_particles(&mut self) -> Vec<(f32, f32, f32, f32)> {
+        let ex = self.emitter_x;
+        let ey = self.emitter_y;
+        let mut dead_data = Vec::new();
+        self.particles.retain(|p| {
+            if p.life <= 0.0 {
+                dead_data.push((ex + p.x, ey + p.y, p.vx, p.vy));
+                false
+            } else {
+                true
+            }
+        });
+        dead_data
     }
     /// Spawn a single particle using the current config; inserts according to `insert_mode`.
     fn emit_one(&mut self) {
@@ -397,12 +422,14 @@ impl ParticleSystem {
     }
     /// Build `RenderCommand` values for all live particles at world offset `(ox, oy)`, including sub-systems.
     pub fn build_render_commands(&self, ox: f32, oy: f32) -> Vec<RenderCommand> {
-        if self.particles.is_empty() {
-            return Vec::new();
-        }
+        let mut all_cmds = Vec::new();
         let mut instances = Vec::with_capacity(self.particles.len());
         for p in &self.particles {
-            let t = 1.0 - (p.life / p.max_life);
+            let t = if p.max_life > MIN_LIFETIME_EPSILON {
+                (1.0 - (p.life / p.max_life)).clamp(0.0, 1.0)
+            } else {
+                1.0
+            };
             let size = interpolate_sizes(&self.config.sizes, t, p.size_variation);
             let color_t = if self.config.color_by_speed {
                 let speed = (p.vx * p.vx + p.vy * p.vy).sqrt();
@@ -471,9 +498,11 @@ impl ParticleSystem {
                 quad_tex_dims,
             });
         }
-        let mut all_cmds = vec![RenderCommand::DrawParticleSystem {
-            particles: instances,
-        }];
+        if !instances.is_empty() {
+            all_cmds.push(RenderCommand::DrawParticleSystem {
+                particles: instances,
+            });
+        }
         for sub in &self.sub_systems {
             all_cmds.extend(sub.build_render_commands(ox, oy));
         }
@@ -496,7 +525,7 @@ impl ParticleSystem {
             x,
             y,
             strength,
-            radius,
+            radius: radius.max(0.0),
         });
     }
     /// Remove all attractors. This function is part of the public API.
@@ -510,12 +539,25 @@ impl ParticleSystem {
     /// Set the axis-aligned bounce boundary; particles reflect on crossing any edge.
     pub fn set_bounds(&mut self, x_min: f32, x_max: f32, y_min: f32, y_max: f32, restitution: f32) {
         self.bounce_bounds = Some(BounceBounds {
-            x_min,
-            x_max,
-            y_min,
-            y_max,
+            x_min: x_min.min(x_max),
+            x_max: x_min.max(x_max),
+            y_min: y_min.min(y_max),
+            y_max: y_min.max(y_max),
             restitution: restitution.clamp(0.0, 1.0),
         });
+    }
+    /// Sets the direct emitter particle capacity and truncates overflow when shrinking.
+    pub fn set_max_particles(&mut self, max_particles: u32) {
+        let max_particles = max_particles.max(1);
+        self.config.max_particles = max_particles;
+        let max_particles_usize = max_particles as usize;
+        if self.particles.len() > max_particles_usize {
+            self.particles.truncate(max_particles_usize);
+        }
+        let additional = max_particles_usize.saturating_sub(self.particles.capacity());
+        if additional > 0 {
+            self.particles.reserve(additional);
+        }
     }
     /// Remove the bounce boundary. This function is part of the public API.
     pub fn clear_bounds(&mut self) {
@@ -530,6 +572,30 @@ impl ParticleSystem {
     /// Return the number of active sub-systems.
     pub fn sub_system_count(&self) -> usize {
         self.sub_systems.len()
+    }
+    /// Returns a telemetry snapshot of the current emitter state.
+    pub fn stats(&self) -> ParticleSystemStats {
+        ParticleSystemStats {
+            live_particles: self.particles.len(),
+            total_live_particles: self.total_live_particles(),
+            max_particles: self.config.max_particles,
+            attractor_count: self.attractors.len(),
+            sub_system_count: self.sub_systems.len(),
+            emission_rate: self.config.emission_rate,
+            emitter_age: self.emitter_age,
+            pending_custom_offsets: self.pending_custom_offsets.len(),
+            pending_deaths: self.pending_deaths.len(),
+            has_bounds: self.bounce_bounds.is_some(),
+            state: self.state.clone(),
+        }
+    }
+    fn total_live_particles(&self) -> usize {
+        self.particles.len()
+            + self
+                .sub_systems
+                .iter()
+                .map(ParticleSystem::total_live_particles)
+                .sum::<usize>()
     }
     /// Drain and return all `(world_x, world_y, vx, vy)` death events accumulated since the last call.
     pub fn drain_pending_deaths(&mut self) -> Vec<(f32, f32, f32, f32)> {

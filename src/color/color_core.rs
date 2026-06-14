@@ -146,11 +146,15 @@ impl Color {
 
     /// Return the four components as clamped u8 values (r, g, b, a).
     pub fn to_u8(&self) -> (u8, u8, u8, u8) {
+        let channel = |value: f32| {
+            let value = if value.is_finite() { value } else { 0.0 };
+            (value.clamp(0.0, 1.0) * 255.0) as u8
+        };
         (
-            (self.r.clamp(0.0, 1.0) * 255.0) as u8,
-            (self.g.clamp(0.0, 1.0) * 255.0) as u8,
-            (self.b.clamp(0.0, 1.0) * 255.0) as u8,
-            (self.a.clamp(0.0, 1.0) * 255.0) as u8,
+            channel(self.r),
+            channel(self.g),
+            channel(self.b),
+            channel(self.a),
         )
     }
 
@@ -267,6 +271,11 @@ fn hsv_to_rgb_f32(h: f32, s: f32, v: f32) -> (f32, f32, f32) {
 
 /// Convert a single sRGB gamma-encoded component `c` to a linear value.
 pub fn gamma_to_linear(c: f32) -> f32 {
+    let c = if c.is_finite() {
+        c.clamp(0.0, 1.0)
+    } else {
+        0.0
+    };
     if c <= 0.04045 {
         c / 12.92
     } else {
@@ -276,6 +285,11 @@ pub fn gamma_to_linear(c: f32) -> f32 {
 
 /// Convert a single linear component `c` back to sRGB gamma-encoded value.
 pub fn linear_to_gamma(c: f32) -> f32 {
+    let c = if c.is_finite() {
+        c.clamp(0.0, 1.0)
+    } else {
+        0.0
+    };
     if c <= 0.0031308 {
         c * 12.92
     } else {

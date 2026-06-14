@@ -7,7 +7,8 @@
 //! Declares subsystem error variants for loading, lookup, and path-related failure handling.
 //! Delivers the canonical type contract consumed by all globe modules and integration surfaces.
 
-use crate::math::Vec2;
+use crate::globe::sphere::{lat_lon_to_unit, unit_to_lat_lon};
+use crate::math::{Vec2, Vec3};
 use std::collections::{HashMap, HashSet};
 /// Maximum region count supported by globe data structures.
 pub const MAX_REGIONS: usize = 8192;
@@ -53,8 +54,68 @@ impl mlua::IntoLua<'_> for RegionId {
 impl mlua::FromLua<'_> for RegionId {
     fn from_lua(val: mlua::Value, lua: &mlua::Lua) -> mlua::Result<Self> {
         let n = i64::from_lua(val, lua)?;
-        Ok(RegionId(n as u32))
+        let raw = u32::try_from(n).map_err(|_| {
+            mlua::Error::RuntimeError(format!(
+                "region id must be an integer in the 0..={} range",
+                u32::MAX
+            ))
+        })?;
+        Ok(RegionId(raw))
     }
+}
+/// One connected geographic part of a region, with one outer ring and optional holes.
+#[derive(Debug, Clone, Default)]
+pub struct RegionPart {
+    /// Outer boundary vertices in latitude/longitude space.
+    pub outer: Vec<(f32, f32)>,
+    /// Inner hole rings in latitude/longitude space.
+    pub holes: Vec<Vec<(f32, f32)>>,
+}
+impl RegionPart {
+    /// Create a part from one outer ring and no holes.
+    pub fn new(outer: Vec<(f32, f32)>) -> Self {
+        Self {
+            outer,
+            holes: Vec::new(),
+        }
+    }
+}
+
+fn derive_centroid_from_vertices(vertices: &[(f32, f32)]) -> (f32, f32) {
+    if vertices.is_empty() {
+        return (0.0, 0.0);
+    }
+    let mut accum = Vec3::new(0.0, 0.0, 0.0);
+    let mut count = 0.0_f32;
+    for &(lat, lon) in vertices {
+        let v = lat_lon_to_unit(lat, lon);
+        accum.x += v.x;
+        accum.y += v.y;
+        accum.z += v.z;
+        count += 1.0;
+    }
+    if count <= 0.0 || accum.length() < 1e-6 {
+        return vertices[0];
+    }
+    unit_to_lat_lon(Vec3::new(accum.x / count, accum.y / count, accum.z / count))
+}
+
+fn derive_centroid_from_parts(parts: &[RegionPart]) -> (f32, f32) {
+    let mut accum = Vec3::new(0.0, 0.0, 0.0);
+    let mut count = 0.0_f32;
+    for part in parts {
+        for &(lat, lon) in &part.outer {
+            let v = lat_lon_to_unit(lat, lon);
+            accum.x += v.x;
+            accum.y += v.y;
+            accum.z += v.z;
+            count += 1.0;
+        }
+    }
+    if count <= 0.0 || accum.length() < 1e-6 {
+        return (0.0, 0.0);
+    }
+    unit_to_lat_lon(Vec3::new(accum.x / count, accum.y / count, accum.z / count))
 }
 /// Geographic region with polygon geometry, adjacency, and render attributes.
 #[derive(Debug, Clone)]
@@ -63,6 +124,8 @@ pub struct Region {
     pub id: RegionId,
     /// Polygon vertices in latitude/longitude space.
     pub vertices: Vec<(f32, f32)>,
+    /// Connected region parts with optional holes. When empty, `vertices` remains the canonical outer ring.
+    pub parts: Vec<RegionPart>,
     /// Cached geographic centroid in latitude/longitude space.
     pub centroid: (f32, f32),
     /// Neighboring region ids for adjacency traversal.
@@ -81,16 +144,17 @@ pub struct Region {
 impl Region {
     /// Create a region from vertices and derive a centroid from them.
     pub fn new(id: RegionId, vertices: Vec<(f32, f32)>) -> Self {
-        let (lat_sum, lon_sum) = vertices
-            .iter()
-            .fold((0.0_f32, 0.0_f32), |(la, lo), (vla, vlo)| {
-                (la + vla, lo + vlo)
-            });
-        let n = vertices.len().max(1) as f32;
+        let centroid = derive_centroid_from_vertices(&vertices);
+        let parts = if vertices.is_empty() {
+            Vec::new()
+        } else {
+            vec![RegionPart::new(vertices.clone())]
+        };
         Self {
             id,
-            centroid: (lat_sum / n, lon_sum / n),
             vertices,
+            parts,
+            centroid,
             neighbors: Vec::new(),
             attrs: HashMap::new(),
             edge_tags: HashMap::new(),
@@ -107,10 +171,16 @@ impl Region {
         neighbors: Vec<RegionId>,
         base_color: [f32; 4],
     ) -> Self {
+        let parts = if vertices.is_empty() {
+            Vec::new()
+        } else {
+            vec![RegionPart::new(vertices.clone())]
+        };
         Self {
             id,
             centroid,
             vertices,
+            parts,
             neighbors,
             attrs: HashMap::new(),
             edge_tags: HashMap::new(),
@@ -118,6 +188,68 @@ impl Region {
             texture_uv_rect: None,
             base_color,
         }
+    }
+    /// Create a region from explicit multipart geometry.
+    pub fn with_parts_data(
+        id: RegionId,
+        centroid: (f32, f32),
+        parts: Vec<RegionPart>,
+        neighbors: Vec<RegionId>,
+        base_color: [f32; 4],
+    ) -> Self {
+        let vertices = parts
+            .first()
+            .map(|part| part.outer.clone())
+            .unwrap_or_default();
+        Self {
+            id,
+            vertices,
+            parts,
+            centroid,
+            neighbors,
+            attrs: HashMap::new(),
+            edge_tags: HashMap::new(),
+            texture: None,
+            texture_uv_rect: None,
+            base_color,
+        }
+    }
+    /// Create a multipart region and derive its centroid from outer-ring vertices on the sphere.
+    pub fn from_parts(id: RegionId, parts: Vec<RegionPart>) -> Self {
+        let centroid = derive_centroid_from_parts(&parts);
+        Self::with_parts_data(id, centroid, parts, Vec::new(), [0.5, 0.5, 0.5, 1.0])
+    }
+    /// Return the primary outer ring used by legacy rendering paths.
+    pub fn primary_vertices(&self) -> &[(f32, f32)] {
+        self.parts
+            .first()
+            .map(|part| part.outer.as_slice())
+            .filter(|outer| !outer.is_empty())
+            .unwrap_or(self.vertices.as_slice())
+    }
+    /// Return all outer rings that make up the visible solid geometry of this region.
+    pub fn outer_loops(&self) -> Vec<&[(f32, f32)]> {
+        if !self.parts.is_empty() {
+            return self
+                .parts
+                .iter()
+                .filter(|part| !part.outer.is_empty())
+                .map(|part| part.outer.as_slice())
+                .collect();
+        }
+        if self.vertices.is_empty() {
+            Vec::new()
+        } else {
+            vec![self.vertices.as_slice()]
+        }
+    }
+    /// Return all hole loops that should be subtracted from the region fill.
+    pub fn hole_loops(&self) -> Vec<&[(f32, f32)]> {
+        self.parts
+            .iter()
+            .flat_map(|part| part.holes.iter().map(Vec::as_slice))
+            .filter(|hole| !hole.is_empty())
+            .collect()
     }
 }
 /// Fog-of-war state for a region.
@@ -161,7 +293,7 @@ pub struct GlobeSpec {
     pub axial_tilt_deg: f32,
     /// Current globe rotation in degrees.
     pub rotation_deg: f32,
-    /// Fractional time of day used by lighting.
+    /// Time of day in hours on the 0.0 through 24.0 clock.
     pub time_of_day: f32,
     /// Flag that controls border rendering.
     pub render_borders: bool,
@@ -190,7 +322,7 @@ impl Default for GlobeSpec {
             radius: 300.0,
             axial_tilt_deg: 23.5,
             rotation_deg: 0.0,
-            time_of_day: 0.25,
+            time_of_day: 12.0,
             render_borders: true,
             border_color: [0.0, 0.0, 0.0, 0.6],
             border_width: 1.0,
@@ -356,6 +488,8 @@ pub struct ProjectedRegion {
     pub id: RegionId,
     /// Screen-space polygon vertices.
     pub screen_verts: Vec<Vec2>,
+    /// Unit-sphere points corresponding to the projected polygon vertices.
+    pub surface_points: Vec<Vec3>,
     /// Screen-space centroid.
     pub centroid_screen: Vec2,
     /// Lighting value applied to the region.

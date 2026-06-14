@@ -4,12 +4,14 @@
 
 - Lets users render runtime charts directly inside the engine for telemetry, balancing, and player-facing dashboards.
 - Converts raw Lua series and table-like data into ready-to-display RGBA images without external plotting tools.
-- Supports line, bar, area, scatter, and pie workflows so teams can choose the right visual grammar per metric.
+- Supports line, bar, area, scatter, pie, histogram, and heatmap workflows so teams can choose the right visual grammar per metric.
 - Helps debug progression, economy, and performance trends during live sessions instead of offline exports.
 - Exposes chart titles, sizing, and palette controls for fast integration into HUD or debug overlays.
 - Handles value-range mapping and coordinate transforms so scripts can focus on data, not pixel math.
 - Works well for static snapshots and repeated redraws in tooling panels.
 - Bridges DataFrame-style analytics output with immediate visual interpretation.
+- Adds streaming windows, nearest-point queries, and direct draw/image bridges for interactive dashboard use.
+- Covers distribution analysis and matrix-style ML views without forcing scripts to leave the engine.
 - Reduces friction for QA and designers who need quick, embedded diagnostic visuals.
 - Keeps chart generation deterministic and portable because it runs on CPU-side rasterization.
 - Serves as the in-engine visualization surface for numeric storytelling and runtime observability.
@@ -22,17 +24,9 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ### `lurek.charts.defaultPalette`
 
-Get the default 8-color series palette.
-
 ```lua
 lurek.charts.defaultPalette()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| table | Array of 8 color tables, each {r, g, b, a}. |
 
 **Example**
 
@@ -50,8 +44,6 @@ end
 
 ### `lurek.charts.newArea`
 
-Create a new area chart exposed by the lurek engine.
-
 ```lua
 lurek.charts.newArea(config)
 ```
@@ -60,13 +52,7 @@ lurek.charts.newArea(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | table | Optional chart configuration table. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LAreaChart](#lareachart) | A area chart userdata object. |
+| `config?` | any |  |
 
 **Example**
 
@@ -82,8 +68,6 @@ end
 
 ### `lurek.charts.newBar`
 
-Create a new bar chart exposed by the lurek engine.
-
 ```lua
 lurek.charts.newBar(config)
 ```
@@ -92,13 +76,7 @@ lurek.charts.newBar(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | table | Optional chart configuration table. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LBarChart](#lbarchart) | A bar chart userdata object. |
+| `config?` | any |  |
 
 **Example**
 
@@ -112,9 +90,35 @@ end
 
 ---
 
-### `lurek.charts.newLine`
+### `lurek.charts.newHeatmap`
 
-Create a new line chart exposed by the lurek engine.
+```lua
+lurek.charts.newHeatmap(config)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config?` | any |  |
+
+---
+
+### `lurek.charts.newHistogram`
+
+```lua
+lurek.charts.newHistogram(config)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `config?` | any |  |
+
+---
+
+### `lurek.charts.newLine`
 
 ```lua
 lurek.charts.newLine(config)
@@ -124,13 +128,7 @@ lurek.charts.newLine(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | table | Optional chart configuration table. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LLineChart](#llinechart) | A line chart userdata object. |
+| `config?` | any |  |
 
 **Example**
 
@@ -146,8 +144,6 @@ end
 
 ### `lurek.charts.newPie`
 
-Create a new pie chart exposed by the lurek engine.
-
 ```lua
 lurek.charts.newPie(config)
 ```
@@ -156,13 +152,7 @@ lurek.charts.newPie(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | table | Optional chart configuration table. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LPieChart](#lpiechart) | A pie chart userdata object. |
+| `config?` | any |  |
 
 **Example**
 
@@ -178,8 +168,6 @@ end
 
 ### `lurek.charts.newScatter`
 
-Create a new scatter plot exposed by the lurek engine.
-
 ```lua
 lurek.charts.newScatter(config)
 ```
@@ -188,13 +176,7 @@ lurek.charts.newScatter(config)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `config?` | table | Optional chart configuration table. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| [LScatterPlot](#lscatterplot) | A scatter plot userdata object. |
+| `config?` | any |  |
 
 **Example**
 
@@ -210,8 +192,6 @@ end
 
 ### `lurek.charts.seriesColor`
 
-Get a palette color by 1-based index (wraps around for index > 8).
-
 ```lua
 lurek.charts.seriesColor(index)
 ```
@@ -220,13 +200,7 @@ lurek.charts.seriesColor(index)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `index` | number | 1-based palette index. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| table | Color table {r, g, b, a}. |
+| `index` | any |  |
 
 **Example**
 
@@ -256,6 +230,8 @@ end
 
 - [LAreaChart](#lareachart)
 - [LBarChart](#lbarchart)
+- [LHeatmapChart](#lheatmapchart)
+- [LHistogramChart](#lhistogramchart)
 - [LLineChart](#llinechart)
 - [LPieChart](#lpiechart)
 - [LScatterPlot](#lscatterplot)
@@ -270,55 +246,29 @@ end
 
 #### `LAreaChart:addLayer`
 
-Adds a data layer to this area chart.
-
 ```lua
-LAreaChart:addLayer(name, vals_tbl, r, g, b)
+LAreaChart:addLayer(name, values, color)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | The layer name. |
-| `vals_tbl` | table | Array of numeric values. |
-| `r` | number | Red color component. |
-| `g` | number | Green color component. |
-| `b` | number | Blue color component. |
+| `name` | any |  |
+| `values` | any |  |
+| `color?` | any |  |
 
 ---
 
 #### `LAreaChart:addLayerFromDataFrame`
 
-Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
-
 ```lua
-LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, opts)
+LAreaChart:addLayerFromDataFrame()
 ```
-
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `name` | string | The layer name. |
-| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
-| `value_col` | string | Column name for layer values. |
-| `r` | number | Red color component. |
-| `g` | number | Green color component. |
-| `b` | number | Blue color component. |
-| `opts?` | table | Optional table with maxRows integer. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Number of values copied into the layer. |
 
 ---
 
 #### `LAreaChart:addSeries`
-
-Add a named data series to the area chart (stacked above previous).
 
 ```lua
 LAreaChart:addSeries(name, data, color)
@@ -328,9 +278,9 @@ LAreaChart:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Display name of the series. |
-| `data` | table | Array of {x, y} point tables. |
-| `color?` | table | Optional RGBA color {r, g, b, a}. |
+| `name` | any |  |
+| `data` | any |  |
+| `color?` | any |  |
 
 **Example**
 
@@ -345,9 +295,24 @@ end
 
 ---
 
-#### `LAreaChart:clear`
+#### `LAreaChart:appendPoint`
 
-Removes all data series from this chart.
+```lua
+LAreaChart:appendPoint(name, x, y, color)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `x` | any |  |
+| `y` | any |  |
+| `color?` | any |  |
+
+---
+
+#### `LAreaChart:clear`
 
 ```lua
 LAreaChart:clear()
@@ -368,9 +333,23 @@ end
 
 ---
 
-#### `LAreaChart:drawToImage`
+#### `LAreaChart:draw`
 
-Renders this area chart to an image buffer.
+```lua
+LAreaChart:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LAreaChart:drawToImage`
 
 ```lua
 LAreaChart:drawToImage(target)
@@ -380,23 +359,15 @@ LAreaChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](render.md#limagedata) | The image to draw into. |
+| `target` | any |  |
 
 ---
 
 #### `LAreaChart:getHeight`
 
-Get the chart output height in pixels.
-
 ```lua
 LAreaChart:getHeight()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Height in pixels. |
 
 **Example**
 
@@ -412,17 +383,9 @@ end
 
 #### `LAreaChart:getWidth`
 
-Get the chart output width in pixels.
-
 ```lua
 LAreaChart:getWidth()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Width in pixels. |
 
 **Example**
 
@@ -438,19 +401,9 @@ end
 
 #### `LAreaChart:render`
 
-Renders the chart contents into a new pixel buffer.
-
 ```lua
 LAreaChart:render()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Output width in pixels. |
-| number | Output height in pixels. |
-| string | RGBA8 pixel data as a binary string. |
 
 **Example**
 
@@ -466,9 +419,15 @@ end
 
 ---
 
-#### `LAreaChart:setShowLegend`
+#### `LAreaChart:renderImage`
 
-Enables or disables the layer legend for this area chart.
+```lua
+LAreaChart:renderImage()
+```
+
+---
+
+#### `LAreaChart:setShowLegend`
 
 ```lua
 LAreaChart:setShowLegend(value)
@@ -478,13 +437,11 @@ LAreaChart:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | boolean | True to show the legend. |
+| `value` | any |  |
 
 ---
 
 #### `LAreaChart:setTitle`
-
-Set or update the chart's displayed title.
 
 ```lua
 LAreaChart:setTitle(title)
@@ -494,7 +451,7 @@ LAreaChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | string | New chart title text. |
+| `title` | any |  |
 
 **Example**
 
@@ -509,9 +466,21 @@ end
 
 ---
 
-#### `LAreaChart:setXLabel`
+#### `LAreaChart:setWindow`
 
-Sets the X-axis label for this area chart.
+```lua
+LAreaChart:setWindow(max_points)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `max_points?` | any |  |
+
+---
+
+#### `LAreaChart:setXLabel`
 
 ```lua
 LAreaChart:setXLabel(label)
@@ -521,13 +490,11 @@ LAreaChart:setXLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | string | Axis label text. |
+| `label` | any |  |
 
 ---
 
 #### `LAreaChart:setXTickCount`
-
-Sets the number of X-axis tick labels for this area chart.
 
 ```lua
 LAreaChart:setXTickCount(count)
@@ -537,13 +504,11 @@ LAreaChart:setXTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | number | Tick count, minimum 2. |
+| `count` | any |  |
 
 ---
 
 #### `LAreaChart:setYLabel`
-
-Sets the Y-axis label for this area chart.
 
 ```lua
 LAreaChart:setYLabel(label)
@@ -553,29 +518,25 @@ LAreaChart:setYLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | string | Axis label text. |
+| `label` | any |  |
 
 ---
 
 #### `LAreaChart:setYMax`
 
-Sets the maximum Y-axis value for this area chart.
-
 ```lua
-LAreaChart:setYMax(v)
+LAreaChart:setYMax(value)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | The Y-axis maximum. |
+| `value` | any |  |
 
 ---
 
 #### `LAreaChart:setYTickCount`
-
-Sets the number of Y-axis tick labels for this area chart.
 
 ```lua
 LAreaChart:setYTickCount(count)
@@ -585,29 +546,19 @@ LAreaChart:setYTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | number | Tick count, minimum 2. |
+| `count` | any |  |
 
 ---
 
 #### `LAreaChart:type`
 
-Returns the type name of this object.
-
 ```lua
 LAreaChart:type()
 ```
 
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always "[LAreaChart](#lareachart)". |
-
 ---
 
 #### `LAreaChart:typeOf`
-
-Checks whether this object matches the given type name.
 
 ```lua
 LAreaChart:typeOf(name)
@@ -617,13 +568,7 @@ LAreaChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the name matches this userdata type. |
+| `name` | any |  |
 
 ---
 
@@ -637,8 +582,6 @@ LAreaChart:typeOf(name)
 
 #### `LBarChart:addCategoriesFromDataFrame`
 
-Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
-
 ```lua
 LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts)
 ```
@@ -647,39 +590,29 @@ LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
-| `label_col` | string | Column name for category labels. |
-| `value_cols` | string[] | Value columns matching registered series order. |
-| `opts?` | table | Optional table with maxRows integer. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Number of categories added. |
+| `df` | any |  |
+| `label_col` | any |  |
+| `value_cols` | any |  |
+| `opts?` | any |  |
 
 ---
 
 #### `LBarChart:addCategory`
 
-Adds a category with values for each series.
-
 ```lua
-LBarChart:addCategory(label, vals_tbl)
+LBarChart:addCategory(label, values)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | string | The category label. |
-| `vals_tbl` | table | Array of values, one per series. |
+| `label` | any |  |
+| `values` | any |  |
 
 ---
 
 #### `LBarChart:addSeries`
-
-Add a named data series to the bar chart.
 
 ```lua
 LBarChart:addSeries(name, data, color)
@@ -689,9 +622,9 @@ LBarChart:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Display name of the series. |
-| `data` | table | Array of {x, y} point tables. |
-| `color?` | table | Optional RGBA color {r, g, b, a}. |
+| `name` | any |  |
+| `data` | any |  |
+| `color?` | any |  |
 
 **Example**
 
@@ -707,8 +640,6 @@ end
 ---
 
 #### `LBarChart:clear`
-
-Removes all data series from this chart.
 
 ```lua
 LBarChart:clear()
@@ -729,9 +660,23 @@ end
 
 ---
 
-#### `LBarChart:drawToImage`
+#### `LBarChart:draw`
 
-Renders this bar chart to an image buffer.
+```lua
+LBarChart:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LBarChart:drawToImage`
 
 ```lua
 LBarChart:drawToImage(target)
@@ -741,23 +686,15 @@ LBarChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](render.md#limagedata) | The image to draw into. |
+| `target` | any |  |
 
 ---
 
 #### `LBarChart:getHeight`
 
-Get the chart output height in pixels.
-
 ```lua
 LBarChart:getHeight()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Height in pixels. |
 
 **Example**
 
@@ -773,17 +710,9 @@ end
 
 #### `LBarChart:getWidth`
 
-Get the chart output width in pixels.
-
 ```lua
 LBarChart:getWidth()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Width in pixels. |
 
 **Example**
 
@@ -799,19 +728,9 @@ end
 
 #### `LBarChart:render`
 
-Renders the chart contents into a new pixel buffer.
-
 ```lua
 LBarChart:render()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Output width in pixels. |
-| number | Output height in pixels. |
-| string | RGBA8 pixel data as a binary string. |
 
 **Example**
 
@@ -827,9 +746,15 @@ end
 
 ---
 
-#### `LBarChart:setBarWidth`
+#### `LBarChart:renderImage`
 
-Set the pixel width of individual bars in this chart.
+```lua
+LBarChart:renderImage()
+```
+
+---
+
+#### `LBarChart:setBarWidth`
 
 ```lua
 LBarChart:setBarWidth(width)
@@ -839,7 +764,7 @@ LBarChart:setBarWidth(width)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `width` | number | Bar width in pixels (minimum 1). |
+| `width` | any |  |
 
 **Example**
 
@@ -856,8 +781,6 @@ end
 
 #### `LBarChart:setShowLegend`
 
-Enables or disables the series legend for this bar chart.
-
 ```lua
 LBarChart:setShowLegend(value)
 ```
@@ -866,13 +789,11 @@ LBarChart:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | boolean | True to show the legend. |
+| `value` | any |  |
 
 ---
 
 #### `LBarChart:setTitle`
-
-Set or update the chart's displayed title.
 
 ```lua
 LBarChart:setTitle(title)
@@ -882,7 +803,7 @@ LBarChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | string | New chart title text. |
+| `title` | any |  |
 
 **Example**
 
@@ -899,8 +820,6 @@ end
 
 #### `LBarChart:setXLabel`
 
-Sets the X-axis label for this bar chart.
-
 ```lua
 LBarChart:setXLabel(label)
 ```
@@ -909,13 +828,11 @@ LBarChart:setXLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | string | Axis label text. |
+| `label` | any |  |
 
 ---
 
 #### `LBarChart:setXTickCount`
-
-Sets the number of X-axis tick labels for this bar chart.
 
 ```lua
 LBarChart:setXTickCount(count)
@@ -925,13 +842,11 @@ LBarChart:setXTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | number | Tick count, minimum 2. |
+| `count` | any |  |
 
 ---
 
 #### `LBarChart:setYLabel`
-
-Sets the Y-axis label for this bar chart.
 
 ```lua
 LBarChart:setYLabel(label)
@@ -941,13 +856,11 @@ LBarChart:setYLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | string | Axis label text. |
+| `label` | any |  |
 
 ---
 
 #### `LBarChart:setYTickCount`
-
-Sets the number of Y-axis tick labels for this bar chart.
 
 ```lua
 LBarChart:setYTickCount(count)
@@ -957,29 +870,19 @@ LBarChart:setYTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | number | Tick count, minimum 2. |
+| `count` | any |  |
 
 ---
 
 #### `LBarChart:type`
 
-Returns the type name of this object.
-
 ```lua
 LBarChart:type()
 ```
 
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always "[LBarChart](#lbarchart)". |
-
 ---
 
 #### `LBarChart:typeOf`
-
-Checks whether this object matches the given type name.
 
 ```lua
 LBarChart:typeOf(name)
@@ -989,13 +892,585 @@ LBarChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check. |
+| `name` | any |  |
 
-**Returns**
+---
 
-| Type | Description |
-|------|-------------|
-| boolean | True if the name matches this userdata type. |
+## LHeatmapChart
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LHeatmapChart:clear`
+
+```lua
+LHeatmapChart:clear()
+```
+
+---
+
+#### `LHeatmapChart:clearValueRange`
+
+```lua
+LHeatmapChart:clearValueRange()
+```
+
+---
+
+#### `LHeatmapChart:draw`
+
+```lua
+LHeatmapChart:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LHeatmapChart:drawToImage`
+
+```lua
+LHeatmapChart:drawToImage(target)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | any |  |
+
+---
+
+#### `LHeatmapChart:getHeight`
+
+```lua
+LHeatmapChart:getHeight()
+```
+
+---
+
+#### `LHeatmapChart:getWidth`
+
+```lua
+LHeatmapChart:getWidth()
+```
+
+---
+
+#### `LHeatmapChart:render`
+
+```lua
+LHeatmapChart:render()
+```
+
+---
+
+#### `LHeatmapChart:renderImage`
+
+```lua
+LHeatmapChart:renderImage()
+```
+
+---
+
+#### `LHeatmapChart:resize`
+
+```lua
+LHeatmapChart:resize(rows, cols)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `rows` | any |  |
+| `cols` | any |  |
+
+---
+
+#### `LHeatmapChart:setCell`
+
+```lua
+LHeatmapChart:setCell(row, col, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `row` | any |  |
+| `col` | any |  |
+| `value` | any |  |
+
+---
+
+#### `LHeatmapChart:setColorRange`
+
+```lua
+LHeatmapChart:setColorRange(low, high)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `low` | any |  |
+| `high` | any |  |
+
+---
+
+#### `LHeatmapChart:setColumnLabels`
+
+```lua
+LHeatmapChart:setColumnLabels(labels)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `labels` | any |  |
+
+---
+
+#### `LHeatmapChart:setMatrix`
+
+```lua
+LHeatmapChart:setMatrix(matrix, row_labels, col_labels)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `matrix` | any |  |
+| `row_labels?` | any |  |
+| `col_labels?` | any |  |
+
+---
+
+#### `LHeatmapChart:setMatrixFromDataFrame`
+
+```lua
+LHeatmapChart:setMatrixFromDataFrame(df, row_col, col_col, value_col, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `df` | any |  |
+| `row_col` | any |  |
+| `col_col` | any |  |
+| `value_col` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LHeatmapChart:setRowLabels`
+
+```lua
+LHeatmapChart:setRowLabels(labels)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `labels` | any |  |
+
+---
+
+#### `LHeatmapChart:setShowLegend`
+
+```lua
+LHeatmapChart:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | any |  |
+
+---
+
+#### `LHeatmapChart:setShowValues`
+
+```lua
+LHeatmapChart:setShowValues(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | any |  |
+
+---
+
+#### `LHeatmapChart:setTitle`
+
+```lua
+LHeatmapChart:setTitle(title)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `title` | any |  |
+
+---
+
+#### `LHeatmapChart:setValueRange`
+
+```lua
+LHeatmapChart:setValueRange(min, max)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `min` | any |  |
+| `max` | any |  |
+
+---
+
+#### `LHeatmapChart:type`
+
+```lua
+LHeatmapChart:type()
+```
+
+---
+
+#### `LHeatmapChart:typeOf`
+
+```lua
+LHeatmapChart:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+
+---
+
+## LHistogramChart
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LHistogramChart:addSeries`
+
+```lua
+LHistogramChart:addSeries(name, values, color)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `values` | any |  |
+| `color?` | any |  |
+
+---
+
+#### `LHistogramChart:addSeriesFromDataFrame`
+
+```lua
+LHistogramChart:addSeriesFromDataFrame()
+```
+
+---
+
+#### `LHistogramChart:appendValue`
+
+```lua
+LHistogramChart:appendValue(name, value, color)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `value` | any |  |
+| `color?` | any |  |
+
+---
+
+#### `LHistogramChart:clear`
+
+```lua
+LHistogramChart:clear()
+```
+
+---
+
+#### `LHistogramChart:clearRange`
+
+```lua
+LHistogramChart:clearRange()
+```
+
+---
+
+#### `LHistogramChart:draw`
+
+```lua
+LHistogramChart:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LHistogramChart:drawToImage`
+
+```lua
+LHistogramChart:drawToImage(target)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `target` | any |  |
+
+---
+
+#### `LHistogramChart:getHeight`
+
+```lua
+LHistogramChart:getHeight()
+```
+
+---
+
+#### `LHistogramChart:getWidth`
+
+```lua
+LHistogramChart:getWidth()
+```
+
+---
+
+#### `LHistogramChart:render`
+
+```lua
+LHistogramChart:render()
+```
+
+---
+
+#### `LHistogramChart:renderImage`
+
+```lua
+LHistogramChart:renderImage()
+```
+
+---
+
+#### `LHistogramChart:replaceSeries`
+
+```lua
+LHistogramChart:replaceSeries(name, values, color)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `values` | any |  |
+| `color?` | any |  |
+
+---
+
+#### `LHistogramChart:setBinCount`
+
+```lua
+LHistogramChart:setBinCount(bins)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `bins` | any |  |
+
+---
+
+#### `LHistogramChart:setDensity`
+
+```lua
+LHistogramChart:setDensity(enabled)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `enabled` | any |  |
+
+---
+
+#### `LHistogramChart:setRange`
+
+```lua
+LHistogramChart:setRange(min, max)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `min` | any |  |
+| `max` | any |  |
+
+---
+
+#### `LHistogramChart:setShowLegend`
+
+```lua
+LHistogramChart:setShowLegend(value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `value` | any |  |
+
+---
+
+#### `LHistogramChart:setTitle`
+
+```lua
+LHistogramChart:setTitle(title)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `title` | any |  |
+
+---
+
+#### `LHistogramChart:setWindow`
+
+```lua
+LHistogramChart:setWindow(max_points)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `max_points?` | any |  |
+
+---
+
+#### `LHistogramChart:setXLabel`
+
+```lua
+LHistogramChart:setXLabel(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | any |  |
+
+---
+
+#### `LHistogramChart:setXTickCount`
+
+```lua
+LHistogramChart:setXTickCount(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count` | any |  |
+
+---
+
+#### `LHistogramChart:setYLabel`
+
+```lua
+LHistogramChart:setYLabel(label)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `label` | any |  |
+
+---
+
+#### `LHistogramChart:setYTickCount`
+
+```lua
+LHistogramChart:setYTickCount(count)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `count` | any |  |
+
+---
+
+#### `LHistogramChart:type`
+
+```lua
+LHistogramChart:type()
+```
+
+---
+
+#### `LHistogramChart:typeOf`
+
+```lua
+LHistogramChart:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
 
 ---
 
@@ -1009,8 +1484,6 @@ LBarChart:typeOf(name)
 
 #### `LLineChart:addSeries`
 
-Add a named data series to the line chart.
-
 ```lua
 LLineChart:addSeries(name, data, color)
 ```
@@ -1019,9 +1492,9 @@ LLineChart:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Display name of the series. |
-| `data` | table | Array of {x, y} point tables. |
-| `color?` | table | Optional RGBA color {r, g, b, a}. |
+| `name` | any |  |
+| `data` | any |  |
+| `color?` | any |  |
 
 **Example**
 
@@ -1038,36 +1511,30 @@ end
 
 #### `LLineChart:addSeriesFromDataFrame`
 
-Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
+```lua
+LLineChart:addSeriesFromDataFrame()
+```
+
+---
+
+#### `LLineChart:appendPoint`
 
 ```lua
-LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts)
+LLineChart:appendPoint(name, x, y, color)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | The series name. |
-| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
-| `x_col` | string | Column name for X values. |
-| `y_col` | string | Column name for Y values. |
-| `r` | number | Red color component. |
-| `g` | number | Green color component. |
-| `b` | number | Blue color component. |
-| `opts?` | table | Optional table with maxRows integer. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Number of accepted points added to the series. |
+| `name` | any |  |
+| `x` | any |  |
+| `y` | any |  |
+| `color?` | any |  |
 
 ---
 
 #### `LLineChart:clear`
-
-Removes all data series from this chart.
 
 ```lua
 LLineChart:clear()
@@ -1088,9 +1555,23 @@ end
 
 ---
 
-#### `LLineChart:drawToImage`
+#### `LLineChart:draw`
 
-Renders this line chart to an image buffer.
+```lua
+LLineChart:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LLineChart:drawToImage`
 
 ```lua
 LLineChart:drawToImage(target)
@@ -1100,23 +1581,15 @@ LLineChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](render.md#limagedata) | The image to draw into. |
+| `target` | any |  |
 
 ---
 
 #### `LLineChart:getHeight`
 
-Get the chart output height in pixels.
-
 ```lua
 LLineChart:getHeight()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Height in pixels. |
 
 **Example**
 
@@ -1132,17 +1605,9 @@ end
 
 #### `LLineChart:getWidth`
 
-Get the chart output width in pixels.
-
 ```lua
 LLineChart:getWidth()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Width in pixels. |
 
 **Example**
 
@@ -1156,21 +1621,26 @@ end
 
 ---
 
-#### `LLineChart:render`
+#### `LLineChart:nearest`
 
-Renders the chart contents into a new pixel buffer.
+```lua
+LLineChart:nearest(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+
+---
+
+#### `LLineChart:render`
 
 ```lua
 LLineChart:render()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Output width in pixels. |
-| number | Output height in pixels. |
-| string | RGBA8 pixel data as a binary string. |
 
 **Example**
 
@@ -1186,9 +1656,31 @@ end
 
 ---
 
-#### `LLineChart:setShowLegend`
+#### `LLineChart:renderImage`
 
-Enables or disables the series legend for this line chart.
+```lua
+LLineChart:renderImage()
+```
+
+---
+
+#### `LLineChart:replaceSeries`
+
+```lua
+LLineChart:replaceSeries(name, data, color)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `data` | any |  |
+| `color?` | any |  |
+
+---
+
+#### `LLineChart:setShowLegend`
 
 ```lua
 LLineChart:setShowLegend(value)
@@ -1198,13 +1690,11 @@ LLineChart:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | boolean | True to show the legend. |
+| `value` | any |  |
 
 ---
 
 #### `LLineChart:setTitle`
-
-Set or update the chart's displayed title.
 
 ```lua
 LLineChart:setTitle(title)
@@ -1214,7 +1704,7 @@ LLineChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | string | New chart title text. |
+| `title` | any |  |
 
 **Example**
 
@@ -1229,9 +1719,21 @@ end
 
 ---
 
-#### `LLineChart:setXLabel`
+#### `LLineChart:setWindow`
 
-Sets the X-axis label for this line chart.
+```lua
+LLineChart:setWindow(max_points)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `max_points?` | any |  |
+
+---
+
+#### `LLineChart:setXLabel`
 
 ```lua
 LLineChart:setXLabel(label)
@@ -1241,29 +1743,25 @@ LLineChart:setXLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | string | Axis label text. |
+| `label` | any |  |
 
 ---
 
 #### `LLineChart:setXMax`
 
-Sets the maximum X-axis value for this line chart.
-
 ```lua
-LLineChart:setXMax(v)
+LLineChart:setXMax(value)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | The X-axis maximum. |
+| `value` | any |  |
 
 ---
 
 #### `LLineChart:setXTickCount`
-
-Sets the number of X-axis tick labels for this line chart.
 
 ```lua
 LLineChart:setXTickCount(count)
@@ -1273,13 +1771,11 @@ LLineChart:setXTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | number | Tick count, minimum 2. |
+| `count` | any |  |
 
 ---
 
 #### `LLineChart:setYLabel`
-
-Sets the Y-axis label for this line chart.
 
 ```lua
 LLineChart:setYLabel(label)
@@ -1289,29 +1785,25 @@ LLineChart:setYLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | string | Axis label text. |
+| `label` | any |  |
 
 ---
 
 #### `LLineChart:setYMax`
 
-Sets the maximum Y-axis value for this line chart.
-
 ```lua
-LLineChart:setYMax(v)
+LLineChart:setYMax(value)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `v` | number | The Y-axis maximum. |
+| `value` | any |  |
 
 ---
 
 #### `LLineChart:setYTickCount`
-
-Sets the number of Y-axis tick labels for this line chart.
 
 ```lua
 LLineChart:setYTickCount(count)
@@ -1321,29 +1813,19 @@ LLineChart:setYTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | number | Tick count, minimum 2. |
+| `count` | any |  |
 
 ---
 
 #### `LLineChart:type`
 
-Returns the type name of this object.
-
 ```lua
 LLineChart:type()
 ```
 
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always "[LLineChart](#llinechart)". |
-
 ---
 
 #### `LLineChart:typeOf`
-
-Checks whether this object matches the given type name.
 
 ```lua
 LLineChart:typeOf(name)
@@ -1353,13 +1835,7 @@ LLineChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the name matches this userdata type. |
+| `name` | any |  |
 
 ---
 
@@ -1373,27 +1849,21 @@ LLineChart:typeOf(name)
 
 #### `LPieChart:addSegment`
 
-Adds a labeled segment to this pie chart widget.
-
 ```lua
-LPieChart:addSegment(label, value, r, g, b)
+LPieChart:addSegment(label, value, color)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | string | The segment label. |
-| `value` | number | The segment value. |
-| `r` | number | Red color component. |
-| `g` | number | Green color component. |
-| `b` | number | Blue color component. |
+| `label` | any |  |
+| `value` | any |  |
+| `color?` | any |  |
 
 ---
 
 #### `LPieChart:addSegmentsFromDataFrame`
-
-Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.
 
 ```lua
 LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts)
@@ -1403,22 +1873,14 @@ LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
-| `label_col` | string | Column name for segment labels. |
-| `value_col` | string | Column name for segment values. |
-| `opts?` | table | Optional table with maxRows integer. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Number of segments added. |
+| `df` | any |  |
+| `label_col` | any |  |
+| `value_col` | any |  |
+| `opts?` | any |  |
 
 ---
 
 #### `LPieChart:addSlice`
-
-Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.
 
 ```lua
 LPieChart:addSlice(label, value, color)
@@ -1428,9 +1890,9 @@ LPieChart:addSlice(label, value, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | string | Display label for the slice. |
-| `value` | number | Numeric value determining the slice proportion. |
-| `color?` | table | Optional RGBA color {r, g, b, a}. Auto-assigned from palette if nil. |
+| `label` | any |  |
+| `value` | any |  |
+| `color?` | any |  |
 
 **Example**
 
@@ -1447,8 +1909,6 @@ end
 ---
 
 #### `LPieChart:clear`
-
-Removes all pie data slices from this chart.
 
 ```lua
 LPieChart:clear()
@@ -1470,9 +1930,23 @@ end
 
 ---
 
-#### `LPieChart:drawToImage`
+#### `LPieChart:draw`
 
-Renders this pie chart to an image buffer.
+```lua
+LPieChart:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LPieChart:drawToImage`
 
 ```lua
 LPieChart:drawToImage(target)
@@ -1482,23 +1956,15 @@ LPieChart:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](render.md#limagedata) | The image to draw into. |
+| `target` | any |  |
 
 ---
 
 #### `LPieChart:getHeight`
 
-Get the chart output height in pixels.
-
 ```lua
 LPieChart:getHeight()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Height in pixels. |
 
 **Example**
 
@@ -1514,17 +1980,9 @@ end
 
 #### `LPieChart:getWidth`
 
-Get the chart output width in pixels.
-
 ```lua
 LPieChart:getWidth()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Width in pixels. |
 
 **Example**
 
@@ -1540,19 +1998,9 @@ end
 
 #### `LPieChart:render`
 
-Renders the chart contents into a new pixel buffer.
-
 ```lua
 LPieChart:render()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Output width in pixels. |
-| number | Output height in pixels. |
-| string | RGBA8 pixel data as a binary string. |
 
 **Example**
 
@@ -1570,9 +2018,15 @@ end
 
 ---
 
-#### `LPieChart:setShowLegend`
+#### `LPieChart:renderImage`
 
-Enables or disables the segment legend for this pie chart.
+```lua
+LPieChart:renderImage()
+```
+
+---
+
+#### `LPieChart:setShowLegend`
 
 ```lua
 LPieChart:setShowLegend(value)
@@ -1582,13 +2036,11 @@ LPieChart:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | boolean | True to show the legend. |
+| `value` | any |  |
 
 ---
 
 #### `LPieChart:setTitle`
-
-Set or update the chart's displayed title.
 
 ```lua
 LPieChart:setTitle(title)
@@ -1598,7 +2050,7 @@ LPieChart:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | string | New chart title text. |
+| `title` | any |  |
 
 **Example**
 
@@ -1615,23 +2067,13 @@ end
 
 #### `LPieChart:type`
 
-Returns the type name of this object.
-
 ```lua
 LPieChart:type()
 ```
 
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always "[LPieChart](#lpiechart)". |
-
 ---
 
 #### `LPieChart:typeOf`
-
-Checks whether this object matches the given type name.
 
 ```lua
 LPieChart:typeOf(name)
@@ -1641,13 +2083,7 @@ LPieChart:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the name matches this userdata type. |
+| `name` | any |  |
 
 ---
 
@@ -1661,8 +2097,6 @@ LPieChart:typeOf(name)
 
 #### `LScatterPlot:addSeries`
 
-Add a named data series to the scatter plot.
-
 ```lua
 LScatterPlot:addSeries(name, data, color)
 ```
@@ -1671,9 +2105,9 @@ LScatterPlot:addSeries(name, data, color)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Display name of the series. |
-| `data` | table | Array of {x, y} point tables. |
-| `color?` | table | Optional RGBA color {r, g, b, a}. |
+| `name` | any |  |
+| `data` | any |  |
+| `color?` | any |  |
 
 **Example**
 
@@ -1690,36 +2124,30 @@ end
 
 #### `LScatterPlot:addSeriesFromDataFrame`
 
-Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
+```lua
+LScatterPlot:addSeriesFromDataFrame()
+```
+
+---
+
+#### `LScatterPlot:appendPoint`
 
 ```lua
-LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts)
+LScatterPlot:appendPoint(name, x, y, color)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | The series name. |
-| `df` | [LDataFrame](dataframe.md#ldataframe) | Source dataframe. |
-| `x_col` | string | Column name for X values. |
-| `y_col` | string | Column name for Y values. |
-| `r` | number | Red color component. |
-| `g` | number | Green color component. |
-| `b` | number | Blue color component. |
-| `opts?` | table | Optional table with maxRows integer. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Number of accepted points added to the series. |
+| `name` | any |  |
+| `x` | any |  |
+| `y` | any |  |
+| `color?` | any |  |
 
 ---
 
 #### `LScatterPlot:clear`
-
-Removes all data series from this chart.
 
 ```lua
 LScatterPlot:clear()
@@ -1740,9 +2168,23 @@ end
 
 ---
 
-#### `LScatterPlot:drawToImage`
+#### `LScatterPlot:draw`
 
-Renders this scatter plot to an image buffer.
+```lua
+LScatterPlot:draw(x, y, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+| `opts?` | any |  |
+
+---
+
+#### `LScatterPlot:drawToImage`
 
 ```lua
 LScatterPlot:drawToImage(target)
@@ -1752,23 +2194,15 @@ LScatterPlot:drawToImage(target)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `target` | [LImageData](render.md#limagedata) | The image to draw into. |
+| `target` | any |  |
 
 ---
 
 #### `LScatterPlot:getHeight`
 
-Get the chart output height in pixels.
-
 ```lua
 LScatterPlot:getHeight()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Height in pixels. |
 
 **Example**
 
@@ -1784,17 +2218,9 @@ end
 
 #### `LScatterPlot:getWidth`
 
-Get the chart output width in pixels.
-
 ```lua
 LScatterPlot:getWidth()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Width in pixels. |
 
 **Example**
 
@@ -1808,21 +2234,26 @@ end
 
 ---
 
-#### `LScatterPlot:render`
+#### `LScatterPlot:nearest`
 
-Renders the chart contents into a new pixel buffer.
+```lua
+LScatterPlot:nearest(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | any |  |
+| `y` | any |  |
+
+---
+
+#### `LScatterPlot:render`
 
 ```lua
 LScatterPlot:render()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Output width in pixels. |
-| number | Output height in pixels. |
-| string | RGBA8 pixel data as a binary string. |
 
 **Example**
 
@@ -1838,19 +2269,41 @@ end
 
 ---
 
-#### `LScatterPlot:setDotRadius`
-
-Set the radius of the dot drawn for each data point.
+#### `LScatterPlot:renderImage`
 
 ```lua
-LScatterPlot:setDotRadius(r)
+LScatterPlot:renderImage()
+```
+
+---
+
+#### `LScatterPlot:replaceSeries`
+
+```lua
+LScatterPlot:replaceSeries(name, data, color)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `r` | number | Dot radius in pixels (minimum 1). |
+| `name` | any |  |
+| `data` | any |  |
+| `color?` | any |  |
+
+---
+
+#### `LScatterPlot:setDotRadius`
+
+```lua
+LScatterPlot:setDotRadius(radius)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `radius` | any |  |
 
 **Example**
 
@@ -1867,8 +2320,6 @@ end
 
 #### `LScatterPlot:setShowLegend`
 
-Enables or disables the series legend for this scatter plot.
-
 ```lua
 LScatterPlot:setShowLegend(value)
 ```
@@ -1877,13 +2328,11 @@ LScatterPlot:setShowLegend(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | boolean | True to show the legend. |
+| `value` | any |  |
 
 ---
 
 #### `LScatterPlot:setTitle`
-
-Set or update the chart's displayed title.
 
 ```lua
 LScatterPlot:setTitle(title)
@@ -1893,7 +2342,7 @@ LScatterPlot:setTitle(title)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `title` | string | New chart title text. |
+| `title` | any |  |
 
 **Example**
 
@@ -1908,9 +2357,21 @@ end
 
 ---
 
-#### `LScatterPlot:setXLabel`
+#### `LScatterPlot:setWindow`
 
-Sets the X-axis label for this scatter plot.
+```lua
+LScatterPlot:setWindow(max_points)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `max_points?` | any |  |
+
+---
+
+#### `LScatterPlot:setXLabel`
 
 ```lua
 LScatterPlot:setXLabel(label)
@@ -1920,30 +2381,26 @@ LScatterPlot:setXLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | string | Axis label text. |
+| `label` | any |  |
 
 ---
 
 #### `LScatterPlot:setXRange`
 
-Sets the X-axis range for this scatter plot.
-
 ```lua
-LScatterPlot:setXRange(mn, mx)
+LScatterPlot:setXRange(min_x, max_x)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mn` | number | Minimum X value. |
-| `mx` | number | Maximum X value. |
+| `min_x` | any |  |
+| `max_x` | any |  |
 
 ---
 
 #### `LScatterPlot:setXTickCount`
-
-Sets the number of X-axis tick labels for this scatter plot.
 
 ```lua
 LScatterPlot:setXTickCount(count)
@@ -1953,13 +2410,11 @@ LScatterPlot:setXTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | number | Tick count, minimum 2. |
+| `count` | any |  |
 
 ---
 
 #### `LScatterPlot:setYLabel`
-
-Sets the Y-axis label for this scatter plot.
 
 ```lua
 LScatterPlot:setYLabel(label)
@@ -1969,30 +2424,26 @@ LScatterPlot:setYLabel(label)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `label` | string | Axis label text. |
+| `label` | any |  |
 
 ---
 
 #### `LScatterPlot:setYRange`
 
-Sets the Y-axis range for this scatter plot.
-
 ```lua
-LScatterPlot:setYRange(mn, mx)
+LScatterPlot:setYRange(min_y, max_y)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `mn` | number | Minimum Y value. |
-| `mx` | number | Maximum Y value. |
+| `min_y` | any |  |
+| `max_y` | any |  |
 
 ---
 
 #### `LScatterPlot:setYTickCount`
-
-Sets the number of Y-axis tick labels for this scatter plot.
 
 ```lua
 LScatterPlot:setYTickCount(count)
@@ -2002,29 +2453,19 @@ LScatterPlot:setYTickCount(count)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `count` | number | Tick count, minimum 2. |
+| `count` | any |  |
 
 ---
 
 #### `LScatterPlot:type`
 
-Returns the type name of this object.
-
 ```lua
 LScatterPlot:type()
 ```
 
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | Always "[LScatterPlot](#lscatterplot)". |
-
 ---
 
 #### `LScatterPlot:typeOf`
-
-Checks whether this object matches the given type name.
 
 ```lua
 LScatterPlot:typeOf(name)
@@ -2034,12 +2475,6 @@ LScatterPlot:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | Type name to check. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the name matches this userdata type. |
+| `name` | any |  |
 
 ---

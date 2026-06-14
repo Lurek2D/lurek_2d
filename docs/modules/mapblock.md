@@ -5,12 +5,14 @@
 - This module gives users procedural map assembly from reusable authored blocks.
 - Blocks package tile data, sockets, and metadata so placement remains data-driven.
 - Neighbor constraints enforce legal block adjacency and prevent invalid seams.
-- Scripted generation steps support fill, targeted placement, random placement, and repeats.
-- Placement grids track occupancy and legality during generation.
+- Scripted generation steps support fill, targeted placement, random placement, backtracking shape solving, and repeats.
+- Placement grids track occupancy and legality during generation, including arbitrary non-rectangular shapes.
 - Multi-level support enables stacked floors and vertical map structures.
 - Orientation support covers top-down and isometric output expectations.
 - Weighted groups support biome or theme-biased block selection.
+- Footprint-aware blocks can express polyomino and province-style shapes with rotation and mirroring.
 - Deterministic seeded generation supports reproducible builds.
+- Placement exports expose block names, transforms, and covered cells for downstream tools and demos.
 - Tileset references map block slots into concrete output tile identifiers.
 - Output conversion produces renderer-ready layered tilemap structures.
 - This module is useful for dungeons, city chunks, and modular world assembly.
@@ -378,6 +380,34 @@ LMapBlock:getDimensions()
 
 ---
 
+#### `LMapBlock:getFootprintCellCount`
+
+Get the number of occupied footprint cells.
+
+```lua
+LMapBlock:getFootprintCellCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Occupied footprint cell count. |
+
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setFootprint({ { 0, 0 }, { 1, 0 }, { 0, 1 } })
+    print("getFootprintCellCount=" .. tostring(block:getFootprintCellCount()))
+end
+```
+
+---
+
 #### `LMapBlock:getHeight`
 
 Get height in tiles for this object.
@@ -512,6 +542,43 @@ LMapBlock:getSide(edge, segment)
 
 ---
 
+#### `LMapBlock:getSocket`
+
+Get a previously stored per-cell socket type.
+
+```lua
+LMapBlock:getSocket(x, y, edge)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Footprint cell X. |
+| `y` | number | Footprint cell Y. |
+| `edge` | string | Edge direction. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Socket type or 0 when missing. |
+
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setFootprint({ { 0, 0 }, { 1, 0 }, { 0, 1 } })
+    block:setSocket(1, 0, "east", 9)
+    print("getSocket=" .. tostring(block:getSocket(1, 0, "east")))
+end
+```
+
+---
+
 #### `LMapBlock:getTile`
 
 Get the tile GID at a specified row and column position.
@@ -552,7 +619,7 @@ end
 
 #### `LMapBlock:getWeight`
 
-Returns the current selection weight.
+Get block weight for random selection.
 
 ```lua
 LMapBlock:getWeight()
@@ -563,6 +630,17 @@ LMapBlock:getWeight()
 | Type | Description |
 |------|-------------|
 | number | Weight value. |
+
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setWeight(3.0)
+    print("getWeight=" .. tostring(block:getWeight()))
+end
+```
 
 ---
 
@@ -605,6 +683,41 @@ LMapBlock:getWidthInSegments()
 | Type | Description |
 |------|-------------|
 | number | Width in segments. |
+
+---
+
+#### `LMapBlock:isFootprintCell`
+
+Check whether a local footprint cell exists.
+
+```lua
+LMapBlock:isFootprintCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Cell X. |
+| `y` | number | Cell Y. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if occupied by the footprint. |
+
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setFootprint({ { 0, 0 }, { 1, 0 }, { 0, 1 } })
+    print("isFootprintCell=" .. tostring(block:isFootprintCell(1, 0)))
+end
+```
 
 ---
 
@@ -660,6 +773,34 @@ do
     local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
     block:setEdgeOnly(true)
     print("LMapBlock:setEdgeOnly height=" .. block:getHeight())
+end
+```
+
+---
+
+#### `LMapBlock:setFootprint`
+
+Replace the placement footprint with a custom cell list.
+
+```lua
+LMapBlock:setFootprint(cells)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cells` | table | Array of {x, y} cells. |
+
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setFootprint({ { 0, 0 }, { 1, 0 }, { 0, 1 } })
+    print("setFootprint cells=" .. tostring(block:getFootprintCellCount()))
 end
 ```
 
@@ -761,6 +902,38 @@ LMapBlock:setSide(edge, segment, sideId)
 | `edge` | string | Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`. |
 | `segment` | number | Segment index along the edge (1-based). |
 | `sideId` | number | Side identifier for matching. |
+
+---
+
+#### `LMapBlock:setSocket`
+
+Set a per-cell socket type for one edge of the footprint.
+
+```lua
+LMapBlock:setSocket(x, y, edge, edge_type)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Footprint cell X. |
+| `y` | number | Footprint cell Y. |
+| `edge` | string | Edge direction. |
+| `edge_type` | number | Socket type identifier. |
+
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setFootprint({ { 0, 0 }, { 1, 0 }, { 0, 1 } })
+    block:setSocket(1, 0, "east", 9)
+    print("setSocket ok")
+end
+```
 
 ---
 
@@ -1113,6 +1286,37 @@ do
     script:addStep("fill_rect", { x = 0, y = 0, width = 2, height = 2, tile_id = 1, slot = 0, layer = 0 })
     gen:generate(script)
     print("LMapBlockGenerator:getLastPlacedCount=" .. gen:getLastPlacedCount())
+end
+```
+
+---
+
+#### `LMapBlockGenerator:setGrid`
+
+Set the placement grid from a prepared PlacementGrid object.
+
+```lua
+LMapBlockGenerator:setGrid(grid)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `grid` | [LPlacementGrid](#lplacementgrid) | Grid to clone into the generator. |
+
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    local gen = lurek.mapblock.newGenerator(cfg)
+    local grid = lurek.mapblock.newEmptyGrid()
+    grid:addPosition(0, 0)
+    grid:addPosition(1, 0)
+    grid:addPosition(1, 1)
+    gen:setGrid(grid)
+    print("LMapBlockGenerator:setGrid ready=true")
 end
 ```
 
@@ -1477,6 +1681,43 @@ do
     script:addStep("fill_rect", { x = 0, y = 0, width = 2, height = 2, tile_id = 1, slot = 0, layer = 0, level = 0 })
     local result = gen:generate(script)
     print("LMapBlockResult:getLevelCount=" .. result:getLevelCount())
+end
+```
+
+---
+
+#### `LMapBlockResult:getPlacements`
+
+Get placement summaries from the last generation run.
+
+```lua
+LMapBlockResult:getPlacements()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of placement records. |
+
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(1, 1, 1, cfg)
+    block:setName("seed")
+    block:setTile(0, 0, 0, 0, 1, 4)
+    local group = lurek.mapblock.newGroup("terrain")
+    group:addBlock(block)
+    local script = lurek.mapblock.newScript("place_once")
+    script:addStep("place_block", { group = "terrain", block_index = 0, x = 0, y = 0 })
+    local gen = lurek.mapblock.newGenerator(cfg)
+    gen:setRectShape(1, 1)
+    gen:addGroup(group)
+    local result = gen:generate(script)
+    print("LMapBlockResult:getPlacements count=" .. tostring(#result:getPlacements()))
 end
 ```
 
@@ -2105,6 +2346,69 @@ do
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(5, 5)
     print("LPlacementGrid:isAvailable=" .. tostring(grid:isAvailable(5, 5)))
+end
+```
+
+---
+
+#### `LPlacementGrid:isEdgePosition`
+
+Check whether a cell touches the placement-shape boundary.
+
+```lua
+LPlacementGrid:isEdgePosition(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if the cell lies on the shape edge. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.mapblock.newEmptyGrid()
+    grid:addPosition(0, 0)
+    grid:addPosition(1, 0)
+    grid:addPosition(1, 1)
+    print("LPlacementGrid:isEdgePosition=" .. tostring(grid:isEdgePosition(1, 1)))
+end
+```
+
+---
+
+#### `LPlacementGrid:removePosition`
+
+Remove an available position from the grid.
+
+```lua
+LPlacementGrid:removePosition(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | X coordinate. |
+| `y` | number | Y coordinate. |
+
+**Example**
+
+```lua
+do
+    local grid = lurek.mapblock.newEmptyGrid()
+    grid:addPosition(1, 1)
+    grid:removePosition(1, 1)
+    print("LPlacementGrid:removePosition availCount=" .. grid:getAvailableCount())
 end
 ```
 

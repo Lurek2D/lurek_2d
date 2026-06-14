@@ -3124,6 +3124,22 @@ end
 
 ---
 
+#### `LMapBlock:getFootprintCellCount`
+
+Get the number of occupied footprint cells.
+
+```lua
+LMapBlock:getFootprintCellCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Occupied footprint cell count. |
+
+---
+
 #### `LMapBlock:getHeight`
 
 Get height in tiles for this object.
@@ -3259,6 +3275,30 @@ end
 
 ---
 
+#### `LMapBlock:getSocket`
+
+Get a previously stored per-cell socket type.
+
+```lua
+LMapBlock:getSocket(x, y, edge)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Footprint cell X. |
+| `y` | number | Footprint cell Y. |
+| `edge` | string | Edge direction. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Socket type or 0 when missing. |
+
+---
+
 #### `LMapBlock:getTile`
 
 Get the tile GID at a specified row and column position.
@@ -3286,7 +3326,7 @@ LMapBlock:getTile(layer, x, y, slot)
 
 #### `LMapBlock:getWeight`
 
-Returns the current selection weight.
+Get block weight for random selection.
 
 ```lua
 LMapBlock:getWeight()
@@ -3352,6 +3392,29 @@ end
 
 ---
 
+#### `LMapBlock:isFootprintCell`
+
+Check whether a local footprint cell exists.
+
+```lua
+LMapBlock:isFootprintCell(x, y)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Cell X. |
+| `y` | number | Cell Y. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True if occupied by the footprint. |
+
+---
+
 #### `LMapBlock:setEdge`
 
 Set edge type for a side and segment.
@@ -3383,6 +3446,22 @@ LMapBlock:setEdgeOnly(edge_only)
 | Name | Type | Description |
 |------|------|-------------|
 | `edge_only` | boolean | True if edge-only. |
+
+---
+
+#### `LMapBlock:setFootprint`
+
+Replace the placement footprint with a custom cell list.
+
+```lua
+LMapBlock:setFootprint(cells)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `cells` | table | Array of {x, y} cells. |
 
 ---
 
@@ -3461,6 +3540,25 @@ do
     print("east seg 1 = " .. block:getSide("east", 1))
 end
 ```
+
+---
+
+#### `LMapBlock:setSocket`
+
+Set a per-cell socket type for one edge of the footprint.
+
+```lua
+LMapBlock:setSocket(x, y, edge, edge_type)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `x` | number | Footprint cell X. |
+| `y` | number | Footprint cell Y. |
+| `edge` | string | Edge direction. |
+| `edge_type` | number | Socket type identifier. |
 
 ---
 

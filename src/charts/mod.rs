@@ -8,6 +8,10 @@ pub mod area;
 pub mod bar;
 /// Chart configuration and shared types.
 pub mod config;
+/// Heatmap chart: renders matrix data using a color ramp for dense dashboard and ML views.
+pub mod heatmap;
+/// Histogram chart: renders bucketed value distributions for telemetry and analytics.
+pub mod histogram;
 /// Line chart: plots data series as connected lines over time or categories.
 pub mod line;
 /// Pie chart: renders proportional slice segments from a single data series.
@@ -20,6 +24,8 @@ pub mod scatter;
 pub use area::AreaChart;
 pub use bar::BarChart;
 pub use config::{ChartConfig, ChartDataFrameOptions, ChartMargin, ChartSeries};
+pub use heatmap::HeatmapChart;
+pub use histogram::HistogramChart;
 pub use line::LineChart;
 pub use pie::PieChart;
 pub use scatter::ScatterPlot;

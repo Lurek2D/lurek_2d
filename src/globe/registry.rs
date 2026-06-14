@@ -10,8 +10,9 @@ use crate::globe::fog::FogStore;
 use crate::globe::label::LabelStore;
 use crate::globe::layer::LayerStore;
 use crate::globe::marker::MarkerStore;
-use crate::globe::picking::{pick, PickResult};
-use crate::globe::projection::OrbitCamera;
+use crate::globe::picking::{pick, point_in_geo_region, screen_to_surface, PickResult, SurfaceHit};
+use crate::globe::projection::{screen_delta_to_pan, OrbitCamera};
+use crate::globe::sphere::great_circle_distance;
 use crate::globe::topology::RegionGraph;
 use crate::globe::types::{
     Arc as GlobeArc, GlobeError, GlobeSpec, HeatLayer, Region, RegionId, MAX_REGIONS,
@@ -19,6 +20,12 @@ use crate::globe::types::{
 use crate::render::renderer::RenderCommand;
 use crate::runtime::resource_keys::FontKey;
 use std::collections::{HashMap, HashSet};
+
+#[inline]
+fn wrap_lon_delta(delta: f32) -> f32 {
+    ((delta + 180.0).rem_euclid(360.0)) - 180.0
+}
+
 /// Mutable globe state used by the renderer and sync layers.
 #[derive(Debug, Default)]
 pub struct Globe {
@@ -30,6 +37,8 @@ pub struct Globe {
     pub camera: OrbitCamera,
     /// Province topology and cached adjacency.
     pub graph: RegionGraph,
+    /// Semantic regions that may overlap and do not participate in province rendering.
+    pub regions: HashMap<RegionId, Region>,
     /// Fog state per viewer.
     pub fog: FogStore,
     /// Marker collection for the globe.
@@ -64,52 +73,56 @@ impl Globe {
     }
     /// Insert a region or return TooManyRegions when the graph is full.
     pub fn add_region(&mut self, region: Region) -> Result<(), GlobeError> {
-        if self.graph.len() >= MAX_REGIONS {
+        if self.regions.len() >= MAX_REGIONS {
             return Err(GlobeError::TooManyRegions);
         }
-        self.graph.insert(region)?;
+        self.regions.insert(region.id, region);
         Ok(())
     }
     /// Remove a region by id and return it when present.
     pub fn remove_region(&mut self, id: RegionId) -> Option<Region> {
-        self.graph.remove(id)
+        self.regions.remove(&id)
     }
     /// Return a shared region reference when the id exists.
     pub fn get_region(&self, id: RegionId) -> Option<&Region> {
-        self.graph.get(id)
+        self.regions.get(&id)
     }
     /// Return a mutable region reference when the id exists.
     pub fn get_region_mut(&mut self, id: RegionId) -> Option<&mut Region> {
-        self.graph.get_mut(id)
+        self.regions.get_mut(&id)
     }
     /// Return the number of stored regions.
     pub fn region_count(&self) -> usize {
-        self.graph.len()
+        self.regions.len()
     }
     /// Backward compatibility: insert a region.
     #[inline]
     pub fn add_province(&mut self, province: Region) -> Result<(), GlobeError> {
-        self.add_region(province)
+        if self.graph.len() >= MAX_REGIONS {
+            return Err(GlobeError::TooManyRegions);
+        }
+        self.graph.insert(province)?;
+        Ok(())
     }
     /// Backward compatibility: remove a region by id.
     #[inline]
     pub fn remove_province(&mut self, id: RegionId) -> Option<Region> {
-        self.remove_region(id)
+        self.graph.remove(id)
     }
     /// Backward compatibility: get a region reference.
     #[inline]
     pub fn get_province(&self, id: RegionId) -> Option<&Region> {
-        self.get_region(id)
+        self.graph.get(id)
     }
     /// Backward compatibility: get a mutable region reference.
     #[inline]
     pub fn get_province_mut(&mut self, id: RegionId) -> Option<&mut Region> {
-        self.get_region_mut(id)
+        self.graph.get_mut(id)
     }
     /// Backward compatibility: return region count.
     #[inline]
     pub fn province_count(&self) -> usize {
-        self.region_count()
+        self.graph.len()
     }
     /// Insert an arc and return its assigned id.
     pub fn add_arc(&mut self, arc: GlobeArc) -> u32 {
@@ -125,14 +138,89 @@ impl Globe {
     /// Advance simulation time and update the globe clock and rotation.
     pub fn update(&mut self, dt: f32) {
         let speed = 1.0;
-        self.spec.time_of_day = (self.spec.time_of_day + dt * speed / 3600.0) % 24.0;
+        self.spec.time_of_day = (self.spec.time_of_day + dt * speed / 3600.0).rem_euclid(24.0);
         self.spec.rotation_deg =
-            (self.spec.rotation_deg + dt * self.spec.auto_rotation_deg_per_sec) % 360.0;
+            (self.spec.rotation_deg + dt * self.spec.auto_rotation_deg_per_sec).rem_euclid(360.0);
         self.sim_time_sec += dt.max(0.0);
+    }
+    /// Resolve a front-hemisphere surface hit from screen coordinates.
+    pub fn screen_to_surface(&self, sx: f32, sy: f32) -> Option<SurfaceHit> {
+        screen_to_surface(sx, sy, &self.spec, &self.camera)
+    }
+    /// Apply a screen-space drag to the camera, anchoring to the visible surface when possible.
+    pub fn apply_mouse_drag(&mut self, start_x: f32, start_y: f32, end_x: f32, end_y: f32) {
+        if let (Some(start), Some(end)) = (
+            self.screen_to_surface(start_x, start_y),
+            self.screen_to_surface(end_x, end_y),
+        ) {
+            let dlat = end.lat_deg - start.lat_deg;
+            let dlon = wrap_lon_delta(end.lon_deg - start.lon_deg);
+            self.camera.pan(dlat, dlon);
+            return;
+        }
+        let (dlat, dlon) =
+            screen_delta_to_pan(end_x - start_x, end_y - start_y, &self.spec, &self.camera);
+        self.camera.pan(dlat, dlon);
     }
     /// Pick a province at screen coordinates or return None when no province matches.
     pub fn pick_screen(&self, sx: f32, sy: f32) -> Option<PickResult> {
         pick(sx, sy, &self.spec, &self.camera, &self.graph)
+    }
+    /// Return all semantic region ids that contain the supplied surface position.
+    pub fn regions_at_lat_lon(&self, lat_deg: f32, lon_deg: f32) -> Vec<RegionId> {
+        self.regions
+            .values()
+            .filter(|region| point_in_geo_region(region, lat_deg, lon_deg))
+            .map(|region| region.id)
+            .collect()
+    }
+    /// Return all semantic region ids that contain the supplied screen-space hit.
+    pub fn pick_regions_at_screen(&self, sx: f32, sy: f32) -> Vec<RegionId> {
+        let Some(surface) = self.screen_to_surface(sx, sy) else {
+            return Vec::new();
+        };
+        self.regions_at_lat_lon(surface.lat_deg, surface.lon_deg)
+    }
+    /// Pick the nearest visible marker under a screen position within a pixel radius.
+    pub fn pick_marker_screen(&self, sx: f32, sy: f32, max_distance_px: f32) -> Option<u32> {
+        let view = crate::globe::projection::build_view_matrix(&self.spec, &self.camera);
+        let max_sq = max_distance_px.max(0.0).powi(2);
+        let radius = self.spec.radius;
+        let zoom = self.camera.zoom;
+        let cx = self.camera.screen_cx;
+        let cy = self.camera.screen_cy;
+        let mut best: Option<(f32, u32)> = None;
+        for marker in self.markers.iter_visible() {
+            let Some(pos) = crate::globe::projection::project_point(
+                marker.lat_deg,
+                marker.lon_deg,
+                &view,
+                radius,
+                zoom,
+                cx,
+                cy,
+            ) else {
+                continue;
+            };
+            let dx = pos.x - sx;
+            let dy = pos.y - sy;
+            let dist_sq = dx * dx + dy * dy;
+            if dist_sq > max_sq {
+                continue;
+            }
+            if best.as_ref().is_none_or(|(prev, _)| dist_sq < *prev) {
+                best = Some((dist_sq, marker.id));
+            }
+        }
+        best.map(|(_, id)| id)
+    }
+    /// Return great-circle distance between two markers on the unit sphere.
+    pub fn marker_distance(&self, a: u32, b: u32) -> Option<f32> {
+        let ma = self.markers.get(a)?;
+        let mb = self.markers.get(b)?;
+        Some(great_circle_distance(
+            ma.lat_deg, ma.lon_deg, mb.lat_deg, mb.lon_deg,
+        ))
     }
     /// Emit render commands for the current globe state.
     pub fn emit_frame(&self, default_font: Option<FontKey>) -> Vec<RenderCommand> {

@@ -7,6 +7,16 @@
 use crate::globe::types::{GlobeError, Region, RegionId, MAX_REGIONS};
 use crate::pathfind::graph_path::{find_province_path, ProvinceCostFn, ProvincePath};
 use std::collections::{HashMap, HashSet};
+
+#[inline]
+fn canonical_edge(a: RegionId, b: RegionId) -> (RegionId, RegionId) {
+    if a <= b {
+        (a, b)
+    } else {
+        (b, a)
+    }
+}
+
 /// Region graph with cached adjacency, centroids, and edge tags.
 #[derive(Debug, Clone, Default)]
 pub struct RegionGraph {
@@ -42,11 +52,13 @@ impl RegionGraph {
     }
     /// Remove a region and its cached data, returning the removed region when present.
     pub fn remove(&mut self, id: RegionId) -> Option<Region> {
-        let p = self.regions.remove(&id)?;
-        self.neighbors.remove(&id.0);
-        self.centroids.remove(&id.0);
-        self.edge_tags.retain(|(a, b), _| *a != id.0 && *b != id.0);
-        Some(p)
+        let removed = self.regions.remove(&id)?;
+        for region in self.regions.values_mut() {
+            region.neighbors.retain(|neighbor| *neighbor != id);
+            region.edge_tags.retain(|(a, b), _| *a != id && *b != id);
+        }
+        self.rebuild_caches();
+        Some(removed)
     }
     /// Return a shared region reference when the id exists.
     pub fn get(&self, id: RegionId) -> Option<&Region> {
@@ -120,6 +132,58 @@ impl RegionGraph {
     /// Return a region attribute as a string slice when it exists.
     pub fn get_attr(&self, id: RegionId, key: &str) -> Option<&str> {
         self.regions.get(&id)?.attrs.get(key).map(String::as_str)
+    }
+    /// Replace the tag set for an existing edge; return false when the edge does not exist.
+    pub fn set_edge_tags(
+        &mut self,
+        a: RegionId,
+        b: RegionId,
+        tags: HashSet<String>,
+    ) -> Result<bool, GlobeError> {
+        if !self.regions.contains_key(&a) {
+            return Err(GlobeError::RegionNotFound(a));
+        }
+        if !self.regions.contains_key(&b) {
+            return Err(GlobeError::RegionNotFound(b));
+        }
+        let connected = self
+            .neighbors
+            .get(&a.0)
+            .is_some_and(|neighbors| neighbors.contains(&b.0))
+            || self
+                .neighbors
+                .get(&b.0)
+                .is_some_and(|neighbors| neighbors.contains(&a.0));
+        if !connected {
+            return Ok(false);
+        }
+        let edge = canonical_edge(a, b);
+        for id in [a, b] {
+            if let Some(region) = self.regions.get_mut(&id) {
+                if tags.is_empty() {
+                    region.edge_tags.remove(&edge);
+                } else {
+                    region.edge_tags.insert(edge, tags.clone());
+                }
+            }
+        }
+        let raw_edge = (edge.0 .0, edge.1 .0);
+        if tags.is_empty() {
+            self.edge_tags.remove(&raw_edge);
+        } else {
+            self.edge_tags.insert(raw_edge, tags);
+        }
+        Ok(true)
+    }
+    /// Return the tag set for an edge as stored in the cached topology graph.
+    pub fn edge_tags(&self, a: RegionId, b: RegionId) -> Vec<String> {
+        let edge = canonical_edge(a, b);
+        let Some(tags) = self.edge_tags.get(&(edge.0 .0, edge.1 .0)) else {
+            return Vec::new();
+        };
+        let mut out: Vec<String> = tags.iter().cloned().collect();
+        out.sort();
+        out
     }
     /// Find a region path with the default cost function.
     pub fn find_path_default(&self, from: RegionId, to: RegionId) -> Option<ProvincePath> {

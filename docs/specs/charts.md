@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- Rasterizes line, bar, area, scatter, and pie charts into RGBA buffers.
+- Rasterizes line, bar, area, scatter, pie, histogram, and heatmap charts into RGBA buffers and drawable runtime textures.
 
 ## General Info
 
@@ -10,7 +10,7 @@
 - Source path: `src/charts/`
 - Binding: `src/lua_api/charts_api.rs`
 - Namespace: `lurek.charts`
-- Lua API surface: `7` functions, `5` types, `32` methods
+- Lua API surface: `9` functions, `7` types, `146` methods
 - Rust test path(s): tests/rust/unit/charts_tests.rs
 - Lua test path(s): tests/lua/unit/test_charts_core_unit.lua
 
@@ -18,12 +18,14 @@
 
 - Lets users render runtime charts directly inside the engine for telemetry, balancing, and player-facing dashboards.
 - Converts raw Lua series and table-like data into ready-to-display RGBA images without external plotting tools.
-- Supports line, bar, area, scatter, and pie workflows so teams can choose the right visual grammar per metric.
+- Supports line, bar, area, scatter, pie, histogram, and heatmap workflows so teams can choose the right visual grammar per metric.
 - Helps debug progression, economy, and performance trends during live sessions instead of offline exports.
 - Exposes chart titles, sizing, and palette controls for fast integration into HUD or debug overlays.
 - Handles value-range mapping and coordinate transforms so scripts can focus on data, not pixel math.
 - Works well for static snapshots and repeated redraws in tooling panels.
 - Bridges DataFrame-style analytics output with immediate visual interpretation.
+- Adds streaming windows, nearest-point queries, and direct draw/image bridges for interactive dashboard use.
+- Covers distribution analysis and matrix-style ML views without forcing scripts to leave the engine.
 - Reduces friction for QA and designers who need quick, embedded diagnostic visuals.
 - Keeps chart generation deterministic and portable because it runs on CPU-side rasterization.
 - Serves as the in-engine visualization surface for numeric storytelling and runtime observability.
@@ -63,6 +65,18 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - Stores dimensions, margins, titles, palette defaults, and optional legend or axis metadata.
 - Provides common series and DataFrame mapping structures consumed by concrete chart specs.
 - Serves as the canonical option layer for consistent chart behavior and appearance.
+
+### heatmap.rs
+
+- Implements heatmap rasterization for matrix-style ML and dashboard views.
+- Maps matrix values to a configurable color ramp and annotates row/column labels.
+- Supports direct matrix updates, per-cell streaming changes, and dataframe pivot ingestion.
+
+### histogram.rs
+
+- Implements histogram rasterization for distribution analysis and dashboard telemetry.
+- Buckets numeric samples into configurable bins and renders grouped bars for one or more series.
+- Supports streaming sample windows, dataframe ingestion, explicit ranges, and density mode.
 
 ### line.rs
 
@@ -108,13 +122,15 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ### Functions
 
-- `lurek.charts.defaultPalette() -> table`: Get the default 8-color series palette.
-- `lurek.charts.newArea(config?) -> LAreaChart`: Create a new area chart exposed by the lurek engine.
-- `lurek.charts.newBar(config?) -> LBarChart`: Create a new bar chart exposed by the lurek engine.
-- `lurek.charts.newLine(config?) -> LLineChart`: Create a new line chart exposed by the lurek engine.
-- `lurek.charts.newPie(config?) -> LPieChart`: Create a new pie chart exposed by the lurek engine.
-- `lurek.charts.newScatter(config?) -> LScatterPlot`: Create a new scatter plot exposed by the lurek engine.
-- `lurek.charts.seriesColor(index) -> table`: Get a palette color by 1-based index (wraps around for index > 8).
+- `lurek.charts.defaultPalette() -> nil`: Lua-facing function documented in the binding source.
+- `lurek.charts.newArea(config?) -> nil`: Lua-facing function documented in the binding source.
+- `lurek.charts.newBar(config?) -> nil`: Lua-facing function documented in the binding source.
+- `lurek.charts.newHeatmap(config?) -> nil`: Lua-facing function documented in the binding source.
+- `lurek.charts.newHistogram(config?) -> nil`: Lua-facing function documented in the binding source.
+- `lurek.charts.newLine(config?) -> nil`: Lua-facing function documented in the binding source.
+- `lurek.charts.newPie(config?) -> nil`: Lua-facing function documented in the binding source.
+- `lurek.charts.newScatter(config?) -> nil`: Lua-facing function documented in the binding source.
+- `lurek.charts.seriesColor(index) -> nil`: Lua-facing function documented in the binding source.
 
 ### Callbacks
 
@@ -128,7 +144,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 #### LAreaChart Type
 
-- Lua userdata for rendering a stacked area series chart.
+- Lua-visible object type.
 
 ##### Fields
 
@@ -136,16 +152,31 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ##### Methods
 
-- `LAreaChart:addSeries(name, data, color?) -> nil`: Add a named data series to the area chart (stacked above previous).
-- `LAreaChart:clear() -> nil`: Removes all data series from this chart.
-- `LAreaChart:getHeight() -> number`: Get the chart output height in pixels.
-- `LAreaChart:getWidth() -> number`: Get the chart output width in pixels.
-- `LAreaChart:render() -> number`: Renders the chart contents into a new pixel buffer.
-- `LAreaChart:setTitle(title) -> nil`: Set or update the chart's displayed title.
+- `LAreaChart:addLayer(name, values, color?) -> nil`: Lua-visible method.
+- `LAreaChart:addLayerFromDataFrame() -> nil`: Lua-visible method.
+- `LAreaChart:addSeries(name, data, color?) -> nil`: Lua-visible method.
+- `LAreaChart:appendPoint(name, x, y, color?) -> nil`: Lua-visible method.
+- `LAreaChart:clear() -> nil`: Lua-visible method.
+- `LAreaChart:draw(x, y, opts?) -> nil`: Lua-visible method.
+- `LAreaChart:drawToImage(target) -> nil`: Lua-visible method.
+- `LAreaChart:getHeight() -> nil`: Lua-visible method.
+- `LAreaChart:getWidth() -> nil`: Lua-visible method.
+- `LAreaChart:render() -> nil`: Lua-visible method.
+- `LAreaChart:renderImage() -> nil`: Lua-visible method.
+- `LAreaChart:setShowLegend(value) -> nil`: Lua-visible method.
+- `LAreaChart:setTitle(title) -> nil`: Lua-visible method.
+- `LAreaChart:setWindow(max_points?) -> nil`: Lua-visible method.
+- `LAreaChart:setXLabel(label) -> nil`: Lua-visible method.
+- `LAreaChart:setXTickCount(count) -> nil`: Lua-visible method.
+- `LAreaChart:setYLabel(label) -> nil`: Lua-visible method.
+- `LAreaChart:setYMax(value) -> nil`: Lua-visible method.
+- `LAreaChart:setYTickCount(count) -> nil`: Lua-visible method.
+- `LAreaChart:type() -> nil`: Lua-visible method.
+- `LAreaChart:typeOf(name) -> nil`: Lua-visible method.
 
 #### LBarChart Type
 
-- Lua userdata for rendering a vertical bar series chart.
+- Lua-visible object type.
 
 ##### Fields
 
@@ -153,17 +184,96 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ##### Methods
 
-- `LBarChart:addSeries(name, data, color?) -> nil`: Add a named data series to the bar chart.
-- `LBarChart:clear() -> nil`: Removes all data series from this chart.
-- `LBarChart:getHeight() -> number`: Get the chart output height in pixels.
-- `LBarChart:getWidth() -> number`: Get the chart output width in pixels.
-- `LBarChart:render() -> number`: Renders the chart contents into a new pixel buffer.
-- `LBarChart:setBarWidth(width) -> nil`: Set the pixel width of individual bars in this chart.
-- `LBarChart:setTitle(title) -> nil`: Set or update the chart's displayed title.
+- `LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts?) -> nil`: Lua-visible method.
+- `LBarChart:addCategory(label, values) -> nil`: Lua-visible method.
+- `LBarChart:addSeries(name, data, color?) -> nil`: Lua-visible method.
+- `LBarChart:clear() -> nil`: Lua-visible method.
+- `LBarChart:draw(x, y, opts?) -> nil`: Lua-visible method.
+- `LBarChart:drawToImage(target) -> nil`: Lua-visible method.
+- `LBarChart:getHeight() -> nil`: Lua-visible method.
+- `LBarChart:getWidth() -> nil`: Lua-visible method.
+- `LBarChart:render() -> nil`: Lua-visible method.
+- `LBarChart:renderImage() -> nil`: Lua-visible method.
+- `LBarChart:setBarWidth(width) -> nil`: Lua-visible method.
+- `LBarChart:setShowLegend(value) -> nil`: Lua-visible method.
+- `LBarChart:setTitle(title) -> nil`: Lua-visible method.
+- `LBarChart:setXLabel(label) -> nil`: Lua-visible method.
+- `LBarChart:setXTickCount(count) -> nil`: Lua-visible method.
+- `LBarChart:setYLabel(label) -> nil`: Lua-visible method.
+- `LBarChart:setYTickCount(count) -> nil`: Lua-visible method.
+- `LBarChart:type() -> nil`: Lua-visible method.
+- `LBarChart:typeOf(name) -> nil`: Lua-visible method.
+
+#### LHeatmapChart Type
+
+- Lua-visible object type.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LHeatmapChart:clear() -> nil`: Lua-visible method.
+- `LHeatmapChart:clearValueRange() -> nil`: Lua-visible method.
+- `LHeatmapChart:draw(x, y, opts?) -> nil`: Lua-visible method.
+- `LHeatmapChart:drawToImage(target) -> nil`: Lua-visible method.
+- `LHeatmapChart:getHeight() -> nil`: Lua-visible method.
+- `LHeatmapChart:getWidth() -> nil`: Lua-visible method.
+- `LHeatmapChart:render() -> nil`: Lua-visible method.
+- `LHeatmapChart:renderImage() -> nil`: Lua-visible method.
+- `LHeatmapChart:resize(rows, cols) -> nil`: Lua-visible method.
+- `LHeatmapChart:setCell(row, col, value) -> nil`: Lua-visible method.
+- `LHeatmapChart:setColorRange(low, high) -> nil`: Lua-visible method.
+- `LHeatmapChart:setColumnLabels(labels) -> nil`: Lua-visible method.
+- `LHeatmapChart:setMatrix(matrix, row_labels?, col_labels?) -> nil`: Lua-visible method.
+- `LHeatmapChart:setMatrixFromDataFrame(df, row_col, col_col, value_col, opts?) -> nil`: Lua-visible method.
+- `LHeatmapChart:setRowLabels(labels) -> nil`: Lua-visible method.
+- `LHeatmapChart:setShowLegend(value) -> nil`: Lua-visible method.
+- `LHeatmapChart:setShowValues(value) -> nil`: Lua-visible method.
+- `LHeatmapChart:setTitle(title) -> nil`: Lua-visible method.
+- `LHeatmapChart:setValueRange(min, max) -> nil`: Lua-visible method.
+- `LHeatmapChart:type() -> nil`: Lua-visible method.
+- `LHeatmapChart:typeOf(name) -> nil`: Lua-visible method.
+
+#### LHistogramChart Type
+
+- Lua-visible object type.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LHistogramChart:addSeries(name, values, color?) -> nil`: Lua-visible method.
+- `LHistogramChart:addSeriesFromDataFrame() -> nil`: Lua-visible method.
+- `LHistogramChart:appendValue(name, value, color?) -> nil`: Lua-visible method.
+- `LHistogramChart:clear() -> nil`: Lua-visible method.
+- `LHistogramChart:clearRange() -> nil`: Lua-visible method.
+- `LHistogramChart:draw(x, y, opts?) -> nil`: Lua-visible method.
+- `LHistogramChart:drawToImage(target) -> nil`: Lua-visible method.
+- `LHistogramChart:getHeight() -> nil`: Lua-visible method.
+- `LHistogramChart:getWidth() -> nil`: Lua-visible method.
+- `LHistogramChart:render() -> nil`: Lua-visible method.
+- `LHistogramChart:renderImage() -> nil`: Lua-visible method.
+- `LHistogramChart:replaceSeries(name, values, color?) -> nil`: Lua-visible method.
+- `LHistogramChart:setBinCount(bins) -> nil`: Lua-visible method.
+- `LHistogramChart:setDensity(enabled) -> nil`: Lua-visible method.
+- `LHistogramChart:setRange(min, max) -> nil`: Lua-visible method.
+- `LHistogramChart:setShowLegend(value) -> nil`: Lua-visible method.
+- `LHistogramChart:setTitle(title) -> nil`: Lua-visible method.
+- `LHistogramChart:setWindow(max_points?) -> nil`: Lua-visible method.
+- `LHistogramChart:setXLabel(label) -> nil`: Lua-visible method.
+- `LHistogramChart:setXTickCount(count) -> nil`: Lua-visible method.
+- `LHistogramChart:setYLabel(label) -> nil`: Lua-visible method.
+- `LHistogramChart:setYTickCount(count) -> nil`: Lua-visible method.
+- `LHistogramChart:type() -> nil`: Lua-visible method.
+- `LHistogramChart:typeOf(name) -> nil`: Lua-visible method.
 
 #### LLineChart Type
 
-- Lua userdata for rendering a connected line series chart.
+- Lua-visible object type.
 
 ##### Fields
 
@@ -171,16 +281,33 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ##### Methods
 
-- `LLineChart:addSeries(name, data, color?) -> nil`: Add a named data series to the line chart.
-- `LLineChart:clear() -> nil`: Removes all data series from this chart.
-- `LLineChart:getHeight() -> number`: Get the chart output height in pixels.
-- `LLineChart:getWidth() -> number`: Get the chart output width in pixels.
-- `LLineChart:render() -> number`: Renders the chart contents into a new pixel buffer.
-- `LLineChart:setTitle(title) -> nil`: Set or update the chart's displayed title.
+- `LLineChart:addSeries(name, data, color?) -> nil`: Lua-visible method.
+- `LLineChart:addSeriesFromDataFrame() -> nil`: Lua-visible method.
+- `LLineChart:appendPoint(name, x, y, color?) -> nil`: Lua-visible method.
+- `LLineChart:clear() -> nil`: Lua-visible method.
+- `LLineChart:draw(x, y, opts?) -> nil`: Lua-visible method.
+- `LLineChart:drawToImage(target) -> nil`: Lua-visible method.
+- `LLineChart:getHeight() -> nil`: Lua-visible method.
+- `LLineChart:getWidth() -> nil`: Lua-visible method.
+- `LLineChart:nearest(x, y) -> nil`: Lua-visible method.
+- `LLineChart:render() -> nil`: Lua-visible method.
+- `LLineChart:renderImage() -> nil`: Lua-visible method.
+- `LLineChart:replaceSeries(name, data, color?) -> nil`: Lua-visible method.
+- `LLineChart:setShowLegend(value) -> nil`: Lua-visible method.
+- `LLineChart:setTitle(title) -> nil`: Lua-visible method.
+- `LLineChart:setWindow(max_points?) -> nil`: Lua-visible method.
+- `LLineChart:setXLabel(label) -> nil`: Lua-visible method.
+- `LLineChart:setXMax(value) -> nil`: Lua-visible method.
+- `LLineChart:setXTickCount(count) -> nil`: Lua-visible method.
+- `LLineChart:setYLabel(label) -> nil`: Lua-visible method.
+- `LLineChart:setYMax(value) -> nil`: Lua-visible method.
+- `LLineChart:setYTickCount(count) -> nil`: Lua-visible method.
+- `LLineChart:type() -> nil`: Lua-visible method.
+- `LLineChart:typeOf(name) -> nil`: Lua-visible method.
 
 #### LPieChart Type
 
-- Lua userdata for rendering a pie slice chart.
+- Lua-visible object type.
 
 ##### Fields
 
@@ -188,16 +315,24 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ##### Methods
 
-- `LPieChart:addSlice(label, value, color?) -> nil`: Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.
-- `LPieChart:clear() -> nil`: Removes all pie data slices from this chart.
-- `LPieChart:getHeight() -> number`: Get the chart output height in pixels.
-- `LPieChart:getWidth() -> number`: Get the chart output width in pixels.
-- `LPieChart:render() -> number`: Renders the chart contents into a new pixel buffer.
-- `LPieChart:setTitle(title) -> nil`: Set or update the chart's displayed title.
+- `LPieChart:addSegment(label, value, color?) -> nil`: Lua-visible method.
+- `LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts?) -> nil`: Lua-visible method.
+- `LPieChart:addSlice(label, value, color?) -> nil`: Lua-visible method.
+- `LPieChart:clear() -> nil`: Lua-visible method.
+- `LPieChart:draw(x, y, opts?) -> nil`: Lua-visible method.
+- `LPieChart:drawToImage(target) -> nil`: Lua-visible method.
+- `LPieChart:getHeight() -> nil`: Lua-visible method.
+- `LPieChart:getWidth() -> nil`: Lua-visible method.
+- `LPieChart:render() -> nil`: Lua-visible method.
+- `LPieChart:renderImage() -> nil`: Lua-visible method.
+- `LPieChart:setShowLegend(value) -> nil`: Lua-visible method.
+- `LPieChart:setTitle(title) -> nil`: Lua-visible method.
+- `LPieChart:type() -> nil`: Lua-visible method.
+- `LPieChart:typeOf(name) -> nil`: Lua-visible method.
 
 #### LScatterPlot Type
 
-- Lua-visible scatter plot userdata.
+- Lua-visible object type.
 
 ##### Fields
 
@@ -205,13 +340,30 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ##### Methods
 
-- `LScatterPlot:addSeries(name, data, color?) -> nil`: Add a named data series to the scatter plot.
-- `LScatterPlot:clear() -> nil`: Removes all data series from this chart.
-- `LScatterPlot:getHeight() -> number`: Get the chart output height in pixels.
-- `LScatterPlot:getWidth() -> number`: Get the chart output width in pixels.
-- `LScatterPlot:render() -> number`: Renders the chart contents into a new pixel buffer.
-- `LScatterPlot:setDotRadius(r) -> nil`: Set the radius of the dot drawn for each data point.
-- `LScatterPlot:setTitle(title) -> nil`: Set or update the chart's displayed title.
+- `LScatterPlot:addSeries(name, data, color?) -> nil`: Lua-visible method.
+- `LScatterPlot:addSeriesFromDataFrame() -> nil`: Lua-visible method.
+- `LScatterPlot:appendPoint(name, x, y, color?) -> nil`: Lua-visible method.
+- `LScatterPlot:clear() -> nil`: Lua-visible method.
+- `LScatterPlot:draw(x, y, opts?) -> nil`: Lua-visible method.
+- `LScatterPlot:drawToImage(target) -> nil`: Lua-visible method.
+- `LScatterPlot:getHeight() -> nil`: Lua-visible method.
+- `LScatterPlot:getWidth() -> nil`: Lua-visible method.
+- `LScatterPlot:nearest(x, y) -> nil`: Lua-visible method.
+- `LScatterPlot:render() -> nil`: Lua-visible method.
+- `LScatterPlot:renderImage() -> nil`: Lua-visible method.
+- `LScatterPlot:replaceSeries(name, data, color?) -> nil`: Lua-visible method.
+- `LScatterPlot:setDotRadius(radius) -> nil`: Lua-visible method.
+- `LScatterPlot:setShowLegend(value) -> nil`: Lua-visible method.
+- `LScatterPlot:setTitle(title) -> nil`: Lua-visible method.
+- `LScatterPlot:setWindow(max_points?) -> nil`: Lua-visible method.
+- `LScatterPlot:setXLabel(label) -> nil`: Lua-visible method.
+- `LScatterPlot:setXRange(min_x, max_x) -> nil`: Lua-visible method.
+- `LScatterPlot:setXTickCount(count) -> nil`: Lua-visible method.
+- `LScatterPlot:setYLabel(label) -> nil`: Lua-visible method.
+- `LScatterPlot:setYRange(min_y, max_y) -> nil`: Lua-visible method.
+- `LScatterPlot:setYTickCount(count) -> nil`: Lua-visible method.
+- `LScatterPlot:type() -> nil`: Lua-visible method.
+- `LScatterPlot:typeOf(name) -> nil`: Lua-visible method.
 
 ## References
 

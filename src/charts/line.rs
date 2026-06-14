@@ -7,6 +7,7 @@
 use crate::charts::config::{ChartConfig, ChartSeries};
 use crate::charts::render_utils::{
     annotate_cartesian_chart, auto_range, draw_circle_filled, draw_line, fill_buffer,
+    trim_points_to_window,
     world_to_screen,
 };
 
@@ -36,6 +37,8 @@ impl LineChart {
 
     /// Add a data series (low-level: accepts a ChartSeries directly).
     pub fn push_series(&mut self, series: ChartSeries) {
+        let mut series = series;
+        trim_points_to_window(&mut series.data, self.config.max_points);
         self.series.push(series);
     }
 
@@ -85,6 +88,58 @@ impl LineChart {
     /// Remove all series from the chart.
     pub fn clear(&mut self) {
         self.series.clear();
+    }
+
+    /// Return all chart series for inspection helpers.
+    pub fn series(&self) -> &[ChartSeries] {
+        &self.series
+    }
+
+    /// Replace or create a series using the provided point buffer.
+    pub fn replace_series(
+        &mut self,
+        name: &str,
+        pts: &[(f32, f32)],
+        color: crate::color::Color,
+    ) {
+        let color = [color.r, color.g, color.b, color.a];
+        if let Some(series) = self.series.iter_mut().find(|series| series.name == name) {
+            series.color = color;
+            series.data.clear();
+            series.data.extend_from_slice(pts);
+            trim_points_to_window(&mut series.data, self.config.max_points);
+            return;
+        }
+        self.push_series(ChartSeries {
+            name: name.to_string(),
+            color,
+            data: pts.to_vec(),
+        });
+    }
+
+    /// Append one point to a named series, creating the series when needed.
+    pub fn append_point(&mut self, name: &str, x: f32, y: f32, color: crate::color::Color) {
+        if !x.is_finite() || !y.is_finite() {
+            return;
+        }
+        if let Some(series) = self.series.iter_mut().find(|series| series.name == name) {
+            series.data.push((x, y));
+            trim_points_to_window(&mut series.data, self.config.max_points);
+            return;
+        }
+        self.push_series(ChartSeries {
+            name: name.to_string(),
+            color: [color.r, color.g, color.b, color.a],
+            data: vec![(x, y)],
+        });
+    }
+
+    /// Set the streaming window size and trim all series immediately.
+    pub fn set_max_points(&mut self, max_points: Option<usize>) {
+        self.config.max_points = max_points;
+        for series in &mut self.series {
+            trim_points_to_window(&mut series.data, self.config.max_points);
+        }
     }
 
     /// Render the chart into an RGBA8 pixel buffer.
@@ -198,6 +253,9 @@ impl LineChart {
 
             // Draw dots at data points.
             for &(x, y) in &s.data {
+                if !x.is_finite() || !y.is_finite() {
+                    continue;
+                }
                 let (sx, sy) = to_screen(x, y);
                 draw_circle_filled(buffer, w, h, sx, sy, 3.0, s.color);
             }

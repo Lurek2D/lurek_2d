@@ -13,6 +13,16 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
+fn require_positive_u32(api: &str, arg_name: &str, value: u32) -> LuaResult<u32> {
+    if value == 0 {
+        return Err(LuaError::RuntimeError(format!(
+            "{}: {} must be greater than zero",
+            api, arg_name
+        )));
+    }
+    Ok(value)
+}
+
 /// Lua-visible single sprite data container, including optional normal-map metadata for lit sprites.
 pub struct LuaSprite {
     inner: Sprite,
@@ -681,6 +691,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "newSheet",
         lua.create_function(|lua, (tw, th, fw, fh): (u32, u32, u32, u32)| {
+            let tw = require_positive_u32("lurek.sprite.newSheet", "tw", tw)?;
+            let th = require_positive_u32("lurek.sprite.newSheet", "th", th)?;
+            let fw = require_positive_u32("lurek.sprite.newSheet", "fw", fw)?;
+            let fh = require_positive_u32("lurek.sprite.newSheet", "fh", fh)?;
             lua.create_userdata(LuaSpriteSheet {
                 inner: SpriteSheet::new(tw, th, fw, fh),
             })
@@ -694,6 +708,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "newRPGMakerSheet",
         lua.create_function(|lua, (tw, th): (u32, u32)| {
+            let tw = require_positive_u32("lurek.sprite.newRPGMakerSheet", "tw", tw)?;
+            let th = require_positive_u32("lurek.sprite.newRPGMakerSheet", "th", th)?;
             lua.create_userdata(LuaSpriteSheet {
                 inner: SpriteSheet::from_rpgmaker(tw, th),
             })
@@ -725,6 +741,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "newAtlasSheet",
         lua.create_function(|lua, (atlas_ud, sw, sh): (LuaAnyUserData, u32, u32)| {
             let atlas = atlas_ud.borrow::<LuaSpriteAtlas>()?;
+            let sw = require_positive_u32("lurek.sprite.newAtlasSheet", "sw", sw)?;
+            let sh = require_positive_u32("lurek.sprite.newAtlasSheet", "sh", sh)?;
             lua.create_userdata(LuaSpriteSheet {
                 inner: SpriteSheet::from_atlas(&atlas.inner, sw, sh),
             })
@@ -739,6 +757,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "newAtlasPacker",
         lua.create_function(|lua, (width, height, padding): (u32, u32, u32)| {
+            let width = require_positive_u32("lurek.sprite.newAtlasPacker", "width", width)?;
+            let height = require_positive_u32("lurek.sprite.newAtlasPacker", "height", height)?;
             lua.create_userdata(LuaAtlasPacker {
                 inner: TextureAtlas::new(width, height, padding),
             })

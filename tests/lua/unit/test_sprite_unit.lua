@@ -261,6 +261,13 @@ describe("newAtlasPacker()", function()
         expect_type("userdata", p)
     end)
 
+    -- @covers lurek.sprite.newAtlasPacker
+    it("rejects zero-sized atlases", function()
+        expect_error(function()
+            lurek.sprite.newAtlasPacker(0, 64, 1)
+        end)
+    end)
+
     -- @covers LAtlasPacker:pack
     it("packs and returns a named region", function()
         local p = lurek.sprite.newAtlasPacker(64, 64, 1)
@@ -342,6 +349,13 @@ describe("newSheet()", function()
     it("returns a userdata", function()
         local s = lurek.sprite.newSheet(64, 64, 16, 16)
         expect_type("userdata", s)
+    end)
+
+    -- @covers lurek.sprite.newSheet
+    it("rejects zero-sized frame dimensions", function()
+        expect_error(function()
+            lurek.sprite.newSheet(64, 64, 0, 16)
+        end)
     end)
 
     -- @covers LSpriteSheet:getFrameCount
@@ -443,6 +457,13 @@ describe("newRPGMakerSheet()", function()
         local s = lurek.sprite.newRPGMakerSheet(144, 192)
         expect_type("userdata", s)
     end)
+
+    -- @covers lurek.sprite.newRPGMakerSheet
+    it("rejects zero-sized textures", function()
+        expect_error(function()
+            lurek.sprite.newRPGMakerSheet(0, 192)
+        end)
+    end)
 end)
 
 -- parseAtlas
@@ -494,6 +515,15 @@ describe("parseAtlas()", function()
             local atlas = lurek.sprite.parseAtlas(json)
             local s = lurek.sprite.newAtlasSheet(atlas, 64, 64)
             expect_type("userdata", s)
+        end)
+
+        -- @covers lurek.sprite.newAtlasSheet
+        it("rejects zero-sized target dimensions", function()
+            local json = [[{"frames":{"a":{"frame":{"x":0,"y":0,"w":16,"h":16},"rotated":false}}}]]
+            local atlas = lurek.sprite.parseAtlas(json)
+            expect_error(function()
+                lurek.sprite.newAtlasSheet(atlas, 0, 64)
+            end)
         end)
     end)
 end)

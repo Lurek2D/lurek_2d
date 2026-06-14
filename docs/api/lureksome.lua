@@ -2116,7 +2116,7 @@ function library.crafting.newIngredient(item_type, quantity) end
 ---@return Ingredient
 function library.crafting.newIngredientTag(tag, quantity) end
 
---- Return true if this ingredient selects by tag rather than item_type. **Precedence**: when both `tag` and `item_type` are non-empty, the tag takes precedence � matching code should check `isTag()` first.
+--- Return true if this ingredient selects by tag rather than item_type. **Precedence**: when both `tag` and `item_type` are non-empty, the tag takes precedence — matching code should check `isTag()` first.
 ---@return boolean
 function Ingredient:isTag() end
 
@@ -2352,7 +2352,7 @@ function library.crafting.newCraftJob(id, recipe_id, total_time, quantity) end
 ---@return boolean
 function CraftJob:advance(dt) end
 
---- Return completion fraction 0���1.
+--- Return completion fraction 0ÔÇô1.
 ---@return number
 function CraftJob:percent() end
 
@@ -2484,7 +2484,7 @@ function library.crafting.newUpgradeTree(name) end
 ---@return nil
 function UpgradeTree:addNode(node) end
 
---- Add a directed edge from_id �cl to_id.
+--- Add a directed edge from_id Ôcl to_id.
 ---@param from_id string
 ---@param to_id string
 ---@return nil
@@ -3420,7 +3420,7 @@ function ConversionRule:effectiveRate() end
 ---@return ResourceManager
 function library.economy.newManager() end
 
---- Return (or lazily create) an optional `lurek.patterns` EventBus that callers can subscribe to for transaction-style notifications. Returns nil when the engine binding is unavailable. The library does not auto-emit events on this bus � callers may emit on it from their own wrappers without breaking pure-Lua tests.
+--- Return (or lazily create) an optional `lurek.patterns` EventBus that callers can subscribe to for transaction-style notifications. Returns nil when the engine binding is unavailable. The library does not auto-emit events on this bus — callers may emit on it from their own wrappers without breaking pure-Lua tests.
 ---@return table|nil
 function ResourceManager:getEventBus() end
 

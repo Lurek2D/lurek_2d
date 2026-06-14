@@ -35,6 +35,122 @@ do
     print("cell(7,7) = " .. empty)
 end
 
+--@api-stub: LRaycaster:setHalfWallCell
+do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+    map:setHalfWallCell(3, 3, 0.5)
+    local feature = map:getWallFeatureCell(3, 3)
+
+    print("kind = " .. feature.kind)
+    print("height = " .. string.format("%.2f", feature.height))
+end
+
+--@api-stub: LRaycaster:setWindowCell
+do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+    map:setWindowCell(3, 3, 0.3, 0.75, 0.4)
+    local feature = map:getWallFeatureCell(3, 3)
+
+    print("kind = " .. feature.kind)
+    print("los = " .. tostring(map:lineOfSight(1.5, 3.5, 6.5, 3.5)))
+    print("alpha = " .. string.format("%.2f", feature.alpha))
+end
+
+--@api-stub: LRaycaster:setDoorCell
+do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+    map:setDoorCell(3, 3, "horizontal", 1.0)
+    local feature = map:getWallFeatureCell(3, 3)
+
+    print("kind = " .. feature.kind)
+    print("direction = " .. feature.direction)
+    print("blocked = " .. tostring(map:isBlocked(3, 3)))
+end
+
+--@api-stub: LRaycaster:applyDoorManager
+do
+    local map = lurek.raycaster.new(8, 8)
+    local doors = lurek.raycaster.newDoorManager()
+    map:setCell(3, 3, 2)
+
+    local id = doors:addDoor(3, 3, "vertical", 1.0)
+    map:applyDoorManager(doors)
+    print("closed blocked = " .. tostring(map:isBlocked(3, 3)))
+
+    doors:openDoor(id)
+    doors:update(1.0)
+    map:applyDoorManager(doors, 0.8)
+
+    local feature = map:getWallFeatureCell(3, 3)
+    print("kind = " .. feature.kind)
+    print("blocked after open = " .. tostring(map:isBlocked(3, 3)))
+    print("open amount = " .. string.format("%.2f", feature.open_amount))
+end
+
+--@api-stub: LRaycaster:clearWallFeatureCell
+do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+    map:setWindowCell(3, 3, 0.25, 0.75, 0.35)
+    map:clearWallFeatureCell(3, 3)
+    print("feature cleared = " .. tostring(map:getWallFeatureCell(3, 3) == nil))
+end
+
+--@api-stub: LRaycaster:getWallFeatureCell
+do
+    local map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    map:setCell(7, 5, 1)
+    map:setHalfWallCell(7, 5, 0.5)
+    map:setCell(7, 7, 1)
+    map:setWindowCell(7, 7, 0.25, 0.78, 0.35)
+    map:setCell(7, 9, 1)
+    map:setDoorCell(7, 9, "vertical", 1.0)
+
+    local params = {
+        px = 2.5,
+        py = 7.5,
+        angle = 0.0,
+        fov = math.pi / 3,
+        rays = 64,
+        max_dist = 20.0,
+        screen_w = 320,
+        screen_h = 200,
+    }
+    local picked = map:pickScreen(160, 100, params)
+    local hit = map:castRay(2.5, 9.5, 0.0, 20.0)
+    local solid = lurek.raycaster.new(8, 3)
+    solid:setCell(4, 1, 1)
+    local solid_r = select(1, solid:computeTileLight(2, 1, 0.0, {
+        { x = 5.5, y = 1.5, radius = 8.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
+    }))
+    local through_window = lurek.raycaster.new(8, 3)
+    through_window:setCell(4, 1, 1)
+    through_window:setWindowCell(4, 1, 0.25, 0.8, 0.35)
+    local window_r = select(1, through_window:computeTileLight(2, 1, 0.0, {
+        { x = 5.5, y = 1.5, radius = 8.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
+    }))
+
+    print("window los = " .. tostring(map:lineOfSight(2.5, 7.5, 12.5, 7.5)))
+    print("half wall blocked = " .. tostring(map:isBlocked(7, 5)))
+    print("open door hit cell = " .. tostring(hit and hit.cell_value or "nil"))
+    print("solid light r = " .. string.format("%.3f", solid_r))
+    print("window light r = " .. string.format("%.3f", window_r))
+    if picked then
+        print("pick surface = " .. picked.surface)
+        print("pick tile = " .. picked.x .. "," .. picked.y)
+    end
+end
+
 --@api-stub: LRaycaster:setCells
 do
     local map = lurek.raycaster.new(8, 8)
@@ -387,23 +503,40 @@ end
 
 --@api-stub: lurek.raycaster.newPointLight
 do
-    local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 4.0, 1.5)
+    local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 4.0, 1.5, 1)
     local r, g, b = torch:color()
 
     print("pos = " .. torch:x() .. "," .. torch:y())
     print("color = " .. r .. "," .. g .. "," .. b)
     print("radius = " .. torch:radius() .. " intensity = " .. torch:intensity())
+    print("level = " .. tostring(torch:level()))
 end
 
 --@api-stub: LPointLight:set
 do
     local light = lurek.raycaster.newPointLight(2, 2, 1, 1, 1, 3, 1.0)
-    light:set(8, 8, 0, 0, 1, 6, 2.0)
+    light:set(8, 8, 0, 0, 1, 6, 2.0, 2)
     local r, g, b = light:color()
 
     print("pos = " .. light:x() .. "," .. light:y())
     print("color = " .. r .. "," .. g .. "," .. b)
     print("radius = " .. light:radius() .. " intensity = " .. light:intensity())
+    print("level = " .. tostring(light:level()))
+end
+
+--@api-stub: LPointLight:level
+do
+    local light = lurek.raycaster.newPointLight(1, 1, 1, 1, 1, 2, 0.5, 3)
+    print("light level = " .. tostring(light:level()))
+end
+
+--@api-stub: LPointLight:setLevel
+do
+    local light = lurek.raycaster.newPointLight(1, 1, 1, 1, 1, 2, 0.5)
+    light:setLevel(1)
+    print("light level after set = " .. tostring(light:level()))
+    light:setLevel(nil)
+    print("light level after clear = " .. tostring(light:level()))
 end
 
 --@api-stub: LPointLight:type
@@ -423,7 +556,7 @@ end
 do
     local sprites = lurek.raycaster.newSpriteManager()
     local barrel = sprites:add(5.5, 3.5, "content/examples/assets/images/sample_texture.png", 1.0)
-    local torch = sprites:add(8.5, 2.5, "content/examples/assets/images/sample_texture.png", 0.5)
+    local torch = sprites:add(8.5, 2.5, "content/examples/assets/images/sample_texture.png", 0.5, 1)
     local enemy = sprites:add(10.5, 7.5, "content/examples/assets/images/sample_texture.png", 1.2)
 
     sprites:setPosition(enemy, 11, 8)
@@ -432,6 +565,59 @@ do
 
     print("torch id = " .. torch)
     print("enemy id = " .. enemy)
+end
+
+--@api-stub: lurek.raycaster.newSceneAdapter
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(5.0, 4.0, "dynamic")
+    body:setAngle(math.pi / 2)
+
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodySprite(
+        body,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 7, size = 1.3, level = 1, offset_x = 0.5 }
+    )
+    adapter:bindBodyLight(body, 4.0, {
+        intensity = 1.2,
+        color = { 1.0, 0.85, 0.5 },
+        level = 1,
+        offset_y = 0.4,
+    })
+    adapter:bindBodyModel(
+        body,
+        lurek.render.loadModel("content/examples/assets/models/sample_tank.obj"),
+        { id = 8, level = 1, yaw_offset = 0.2, z = 0.15, scale = 0.22 }
+    )
+
+    body:setPosition(6.0, 4.5)
+    local inputs = adapter:sceneInputs()
+    local demo_map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        demo_map:setCell(i, 0, 1)
+        demo_map:setCell(i, 15, 1)
+        demo_map:setCell(0, i, 1)
+        demo_map:setCell(15, i, 1)
+    end
+    local params = {
+        px = 4.5,
+        py = 4.5,
+        angle = 0.0,
+        fov = math.pi / 3,
+        rays = 32,
+        max_dist = 16.0,
+        screen_w = 160,
+        screen_h = 100,
+    }
+    local quad_count = demo_map:buildSceneFromAdapter(params, adapter, {})
+    local pick = demo_map:pickScreenFromAdapter(80, 50, params, adapter)
+    print("scene adapter sprites = " .. #inputs.sprites)
+    print("scene adapter lights = " .. #inputs.lights)
+    print("scene adapter models = " .. #inputs.models)
+    print("sprite pos = " .. string.format("%.2f,%.2f", inputs.sprites[1].x, inputs.sprites[1].y))
+    print("adapter buildScene quads = " .. quad_count)
+    print("adapter pick = " .. tostring(pick and pick.surface or "nil"))
 end
 
 --@api-stub: LSpriteManager:sortAndProject
@@ -448,6 +634,48 @@ do
         print("first id = " .. order[1].id)
         print("first distance = " .. string.format("%.2f", order[1].distance))
     end
+end
+
+--@api-stub: LSpriteManager:addDirectional
+do
+    local sprites = lurek.raycaster.newSpriteManager()
+    local id = sprites:addDirectional(
+        2.0,
+        0.0,
+        "front.png",
+        "right.png",
+        "back.png",
+        "left.png",
+        math.pi,
+        1.0
+    )
+    local order = sprites:sortAndProject(0, 0, 0)
+
+    print("sprite id = " .. id)
+    print("texture = " .. order[1].texture)
+    print("variant = " .. tostring(order[1].variant))
+end
+
+--@api-stub: LSpriteManager:setFacing
+do
+    local sprites = lurek.raycaster.newSpriteManager()
+    local id = sprites:addDirectional(2.0, 0.0, "front.png", "right.png", "back.png", "left.png", math.pi, 1.0)
+    sprites:setFacing(id, 0.0)
+    local order = sprites:sortAndProject(0, 0, 0)
+
+    print("texture = " .. order[1].texture)
+    print("variant = " .. tostring(order[1].variant))
+end
+
+--@api-stub: LSpriteManager:setDirectionalTextures
+do
+    local sprites = lurek.raycaster.newSpriteManager()
+    local id = sprites:add(2.0, 0.0, "old.png", 1.0)
+    sprites:setDirectionalTextures(id, "front2.png", "right2.png", "back2.png", "left2.png", math.pi)
+    local order = sprites:sortAndProject(0, 0, 0)
+
+    print("texture = " .. order[1].texture)
+    print("variant = " .. tostring(order[1].variant))
 end
 
 --@api-stub: LSpriteManager:clear
@@ -596,19 +824,880 @@ do
         max_dist = 16,
         screen_w = 320,
         screen_h = 200,
+        sun_r = 0.75,
+        sun_g = 0.8,
+        sun_b = 1.0,
+        sun_intensity = 0.85,
+        sun_angle = 0.0,
+        roof_darkness = 0.35,
     }
     local lights = {
         { x = 8, y = 8, r = 1.0, g = 0.9, b = 0.8, radius = 4.0, intensity = 1.5 },
     }
     local sprites = {
-        { x = 10.5, y = 8.0, texture = sprite_tex, size = 1.0 },
+        {
+            x = 10.5,
+            y = 8.0,
+            size = 1.0,
+            angle = math.pi,
+            front_texture = sprite_tex,
+            right_texture = sprite_tex,
+            back_texture = sprite_tex,
+            left_texture = sprite_tex,
+        },
     }
     local wall_textures = {
         [1] = wall_tex,
     }
     local quad_count = map:buildScene(params, lights, sprites, wall_textures)
+    local managed = lurek.raycaster.newSpriteManager()
+    managed:addDirectional(10.5, 8.0, sprite_tex, sprite_tex, sprite_tex, sprite_tex, math.pi, 1.0)
+    local managed_quad_count = map:buildScene(params, lights, managed, wall_textures)
 
     print("quad count = " .. quad_count)
+    print("managed quad count = " .. managed_quad_count)
+    print("directional sprite count = " .. #sprites)
+end
+
+--@api-stub: lurek.raycaster.getLastBuildStats
+do
+    local map = lurek.raycaster.new(8, 8)
+    local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    for i = 0, 7 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 7, 1)
+        map:setCell(0, i, 1)
+        map:setCell(7, i, 1)
+    end
+    for y = 1, 6 do
+        for x = 1, 6 do
+            map:setCeilingTextureCell(x, y, wall_tex)
+        end
+    end
+
+    map:buildScene({
+        px = 4,
+        py = 4,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 64,
+        max_dist = 10,
+        screen_w = 320,
+        screen_h = 200,
+    }, {
+        lurek.raycaster.newPointLight(4.0, 4.0, 1.0, 0.9, 0.8, 4.0, 1.25),
+    }, {}, {
+        [1] = wall_tex,
+    })
+
+    local stats = lurek.raycaster.getLastBuildStats()
+    if stats then
+        print("lighting samples = " .. stats.lightingSamples)
+        print("lighting cache hits = " .. stats.lightingCacheHits)
+        print("lighting cache misses = " .. stats.lightingCacheMisses)
+    end
+end
+
+--@api-stub: lurek.raycaster.buildMultiLevelScene
+do
+    local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local floor_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local ceil_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local pit_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
+    local quad_count = lurek.raycaster.buildMultiLevelScene(
+        {
+            px = 0.5,
+            py = 1.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            active_level = 1,
+            sun_r = 0.9,
+            sun_g = 0.95,
+            sun_b = 1.0,
+            sun_intensity = 0.8,
+            sun_angle = 0.0,
+        },
+        {
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 0,
+                ceiling_height = 1,
+            },
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 1,
+                ceiling_height = 2,
+                floor_holes = {
+                    false, false, false, false,
+                    false, false, false, false,
+                    false, false, false, false,
+                    false, false, false, false,
+                },
+                floor_texture = wall_tex,
+                floor_cell_textures = {
+                    { x = 0, y = 0, texture = floor_tex },
+                },
+                ceiling_cell_textures = {
+                    { x = 0, y = 0, texture = ceil_tex },
+                },
+                lowered_floor_cells = {
+                    {
+                        x = 0,
+                        y = 0,
+                        texture = pit_tex,
+                        depth = 0.35,
+                        r = 0.8,
+                        g = 0.7,
+                        b = 0.6,
+                        blocked = true,
+                    },
+                },
+                wall_features = {
+                    {
+                        x = 1,
+                        y = 0,
+                        kind = "window",
+                        sill_height = 0.25,
+                        lintel_height = 0.8,
+                        alpha = 0.4,
+                    },
+                },
+            },
+        },
+        {},
+        {},
+        {},
+        {
+            { model = model, x = 2.5, y = 1.5, level = 1, yaw = math.pi / 6, z = 0.2, scale = 0.22 },
+        }
+    )
+
+    print("stacked quad count = " .. quad_count)
+end
+
+--@api-stub: lurek.raycaster.buildMultiLevelSceneFromAdapter
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(2.5, 1.5, "dynamic")
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodySprite(
+        body,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 21, level = 1, size = 1.0 }
+    )
+    adapter:bindBodyLight(body, 4.0, {
+        level = 1,
+        intensity = 1.0,
+        color = { 1.0, 0.85, 0.6 },
+    })
+    local quad_count = lurek.raycaster.buildMultiLevelSceneFromAdapter(
+        {
+            px = 0.5,
+            py = 1.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            active_level = 1,
+        },
+        {
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 0,
+                ceiling_height = 1,
+            },
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 1,
+                ceiling_height = 2,
+            },
+        },
+        adapter,
+        {}
+    )
+
+    print("stacked adapter quad count = " .. quad_count)
+end
+
+--@api-stub: lurek.raycaster.newMultiLevelGrid
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        {
+            width = 2,
+            height = 2,
+            cells = { 0, 0, 0, 0 },
+        },
+    })
+    print("persistent grid levels = " .. grid:levelCount())
+end
+
+--@api-stub: LMultiLevelGrid:addLevel
+do
+    local grid = lurek.raycaster.newMultiLevelGrid()
+    local index = grid:addLevel({
+        width = 2,
+        height = 2,
+        cells = { 0, 0, 0, 0 },
+    })
+    print("added level = " .. index)
+end
+
+--@api-stub: LMultiLevelGrid:levelCount
+do
+    local grid = lurek.raycaster.newMultiLevelGrid()
+    grid:addLevel({
+        width = 2,
+        height = 2,
+        cells = { 0, 0, 0, 0 },
+    })
+    print("level count = " .. grid:levelCount())
+end
+
+--@api-stub: LMultiLevelGrid:setActiveLevel
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 1, ceiling_height = 2 },
+    })
+    grid:setActiveLevel(1)
+    print("active after set = " .. grid:activeLevel())
+end
+
+--@api-stub: LMultiLevelGrid:activeLevel
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 1, ceiling_height = 2 },
+    })
+    grid:setActiveLevel(1)
+    print("active level = " .. grid:activeLevel())
+end
+
+--@api-stub: LMultiLevelGrid:getFloorOffset
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 1.25, ceiling_height = 2.5 },
+    })
+    grid:setActiveLevel(1)
+    print("floor offset = " .. grid:getFloorOffset())
+end
+
+--@api-stub: LMultiLevelGrid:setFloorOffset
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 0, ceiling_height = 1 },
+    })
+    grid:setFloorOffset(0.75)
+    print("updated floor offset = " .. grid:getFloorOffset())
+end
+
+--@api-stub: LMultiLevelGrid:getCeilingHeight
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 0.5, ceiling_height = 2.25 },
+    })
+    print("ceiling height = " .. grid:getCeilingHeight())
+end
+
+--@api-stub: LMultiLevelGrid:setCeilingHeight
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_offset = 0.5, ceiling_height = 1.5 },
+    })
+    grid:setCeilingHeight(0.55)
+    print("clamped ceiling height = " .. grid:getCeilingHeight())
+end
+
+--@api-stub: LMultiLevelGrid:setCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setActiveLevel(1)
+    grid:setCell(1, 0, 7)
+    print("active cell after set = " .. grid:getCell(1, 0))
+end
+
+--@api-stub: LMultiLevelGrid:getCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 5, 0, 0 } },
+    })
+    grid:setActiveLevel(1)
+    print("active cell = " .. grid:getCell(1, 0))
+end
+
+--@api-stub: LMultiLevelGrid:setHalfWallCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
+    })
+    grid:setHalfWallCell(0, 0, 0.5)
+    print("half feature kind = " .. grid:getWallFeatureCell(0, 0).kind)
+end
+
+--@api-stub: LMultiLevelGrid:setWindowCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
+    })
+    grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
+    print("window sill = " .. grid:getWallFeatureCell(0, 0).sill_height)
+end
+
+--@api-stub: LMultiLevelGrid:setDoorCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
+    })
+    grid:setDoorCell(0, 0, "vertical", 0.6, 0.9)
+    print("door open amount = " .. grid:getWallFeatureCell(0, 0).open_amount)
+end
+
+--@api-stub: LMultiLevelGrid:clearWallFeatureCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
+    })
+    grid:setWindowCell(0, 0, 0.25, 0.8, 0.4)
+    grid:clearWallFeatureCell(0, 0)
+    print("feature cleared = " .. tostring(grid:getWallFeatureCell(0, 0) == nil))
+end
+
+--@api-stub: LMultiLevelGrid:getWallFeatureCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 1, 0, 0, 0 } },
+    })
+    print("feature absent = " .. tostring(grid:getWallFeatureCell(1, 1) == nil))
+end
+
+--@api-stub: LMultiLevelGrid:setFloorTexture
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    local floor_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    grid:setFloorTexture(floor_tex)
+    print("default floor texture = " .. tostring(grid:getFloorTexture()))
+    grid:setFloorTexture(nil)
+    print("default floor cleared = " .. tostring(grid:getFloorTexture() == nil))
+end
+
+--@api-stub: LMultiLevelGrid:getFloorTexture
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setFloorTexture(lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("floor texture id = " .. tostring(grid:getFloorTexture()))
+end
+
+--@api-stub: LMultiLevelGrid:setFloorTextureCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setFloorTextureCell(1, 1, lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("floor cell texture = " .. tostring(grid:getFloorTextureCell(1, 1)))
+    grid:setFloorTextureCell(1, 1, nil)
+    print("floor cell cleared = " .. tostring(grid:getFloorTextureCell(1, 1) == nil))
+end
+
+--@api-stub: LMultiLevelGrid:getFloorTextureCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setFloorTextureCell(1, 0, lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("floor(1,0) texture id = " .. tostring(grid:getFloorTextureCell(1, 0)))
+end
+
+--@api-stub: LMultiLevelGrid:setCeilingTexture
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    local ceil_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    grid:setCeilingTexture(ceil_tex)
+    print("default ceiling texture = " .. tostring(grid:getCeilingTexture()))
+    grid:setCeilingTexture(nil)
+    print("default ceiling cleared = " .. tostring(grid:getCeilingTexture() == nil))
+end
+
+--@api-stub: LMultiLevelGrid:getCeilingTexture
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setCeilingTexture(lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("ceiling texture id = " .. tostring(grid:getCeilingTexture()))
+end
+
+--@api-stub: LMultiLevelGrid:setCeilingTextureCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setCeilingTextureCell(0, 1, lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("ceiling cell texture = " .. tostring(grid:getCeilingTextureCell(0, 1)))
+    grid:setCeilingTextureCell(0, 1, nil)
+    print("ceiling cell cleared = " .. tostring(grid:getCeilingTextureCell(0, 1) == nil))
+end
+
+--@api-stub: LMultiLevelGrid:getCeilingTextureCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setCeilingTextureCell(0, 0, lurek.render.newImage("content/examples/assets/images/sample_texture.png"))
+    print("ceiling(0,0) texture id = " .. tostring(grid:getCeilingTextureCell(0, 0)))
+end
+
+--@api-stub: LMultiLevelGrid:setLoweredFloorCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 4, height = 4, cells = {
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+        } },
+    })
+    grid:setLoweredFloorCell(2, 2, {
+        texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        depth = 0.3,
+        r = 0.8,
+        g = 0.7,
+        b = 0.6,
+        blocked = false,
+    })
+    local pit = grid:getLoweredFloorCell(2, 2)
+    print("pit depth = " .. pit.depth)
+    grid:setLoweredFloorCell(2, 2, nil)
+    print("pit cleared = " .. tostring(grid:getLoweredFloorCell(2, 2) == nil))
+end
+
+--@api-stub: LMultiLevelGrid:getLoweredFloorCell
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 4, height = 4, cells = {
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+        } },
+    })
+    grid:setLoweredFloorCell(1, 1, {
+        texture = lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        depth = 0.25,
+        blocked = true,
+    })
+    local pit = grid:getLoweredFloorCell(1, 1)
+    print("pit blocked = " .. tostring(pit.blocked))
+end
+
+--@api-stub: LMultiLevelGrid:setFloorHole
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setActiveLevel(1)
+    grid:setFloorHole(1, 0, true)
+    print("floor hole after set = " .. tostring(grid:isFloorHole(1, 0)))
+end
+
+--@api-stub: LMultiLevelGrid:isFloorHole
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, floor_holes = { false, true, false, false } },
+    })
+    grid:setActiveLevel(1)
+    print("imported floor hole = " .. tostring(grid:isFloorHole(1, 0)))
+end
+
+--@api-stub: LMultiLevelGrid:setCeilingHole
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+    })
+    grid:setActiveLevel(1)
+    grid:setCeilingHole(1, 1, true)
+    print("ceiling hole after set = " .. tostring(grid:isCeilingHole(1, 1)))
+end
+
+--@api-stub: LMultiLevelGrid:isCeilingHole
+do
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 }, ceiling_holes = { false, false, false, true } },
+    })
+    grid:setActiveLevel(1)
+    print("imported ceiling hole = " .. tostring(grid:isCeilingHole(1, 1)))
+end
+
+--@api-stub: LMultiLevelGrid:buildScene
+do
+    local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        { width = 2, height = 2, cells = { 0, 0, 0, 0 } },
+        {
+            width = 2,
+            height = 2,
+            cells = { 0, 1, 0, 0 },
+            floor_offset = 1,
+            ceiling_height = 2,
+            floor_texture = wall_tex,
+        },
+    })
+    grid:setActiveLevel(1)
+    local count = grid:buildScene(
+        {
+            px = 0.5,
+            py = 0.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            camera_height = 0.5,
+        },
+        {},
+        {},
+        { [1] = wall_tex }
+    )
+    print("persistent scene quads = " .. count)
+end
+
+--@api-stub: LMultiLevelGrid:pickScreen
+do
+    local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local grid = lurek.raycaster.newMultiLevelGrid({
+        {
+            width = 8,
+            height = 8,
+            cells = {
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+            },
+        },
+        {
+            width = 8,
+            height = 8,
+            cells = {
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 1, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+            },
+            floor_offset = 1,
+            ceiling_height = 2,
+        },
+    })
+    grid:setActiveLevel(1)
+    local hit = grid:pickScreen(
+        160,
+        100,
+        {
+            px = 1.5,
+            py = 2.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            camera_height = 0.5,
+        },
+        { [1] = wall_tex }
+    )
+    if hit then
+        print("persistent pick = " .. hit.surface .. " @ level " .. hit.level)
+    end
+end
+
+--@api-stub: LMultiLevelGrid:type
+do
+    local grid = lurek.raycaster.newMultiLevelGrid()
+    print("persistent type = " .. grid:type())
+end
+
+--@api-stub: LMultiLevelGrid:typeOf
+do
+    local grid = lurek.raycaster.newMultiLevelGrid()
+    print("persistent typeOf = " .. tostring(grid:typeOf("LMultiLevelGrid")))
+end
+
+--@api-stub: lurek.raycaster.pickScreenMultiLevel
+do
+    local wall_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local hit = lurek.raycaster.pickScreenMultiLevel(
+        160,
+        190,
+        {
+            px = 1.5,
+            py = 1.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            active_level = 1,
+            camera_height = 0.5,
+        },
+        {
+            {
+                width = 8,
+                height = 8,
+                cells = {
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                },
+                floor_offset = 0,
+                ceiling_height = 1,
+                ceiling_holes = {
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, true, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                },
+            },
+            {
+                width = 8,
+                height = 8,
+                cells = {
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                },
+                floor_offset = 1,
+                ceiling_height = 2,
+                floor_holes = {
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, true, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                    false, false, false, false, false, false, false, false,
+                },
+                floor_texture = wall_tex,
+            },
+        },
+        {}
+    )
+
+    if hit then
+        print("stacked pick level = " .. hit.level)
+        print("stacked pick surface = " .. hit.surface)
+        print("stacked pick cell = " .. hit.x .. "," .. hit.y)
+    end
+end
+
+--@api-stub: lurek.raycaster.pickScreenMultiLevelFromAdapter
+do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(2.5, 1.5, "dynamic")
+    local adapter = lurek.raycaster.newSceneAdapter()
+    adapter:bindBodySprite(
+        body,
+        lurek.render.newImage("content/examples/assets/images/sample_texture.png"),
+        { id = 22, level = 1, size = 1.0 }
+    )
+    local hit = lurek.raycaster.pickScreenMultiLevelFromAdapter(
+        160,
+        100,
+        {
+            px = 0.5,
+            py = 1.5,
+            angle = 0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 12,
+            screen_w = 320,
+            screen_h = 200,
+            active_level = 1,
+        },
+        {
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 0,
+                ceiling_height = 1,
+            },
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 1,
+                ceiling_height = 2,
+            },
+        },
+        {},
+        adapter
+    )
+
+    if hit then
+        print("adapter stacked pick = " .. hit.surface .. " @ level " .. hit.level)
+    end
+end
+
+--@api-stub: LRaycaster:pickScreen
+do
+    local map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    local params = {
+        px = 8,
+        py = 8,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 64,
+        max_dist = 16,
+        screen_w = 320,
+        screen_h = 200,
+    }
+    local hit = map:pickScreen(160, 100, params)
+    local sprite_tex = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
+    local sprite_hit = map:pickScreen(160, 100, params, {
+        { id = 7, x = 10.5, y = 8.0, texture = sprite_tex, size = 1.0 },
+    })
+    local model_hit = map:pickScreen(160, 120, params, nil, {
+        { id = 8, model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
+    })
+    local half_map = lurek.raycaster.new(12, 10)
+    for i = 0, 11 do
+        half_map:setCell(i, 0, 1)
+        half_map:setCell(i, 9, 1)
+    end
+    for i = 0, 9 do
+        half_map:setCell(0, i, 1)
+        half_map:setCell(11, i, 1)
+    end
+    half_map:setCell(7, 5, 1)
+    half_map:setHalfWallCell(7, 5, 0.5)
+    local feature_hit = half_map:pickScreen(160, 100, {
+        px = 2.5,
+        py = 5.5,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 64,
+        max_dist = 20,
+        screen_w = 320,
+        screen_h = 200,
+    })
+
+    if hit then
+        print("surface = " .. hit.surface)
+        print("cell = " .. hit.x .. "," .. hit.y)
+        print("distance = " .. string.format("%.2f", hit.distance))
+        print("hit = " .. string.format("%.2f", hit.hit_x) .. "," .. string.format("%.2f", hit.hit_y))
+        print("ray angle = " .. string.format("%.3f", hit.ray_angle))
+        print("uv = " .. string.format("%.2f", hit.u) .. "," .. string.format("%.2f", hit.v))
+    end
+    if sprite_hit then
+        print("sprite surface = " .. sprite_hit.surface)
+        print("sprite id = " .. tostring(sprite_hit.id))
+        print("sprite distance = " .. string.format("%.2f", sprite_hit.distance))
+        print("sprite uv = " .. string.format("%.2f", sprite_hit.u) .. "," .. string.format("%.2f", sprite_hit.v))
+    end
+    if model_hit then
+        print("model surface = " .. model_hit.surface)
+        print("model id = " .. tostring(model_hit.id))
+        print("model distance = " .. string.format("%.2f", model_hit.distance))
+        print("model uv = " .. string.format("%.2f", model_hit.u) .. "," .. string.format("%.2f", model_hit.v))
+    end
+    if feature_hit and feature_hit.feature then
+        print("feature kind = " .. feature_hit.feature.kind)
+        print("feature section = " .. feature_hit.feature.section)
+        print("feature wall height = " .. string.format("%.2f", feature_hit.wall_height))
+    end
 end
 
 --@api-stub: LRaycaster:buildMinimapWindow
@@ -698,6 +1787,7 @@ end
 --@api-stub: LRaycaster:buildSceneWithModels
 do
     local rc = lurek.raycaster.new(80, 60)
+    local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
     local params = {
         px = 8,
         py = 8,
@@ -706,11 +1796,24 @@ do
         rays = 40,
         max_dist = 20,
         screen_w = 160,
-        screen_h = 90,
+        screen_h = 100,
     }
-    local count = rc:buildSceneWithModels(params, nil, nil, nil, nil)
+    local baseline = rc:buildScene(params)
+    local count = rc:buildSceneWithModels(params, nil, nil, nil, {
+        { model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
+    })
+    local model_pick = rc:pickScreen(80, 60, params, nil, {
+        { id = 42, model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
+    })
 
-    print("quad count = " .. count)
+    print("quad count without model = " .. baseline)
+    print("quad count with model = " .. count)
+    if model_pick then
+        print("model pick surface = " .. model_pick.surface)
+        print("model pick id = " .. tostring(model_pick.id))
+        print("model pick distance = " .. string.format("%.2f", model_pick.distance))
+        print("model pick uv = " .. string.format("%.2f", model_pick.u) .. "," .. string.format("%.2f", model_pick.v))
+    end
 end
 
 --@api-stub: LRaycaster:height
@@ -888,6 +1991,17 @@ do
 
     print("first x = " .. projected[1].x)
     print("first y = " .. projected[1].y)
+end
+
+--@api-stub: LSpriteManager:setLevel
+do
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(5, 5, "content/examples/assets/images/sample_texture.png", 1.0)
+    sm:setLevel(id, 2)
+
+    local projected = sm:sortAndProject(0, 0, 0)
+
+    print("level = " .. tostring(projected[1].level))
 end
 
 --@api-stub: LSpriteManager:setVisible

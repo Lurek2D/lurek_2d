@@ -97,7 +97,8 @@ impl Texture {
         textures: &mut SlotMap<TextureKey, TextureData>,
         color_space: TextureColorSpace,
     ) -> EngineResult<Self> {
-        let expected = (width * height * 4) as usize;
+        let expected = crate::image::ImageData::rgba_byte_len(width, height)
+            .map_err(EngineError::RenderError)?;
         if pixels.len() != expected {
             return Err(EngineError::RenderError(format!(
                 "Expected {} bytes for {}x{} RGBA, got {}",

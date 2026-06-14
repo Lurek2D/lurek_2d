@@ -206,6 +206,10 @@ demo_smoke_test!(
 
 // ─── showcase: HTML UI demos ──────────────────────────────────────────────────
 
+demo_smoke_test!(
+    demo_smoke_mapblock_labyrinth,
+    "content/games/puzzle/mapblock_labyrinth"
+);
 demo_smoke_test!(demo_smoke_html_hud, "content/games/showcase/html-hud");
 demo_smoke_test!(
     demo_smoke_html_inventory,

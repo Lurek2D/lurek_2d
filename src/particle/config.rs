@@ -8,6 +8,21 @@
 
 use super::shapes::ParticleShape;
 use crate::runtime::resource_keys::TextureKey;
+
+const MIN_PARTICLE_LIFETIME: f32 = 1.0e-4;
+
+fn finite_or(value: f32, fallback: f32) -> f32 {
+    if value.is_finite() {
+        value
+    } else {
+        fallback
+    }
+}
+
+fn non_negative_finite_or(value: f32, fallback: f32) -> f32 {
+    finite_or(value, fallback).max(0.0)
+}
+
 /// Controls how particles are distributed across the emitter's area when `area_width`/`area_height` > 0.
 #[derive(Clone, Debug, Default, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum AreaDistribution {
@@ -336,8 +351,194 @@ impl Default for ParticleConfig {
 }
 /// Construction helpers for `ParticleConfig`.
 impl ParticleConfig {
+    /// Clamps and normalizes hostile or malformed values into a safe runtime configuration.
+    pub fn sanitize(&mut self) {
+        self.max_particles = self.max_particles.max(1);
+        self.emission_rate = non_negative_finite_or(self.emission_rate, 0.0);
+
+        let life_min = non_negative_finite_or(self.lifetime_min, 1.0).max(MIN_PARTICLE_LIFETIME);
+        let life_max = non_negative_finite_or(self.lifetime_max, life_min).max(MIN_PARTICLE_LIFETIME);
+        self.lifetime_min = life_min.min(life_max);
+        self.lifetime_max = life_min.max(life_max);
+
+        let speed_min = non_negative_finite_or(self.speed_min, 0.0);
+        let speed_max = non_negative_finite_or(self.speed_max, speed_min);
+        self.speed_min = speed_min.min(speed_max);
+        self.speed_max = speed_min.max(speed_max);
+
+        self.direction = finite_or(self.direction, -std::f32::consts::FRAC_PI_2);
+        self.spread = non_negative_finite_or(self.spread, std::f32::consts::FRAC_PI_4);
+        self.gravity_x = finite_or(self.gravity_x, 0.0);
+        self.gravity_y = finite_or(self.gravity_y, 0.0);
+
+        self.sizes.retain(|size| size.is_finite() && *size > 0.0);
+        if self.sizes.is_empty() {
+            self.sizes = vec![4.0, 1.0];
+        }
+
+        self.colors.retain(|rgba| rgba.iter().all(|channel| channel.is_finite()));
+        if self.colors.is_empty() {
+            self.colors = vec![[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 0.0]];
+        } else {
+            for rgba in &mut self.colors {
+                for channel in rgba {
+                    *channel = channel.clamp(0.0, 1.0);
+                }
+            }
+        }
+
+        self.spin_min = finite_or(self.spin_min, 0.0);
+        self.spin_max = finite_or(self.spin_max, self.spin_min);
+        if self.spin_min > self.spin_max {
+            std::mem::swap(&mut self.spin_min, &mut self.spin_max);
+        }
+
+        self.rotation_min = finite_or(self.rotation_min, 0.0);
+        self.rotation_max = finite_or(self.rotation_max, self.rotation_min);
+        if self.rotation_min > self.rotation_max {
+            std::mem::swap(&mut self.rotation_min, &mut self.rotation_max);
+        }
+
+        self.spin_variation = finite_or(self.spin_variation, 0.0).clamp(0.0, 1.0);
+        self.size_variation = non_negative_finite_or(self.size_variation, 0.0);
+
+        self.linear_accel_x_min = finite_or(self.linear_accel_x_min, 0.0);
+        self.linear_accel_x_max = finite_or(self.linear_accel_x_max, self.linear_accel_x_min);
+        if self.linear_accel_x_min > self.linear_accel_x_max {
+            std::mem::swap(&mut self.linear_accel_x_min, &mut self.linear_accel_x_max);
+        }
+        self.linear_accel_y_min = finite_or(self.linear_accel_y_min, 0.0);
+        self.linear_accel_y_max = finite_or(self.linear_accel_y_max, self.linear_accel_y_min);
+        if self.linear_accel_y_min > self.linear_accel_y_max {
+            std::mem::swap(&mut self.linear_accel_y_min, &mut self.linear_accel_y_max);
+        }
+
+        self.radial_accel_min = finite_or(self.radial_accel_min, 0.0);
+        self.radial_accel_max = finite_or(self.radial_accel_max, self.radial_accel_min);
+        if self.radial_accel_min > self.radial_accel_max {
+            std::mem::swap(&mut self.radial_accel_min, &mut self.radial_accel_max);
+        }
+        self.tangential_accel_min = finite_or(self.tangential_accel_min, 0.0);
+        self.tangential_accel_max =
+            finite_or(self.tangential_accel_max, self.tangential_accel_min);
+        if self.tangential_accel_min > self.tangential_accel_max {
+            std::mem::swap(&mut self.tangential_accel_min, &mut self.tangential_accel_max);
+        }
+
+        self.linear_damping_min = non_negative_finite_or(self.linear_damping_min, 0.0);
+        self.linear_damping_max =
+            non_negative_finite_or(self.linear_damping_max, self.linear_damping_min);
+        if self.linear_damping_min > self.linear_damping_max {
+            std::mem::swap(&mut self.linear_damping_min, &mut self.linear_damping_max);
+        }
+
+        self.area_width = non_negative_finite_or(self.area_width, 0.0);
+        self.area_height = non_negative_finite_or(self.area_height, 0.0);
+        self.area_angle = finite_or(self.area_angle, 0.0);
+
+        self.emitter_lifetime = if self.emitter_lifetime.is_finite() {
+            if self.emitter_lifetime < 0.0 {
+                -1.0
+            } else {
+                self.emitter_lifetime.max(MIN_PARTICLE_LIFETIME)
+            }
+        } else {
+            -1.0
+        };
+
+        self.offset_x = finite_or(self.offset_x, 0.0);
+        self.offset_y = finite_or(self.offset_y, 0.0);
+        self.alpha_keyframes.retain(|alpha| alpha.is_finite());
+        for alpha in &mut self.alpha_keyframes {
+            *alpha = alpha.clamp(0.0, 1.0);
+        }
+
+        self.turbulence = non_negative_finite_or(self.turbulence, 0.0);
+        self.drag = non_negative_finite_or(self.drag, 0.0);
+        self.orbit_speed = finite_or(self.orbit_speed, 0.0);
+        self.frame_rate = non_negative_finite_or(self.frame_rate, 12.0).max(MIN_PARTICLE_LIFETIME);
+        self.speed_color_min = finite_or(self.speed_color_min, 0.0);
+        self.speed_color_max = finite_or(self.speed_color_max, self.speed_color_min);
+        if self.speed_color_min > self.speed_color_max {
+            std::mem::swap(&mut self.speed_color_min, &mut self.speed_color_max);
+        }
+
+        self.shrapnel_edges = self.shrapnel_edges.max(3);
+        self.ray_aspect = non_negative_finite_or(self.ray_aspect, 4.0).max(0.1);
+        self.ring_thickness = finite_or(self.ring_thickness, 0.2).clamp(0.0, 1.0);
+
+        match &mut self.emission_shape {
+            EmissionShape::Circle { radius, .. } => {
+                *radius = non_negative_finite_or(*radius, 50.0);
+            }
+            EmissionShape::Rectangle { width, height } => {
+                *width = non_negative_finite_or(*width, 100.0);
+                *height = non_negative_finite_or(*height, 100.0);
+            }
+            EmissionShape::Ring {
+                inner_radius,
+                outer_radius,
+            } => {
+                *inner_radius = non_negative_finite_or(*inner_radius, 20.0);
+                *outer_radius = non_negative_finite_or(*outer_radius, 50.0).max(*inner_radius);
+            }
+            EmissionShape::Line { length, angle } => {
+                *length = non_negative_finite_or(*length, 100.0);
+                *angle = finite_or(*angle, 0.0);
+            }
+            EmissionShape::Cone {
+                radius,
+                angle,
+                spread,
+            } => {
+                *radius = non_negative_finite_or(*radius, 50.0);
+                *angle = finite_or(*angle, 0.0);
+                *spread = non_negative_finite_or(*spread, 0.5);
+            }
+            EmissionShape::Star {
+                points,
+                outer_radius,
+                inner_radius,
+            } => {
+                *points = (*points).max(3);
+                *outer_radius = non_negative_finite_or(*outer_radius, 50.0);
+                *inner_radius = non_negative_finite_or(*inner_radius, 25.0).min(*outer_radius);
+            }
+            EmissionShape::Spiral { revolutions, radius } => {
+                *revolutions = non_negative_finite_or(*revolutions, 2.0);
+                *radius = non_negative_finite_or(*radius, 50.0);
+            }
+            EmissionShape::Point | EmissionShape::Custom { .. } => {}
+        }
+
+        self.shape = match self.shape.clone() {
+            ParticleShape::Shrapnel { .. } => ParticleShape::Shrapnel {
+                edges: self.shrapnel_edges,
+            },
+            ParticleShape::Ray { .. } => ParticleShape::Ray {
+                aspect: self.ray_aspect,
+            },
+            ParticleShape::Ring { .. } => ParticleShape::Ring {
+                thickness: self.ring_thickness,
+            },
+            other => other,
+        };
+
+        if let Some(sub) = &mut self.death_emitter {
+            sub.sanitize();
+        }
+    }
+
+    /// Returns a sanitized copy of the config.
+    pub fn normalized(mut self) -> Self {
+        self.sanitize();
+        self
+    }
+
     /// Parse a `ParticleConfig` from a TOML string; returns the error string on failure.
     pub fn from_toml_str(toml_str: &str) -> Result<Self, String> {
-        toml::from_str(toml_str).map_err(|e| e.to_string())
+        toml::from_str::<Self>(toml_str)
+            .map(|cfg| cfg.normalized())
+            .map_err(|e| e.to_string())
     }
 }

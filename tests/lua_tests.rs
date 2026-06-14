@@ -275,6 +275,11 @@ fn lua_evidence_math_evidence() {
 }
 
 #[test]
+fn lua_evidence_mapblock_evidence() {
+    run_lua_test("evidence/test_mapblock_evidence.lua");
+}
+
+#[test]
 fn lua_evidence_minimap_evidence() {
     run_lua_test("evidence/test_minimap_evidence.lua");
 }

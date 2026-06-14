@@ -73,6 +73,9 @@ impl ImageData {
     }
     /// Apply gamma correction to RGB channels in place.
     pub fn gamma(&mut self, gamma: f32) {
+        if !gamma.is_finite() || gamma <= 0.0 {
+            return;
+        }
         self.map_pixel_par(|_, _, r, g, b, a| {
             let apply =
                 |ch: u8| ((ch as f32 / 255.0).powf(1.0 / gamma) * 255.0).clamp(0.0, 255.0) as u8;

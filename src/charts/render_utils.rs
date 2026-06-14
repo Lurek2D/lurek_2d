@@ -127,6 +127,21 @@ pub fn fill_buffer(buffer: &mut [u8], color: [f32; 4]) {
     }
 }
 
+/// Trim a point buffer to the newest `max_points` entries.
+pub fn trim_points_to_window(data: &mut Vec<(f32, f32)>, max_points: Option<usize>) {
+    let Some(max_points) = max_points else {
+        return;
+    };
+    if max_points == 0 {
+        data.clear();
+        return;
+    }
+    if data.len() > max_points {
+        let drop_count = data.len() - max_points;
+        data.drain(0..drop_count);
+    }
+}
+
 /// Compute the bounding range across all series.
 ///
 /// Returns `(min_x, max_x, min_y, max_y)`. If no data points exist,
@@ -140,6 +155,9 @@ pub fn auto_range(series: &[ChartSeries]) -> (f32, f32, f32, f32) {
 
     for s in series {
         for &(x, y) in &s.data {
+            if !x.is_finite() || !y.is_finite() {
+                continue;
+            }
             has_data = true;
             if x < min_x {
                 min_x = x;

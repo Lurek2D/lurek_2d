@@ -259,6 +259,10 @@ name = "gui_tests"
 path = "tests/rust/unit/gui_tests.rs"
 
 [[test]]
+name = "globe_tests"
+path = "tests/rust/unit/globe_tests.rs"
+
+[[test]]
 name = "lua_tests"
 path = "tests/lua_tests.rs"
 
@@ -273,6 +277,10 @@ path = "tests/rust/unit/physics_tests.rs"
 [[test]]
 name = "tilemap_tests"
 path = "tests/rust/unit/tilemap_tests.rs"
+
+[[test]]
+name = "mapblock_tests"
+path = "tests/rust/unit/mapblock_tests.rs"
 
 [[test]]
 name = "pathfind_tests"
@@ -429,6 +437,10 @@ path = "tests/rust/unit/spine_tests.rs"
 [[test]]
 name = "sprite_tests"
 path = "tests/rust/unit/sprite_tests.rs"
+
+[[test]]
+name = "color_tests"
+path = "tests/rust/unit/color_tests.rs"
 
 [[test]]
 name = "terminal_tests"

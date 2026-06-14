@@ -7,6 +7,13 @@
 
 use crate::animation::aseprite::load_aseprite_json;
 use std::collections::HashMap;
+
+fn json_u32(value: Option<&serde_json::Value>, field: &str, name: &str) -> Result<u32, String> {
+    let raw = value
+        .and_then(|v| v.as_u64())
+        .ok_or_else(|| format!("Frame '{}' missing '{}'", name, field))?;
+    u32::try_from(raw).map_err(|_| format!("Frame '{}' '{}' exceeds u32 range", name, field))
+}
 /// Named sub-region of a texture atlas with pixel coordinates, size, and flip/rotate flags.
 #[derive(Debug, Clone)]
 pub struct AtlasEntry {
@@ -142,22 +149,10 @@ fn parse_frame_entry(name: String, item: &serde_json::Value) -> Result<AtlasEntr
     let frame = item
         .get("frame")
         .ok_or_else(|| format!("Frame '{}' missing 'frame' rect object", name))?;
-    let x = frame
-        .get("x")
-        .and_then(|v| v.as_u64())
-        .ok_or_else(|| format!("Frame '{}' missing 'frame.x'", name))? as u32;
-    let y = frame
-        .get("y")
-        .and_then(|v| v.as_u64())
-        .ok_or_else(|| format!("Frame '{}' missing 'frame.y'", name))? as u32;
-    let w = frame
-        .get("w")
-        .and_then(|v| v.as_u64())
-        .ok_or_else(|| format!("Frame '{}' missing 'frame.w'", name))? as u32;
-    let h = frame
-        .get("h")
-        .and_then(|v| v.as_u64())
-        .ok_or_else(|| format!("Frame '{}' missing 'frame.h'", name))? as u32;
+    let x = json_u32(frame.get("x"), "frame.x", &name)?;
+    let y = json_u32(frame.get("y"), "frame.y", &name)?;
+    let w = json_u32(frame.get("w"), "frame.w", &name)?;
+    let h = json_u32(frame.get("h"), "frame.h", &name)?;
     let rotated = item
         .get("rotated")
         .and_then(|v| v.as_bool())

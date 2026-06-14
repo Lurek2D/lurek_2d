@@ -6,7 +6,8 @@
 
 use crate::charts::config::{ChartConfig, ChartSeries};
 use crate::charts::render_utils::{
-    annotate_cartesian_chart, auto_range, draw_line, draw_rect_filled, fill_buffer, world_to_screen,
+    annotate_cartesian_chart, auto_range, draw_line, draw_rect_filled, fill_buffer,
+    trim_points_to_window, world_to_screen,
 };
 
 /// A bar chart that renders series as grouped vertical bars.
@@ -38,6 +39,8 @@ impl BarChart {
 
     /// Add a data series (low-level: accepts a ChartSeries directly).
     pub fn push_series(&mut self, series: ChartSeries) {
+        let mut series = series;
+        trim_points_to_window(&mut series.data, self.config.max_points);
         self.series.push(series);
     }
 
@@ -47,6 +50,28 @@ impl BarChart {
             name: name.to_string(),
             color: [color.r, color.g, color.b, color.a],
             data: Vec::new(),
+        });
+    }
+
+    /// Add or replace a named series with direct `(x, y)` point data.
+    pub fn add_series_data(
+        &mut self,
+        name: &str,
+        data: &[(f32, f32)],
+        color: crate::color::Color,
+    ) {
+        let color = [color.r, color.g, color.b, color.a];
+        if let Some(series) = self.series.iter_mut().find(|series| series.name == name) {
+            series.color = color;
+            series.data.clear();
+            series.data.extend_from_slice(data);
+            trim_points_to_window(&mut series.data, self.config.max_points);
+            return;
+        }
+        self.push_series(ChartSeries {
+            name: name.to_string(),
+            color,
+            data: data.to_vec(),
         });
     }
 
@@ -95,6 +120,16 @@ impl BarChart {
     pub fn clear(&mut self) {
         self.series.clear();
         self.category_labels.clear();
+    }
+
+    /// Return all chart series for inspection helpers.
+    pub fn series(&self) -> &[ChartSeries] {
+        &self.series
+    }
+
+    /// Return all category labels in display order.
+    pub fn category_labels(&self) -> &[String] {
+        &self.category_labels
     }
 
     /// Set the individual bar width in pixels.

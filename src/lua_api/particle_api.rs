@@ -15,6 +15,37 @@ use crate::runtime::resource_keys::ParticleKey;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+fn finite_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be finite"
+        )))
+    }
+}
+
+fn non_negative_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    let value = finite_f32(api, arg_name, value)?;
+    if value >= 0.0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be >= 0"
+        )))
+    }
+}
+
+fn positive_u32(api: &str, arg_name: &str, value: u32) -> LuaResult<u32> {
+    if value > 0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be > 0"
+        )))
+    }
+}
 #[derive(Clone)]
 /// Lua-side handle for a particle system stored in shared runtime state.
 pub struct LuaParticleSystem {
@@ -42,6 +73,7 @@ impl LuaUserData for LuaParticleSystem {
         /// Updates the particle system, applies optional physics collision, and invokes pending callbacks.
         /// @param | dt | number | Delta time in seconds.
         methods.add_method("update", |lua, this, dt: f32| {
+            let dt = non_negative_f32("LParticleSystem:update", "dt", dt)?;
             {
                 let mut st = this.state.borrow_mut();
                 if let Some(ps) = st.particle_systems.get_mut(this.key) {
@@ -178,6 +210,8 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | x | number | Emitter x coordinate.
         /// @param | y | number | Emitter y coordinate.
         methods.add_method("moveTo", |_, this, (x, y): (f32, f32)| {
+            let x = finite_f32("LParticleSystem:moveTo", "x", x)?;
+            let y = finite_f32("LParticleSystem:moveTo", "y", y)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
                 ps.move_to(x, y);
@@ -200,6 +234,37 @@ impl LuaUserData for LuaParticleSystem {
                 .particle_systems
                 .get(this.key)
                 .is_some_and(|ps| ps.is_active()))
+        });
+        // -- getStats --
+        /// Returns a telemetry snapshot for dashboard and debug workflows.
+        /// @return | table | Particle-system telemetry fields.
+        methods.add_method("getStats", |lua, this, ()| {
+            let st = this.state.borrow();
+            let ps = st
+                .particle_systems
+                .get(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
+            let stats = ps.stats();
+            let table = lua.create_table()?;
+            table.set("live_particles", stats.live_particles)?;
+            table.set("total_live_particles", stats.total_live_particles)?;
+            table.set("max_particles", stats.max_particles)?;
+            table.set("attractor_count", stats.attractor_count)?;
+            table.set("sub_system_count", stats.sub_system_count)?;
+            table.set("emission_rate", stats.emission_rate)?;
+            table.set("emitter_age", stats.emitter_age)?;
+            table.set("pending_custom_offsets", stats.pending_custom_offsets)?;
+            table.set("pending_deaths", stats.pending_deaths)?;
+            table.set("has_bounds", stats.has_bounds)?;
+            table.set(
+                "state",
+                match stats.state {
+                    crate::particle::EmitterState::Active => "active",
+                    crate::particle::EmitterState::Paused => "paused",
+                    crate::particle::EmitterState::Stopped => "stopped",
+                },
+            )?;
+            Ok(table)
         });
         // -- isPaused --
         /// Returns whether the particle system is paused.
@@ -281,6 +346,8 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | x | number | Emitter x coordinate.
         /// @param | y | number | Emitter y coordinate.
         methods.add_method("setPosition", |_, this, (x, y): (f32, f32)| {
+            let x = finite_f32("LParticleSystem:setPosition", "x", x)?;
+            let y = finite_f32("LParticleSystem:setPosition", "y", y)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
                 ps.emitter_x = x;
@@ -304,6 +371,7 @@ impl LuaUserData for LuaParticleSystem {
         /// Sets emission rate. This method is available to Lua scripts.
         /// @param | rate | number | Particles per second.
         methods.add_method("setEmissionRate", |_, this, rate: f32| {
+            let rate = non_negative_f32("LParticleSystem:setEmissionRate", "rate", rate)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
                 ps.config.emission_rate = rate;
@@ -325,10 +393,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | min | number | Minimum lifetime.
         /// @param | max | number | Maximum lifetime.
         methods.add_method("setParticleLifetime", |_, this, (min, max): (f32, f32)| {
+            let min = non_negative_f32("LParticleSystem:setParticleLifetime", "min", min)?;
+            let max = non_negative_f32("LParticleSystem:setParticleLifetime", "max", max)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                ps.config.lifetime_min = min;
-                ps.config.lifetime_max = max;
+                ps.config.lifetime_min = min.min(max).max(1.0e-4);
+                ps.config.lifetime_max = min.max(max).max(1.0e-4);
             }
             Ok(())
         });
@@ -350,9 +420,10 @@ impl LuaUserData for LuaParticleSystem {
         /// Sets emitter lifetime. This method is available to Lua scripts.
         /// @param | t | number | Emitter lifetime.
         methods.add_method("setEmitterLifetime", |_, this, t: f32| {
+            let t = finite_f32("LParticleSystem:setEmitterLifetime", "t", t)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                ps.config.emitter_lifetime = t;
+                ps.config.emitter_lifetime = if t < 0.0 { -1.0 } else { t.max(1.0e-4) };
             }
             Ok(())
         });
@@ -371,10 +442,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | min | number | Minimum speed.
         /// @param | max | number | Maximum speed.
         methods.add_method("setSpeed", |_, this, (min, max): (f32, f32)| {
+            let min = non_negative_f32("LParticleSystem:setSpeed", "min", min)?;
+            let max = non_negative_f32("LParticleSystem:setSpeed", "max", max)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                ps.config.speed_min = min;
-                ps.config.speed_max = max;
+                ps.config.speed_min = min.min(max);
+                ps.config.speed_max = min.max(max);
             }
             Ok(())
         });
@@ -396,6 +469,7 @@ impl LuaUserData for LuaParticleSystem {
         /// Sets emission direction. This method is available to Lua scripts.
         /// @param | dir | number | Direction angle.
         methods.add_method("setDirection", |_, this, dir: f32| {
+            let dir = finite_f32("LParticleSystem:setDirection", "dir", dir)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
                 ps.config.direction = dir;
@@ -416,6 +490,7 @@ impl LuaUserData for LuaParticleSystem {
         /// Sets emission spread. This method is available to Lua scripts.
         /// @param | spread | number | Spread angle.
         methods.add_method("setSpread", |_, this, spread: f32| {
+            let spread = non_negative_f32("LParticleSystem:setSpread", "spread", spread)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
                 ps.config.spread = spread;
@@ -538,10 +613,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | min | number | Minimum damping.
         /// @param | max | number | Maximum damping.
         methods.add_method("setLinearDamping", |_, this, (min, max): (f32, f32)| {
+            let min = non_negative_f32("LParticleSystem:setLinearDamping", "min", min)?;
+            let max = non_negative_f32("LParticleSystem:setLinearDamping", "max", max)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                ps.config.linear_damping_min = min;
-                ps.config.linear_damping_max = max;
+                ps.config.linear_damping_min = min.min(max);
+                ps.config.linear_damping_max = min.max(max);
             }
             Ok(())
         });
@@ -596,6 +673,7 @@ impl LuaUserData for LuaParticleSystem {
         /// Sets size variation. This method is available to Lua scripts.
         /// @param | v | number | Size variation.
         methods.add_method("setSizeVariation", |_, this, v: f32| {
+            let v = non_negative_f32("LParticleSystem:setSizeVariation", "v", v)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
                 ps.config.size_variation = v;
@@ -617,10 +695,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | min | number | Minimum rotation.
         /// @param | max | number | Maximum rotation.
         methods.add_method("setRotation", |_, this, (min, max): (f32, f32)| {
+            let min = finite_f32("LParticleSystem:setRotation", "min", min)?;
+            let max = finite_f32("LParticleSystem:setRotation", "max", max)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                ps.config.rotation_min = min;
-                ps.config.rotation_max = max;
+                ps.config.rotation_min = min.min(max);
+                ps.config.rotation_max = min.max(max);
             }
             Ok(())
         });
@@ -643,10 +723,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | min | number | Minimum spin.
         /// @param | max | number | Maximum spin.
         methods.add_method("setSpin", |_, this, (min, max): (f32, f32)| {
+            let min = finite_f32("LParticleSystem:setSpin", "min", min)?;
+            let max = finite_f32("LParticleSystem:setSpin", "max", max)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                ps.config.spin_min = min;
-                ps.config.spin_max = max;
+                ps.config.spin_min = min.min(max);
+                ps.config.spin_max = min.max(max);
             }
             Ok(())
         });
@@ -668,9 +750,10 @@ impl LuaUserData for LuaParticleSystem {
         /// Sets spin variation. This method is available to Lua scripts.
         /// @param | v | number | Spin variation factor.
         methods.add_method("setSpinVariation", |_, this, v: f32| {
+            let v = non_negative_f32("LParticleSystem:setSpinVariation", "v", v)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                ps.config.spin_variation = v;
+                ps.config.spin_variation = v.clamp(0.0, 1.0);
             }
             Ok(())
         });
@@ -756,6 +839,8 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | ox | number | Spawn offset x.
         /// @param | oy | number | Spawn offset y.
         methods.add_method("setOffset", |_, this, (ox, oy): (f32, f32)| {
+            let ox = finite_f32("LParticleSystem:setOffset", "ox", ox)?;
+            let oy = finite_f32("LParticleSystem:setOffset", "oy", oy)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
                 ps.config.offset_x = ox;
@@ -813,10 +898,10 @@ impl LuaUserData for LuaParticleSystem {
         /// Sets maximum particle buffer size.
         /// @param | n | integer | Maximum particle count.
         methods.add_method("setBufferSize", |_, this, n: u32| {
+            let n = positive_u32("LParticleSystem:setBufferSize", "n", n)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                ps.config.max_particles = n;
-                ps.particles.reserve(n as usize);
+                ps.set_max_particles(n);
             }
             Ok(())
         });
@@ -850,9 +935,12 @@ impl LuaUserData for LuaParticleSystem {
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
                 ps.config.area_distribution = d;
-                ps.config.area_width = w;
-                ps.config.area_height = h;
-                if let Some(a) = angle { ps.config.area_angle = a; }
+                ps.config.area_width = non_negative_f32("LParticleSystem:setEmissionArea", "w", w)?;
+                ps.config.area_height = non_negative_f32("LParticleSystem:setEmissionArea", "h", h)?;
+                if let Some(a) = angle {
+                    ps.config.area_angle =
+                        finite_f32("LParticleSystem:setEmissionArea", "angle", a)?;
+                }
                 if let Some(dr) = dir_rel { ps.config.area_direction_relative = dr; }
             }
             Ok(())
@@ -951,6 +1039,8 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | gx | number | Gravity x.
         /// @param | gy | number | Gravity y.
         methods.add_method("setGravity", |_, this, (gx, gy): (f32, f32)| {
+            let gx = finite_f32("LParticleSystem:setGravity", "gx", gx)?;
+            let gy = finite_f32("LParticleSystem:setGravity", "gy", gy)?;
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
                 ps.config.gravity_x = gx;
@@ -1097,6 +1187,7 @@ impl LuaUserData for LuaParticleSystem {
         /// Advances the system by a warm-up duration.
         /// @param | seconds | number | Warm-up duration in seconds.
         methods.add_method_mut("warmUp", |_, this, seconds: f32| {
+            let seconds = non_negative_f32("LParticleSystem:warmUp", "seconds", seconds)?;
             let mut st = this.state.borrow_mut();
             let ps = st
                 .particle_systems
@@ -1114,6 +1205,10 @@ impl LuaUserData for LuaParticleSystem {
         methods.add_method_mut(
             "addAttractor",
             |_, this, (x, y, strength, radius): (f32, f32, f32, f32)| {
+                let x = finite_f32("LParticleSystem:addAttractor", "x", x)?;
+                let y = finite_f32("LParticleSystem:addAttractor", "y", y)?;
+                let strength = finite_f32("LParticleSystem:addAttractor", "strength", strength)?;
+                let radius = non_negative_f32("LParticleSystem:addAttractor", "radius", radius)?;
                 let mut st = this.state.borrow_mut();
                 let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
                     LuaError::runtime("ParticleSystem handle is invalid (released)")
@@ -1154,6 +1249,12 @@ impl LuaUserData for LuaParticleSystem {
         methods.add_method_mut(
             "setBounds",
             |_, this, (xmin, xmax, ymin, ymax, restitution): (f32, f32, f32, f32, f32)| {
+                let xmin = finite_f32("LParticleSystem:setBounds", "xmin", xmin)?;
+                let xmax = finite_f32("LParticleSystem:setBounds", "xmax", xmax)?;
+                let ymin = finite_f32("LParticleSystem:setBounds", "ymin", ymin)?;
+                let ymax = finite_f32("LParticleSystem:setBounds", "ymax", ymax)?;
+                let restitution =
+                    non_negative_f32("LParticleSystem:setBounds", "restitution", restitution)?;
                 let mut st = this.state.borrow_mut();
                 let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
                     LuaError::runtime("ParticleSystem handle is invalid (released)")
@@ -1183,8 +1284,18 @@ impl LuaUserData for LuaParticleSystem {
             |_, this, (world_ud, probe_radius, restitution): (LuaAnyUserData, Option<f32>, Option<f32>)| {
                 let world = world_ud.borrow::<LuaWorld>()?;
                 this.collision_world = Some(world.world_handle());
-                this.collision_probe_radius = probe_radius.unwrap_or(1.0).max(0.1);
-                this.collision_restitution = restitution.unwrap_or(0.6).clamp(0.0, 1.0);
+                this.collision_probe_radius = non_negative_f32(
+                    "LParticleSystem:setCollidesWithPhysics",
+                    "probe_radius",
+                    probe_radius.unwrap_or(1.0),
+                )?
+                .max(0.1);
+                this.collision_restitution = non_negative_f32(
+                    "LParticleSystem:setCollidesWithPhysics",
+                    "restitution",
+                    restitution.unwrap_or(0.6),
+                )?
+                .clamp(0.0, 1.0);
                 Ok(())
             },
         );
@@ -1584,6 +1695,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "reset",
         "moveTo",
         "isActive",
+        "getStats",
         "isPaused",
         "isStopped",
         "isEmpty",
@@ -1948,6 +2060,7 @@ impl ParticleConfig {
         if let Ok(sub_tbl) = t.get::<_, LuaTable>("deathEmitter") {
             c.death_emitter = Some(Box::new(ParticleConfig::from_lua_opts(&sub_tbl)?));
         }
+        c.sanitize();
         Ok(c)
     }
 }

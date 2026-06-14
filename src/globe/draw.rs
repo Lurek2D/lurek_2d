@@ -10,17 +10,23 @@ use super::sphere::great_circle_path;
 use crate::globe::fog::FogStore;
 use crate::globe::label::LabelStore;
 use crate::globe::layer::LayerStore;
-use crate::globe::lighting::{province_intensity, sun_direction};
+use crate::globe::lighting::{province_intensity, sun_direction, terminator_alpha};
 use crate::globe::marker::MarkerStore;
-use crate::globe::projection::{build_view_matrix, project_point, project_region, OrbitCamera};
+use crate::globe::projection::{build_view_matrix, project_geo_loop, project_point, OrbitCamera};
 use crate::globe::topology::RegionGraph;
-use crate::globe::types::{Arc as GlobeArc, FogState, GlobeSpec, HeatLayer, LodTier, Region};
-use crate::math::Vec2;
-use crate::render::renderer::{BlendMode, DrawMode, RenderCommand};
+use crate::globe::types::{
+    Arc as GlobeArc, FogState, GlobeSpec, HeatLayer, LodTier, MarkerShape, Region,
+};
+use crate::math::{polygon, Vec2, Vec3};
+use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};
+use crate::render::renderer::{BlendMode, DrawMode, RenderCommand, StencilAction};
 use crate::runtime::resource_keys::FontKey;
 use crate::runtime::resource_keys::TextureKey;
 use slotmap::KeyData;
 use std::collections::HashMap;
+
+type RegionRenderPart<'a> = (&'a [(f32, f32)], &'a [Vec<(f32, f32)>]);
+
 /// Emit a full globe frame as render commands for the current globe state.
 #[allow(clippy::too_many_arguments)]
 pub fn emit_globe_frame(
@@ -50,20 +56,65 @@ pub fn emit_globe_frame(
     for region in graph.iter() {
         if let Some(viewer) = active_viewer {
             if let FogState::Hidden = fog.state(viewer, region.id) {
-                if let Some(proj) = project_region(region, &view, spec, camera, 0.0) {
-                    cmds.push(RenderCommand::DrawConvexFan {
-                        vertices: proj.screen_verts,
-                        uvs: Vec::new(),
-                        texture_key: None,
-                        tint: [0.05, 0.05, 0.05, 1.0],
-                        blend: BlendMode::Alpha,
-                    });
+                for (outer_vertices, hole_loops) in region_render_parts(region) {
+                    let Some(proj) = project_geo_loop(
+                        region.id,
+                        outer_vertices,
+                        region.centroid,
+                        &view,
+                        spec,
+                        camera,
+                        0.0,
+                    ) else {
+                        continue;
+                    };
+                    let projected_holes: Vec<Vec<Vec2>> = hole_loops
+                        .iter()
+                        .filter_map(|hole| {
+                            project_geo_loop(
+                                region.id,
+                                hole,
+                                region.centroid,
+                                &view,
+                                spec,
+                                camera,
+                                0.0,
+                            )
+                            .map(|proj_hole| proj_hole.screen_verts)
+                        })
+                        .filter(|verts| verts.len() >= 3)
+                        .collect();
+                    let has_holes = !projected_holes.is_empty();
+                    if has_holes {
+                        cmds.push(RenderCommand::SetColorMask(false, false, false, false));
+                        cmds.push(RenderCommand::StencilBegin {
+                            action: StencilAction::Replace,
+                            value: 1,
+                        });
+                        emit_stencil_triangles(&mut cmds, &proj.screen_verts);
+                        cmds.push(RenderCommand::StencilEnd);
+                        cmds.push(RenderCommand::StencilBegin {
+                            action: StencilAction::Zero,
+                            value: 0,
+                        });
+                        for hole in &projected_holes {
+                            emit_stencil_triangles(&mut cmds, hole);
+                        }
+                        cmds.push(RenderCommand::StencilEnd);
+                        cmds.push(RenderCommand::SetColorMask(true, true, true, true));
+                        cmds.push(RenderCommand::SetStencilTest(Some((
+                            crate::render::renderer::CompareMode::Equal,
+                            1,
+                        ))));
+                    }
+                    emit_flat_colored_fill(&mut cmds, &proj.screen_verts, [0.05, 0.05, 0.05, 1.0]);
+                    if has_holes {
+                        cmds.push(RenderCommand::SetStencilTest(None));
+                    }
                 }
                 continue;
             }
         }
-        let intensity =
-            province_intensity(region.centroid.0, region.centroid.1, &sun, spec.ambient);
         let mut base = layers
             .effective_color(region.id)
             .unwrap_or(region.base_color);
@@ -75,39 +126,124 @@ pub fn emit_globe_frame(
                 base[2] *= 0.45;
             }
         }
-        let tint = [
-            (base[0] * intensity).clamp(0.0, 1.0),
-            (base[1] * intensity).clamp(0.0, 1.0),
-            (base[2] * intensity).clamp(0.0, 1.0),
-            base[3],
-        ];
-        if let Some(proj) = project_region(region, &view, spec, camera, intensity) {
-            let texture_key = region
-                .attrs
-                .get("__texture_raw")
-                .and_then(|v| v.parse::<u64>().ok())
-                .map(|raw| TextureKey::from(KeyData::from_ffi(raw)));
-            let uvs = build_region_uvs(region, region.texture_uv_rect);
-            cmds.push(RenderCommand::DrawConvexFan {
-                vertices: proj.screen_verts.clone(),
-                uvs,
-                texture_key,
-                tint,
-                blend: BlendMode::Alpha,
-            });
-            if spec.render_borders && lod >= LodTier::Mid {
-                let [br, bg, bb, ba] = spec.border_color;
-                cmds.push(RenderCommand::SetLineWidth(spec.border_width));
-                cmds.push(RenderCommand::SetColor(br, bg, bb, ba));
-                let border_verts =
-                    smooth_polyline(&proj.screen_verts, spec.border_smoothing_passes);
-                let mut pts: Vec<f32> = border_verts.iter().flat_map(|v| [v.x, v.y]).collect();
-                if let Some(first) = border_verts.first() {
-                    pts.push(first.x);
-                    pts.push(first.y);
+        let centroid_intensity =
+            province_intensity(region.centroid.0, region.centroid.1, &sun, spec.ambient);
+        let texture_key = region
+            .attrs
+            .get("__texture_raw")
+            .and_then(|v| v.parse::<u64>().ok())
+            .map(|raw| TextureKey::from(KeyData::from_ffi(raw)));
+        let render_parts = region_render_parts(region);
+        if render_parts.is_empty() {
+            continue;
+        }
+        for (outer_vertices, hole_loops) in render_parts {
+            let Some(proj) = project_geo_loop(
+                region.id,
+                outer_vertices,
+                region.centroid,
+                &view,
+                spec,
+                camera,
+                centroid_intensity,
+            ) else {
+                continue;
+            };
+            let projected_holes: Vec<Vec<Vec2>> = hole_loops
+                .iter()
+                .filter_map(|hole| {
+                    project_geo_loop(
+                        region.id,
+                        hole,
+                        region.centroid,
+                        &view,
+                        spec,
+                        camera,
+                        centroid_intensity,
+                    )
+                    .map(|proj_hole| proj_hole.screen_verts)
+                })
+                .filter(|verts| verts.len() >= 3)
+                .collect();
+            let has_holes = !projected_holes.is_empty();
+            if has_holes {
+                cmds.push(RenderCommand::SetColorMask(false, false, false, false));
+                cmds.push(RenderCommand::StencilBegin {
+                    action: StencilAction::Replace,
+                    value: 1,
+                });
+                emit_stencil_triangles(&mut cmds, &proj.screen_verts);
+                cmds.push(RenderCommand::StencilEnd);
+                cmds.push(RenderCommand::StencilBegin {
+                    action: StencilAction::Zero,
+                    value: 0,
+                });
+                for hole in &projected_holes {
+                    emit_stencil_triangles(&mut cmds, hole);
                 }
-                if pts.len() >= 4 {
-                    cmds.push(RenderCommand::Polyline { points: pts });
+                cmds.push(RenderCommand::StencilEnd);
+                cmds.push(RenderCommand::SetColorMask(true, true, true, true));
+                cmds.push(RenderCommand::SetStencilTest(Some((
+                    crate::render::renderer::CompareMode::Equal,
+                    1,
+                ))));
+            }
+            if let Some(texture_key) = texture_key {
+                emit_textured_region_fill(
+                    &mut cmds,
+                    &proj.screen_verts,
+                    &proj.surface_points,
+                    region.texture_uv_rect,
+                    texture_key,
+                    [
+                        (base[0] * centroid_intensity).clamp(0.0, 1.0),
+                        (base[1] * centroid_intensity).clamp(0.0, 1.0),
+                        (base[2] * centroid_intensity).clamp(0.0, 1.0),
+                        base[3],
+                    ],
+                );
+            } else {
+                let vertices: Vec<f32> =
+                    proj.screen_verts.iter().flat_map(|v| [v.x, v.y]).collect();
+                let colors: Vec<[f32; 4]> = proj
+                    .surface_points
+                    .iter()
+                    .map(|point| {
+                        let light = (point.x * sun.x + point.y * sun.y + point.z * sun.z)
+                            .max(spec.ambient)
+                            .min(1.0);
+                        [
+                            (base[0] * light).clamp(0.0, 1.0),
+                            (base[1] * light).clamp(0.0, 1.0),
+                            (base[2] * light).clamp(0.0, 1.0),
+                            base[3],
+                        ]
+                    })
+                    .collect();
+                cmds.push(RenderCommand::DrawColoredPolygon {
+                    vertices,
+                    colors,
+                    mode: DrawMode::Fill,
+                });
+            }
+            let night_alpha =
+                (1.0 - terminator_alpha(region.centroid.0, region.centroid.1, &sun, 24.0)) * 0.45;
+            if night_alpha > 0.01 {
+                cmds.push(RenderCommand::DrawConvexFan {
+                    vertices: proj.screen_verts.clone(),
+                    uvs: Vec::new(),
+                    texture_key: None,
+                    tint: [0.02, 0.03, 0.08, night_alpha.clamp(0.0, 0.6)],
+                    blend: BlendMode::Alpha,
+                });
+            }
+            if has_holes {
+                cmds.push(RenderCommand::SetStencilTest(None));
+            }
+            if spec.render_borders && lod >= LodTier::Mid {
+                emit_border_polyline(&mut cmds, spec, &proj.screen_verts);
+                for hole in &projected_holes {
+                    emit_border_polyline(&mut cmds, spec, hole);
                 }
             }
         }
@@ -139,21 +275,35 @@ pub fn emit_globe_frame(
                 0.0
             };
             let r = (marker.style.size * (0.5 + pulse)).max(2.0);
+            let rotation = sim_time_sec * marker.style.rotation_deg_per_sec.to_radians();
             cmds.push(RenderCommand::SetColor(mr, mg, mb, ma));
-            cmds.push(RenderCommand::Circle {
-                mode: DrawMode::Fill,
-                x: screen.x,
-                y: screen.y,
-                r,
-            });
-            if marker.style.rotation_deg_per_sec.abs() > 0.0 {
-                let ang = sim_time_sec * marker.style.rotation_deg_per_sec.to_radians();
-                let dx = ang.cos() * (r + 3.0);
-                let dy = ang.sin() * (r + 3.0);
-                cmds.push(RenderCommand::SetLineWidth(1.0));
-                cmds.push(RenderCommand::Polyline {
-                    points: vec![screen.x, screen.y, screen.x + dx, screen.y + dy],
+            if let Some(texture_key) = marker
+                .style
+                .icon_texture
+                .as_deref()
+                .and_then(|raw| raw.parse::<u64>().ok())
+                .map(|raw| TextureKey::from(KeyData::from_ffi(raw)))
+            {
+                cmds.push(RenderCommand::DrawImageEx {
+                    texture_key,
+                    x: screen.x,
+                    y: screen.y,
+                    rotation,
+                    sx: (r / 8.0).max(0.125),
+                    sy: (r / 8.0).max(0.125),
+                    ox: 0.5,
+                    oy: 0.5,
+                    effect: None,
                 });
+            } else {
+                emit_marker_shape(
+                    &mut cmds,
+                    marker.style.shape,
+                    screen.x,
+                    screen.y,
+                    r,
+                    rotation,
+                );
             }
             if let (Some(label_text), Some(font_key)) = (&marker.label, default_font) {
                 cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
@@ -189,13 +339,216 @@ pub fn emit_globe_frame(
     }
     cmds
 }
-/// Build region UVs from latitude/longitude vertices and an optional UV rectangle.
-fn build_region_uvs(region: &Region, rect: Option<[f32; 4]>) -> Vec<Vec2> {
-    let [u0, v0, u1, v1] = rect.unwrap_or([0.0, 0.0, 1.0, 1.0]);
-    region
-        .vertices
+/// Emit a marker primitive matching the configured shape.
+fn emit_marker_shape(
+    cmds: &mut Vec<RenderCommand>,
+    shape: MarkerShape,
+    x: f32,
+    y: f32,
+    r: f32,
+    rotation: f32,
+) {
+    match shape {
+        MarkerShape::Circle => cmds.push(RenderCommand::Circle {
+            mode: DrawMode::Fill,
+            x,
+            y,
+            r,
+        }),
+        MarkerShape::Square => cmds.push(RenderCommand::Polygon {
+            mode: DrawMode::Fill,
+            vertices: rotate_vertices(x, y, rotation, &[(-r, -r), (r, -r), (r, r), (-r, r)]),
+        }),
+        MarkerShape::Diamond => cmds.push(RenderCommand::Polygon {
+            mode: DrawMode::Fill,
+            vertices: rotate_vertices(x, y, rotation, &[(0.0, -r), (r, 0.0), (0.0, r), (-r, 0.0)]),
+        }),
+        MarkerShape::Triangle => cmds.push(RenderCommand::Polygon {
+            mode: DrawMode::Fill,
+            vertices: rotate_vertices(x, y, rotation, &[(0.0, -r), (r, r), (-r, r)]),
+        }),
+        MarkerShape::Cross => {
+            cmds.push(RenderCommand::SetLineWidth((r * 0.35).max(1.0)));
+            let [x1, y1, x2, y2] = rotate_segment(x, y, rotation, -r, 0.0, r, 0.0);
+            cmds.push(RenderCommand::Line { x1, y1, x2, y2 });
+            let [x1, y1, x2, y2] = rotate_segment(x, y, rotation, 0.0, -r, 0.0, r);
+            cmds.push(RenderCommand::Line { x1, y1, x2, y2 });
+        }
+    }
+}
+
+#[inline]
+fn rotate_point(x: f32, y: f32, rotation: f32, dx: f32, dy: f32) -> (f32, f32) {
+    let cos = rotation.cos();
+    let sin = rotation.sin();
+    (x + dx * cos - dy * sin, y + dx * sin + dy * cos)
+}
+
+fn rotate_vertices(x: f32, y: f32, rotation: f32, points: &[(f32, f32)]) -> Vec<f32> {
+    let mut out = Vec::with_capacity(points.len() * 2);
+    for &(dx, dy) in points {
+        let (px, py) = rotate_point(x, y, rotation, dx, dy);
+        out.push(px);
+        out.push(py);
+    }
+    out
+}
+
+fn rotate_segment(x: f32, y: f32, rotation: f32, x1: f32, y1: f32, x2: f32, y2: f32) -> [f32; 4] {
+    let (rx1, ry1) = rotate_point(x, y, rotation, x1, y1);
+    let (rx2, ry2) = rotate_point(x, y, rotation, x2, y2);
+    [rx1, ry1, rx2, ry2]
+}
+
+fn region_render_parts(region: &Region) -> Vec<RegionRenderPart<'_>> {
+    if !region.parts.is_empty() {
+        return region
+            .parts
+            .iter()
+            .filter(|part| !part.outer.is_empty())
+            .map(|part| (part.outer.as_slice(), part.holes.as_slice()))
+            .collect();
+    }
+    if region.vertices.is_empty() {
+        Vec::new()
+    } else {
+        vec![(region.vertices.as_slice(), &[])]
+    }
+}
+
+fn emit_stencil_triangles(cmds: &mut Vec<RenderCommand>, vertices: &[Vec2]) {
+    for tri in triangulate_loop_indices(vertices).chunks_exact(3) {
+        let a = vertices[tri[0] as usize];
+        let b = vertices[tri[1] as usize];
+        let c = vertices[tri[2] as usize];
+        cmds.push(RenderCommand::Triangle {
+            mode: DrawMode::Fill,
+            x1: a.x,
+            y1: a.y,
+            x2: b.x,
+            y2: b.y,
+            x3: c.x,
+            y3: c.y,
+        });
+    }
+}
+
+fn emit_flat_colored_fill(cmds: &mut Vec<RenderCommand>, vertices: &[Vec2], color: [f32; 4]) {
+    let flat: Vec<f32> = vertices.iter().flat_map(|v| [v.x, v.y]).collect();
+    let colors = vec![color; vertices.len()];
+    cmds.push(RenderCommand::DrawColoredPolygon {
+        vertices: flat,
+        colors,
+        mode: DrawMode::Fill,
+    });
+}
+
+fn emit_textured_region_fill(
+    cmds: &mut Vec<RenderCommand>,
+    screen_verts: &[Vec2],
+    surface_points: &[Vec3],
+    rect: Option<[f32; 4]>,
+    texture_key: TextureKey,
+    tint: [f32; 4],
+) {
+    let indices = triangulate_loop_indices(screen_verts);
+    if indices.len() < 3 {
+        return;
+    }
+    let uvs = build_surface_uvs(surface_points, rect);
+    if uvs.len() != screen_verts.len() {
+        return;
+    }
+    let mesh_vertices: Vec<MeshVertex> = screen_verts
         .iter()
-        .map(|(lat, lon)| {
+        .zip(uvs.iter())
+        .map(|(screen, uv)| MeshVertex {
+            x: screen.x,
+            y: screen.y,
+            u: uv.x,
+            v: uv.y,
+            r: tint[0],
+            g: tint[1],
+            b: tint[2],
+            a: tint[3],
+        })
+        .collect();
+    let mut mesh = Mesh::from_vertices(mesh_vertices, MeshDrawMode::Triangles);
+    mesh.set_vertex_map(indices);
+    mesh.set_texture(Some(texture_key));
+    cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
+    cmds.push(RenderCommand::DrawMeshTransient {
+        mesh,
+        x: 0.0,
+        y: 0.0,
+        rotation: 0.0,
+        sx: 1.0,
+        sy: 1.0,
+        ox: 0.0,
+        oy: 0.0,
+    });
+}
+
+fn emit_border_polyline(cmds: &mut Vec<RenderCommand>, spec: &GlobeSpec, vertices: &[Vec2]) {
+    if vertices.len() < 2 {
+        return;
+    }
+    let [br, bg, bb, ba] = spec.border_color;
+    cmds.push(RenderCommand::SetLineWidth(spec.border_width));
+    cmds.push(RenderCommand::SetColor(br, bg, bb, ba));
+    let border_verts = smooth_polyline(vertices, spec.border_smoothing_passes);
+    let mut pts: Vec<f32> = border_verts.iter().flat_map(|v| [v.x, v.y]).collect();
+    if let Some(first) = border_verts.first() {
+        pts.push(first.x);
+        pts.push(first.y);
+    }
+    if pts.len() >= 4 {
+        cmds.push(RenderCommand::Polyline { points: pts });
+    }
+}
+
+fn triangulate_loop_indices(vertices: &[Vec2]) -> Vec<u32> {
+    if vertices.len() < 3 {
+        return Vec::new();
+    }
+    if let Ok(tris) = polygon::triangulate(vertices) {
+        let mut out = Vec::with_capacity(tris.len() * 3);
+        for tri in tris {
+            for point in tri {
+                let Some(index) = vertices.iter().position(|candidate| {
+                    candidate.x.to_bits() == point.x.to_bits()
+                        && candidate.y.to_bits() == point.y.to_bits()
+                }) else {
+                    return fan_indices(vertices.len());
+                };
+                out.push(index as u32);
+            }
+        }
+        if !out.is_empty() {
+            return out;
+        }
+    }
+    fan_indices(vertices.len())
+}
+
+fn fan_indices(len: usize) -> Vec<u32> {
+    if len < 3 {
+        return Vec::new();
+    }
+    let mut out = Vec::with_capacity((len - 2) * 3);
+    for i in 1..len - 1 {
+        out.extend_from_slice(&[0, i as u32, i as u32 + 1]);
+    }
+    out
+}
+
+/// Build region UVs from projected surface points and an optional UV rectangle.
+fn build_surface_uvs(surface_points: &[Vec3], rect: Option<[f32; 4]>) -> Vec<Vec2> {
+    let [u0, v0, u1, v1] = rect.unwrap_or([0.0, 0.0, 1.0, 1.0]);
+    surface_points
+        .iter()
+        .map(|point| {
+            let (lat, lon) = super::sphere::unit_to_lat_lon(*point);
             let un = ((lon + 180.0) / 360.0).clamp(0.0, 1.0);
             let vn = ((90.0 - lat) / 180.0).clamp(0.0, 1.0);
             Vec2::new(u0 + (u1 - u0) * un, v0 + (v1 - v0) * vn)

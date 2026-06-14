@@ -11,6 +11,40 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+fn parse_lua_u32(value: LuaValue, api: &str, arg_name: &str) -> LuaResult<u32> {
+    match value {
+        LuaValue::Integer(n) => u32::try_from(n).map_err(|_| {
+            LuaError::RuntimeError(format!(
+                "{}: {} must be an integer in the range 0..={}",
+                api,
+                arg_name,
+                u32::MAX
+            ))
+        }),
+        LuaValue::Number(n) => {
+            if !n.is_finite() || n < 0.0 || n > u32::MAX as f64 || n.fract() != 0.0 {
+                return Err(LuaError::RuntimeError(format!(
+                    "{}: {} must be an integer in the range 0..={}",
+                    api,
+                    arg_name,
+                    u32::MAX
+                )));
+            }
+            Ok(n as u32)
+        }
+        _ => Err(LuaError::RuntimeError(format!(
+            "{}: {} must be numeric",
+            api, arg_name
+        ))),
+    }
+}
+
+fn validate_image_dimensions(api: &str, width: u32, height: u32) -> LuaResult<()> {
+    ImageData::rgba_byte_len(width, height)
+        .map(|_| ())
+        .map_err(|err| LuaError::RuntimeError(format!("{}: {}", api, err)))
+}
+
 fn parse_save_gif_options(opts: Option<LuaTable>) -> LuaResult<AnimatedGifOptions> {
     let mut out = AnimatedGifOptions::default();
     let Some(opts) = opts else {
@@ -613,21 +647,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let bytes = s.borrow().fs.read_bytes(name).map_err(LuaError::external)?;
                 ImageData::from_encoded_bytes(&bytes, name).map_err(LuaError::RuntimeError)?
             } else {
-                let width = match first {
-                    LuaValue::Integer(n) => n as u32,
-                    LuaValue::Number(n) => n as u32,
-                    _ => {
-                        return Err(LuaError::RuntimeError("width must be a number".into()));
-                    }
-                };
-                let height = match iter.next() {
-                    Some(LuaValue::Integer(n)) => n as u32,
-                    Some(LuaValue::Number(n)) => n as u32,
-                    _ => {
-                        return Err(LuaError::RuntimeError("height must be a number".into()));
-                    }
-                };
-                ImageData::new(width, height)
+                let width = parse_lua_u32(first, "newImageData", "width")?;
+                let height = parse_lua_u32(
+                    iter.next().ok_or_else(|| {
+                        LuaError::RuntimeError("newImageData: missing height".into())
+                    })?,
+                    "newImageData",
+                    "height",
+                )?;
+                validate_image_dimensions("newImageData", width, height)?;
+                ImageData::try_new(width, height).map_err(LuaError::RuntimeError)?
             };
             lua.create_userdata(img)
         })?,
@@ -685,7 +714,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | LLayeredImage | New layered image handle.
     tbl.set(
         "newLayeredImage",
-        lua.create_function(move |lua, (width, height): (u32, u32)| {
+        lua.create_function(move |lua, (width, height): (LuaValue, LuaValue)| {
+            let width = parse_lua_u32(width, "newLayeredImage", "width")?;
+            let height = parse_lua_u32(height, "newLayeredImage", "height")?;
+            validate_image_dimensions("newLayeredImage", width, height)?;
             lua.create_userdata(LuaLayeredImage {
                 inner: LayeredImage::new(width, height),
             })
@@ -1155,24 +1187,21 @@ impl mlua::UserData for ImageData {
         /// @return | LImageData|nil | Resized `LImageData` handle, or nil when resizing fails.
         methods.add_method("resize", |lua, this, args: LuaMultiValue| {
             let mut it = args.into_iter();
-            let w = match it.next() {
-                Some(LuaValue::Integer(v)) => v as u32,
-                Some(LuaValue::Number(v)) => v as u32,
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "resize(width, height, [filter]): width must be numeric".into(),
-                    ));
-                }
-            };
-            let h = match it.next() {
-                Some(LuaValue::Integer(v)) => v as u32,
-                Some(LuaValue::Number(v)) => v as u32,
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "resize(width, height, [filter]): height must be numeric".into(),
-                    ));
-                }
-            };
+            let w = parse_lua_u32(
+                it.next().ok_or_else(|| {
+                    LuaError::RuntimeError("resize(width, height, [filter]): missing width".into())
+                })?,
+                "resize(width, height, [filter])",
+                "width",
+            )?;
+            let h = parse_lua_u32(
+                it.next().ok_or_else(|| {
+                    LuaError::RuntimeError("resize(width, height, [filter]): missing height".into())
+                })?,
+                "resize(width, height, [filter])",
+                "height",
+            )?;
+            validate_image_dimensions("resize(width, height, [filter])", w, h)?;
             let filter = match it.next() {
                 Some(LuaValue::String(name)) => {
                     let name = name
@@ -1333,7 +1362,9 @@ impl mlua::UserData for ImageData {
         methods.add_method(
             "convolve",
             |lua, this, (kernel_t, ksize): (LuaTable, usize)| {
-                let len = kernel_t.len()? as usize;
+                let len = usize::try_from(kernel_t.len()?).map_err(|_| {
+                    LuaError::RuntimeError("convolve: kernel length exceeds supported size".into())
+                })?;
                 let mut kernel: Vec<f64> = Vec::with_capacity(len);
                 for i in 1..=len {
                     kernel.push(kernel_t.get::<_, f64>(i)?);

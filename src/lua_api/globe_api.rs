@@ -3,17 +3,19 @@
 use super::SharedState;
 use crate::globe::export::export_regions_to_obj;
 use crate::globe::loader;
+use crate::globe::projection::screen_delta_to_pan;
 use crate::globe::registry::{Globe, GlobeRegistry};
 use crate::globe::sphere::{
     great_circle_distance, great_circle_path, lat_lon_to_unit, ray_sphere_intersect,
 };
 use crate::globe::types::{
-    FogState, GlobeSpec, HeatLayer, LabelStyle, Layer, LodTier, MarkerStyle, Region, RegionId,
-    MAX_REGIONS,
+    FogState, GlobeSpec, HeatLayer, LabelStyle, Layer, LodTier, MarkerShape, MarkerStyle, Region,
+    RegionId, RegionPart, MAX_REGIONS,
 };
+use crate::pathfind::graph_path::ProvinceCostFn;
 use mlua::prelude::*;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 #[derive(Clone)]
@@ -51,46 +53,246 @@ impl LuaGlobe {
             .ok_or_else(|| mlua::Error::RuntimeError(format!("globe '{}' not found", self.name)))
     }
 }
+fn finite_f32(value: f32, label: &str) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "lurek.globe: {label} must be a finite number"
+        )))
+    }
+}
+
+fn finite_non_negative_f64(value: f64, label: &str) -> LuaResult<f64> {
+    if !value.is_finite() {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.globe: {label} must be a finite number"
+        )));
+    }
+    if value < 0.0 {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.globe: {label} must be >= 0"
+        )));
+    }
+    Ok(value)
+}
+
+fn validate_lat_lon(lat: f32, lon: f32, label: &str) -> LuaResult<(f32, f32)> {
+    let lat = finite_f32(lat, &format!("{label} latitude"))?;
+    let lon = finite_f32(lon, &format!("{label} longitude"))?;
+    if !(-90.0..=90.0).contains(&lat) {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.globe: {label} latitude must be in -90..90"
+        )));
+    }
+    if !(-180.0..=180.0).contains(&lon) {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.globe: {label} longitude must be in -180..180"
+        )));
+    }
+    Ok((lat, lon))
+}
+
+fn parse_color_table(
+    tbl: Option<LuaTable>,
+    fallback: [f32; 4],
+    label: &str,
+) -> LuaResult<[f32; 4]> {
+    let Some(tbl) = tbl else {
+        return Ok(fallback);
+    };
+    let mut out = fallback;
+    for (index, slot) in out.iter_mut().enumerate() {
+        if let Ok(value) = tbl.get::<_, f32>(index + 1) {
+            let value = finite_f32(value, label)?;
+            *slot = value.clamp(0.0, 1.0);
+        }
+    }
+    Ok(out)
+}
+
+fn parse_lat_lon_loop(tbl: LuaTable, label: &str) -> LuaResult<Vec<(f32, f32)>> {
+    let mut vertices = Vec::new();
+    for (index, vt) in tbl.sequence_values::<LuaTable>().enumerate() {
+        let vt = vt?;
+        let (lat, lon) = validate_lat_lon(
+            vt.get::<_, f32>(1)?,
+            vt.get::<_, f32>(2)?,
+            &format!("{label} vertex {}", index + 1),
+        )?;
+        vertices.push((lat, lon));
+    }
+    if vertices.len() < 3 {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.globe: {label} must have at least 3 vertices"
+        )));
+    }
+    Ok(vertices)
+}
+
+fn parse_region_parts(tbl: LuaTable, kind: &str, id: u32) -> LuaResult<Vec<RegionPart>> {
+    let mut parts = Vec::new();
+    for (index, part_tbl) in tbl.sequence_values::<LuaTable>().enumerate() {
+        let part_tbl = part_tbl?;
+        let outer_tbl: LuaTable = part_tbl.get("outer").map_err(|_| {
+            LuaError::RuntimeError(format!(
+                "lurek.globe.{kind}: region {id} part {} requires 'outer'",
+                index + 1
+            ))
+        })?;
+        let outer = parse_lat_lon_loop(
+            outer_tbl,
+            &format!("{kind} region {id} part {} outer", index + 1),
+        )?;
+        let mut holes = Vec::new();
+        if let Ok(holes_tbl) = part_tbl.get::<_, LuaTable>("holes") {
+            for (hole_index, hole_tbl) in holes_tbl.sequence_values::<LuaTable>().enumerate() {
+                let hole_tbl = hole_tbl?;
+                holes.push(parse_lat_lon_loop(
+                    hole_tbl,
+                    &format!(
+                        "{kind} region {id} part {} hole {}",
+                        index + 1,
+                        hole_index + 1
+                    ),
+                )?);
+            }
+        }
+        parts.push(RegionPart { outer, holes });
+    }
+    if parts.is_empty() {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.globe.{kind}: region {id} parts must not be empty"
+        )));
+    }
+    Ok(parts)
+}
+
+fn parse_region_table(p: LuaTable, kind: &str) -> LuaResult<Region> {
+    let id: u32 = p.get("id")?;
+    let parts = p
+        .get::<_, LuaTable>("parts")
+        .ok()
+        .map(|tbl| parse_region_parts(tbl, kind, id))
+        .transpose()?;
+    let vertices = if let Some(parts) = &parts {
+        parts
+            .first()
+            .map(|part| part.outer.clone())
+            .unwrap_or_default()
+    } else {
+        let verts_tbl: LuaTable = p.get::<_, LuaTable>("vertices").map_err(|_| {
+            LuaError::RuntimeError(format!(
+                "lurek.globe.{kind}: region {id} requires 'vertices' or 'parts'"
+            ))
+        })?;
+        parse_lat_lon_loop(verts_tbl, &format!("{kind} region {id}"))?
+    };
+    let neighbors: Vec<RegionId> = p
+        .get::<_, LuaTable>("neighbors")
+        .map(|t| {
+            t.sequence_values::<u32>()
+                .map(|r| r.map(RegionId))
+                .collect::<LuaResult<Vec<_>>>()
+        })
+        .unwrap_or_else(|_| Ok(vec![]))?;
+    let centroid = if let Ok(ct) = p.get::<_, LuaTable>("centroid") {
+        validate_lat_lon(
+            ct.get::<_, f32>(1)?,
+            ct.get::<_, f32>(2)?,
+            &format!("{kind} region {id} centroid"),
+        )?
+    } else {
+        if let Some(parts) = &parts {
+            Region::from_parts(RegionId(id), parts.clone()).centroid
+        } else {
+            Region::new(RegionId(id), vertices.clone()).centroid
+        }
+    };
+    let base_color = parse_color_table(
+        p.get("base_color").ok(),
+        [0.5, 0.5, 0.5, 1.0],
+        &format!("{kind} region {id} base_color"),
+    )?;
+    Ok(if let Some(parts) = parts {
+        Region::with_parts_data(RegionId(id), centroid, parts, neighbors, base_color)
+    } else {
+        Region::with_data(RegionId(id), centroid, vertices, neighbors, base_color)
+    })
+}
+
+fn parse_marker_shape(shape: &str) -> LuaResult<MarkerShape> {
+    match shape {
+        "circle" => Ok(MarkerShape::Circle),
+        "square" => Ok(MarkerShape::Square),
+        "diamond" => Ok(MarkerShape::Diamond),
+        "triangle" => Ok(MarkerShape::Triangle),
+        "cross" => Ok(MarkerShape::Cross),
+        _ => Err(LuaError::RuntimeError(format!(
+            "lurek.globe: unsupported marker shape '{}'",
+            shape
+        ))),
+    }
+}
+
+fn normalize_time_of_day(t: f32) -> LuaResult<f32> {
+    Ok(finite_f32(t, "time_of_day")?.rem_euclid(24.0))
+}
+
+fn parse_cost_fn(opts: Option<LuaTable>, label: &str) -> LuaResult<ProvinceCostFn> {
+    let mut cost_fn = ProvinceCostFn::new();
+    let Some(opts) = opts else {
+        return Ok(cost_fn);
+    };
+    if let Ok(default_cost) = opts.get::<_, f64>("default_cost") {
+        cost_fn.default_cost =
+            finite_non_negative_f64(default_cost, &format!("{label} default_cost"))?;
+    }
+    if let Ok(province_costs) = opts.get::<_, LuaTable>("province_costs") {
+        for pair in province_costs.pairs::<u32, f64>() {
+            let (id, cost) = pair?;
+            cost_fn.province_costs.insert(
+                id,
+                finite_non_negative_f64(cost, &format!("{label} province_costs[{id}]"))?,
+            );
+        }
+    }
+    if let Ok(tag_costs) = opts.get::<_, LuaTable>("tag_costs") {
+        for pair in tag_costs.pairs::<String, f64>() {
+            let (tag, cost) = pair?;
+            cost_fn.tag_costs.insert(
+                tag.clone(),
+                finite_non_negative_f64(cost, &format!("{label} tag_costs.{tag}"))?,
+            );
+        }
+    }
+    if let Ok(blocked_ids) = opts.get::<_, LuaTable>("blocked_ids") {
+        for id in blocked_ids.sequence_values::<u32>() {
+            cost_fn.blocked.insert(id?);
+        }
+    }
+    Ok(cost_fn)
+}
 /// Provides Lua methods for editing and querying one named globe.
 impl LuaUserData for LuaGlobe {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- addProvince --
-        /// Adds a province described by id, centroid, vertices, neighbors, and optional base color.
-        /// @param | p | table | Province table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`.
+        /// Adds a province described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
+        /// @param | p | table | Province table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`.
         /// @return | boolean | True when the province was accepted by the globe.
         methods.add_method_mut("addProvince", |_, this, p: LuaTable| {
-            let id: u32 = p.get("id")?;
-            let ct: LuaTable = p.get("centroid")?;
-            let centroid = (ct.get::<_, f32>(1)?, ct.get::<_, f32>(2)?);
-            let verts_tbl: LuaTable = p.get::<_, LuaTable>("vertices").map_err(|_| {
-                mlua::Error::RuntimeError(format!("province {id}: 'vertices' field is required"))
-            })?;
-            let mut vertices = Vec::new();
-            for vt in verts_tbl.sequence_values::<LuaTable>() {
-                let vt = vt?;
-                vertices.push((vt.get::<_, f32>(1)?, vt.get::<_, f32>(2)?));
-            }
-            let neighbors: Vec<RegionId> = p
-                .get::<_, LuaTable>("neighbors")
-                .map(|t| {
-                    t.sequence_values::<u32>()
-                        .map(|r| r.map(RegionId))
-                        .collect::<LuaResult<Vec<_>>>()
-                })
-                .unwrap_or_else(|_| Ok(vec![]))?;
-            let color_tbl: Option<LuaTable> = p.get("base_color").ok();
-            let base_color = if let Some(ct) = color_tbl {
-                [
-                    ct.get::<_, f32>(1).unwrap_or(0.5),
-                    ct.get::<_, f32>(2).unwrap_or(0.5),
-                    ct.get::<_, f32>(3).unwrap_or(0.5),
-                    ct.get::<_, f32>(4).unwrap_or(1.0),
-                ]
-            } else {
-                [0.5, 0.5, 0.5, 1.0]
-            };
-            let region = Region::with_data(RegionId(id), centroid, vertices, neighbors, base_color);
-            this.with_mut(|g| g.add_province(region).map(|_| true).unwrap_or(false))
+            let region = parse_region_table(p, "addProvince")?;
+            this.with_mut(|g| {
+                if g.get_province(region.id).is_some() {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.globe.addProvince: province {} already exists",
+                        region.id
+                    )));
+                }
+                g.add_province(region)
+                    .map(|_| true)
+                    .map_err(|e| LuaError::RuntimeError(format!("lurek.globe.addProvince: {e}")))
+            })?
         });
         // -- removeProvince --
         /// Removes a region by id. This method is available to Lua scripts.
@@ -100,42 +302,22 @@ impl LuaUserData for LuaGlobe {
             this.with_mut(|g| g.remove_province(RegionId(id)).is_some())
         });
         // -- addRegion -- (alias for addProvince)
-        /// Adds a region described by id, centroid, vertices, neighbors, and optional base color.
-        /// @param | p | table | Region table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`.
+        /// Adds a region described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
+        /// @param | p | table | Region table with `id`, optional `centroid`, either `vertices` or `parts`, optional `neighbors`, and optional `base_color`.
         /// @return | boolean | True when the region was accepted by the globe.
         methods.add_method_mut("addRegion", |_, this, p: LuaTable| {
-            let id: u32 = p.get("id")?;
-            let ct: LuaTable = p.get("centroid")?;
-            let centroid = (ct.get::<_, f32>(1)?, ct.get::<_, f32>(2)?);
-            let verts_tbl: LuaTable = p.get::<_, LuaTable>("vertices").map_err(|_| {
-                mlua::Error::RuntimeError(format!("region {id}: 'vertices' field is required"))
-            })?;
-            let mut vertices = Vec::new();
-            for vt in verts_tbl.sequence_values::<LuaTable>() {
-                let vt = vt?;
-                vertices.push((vt.get::<_, f32>(1)?, vt.get::<_, f32>(2)?));
-            }
-            let neighbors: Vec<RegionId> = p
-                .get::<_, LuaTable>("neighbors")
-                .map(|t| {
-                    t.sequence_values::<u32>()
-                        .map(|r| r.map(RegionId))
-                        .collect::<LuaResult<Vec<_>>>()
-                })
-                .unwrap_or_else(|_| Ok(vec![]))?;
-            let color_tbl: Option<LuaTable> = p.get("base_color").ok();
-            let base_color = if let Some(ct) = color_tbl {
-                [
-                    ct.get::<_, f32>(1).unwrap_or(0.5),
-                    ct.get::<_, f32>(2).unwrap_or(0.5),
-                    ct.get::<_, f32>(3).unwrap_or(0.5),
-                    ct.get::<_, f32>(4).unwrap_or(1.0),
-                ]
-            } else {
-                [0.5, 0.5, 0.5, 1.0]
-            };
-            let region = Region::with_data(RegionId(id), centroid, vertices, neighbors, base_color);
-            this.with_mut(|g| g.add_region(region).map(|_| true).unwrap_or(false))
+            let region = parse_region_table(p, "addRegion")?;
+            this.with_mut(|g| {
+                if g.get_region(region.id).is_some() {
+                    return Err(LuaError::RuntimeError(format!(
+                        "lurek.globe.addRegion: region {} already exists",
+                        region.id
+                    )));
+                }
+                g.add_region(region)
+                    .map(|_| true)
+                    .map_err(|e| LuaError::RuntimeError(format!("lurek.globe.addRegion: {e}")))
+            })?
         });
         // -- removeRegion -- (alias for removeProvince)
         /// Removes a region by id. This method is available to Lua scripts.
@@ -145,14 +327,14 @@ impl LuaUserData for LuaGlobe {
             this.with_mut(|g| g.remove_region(RegionId(id)).is_some())
         });
         // -- provinceCount --
-        /// Returns the number of regions in this globe.
-        /// @return | integer | Region count.
+        /// Returns the number of rendered provinces in this globe.
+        /// @return | integer | Province count.
         methods.add_method("provinceCount", |_, this, ()| {
             this.with(|g| g.province_count())
         });
         // -- regionCount -- (alias)
-        /// Returns the number of regions in this globe.
-        /// @return | integer | Region count.
+        /// Returns the number of stored semantic regions in this globe.
+        /// @return | integer | Semantic region count.
         methods.add_method("regionCount", |_, this, ()| this.with(|g| g.region_count()));
         // -- getNeighbors --
         /// Returns neighboring province ids for a province.
@@ -169,6 +351,39 @@ impl LuaUserData for LuaGlobe {
                 t.set(i + 1, n.0)?;
             }
             Ok(t)
+        });
+        // -- setEdgeTags --
+        /// Replaces the tag set stored on an existing province edge.
+        /// @param | a | integer | First province id.
+        /// @param | b | integer | Second province id.
+        /// @param | tags | string[] | Sequential table of edge tag strings.
+        /// @return | boolean | True when the edge exists and the tags were stored.
+        methods.add_method_mut(
+            "setEdgeTags",
+            |_, this, (a, b, tags): (u32, u32, LuaTable)| {
+                let mut set = HashSet::new();
+                for tag in tags.sequence_values::<String>() {
+                    set.insert(tag?);
+                }
+                this.with_mut(|g| {
+                    g.graph
+                        .set_edge_tags(RegionId(a), RegionId(b), set)
+                        .unwrap_or(false)
+                })
+            },
+        );
+        // -- getEdgeTags --
+        /// Returns the sorted tag strings stored on a province edge.
+        /// @param | a | integer | First province id.
+        /// @param | b | integer | Second province id.
+        /// @return | string[] | Sequential table of edge tag strings, empty when none are set.
+        methods.add_method("getEdgeTags", |lua, this, (a, b): (u32, u32)| {
+            let tags = this.with(|g| g.graph.edge_tags(RegionId(a), RegionId(b)))?;
+            let out = lua.create_table()?;
+            for (index, tag) in tags.iter().enumerate() {
+                out.set(index + 1, tag.as_str())?;
+            }
+            Ok(out)
         });
         // -- setProvinceAttr --
         /// Sets a string attribute on a province.
@@ -198,6 +413,36 @@ impl LuaUserData for LuaGlobe {
             this.with(|g| {
                 g.get_province(RegionId(id))
                     .and_then(|p| p.attrs.get(&key).cloned())
+            })
+        });
+        // -- setRegionAttr --
+        /// Sets a string attribute on a semantic region.
+        /// @param | id | integer | Region id.
+        /// @param | key | string | Attribute key.
+        /// @param | val | string | Attribute value.
+        /// @return | boolean | True when the region exists.
+        methods.add_method_mut(
+            "setRegionAttr",
+            |_, this, (id, key, val): (u32, String, String)| {
+                this.with_mut(|g| {
+                    if let Some(region) = g.get_region_mut(RegionId(id)) {
+                        region.attrs.insert(key, val);
+                        true
+                    } else {
+                        false
+                    }
+                })
+            },
+        );
+        // -- getRegionAttr --
+        /// Reads a string attribute from a semantic region.
+        /// @param | id | integer | Region id.
+        /// @param | key | string | Attribute key.
+        /// @return | string | Attribute string, or nil when the region or key is missing.
+        methods.add_method("getRegionAttr", |_, this, (id, key): (u32, String)| {
+            this.with(|g| {
+                g.get_region(RegionId(id))
+                    .and_then(|region| region.attrs.get(&key).cloned())
             })
         });
         // -- setProvinceTexture --
@@ -335,6 +580,36 @@ impl LuaUserData for LuaGlobe {
         methods.add_method("getCamera", |_, this, ()| {
             this.with(|g| (g.camera.lat_deg, g.camera.lon_deg, g.camera.zoom))
         });
+        // -- screenDeltaToPan --
+        /// Converts a screen-space drag delta into latitude and longitude pan deltas.
+        /// @param | dx | number | Screen-space x delta in pixels.
+        /// @param | dy | number | Screen-space y delta in pixels.
+        /// @return | number | Latitude delta in degrees.
+        /// @return | number | Longitude delta in degrees.
+        methods.add_method("screenDeltaToPan", |_, this, (dx, dy): (f32, f32)| {
+            this.with(|g| screen_delta_to_pan(dx, dy, &g.spec, &g.camera))
+        });
+        // -- applyMouseDrag --
+        /// Applies a pointer drag to the globe camera using screen-space deltas.
+        /// @param | start_x | number | Drag start x.
+        /// @param | start_y | number | Drag start y.
+        /// @param | end_x | number | Drag end x.
+        /// @param | end_y | number | Drag end y.
+        methods.add_method_mut(
+            "applyMouseDrag",
+            |_, this, (start_x, start_y, end_x, end_y): (f32, f32, f32, f32)| {
+                this.with_mut(|g| g.apply_mouse_drag(start_x, start_y, end_x, end_y))
+            },
+        );
+        // -- applyWheelZoom --
+        /// Applies a wheel delta using an exponential zoom scale.
+        /// @param | delta | number | Wheel delta where positive zooms in and negative zooms out.
+        methods.add_method_mut("applyWheelZoom", |_, this, delta: f32| {
+            this.with_mut(|g| {
+                let factor = 1.1_f32.powf(delta);
+                g.camera.zoom_by(factor);
+            })
+        });
         // -- getLod --
         /// Returns the camera-derived level-of-detail tier name.
         /// @return | string | One of `far`, `mid`, or `near`.
@@ -356,11 +631,32 @@ impl LuaUserData for LuaGlobe {
         methods.add_method("pick", |_, this, (sx, sy): (f32, f32)| {
             this.with(|g| g.pick_screen(sx, sy).map(|r| r.region_id.0))
         });
+        // -- screenToLatLon --
+        /// Converts a visible screen position into globe latitude, longitude, and unit-sphere coordinates.
+        /// @param | sx | number | Screen x coordinate.
+        /// @param | sy | number | Screen y coordinate.
+        /// @return | number | Latitude in degrees, or nil when the point is off the globe.
+        /// @return | number | Longitude in degrees, or nil when the point is off the globe.
+        /// @return | number | Unit-sphere x coordinate, or nil when the point is off the globe.
+        /// @return | number | Unit-sphere y coordinate, or nil when the point is off the globe.
+        /// @return | number | Unit-sphere z coordinate, or nil when the point is off the globe.
+        methods.add_method("screenToLatLon", |_, this, (sx, sy): (f32, f32)| {
+            this.with(|g| match g.screen_to_surface(sx, sy) {
+                Some(surface) => (
+                    Some(surface.lat_deg as f64),
+                    Some(surface.lon_deg as f64),
+                    Some(surface.world_pos.x as f64),
+                    Some(surface.world_pos.y as f64),
+                    Some(surface.world_pos.z as f64),
+                ),
+                None => (None, None, None, None, None),
+            })
+        });
         // -- pickRaycast --
-        /// Samples along a screen ray from the camera center and returns the first hit province.
+        /// Samples along the screen-space line from the globe center to the target and returns the first hit province.
         /// @param | sx | number | Target screen x coordinate.
         /// @param | sy | number | Target screen y coordinate.
-        /// @param | steps | integer? | Number of samples along the ray, defaulting to 24.
+        /// @param | steps | integer? | Number of screen-space samples along the line, defaulting to 24.
         /// @return | integer | Province id, or nil when no sample hits.
         methods.add_method(
             "pickRaycast",
@@ -384,20 +680,89 @@ impl LuaUserData for LuaGlobe {
             },
         );
         // -- pickLatLon --
-        /// Picks at screen coordinates and returns the hit province centroid screen coordinates.
+        /// Picks at screen coordinates and returns the hit surface latitude and longitude.
         /// @param | sx | number | Screen x coordinate.
         /// @param | sy | number | Screen y coordinate.
-        /// @return | number | Centroid x coordinate, or nil when nothing is hit.
-        /// @return | number | Centroid y coordinate, or nil when nothing is hit.
+        /// @return | number | Latitude in degrees, or nil when nothing is hit.
+        /// @return | number | Longitude in degrees, or nil when nothing is hit.
         methods.add_method("pickLatLon", |_lua, this, (sx, sy): (f32, f32)| {
-            this.with(|g| match g.pick_screen(sx, sy) {
-                Some(r) => (
-                    Some(r.centroid_screen.x as f64),
-                    Some(r.centroid_screen.y as f64),
-                ),
+            this.with(|g| match g.screen_to_surface(sx, sy) {
+                Some(surface) => (Some(surface.lat_deg as f64), Some(surface.lon_deg as f64)),
                 None => (None, None),
             })
         });
+        // -- pickRegions --
+        /// Returns semantic region ids under a screen-space hit.
+        /// @param | sx | number | Screen x coordinate.
+        /// @param | sy | number | Screen y coordinate.
+        /// @return | integer[] | Array table of semantic region ids.
+        methods.add_method("pickRegions", |lua, this, (sx, sy): (f32, f32)| {
+            let ids = this.with(|g| g.pick_regions_at_screen(sx, sy))?;
+            let t = lua.create_table()?;
+            for (index, id) in ids.iter().enumerate() {
+                t.set(index + 1, id.0)?;
+            }
+            Ok(t)
+        });
+        // -- regionsAtLatLon --
+        /// Returns semantic region ids containing a latitude-longitude point.
+        /// @param | lat | number | Latitude in degrees.
+        /// @param | lon | number | Longitude in degrees.
+        /// @return | integer[] | Array table of semantic region ids.
+        methods.add_method("regionsAtLatLon", |lua, this, (lat, lon): (f32, f32)| {
+            let (lat, lon) = validate_lat_lon(lat, lon, "regionsAtLatLon")?;
+            let ids = this.with(|g| g.regions_at_lat_lon(lat, lon))?;
+            let t = lua.create_table()?;
+            for (index, id) in ids.iter().enumerate() {
+                t.set(index + 1, id.0)?;
+            }
+            Ok(t)
+        });
+        // -- pickMarker --
+        /// Returns the nearest visible marker at a screen position within an optional pixel radius.
+        /// @param | sx | number | Screen x coordinate.
+        /// @param | sy | number | Screen y coordinate.
+        /// @param | radius | number? | Maximum marker distance in pixels, default 12.
+        /// @return | integer | Marker id, or nil when no visible marker is within range.
+        methods.add_method(
+            "pickMarker",
+            |_, this, (sx, sy, radius): (f32, f32, Option<f32>)| {
+                this.with(|g| g.pick_marker_screen(sx, sy, radius.unwrap_or(12.0)))
+            },
+        );
+        // -- pickSurface --
+        /// Resolves a screen-space hit into globe surface data plus province, marker, and semantic-region hits.
+        /// @param | sx | number | Screen x coordinate.
+        /// @param | sy | number | Screen y coordinate.
+        /// @param | marker_radius | number? | Maximum marker distance in pixels when testing marker hits.
+        /// @return | table | Pick result table, or nil when the screen point is off the globe.
+        methods.add_method(
+            "pickSurface",
+            |lua, this, (sx, sy, marker_radius): (f32, f32, Option<f32>)| {
+                this.with(|g| {
+                    let Some(surface) = g.screen_to_surface(sx, sy) else {
+                        return Ok(None::<LuaTable>);
+                    };
+                    let province_id = g.pick_screen(sx, sy).map(|hit| hit.region_id.0);
+                    let marker_id = g.pick_marker_screen(sx, sy, marker_radius.unwrap_or(12.0));
+                    let region_ids = g.regions_at_lat_lon(surface.lat_deg, surface.lon_deg);
+                    let out = lua.create_table()?;
+                    out.set("lat", surface.lat_deg)?;
+                    out.set("lon", surface.lon_deg)?;
+                    out.set("x", surface.world_pos.x)?;
+                    out.set("y", surface.world_pos.y)?;
+                    out.set("z", surface.world_pos.z)?;
+                    out.set("province_id", province_id)?;
+                    out.set("marker_id", marker_id)?;
+                    let regions = lua.create_table()?;
+                    for (index, id) in region_ids.iter().enumerate() {
+                        regions.set(index + 1, id.0)?;
+                    }
+                    out.set("region_ids", regions)?;
+                    Ok(Some(out))
+                })?
+            },
+        );
         // -- setActiveViewer --
         /// Sets the active fog-of-war viewer name or clears it.
         /// @param | viewer | string? | Viewer name.
@@ -496,6 +861,7 @@ impl LuaUserData for LuaGlobe {
         methods.add_method_mut(
             "addMarker",
             |_, this, (mtype, lat, lon, label): (String, f32, f32, Option<String>)| {
+                let (lat, lon) = validate_lat_lon(lat, lon, "marker")?;
                 this.with_mut(|g| {
                     g.markers
                         .add(mtype, lat, lon, label, MarkerStyle::default())
@@ -516,6 +882,7 @@ impl LuaUserData for LuaGlobe {
         /// @param | lon | number | Longitude in degrees.
         /// @return | boolean | True when the marker exists.
         methods.add_method_mut("moveMarker", |_, this, (id, lat, lon): (u32, f32, f32)| {
+            let (lat, lon) = validate_lat_lon(lat, lon, "marker")?;
             this.with_mut(|g| g.markers.move_to(id, lat, lon))
         });
         // -- setMarkerVisible --
@@ -581,6 +948,91 @@ impl LuaUserData for LuaGlobe {
         methods.add_method("getMarkerAttr", |_, this, (id, key): (u32, String)| {
             this.with(|g| g.markers.get_attr(id, &key).map(|s| s.to_owned()))
         });
+        // -- setMarkerColor --
+        /// Sets marker tint color.
+        /// @param | id | integer | Marker id.
+        /// @param | r | number | Red channel.
+        /// @param | g | number | Green channel.
+        /// @param | b | number | Blue channel.
+        /// @param | a | number? | Alpha channel, defaulting to 1.0.
+        /// @return | boolean | True when the marker exists.
+        methods.add_method_mut(
+            "setMarkerColor",
+            |_, this, (id, r, g, b, a): (u32, f32, f32, f32, Option<f32>)| {
+                let color = [
+                    finite_f32(r, "marker color red")?.clamp(0.0, 1.0),
+                    finite_f32(g, "marker color green")?.clamp(0.0, 1.0),
+                    finite_f32(b, "marker color blue")?.clamp(0.0, 1.0),
+                    finite_f32(a.unwrap_or(1.0), "marker color alpha")?.clamp(0.0, 1.0),
+                ];
+                this.with_mut(|g| {
+                    if let Some(marker) = g.markers.get_mut(id) {
+                        marker.style.color = color;
+                        true
+                    } else {
+                        false
+                    }
+                })
+            },
+        );
+        // -- setMarkerSize --
+        /// Sets marker size in screen units.
+        /// @param | id | integer | Marker id.
+        /// @param | size | number | Marker size, clamped to at least 1.0.
+        /// @return | boolean | True when the marker exists.
+        methods.add_method_mut("setMarkerSize", |_, this, (id, size): (u32, f32)| {
+            let size = finite_f32(size, "marker size")?.max(1.0);
+            this.with_mut(|g| {
+                if let Some(marker) = g.markers.get_mut(id) {
+                    marker.style.size = size;
+                    true
+                } else {
+                    false
+                }
+            })
+        });
+        // -- setMarkerShape --
+        /// Sets the vector fallback shape used by a marker.
+        /// @param | id | integer | Marker id.
+        /// @param | shape | string | One of `circle`, `square`, `diamond`, `triangle`, or `cross`.
+        /// @return | boolean | True when the marker exists.
+        methods.add_method_mut("setMarkerShape", |_, this, (id, shape): (u32, String)| {
+            let shape = parse_marker_shape(shape.as_str())?;
+            this.with_mut(|g| {
+                if let Some(marker) = g.markers.get_mut(id) {
+                    marker.style.shape = shape;
+                    true
+                } else {
+                    false
+                }
+            })
+        });
+        // -- setMarkerIconTexture --
+        /// Assigns or clears a raw texture handle for a marker icon.
+        /// @param | id | integer | Marker id.
+        /// @param | tex_raw | integer? | Raw texture handle, or nil to clear the icon.
+        /// @return | boolean | True when the marker exists.
+        methods.add_method_mut(
+            "setMarkerIconTexture",
+            |_, this, (id, tex_raw): (u32, Option<u64>)| {
+                this.with_mut(|g| {
+                    if let Some(marker) = g.markers.get_mut(id) {
+                        marker.style.icon_texture = tex_raw.map(|raw| raw.to_string());
+                        true
+                    } else {
+                        false
+                    }
+                })
+            },
+        );
+        // -- distanceBetweenMarkers --
+        /// Computes great-circle distance between two markers on the unit sphere.
+        /// @param | a | integer | First marker id.
+        /// @param | b | integer | Second marker id.
+        /// @return | number | Great-circle distance, or nil when either marker is missing.
+        methods.add_method("distanceBetweenMarkers", |_, this, (a, b): (u32, u32)| {
+            this.with(|g| g.marker_distance(a, b))
+        });
         // -- addLabel --
         /// Adds a text label at latitude and longitude.
         /// @param | ltype | string | Label type name.
@@ -591,6 +1043,7 @@ impl LuaUserData for LuaGlobe {
         methods.add_method_mut(
             "addLabel",
             |_, this, (ltype, lat, lon, text): (String, f32, f32, String)| {
+                let (lat, lon) = validate_lat_lon(lat, lon, "label")?;
                 this.with_mut(|g| {
                     g.labels
                         .add(ltype, lat, lon, text, LabelStyle::default(), 0)
@@ -685,7 +1138,8 @@ impl LuaUserData for LuaGlobe {
         /// Sets globe time of day modulo 24 hours.
         /// @param | t | number | Time of day in hours.
         methods.add_method_mut("setTimeOfDay", |_, this, t: f32| {
-            this.with_mut(|g| g.spec.time_of_day = t % 24.0)
+            let t = normalize_time_of_day(t)?;
+            this.with_mut(|g| g.spec.time_of_day = t)
         });
         // -- getTimeOfDay --
         /// Returns globe time of day. This method is available to Lua scripts.
@@ -697,12 +1151,14 @@ impl LuaUserData for LuaGlobe {
         /// Sets globe rotation angle. This method is available to Lua scripts.
         /// @param | deg | number | Rotation in degrees.
         methods.add_method_mut("setRotation", |_, this, deg: f32| {
+            let deg = finite_f32(deg, "rotation_deg")?.rem_euclid(360.0);
             this.with_mut(|g| g.spec.rotation_deg = deg)
         });
         // -- setAutoRotationSpeed --
         /// Sets automatic globe rotation speed.
         /// @param | dps | number | Rotation speed in degrees per second.
         methods.add_method_mut("setAutoRotationSpeed", |_, this, dps: f32| {
+            let dps = finite_f32(dps, "auto_rotation_deg_per_sec")?;
             this.with_mut(|g| g.spec.auto_rotation_deg_per_sec = dps)
         });
         // -- update --
@@ -715,11 +1171,35 @@ impl LuaUserData for LuaGlobe {
         methods.add_method_mut("setBorders", |_, this, show: bool| {
             this.with_mut(|g| g.spec.render_borders = show)
         });
+        // -- draw --
+        /// Emits the globe's render commands into the shared renderer command queue.
+        /// @param | opts | table? | Optional draw settings with `screen_cx` and `screen_cy`.
+        methods.add_method_mut("draw", |_, this, opts: Option<LuaTable>| {
+            let (screen_cx, screen_cy, default_font) = {
+                let st = this.state.borrow();
+                let cx = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<f32>>("screen_cx").ok().flatten())
+                    .unwrap_or(st.window_width as f32 * 0.5);
+                let cy = opts
+                    .as_ref()
+                    .and_then(|t| t.get::<_, Option<f32>>("screen_cy").ok().flatten())
+                    .unwrap_or(st.window_height as f32 * 0.5);
+                (cx, cy, st.active_font.or(st.default_font))
+            };
+            let cmds = this.with_mut(|g| {
+                g.camera.screen_cx = screen_cx;
+                g.camera.screen_cy = screen_cy;
+                g.emit_frame(default_font)
+            })?;
+            this.state.borrow_mut().render_commands.extend(cmds);
+            Ok(())
+        });
         // -- findPath --
         /// Finds a default-cost province path between two province ids.
         /// @param | from_id | integer | Start province id.
         /// @param | to_id | integer | Target province id.
-        /// @return | string[] | Province ids, or nil when no path exists.
+        /// @return | integer[] | Province ids, or nil when no path exists.
         methods.add_method("findPath", |lua, this, (from_id, to_id): (u32, u32)| {
             let path_opt = this.with(|g| {
                 g.graph
@@ -736,6 +1216,34 @@ impl LuaUserData for LuaGlobe {
                 }
             }
         });
+        // -- findPathWithCosts --
+        /// Finds a province path using caller-supplied traversal costs, blocked ids, and edge-tag surcharges.
+        /// @param | from_id | integer | Start province id.
+        /// @param | to_id | integer | Target province id.
+        /// @param | opts | table? | Optional cost table with `default_cost`, `province_costs`, `tag_costs`, and `blocked_ids`.
+        /// @return | table | Result table with `ids` and `total_cost`, or nil when no path exists.
+        methods.add_method(
+            "findPathWithCosts",
+            |lua, this, (from_id, to_id, opts): (u32, u32, Option<LuaTable>)| {
+                let cost_fn = parse_cost_fn(opts, "findPathWithCosts")?;
+                let path_opt = this.with(|g| {
+                    g.graph
+                        .find_path(RegionId(from_id), RegionId(to_id), &cost_fn)
+                        .ok()
+                })?;
+                let Some(path) = path_opt else {
+                    return Ok(None);
+                };
+                let ids = lua.create_table()?;
+                for (index, id) in path.provinces.iter().enumerate() {
+                    ids.set(index + 1, *id)?;
+                }
+                let out = lua.create_table()?;
+                out.set("ids", ids)?;
+                out.set("total_cost", path.total_cost)?;
+                Ok(Some(out))
+            },
+        );
         // -- reachable --
         /// Returns provinces reachable from a start province within a cost budget.
         /// @param | start_id | integer | Start province id.
@@ -744,8 +1252,29 @@ impl LuaUserData for LuaGlobe {
         methods.add_method(
             "reachable",
             |lua, this, (start_id, max_cost): (u32, f64)| {
+                let max_cost = finite_non_negative_f64(max_cost, "reachable max_cost")?;
                 let reached =
                     this.with(|g| g.graph.reachable_default(RegionId(start_id), max_cost))?;
+                let t = lua.create_table()?;
+                for (id, cost) in reached {
+                    t.set(id.0, cost)?;
+                }
+                Ok(t)
+            },
+        );
+        // -- reachableWithCosts --
+        /// Returns provinces reachable under caller-supplied traversal costs, blocked ids, and edge-tag surcharges.
+        /// @param | start_id | integer | Start province id.
+        /// @param | max_cost | number | Maximum traversal cost.
+        /// @param | opts | table? | Optional cost table with `default_cost`, `province_costs`, `tag_costs`, and `blocked_ids`.
+        /// @return | table | Map table from province id (integer key) to accumulated traversal cost (number).
+        methods.add_method(
+            "reachableWithCosts",
+            |lua, this, (start_id, max_cost, opts): (u32, f64, Option<LuaTable>)| {
+                let max_cost = finite_non_negative_f64(max_cost, "reachableWithCosts max_cost")?;
+                let cost_fn = parse_cost_fn(opts, "reachableWithCosts")?;
+                let reached =
+                    this.with(|g| g.graph.reachable(RegionId(start_id), max_cost, &cost_fn))?;
                 let t = lua.create_table()?;
                 for (id, cost) in reached {
                     t.set(id.0, cost)?;
@@ -761,6 +1290,7 @@ impl LuaUserData for LuaGlobe {
         methods.add_method_mut(
             "cacheReachability",
             |_, this, (faction, start_id, max_cost): (String, u32, f64)| {
+                let max_cost = finite_non_negative_f64(max_cost, "cacheReachability max_cost")?;
                 this.with_mut(|g| {
                     g.cache_reachability_default(faction, RegionId(start_id), max_cost)
                 })
@@ -781,8 +1311,8 @@ impl LuaUserData for LuaGlobe {
             Ok(t)
         });
         // -- exportProvinceMeshOBJ --
-        /// Exports province geometry as Wavefront OBJ text.
-        /// @return | string | OBJ mesh text for the current provinces.
+        /// Exports province geometry as Wavefront OBJ text, preserving multipart boundaries and hole loops.
+        /// @return | string | OBJ text for the current provinces, including grouped boundary loops and any available fill geometry.
         methods.add_method("exportProvinceMeshOBJ", |_, this, ()| {
             this.with(export_regions_to_obj)
         });
@@ -942,25 +1472,25 @@ fn parse_globe_spec(tbl: Option<LuaTable>) -> GlobeSpec {
     let mut spec = GlobeSpec::default();
     if let Some(t) = tbl {
         if let Ok(v) = t.get::<_, f32>("radius") {
-            spec.radius = v;
+            spec.radius = v.max(1.0);
         }
         if let Ok(v) = t.get::<_, f32>("axial_tilt_deg") {
             spec.axial_tilt_deg = v;
         }
         if let Ok(v) = t.get::<_, f32>("rotation_deg") {
-            spec.rotation_deg = v;
+            spec.rotation_deg = v.rem_euclid(360.0);
         }
         if let Ok(v) = t.get::<_, f32>("time_of_day") {
-            spec.time_of_day = v;
+            spec.time_of_day = v.rem_euclid(24.0);
         }
         if let Ok(v) = t.get::<_, bool>("render_borders") {
             spec.render_borders = v;
         }
         if let Ok(v) = t.get::<_, f32>("border_width") {
-            spec.border_width = v;
+            spec.border_width = v.max(0.0);
         }
         if let Ok(v) = t.get::<_, f32>("ambient") {
-            spec.ambient = v;
+            spec.ambient = v.clamp(0.0, 1.0);
         }
         if let Ok(v) = t.get::<_, f32>("auto_rotation_deg_per_sec") {
             spec.auto_rotation_deg_per_sec = v;
@@ -1052,9 +1582,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "remove",
         lua.create_function(move |_, name: String| {
-            let mut guard = remove_reg.lock().map_err(|e| {
-                mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
-            })?;
+            let mut guard = remove_reg
+                .lock()
+                .map_err(|e| mlua::Error::RuntimeError(format!("registry lock poisoned: {e}")))?;
             Ok(guard.remove(&name).is_some())
         })?,
     )?;
@@ -1063,7 +1593,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- loadFromTOMLFile --
     /// Creates a globe and populates provinces from a TOML file path.
     /// @param | name | string | Globe registry name.
-    /// @param | path | string | TOML file path to load.
+    /// @param | path | string | TOML file path to load. Provinces may use either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.
     /// @param | spec_tbl | table? | Globe specification table.
     /// @return | LGlobe | New populated globe handle.
     tbl.set(
@@ -1079,7 +1609,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     })?;
                     let globe = guard.create(name.clone(), spec);
                     for p in provinces {
-                        let _ = globe.add_province(p);
+                        globe.add_province(p).map_err(|e| {
+                            mlua::Error::RuntimeError(format!("lurek.globe.loadFromTOMLFile: {e}"))
+                        })?;
                     }
                 }
                 Ok(LuaGlobe {
@@ -1096,7 +1628,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- loadFromTOML --
     /// Creates a globe and populates provinces from TOML source text.
     /// @param | name | string | Globe registry name.
-    /// @param | toml_src | string | TOML province document source.
+    /// @param | toml_src | string | TOML province document source supporting either `vertices` or multipart `parts = [{ outer = ..., holes = ... }]`.
     /// @param | spec_tbl | table? | Globe specification table.
     /// @return | LGlobe | New populated globe handle.
     tbl.set(
@@ -1112,7 +1644,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     })?;
                     let globe = guard.create(name.clone(), spec);
                     for p in provinces {
-                        let _ = globe.add_province(p);
+                        globe.add_province(p).map_err(|e| {
+                            mlua::Error::RuntimeError(format!("lurek.globe.loadFromTOML: {e}"))
+                        })?;
                     }
                 }
                 Ok(LuaGlobe {
@@ -1145,7 +1679,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     })?;
                     let globe = guard.create(name.clone(), spec);
                     for p in provinces {
-                        let _ = globe.add_province(p);
+                        globe.add_province(p).map_err(|e| {
+                            mlua::Error::RuntimeError(format!("lurek.globe.loadFromPNG: {e}"))
+                        })?;
                     }
                 }
                 Ok(LuaGlobe {
@@ -1183,7 +1719,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     })?;
                     let globe = guard.create(name.clone(), spec);
                     for p in provinces {
-                        let _ = globe.add_province(p);
+                        globe.add_province(p).map_err(|e| {
+                            mlua::Error::RuntimeError(format!("lurek.globe.generateVoronoi: {e}"))
+                        })?;
                     }
                 }
                 Ok(LuaGlobe {

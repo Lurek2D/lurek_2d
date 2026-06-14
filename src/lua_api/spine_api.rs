@@ -7,6 +7,28 @@ use crate::spine::{skeleton_from_json_str, BoneParams, Skeleton};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+fn finite_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{}: {} must be finite",
+            api, arg_name
+        )))
+    }
+}
+
+fn non_negative_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    let value = finite_f32(api, arg_name, value)?;
+    if value < 0.0 {
+        return Err(LuaError::RuntimeError(format!(
+            "{}: {} must be non-negative",
+            api, arg_name
+        )));
+    }
+    Ok(value)
+}
 /// Parses optional bone transform overrides from a Lua table.
 fn parse_bone_opts(opts: &Option<LuaTable>) -> LuaResult<(f32, f32, f32, f32, f32)> {
     let (mut x, mut y, mut rot, mut sx, mut sy) = (0.0, 0.0, 0.0, 1.0, 1.0);
@@ -64,6 +86,13 @@ impl LuaUserData for LuaSkeleton {
         methods.add_method_mut(
             "addChildBone",
             |_, this, (name, parent_idx, opts): (String, usize, Option<LuaTable>)| {
+                if parent_idx >= this.inner.bone_count() {
+                    return Err(LuaError::RuntimeError(format!(
+                        "LSkeleton:addChildBone: parent_idx {} out of bounds for {} bones",
+                        parent_idx,
+                        this.inner.bone_count()
+                    )));
+                }
                 let (x, y, rot, sx, sy) = parse_bone_opts(&opts)?;
                 Ok(this.inner.add_bone_full(BoneParams {
                     name,
@@ -85,6 +114,13 @@ impl LuaUserData for LuaSkeleton {
         methods.add_method_mut(
             "addSlot",
             |_, this, (name, bone_idx, attachment): (String, usize, Option<String>)| {
+                if bone_idx >= this.inner.bone_count() {
+                    return Err(LuaError::RuntimeError(format!(
+                        "LSkeleton:addSlot: bone_idx {} out of bounds for {} bones",
+                        bone_idx,
+                        this.inner.bone_count()
+                    )));
+                }
                 Ok(this.inner.add_slot_full(&name, bone_idx, attachment))
             },
         );
@@ -182,6 +218,7 @@ impl LuaUserData for LuaSkeleton {
         /// Advances the current animation by a delta time, applying bone transforms to the skeleton.
         /// @param | dt | number | Time step in seconds (e.g. from lurek.timer.getDelta()).
         methods.add_method_mut("updateAnimation", |_, this, dt: f32| {
+            let dt = non_negative_f32("LSkeleton:updateAnimation", "dt", dt)?;
             this.inner.update_animation(dt);
             Ok(())
         });
@@ -313,6 +350,8 @@ impl LuaUserData for LuaSkeletonAnimation {
                 f32,
                 Option<String>,
             )| {
+                let time = non_negative_f32("LSkeletonAnimation:addKeyframe", "time", time)?;
+                let value = finite_f32("LSkeletonAnimation:addKeyframe", "value", value)?;
                 let property = match prop_str.as_str() {
                     "x" => BoneProperty::X,
                     "y" => BoneProperty::Y,
@@ -356,7 +395,13 @@ impl LuaUserData for LuaSkeletonAnimation {
         methods.add_method_mut(
             "addEventKey",
             |_, this, (time, name, value): (f32, String, Option<f32>)| {
-                this.inner.add_event_key(time, name, value.unwrap_or(0.0));
+                let time = non_negative_f32("LSkeletonAnimation:addEventKey", "time", time)?;
+                let value = finite_f32(
+                    "LSkeletonAnimation:addEventKey",
+                    "value",
+                    value.unwrap_or(0.0),
+                )?;
+                this.inner.add_event_key(time, name, value);
                 Ok(())
             },
         );
@@ -459,6 +504,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "newSkeletonAnimation",
         lua.create_function(|lua, (name, duration): (String, f32)| {
+            let duration =
+                non_negative_f32("lurek.spine.newSkeletonAnimation", "duration", duration)?;
             lua.create_userdata(LuaSkeletonAnimation {
                 inner: SkeletonAnimation {
                     name,

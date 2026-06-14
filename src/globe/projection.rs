@@ -7,6 +7,12 @@
 use super::sphere::{axial_tilt_mat, lat_lon_to_unit, rot_x, rot_y, Mat3x3};
 use crate::globe::types::{GlobeSpec, LodTier, ProjectedRegion, Region};
 use crate::math::{Vec2, Vec3};
+
+#[derive(Debug, Clone, Copy)]
+struct ClippedVertex {
+    world: Vec3,
+    cam: Vec3,
+}
 /// Orbit camera state used to project globe geometry into screen space.
 #[derive(Debug, Clone)]
 pub struct OrbitCamera {
@@ -97,30 +103,54 @@ pub fn project_region(
     camera: &OrbitCamera,
     light_intensity: f32,
 ) -> Option<ProjectedRegion> {
+    project_geo_loop(
+        region.id,
+        region.primary_vertices(),
+        region.centroid,
+        view,
+        spec,
+        camera,
+        light_intensity,
+    )
+}
+
+/// Project one geographic loop into screen space, clipping it to the visible hemisphere.
+pub fn project_geo_loop(
+    id: crate::globe::types::RegionId,
+    vertices: &[(f32, f32)],
+    centroid: (f32, f32),
+    view: &Mat3x3,
+    spec: &GlobeSpec,
+    camera: &OrbitCamera,
+    light_intensity: f32,
+) -> Option<ProjectedRegion> {
     let r = spec.radius * camera.zoom;
     let cx = camera.screen_cx;
     let cy = camera.screen_cy;
-    let c_world = lat_lon_to_unit(region.centroid.0, region.centroid.1);
+    let c_world = lat_lon_to_unit(centroid.0, centroid.1);
     let c_cam = view.mul_vec(c_world);
-    if c_cam.z <= 0.0 {
+    let clipped = clip_geo_loop_to_visible_hemisphere(vertices, view);
+    if clipped.len() < 3 {
         return None;
     }
-    let centroid_screen = Vec2::new(cx + c_cam.x * r, cy - c_cam.y * r);
-    let mut screen_verts = Vec::with_capacity(region.vertices.len());
-    for &(lat, lon) in &region.vertices {
-        let w = lat_lon_to_unit(lat, lon);
-        let v = view.mul_vec(w);
-        if v.z <= 0.0 {
-            return None;
-        }
-        screen_verts.push(Vec2::new(cx + v.x * r, cy - v.y * r));
-    }
-    if screen_verts.is_empty() {
-        return None;
-    }
+    let surface_points: Vec<Vec3> = clipped.iter().map(|v| v.world).collect();
+    let screen_verts: Vec<Vec2> = clipped
+        .iter()
+        .map(|v| Vec2::new(cx + v.cam.x * r, cy - v.cam.y * r))
+        .collect();
+    let centroid_screen = if c_cam.z > 0.0 {
+        Vec2::new(cx + c_cam.x * r, cy - c_cam.y * r)
+    } else {
+        let (sx, sy) = screen_verts
+            .iter()
+            .fold((0.0_f32, 0.0_f32), |(ax, ay), v| (ax + v.x, ay + v.y));
+        let count = screen_verts.len() as f32;
+        Vec2::new(sx / count, sy / count)
+    };
     Some(ProjectedRegion {
-        id: region.id,
+        id,
         screen_verts,
+        surface_points,
         centroid_screen,
         light_intensity,
         visible: true,
@@ -170,4 +200,64 @@ pub fn normalize_v3(v: Vec3) -> Vec3 {
     } else {
         Vec3::new(v.x / len, v.y / len, v.z / len)
     }
+}
+
+#[inline]
+fn lerp_v3(a: Vec3, b: Vec3, t: f32) -> Vec3 {
+    Vec3::new(
+        a.x + (b.x - a.x) * t,
+        a.y + (b.y - a.y) * t,
+        a.z + (b.z - a.z) * t,
+    )
+}
+
+fn interpolate_visible_edge(a: ClippedVertex, b: ClippedVertex, view: &Mat3x3) -> ClippedVertex {
+    let denom = a.cam.z - b.cam.z;
+    let t = if denom.abs() < 1e-6 {
+        0.5
+    } else {
+        (a.cam.z / denom).clamp(0.0, 1.0)
+    };
+    let world = normalize_v3(lerp_v3(a.world, b.world, t));
+    let mut cam = view.mul_vec(world);
+    cam.z = 0.0;
+    ClippedVertex { world, cam }
+}
+
+fn clip_geo_loop_to_visible_hemisphere(
+    vertices: &[(f32, f32)],
+    view: &Mat3x3,
+) -> Vec<ClippedVertex> {
+    if vertices.len() < 3 {
+        return Vec::new();
+    }
+    let mut subject: Vec<ClippedVertex> = vertices
+        .iter()
+        .map(|&(lat, lon)| {
+            let world = lat_lon_to_unit(lat, lon);
+            let cam = view.mul_vec(world);
+            ClippedVertex { world, cam }
+        })
+        .collect();
+    if subject.iter().all(|v| v.cam.z <= 0.0) {
+        return Vec::new();
+    }
+    let mut clipped: Vec<ClippedVertex> = Vec::with_capacity(subject.len() + 2);
+    let mut prev = *subject.last().expect("subject is non-empty");
+    let mut prev_inside = prev.cam.z >= 0.0;
+    for curr in subject.drain(..) {
+        let curr_inside = curr.cam.z >= 0.0;
+        match (prev_inside, curr_inside) {
+            (true, true) => clipped.push(curr),
+            (true, false) => clipped.push(interpolate_visible_edge(prev, curr, view)),
+            (false, true) => {
+                clipped.push(interpolate_visible_edge(prev, curr, view));
+                clipped.push(curr);
+            }
+            (false, false) => {}
+        }
+        prev = curr;
+        prev_inside = curr_inside;
+    }
+    clipped
 }

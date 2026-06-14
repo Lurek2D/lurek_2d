@@ -145,7 +145,7 @@ impl LayeredImage {
     /// Merge visible layers front-to-back into a new image.
     pub fn merge(&self) -> ImageData {
         let mut result = ImageData::new(self.width, self.height);
-        let pixels_len = (self.width * self.height * 4) as usize;
+        let pixels_len = result.pixels.len();
         let dst = result.pixels.as_mut_slice();
         for layer in &self.layers {
             if !layer.visible {

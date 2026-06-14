@@ -5,6 +5,20 @@
 //! Serves as the import boundary between external authoring output and internal animation contracts.
 
 use serde_json::Value;
+
+fn value_u32(value: Option<&Value>, field: &str) -> Result<u32, String> {
+    let raw = value
+        .and_then(Value::as_u64)
+        .ok_or_else(|| format!("aseprite: missing '{}'", field))?;
+    u32::try_from(raw).map_err(|_| format!("aseprite: '{}' exceeds u32 range", field))
+}
+
+fn value_usize(value: Option<&Value>, field: &str) -> Result<usize, String> {
+    let raw = value
+        .and_then(Value::as_u64)
+        .ok_or_else(|| format!("aseprite: missing '{}'", field))?;
+    usize::try_from(raw).map_err(|_| format!("aseprite: '{}' exceeds usize range", field))
+}
 /// One frame rectangle parsed from an Aseprite sheet.
 #[derive(Debug, Clone)]
 pub struct AsepriteFrameData {
@@ -98,14 +112,12 @@ pub fn load_aseprite_json(json_str: &str) -> Result<AsepriteParsed, String> {
     let meta = root.get("meta");
     let size = meta.and_then(|m| m.get("size"));
     let sheet_width = size
-        .and_then(|s| s.get("w"))
-        .and_then(Value::as_u64)
-        .map(|v| v as u32)
+        .map(|s| value_u32(s.get("w"), "meta.size.w"))
+        .transpose()?
         .unwrap_or(derived_sheet_width);
     let sheet_height = size
-        .and_then(|s| s.get("h"))
-        .and_then(Value::as_u64)
-        .map(|v| v as u32)
+        .map(|s| value_u32(s.get("h"), "meta.size.h"))
+        .transpose()?
         .unwrap_or(derived_sheet_height);
     let mut tags: Vec<AsepriteTagData> = Vec::new();
     if let Some(tag_arr) = meta
@@ -118,14 +130,8 @@ pub fn load_aseprite_json(json_str: &str) -> Result<AsepriteParsed, String> {
                 .and_then(Value::as_str)
                 .ok_or("aseprite: tag missing 'name'")?
                 .to_string();
-            let from = tag_val
-                .get("from")
-                .and_then(Value::as_u64)
-                .ok_or("aseprite: tag missing 'from'")? as usize;
-            let to = tag_val
-                .get("to")
-                .and_then(Value::as_u64)
-                .ok_or("aseprite: tag missing 'to'")? as usize;
+            let from = value_usize(tag_val.get("from"), "tag.from")?;
+            let to = value_usize(tag_val.get("to"), "tag.to")?;
             let direction = match tag_val
                 .get("direction")
                 .and_then(Value::as_str)
@@ -155,23 +161,16 @@ fn parse_frame_entry(entry: &Value, name: String) -> Result<AsepriteFrameData, S
     let frame_obj = entry
         .get("frame")
         .ok_or("aseprite: frame entry missing 'frame' object")?;
-    let x = frame_obj
-        .get("x")
-        .and_then(Value::as_u64)
-        .ok_or("aseprite: frame missing 'x'")? as u32;
-    let y = frame_obj
-        .get("y")
-        .and_then(Value::as_u64)
-        .ok_or("aseprite: frame missing 'y'")? as u32;
-    let w = frame_obj
-        .get("w")
-        .and_then(Value::as_u64)
-        .ok_or("aseprite: frame missing 'w'")? as u32;
-    let h = frame_obj
-        .get("h")
-        .and_then(Value::as_u64)
-        .ok_or("aseprite: frame missing 'h'")? as u32;
-    let duration_ms = entry.get("duration").and_then(Value::as_u64).unwrap_or(100) as u32;
+    let x = value_u32(frame_obj.get("x"), "frame.x")?;
+    let y = value_u32(frame_obj.get("y"), "frame.y")?;
+    let w = value_u32(frame_obj.get("w"), "frame.w")?;
+    let h = value_u32(frame_obj.get("h"), "frame.h")?;
+    let duration_ms = match entry.get("duration").and_then(Value::as_u64) {
+        Some(duration) => {
+            u32::try_from(duration).map_err(|_| "aseprite: 'duration' exceeds u32 range")?
+        }
+        None => 100,
+    };
     Ok(AsepriteFrameData {
         name,
         x,

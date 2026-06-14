@@ -41,8 +41,8 @@ describe("Globe creation", function()
         local g = lurek.globe.new("empty_globe")
         expect_equal(0, g:provinceCount())
         g = lurek.globe.new("grow_globe")
-        g:addProvince({ id = 1, centroid = {0,0}, vertices = {{0,0}}, neighbors = {} })
-        g:addProvince({ id = 2, centroid = {1,1}, vertices = {{1,1}}, neighbors = {} })
+        g:addProvince({ id = 1, centroid = {0,0}, vertices = {{-1,-1},{1,-1},{1,1},{-1,1}}, neighbors = {} })
+        g:addProvince({ id = 2, centroid = {1,1}, vertices = {{0,0},{2,0},{2,2},{0,2}}, neighbors = {} })
         expect_equal(2, g:provinceCount())
     end)
 end)
@@ -150,16 +150,17 @@ describe("Camera and LOD", function()
     end)
 
     -- @covers LGlobe:pickLatLon
-    it("pickLatLon returns nil or a table", function()
-        local g = lurek.globe.new("pick_globe")
-        g:setCamera(30.0, 0.0, 1.0)
-        local result = g:pickLatLon(640, 360)
-        if result ~= nil then
-            expect_type("table", result)
-        end
-        -- Picking at a screen corner may return nil (back hemisphere)  that is correct.
-        local edge = g:pickLatLon(0, 0)
-        expect_true(edge == nil or type(edge) == "table")
+    it("pickLatLon returns visible surface latitude and longitude", function()
+        local g = lurek.globe.new("pick_globe", { axial_tilt_deg = 0.0 })
+        g:setCamera(0.0, 0.0, 1.0)
+        local lat, lon = g:pickLatLon(640, 360)
+        expect_type("number", lat)
+        expect_type("number", lon)
+        expect_near(0.0, lat, 0.01)
+        expect_near(90.0, lon, 0.01)
+        local edge_lat, edge_lon = g:pickLatLon(0, 0)
+        expect_true(edge_lat == nil or type(edge_lat) == "number")
+        expect_true(edge_lon == nil or type(edge_lon) == "number")
     end)
 end)
 
@@ -311,7 +312,7 @@ describe("Layers", function()
     -- @covers LGlobe:setLayerColor
     it("setLayerColor returns true for existing layers and false for missing ones", function()
         local g = lurek.globe.new("layer_color_globe")
-        g:addProvince({ id = 1, centroid = {0,0}, vertices = {{0,0}}, neighbors = {} })
+        g:addProvince({ id = 1, centroid = {0,0}, vertices = {{-1,-1},{1,-1},{1,1},{-1,1}}, neighbors = {} })
         g:addLayer("territory")
         expect_equal(true, g:setLayerColor("territory", 1, 0.8, 0.2, 0.2, 1.0))
         g = lurek.globe.new("layer_absent_globe")
@@ -407,6 +408,45 @@ describe("Path finding", function()
         expect_type("table", reached)
         expect_equal(0, reached[10])
         expect_nil(reached[11])
+        expect_nil(reached[12])
+    end)
+
+    -- @covers LGlobe:setEdgeTags
+    -- @covers LGlobe:getEdgeTags
+    it("setEdgeTags and getEdgeTags store sorted edge metadata", function()
+        local g = make_path_globe()
+        expect_true(g:setEdgeTags(10, 11, {"land", "road"}))
+        local tags = g:getEdgeTags(11, 10)
+        expect_equal(2, #tags)
+        expect_equal("land", tags[1])
+        expect_equal("road", tags[2])
+    end)
+
+    -- @covers LGlobe:findPathWithCosts
+    it("findPathWithCosts respects blocked ids and tag surcharges", function()
+        local g = make_path_globe()
+        expect_true(g:setEdgeTags(10, 11, {"sea"}))
+        local result = g:findPathWithCosts(10, 12, {
+            province_costs = { [11] = 2.0 },
+            tag_costs = { sea = 3.0 },
+        })
+        expect_type("table", result)
+        expect_type("table", result.ids)
+        expect_equal(3, #result.ids)
+        expect_equal(10, result.ids[1])
+        expect_equal(12, result.ids[3])
+        expect_true(result.total_cost > 0)
+        expect_nil(g:findPathWithCosts(10, 12, { blocked_ids = {11} }))
+    end)
+
+    -- @covers LGlobe:reachableWithCosts
+    it("reachableWithCosts applies blocked ids and province costs", function()
+        local g = make_path_globe()
+        local reached = g:reachableWithCosts(10, 1.5, { province_costs = { [11] = 1.0 } })
+        expect_equal(0, reached[10])
+        expect_nil(reached[11])
+        reached = g:reachableWithCosts(10, 2.5, { blocked_ids = {12} })
+        expect_true(reached[11] ~= nil)
         expect_nil(reached[12])
     end)
 end)
@@ -557,6 +597,23 @@ neighbors = [1]
         expect_equal(2, g:provinceCount())
         expect_equal("player", g:getProvinceAttr(1, "owner"))
     end)
+
+    -- @covers lurek.globe.loadFromTOML
+    it("loads multipart provinces with holes from TOML", function()
+        local toml = [=[
+[[province]]
+id = 1
+parts = [{ outer = [[-12.0, 78.0], [-12.0, 102.0], [12.0, 102.0], [12.0, 78.0]], holes = [[[-4.0, 86.0], [-4.0, 94.0], [4.0, 94.0], [4.0, 86.0]]] }]
+
+[province.attrs]
+owner = "player"
+]=]
+        local g = lurek.globe.loadFromTOML("toml_globe_parts", toml)
+        expect_equal(1, g:provinceCount())
+        expect_equal("player", g:getProvinceAttr(1, "owner"))
+        g:setCamera(0.0, 90.0, 2.0)
+        expect_nil(g:pick(640.0, 360.0))
+    end)
 end)
 
 -- @describe globe missing explicit coverage
@@ -672,6 +729,27 @@ describe("globe extended feature coverage", function()
         local obj = g:exportProvinceMeshOBJ()
         expect_type("string", obj)
     end)
+
+    -- @covers LGlobe:exportProvinceMeshOBJ
+    it("exportProvinceMeshOBJ includes hole loop groups for multipart provinces", function()
+        local g = lurek.globe.new("cov_runtime_export_holes")
+        g:addProvince({
+            id = 1,
+            centroid = {0.0, 90.0},
+            parts = {
+                {
+                    outer = {{-12.0, 78.0}, {-12.0, 102.0}, {12.0, 102.0}, {12.0, 78.0}},
+                    holes = {
+                        {{-4.0, 86.0}, {-4.0, 94.0}, {4.0, 94.0}, {4.0, 86.0}},
+                    },
+                },
+            },
+        })
+        local obj = g:exportProvinceMeshOBJ()
+        expect_true(obj:find("region_1_part_0_outer", 1, true) ~= nil)
+        expect_true(obj:find("region_1_part_0_hole_0", 1, true) ~= nil)
+        expect_true(obj:find("\nl ", 1, true) ~= nil or obj:sub(1, 2) == "l ")
+    end)
 end)
 
 -- =========================================================================
@@ -777,10 +855,10 @@ describe("globe missing explicit coverage", function()
     end)
 
     -- @covers LGlobe:regionCount
-    it("regionCount reports the number of stored regions", function()
+    it("regionCount reports the number of stored semantic regions", function()
         local g = new_globe("coverage_region_count")
         expect_equal(0, g:regionCount())
-        expect_true(g:addProvince(province(1)))
+        expect_true(g:addRegion(province(1)))
         expect_equal(1, g:regionCount())
     end)
 
@@ -987,6 +1065,209 @@ describe("globe missing explicit coverage", function()
         expect_true(reg:typeOf("LGlobeRegistry"))
         expect_true(reg:typeOf("LObject"))
         expect_false(reg:typeOf("LGlobe"))
+    end)
+end)
+
+-- @describe globe surface interaction and semantic region coverage
+describe("globe surface interaction and semantic region coverage", function()
+    local function interaction_globe(name)
+        local g = lurek.globe.new(name, { axial_tilt_deg = 0.0 })
+        g:setCamera(0.0, 0.0, 1.0)
+        g:addProvince({
+            id = 1,
+            centroid = {0.0, 90.0},
+            vertices = {{-10.0, 80.0}, {-10.0, 100.0}, {10.0, 100.0}, {10.0, 80.0}},
+            neighbors = {},
+        })
+        g:addRegion({
+            id = 100,
+            centroid = {0.0, 90.0},
+            vertices = {{-12.0, 78.0}, {-12.0, 102.0}, {12.0, 102.0}, {12.0, 78.0}},
+            neighbors = {},
+        })
+        local marker_id = g:addMarker("poi", 0.0, 90.0, "Center")
+        return g, marker_id
+    end
+
+    -- @covers LGlobe:screenToLatLon
+    it("screenToLatLon converts the visible center into surface coordinates", function()
+        local g = lurek.globe.new("coverage_screen_to_lat_lon", { axial_tilt_deg = 0.0 })
+        g:setCamera(0.0, 0.0, 1.0)
+        local lat, lon, x, y, z = g:screenToLatLon(640, 360)
+        expect_near(0.0, lat, 0.01)
+        expect_near(90.0, lon, 0.01)
+        expect_type("number", x)
+        expect_type("number", y)
+        expect_type("number", z)
+    end)
+
+    -- @covers LGlobe:regionsAtLatLon
+    it("regionsAtLatLon returns overlapping semantic region ids at a point", function()
+        local g = lurek.globe.new("coverage_regions_at_lat_lon")
+        g:addRegion({ id = 200, centroid = {0.0, 0.0}, vertices = {{-5,-5},{-5,5},{5,5},{5,-5}} })
+        g:addRegion({ id = 201, centroid = {0.0, 0.0}, vertices = {{-3,-3},{-3,3},{3,3},{3,-3}} })
+        local ids = g:regionsAtLatLon(0.0, 0.0)
+        expect_equal(2, #ids)
+    end)
+
+    -- @covers LGlobe:addRegion
+    -- @covers LGlobe:regionsAtLatLon
+    it("regionsAtLatLon respects multipart semantic regions with holes", function()
+        local g = lurek.globe.new("coverage_regions_with_holes")
+        g:addRegion({
+            id = 210,
+            parts = {
+                {
+                    outer = {{-8,-8},{-8,8},{8,8},{8,-8}},
+                    holes = {
+                        {{-2,-2},{-2,2},{2,2},{2,-2}},
+                    },
+                },
+                {
+                    outer = {{10,10},{10,14},{14,14},{14,10}},
+                },
+            },
+        })
+        local outer_ids = g:regionsAtLatLon(6.0, 6.0)
+        expect_equal(1, #outer_ids)
+        expect_equal(210, outer_ids[1])
+        local hole_ids = g:regionsAtLatLon(0.0, 0.0)
+        expect_equal(0, #hole_ids)
+        local island_ids = g:regionsAtLatLon(12.0, 12.0)
+        expect_equal(1, #island_ids)
+        expect_equal(210, island_ids[1])
+    end)
+
+    -- @covers LGlobe:pickRegions
+    it("pickRegions returns semantic regions under the pointer", function()
+        local g = interaction_globe("coverage_pick_regions")
+        local ids = g:pickRegions(640, 360)
+        expect_equal(1, #ids)
+        expect_equal(100, ids[1])
+    end)
+
+    -- @covers LGlobe:pickRegions
+    it("pickRegions ignores semantic hole geometry at the pointer", function()
+        local g = lurek.globe.new("coverage_pick_regions_hole", { axial_tilt_deg = 0.0 })
+        g:setCamera(0.0, 0.0, 1.0)
+        g:addRegion({
+            id = 220,
+            parts = {
+                {
+                    outer = {{-12.0, 78.0}, {-12.0, 102.0}, {12.0, 102.0}, {12.0, 78.0}},
+                    holes = {
+                        {{-4.0, 86.0}, {-4.0, 94.0}, {4.0, 94.0}, {4.0, 86.0}},
+                    },
+                },
+            },
+        })
+        local ids = g:pickRegions(640, 360)
+        expect_equal(0, #ids)
+    end)
+
+    -- @covers LGlobe:pickMarker
+    it("pickMarker returns the nearest visible marker at the pointer", function()
+        local g, marker_id = interaction_globe("coverage_pick_marker")
+        expect_equal(marker_id, g:pickMarker(640, 360, 16.0))
+    end)
+
+    -- @covers LGlobe:pickSurface
+    it("pickSurface returns surface coordinates plus province and region hits", function()
+        local g, marker_id = interaction_globe("coverage_pick_surface")
+        local hit = g:pickSurface(640, 360, 16.0)
+        expect_type("table", hit)
+        expect_equal(1, hit.province_id)
+        expect_equal(marker_id, hit.marker_id)
+        expect_equal(100, hit.region_ids[1])
+        expect_near(0.0, hit.lat, 0.01)
+        expect_near(90.0, hit.lon, 0.01)
+    end)
+
+    -- @covers LGlobe:screenDeltaToPan
+    it("screenDeltaToPan returns numeric latitude and longitude deltas", function()
+        local g = lurek.globe.new("coverage_screen_delta_to_pan")
+        local dlat, dlon = g:screenDeltaToPan(10.0, -5.0)
+        expect_type("number", dlat)
+        expect_type("number", dlon)
+    end)
+
+    -- @covers LGlobe:applyMouseDrag
+    it("applyMouseDrag updates the camera from pointer movement", function()
+        local g = lurek.globe.new("coverage_apply_mouse_drag")
+        g:setCamera(0.0, 0.0, 1.0)
+        g:applyMouseDrag(640, 360, 680, 360)
+        local _, lon = g:getCamera()
+        expect_true(math.abs(lon) > 0.0)
+    end)
+
+    -- @covers LGlobe:applyWheelZoom
+    it("applyWheelZoom changes the stored zoom factor", function()
+        local g = lurek.globe.new("coverage_apply_wheel_zoom")
+        g:setCamera(0.0, 0.0, 1.0)
+        g:applyWheelZoom(1.0)
+        local _, _, zoom = g:getCamera()
+        expect_true(zoom > 1.0)
+    end)
+
+    -- @covers LGlobe:setRegionAttr
+    it("setRegionAttr stores metadata on a semantic region", function()
+        local g = lurek.globe.new("coverage_set_region_attr")
+        g:addRegion({ id = 300, centroid = {0.0, 0.0}, vertices = {{-1,-1},{-1,1},{1,1},{1,-1}} })
+        expect_true(g:setRegionAttr(300, "country", "PL"))
+    end)
+
+    -- @covers LGlobe:getRegionAttr
+    it("getRegionAttr reads metadata from a semantic region", function()
+        local g = lurek.globe.new("coverage_get_region_attr")
+        g:addRegion({ id = 301, centroid = {0.0, 0.0}, vertices = {{-1,-1},{-1,1},{1,1},{1,-1}} })
+        g:setRegionAttr(301, "country", "PL")
+        expect_equal("PL", g:getRegionAttr(301, "country"))
+    end)
+
+    -- @covers LGlobe:setMarkerColor
+    it("setMarkerColor updates marker tint", function()
+        local g = lurek.globe.new("coverage_set_marker_color")
+        local id = g:addMarker("poi", 0.0, 0.0, "A")
+        expect_true(g:setMarkerColor(id, 0.2, 0.4, 0.6, 1.0))
+    end)
+
+    -- @covers LGlobe:setMarkerSize
+    it("setMarkerSize updates marker size", function()
+        local g = lurek.globe.new("coverage_set_marker_size")
+        local id = g:addMarker("poi", 0.0, 0.0, "A")
+        expect_true(g:setMarkerSize(id, 14.0))
+    end)
+
+    -- @covers LGlobe:setMarkerShape
+    it("setMarkerShape accepts supported shape names", function()
+        local g = lurek.globe.new("coverage_set_marker_shape")
+        local id = g:addMarker("poi", 0.0, 0.0, "A")
+        expect_true(g:setMarkerShape(id, "diamond"))
+    end)
+
+    -- @covers LGlobe:setMarkerIconTexture
+    it("setMarkerIconTexture stores or clears raw icon handles", function()
+        local g = lurek.globe.new("coverage_set_marker_icon")
+        local id = g:addMarker("poi", 0.0, 0.0, "A")
+        expect_true(g:setMarkerIconTexture(id, 0))
+        expect_true(g:setMarkerIconTexture(id, nil))
+    end)
+
+    -- @covers LGlobe:distanceBetweenMarkers
+    it("distanceBetweenMarkers returns great-circle distance between markers", function()
+        local g = lurek.globe.new("coverage_distance_between_markers")
+        local a = g:addMarker("poi", 0.0, 0.0, "A")
+        local b = g:addMarker("poi", 0.0, 90.0, "B")
+        local d = g:distanceBetweenMarkers(a, b)
+        expect_in_range(d, 1.5, 1.6)
+    end)
+
+    -- @covers LGlobe:draw
+    it("draw submits globe render commands without requiring a Lua fallback renderer", function()
+        local g = interaction_globe("coverage_globe_draw")
+        expect_no_error(function()
+            g:draw({ screen_cx = 640.0, screen_cy = 360.0 })
+        end)
     end)
 end)
 end

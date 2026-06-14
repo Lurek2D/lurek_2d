@@ -18,6 +18,56 @@ use super::water::WaterOverlayState;
 use super::weather::{WeatherParticle, WeatherState, WeatherType};
 use crate::log_msg;
 use crate::runtime::log_messages::{OV01, OV02, OV03};
+
+/// Minimum non-zero duration accepted by timed overlay effects.
+const MIN_EFFECT_DURATION: f32 = 1.0e-4;
+/// Upper cap used to prevent runaway weather particle growth from hostile script input.
+const MAX_WEATHER_PARTICLES: usize = 4_096;
+
+/// Snapshot of overlay runtime state for telemetry, debugging, and dashboard surfaces.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct OverlayStats {
+    /// Current overlay width in pixels.
+    pub width: u32,
+    /// Current overlay height in pixels.
+    pub height: u32,
+    /// Number of live weather particles.
+    pub weather_particle_count: usize,
+    /// Maximum number of weather particles allowed for the current intensity.
+    pub weather_particle_limit: usize,
+    /// Current weather intensity after safety clamping.
+    pub weather_intensity: f32,
+    /// Current flash alpha after decay.
+    pub flash_alpha: f32,
+    /// Current lightning alpha after decay.
+    pub lightning_alpha: f32,
+    /// Number of currently enabled or active effect groups.
+    pub active_effects: u32,
+    /// Whether weather is enabled.
+    pub weather_enabled: bool,
+    /// Whether ambient is enabled.
+    pub ambient_enabled: bool,
+    /// Whether fog is enabled.
+    pub fog_enabled: bool,
+    /// Whether vignette is enabled.
+    pub vignette_enabled: bool,
+}
+
+fn clamp_unit(value: f32) -> f32 {
+    if value.is_finite() {
+        value.clamp(0.0, 1.0)
+    } else {
+        0.0
+    }
+}
+
+fn sanitize_duration(duration: f32, fallback: f32) -> f32 {
+    if duration.is_finite() && duration > 0.0 {
+        duration.max(MIN_EFFECT_DURATION)
+    } else {
+        fallback.max(MIN_EFFECT_DURATION)
+    }
+}
 /// Owns every screen-space overlay state block applied on top of world rendering.
 pub struct Overlay {
     /// Current overlay target width in pixels.
@@ -54,6 +104,8 @@ pub struct Overlay {
 impl Overlay {
     /// Creates an overlay initialized with default state blocks for the target size.
     pub fn new(width: u32, height: u32) -> Self {
+        let width = width.max(1);
+        let height = height.max(1);
         log_msg!(debug, OV01, "{}x{}", width, height);
         Self {
             width,
@@ -75,10 +127,16 @@ impl Overlay {
     }
     /// Advances every active overlay subsystem by `dt` seconds.
     pub fn update(&mut self, dt: f32) {
+        if !dt.is_finite() || dt <= 0.0 {
+            return;
+        }
         if self.ambient.enabled {
             self.ambient.color = self.ambient.compute_color_from_time();
         }
-        if self.weather.enabled && self.weather.weather_type != WeatherType::None {
+        if self.weather.enabled
+            && self.weather.weather_type != WeatherType::None
+            && self.weather.intensity > 0.0
+        {
             self.update_weather(dt);
         }
         if self.flash.active {
@@ -129,11 +187,11 @@ impl Overlay {
     }
     /// Advances particle spawn and movement for the active weather mode.
     fn update_weather(&mut self, dt: f32) {
-        let max_particles = (self.weather.intensity * 200.0) as usize;
+        let max_particles = self.weather_particle_limit();
         let w = self.width as f32;
         let h = self.height as f32;
         self.weather.spawn_timer += dt;
-        let spawn_interval = 1.0 / (self.weather.intensity * 100.0 + 1.0);
+        let spawn_interval = 1.0 / (self.weather_intensity() * 100.0 + 1.0);
         while self.weather.spawn_timer >= spawn_interval
             && self.weather.particles.len() < max_particles
         {
@@ -156,6 +214,16 @@ impl Overlay {
                 self.weather.particles.swap_remove(i);
             }
         }
+    }
+    fn weather_intensity(&self) -> f32 {
+        if self.weather.intensity.is_finite() {
+            self.weather.intensity.clamp(0.0, 8.0)
+        } else {
+            0.0
+        }
+    }
+    fn weather_particle_limit(&self) -> usize {
+        ((self.weather_intensity() * 200.0).ceil() as usize).min(MAX_WEATHER_PARTICLES)
     }
     /// Creates one weather particle with parameters derived from the active weather mode.
     fn spawn_particle(&mut self, width: f32) -> WeatherParticle {
@@ -182,6 +250,7 @@ impl Overlay {
     }
     /// Starts a flash overlay with the supplied color, alpha, and duration.
     pub fn trigger_flash(&mut self, r: f32, g: f32, b: f32, a: f32, duration: f32) {
+        let duration = sanitize_duration(duration, self.flash.duration);
         log_msg!(
             debug,
             OV02,
@@ -193,12 +262,18 @@ impl Overlay {
             duration
         );
         self.flash.active = true;
-        self.flash.color = [r, g, b, a];
+        self.flash.color = [clamp_unit(r), clamp_unit(g), clamp_unit(b), clamp_unit(a)];
         self.flash.duration = duration;
         self.flash.elapsed = 0.0;
     }
     /// Starts a camera shake with the supplied intensity and duration.
     pub fn trigger_shake(&mut self, intensity: f32, duration: f32) {
+        let duration = sanitize_duration(duration, self.shake.duration);
+        let intensity = if intensity.is_finite() {
+            intensity.max(0.0)
+        } else {
+            0.0
+        };
         log_msg!(
             debug,
             OV03,
@@ -215,10 +290,11 @@ impl Overlay {
     }
     /// Starts a fade toward the supplied target alpha over the given duration.
     pub fn trigger_fade(&mut self, r: f32, g: f32, b: f32, target_alpha: f32, duration: f32) {
+        let duration = sanitize_duration(duration, self.fade.duration);
         self.fade.start_alpha = self.fade.color[3];
         self.fade.active = true;
-        self.fade.color = [r, g, b, self.fade.start_alpha];
-        self.fade.target_alpha = target_alpha;
+        self.fade.color = [clamp_unit(r), clamp_unit(g), clamp_unit(b), self.fade.start_alpha];
+        self.fade.target_alpha = clamp_unit(target_alpha);
         self.fade.duration = duration;
         self.fade.elapsed = 0.0;
     }
@@ -319,8 +395,8 @@ impl Overlay {
 
     /// Updates the overlay target dimensions.
     pub fn resize(&mut self, width: u32, height: u32) {
-        self.width = width;
-        self.height = height;
+        self.width = width.max(1);
+        self.height = height.max(1);
     }
     /// Returns the overlay target width.
     pub fn get_width(&self) -> u32 {
@@ -336,24 +412,60 @@ impl Overlay {
     }
     /// Computes the current flash alpha after time decay.
     pub fn get_flash_alpha(&self) -> f32 {
-        if !self.flash.active {
+        if !self.flash.active || self.flash.duration <= MIN_EFFECT_DURATION {
             return 0.0;
         }
-        let progress = self.flash.elapsed / self.flash.duration;
-        self.flash.color[3] * (1.0 - progress)
+        let progress = (self.flash.elapsed / self.flash.duration).clamp(0.0, 1.0);
+        (self.flash.color[3] * (1.0 - progress)).clamp(0.0, 1.0)
     }
     /// Computes the current lightning flash alpha after time decay.
     pub fn get_lightning_alpha(&self) -> f32 {
-        if !self.lightning.active {
+        if !self.lightning.active || self.lightning.duration <= MIN_EFFECT_DURATION {
             return 0.0;
         }
-        let progress = self.lightning.elapsed / self.lightning.duration;
-        self.lightning.color[3] * (1.0 - progress)
+        let progress = (self.lightning.elapsed / self.lightning.duration).clamp(0.0, 1.0);
+        (self.lightning.color[3] * (1.0 - progress)).clamp(0.0, 1.0)
+    }
+    /// Returns a compact telemetry snapshot of the current overlay runtime state.
+    pub fn stats(&self) -> OverlayStats {
+        let mut active_effects = 0_u32;
+        for enabled in [
+            self.weather.enabled,
+            self.ambient.enabled,
+            self.flash.active,
+            self.shake.active,
+            self.fade.active,
+            self.clouds.enabled,
+            self.fog.enabled,
+            self.heat_haze.enabled,
+            self.vignette.enabled,
+            self.film_grain.enabled,
+            self.lightning.active,
+            self.water.enabled,
+        ] {
+            if enabled {
+                active_effects += 1;
+            }
+        }
+        OverlayStats {
+            width: self.width,
+            height: self.height,
+            weather_particle_count: self.weather.particles.len(),
+            weather_particle_limit: self.weather_particle_limit(),
+            weather_intensity: self.weather_intensity(),
+            flash_alpha: self.get_flash_alpha(),
+            lightning_alpha: self.get_lightning_alpha(),
+            active_effects,
+            weather_enabled: self.weather.enabled,
+            ambient_enabled: self.ambient.enabled,
+            fog_enabled: self.fog.enabled,
+            vignette_enabled: self.vignette.enabled,
+        }
     }
     /// Builds render commands for currently active full-screen overlay layers.
     pub fn build_render_commands(&self) -> Vec<crate::render::renderer::RenderCommand> {
         use crate::render::renderer::{DrawMode, RenderCommand};
-        let mut cmds = Vec::new();
+        let mut cmds = Vec::with_capacity(8);
         let w = self.width as f32;
         let h = self.height as f32;
         let flash_a = self.get_flash_alpha();

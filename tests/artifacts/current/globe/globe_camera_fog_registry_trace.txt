@@ -1,0 +1,8 @@
+camera=18.00,22.00,1.80
+pick_type=number
+marker_id=0
+label_id=0
+arc_id=0
+fog_before=explored
+fog_after=explored
+fog_payload_len=2732

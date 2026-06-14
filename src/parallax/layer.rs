@@ -11,6 +11,51 @@ use crate::runtime::resource_keys::TextureKey;
 use std::collections::HashMap;
 /// Minimum tile edge size in pixels; prevents degenerate zero-area tile geometry.
 const MIN_TILE_SIZE: f32 = 16.0;
+/// Fallback scale used when hostile or invalid input provides a non-positive scale.
+const DEFAULT_SCALE: f32 = 1.0;
+
+/// Snapshot of per-layer runtime telemetry for diagnostics and dashboard surfaces.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ParallaxLayerStats {
+    /// Number of visible tiles produced for the current view.
+    pub visible_tile_count: usize,
+    /// Effective tile width in pixels after overrides and scaling.
+    pub tile_width: f32,
+    /// Effective tile height in pixels after overrides and scaling.
+    pub tile_height: f32,
+    /// X scale submitted to the renderer.
+    pub draw_scale_x: f32,
+    /// Y scale submitted to the renderer.
+    pub draw_scale_y: f32,
+    /// Number of effect passes active on this layer for the current view.
+    pub effect_pass_count: usize,
+    /// Integer z-order of the layer.
+    pub z: i32,
+    /// Floating-point depth of the layer.
+    pub depth: f32,
+    /// Whether the layer is currently visible.
+    pub visible: bool,
+    /// Whether motion stretch is enabled.
+    pub motion_stretch_enabled: bool,
+    /// Magnitude of the current autoscroll velocity.
+    pub autoscroll_speed: f32,
+}
+
+fn positive_finite_or(value: f32, fallback: f32) -> f32 {
+    if value.is_finite() && value > 0.0 {
+        value
+    } else {
+        fallback
+    }
+}
+
+fn finite_or(value: f32, fallback: f32) -> f32 {
+    if value.is_finite() {
+        value
+    } else {
+        fallback
+    }
+}
 /// Accumulated draw data for one parallax layer ready to submit to the renderer.
 pub struct ParallaxDrawBatch {
     /// Texture to draw for every tile position.
@@ -114,6 +159,9 @@ impl ParallaxLayer {
     }
     /// Advance the autoscroll accumulator by `dt` seconds and wrap it to one tile width/height.
     pub fn update(&mut self, dt: f32) {
+        if !dt.is_finite() || dt <= 0.0 {
+            return;
+        }
         self.autoscroll_accum[0] += self.autoscroll[0] * dt;
         self.autoscroll_accum[1] += self.autoscroll[1] * dt;
         let (tw, th) = self.resolved_tile_dimensions();
@@ -126,10 +174,12 @@ impl ParallaxLayer {
     }
     /// Return the effective `(tile_w, tile_h)` in pixels after applying scale and `MIN_TILE_SIZE`.
     fn resolved_tile_dimensions(&self) -> (f32, f32) {
-        let base_w = self.texture_width * self.scale[0];
-        let base_h = self.texture_height * self.scale[1];
-        let tw = self.tile_w.unwrap_or(base_w).max(MIN_TILE_SIZE);
-        let th = self.tile_h.unwrap_or(base_h).max(MIN_TILE_SIZE);
+        let scale_x = positive_finite_or(self.scale[0], DEFAULT_SCALE);
+        let scale_y = positive_finite_or(self.scale[1], DEFAULT_SCALE);
+        let base_w = positive_finite_or(self.texture_width, MIN_TILE_SIZE) * scale_x;
+        let base_h = positive_finite_or(self.texture_height, MIN_TILE_SIZE) * scale_y;
+        let tw = positive_finite_or(self.tile_w.unwrap_or(base_w), base_w).max(MIN_TILE_SIZE);
+        let th = positive_finite_or(self.tile_h.unwrap_or(base_h), base_h).max(MIN_TILE_SIZE);
         (tw, th)
     }
     /// Return the pixel offset `(px, py)` for the layer given camera position `(cam_x, cam_y)`.
@@ -176,12 +226,12 @@ impl ParallaxLayer {
         let mut sx = if self.texture_width > 0.0 {
             tex_w / self.texture_width
         } else {
-            self.scale[0]
+            positive_finite_or(self.scale[0], DEFAULT_SCALE)
         };
         let mut sy = if self.texture_height > 0.0 {
             tex_h / self.texture_height
         } else {
-            self.scale[1]
+            positive_finite_or(self.scale[1], DEFAULT_SCALE)
         };
         let mut effect = self.effect_chain.clone();
         if self.motion_stretch_enabled {
@@ -231,6 +281,47 @@ impl ParallaxLayer {
             effect,
         })
     }
+    /// Returns telemetry for the current camera position and viewport size.
+    pub fn stats_for_view(
+        &self,
+        cam_x: f32,
+        cam_y: f32,
+        screen_w: f32,
+        screen_h: f32,
+    ) -> ParallaxLayerStats {
+        let (tile_width, tile_height) = self.resolved_tile_dimensions();
+        let autoscroll_speed =
+            (self.autoscroll[0] * self.autoscroll[0] + self.autoscroll[1] * self.autoscroll[1])
+                .sqrt();
+        if let Some(batch) = self.build_draw_calls(cam_x, cam_y, screen_w, screen_h) {
+            return ParallaxLayerStats {
+                visible_tile_count: batch.tiles.len(),
+                tile_width,
+                tile_height,
+                draw_scale_x: batch.sx,
+                draw_scale_y: batch.sy,
+                effect_pass_count: batch.effect.as_ref().map_or(0, Vec::len),
+                z: self.z,
+                depth: self.depth,
+                visible: self.visible,
+                motion_stretch_enabled: self.motion_stretch_enabled,
+                autoscroll_speed,
+            };
+        }
+        ParallaxLayerStats {
+            visible_tile_count: 0,
+            tile_width,
+            tile_height,
+            draw_scale_x: finite_or(self.scale[0], DEFAULT_SCALE),
+            draw_scale_y: finite_or(self.scale[1], DEFAULT_SCALE),
+            effect_pass_count: self.effect_count(),
+            z: self.z,
+            depth: self.depth,
+            visible: self.visible,
+            motion_stretch_enabled: self.motion_stretch_enabled,
+            autoscroll_speed,
+        }
+    }
     /// Reset the autoscroll accumulator to `[0.0, 0.0]`.
     pub fn reset_autoscroll(&mut self) {
         self.autoscroll_accum = [0.0, 0.0];
@@ -245,20 +336,25 @@ impl ParallaxLayer {
     }
     /// Override tile size to `(w, h)` pixels; `0.0` or negative resets to texture-derived size.
     pub fn set_tile_size(&mut self, w: f32, h: f32) {
-        self.tile_w = if w > 0.0 {
+        self.tile_w = if w.is_finite() && w > 0.0 {
             Some(w.max(MIN_TILE_SIZE))
         } else {
             None
         };
-        self.tile_h = if h > 0.0 {
+        self.tile_h = if h.is_finite() && h > 0.0 {
             Some(h.max(MIN_TILE_SIZE))
         } else {
             None
         };
     }
+    /// Sets movement clamp bounds and normalizes min/max ordering per axis.
+    pub fn set_clamp_bounds(&mut self, min: [f32; 2], max: [f32; 2]) {
+        self.clamp_min = Some([min[0].min(max[0]), min[1].min(max[1])]);
+        self.clamp_max = Some([min[0].max(max[0]), min[1].max(max[1])]);
+    }
     /// Set the depth sort value for this layer.
     pub fn set_depth(&mut self, z: f32) {
-        self.depth = z;
+        self.depth = finite_or(z, 0.0);
     }
     /// Return the current depth sort value.
     pub fn get_depth(&self) -> f32 {
@@ -279,7 +375,7 @@ impl ParallaxLayer {
     /// Configure motion-stretch blur; `strength` controls pixels-per-sec sensitivity, `max_scale` caps the scale boost.
     pub fn set_motion_stretch(&mut self, enabled: bool, strength: f32, max_scale: f32) {
         self.motion_stretch_enabled = enabled;
-        self.motion_stretch_strength = strength.max(0.0);
-        self.motion_stretch_max_scale = max_scale.max(1.0);
+        self.motion_stretch_strength = finite_or(strength, 0.0).max(0.0);
+        self.motion_stretch_max_scale = positive_finite_or(max_scale, 1.0).max(1.0);
     }
 }

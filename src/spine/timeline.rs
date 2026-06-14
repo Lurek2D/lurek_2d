@@ -299,12 +299,25 @@ impl SkeletonAnimation {
     }
     /// Parse a SkeletonAnimation from a serde_json Value; returns None when required fields are missing or malformed.
     pub fn from_json(v: &serde_json::Value) -> Option<Self> {
+        fn json_f32(value: Option<&serde_json::Value>) -> Option<f32> {
+            let raw = value?.as_f64()?;
+            if !raw.is_finite() || raw < 0.0 || raw > f32::MAX as f64 {
+                return None;
+            }
+            Some(raw as f32)
+        }
+
+        fn json_usize(value: Option<&serde_json::Value>) -> Option<usize> {
+            let raw = value?.as_u64()?;
+            usize::try_from(raw).ok()
+        }
+
         let name = v.get("name")?.as_str()?.to_owned();
-        let duration = v.get("duration")?.as_f64()? as f32;
+        let duration = json_f32(v.get("duration"))?;
         let mut anim = Self::new(name, duration);
         if let Some(timelines) = v.get("timelines").and_then(|t| t.as_array()) {
             for tl_val in timelines {
-                let bone_idx = tl_val.get("bone_idx")?.as_u64()? as usize;
+                let bone_idx = json_usize(tl_val.get("bone_idx"))?;
                 let property = match tl_val.get("property")?.as_str()? {
                     "x" => BoneProperty::X,
                     "y" => BoneProperty::Y,
@@ -316,8 +329,8 @@ impl SkeletonAnimation {
                 let mut tl = BoneTimeline::new(bone_idx, property);
                 if let Some(keys) = tl_val.get("keys").and_then(|k| k.as_array()) {
                     for kf in keys {
-                        let t = kf.get("time").and_then(|v| v.as_f64()).unwrap_or(0.0) as f32;
-                        let val = kf.get("value").and_then(|v| v.as_f64()).unwrap_or(0.0) as f32;
+                        let t = json_f32(kf.get("time")).unwrap_or(0.0);
+                        let val = json_f32(kf.get("value")).unwrap_or(0.0);
                         let easing = match kf
                             .get("easing")
                             .and_then(|e| e.as_str())
@@ -337,13 +350,13 @@ impl SkeletonAnimation {
         }
         if let Some(events) = v.get("events").and_then(|e| e.as_array()) {
             for ev in events {
-                let t = ev.get("time").and_then(|v| v.as_f64()).unwrap_or(0.0) as f32;
+                let t = json_f32(ev.get("time")).unwrap_or(0.0);
                 let ev_name = ev
                     .get("name")
                     .and_then(|v| v.as_str())
                     .unwrap_or("")
                     .to_owned();
-                let val = ev.get("value").and_then(|v| v.as_f64()).unwrap_or(0.0) as f32;
+                let val = json_f32(ev.get("value")).unwrap_or(0.0);
                 anim.add_event_key(t, ev_name, val);
             }
         }

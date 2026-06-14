@@ -216,7 +216,7 @@ impl AnimStateMachine {
             let looping = cfg.looping;
             let played = self.animation.play(&clip);
             if played {
-                let _ = looping;
+                let _ = self.animation.set_current_clip_looping(looping);
                 self.current = name.to_string();
             }
             played

@@ -12,6 +12,39 @@ use mlua::prelude::*;
 use serde_json;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+fn finite_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{}: {} must be finite",
+            api, arg_name
+        )))
+    }
+}
+
+fn non_negative_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    let value = finite_f32(api, arg_name, value)?;
+    if value < 0.0 {
+        return Err(LuaError::RuntimeError(format!(
+            "{}: {} must be non-negative",
+            api, arg_name
+        )));
+    }
+    Ok(value)
+}
+
+fn positive_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    let value = finite_f32(api, arg_name, value)?;
+    if value <= 0.0 {
+        return Err(LuaError::RuntimeError(format!(
+            "{}: {} must be greater than zero",
+            api, arg_name
+        )));
+    }
+    Ok(value)
+}
 /// Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
 pub struct LuaAnimation {
     /// Owned animation data exposed through this userdata handle.
@@ -87,9 +120,10 @@ impl LuaUserData for LuaAnimation {
                     indices.push(v?);
                 }
                 let mode = parse_clip_mode(mode.as_deref())?;
+                let fps = positive_f32("LAnimation:addClip", "fps", fps)?;
                 this.inner
-                    .add_clip_with_mode(&name, indices, fps, looping, mode);
-                Ok(())
+                    .add_clip_with_mode(&name, indices, fps, looping, mode)
+                    .map_err(LuaError::RuntimeError)
             },
         );
         // -- setClipMode --
@@ -142,9 +176,10 @@ impl LuaUserData for LuaAnimation {
                 f32,
                 bool,
             )| {
+                let fps = positive_f32("LAnimation:addClipFromGrid", "fps", fps)?;
                 this.inner
-                    .add_clip_from_grid(&name, tw, th, fw, fh, start, count, fps, looping);
-                Ok(())
+                    .add_clip_from_grid(&name, tw, th, fw, fh, start, count, fps, looping)
+                    .map_err(LuaError::RuntimeError)
             },
         );
         // -- play --
@@ -174,6 +209,7 @@ impl LuaUserData for LuaAnimation {
         /// Advances animation playback and records any frame or clip events.
         /// @param | dt | number | Elapsed time in seconds.
         methods.add_method_mut("update", |_, this, dt: f32| {
+            let dt = non_negative_f32("LAnimation:update", "dt", dt)?;
             this.inner.update(dt);
             Ok(())
         });
@@ -260,6 +296,7 @@ impl LuaUserData for LuaAnimation {
         /// Sets the animation playback speed multiplier.
         /// @param | speed | number | Playback speed multiplier used by future updates.
         methods.add_method_mut("setSpeed", |_, this, speed: f32| {
+            let speed = non_negative_f32("LAnimation:setSpeed", "speed", speed)?;
             this.inner.set_speed(speed);
             Ok(())
         });
@@ -296,6 +333,7 @@ impl LuaUserData for LuaAnimation {
         methods.add_method_mut(
             "crossfade",
             |_, this, (clip_name, duration): (String, f32)| {
+                let duration = non_negative_f32("LAnimation:crossfade", "duration", duration)?;
                 Ok(this.inner.crossfade(&clip_name, duration))
             },
         );
@@ -382,6 +420,7 @@ impl LuaUserData for LuaAnimStateMachine {
         /// Advances the animation state machine and its owned animation playback.
         /// @param | dt | number | Elapsed time in seconds.
         methods.add_method_mut("update", |_, this, dt: f32| {
+            let dt = non_negative_f32("LStateMachine:update", "dt", dt)?;
             this.inner.update(dt);
             Ok(())
         });
@@ -740,13 +779,18 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 let name: String = clip_tbl.get("name")?;
                 let start: usize = clip_tbl.get("start")?;
                 let count: usize = clip_tbl.get("count")?;
-                let fps: f32 = clip_tbl.get::<_, Option<f32>>("fps")?.unwrap_or(8.0);
+                let fps = positive_f32(
+                    "lurek.animation.buildCharacter",
+                    "clips[].fps",
+                    clip_tbl.get::<_, Option<f32>>("fps")?.unwrap_or(8.0),
+                )?;
                 let looping: bool = clip_tbl.get::<_, Option<bool>>("looping")?.unwrap_or(true);
                 let mode = parse_clip_mode(clip_tbl.get::<_, Option<String>>("mode")?.as_deref())?;
                 let base = anim.get_frame_count();
                 let added = anim.add_frames_from_grid(tex_w, tex_h, frame_w, frame_h, start, count);
                 let indices: Vec<usize> = (base..base + added).collect();
-                anim.add_clip_with_mode(&name, indices, fps, looping, mode);
+                anim.add_clip_with_mode(&name, indices, fps, looping, mode)
+                    .map_err(LuaError::RuntimeError)?;
             }
             let initial_clip = cfg.get::<_, Option<String>>("initialClip")?;
             if let Some(name) = initial_clip {
@@ -999,8 +1043,11 @@ impl LuaUserData for LuaAnimCurve {
         /// @param | t | number | Keyframe time or normalized position.
         /// @param | v | number | Keyframe value.
         methods.add_method_mut("addKeyframe", |_, this, (t, v): (f32, f32)| {
-            this.inner.add_keyframe(t, v);
-            Ok(())
+            let t = finite_f32("LAnimCurve:addKeyframe", "t", t)?;
+            let v = finite_f32("LAnimCurve:addKeyframe", "v", v)?;
+            this.inner
+                .add_keyframe(t, v)
+                .map_err(LuaError::RuntimeError)
         });
         // -- eval --
         /// Evaluates the curve at a time or normalized position.

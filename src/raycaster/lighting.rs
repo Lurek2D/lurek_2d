@@ -10,12 +10,23 @@ pub struct PointLight {
     pub x: f32,
     /// World Y position of the light source.
     pub y: f32,
+    /// Optional multilevel slice index that owns this light. `None` means the light affects every level.
+    pub level_index: Option<usize>,
     /// Maximum tile distance at which this light contributes, in tiles.
     pub radius: f32,
     /// Brightness multiplier applied to the light contribution.
     pub intensity: f32,
     /// RGB color of the light, each channel in 0.0..1.0.
     pub color: [f32; 3],
+}
+
+impl PointLight {
+    /// Return true when this light should contribute to `level_index`.
+    pub fn applies_to_level(&self, level_index: usize) -> bool {
+        self.level_index
+            .map(|owner| owner == level_index)
+            .unwrap_or(true)
+    }
 }
 /// Return true when the grid path from `(x0,y0)` to `(x1,y1)` contains no wall tile (Bresenham traversal).
 fn has_line_of_sight(
@@ -82,6 +93,61 @@ pub fn compute_lighting(
         b += light.color[2] * attenuation;
     }
     [r.clamp(0.0, 1.0), g.clamp(0.0, 1.0), b.clamp(0.0, 1.0)]
+}
+
+fn directional_sun_visible(
+    x: f32,
+    y: f32,
+    sun_angle: f32,
+    shadow_distance: f32,
+    wall_at: &dyn Fn(i32, i32) -> bool,
+) -> bool {
+    if shadow_distance <= 0.0 {
+        return true;
+    }
+    let tx = x.floor() as i32;
+    let ty = y.floor() as i32;
+    let target_x = (x + sun_angle.cos() * shadow_distance).floor() as i32;
+    let target_y = (y + sun_angle.sin() * shadow_distance).floor() as i32;
+    if tx == target_x && ty == target_y {
+        return true;
+    }
+    has_line_of_sight(tx, ty, target_x, target_y, wall_at)
+}
+
+/// Apply global tint and optional directional sun to an already accumulated local lighting sample.
+#[allow(clippy::too_many_arguments)]
+pub fn apply_global_light(
+    light_rgb: [f32; 3],
+    x: f32,
+    y: f32,
+    roofed: bool,
+    global_color: [f32; 3],
+    global_intensity: f32,
+    sun_angle: Option<f32>,
+    shadow_distance: f32,
+    wall_at: &dyn Fn(i32, i32) -> bool,
+) -> [f32; 3] {
+    let tinted = [
+        (light_rgb[0] * global_color[0] * global_intensity).clamp(0.0, 1.0),
+        (light_rgb[1] * global_color[1] * global_intensity).clamp(0.0, 1.0),
+        (light_rgb[2] * global_color[2] * global_intensity).clamp(0.0, 1.0),
+    ];
+    let Some(sun_angle) = sun_angle else {
+        return tinted;
+    };
+    if roofed || global_intensity <= 0.0 {
+        return tinted;
+    }
+    if !directional_sun_visible(x, y, sun_angle, shadow_distance, wall_at) {
+        return tinted;
+    }
+    let direct_scale = (global_intensity * 0.6).clamp(0.0, 1.0);
+    [
+        (tinted[0] + global_color[0] * direct_scale).clamp(0.0, 1.0),
+        (tinted[1] + global_color[1] * direct_scale).clamp(0.0, 1.0),
+        (tinted[2] + global_color[2] * direct_scale).clamp(0.0, 1.0),
+    ]
 }
 /// Multiply `base_shade` by each channel of `light_color`; return clamped `[r, g, b]`.
 pub fn apply_lit_shade(base_shade: f32, light_color: [f32; 3]) -> [f32; 3] {

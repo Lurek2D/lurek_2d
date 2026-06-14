@@ -1,0 +1,9 @@
+before_sprite=10.500,8.000
+before_light=10.500,8.000
+before_quads=254
+before_pick=sprite@10@8@2.500@10.500@8.000@0.500@0.500@0
+after_sprite=11.500,8.000
+after_light=11.500,8.000
+after_quads=254
+after_pick=sprite@11@8@3.500@11.500@8.000@0.500@0.500@0
+after_pick_id=771

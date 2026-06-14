@@ -20,6 +20,10 @@ describe("lurek.color.new", function()
         expect_near(0.4, c[2], 0.01)
         expect_near(0.6, c[3], 0.01)
         expect_near(1.0, c[4], 0.01)
+
+        expect_error(function()
+            lurek.color.new(0 / 0, 0.4, 0.6, 1.0)
+        end)
     end)
 end)
 
@@ -109,6 +113,11 @@ describe("lurek.color.fromHsv", function()
         expect_near(1.0, c[2], 0.01)
         expect_near(0.0, c[3], 0.01)
         expect_near(1.0, c[4], 0.01)
+
+        c = lurek.color.fromHsv(-120, 1, 1)
+        expect_near(0.0, c[1], 0.01)
+        expect_near(0.0, c[2], 0.01)
+        expect_near(1.0, c[3], 0.01)
     end)
 end)
 
@@ -246,6 +255,12 @@ describe("lurek.color utilities", function()
         expect_near(1.0, v, 0.01)
         v = lurek.color.gammaToLinear(0.0)
         expect_near(0.0, v, 0.01)
+        v = lurek.color.gammaToLinear(2.0)
+        expect_near(1.0, v, 0.01)
+
+        expect_error(function()
+            lurek.color.gammaToLinear(0 / 0)
+        end)
     end)
 
     -- @covers lurek.color.linearToGamma
@@ -254,6 +269,12 @@ describe("lurek.color utilities", function()
         expect_near(1.0, v, 0.01)
         v = lurek.color.linearToGamma(0.0)
         expect_near(0.0, v, 0.01)
+        v = lurek.color.linearToGamma(-1.0)
+        expect_near(0.0, v, 0.01)
+
+        expect_error(function()
+            lurek.color.linearToGamma(0 / 0)
+        end)
     end)
 end)
 

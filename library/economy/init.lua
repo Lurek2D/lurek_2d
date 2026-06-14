@@ -29,7 +29,7 @@ if type(lurek) == "table" and type(lurek.patterns) == "table"
 end
 
 ---------------------------------------------------------------------------
--- Logging helper (optional — works outside Lurek2D too)
+-- Logging helper (optional â€” works outside Lurek2D too)
 ---------------------------------------------------------------------------
 
 --- Internal: log a message via lurek.log if available.
@@ -260,7 +260,7 @@ function Resource:add(amount)
             if range > 0 then
                 self.value = self.minimum + ((new - self.minimum) % range)
             else
-                -- Degenerate: capacity <= minimum — clamp to safe value
+                -- Degenerate: capacity <= minimum â€” clamp to safe value
                 self.value = self:_clamp(self.minimum)
             end
         else
@@ -566,7 +566,7 @@ function ConversionRule:effectiveRate()
     end
     if set_val ~= nil then return set_val end
 
-    -- Pass 2: no set modifier — accumulate add + multiply
+    -- Pass 2: no set modifier â€” accumulate add + multiply
     local add_total = 0
     local mul_total = 1
     for _, m in ipairs(self.modifiers) do
@@ -601,7 +601,7 @@ end
 --- Return (or lazily create) an optional `lurek.patterns` EventBus that
 --- callers can subscribe to for transaction-style notifications. Returns
 --- nil when the engine binding is unavailable. The library does not
---- auto-emit events on this bus — callers may emit on it from their own
+--- auto-emit events on this bus â€” callers may emit on it from their own
 --- wrappers without breaking pure-Lua tests.
 --- @treturn table|nil EventBus instance, or nil when `lurek.patterns.newEventBus` is missing.
 --- @see lurek.patterns.newEventBus
@@ -1090,7 +1090,7 @@ end
 
 
 -- -----------------------------------------------------------------------
--- PARITY ADDITIONS — Phase 2A  (economy)
+-- PARITY ADDITIONS â€” Phase 2A  (economy)
 -- -----------------------------------------------------------------------
 
 --- Resource-cap overflow policy enum.

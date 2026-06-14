@@ -12,6 +12,7 @@
 - Water distortion and tint controls support stylized surface-screen effects.
 - Overlay state updates run as one controller, reducing per-feature timing glue.
 - Render-command generation keeps overlay composition aligned with the main render path.
+- Runtime telemetry snapshots expose effect load, weather occupancy, and alpha state for dashboards and debug tooling.
 - Image output support enables overlay previews and debug evidence generation.
 - The module is useful for cutscenes, weather systems, UX transitions, and dramatic pacing.
 - For users, it centralizes post-world presentation behavior in one script API.
@@ -688,6 +689,22 @@ do
     print("LOverlay:getShakeOffset=" .. pair_text(ox, oy))
 end
 ```
+
+---
+
+#### `LOverlay:getStats`
+
+Returns a telemetry snapshot for dashboard and debug workflows.
+
+```lua
+LOverlay:getStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Overlay telemetry fields. |
 
 ---
 

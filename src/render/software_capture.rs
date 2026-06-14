@@ -3,7 +3,8 @@
 //! Exists to support evidence capture in headless/unit environments where GPU readback is unavailable.
 
 use crate::image::ImageData;
-use crate::render::renderer::{DrawMode, RenderCommand};
+use crate::render::mesh::Mesh;
+use crate::render::renderer::{CompareMode, DrawMode, RenderCommand, StencilAction};
 
 #[derive(Clone, Copy)]
 struct Mat3 {
@@ -71,10 +72,13 @@ struct CaptureState {
     scissor: Option<(i32, i32, i32, i32)>,
     transform: Mat3,
     stack: Vec<Mat3>,
+    stencil_mode: CaptureStencilMode,
+    stencil: Vec<u8>,
+    width: u32,
 }
 
 impl CaptureState {
-    fn new() -> Self {
+    fn new(width: u32, height: u32) -> Self {
         Self {
             color: [255, 255, 255, 255],
             line_width: 1,
@@ -83,8 +87,27 @@ impl CaptureState {
             scissor: None,
             transform: Mat3::identity(),
             stack: Vec::new(),
+            stencil_mode: CaptureStencilMode::Disabled,
+            stencil: vec![0; (width as usize).saturating_mul(height as usize)],
+            width,
         }
     }
+}
+
+enum CaptureStencilMode {
+    Disabled,
+    Write { action: StencilAction, value: u8 },
+    Test { compare: CompareMode, value: u8 },
+}
+
+struct MeshTransform {
+    x: f32,
+    y: f32,
+    rotation: f32,
+    sx: f32,
+    sy: f32,
+    ox: f32,
+    oy: f32,
 }
 
 fn color_to_rgba8(color: [f32; 4]) -> [u8; 4] {
@@ -147,15 +170,7 @@ fn estimate_canvas_size(commands: &[RenderCommand]) -> (u32, u32) {
     ((max_x + 40.0).ceil() as u32, (max_y + 40.0).ceil() as u32)
 }
 
-fn set_pixel(img: &mut ImageData, state: &CaptureState, x: i32, y: i32) {
-    if x < 0 || y < 0 || x as u32 >= img.width() || y as u32 >= img.height() {
-        return;
-    }
-    if let Some((sx, sy, sw, sh)) = state.scissor {
-        if x < sx || y < sy || x >= sx + sw || y >= sy + sh {
-            return;
-        }
-    }
+fn write_color_pixel(img: &mut ImageData, state: &CaptureState, x: i32, y: i32) {
     let idx = ((y as u32 * img.width() + x as u32) * 4) as usize;
     let bytes = img.as_mut_bytes();
     if state.color_mask[0] {
@@ -172,7 +187,64 @@ fn set_pixel(img: &mut ImageData, state: &CaptureState, x: i32, y: i32) {
     }
 }
 
-fn draw_line(img: &mut ImageData, state: &CaptureState, x0: f32, y0: f32, x1: f32, y1: f32) {
+fn compare_stencil(compare: CompareMode, current: u8, value: u8) -> bool {
+    match compare {
+        CompareMode::Equal => current == value,
+        CompareMode::NotEqual => current != value,
+        CompareMode::Less => current < value,
+        CompareMode::LessEqual => current <= value,
+        CompareMode::Greater => current > value,
+        CompareMode::GreaterEqual => current >= value,
+        CompareMode::Always => true,
+        CompareMode::Never => false,
+    }
+}
+
+fn apply_stencil_action(action: StencilAction, current: u8, value: u8) -> u8 {
+    match action {
+        StencilAction::Keep => current,
+        StencilAction::Zero => 0,
+        StencilAction::Replace => value,
+        StencilAction::Increment => current.saturating_add(1),
+        StencilAction::Decrement => current.saturating_sub(1),
+        StencilAction::IncrementWrap => current.wrapping_add(1),
+        StencilAction::DecrementWrap => current.wrapping_sub(1),
+        StencilAction::Invert => !current,
+    }
+}
+
+fn set_pixel(img: &mut ImageData, state: &mut CaptureState, x: i32, y: i32) {
+    if x < 0 || y < 0 || x as u32 >= img.width() || y as u32 >= img.height() {
+        return;
+    }
+    if let Some((sx, sy, sw, sh)) = state.scissor {
+        if x < sx || y < sy || x >= sx + sw || y >= sy + sh {
+            return;
+        }
+    }
+    let stencil_index = y as usize * state.width as usize + x as usize;
+    let current = state
+        .stencil
+        .get(stencil_index)
+        .copied()
+        .unwrap_or_default();
+    match state.stencil_mode {
+        CaptureStencilMode::Disabled => write_color_pixel(img, state, x, y),
+        CaptureStencilMode::Write { action, value } => {
+            if let Some(slot) = state.stencil.get_mut(stencil_index) {
+                *slot = apply_stencil_action(action, current, value);
+            }
+            write_color_pixel(img, state, x, y);
+        }
+        CaptureStencilMode::Test { compare, value } => {
+            if compare_stencil(compare, current, value) {
+                write_color_pixel(img, state, x, y);
+            }
+        }
+    }
+}
+
+fn draw_line(img: &mut ImageData, state: &mut CaptureState, x0: f32, y0: f32, x1: f32, y1: f32) {
     let (x0, y0) = state.transform.transform_point(x0, y0);
     let (x1, y1) = state.transform.transform_point(x1, y1);
     let mut x0 = x0.round() as i32;
@@ -206,7 +278,12 @@ fn draw_line(img: &mut ImageData, state: &CaptureState, x0: f32, y0: f32, x1: f3
     }
 }
 
-fn draw_polyline(img: &mut ImageData, state: &CaptureState, points: &[(f32, f32)], close: bool) {
+fn draw_polyline(
+    img: &mut ImageData,
+    state: &mut CaptureState,
+    points: &[(f32, f32)],
+    close: bool,
+) {
     if points.len() < 2 {
         return;
     }
@@ -226,8 +303,16 @@ fn point_in_polygon(point: (f32, f32), vertices: &[(f32, f32)]) -> bool {
     for i in 0..vertices.len() {
         let (xi, yi) = vertices[i];
         let (xj, yj) = vertices[j];
+        let mut denom = yj - yi;
+        if denom.abs() < f32::EPSILON {
+            denom = if denom.is_sign_negative() {
+                -f32::EPSILON
+            } else {
+                f32::EPSILON
+            };
+        }
         let intersects = ((yi > point.1) != (yj > point.1))
-            && (point.0 < (xj - xi) * (point.1 - yi) / ((yj - yi).abs().max(f32::EPSILON)) + xi);
+            && (point.0 < (xj - xi) * (point.1 - yi) / denom + xi);
         if intersects {
             inside = !inside;
         }
@@ -236,7 +321,7 @@ fn point_in_polygon(point: (f32, f32), vertices: &[(f32, f32)]) -> bool {
     inside
 }
 
-fn fill_polygon(img: &mut ImageData, state: &CaptureState, vertices: &[(f32, f32)]) {
+fn fill_polygon(img: &mut ImageData, state: &mut CaptureState, vertices: &[(f32, f32)]) {
     if vertices.len() < 3 {
         return;
     }
@@ -275,7 +360,7 @@ fn fill_polygon(img: &mut ImageData, state: &CaptureState, vertices: &[(f32, f32
 
 fn draw_polygon(
     img: &mut ImageData,
-    state: &CaptureState,
+    state: &mut CaptureState,
     mode: &DrawMode,
     vertices: &[(f32, f32)],
 ) {
@@ -287,7 +372,7 @@ fn draw_polygon(
 
 fn draw_rect(
     img: &mut ImageData,
-    state: &CaptureState,
+    state: &mut CaptureState,
     mode: &DrawMode,
     x: f32,
     y: f32,
@@ -300,7 +385,7 @@ fn draw_rect(
 
 fn draw_circle(
     img: &mut ImageData,
-    state: &CaptureState,
+    state: &mut CaptureState,
     mode: &DrawMode,
     cx: f32,
     cy: f32,
@@ -317,7 +402,7 @@ fn draw_circle(
 
 fn draw_ellipse(
     img: &mut ImageData,
-    state: &CaptureState,
+    state: &mut CaptureState,
     mode: &DrawMode,
     cx: f32,
     cy: f32,
@@ -336,7 +421,7 @@ fn draw_ellipse(
 #[allow(clippy::too_many_arguments)]
 fn draw_arc(
     img: &mut ImageData,
-    state: &CaptureState,
+    state: &mut CaptureState,
     mode: &DrawMode,
     cx: f32,
     cy: f32,
@@ -361,6 +446,69 @@ fn draw_arc(
             fill_polygon(img, state, &fan);
         }
     }
+}
+
+fn average_rgba8(colors: &[[f32; 4]]) -> [u8; 4] {
+    if colors.is_empty() {
+        return [255, 255, 255, 255];
+    }
+    let mut accum = [0.0_f32; 4];
+    for color in colors {
+        for i in 0..4 {
+            accum[i] += color[i];
+        }
+    }
+    let inv = 1.0 / colors.len() as f32;
+    color_to_rgba8([
+        accum[0] * inv,
+        accum[1] * inv,
+        accum[2] * inv,
+        accum[3] * inv,
+    ])
+}
+
+fn draw_transient_mesh(
+    img: &mut ImageData,
+    state: &mut CaptureState,
+    mesh: &Mesh,
+    transform: &MeshTransform,
+) {
+    let indices = mesh.triangulate();
+    if indices.len() < 3 {
+        return;
+    }
+    let cos_r = transform.rotation.cos();
+    let sin_r = transform.rotation.sin();
+    let previous = state.color;
+    for tri in indices.chunks_exact(3) {
+        let Some(a) = mesh.vertices.get(tri[0]) else {
+            continue;
+        };
+        let Some(b) = mesh.vertices.get(tri[1]) else {
+            continue;
+        };
+        let Some(c) = mesh.vertices.get(tri[2]) else {
+            continue;
+        };
+        state.color = average_rgba8(&[
+            [a.r, a.g, a.b, a.a],
+            [b.r, b.g, b.b, b.a],
+            [c.r, c.g, c.b, c.a],
+        ]);
+        let map_vertex = |vx: f32, vy: f32| {
+            let lx = (vx - transform.ox) * transform.sx;
+            let ly = (vy - transform.oy) * transform.sy;
+            (
+                lx * cos_r - ly * sin_r + transform.x,
+                lx * sin_r + ly * cos_r + transform.y,
+            )
+        };
+        let (ax, ay) = map_vertex(a.x, a.y);
+        let (bx, by) = map_vertex(b.x, b.y);
+        let (cx, cy) = map_vertex(c.x, c.y);
+        draw_polygon(img, state, &DrawMode::Fill, &[(ax, ay), (bx, by), (cx, cy)]);
+    }
+    state.color = previous;
 }
 
 fn replay_command(img: &mut ImageData, state: &mut CaptureState, command: &RenderCommand) {
@@ -396,6 +544,24 @@ fn replay_command(img: &mut ImageData, state: &mut CaptureState, command: &Rende
         RenderCommand::SetColorMask(r, g, b, a) => {
             state.color_mask = [*r, *g, *b, *a];
         }
+        RenderCommand::StencilBegin { action, value } => {
+            state.stencil_mode = CaptureStencilMode::Write {
+                action: *action,
+                value: *value,
+            };
+        }
+        RenderCommand::StencilEnd => {
+            state.stencil_mode = CaptureStencilMode::Disabled;
+        }
+        RenderCommand::SetStencilTest(test) => match test {
+            Some((compare, value)) => {
+                state.stencil_mode = CaptureStencilMode::Test {
+                    compare: *compare,
+                    value: *value,
+                };
+            }
+            None => state.stencil_mode = CaptureStencilMode::Disabled,
+        },
         RenderCommand::Rectangle { mode, x, y, w, h } => {
             draw_rect(img, state, mode, *x, *y, *w, *h)
         }
@@ -441,6 +607,50 @@ fn replay_command(img: &mut ImageData, state: &mut CaptureState, command: &Rende
         } => draw_arc(
             img, state, mode, *x, *y, *radius, *angle1, *angle2, *segments,
         ),
+        RenderCommand::DrawColoredPolygon {
+            vertices,
+            colors,
+            mode,
+        } => {
+            let points: Vec<(f32, f32)> = vertices
+                .chunks_exact(2)
+                .map(|pair| (pair[0], pair[1]))
+                .collect();
+            let previous = state.color;
+            state.color = average_rgba8(colors);
+            draw_polygon(img, state, mode, &points);
+            state.color = previous;
+        }
+        RenderCommand::DrawConvexFan { vertices, tint, .. } => {
+            let points: Vec<(f32, f32)> = vertices.iter().map(|v| (v.x, v.y)).collect();
+            let previous = state.color;
+            state.color = color_to_rgba8(*tint);
+            draw_polygon(img, state, &DrawMode::Fill, &points);
+            state.color = previous;
+        }
+        RenderCommand::DrawMeshTransient {
+            mesh,
+            x,
+            y,
+            rotation,
+            sx,
+            sy,
+            ox,
+            oy,
+        } => draw_transient_mesh(
+            img,
+            state,
+            mesh,
+            &MeshTransform {
+                x: *x,
+                y: *y,
+                rotation: *rotation,
+                sx: *sx,
+                sy: *sy,
+                ox: *ox,
+                oy: *oy,
+            },
+        ),
         RenderCommand::Points { points } => {
             let radius = (state.point_size.max(1) - 1) / 2;
             for (x, y) in points {
@@ -465,7 +675,7 @@ pub fn capture_commands_to_image(
     let bg = color_to_rgba8(background_color);
     let mut img = ImageData::new(width, height);
     img.draw_rect(0, 0, width, height, bg[0], bg[1], bg[2], bg[3]);
-    let mut state = CaptureState::new();
+    let mut state = CaptureState::new(width, height);
     for command in commands {
         replay_command(&mut img, &mut state, command);
     }

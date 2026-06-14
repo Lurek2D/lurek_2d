@@ -73,6 +73,57 @@ local function build_world()
     return rc
 end
 
+local function make_room(w, h)
+    local rc = lurek.raycaster.new(w, h)
+    for x = 0, w - 1 do
+        rc:setCell(x, 0, 1)
+        rc:setCell(x, h - 1, 1)
+    end
+    for y = 0, h - 1 do
+        rc:setCell(0, y, 1)
+        rc:setCell(w - 1, y, 1)
+    end
+    return rc
+end
+
+local function draw_frame(img, x, y, w, h, r, g, b)
+    img:drawLine(x, y, x + w - 1, y, r, g, b, 255)
+    img:drawLine(x + w - 1, y, x + w - 1, y + h - 1, r, g, b, 255)
+    img:drawLine(x + w - 1, y + h - 1, x, y + h - 1, r, g, b, 255)
+    img:drawLine(x, y + h - 1, x, y, r, g, b, 255)
+end
+
+local function mark_cell(img, cell_x, cell_y, scale, r, g, b)
+    local left = cell_x * scale + math.floor(scale * 0.25)
+    local top = cell_y * scale + math.floor(scale * 0.25)
+    local size = math.max(2, math.floor(scale * 0.5))
+    img:drawRect(left, top, size, size, r, g, b, 255)
+end
+
+local function mark_world_point(img, world_x, world_y, scale, r, g, b)
+    local px = math.floor(world_x * scale + 0.5)
+    local py = math.floor(world_y * scale + 0.5)
+    img:drawLine(px - 3, py, px + 3, py, r, g, b, 255)
+    img:drawLine(px, py - 3, px, py + 3, r, g, b, 255)
+end
+
+local function describe_pick(hit)
+    if not hit then
+        return "nil"
+    end
+    return table.concat({
+        tostring(hit.surface),
+        tostring(hit.x),
+        tostring(hit.y),
+        string.format("%.3f", hit.distance or 0.0),
+        string.format("%.3f", hit.hit_x or 0.0),
+        string.format("%.3f", hit.hit_y or 0.0),
+        string.format("%.3f", hit.u or 0.0),
+        string.format("%.3f", hit.v or 0.0),
+        tostring(hit.level or 0),
+    }, "@")
+end
+
 -- @describe Evidence: lurek.raycaster visual scenarios
 describe("Evidence: lurek.raycaster visual scenarios", function()
     -- Does: Runs "saves raycaster depth-buffer as PNG evidence" and turns the owner-module result into an inspectable artifact.
@@ -304,41 +355,60 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
         local path = OUT .. "raycaster_mirrors.png"
         save_png(img, path)
     end)
-    -- Does: Draws transparent glass wall columns with cyan tint and highlight streaks.
-    -- Shows: The PNG should show a readable difference between glass panes and solid frame columns.
-    -- Artifact: tests/artifacts/current/raycaster/raycaster_glass.png
-    -- Why: This is meaningful because it preserves a concrete transparent-wall styling sample.
+    -- Does: Compares solid-wall, window, closed-door, and open-door visibility using actual raycaster LOS images.
+    -- Shows: The contact sheet should make the transition from blocked sight to pass-through sight obvious without a fake renderer.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_feature_visibility_sheet.png
+    -- Why: This is meaningful because each panel is produced by LRaycaster:drawLineOfSight over real wall-feature semantics.
 
-    it("PNG: transparent glass walls", function()
+    it("PNG: feature visibility contact sheet", function()
         ensure_evidence_dir("raycaster")
-        local W, H = 128, 64
-        local img = lurek.image.newImageData(W, H)
-        img:fill(20, 30, 40, 255)
 
-        for col = 0, W - 1 do
-            local dist_glass = 4.0
-            local wall_h = math.floor((H / dist_glass) * 1.5)
-            local top = math.max(0, math.floor((H - wall_h) / 2))
-            local bottom = math.min(H - 1, top + wall_h)
+        local scale = 16
+        local solid = make_room(16, 16)
+        solid:setCell(7, 7, 1)
 
-            if col % 10 < 8 then
-                for y = top, bottom do
-                    local r, g, b = img:getPixel(col, y)
-                    local out_r = math.floor(r * 0.5 + 50 * 0.5)
-                    local out_g = math.floor(g * 0.5 + 200 * 0.5)
-                    local out_b = math.floor(b * 0.5 + 255 * 0.5)
-                    img:setPixel(col, y, out_r, out_g, out_b, 255)
-                end
-                if (col + top) % 20 < 4 then
-                    img:drawLine(col, top, col, bottom, 255, 255, 255, 100)
-                end
-            else
-                img:drawLine(col, top, col, bottom, 40, 40, 40, 255)
-            end
+        local window_map = make_room(16, 16)
+        window_map:setCell(7, 7, 1)
+        window_map:setWindowCell(7, 7, 0.25, 0.78, 0.35)
+
+        local closed_door = make_room(16, 16)
+        closed_door:setCell(7, 7, 1)
+        closed_door:setDoorCell(7, 7, "vertical", 0.0)
+
+        local open_door = make_room(16, 16)
+        open_door:setCell(7, 7, 1)
+        open_door:setDoorCell(7, 7, "vertical", 1.0)
+
+        local panels = {
+            { image = solid:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 224, 92, 92 } },
+            { image = window_map:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 88, 208, 240 } },
+            { image = closed_door:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 224, 176, 96 } },
+            { image = open_door:drawLineOfSight(2.5, 7.5, 12.5, 7.5, scale), accent = { 96, 220, 144 } },
+        }
+
+        for _, panel in ipairs(panels) do
+            mark_cell(panel.image, 7, 7, scale, panel.accent[1], panel.accent[2], panel.accent[3])
         end
 
-        local path = OUT .. "raycaster_glass.png"
-        save_png(img, path)
+        local panel_w = panels[1].image:getWidth()
+        local panel_h = panels[1].image:getHeight()
+        local canvas = lurek.image.newImageData(panel_w * 2 + 36, panel_h * 2 + 36)
+        canvas:fill(16, 18, 24, 255)
+
+        local positions = {
+            { 12, 12 },
+            { panel_w + 24, 12 },
+            { 12, panel_h + 24 },
+            { panel_w + 24, panel_h + 24 },
+        }
+        for i, panel in ipairs(panels) do
+            local pos = positions[i]
+            canvas:paste(panel.image, pos[1], pos[2])
+            draw_frame(canvas, pos[1] - 2, pos[2] - 2, panel_w + 4, panel_h + 4, panel.accent[1], panel.accent[2], panel.accent[3])
+        end
+
+        local path = OUT .. "raycaster_feature_visibility_sheet.png"
+        save_png(canvas, path)
     end)
     -- Does: Paints a ceiling and floor with different procedural textures in one first-person frame.
     -- Shows: The PNG should make the contrast between ceiling patterning and floor patterning visually clear.
@@ -572,6 +642,8 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
         local door_id = doors:addDoor(7, 8, "vertical", 1.0)
         doors:openDoor(door_id)
         doors:update(0.45)
+        map:setCell(7, 8, 2)
+        map:applyDoorManager(doors, 0.85)
 
         local torch = lurek.raycaster.newPointLight(7.5, 8.5, 1.0, 0.82, 0.52, 5.0, 2.0)
         torch:set(7.5, 8.5, 1.0, 0.82, 0.52, 5.0, 2.0)
@@ -626,6 +698,129 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
         local path = OUT .. "raycaster_door_light_minimap_study.png"
         save_png(img, path)
     end)
+    -- Does: Compares wall, half-wall, sprite, and model picks on one atlas of real raycaster top-down captures.
+    -- Shows: The contact sheet should make the resolved cell and exact world hit point easy to inspect across geometry and entity picks.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_pick_contact_sheet.png
+    -- Why: This is meaningful because each panel starts from LRaycaster:drawTopDown and overlays coordinates returned by LRaycaster:pickScreen.
+
+    it("PNG: pick contact sheet", function()
+        ensure_evidence_dir("raycaster")
+
+        local scale = 12
+        local wall_params = {
+            px = 8.0,
+            py = 8.0,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 16.0,
+            screen_w = 320,
+            screen_h = 200,
+        }
+        local pick_params = {
+            px = 8.0,
+            py = 8.0,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 32,
+            max_dist = 16.0,
+            screen_w = 160,
+            screen_h = 100,
+        }
+        local half_params = {
+            px = 2.5,
+            py = 5.5,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 20.0,
+            screen_w = 320,
+            screen_h = 200,
+        }
+
+        local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
+        local wall = lurek.render.newImage(SAMPLE_TEXTURE)
+
+        local wall_map = make_room(16, 16)
+        local wall_hit = wall_map:pickScreen(160, 100, wall_params)
+        expect_true(wall_hit ~= nil)
+        expect_equal("wall", wall_hit.surface)
+
+        local half_map = make_room(12, 10)
+        half_map:setCell(7, 5, 1)
+        half_map:setHalfWallCell(7, 5, 0.5)
+        local half_hit = half_map:pickScreen(160, 100, half_params)
+        expect_true(half_hit ~= nil)
+        expect_equal(7, half_hit.x)
+        expect_equal(5, half_hit.y)
+
+        local sprite_map = make_room(16, 16)
+        local sprite_hit = sprite_map:pickScreen(80, 50, pick_params, {
+            { id = 901, x = 10.5, y = 8.0, texture = wall, size = 1.0 },
+        })
+        expect_true(sprite_hit ~= nil)
+        expect_equal("sprite", sprite_hit.surface)
+
+        local model_map = make_room(16, 16)
+        local model_hit = model_map:pickScreen(80, 60, pick_params, nil, {
+            { id = 902, model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
+        })
+        expect_true(model_hit ~= nil)
+        expect_equal("model", model_hit.surface)
+
+        local panels = {
+            {
+                image = wall_map:drawTopDown(wall_params.px, wall_params.py, wall_params.angle, scale),
+                hit = wall_hit,
+                accent = { 232, 120, 96 },
+            },
+            {
+                image = half_map:drawTopDown(half_params.px, half_params.py, half_params.angle, scale),
+                hit = half_hit,
+                accent = { 224, 200, 104 },
+            },
+            {
+                image = sprite_map:drawTopDown(pick_params.px, pick_params.py, pick_params.angle, scale),
+                hit = sprite_hit,
+                accent = { 104, 216, 160 },
+                entity = { 10.5, 8.0 },
+            },
+            {
+                image = model_map:drawTopDown(pick_params.px, pick_params.py, pick_params.angle, scale),
+                hit = model_hit,
+                accent = { 104, 168, 255 },
+                entity = { 10.5, 8.0 },
+            },
+        }
+
+        for _, panel in ipairs(panels) do
+            mark_cell(panel.image, panel.hit.x, panel.hit.y, scale, panel.accent[1], panel.accent[2], panel.accent[3])
+            mark_world_point(panel.image, panel.hit.hit_x, panel.hit.hit_y, scale, panel.accent[1], panel.accent[2], panel.accent[3])
+            if panel.entity then
+                mark_world_point(panel.image, panel.entity[1], panel.entity[2], scale, 220, 236, 255)
+            end
+        end
+
+        local panel_w = panels[1].image:getWidth()
+        local panel_h = panels[1].image:getHeight()
+        local canvas = lurek.image.newImageData(panel_w * 2 + 36, panel_h * 2 + 36)
+        canvas:fill(16, 18, 24, 255)
+
+        local positions = {
+            { 12, 12 },
+            { panel_w + 24, 12 },
+            { 12, panel_h + 24 },
+            { panel_w + 24, panel_h + 24 },
+        }
+        for i, panel in ipairs(panels) do
+            local pos = positions[i]
+            canvas:paste(panel.image, pos[1], pos[2])
+            draw_frame(canvas, pos[1] - 2, pos[2] - 2, panel_w + 4, panel_h + 4, panel.accent[1], panel.accent[2], panel.accent[3])
+        end
+
+        local path = OUT .. "raycaster_pick_contact_sheet.png"
+        save_png(canvas, path)
+    end)
     -- Does: Runs "scene build and layered hit trace" and turns the owner-module result into an inspectable artifact.
     -- Shows: The artifact should expose the behavior produced by lurek.raycaster.newHeightMap, LHeightMap:setFloor, and related owner calls without needing a special evidence-only renderer.
     -- Artifact: tests/artifacts/current/raycaster/raycaster_scene_build_trace.txt
@@ -638,6 +833,13 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
         map:setCell(6, 8, 2)
         map:setCell(9, 8, 3)
         map:setWallAlpha(2, 0.45)
+        map:setCell(7, 7, 1)
+        map:setWindowCell(7, 7, 0.25, 0.78, 0.35)
+        map:setCell(7, 9, 1)
+        map:setDoorCell(7, 9, "vertical", 0.0)
+        local half_pick_map = make_room(12, 10)
+        half_pick_map:setCell(7, 5, 1)
+        half_pick_map:setHalfWallCell(7, 5, 0.5)
 
         local hm = lurek.raycaster.newHeightMap(16, 16)
         hm:setFloor(8, 8, -0.25)
@@ -655,20 +857,632 @@ describe("Evidence: lurek.raycaster visual scenarios", function()
         }
         local wall = lurek.render.newImage(SAMPLE_TEXTURE)
         local quad_count = map:buildScene(scene_params, {}, {}, { [1] = wall, [2] = wall, [3] = wall })
-        local model_count = map:buildSceneWithModels(scene_params, nil, nil, nil, nil)
+        local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
+        local model_count = map:buildSceneWithModels(scene_params, nil, nil, nil, {
+            { model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
+        })
         local layered = map:castRayMulti(2, 8.5, 0, 20, 4)
         local revealed = map:revealCellsFromRays(7.5, 8.5, 0.12, math.pi / 2, 16, 12.0, 0.2)
+        local managed_doors = lurek.raycaster.newDoorManager()
+        local managed_id = managed_doors:addDoor(7, 9, "vertical", 1.0)
+        local half_pick_center = half_pick_map:pickScreen(160, 100, {
+            px = 2.5,
+            py = 5.5,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 20.0,
+            screen_w = 320,
+            screen_h = 200,
+        })
+        local half_pick_upper = half_pick_map:pickScreen(160, 84, {
+            px = 2.5,
+            py = 5.5,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 20.0,
+            screen_w = 320,
+            screen_h = 200,
+        })
+        local window_pick_map = make_room(12, 10)
+        window_pick_map:setCell(7, 5, 1)
+        window_pick_map:setWindowCell(7, 5, 0.3, 0.75, 0.35)
+        local window_pick_open = window_pick_map:pickScreen(160, 100, {
+            px = 2.5,
+            py = 5.5,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 20.0,
+            screen_w = 320,
+            screen_h = 200,
+        })
+        local window_pick_lower = window_pick_map:pickScreen(160, 114, {
+            px = 2.5,
+            py = 5.5,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 20.0,
+            screen_w = 320,
+            screen_h = 200,
+        })
+        local door_pick_map = make_room(12, 10)
+        door_pick_map:setCell(7, 5, 1)
+        door_pick_map:setDoorCell(7, 5, "vertical", 0.25, 0.9)
+        local door_pick_panel = door_pick_map:pickScreen(160, 100, {
+            px = 2.5,
+            py = 5.5,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 20.0,
+            screen_w = 320,
+            screen_h = 200,
+        })
+        local open_door_pick_map = make_room(12, 10)
+        open_door_pick_map:setCell(7, 5, 1)
+        open_door_pick_map:setDoorCell(7, 5, "vertical", 0.6, 0.9)
+        local door_pick_gap = open_door_pick_map:pickScreen(160, 100, {
+            px = 2.5,
+            py = 5.5,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 64,
+            max_dist = 20.0,
+            screen_w = 320,
+            screen_h = 200,
+        })
+        local pick_map = make_room(16, 16)
+        local pick_params = {
+            px = 8.0,
+            py = 8.0,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 32,
+            max_dist = 16.0,
+            screen_w = 160,
+            screen_h = 100,
+        }
+        local sprite_pick = pick_map:pickScreen(80, 50, pick_params, {
+            { id = 901, x = 10.5, y = 8.0, texture = wall, size = 1.0 },
+        })
+        local model_pick = pick_map:pickScreen(80, 60, pick_params, nil, {
+            { id = 902, model = model, x = 10.5, y = 8.0, yaw = math.pi / 4, z = 0.15, scale = 0.22 },
+        })
+        local solid_los_map = lurek.raycaster.new(10, 10)
+        solid_los_map:setCell(5, 5, 1)
+        local solid_los = solid_los_map:lineOfSight(1.0, 5.5, 9.0, 5.5)
+        local window_los_map = lurek.raycaster.new(10, 10)
+        window_los_map:setCell(5, 5, 1)
+        window_los_map:setWindowCell(5, 5, 0.25, 0.8, 0.35)
+        local window_los = window_los_map:lineOfSight(1.0, 5.5, 9.0, 5.5)
+        local door_closed_map = lurek.raycaster.new(12, 6)
+        door_closed_map:setCell(5, 2, 2)
+        door_closed_map:setDoorCell(5, 2, "vertical", 0.0, 0.25)
+        door_closed_map:setCell(9, 2, 1)
+        local door_closed_hit = door_closed_map:castRay(1.5, 2.5, 0.0, 20.0)
+        local door_open_map = lurek.raycaster.new(12, 6)
+        door_open_map:setCell(5, 2, 2)
+        door_open_map:setDoorCell(5, 2, "vertical", 1.0, 0.25)
+        door_open_map:setCell(9, 2, 1)
+        local door_open_hit = door_open_map:castRay(1.5, 2.5, 0.0, 20.0)
+        local feature_light = {
+            { x = 12.5, y = 7.5, radius = 10.0, intensity = 8.0, color = { 1.0, 0.8, 0.6 } },
+        }
+        local solid_light_map = lurek.raycaster.new(16, 16)
+        solid_light_map:setCell(7, 7, 1)
+        local solid_light_r = select(1, solid_light_map:computeTileLight(4, 7, 0.0, feature_light))
+        local window_light_map = lurek.raycaster.new(16, 16)
+        window_light_map:setCell(7, 7, 1)
+        window_light_map:setWindowCell(7, 7, 0.25, 0.78, 0.35)
+        local window_light_r = select(1, window_light_map:computeTileLight(4, 7, 0.0, feature_light))
+        local closed_door_light_map = lurek.raycaster.new(16, 16)
+        closed_door_light_map:setCell(7, 7, 1)
+        closed_door_light_map:setDoorCell(7, 7, "vertical", 0.0, 0.25)
+        local closed_door_light_r = select(1, closed_door_light_map:computeTileLight(4, 7, 0.0, feature_light))
+        local open_door_light_map = lurek.raycaster.new(16, 16)
+        open_door_light_map:setCell(7, 7, 1)
+        open_door_light_map:setDoorCell(7, 7, "vertical", 1.0, 0.25)
+        local open_door_light_r = select(1, open_door_light_map:computeTileLight(4, 7, 0.0, feature_light))
+        expect_equal("half", half_pick_center.feature.kind)
+        expect_equal("body", half_pick_center.feature.section)
+        expect_equal(11, half_pick_upper.x)
+        expect_equal(5, half_pick_upper.y)
+        expect_equal(11, window_pick_open.x)
+        expect_equal(5, window_pick_open.y)
+        expect_equal("window", window_pick_lower.feature.kind)
+        expect_equal("lower", window_pick_lower.feature.section)
+        expect_equal("door", door_pick_panel.feature.kind)
+        expect_equal("panel", door_pick_panel.feature.section)
+        expect_equal(11, door_pick_gap.x)
+        expect_equal(5, door_pick_gap.y)
+        expect_true(window_light_r > solid_light_r)
+        expect_true(open_door_light_r > closed_door_light_r)
+        local multilevel_count = lurek.raycaster.buildMultiLevelScene(
+            {
+                px = 0.5,
+                py = 1.5,
+                angle = 0.0,
+                fov = math.pi / 3,
+                rays = 32,
+                max_dist = 8.0,
+                screen_w = 160,
+                screen_h = 100,
+                active_level = 1,
+            },
+            {
+                {
+                    width = 4,
+                    height = 4,
+                    cells = {
+                        0, 0, 0, 0,
+                        0, 0, 0, 0,
+                        0, 0, 0, 0,
+                        0, 0, 0, 0,
+                    },
+                    floor_offset = 0.0,
+                    ceiling_height = 1.0,
+                    ceiling_holes = {
+                        false, false, false, false,
+                        false, false, false, false,
+                        false, false, false, false,
+                        false, false, false, false,
+                    },
+                    ceiling_texture = wall,
+                },
+                {
+                    width = 4,
+                    height = 4,
+                    cells = {
+                        0, 0, 0, 0,
+                        0, 0, 0, 0,
+                        0, 0, 0, 0,
+                        0, 0, 0, 0,
+                    },
+                    floor_offset = 1.0,
+                    ceiling_height = 2.0,
+                    floor_holes = {
+                        false, false, false, false,
+                        false, false, false, false,
+                        false, false, false, false,
+                        false, false, false, false,
+                    },
+                    floor_texture = wall,
+                },
+            },
+            {},
+            {},
+            {},
+            {
+                { model = model, x = 2.5, y = 1.5, level = 1, yaw = math.pi / 6, z = 0.2, scale = 0.22 },
+            }
+        )
+        local cull_closed_count = lurek.raycaster.buildMultiLevelScene(
+            {
+                px = 1.5,
+                py = 2.5,
+                angle = 0.0,
+                fov = math.pi / 3,
+                rays = 32,
+                max_dist = 20.0,
+                screen_w = 160,
+                screen_h = 100,
+                active_level = 0,
+            },
+            {
+                {
+                    width = 8,
+                    height = 8,
+                    cells = {
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                    },
+                    floor_offset = 0.0,
+                    ceiling_height = 1.0,
+                },
+                {
+                    width = 8,
+                    height = 8,
+                    cells = {
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 1, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                    },
+                    floor_offset = 1.0,
+                    ceiling_height = 2.0,
+                },
+            },
+            {},
+            {},
+            { [1] = wall }
+        )
+        local cull_open_count = lurek.raycaster.buildMultiLevelScene(
+            {
+                px = 1.5,
+                py = 2.5,
+                angle = 0.0,
+                fov = math.pi / 3,
+                rays = 32,
+                max_dist = 20.0,
+                screen_w = 160,
+                screen_h = 100,
+                active_level = 0,
+            },
+            {
+                {
+                    width = 8,
+                    height = 8,
+                    cells = {
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                    },
+                    floor_offset = 0.0,
+                    ceiling_height = 1.0,
+                    ceiling_holes = {
+                        false, false, false, false, false, false, false, false,
+                        false, false, false, false, false, false, false, false,
+                        false, false, false, false, true, false, false, false,
+                        false, false, false, false, false, false, false, false,
+                        false, false, false, false, false, false, false, false,
+                        false, false, false, false, false, false, false, false,
+                        false, false, false, false, false, false, false, false,
+                        false, false, false, false, false, false, false, false,
+                    },
+                },
+                {
+                    width = 8,
+                    height = 8,
+                    cells = {
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 1, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                    },
+                    floor_offset = 1.0,
+                    ceiling_height = 2.0,
+                },
+            },
+            {},
+            {},
+            { [1] = wall }
+        )
+        expect_true(cull_open_count > cull_closed_count)
+        local stats_map = make_room(8, 8)
+        for y = 1, 6 do
+            for x = 1, 6 do
+                stats_map:setCeilingTextureCell(x, y, wall)
+            end
+        end
+        stats_map:buildScene({
+            px = 4.0,
+            py = 4.0,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 48,
+            max_dist = 10.0,
+            screen_w = 160,
+            screen_h = 100,
+        }, {
+            lurek.raycaster.newPointLight(4.0, 4.0, 1.0, 0.9, 0.8, 4.0, 1.25),
+        }, {}, {
+            [1] = wall,
+        })
+        local build_stats = lurek.raycaster.getLastBuildStats()
         local path = OUT .. "raycaster_scene_build_trace.txt"
         local lines = {
             "floor_8_8=" .. tostring(hm:floorAt(8, 8)),
             "ceiling_8_8=" .. tostring(hm:ceilingAt(8, 8)),
             "buildScene_quads=" .. tostring(quad_count),
             "buildSceneWithModels_quads=" .. tostring(model_count),
+            "buildMultiLevelScene_quads=" .. tostring(multilevel_count),
             "castRayMulti_hits=" .. tostring(#layered),
             "revealCells_hits=" .. tostring(#revealed),
             "first_layered_cell=" .. tostring(layered[1] and layered[1].cell_value or "nil"),
+            "half_feature=" .. tostring(half_pick_map:getWallFeatureCell(7, 5).kind),
+            "half_pick_center=" .. describe_pick(half_pick_center),
+            "half_pick_upper=" .. describe_pick(half_pick_upper),
+            "half_pick_section=" .. tostring(half_pick_center.feature and half_pick_center.feature.section or "nil"),
+            "window_pick_open=" .. describe_pick(window_pick_open),
+            "window_pick_lower=" .. describe_pick(window_pick_lower),
+            "window_pick_section=" .. tostring(window_pick_lower.feature and window_pick_lower.feature.section or "nil"),
+            "door_pick_panel=" .. describe_pick(door_pick_panel),
+            "door_pick_gap=" .. describe_pick(door_pick_gap),
+            "door_pick_section=" .. tostring(door_pick_panel.feature and door_pick_panel.feature.section or "nil"),
+            "sprite_pick=" .. describe_pick(sprite_pick),
+            "sprite_pick_id=" .. tostring(sprite_pick and sprite_pick.id or "nil"),
+            "sprite_pick_hit=" .. tostring(sprite_pick and string.format("%.3f,%.3f", sprite_pick.hit_x, sprite_pick.hit_y) or "nil"),
+            "model_pick=" .. describe_pick(model_pick),
+            "model_pick_id=" .. tostring(model_pick and model_pick.id or "nil"),
+            "model_pick_hit=" .. tostring(model_pick and string.format("%.3f,%.3f", model_pick.hit_x, model_pick.hit_y) or "nil"),
+            "model_pick_level=" .. tostring(model_pick and model_pick.level or "nil"),
+            "solid_los=" .. tostring(solid_los),
+            "window_los=" .. tostring(window_los),
+            "door_closed_hit=" .. tostring(door_closed_hit and door_closed_hit.cell_value or "nil"),
+            "door_open_hit=" .. tostring(door_open_hit and door_open_hit.cell_value or "nil"),
+            "managed_door_kind=" .. tostring(map:getWallFeatureCell(7, 9).kind),
+            "solid_light_r=" .. string.format("%.3f", solid_light_r),
+            "window_light_r=" .. string.format("%.3f", window_light_r),
+            "closed_door_light_r=" .. string.format("%.3f", closed_door_light_r),
+            "open_door_light_r=" .. string.format("%.3f", open_door_light_r),
+            "cull_closed_quads=" .. tostring(cull_closed_count),
+            "cull_open_quads=" .. tostring(cull_open_count),
+            "lighting_samples=" .. tostring(build_stats and build_stats.lightingSamples or "nil"),
+            "lighting_cache_hits=" .. tostring(build_stats and build_stats.lightingCacheHits or "nil"),
+            "lighting_cache_misses=" .. tostring(build_stats and build_stats.lightingCacheMisses or "nil"),
         }
 
+        write_file(path, table.concat(lines, "\n") .. "\n")
+        expect_evidence_created(path)
+    end)
+
+    -- Does: Runs "scene adapter physics bridge trace" and turns the owner-module result into an inspectable artifact.
+    -- Shows: The artifact should expose the behavior produced by lurek.raycaster.newSceneAdapter, LRaycaster:buildSceneFromAdapter, and LRaycaster:pickScreenFromAdapter while a bound physics body moves.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_scene_adapter_trace.txt
+    -- Why: This is meaningful only if the trace changes come from the physics-backed adapter bridge rather than manual sprite/model table rebuilding.
+
+    it("TXT: scene adapter physics bridge trace", function()
+        ensure_evidence_dir("raycaster")
+
+        local map = make_room(16, 16)
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newBody(10.5, 8.0, "dynamic")
+        local wall = lurek.render.newImage(SAMPLE_TEXTURE)
+        local model = lurek.render.loadModel("content/examples/assets/models/sample_tank.obj")
+        local adapter = lurek.raycaster.newSceneAdapter()
+        adapter:bindBodySprite(body, wall, {
+            id = 771,
+            size = 1.0,
+        })
+        adapter:bindBodyLight(body, 4.0, {
+            intensity = 1.2,
+            color = { 1.0, 0.85, 0.5 },
+        })
+        adapter:bindBodyModel(body, model, {
+            id = 772,
+            yaw_offset = math.pi / 4,
+            z = 0.15,
+            scale = 0.22,
+        })
+
+        local params = {
+            px = 8.0,
+            py = 8.0,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 32,
+            max_dist = 16.0,
+            screen_w = 160,
+            screen_h = 100,
+        }
+        local before_inputs = adapter:sceneInputs()
+        local before_quads = map:buildSceneFromAdapter(params, adapter, {})
+        local before_pick = map:pickScreenFromAdapter(80, 50, params, adapter)
+
+        body:setPosition(11.5, 8.0)
+
+        local after_inputs = adapter:sceneInputs()
+        local after_quads = map:buildSceneFromAdapter(params, adapter, {})
+        local after_pick = map:pickScreenFromAdapter(80, 50, params, adapter)
+
+        local path = OUT .. "raycaster_scene_adapter_trace.txt"
+        local lines = {
+            "before_sprite=" .. string.format("%.3f,%.3f", before_inputs.sprites[1].x, before_inputs.sprites[1].y),
+            "before_light=" .. string.format("%.3f,%.3f", before_inputs.lights[1].x, before_inputs.lights[1].y),
+            "before_quads=" .. tostring(before_quads),
+            "before_pick=" .. describe_pick(before_pick),
+            "after_sprite=" .. string.format("%.3f,%.3f", after_inputs.sprites[1].x, after_inputs.sprites[1].y),
+            "after_light=" .. string.format("%.3f,%.3f", after_inputs.lights[1].x, after_inputs.lights[1].y),
+            "after_quads=" .. tostring(after_quads),
+            "after_pick=" .. describe_pick(after_pick),
+            "after_pick_id=" .. tostring(after_pick and after_pick.id or "nil"),
+        }
+        write_file(path, table.concat(lines, "\n") .. "\n")
+        expect_evidence_created(path)
+    end)
+
+    -- Does: Runs "multilevel scene adapter level trace" and turns the owner-module result into an inspectable artifact.
+    -- Shows: The artifact should expose the behavior produced by lurek.raycaster.buildMultiLevelSceneFromAdapter and lurek.raycaster.pickScreenMultiLevelFromAdapter for physics-backed entities placed on an upper level.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_multilevel_scene_adapter_trace.txt
+    -- Why: This is meaningful only if the same 2D body movement changes both the projected multilevel scene and the picked owning level without rebuilding manual sprite tables.
+
+    it("TXT: multilevel scene adapter level trace", function()
+        ensure_evidence_dir("raycaster")
+
+        local world = lurek.physics.newWorld(0, 0)
+        local body = world:newBody(2.5, 1.5, "dynamic")
+        local wall = lurek.render.newImage(SAMPLE_TEXTURE)
+        local adapter = lurek.raycaster.newSceneAdapter()
+        adapter:bindBodySprite(body, wall, {
+            id = 881,
+            level = 1,
+            size = 1.0,
+        })
+        adapter:bindBodyLight(body, 4.0, {
+            level = 1,
+            intensity = 1.0,
+            color = { 1.0, 0.85, 0.6 },
+        })
+
+        local params = {
+            px = 0.5,
+            py = 1.5,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 32,
+            max_dist = 8.0,
+            screen_w = 160,
+            screen_h = 100,
+            active_level = 1,
+        }
+        local levels = {
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 0.0,
+                ceiling_height = 1.0,
+            },
+            {
+                width = 4,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                },
+                floor_offset = 1.0,
+                ceiling_height = 2.0,
+            },
+        }
+
+        local before_inputs = adapter:sceneInputs()
+        local before_quads = lurek.raycaster.buildMultiLevelSceneFromAdapter(params, levels, adapter, {})
+        local before_pick = lurek.raycaster.pickScreenMultiLevelFromAdapter(80, 50, params, levels, {}, adapter)
+
+        body:setPosition(3.0, 1.5)
+
+        local after_inputs = adapter:sceneInputs()
+        local after_quads = lurek.raycaster.buildMultiLevelSceneFromAdapter(params, levels, adapter, {})
+        local after_pick = lurek.raycaster.pickScreenMultiLevelFromAdapter(80, 50, params, levels, {}, adapter)
+
+        local path = OUT .. "raycaster_multilevel_scene_adapter_trace.txt"
+        local lines = {
+            "before_sprite=" .. string.format("%.3f,%.3f@L%d", before_inputs.sprites[1].x, before_inputs.sprites[1].y, before_inputs.sprites[1].level or -1),
+            "before_light=" .. string.format("%.3f,%.3f@L%d", before_inputs.lights[1].x, before_inputs.lights[1].y, before_inputs.lights[1].level or -1),
+            "before_quads=" .. tostring(before_quads),
+            "before_pick=" .. describe_pick(before_pick),
+            "before_pick_id=" .. tostring(before_pick and before_pick.id or "nil"),
+            "after_sprite=" .. string.format("%.3f,%.3f@L%d", after_inputs.sprites[1].x, after_inputs.sprites[1].y, after_inputs.sprites[1].level or -1),
+            "after_light=" .. string.format("%.3f,%.3f@L%d", after_inputs.lights[1].x, after_inputs.lights[1].y, after_inputs.lights[1].level or -1),
+            "after_quads=" .. tostring(after_quads),
+            "after_pick=" .. describe_pick(after_pick),
+            "after_pick_id=" .. tostring(after_pick and after_pick.id or "nil"),
+        }
+        write_file(path, table.concat(lines, "\n") .. "\n")
+        expect_evidence_created(path)
+    end)
+
+    -- Does: Runs "persistent multilevel runtime authoring trace" and turns the owner-module result into an inspectable artifact.
+    -- Shows: The artifact should expose the behavior produced by LMultiLevelGrid:setFloorTexture, LMultiLevelGrid:setCeilingTexture, LMultiLevelGrid:setLoweredFloorCell, and LMultiLevelGrid:buildScene when a stacked world is authored incrementally at runtime.
+    -- Artifact: tests/artifacts/current/raycaster/raycaster_persistent_multilevel_authoring_trace.txt
+    -- Why: This is meaningful only if the same persistent grid handle can be shaped into a lit pseudo-3D level without rebuilding level tables from scratch.
+
+    it("TXT: persistent multilevel runtime authoring trace", function()
+        ensure_evidence_dir("raycaster")
+
+        local wall = lurek.render.newImage(SAMPLE_TEXTURE)
+        local grid = lurek.raycaster.newMultiLevelGrid({
+            {
+                width = 6,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0,
+                },
+                floor_offset = 0.0,
+                ceiling_height = 1.0,
+            },
+            {
+                width = 6,
+                height = 4,
+                cells = {
+                    0, 0, 0, 0, 0, 1,
+                    0, 0, 0, 0, 0, 1,
+                    0, 0, 0, 0, 0, 1,
+                    0, 0, 0, 0, 0, 1,
+                },
+                floor_offset = 1.0,
+                ceiling_height = 2.0,
+            },
+        })
+        grid:setActiveLevel(1)
+        grid:setFloorOffset(1.2)
+        grid:setCeilingHeight(2.4)
+        grid:setFloorTexture(wall)
+        grid:setCeilingTexture(wall)
+        grid:setFloorTextureCell(2, 1, wall)
+        grid:setCeilingTextureCell(2, 1, wall)
+        grid:setLoweredFloorCell(2, 1, {
+            texture = wall,
+            depth = 0.35,
+            r = 0.8,
+            g = 0.7,
+            b = 0.6,
+            blocked = false,
+        })
+        grid:setFloorHole(2, 1, false)
+        grid:setCeilingHole(2, 1, false)
+
+        local params = {
+            px = 1.5,
+            py = 1.5,
+            angle = 0.0,
+            fov = math.pi / 3,
+            rays = 48,
+            max_dist = 10.0,
+            screen_w = 160,
+            screen_h = 100,
+            camera_height = 0.5,
+        }
+        local quad_count = grid:buildScene(params, {
+            lurek.raycaster.newPointLight(2.5, 1.5, 1.0, 0.9, 0.8, 4.0, 1.25, 1),
+        }, {}, {
+            [1] = wall,
+        })
+        local wall_pick = grid:pickScreen(80, 50, params, { [1] = wall })
+        local floor_pick = grid:pickScreen(80, 92, params, { [1] = wall })
+        local pit = grid:getLoweredFloorCell(2, 1)
+        local stats = lurek.raycaster.getLastBuildStats()
+
+        local path = OUT .. "raycaster_persistent_multilevel_authoring_trace.txt"
+        local lines = {
+            "active_level=" .. tostring(grid:activeLevel()),
+            "floor_offset=" .. tostring(grid:getFloorOffset()),
+            "ceiling_height=" .. tostring(grid:getCeilingHeight()),
+            "floor_texture=" .. tostring(grid:getFloorTexture()),
+            "ceiling_texture=" .. tostring(grid:getCeilingTexture()),
+            "floor_cell_texture=" .. tostring(grid:getFloorTextureCell(2, 1)),
+            "ceiling_cell_texture=" .. tostring(grid:getCeilingTextureCell(2, 1)),
+            "pit_depth=" .. tostring(pit and pit.depth or "nil"),
+            "pit_blocked=" .. (pit == nil and "nil" or tostring(pit.blocked)),
+            "quad_count=" .. tostring(quad_count),
+            "wall_pick=" .. describe_pick(wall_pick),
+            "floor_pick=" .. describe_pick(floor_pick),
+            "lighting_samples=" .. tostring(stats and stats.lightingSamples or "nil"),
+            "lighting_cache_hits=" .. tostring(stats and stats.lightingCacheHits or "nil"),
+            "lighting_cache_misses=" .. tostring(stats and stats.lightingCacheMisses or "nil"),
+        }
         write_file(path, table.concat(lines, "\n") .. "\n")
         expect_evidence_created(path)
     end)

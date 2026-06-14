@@ -36,6 +36,37 @@ local function new_tileset()
     return lurek.mapblock.newTilesetRef(7, "ground", 64, 8, 16, 16)
 end
 
+local function new_footprint_block()
+    local config = new_config()
+    config:setDefaultSegmentSize(1)
+    local block = lurek.mapblock.newBlock(2, 2, 1, config)
+    block:setFootprint({
+        { 0, 0 },
+        { 1, 0 },
+        { 0, 1 },
+    })
+    return block
+end
+
+local function generate_single_placement_result()
+    local config = new_config()
+    config:setDefaultSegmentSize(1)
+    local gen = new_generator(config)
+    gen:setRectShape(1, 1)
+
+    local block = lurek.mapblock.newBlock(1, 1, 1, config)
+    block:setName("seed")
+    block:setTile(0, 0, 0, 0, 1, 9)
+
+    local group = new_group("terrain")
+    group:addBlock(block)
+    gen:addGroup(group)
+
+    local script = new_script("place_once")
+    script:addStep("place_block", { group = "terrain", block_index = 0, x = 0, y = 0 })
+    return gen:generate(script)
+end
+
 local function generate_empty_result(config)
     local gen = new_generator(config)
     gen:setRectShape(2, 1)
@@ -191,6 +222,47 @@ describe("mapblock block methods", function()
         end)
     end)
 
+    -- @covers LMapBlock:getWeight
+    it("getWeight returns the previously stored weight", function()
+        local block = new_block()
+        block:setWeight(3.25)
+        expect_equal(3.25, block:getWeight())
+    end)
+
+    -- @covers LMapBlock:setFootprint
+    it("setFootprint accepts a custom polyomino footprint", function()
+        local block = new_footprint_block()
+        expect_equal(3, block:getFootprintCellCount())
+    end)
+
+    -- @covers LMapBlock:getFootprintCellCount
+    it("getFootprintCellCount reports the custom footprint size", function()
+        local block = new_footprint_block()
+        expect_equal(3, block:getFootprintCellCount())
+    end)
+
+    -- @covers LMapBlock:isFootprintCell
+    it("isFootprintCell returns true only for occupied footprint cells", function()
+        local block = new_footprint_block()
+        expect_true(block:isFootprintCell(1, 0))
+        expect_false(block:isFootprintCell(1, 1))
+    end)
+
+    -- @covers LMapBlock:setSocket
+    it("setSocket stores per-cell socket metadata", function()
+        local block = new_footprint_block()
+        expect_no_error(function()
+            block:setSocket(1, 0, "east", 12)
+        end)
+    end)
+
+    -- @covers LMapBlock:getSocket
+    it("getSocket returns a stored per-cell socket type", function()
+        local block = new_footprint_block()
+        block:setSocket(1, 0, "east", 12)
+        expect_equal(12, block:getSocket(1, 0, "east"))
+    end)
+
     -- @covers LMapBlock:setEdgeOnly
     it("setEdgeOnly accepts a boolean placement restriction", function()
         local block = new_block()
@@ -312,6 +384,14 @@ describe("mapblock rules and grids", function()
         expect_equal(1, grid:getAvailableCount())
     end)
 
+    -- @covers LPlacementGrid:removePosition
+    it("removePosition deletes a previously available cell", function()
+        local grid = lurek.mapblock.newEmptyGrid()
+        grid:addPosition(2, 4)
+        grid:removePosition(2, 4)
+        expect_equal(0, grid:getAvailableCount())
+    end)
+
     -- @covers LPlacementGrid:isAvailable
     it("isAvailable returns true for inserted positions", function()
         local grid = lurek.mapblock.newEmptyGrid()
@@ -322,6 +402,16 @@ describe("mapblock rules and grids", function()
     -- @covers LPlacementGrid:getAvailableCount
     it("getAvailableCount reports all rectangular positions", function()
         expect_equal(12, new_grid(4, 3):getAvailableCount())
+    end)
+
+    -- @covers LPlacementGrid:isEdgePosition
+    it("isEdgePosition detects boundary cells in an irregular shape", function()
+        local grid = lurek.mapblock.newEmptyGrid()
+        grid:addPosition(0, 0)
+        grid:addPosition(1, 0)
+        grid:addPosition(1, 1)
+        expect_true(grid:isEdgePosition(0, 0))
+        expect_true(grid:isEdgePosition(1, 1))
     end)
 
     -- @covers LPlacementGrid:clear
@@ -352,6 +442,19 @@ describe("mapblock generator and result methods", function()
         })
         local result = gen:generate(new_script("empty"))
         expect_equal(24, result:getWidth())
+        expect_equal(16, result:getHeight())
+    end)
+
+    -- @covers LMapBlockGenerator:setGrid
+    it("setGrid accepts an explicit irregular placement grid", function()
+        local gen = new_generator()
+        local grid = lurek.mapblock.newEmptyGrid()
+        grid:addPosition(0, 0)
+        grid:addPosition(1, 0)
+        grid:addPosition(1, 1)
+        gen:setGrid(grid)
+        local result = gen:generate(new_script("empty"))
+        expect_equal(16, result:getWidth())
         expect_equal(16, result:getHeight())
     end)
 
@@ -460,6 +563,15 @@ describe("mapblock generator and result methods", function()
     -- @covers LMapBlockResult:isEmpty
     it("isEmpty returns true when generation placed nothing", function()
         expect_true(generate_empty_result(new_config()):isEmpty())
+    end)
+
+    -- @covers LMapBlockResult:getPlacements
+    it("getPlacements returns structured placement records", function()
+        local placements = generate_single_placement_result():getPlacements()
+        expect_equal(1, #placements)
+        expect_equal("terrain", placements[1].group_name)
+        expect_equal("seed", placements[1].block_name)
+        expect_equal(1, #placements[1].cells)
     end)
 end)
 

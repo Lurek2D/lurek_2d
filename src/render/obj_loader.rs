@@ -412,7 +412,10 @@ impl ObjModel {
         mesh.texture = texture_key;
         mesh
     }
-    /// Project a single world-space instance with Y-rotation and uniform scale; return `(Mesh, depth)`.
+    /// Project a single world-space instance with Y-rotation and uniform scale.
+    /// Returns `(Mesh, depth, triangle_depths)` where `triangle_depths` stores one
+    /// camera-space depth per emitted triangle in the same order as the flattened
+    /// triangle-list mesh vertices.
     #[allow(clippy::too_many_arguments)]
     pub fn project_instance_to_mesh(
         &self,
@@ -422,10 +425,11 @@ impl ObjModel {
         screen_w: f32,
         screen_h: f32,
         world_x: f32,
-        world_y: f32,
-        rotation_quarters: u8,
+        world_z: f32,
+        floor_y: f32,
+        yaw_radians: f32,
         scale: f32,
-    ) -> (Mesh, f32) {
+    ) -> (Mesh, f32, Vec<f32>) {
         let forward = cam_target.sub(cam_pos).normalise();
         let world_up = Vec3::new(0.0, 1.0, 0.0);
         let right = forward.cross(world_up).normalise();
@@ -434,10 +438,10 @@ impl ObjModel {
         let tan_half_fov = (fov_y * 0.5).tan();
         let light_dir = Vec3::new(0.5, 1.0, 0.7).normalise();
         let near_z = 0.05_f32;
-        let rot = (rotation_quarters % 4) as f32 * std::f32::consts::FRAC_PI_2;
-        let c = rot.cos();
-        let s = rot.sin();
-        let mut projected_tris: Vec<(f32, [MeshVertex; 3])> = Vec::with_capacity(self.faces.len());
+        let c = yaw_radians.cos();
+        let s = yaw_radians.sin();
+        let mut projected_tris: Vec<(f32, f32, [MeshVertex; 3])> =
+            Vec::with_capacity(self.faces.len());
         let mut min_x = f32::INFINITY;
         let mut max_x = f32::NEG_INFINITY;
         let mut min_y = f32::INFINITY;
@@ -452,17 +456,17 @@ impl ObjModel {
         }
         let center_x = (min_x + max_x) * 0.5;
         let center_z = (min_z + max_z) * 0.5;
-        let base_y = min_y;
+        let model_base_y = min_y;
         let mut instance_depth = f32::INFINITY;
         for face in &self.faces {
             let wp = face.verts.map(|v| {
                 let p = self.positions[v.0];
                 let px = (p.x - center_x) * scale;
-                let py = (p.y - base_y) * scale;
+                let py = (p.y - model_base_y) * scale;
                 let pz = (p.z - center_z) * scale;
                 let rx = px * c + pz * s;
                 let rz = -px * s + pz * c;
-                Vec3::new(world_x + rx, py, world_y + rz)
+                Vec3::new(world_x + rx, floor_y + py, world_z + rz)
             });
             let e0 = wp[1].sub(wp[0]);
             let e1 = wp[2].sub(wp[0]);
@@ -524,19 +528,23 @@ impl ObjModel {
                 };
             }
             let tri_depth = z0.max(z1).max(z2);
-            instance_depth = instance_depth.min((z0 + z1 + z2) / 3.0);
-            projected_tris.push((tri_depth, tri));
+            let pick_depth = (z0 + z1 + z2) / 3.0;
+            instance_depth = instance_depth.min(pick_depth);
+            projected_tris.push((tri_depth, pick_depth, tri));
         }
         projected_tris.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap_or(std::cmp::Ordering::Equal));
         let mut vertices: Vec<MeshVertex> = Vec::with_capacity(projected_tris.len() * 3);
-        for (_, tri) in projected_tris {
+        let mut triangle_depths: Vec<f32> = Vec::with_capacity(projected_tris.len());
+        for (_, pick_depth, tri) in projected_tris {
             vertices.push(tri[0]);
             vertices.push(tri[1]);
             vertices.push(tri[2]);
+            triangle_depths.push(pick_depth);
         }
         (
             Mesh::from_vertices(vertices, MeshDrawMode::Triangles),
             instance_depth,
+            triangle_depths,
         )
     }
 }

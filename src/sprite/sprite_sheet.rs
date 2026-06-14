@@ -163,7 +163,7 @@ impl SpriteSheet {
     }
     /// Return up to count frames starting at start; empty vec when start >= frame count.
     pub fn get_range(&self, start: usize, count: usize) -> Vec<Rect> {
-        let end = (start + count).min(self.frames.len());
+        let end = start.saturating_add(count).min(self.frames.len());
         if start >= self.frames.len() {
             return Vec::new();
         }

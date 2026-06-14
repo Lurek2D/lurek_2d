@@ -31,6 +31,8 @@ pub mod projection;
 pub mod ray_hit;
 /// Top-level render dispatch for a raycaster frame.
 pub mod render;
+/// Runtime adapter for mapping static or physics-backed 2D entities into raycaster scene inputs.
+pub mod scene_adapter;
 /// `RaycasterScene` and its constituent quad/sprite/mesh types.
 pub mod scene;
 /// 2D line segment and `cast_ray_2d` entry point.
@@ -45,8 +47,10 @@ pub mod tile_picker;
 pub mod visibility;
 /// Debug visualization helpers (ray paths, normals, tiles).
 pub mod visualization;
+/// Per-cell wall feature descriptors for doors, windows, and half-height walls.
+pub mod wall_feature;
 
-pub use build_scene::{SceneBuildParams, WorldSprite};
+pub use build_scene::{DirectionalSpriteTextures, LevelSprite, SceneBuildParams, WorldSprite};
 pub use column_batch::{ColumnBatch, ColumnData};
 pub use dda::Raycaster2D;
 pub use depth_buffer::DepthBuffer;
@@ -58,9 +62,21 @@ pub use lighting::{apply_lit_shade, compute_lighting, PointLight};
 pub use multilevel::{MultiLevelGrid, RaycasterLevel};
 pub use projection::{distance_shade, project_column};
 pub use ray_hit::RayHit;
-pub use scene::{BillboardSprite, CeilingQuad, FloorQuad, ModelMesh, RaycasterScene, WallQuad};
+pub use scene_adapter::{
+    ResolvedSceneTransform, SceneAdapter, SceneAdapterLight, SceneAdapterSprite, SceneTransform,
+};
+#[cfg(feature = "obj-loader")]
+pub use scene_adapter::{ResolvedSceneModel, SceneAdapterModel};
+pub use scene::{
+    BillboardSprite, CeilingQuad, EntityPickKind, EntityPickResult, FloorQuad, ModelMesh,
+    RaycasterBuildStats, RaycasterScene, WallQuad,
+};
 pub use segment::{cast_ray_2d, Segment};
-pub use sprite_manager::{SpriteManager, WorldSprite as ManagedSprite};
+pub use sprite_manager::{
+    DirectionalSpriteTextures as ManagedDirectionalSpriteTextures, DirectionalSpriteVariant,
+    SpriteManager, WorldSprite as ManagedSprite,
+};
 pub use sprite_projection::SpriteProjection;
-pub use tile_picker::{PickResult, TilePicker};
+pub use tile_picker::{PickResult, PickSurface, PickWallSection, ScreenPickParams, TilePicker};
 pub use visibility::field_of_view;
+pub use wall_feature::{WallFeature, WallFeatureKind};

@@ -29,7 +29,7 @@ pub mod script;
 /// Tileset reference linking block slots to tile ID ranges in a tileset.
 pub mod tileset_ref;
 
-pub use block::MapBlock;
+pub use block::{Edge, MapBlock};
 pub use config::MapBlockConfig;
 pub use constraints::{EdgeConstraint, NeighborRules};
 pub use generator::MapBlockGenerator;
@@ -38,7 +38,7 @@ pub use layer::BlockLayer;
 pub use maptile::{MapTile, TileSlot};
 pub use multilevel::{LevelData, MultiLevelMap};
 pub use orientation::MapOrientation;
-pub use output::MapBlockResult;
+pub use output::{MapBlockResult, PlacementRecord};
 pub use placement::{PlacedBlock, PlacementGrid};
 pub use script::{MapScript, ScriptStep, StepType};
 pub use tileset_ref::TilesetRef;

@@ -12,6 +12,8 @@ use std::collections::{HashMap, HashSet};
 /// A block that has been placed on the map.
 #[derive(Debug, Clone)]
 pub struct PlacedBlock {
+    /// Group name that owns the block index.
+    pub group_name: String,
     /// Index of the block within its group.
     pub block_index: usize,
     /// Position on the placement grid (grid coordinates, not tile coordinates).
@@ -20,15 +22,55 @@ pub struct PlacedBlock {
     pub grid_y: i32,
     /// Level (storey) this block is placed on.
     pub level: u32,
-    /// Rotation applied (0, 1, 2, 3 = 0°, 90°, 180°, 270°).
+    /// Rotation applied (0, 1, 2, 3 = 0, 90, 180, 270 degrees clockwise).
     pub rotation: u32,
     /// Whether the block is mirrored horizontally.
     pub mirrored: bool,
+    /// Occupied placement-grid cells covered by this block.
+    pub occupied_cells: Vec<(i32, i32)>,
 }
 
-/// The placement grid — defines available positions and tracks placed blocks.
+/// A fully resolved placement candidate with transform and occupied cells.
+#[derive(Debug, Clone)]
+pub struct PlacementCandidate {
+    /// Group name that owns the candidate block.
+    pub group_name: String,
+    /// Index of the candidate block inside its group.
+    pub block_index: usize,
+    /// Anchor placement X.
+    pub grid_x: i32,
+    /// Anchor placement Y.
+    pub grid_y: i32,
+    /// Rotation in quarter turns clockwise.
+    pub rotation: u32,
+    /// Whether the block is mirrored horizontally.
+    pub mirrored: bool,
+    /// Occupied placement cells.
+    pub occupied_cells: Vec<(i32, i32)>,
+}
+
+/// Immutable query parameters for one placement search.
+#[derive(Debug, Clone, Copy)]
+pub struct PlacementSearch<'a> {
+    /// All known groups keyed by name.
+    pub groups: &'a HashMap<String, super::group::MapGroup>,
+    /// Group name that owns the target block.
+    pub group_name: &'a str,
+    /// Block index inside the target group.
+    pub block_index: usize,
+    /// Neighbor compatibility rules.
+    pub rules: &'a NeighborRules,
+    /// Whether neighbor sockets must be respected.
+    pub match_sides: bool,
+    /// Allowed quarter-turn rotations.
+    pub rotations: &'a [u32],
+    /// Allowed mirror states.
+    pub mirrors: &'a [bool],
+}
+
+/// The placement grid defines available positions and tracks placed blocks.
 ///
-/// The grid does NOT need to be rectangular. Available positions are defined by
+/// The grid does not need to be rectangular. Available positions are defined by
 /// a set of coordinates, allowing arbitrary map shapes.
 #[derive(Debug, Clone)]
 pub struct PlacementGrid {
@@ -91,22 +133,27 @@ impl PlacementGrid {
         if !self.available.contains(&(x, y)) {
             return false;
         }
-        // A position is on the edge if any cardinal neighbor is NOT available
         !self.available.contains(&(x, y - 1))
             || !self.available.contains(&(x, y + 1))
             || !self.available.contains(&(x - 1, y))
             || !self.available.contains(&(x + 1, y))
     }
 
-    /// Place a block at a position. Returns false if position is not available.
+    /// Check whether all cells exist in the shape and are currently unoccupied.
+    pub fn can_place_cells(&self, cells: &[(i32, i32)]) -> bool {
+        cells.iter().all(|&(x, y)| self.is_available(x, y))
+    }
+
+    /// Place a block at a position. Returns false if any covered cell is unavailable.
     pub fn place_block(&mut self, placed: PlacedBlock) -> bool {
-        let pos = (placed.grid_x, placed.grid_y);
-        if !self.is_available(pos.0, pos.1) {
+        if placed.occupied_cells.is_empty() || !self.can_place_cells(&placed.occupied_cells) {
             return false;
         }
-        self.occupied.insert(pos);
         let idx = self.placed.len();
-        self.position_map.insert(pos, idx);
+        for &cell in &placed.occupied_cells {
+            self.occupied.insert(cell);
+            self.position_map.insert(cell, idx);
+        }
         self.placed.push(placed);
         true
     }
@@ -182,71 +229,123 @@ impl Default for PlacementGrid {
     }
 }
 
-/// Find valid positions for a block given the current grid state and rules.
-pub fn find_valid_positions(
+/// Find valid placements for a block given the current grid state and rules.
+pub fn find_valid_placements(
     grid: &PlacementGrid,
-    blocks: &[MapBlock],
-    block_index: usize,
-    rules: &NeighborRules,
-) -> Vec<(i32, i32)> {
-    let block = match blocks.get(block_index) {
-        Some(b) => b,
-        None => return Vec::new(),
+    search: &PlacementSearch<'_>,
+) -> Vec<PlacementCandidate> {
+    let Some(group) = search.groups.get(search.group_name) else {
+        return Vec::new();
+    };
+    let Some(block) = group.get_block(search.block_index) else {
+        return Vec::new();
     };
 
-    let is_edge_req = block.edge_only || rules.is_edge_required(block_index);
-    let is_interior = block.interior_only || rules.is_interior_only(block_index);
+    let is_edge_req = block.edge_only || search.rules.is_edge_required(search.block_index);
+    let is_interior = block.interior_only || search.rules.is_interior_only(search.block_index);
+    let mut placements = Vec::new();
 
-    grid.available_positions()
-        .into_iter()
-        .filter(|&(x, y)| {
-            let on_edge = grid.is_edge_position(x, y);
-            if is_edge_req && !on_edge {
-                return false;
+    for (anchor_x, anchor_y) in grid.available_positions() {
+        for &rotation in search.rotations {
+            for &mirrored in search.mirrors {
+                let footprint = block.transformed_footprint(rotation, mirrored);
+                let occupied_cells: Vec<_> = footprint
+                    .iter()
+                    .map(|&(dx, dy)| (anchor_x + dx, anchor_y + dy))
+                    .collect();
+
+                if occupied_cells.is_empty() || !grid.can_place_cells(&occupied_cells) {
+                    continue;
+                }
+
+                let touches_edge = occupied_cells
+                    .iter()
+                    .any(|&(x, y)| grid.is_edge_position(x, y));
+                if is_edge_req && !touches_edge {
+                    continue;
+                }
+                if is_interior && touches_edge {
+                    continue;
+                }
+                if !check_neighbors_compatible(
+                    grid, search, block, anchor_x, anchor_y, rotation, mirrored,
+                ) {
+                    continue;
+                }
+
+                placements.push(PlacementCandidate {
+                    group_name: search.group_name.to_string(),
+                    block_index: search.block_index,
+                    grid_x: anchor_x,
+                    grid_y: anchor_y,
+                    rotation,
+                    mirrored,
+                    occupied_cells,
+                });
             }
-            if is_interior && on_edge {
-                return false;
-            }
-            // Check neighbor compatibility
-            check_neighbors_compatible(grid, blocks, block, x, y, rules)
-        })
-        .collect()
+        }
+    }
+
+    placements
 }
 
-/// Check if placing a block at (x, y) is compatible with all placed neighbors.
+/// Check if placing a block at an anchor is compatible with all placed neighbors.
 fn check_neighbors_compatible(
     grid: &PlacementGrid,
-    blocks: &[MapBlock],
+    search: &PlacementSearch<'_>,
     block: &MapBlock,
-    x: i32,
-    y: i32,
-    rules: &NeighborRules,
+    anchor_x: i32,
+    anchor_y: i32,
+    rotation: u32,
+    mirrored: bool,
 ) -> bool {
-    let neighbors = [
-        (Edge::North, x, y - 1),
-        (Edge::South, x, y + 1),
-        (Edge::West, x - 1, y),
-        (Edge::East, x + 1, y),
-    ];
+    if !search.match_sides {
+        return true;
+    }
 
-    for (my_edge, nx, ny) in neighbors {
-        if let Some(placed) = grid.get_block_at(nx, ny) {
-            if let Some(neighbor_block) = blocks.get(placed.block_index) {
-                let their_edge = opposite_edge(my_edge);
-                // Check each segment along the shared edge
-                let segments = match my_edge {
-                    Edge::North | Edge::South => block.segments_horizontal(),
-                    Edge::East | Edge::West => block.segments_vertical(),
-                };
-                for seg in 0..segments {
-                    let my_type = block.get_edge(my_edge, seg).unwrap_or(0);
-                    let their_type = neighbor_block.get_edge(their_edge, seg).unwrap_or(0);
-                    if !rules.is_compatible(my_type, their_type) {
+    let footprint = block.transformed_footprint(rotation, mirrored);
+    let occupied_lookup: HashSet<_> = footprint
+        .iter()
+        .map(|&(dx, dy)| (anchor_x + dx, anchor_y + dy))
+        .collect();
+
+    for &(dx, dy) in &footprint {
+        let cell_x = anchor_x + dx;
+        let cell_y = anchor_y + dy;
+        let neighbors = [
+            (Edge::North, cell_x, cell_y - 1),
+            (Edge::South, cell_x, cell_y + 1),
+            (Edge::West, cell_x - 1, cell_y),
+            (Edge::East, cell_x + 1, cell_y),
+        ];
+
+        for (my_edge, nx, ny) in neighbors {
+            if occupied_lookup.contains(&(nx, ny)) {
+                continue;
+            }
+            let my_type = block.transformed_socket(dx, dy, my_edge, rotation, mirrored);
+            if let Some(placed) = grid.get_block_at(nx, ny) {
+                if let Some(neighbor_block) = search
+                    .groups
+                    .get(&placed.group_name)
+                    .and_then(|group| group.get_block(placed.block_index))
+                {
+                    let neighbor_dx = nx - placed.grid_x;
+                    let neighbor_dy = ny - placed.grid_y;
+                    let their_type = neighbor_block.transformed_socket(
+                        neighbor_dx,
+                        neighbor_dy,
+                        opposite_edge(my_edge),
+                        placed.rotation,
+                        placed.mirrored,
+                    );
+                    if !search.rules.is_compatible(my_type, their_type) {
                         return false;
                     }
                 }
             }
         }
     }
+
     true
 }

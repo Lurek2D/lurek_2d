@@ -8,8 +8,10 @@ use crate::globe::types::GlobeSpec;
 use crate::math::Vec3;
 /// Compute the sun direction in world space from globe rotation and time of day.
 pub fn sun_direction(spec: &GlobeSpec) -> Vec3 {
-    let sun_lon_deg = 180.0 - spec.time_of_day * 360.0;
-    let sun_lat_deg = spec.axial_tilt_deg * (spec.time_of_day * std::f32::consts::TAU).sin();
+    let time_hours = spec.time_of_day.rem_euclid(24.0);
+    let phase = time_hours / 24.0;
+    let sun_lon_deg = 180.0 - phase * 360.0;
+    let sun_lat_deg = spec.axial_tilt_deg * (phase * std::f32::consts::TAU).sin();
     let base = lat_lon_to_unit(sun_lat_deg, sun_lon_deg);
     let spin = rot_y(spec.rotation_deg);
     let sun_world = spin.mul_vec(base);

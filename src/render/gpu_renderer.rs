@@ -50,7 +50,7 @@
 //! - Controls viewport layouts, aspect ratios, and letterboxing setups for retro resolutions.
 
 use crate::log_msg;
-use crate::math::{Mat3, Vec2};
+use crate::math::{polygon, Mat3, Vec2};
 use crate::render::mesh::Mesh;
 use crate::render::renderer::{
     adaptive_circle_ellipse_segments, BevelStyle, BlendMode, DrawMode, DrawableKind,
@@ -2774,7 +2774,6 @@ impl GpuRenderer {
                         let mut idxs: Vec<u32> = Vec::new();
                         match mode {
                             DrawMode::Fill => {
-                                let base = verts.len() as u32;
                                 for i in 0..n {
                                     let (sx, sy) = apply(t, vertices[i * 2], vertices[i * 2 + 1]);
                                     verts.push(ColorVertex {
@@ -2782,8 +2781,26 @@ impl GpuRenderer {
                                         color: colors[i],
                                     });
                                 }
-                                for i in 1..(n as u32 - 1) {
-                                    idxs.extend_from_slice(&[base, base + i, base + i + 1]);
+                                let poly: Vec<Vec2> = vertices
+                                    .chunks_exact(2)
+                                    .map(|pair| Vec2::new(pair[0], pair[1]))
+                                    .collect();
+                                if let Ok(tris) = polygon::triangulate(&poly) {
+                                    for tri in tris {
+                                        for point in tri {
+                                            if let Some(index) = poly.iter().position(|candidate| {
+                                                candidate.x.to_bits() == point.x.to_bits()
+                                                    && candidate.y.to_bits() == point.y.to_bits()
+                                            }) {
+                                                idxs.push(index as u32);
+                                            }
+                                        }
+                                    }
+                                }
+                                if idxs.len() < 3 {
+                                    for i in 1..(n as u32 - 1) {
+                                        idxs.extend_from_slice(&[0, i, i + 1]);
+                                    }
                                 }
                             }
                             DrawMode::Line => {

@@ -8,7 +8,7 @@
 use super::config::MapBlockConfig;
 use super::constraints::EdgeConstraint;
 use super::layer::BlockLayer;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 /// Cardinal direction for block edges.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -38,6 +38,10 @@ pub struct MapBlock {
     slot_count: usize,
     /// Edge type IDs: `(Edge, segment_index) -> edge_type_id`.
     sides: HashMap<(Edge, u32), u32>,
+    /// Placement footprint cells in local grid coordinates.
+    footprint: Vec<(i32, i32)>,
+    /// Per-cell socket definitions `(cell_x, cell_y, edge) -> edge_type_id`.
+    sockets: HashMap<(i32, i32, Edge), u32>,
     /// Block weight for random selection (higher = more likely).
     pub weight: f32,
     /// If true, this block must be placed on the map edge.
@@ -58,6 +62,7 @@ impl MapBlock {
         let layers = (0..layer_count)
             .map(|_| BlockLayer::new(width, height, slot_count))
             .collect();
+        let segment_size = config.default_segment_size.max(1);
 
         Self {
             name: String::new(),
@@ -66,11 +71,13 @@ impl MapBlock {
             layers,
             slot_count,
             sides: HashMap::new(),
+            footprint: Self::rect_footprint_for_dims(width, height, segment_size),
+            sockets: HashMap::new(),
             weight: 1.0,
             edge_only: false,
             interior_only: false,
             level_span: 1,
-            segment_size: width,
+            segment_size,
         }
     }
 
@@ -111,6 +118,8 @@ impl MapBlock {
             layers,
             slot_count,
             sides: sides.clone(),
+            footprint: Self::rect_footprint_for_dims(width, height, segment_size),
+            sockets: HashMap::new(),
             weight,
             edge_only: false,
             interior_only: false,
@@ -215,21 +224,249 @@ impl MapBlock {
         &self.name
     }
 
-    /// Get number of segments along an edge (width / segment_size or height / segment_size).
-    pub fn segments_horizontal(&self) -> u32 {
-        if self.segment_size > 0 {
-            self.width / self.segment_size
+    /// Set the random selection weight.
+    pub fn set_weight(&mut self, weight: f32) {
+        self.weight = weight.max(0.0);
+    }
+
+    /// Return the random selection weight.
+    pub fn get_weight(&self) -> f32 {
+        self.weight
+    }
+
+    /// Replace the placement footprint with custom occupied cells.
+    pub fn set_footprint(&mut self, cells: &[(i32, i32)]) {
+        if cells.is_empty() {
+            self.footprint = vec![(0, 0)];
+            return;
+        }
+        self.footprint = Self::normalize_cells(cells);
+    }
+
+    /// Return the placement footprint cells.
+    pub fn footprint(&self) -> &[(i32, i32)] {
+        &self.footprint
+    }
+
+    /// Return whether the local footprint contains a cell.
+    pub fn is_footprint_cell(&self, x: i32, y: i32) -> bool {
+        self.footprint.contains(&(x, y))
+    }
+
+    /// Set a per-cell socket type on one footprint edge.
+    pub fn set_socket(&mut self, cell_x: i32, cell_y: i32, edge: Edge, edge_type: u32) {
+        self.sockets.insert((cell_x, cell_y, edge), edge_type);
+    }
+
+    /// Return a previously registered per-cell socket type.
+    pub fn get_socket(&self, cell_x: i32, cell_y: i32, edge: Edge) -> Option<u32> {
+        self.sockets.get(&(cell_x, cell_y, edge)).copied()
+    }
+
+    /// Return the normalized footprint cells after transform.
+    pub fn transformed_footprint(&self, rotation: u32, mirrored: bool) -> Vec<(i32, i32)> {
+        let transformed: Vec<_> = self
+            .footprint
+            .iter()
+            .map(|&(x, y)| Self::transform_point(x, y, rotation, mirrored))
+            .collect();
+        Self::normalize_cells(&transformed)
+    }
+
+    /// Return the transformed footprint width/height in placement cells.
+    pub fn transformed_footprint_size(&self, rotation: u32, mirrored: bool) -> (u32, u32) {
+        let cells = self.transformed_footprint(rotation, mirrored);
+        Self::cell_bounds(&cells)
+    }
+
+    /// Return the transformed tile width/height in tiles.
+    pub fn transformed_tile_size(&self, rotation: u32) -> (u32, u32) {
+        if rotation % 2 == 1 {
+            (self.height, self.width)
         } else {
-            1
+            (self.width, self.height)
         }
     }
 
-    /// Get number of segments along vertical edge.
-    pub fn segments_vertical(&self) -> u32 {
-        if self.segment_size > 0 {
-            self.height / self.segment_size
-        } else {
-            1
+    /// Resolve the socket type on a transformed footprint edge.
+    pub fn transformed_socket(
+        &self,
+        cell_x: i32,
+        cell_y: i32,
+        edge: Edge,
+        rotation: u32,
+        mirrored: bool,
+    ) -> u32 {
+        let sockets = self.transformed_socket_map(rotation, mirrored);
+        sockets.get(&(cell_x, cell_y, edge)).copied().unwrap_or(0)
+    }
+
+    /// Return all transformed sockets in normalized footprint coordinates.
+    pub fn transformed_socket_map(
+        &self,
+        rotation: u32,
+        mirrored: bool,
+    ) -> HashMap<(i32, i32, Edge), u32> {
+        let transformed_cells = self.transformed_footprint(rotation, mirrored);
+        let transformed_lookup: HashSet<_> = transformed_cells.iter().copied().collect();
+        let raw_cells: Vec<_> = self
+            .footprint
+            .iter()
+            .map(|&(x, y)| Self::transform_point(x, y, rotation, mirrored))
+            .collect();
+        let (raw_min_x, raw_min_y) = Self::min_xy(&raw_cells);
+        let mut raw_map = HashMap::new();
+
+        for (&(x, y, edge), &edge_type) in &self.sockets {
+            let (tx, ty) = Self::transform_point(x, y, rotation, mirrored);
+            let tedge = Self::transform_edge(edge, rotation, mirrored);
+            raw_map.insert((tx, ty, tedge), edge_type);
         }
+
+        let legacy = self.legacy_socket_map();
+        for (&(x, y, edge), &edge_type) in &legacy {
+            let (tx, ty) = Self::transform_point(x, y, rotation, mirrored);
+            let tedge = Self::transform_edge(edge, rotation, mirrored);
+            raw_map.entry((tx, ty, tedge)).or_insert(edge_type);
+        }
+
+        let mut normalized = HashMap::new();
+        for ((x, y, edge), edge_type) in raw_map {
+            let nx = x - raw_min_x;
+            let ny = y - raw_min_y;
+            if transformed_lookup.contains(&(nx, ny)) {
+                normalized.insert((nx, ny, edge), edge_type);
+            }
+        }
+        normalized
+    }
+
+    /// Return the number of placement cells across the transformed block width.
+    pub fn segments_horizontal(&self) -> u32 {
+        let cells = Self::normalize_cells(&self.footprint);
+        Self::cell_bounds(&cells).0
+    }
+
+    /// Return the number of placement cells across the transformed block height.
+    pub fn segments_vertical(&self) -> u32 {
+        let cells = Self::normalize_cells(&self.footprint);
+        Self::cell_bounds(&cells).1
+    }
+
+    /// Return the placement-cell bounds of the normalized footprint.
+    pub fn footprint_bounds(&self) -> (u32, u32) {
+        Self::cell_bounds(&self.footprint)
+    }
+
+    fn rect_footprint_for_dims(width: u32, height: u32, segment_size: u32) -> Vec<(i32, i32)> {
+        let seg = segment_size.max(1);
+        let cells_w = width.max(1).div_ceil(seg);
+        let cells_h = height.max(1).div_ceil(seg);
+        let mut cells = Vec::new();
+        for y in 0..cells_h as i32 {
+            for x in 0..cells_w as i32 {
+                cells.push((x, y));
+            }
+        }
+        Self::normalize_cells(&cells)
+    }
+
+    fn normalize_cells(cells: &[(i32, i32)]) -> Vec<(i32, i32)> {
+        if cells.is_empty() {
+            return vec![(0, 0)];
+        }
+        let (min_x, min_y) = Self::min_xy(cells);
+        let mut normalized: Vec<_> = cells.iter().map(|&(x, y)| (x - min_x, y - min_y)).collect();
+        normalized.sort_unstable();
+        normalized.dedup();
+        normalized
+    }
+
+    fn min_xy(cells: &[(i32, i32)]) -> (i32, i32) {
+        let min_x = cells.iter().map(|c| c.0).min().unwrap_or(0);
+        let min_y = cells.iter().map(|c| c.1).min().unwrap_or(0);
+        (min_x, min_y)
+    }
+
+    fn cell_bounds(cells: &[(i32, i32)]) -> (u32, u32) {
+        if cells.is_empty() {
+            return (1, 1);
+        }
+        let max_x = cells.iter().map(|c| c.0).max().unwrap_or(0);
+        let max_y = cells.iter().map(|c| c.1).max().unwrap_or(0);
+        ((max_x + 1).max(1) as u32, (max_y + 1).max(1) as u32)
+    }
+
+    fn transform_point(x: i32, y: i32, rotation: u32, mirrored: bool) -> (i32, i32) {
+        let (mut tx, mut ty) = if mirrored { (-x, y) } else { (x, y) };
+        for _ in 0..(rotation % 4) {
+            (tx, ty) = (ty, -tx);
+        }
+        (tx, ty)
+    }
+
+    fn transform_edge(edge: Edge, rotation: u32, mirrored: bool) -> Edge {
+        let mut transformed = if mirrored {
+            match edge {
+                Edge::East => Edge::West,
+                Edge::West => Edge::East,
+                other => other,
+            }
+        } else {
+            edge
+        };
+        for _ in 0..(rotation % 4) {
+            transformed = match transformed {
+                Edge::North => Edge::East,
+                Edge::East => Edge::South,
+                Edge::South => Edge::West,
+                Edge::West => Edge::North,
+            };
+        }
+        transformed
+    }
+
+    fn legacy_socket_map(&self) -> HashMap<(i32, i32, Edge), u32> {
+        let mut sockets = HashMap::new();
+        let cells = &self.footprint;
+        let lookup: HashSet<_> = cells.iter().copied().collect();
+        let (foot_w, foot_h) = self.footprint_bounds();
+
+        for &(x, y) in cells {
+            if !lookup.contains(&(x, y - 1)) {
+                let segment = x as u32;
+                if segment < foot_w {
+                    if let Some(edge_type) = self.get_edge(Edge::North, segment) {
+                        sockets.insert((x, y, Edge::North), edge_type);
+                    }
+                }
+            }
+            if !lookup.contains(&(x + 1, y)) {
+                let segment = y as u32;
+                if segment < foot_h {
+                    if let Some(edge_type) = self.get_edge(Edge::East, segment) {
+                        sockets.insert((x, y, Edge::East), edge_type);
+                    }
+                }
+            }
+            if !lookup.contains(&(x, y + 1)) {
+                let segment = x as u32;
+                if segment < foot_w {
+                    if let Some(edge_type) = self.get_edge(Edge::South, segment) {
+                        sockets.insert((x, y, Edge::South), edge_type);
+                    }
+                }
+            }
+            if !lookup.contains(&(x - 1, y)) {
+                let segment = y as u32;
+                if segment < foot_h {
+                    if let Some(edge_type) = self.get_edge(Edge::West, segment) {
+                        sockets.insert((x, y, Edge::West), edge_type);
+                    }
+                }
+            }
+        }
+
+        sockets
     }
 }

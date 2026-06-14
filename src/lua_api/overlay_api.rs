@@ -6,6 +6,41 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+fn finite_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be finite"
+        )))
+    }
+}
+
+fn non_negative_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    let value = finite_f32(api, arg_name, value)?;
+    if value >= 0.0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be >= 0"
+        )))
+    }
+}
+
+fn unit_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    Ok(finite_f32(api, arg_name, value)?.clamp(0.0, 1.0))
+}
+
+fn positive_u32(api: &str, arg_name: &str, value: u32) -> LuaResult<u32> {
+    if value > 0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be > 0"
+        )))
+    }
+}
+
 /// Lua-side handle for screen overlay, ambient, weather, and transition visual state.
 pub struct LuaOverlay {
     /// Overlay state that builds renderer commands for full-screen effects.
@@ -20,6 +55,7 @@ impl LuaUserData for LuaOverlay {
         /// Advances overlay timers and animated effect state.
         /// @param | dt | number | Delta time in seconds.
         methods.add_method_mut("update", |_, this, dt: f32| {
+            let dt = non_negative_f32("LOverlay:update", "dt", dt)?;
             this.inner.update(dt);
             Ok(())
         });
@@ -33,6 +69,11 @@ impl LuaUserData for LuaOverlay {
         methods.add_method_mut(
             "triggerFlash",
             |_, this, (r, g, b, a, duration): (f32, f32, f32, f32, f32)| {
+                let r = unit_f32("LOverlay:triggerFlash", "r", r)?;
+                let g = unit_f32("LOverlay:triggerFlash", "g", g)?;
+                let b = unit_f32("LOverlay:triggerFlash", "b", b)?;
+                let a = unit_f32("LOverlay:triggerFlash", "a", a)?;
+                let duration = non_negative_f32("LOverlay:triggerFlash", "duration", duration)?;
                 this.inner.trigger_flash(r, g, b, a, duration);
                 Ok(())
             },
@@ -44,6 +85,9 @@ impl LuaUserData for LuaOverlay {
         methods.add_method_mut(
             "triggerShake",
             |_, this, (intensity, duration): (f32, f32)| {
+                let intensity =
+                    non_negative_f32("LOverlay:triggerShake", "intensity", intensity)?;
+                let duration = non_negative_f32("LOverlay:triggerShake", "duration", duration)?;
                 this.inner.trigger_shake(intensity, duration);
                 Ok(())
             },
@@ -58,6 +102,12 @@ impl LuaUserData for LuaOverlay {
         methods.add_method_mut(
             "triggerFade",
             |_, this, (r, g, b, target_alpha, duration): (f32, f32, f32, f32, f32)| {
+                let r = unit_f32("LOverlay:triggerFade", "r", r)?;
+                let g = unit_f32("LOverlay:triggerFade", "g", g)?;
+                let b = unit_f32("LOverlay:triggerFade", "b", b)?;
+                let target_alpha =
+                    unit_f32("LOverlay:triggerFade", "target_alpha", target_alpha)?;
+                let duration = non_negative_f32("LOverlay:triggerFade", "duration", duration)?;
                 this.inner.trigger_fade(r, g, b, target_alpha, duration);
                 Ok(())
             },
@@ -79,6 +129,26 @@ impl LuaUserData for LuaOverlay {
         /// Returns whether any overlay effect is currently active.
         /// @return | boolean | True when overlay state should render.
         methods.add_method("isActive", |_, this, ()| Ok(this.inner.is_active()));
+        // -- getStats --
+        /// Returns a telemetry snapshot for dashboard and debug workflows.
+        /// @return | table | Overlay telemetry fields.
+        methods.add_method("getStats", |lua, this, ()| {
+            let stats = this.inner.stats();
+            let table = lua.create_table()?;
+            table.set("width", stats.width)?;
+            table.set("height", stats.height)?;
+            table.set("weather_particle_count", stats.weather_particle_count)?;
+            table.set("weather_particle_limit", stats.weather_particle_limit)?;
+            table.set("weather_intensity", stats.weather_intensity)?;
+            table.set("flash_alpha", stats.flash_alpha)?;
+            table.set("lightning_alpha", stats.lightning_alpha)?;
+            table.set("active_effects", stats.active_effects)?;
+            table.set("weather_enabled", stats.weather_enabled)?;
+            table.set("ambient_enabled", stats.ambient_enabled)?;
+            table.set("fog_enabled", stats.fog_enabled)?;
+            table.set("vignette_enabled", stats.vignette_enabled)?;
+            Ok(table)
+        });
         // -- clear --
         /// Clears active overlay effects and resets transient state.
         methods.add_method_mut("clear", |_, this, ()| {
@@ -90,6 +160,8 @@ impl LuaUserData for LuaOverlay {
         /// @param | w | integer | New width in pixels.
         /// @param | h | integer | New height in pixels.
         methods.add_method_mut("resize", |_, this, (w, h): (u32, u32)| {
+            let w = positive_u32("LOverlay:resize", "w", w)?;
+            let h = positive_u32("LOverlay:resize", "h", h)?;
             this.inner.resize(w, h);
             Ok(())
         });
@@ -142,7 +214,12 @@ impl LuaUserData for LuaOverlay {
         methods.add_method_mut(
             "setAmbientColor",
             |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
-                this.inner.ambient.color = [r, g, b, a.unwrap_or(1.0)];
+                this.inner.ambient.color = [
+                    unit_f32("LOverlay:setAmbientColor", "r", r)?,
+                    unit_f32("LOverlay:setAmbientColor", "g", g)?,
+                    unit_f32("LOverlay:setAmbientColor", "b", b)?,
+                    unit_f32("LOverlay:setAmbientColor", "a", a.unwrap_or(1.0))?,
+                ];
                 Ok(())
             },
         );
@@ -184,6 +261,7 @@ impl LuaUserData for LuaOverlay {
         /// Sets the overlay time-of-day value used by ambient effects.
         /// @param | v | number | Time-of-day value stored on the overlay ambient state.
         methods.add_method_mut("setTimeOfDay", |_, this, v: f32| {
+            let v = finite_f32("LOverlay:setTimeOfDay", "v", v)?;
             this.inner.ambient.time_of_day = v;
             Ok(())
         });
@@ -208,7 +286,7 @@ impl LuaUserData for LuaOverlay {
         /// Sets overlay fog density. This method is available to Lua scripts.
         /// @param | v | number | Fog density value.
         methods.add_method_mut("setFogDensity", |_, this, v: f32| {
-            this.inner.fog.density = v;
+            this.inner.fog.density = non_negative_f32("LOverlay:setFogDensity", "v", v)?;
             Ok(())
         });
         // -- getFogDensity --
@@ -224,7 +302,12 @@ impl LuaUserData for LuaOverlay {
         methods.add_method_mut(
             "setFogColor",
             |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
-                this.inner.fog.color = [r, g, b, a.unwrap_or(1.0)];
+                this.inner.fog.color = [
+                    unit_f32("LOverlay:setFogColor", "r", r)?,
+                    unit_f32("LOverlay:setFogColor", "g", g)?,
+                    unit_f32("LOverlay:setFogColor", "b", b)?,
+                    unit_f32("LOverlay:setFogColor", "a", a.unwrap_or(1.0))?,
+                ];
                 Ok(())
             },
         );
@@ -255,7 +338,8 @@ impl LuaUserData for LuaOverlay {
         /// Sets overlay heat haze intensity. This method is available to Lua scripts.
         /// @param | v | number | Heat haze intensity value.
         methods.add_method_mut("setHeatHazeIntensity", |_, this, v: f32| {
-            this.inner.heat_haze.intensity = v;
+            this.inner.heat_haze.intensity =
+                non_negative_f32("LOverlay:setHeatHazeIntensity", "v", v)?;
             Ok(())
         });
         // -- getHeatHazeIntensity --
@@ -281,7 +365,7 @@ impl LuaUserData for LuaOverlay {
         /// Sets overlay vignette strength. This method is available to Lua scripts.
         /// @param | v | number | Vignette strength value.
         methods.add_method_mut("setVignetteStrength", |_, this, v: f32| {
-            this.inner.vignette.strength = v;
+            this.inner.vignette.strength = unit_f32("LOverlay:setVignetteStrength", "v", v)?;
             Ok(())
         });
         // -- getVignetteStrength --
@@ -307,7 +391,8 @@ impl LuaUserData for LuaOverlay {
         /// Sets overlay film grain intensity.
         /// @param | v | number | Film grain intensity value.
         methods.add_method_mut("setFilmGrainIntensity", |_, this, v: f32| {
-            this.inner.film_grain.intensity = v;
+            this.inner.film_grain.intensity =
+                unit_f32("LOverlay:setFilmGrainIntensity", "v", v)?;
             Ok(())
         });
         // -- getFilmGrainIntensity --
@@ -344,7 +429,7 @@ impl LuaUserData for LuaOverlay {
         /// Sets cloud shadow movement speed. This method is available to Lua scripts.
         /// @param | v | number | Cloud speed value.
         methods.add_method_mut("setCloudSpeed", |_, this, v: f32| {
-            this.inner.clouds.speed = v;
+            this.inner.clouds.speed = finite_f32("LOverlay:setCloudSpeed", "v", v)?;
             Ok(())
         });
         // -- getCloudSpeed --
@@ -355,6 +440,12 @@ impl LuaUserData for LuaOverlay {
         /// Sets cloud shadow scale. This method is available to Lua scripts.
         /// @param | v | number | Cloud scale value.
         methods.add_method_mut("setCloudScale", |_, this, v: f32| {
+            let v = non_negative_f32("LOverlay:setCloudScale", "v", v)?;
+            if v == 0.0 {
+                return Err(LuaError::RuntimeError(
+                    "LOverlay:setCloudScale: v must be > 0".into(),
+                ));
+            }
             this.inner.clouds.scale = v;
             Ok(())
         });
@@ -366,7 +457,7 @@ impl LuaUserData for LuaOverlay {
         /// Sets cloud shadow opacity. This method is available to Lua scripts.
         /// @param | v | number | Cloud opacity value.
         methods.add_method_mut("setCloudOpacity", |_, this, v: f32| {
-            this.inner.clouds.opacity = v;
+            this.inner.clouds.opacity = unit_f32("LOverlay:setCloudOpacity", "v", v)?;
             Ok(())
         });
         // -- getCloudOpacity --
@@ -406,7 +497,8 @@ impl LuaUserData for LuaOverlay {
         /// Sets weather intensity for the current weather type.
         /// @param | v | number | Weather intensity value.
         methods.add_method_mut("setWeatherIntensity", |_, this, v: f32| {
-            this.inner.weather.intensity = v;
+            this.inner.weather.intensity =
+                non_negative_f32("LOverlay:setWeatherIntensity", "v", v)?;
             Ok(())
         });
         // -- getWeatherIntensity --
@@ -419,7 +511,7 @@ impl LuaUserData for LuaOverlay {
         /// Sets the overlay weather wind direction.
         /// @param | v | number | Wind direction value.
         methods.add_method_mut("setWindDirection", |_, this, v: f32| {
-            this.inner.weather.wind_direction = v;
+            this.inner.weather.wind_direction = finite_f32("LOverlay:setWindDirection", "v", v)?;
             Ok(())
         });
         // -- getWindDirection --
@@ -432,7 +524,7 @@ impl LuaUserData for LuaOverlay {
         /// Sets the overlay weather wind speed.
         /// @param | v | number | Wind speed value.
         methods.add_method_mut("setWindSpeed", |_, this, v: f32| {
-            this.inner.weather.wind_speed = v;
+            this.inner.weather.wind_speed = non_negative_f32("LOverlay:setWindSpeed", "v", v)?;
             Ok(())
         });
         // -- getWindSpeed --
@@ -450,7 +542,12 @@ impl LuaUserData for LuaOverlay {
         methods.add_method_mut(
             "setLightningColor",
             |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
-                this.inner.lightning.color = [r, g, b, a.unwrap_or(1.0)];
+                this.inner.lightning.color = [
+                    unit_f32("LOverlay:setLightningColor", "r", r)?,
+                    unit_f32("LOverlay:setLightningColor", "g", g)?,
+                    unit_f32("LOverlay:setLightningColor", "b", b)?,
+                    unit_f32("LOverlay:setLightningColor", "a", a.unwrap_or(1.0))?,
+                ];
                 Ok(())
             },
         );
@@ -474,8 +571,12 @@ impl LuaUserData for LuaOverlay {
         methods.add_method_mut(
             "flash",
             |_, this, (r, g, b, a, dur): (f32, f32, f32, Option<f32>, Option<f32>)| {
-                this.inner
-                    .trigger_flash(r, g, b, a.unwrap_or(1.0), dur.unwrap_or(0.2));
+                let r = unit_f32("LOverlay:flash", "r", r)?;
+                let g = unit_f32("LOverlay:flash", "g", g)?;
+                let b = unit_f32("LOverlay:flash", "b", b)?;
+                let a = unit_f32("LOverlay:flash", "a", a.unwrap_or(1.0))?;
+                let dur = non_negative_f32("LOverlay:flash", "dur", dur.unwrap_or(0.2))?;
+                this.inner.trigger_flash(r, g, b, a, dur);
                 Ok(())
             },
         );
@@ -488,7 +589,9 @@ impl LuaUserData for LuaOverlay {
         /// @param | intensity | number | Shake intensity.
         /// @param | dur | number? | Duration in seconds, defaulting to 0.5.
         methods.add_method_mut("shake", |_, this, (intensity, dur): (f32, Option<f32>)| {
-            this.inner.trigger_shake(intensity, dur.unwrap_or(0.5));
+            let intensity = non_negative_f32("LOverlay:shake", "intensity", intensity)?;
+            let dur = non_negative_f32("LOverlay:shake", "dur", dur.unwrap_or(0.5))?;
+            this.inner.trigger_shake(intensity, dur);
             Ok(())
         });
         // -- isShaking --
@@ -505,8 +608,12 @@ impl LuaUserData for LuaOverlay {
         methods.add_method_mut(
             "fade",
             |_, this, (r, g, b, a, dur): (f32, f32, f32, Option<f32>, Option<f32>)| {
-                this.inner
-                    .trigger_fade(r, g, b, a.unwrap_or(1.0), dur.unwrap_or(1.0));
+                let r = unit_f32("LOverlay:fade", "r", r)?;
+                let g = unit_f32("LOverlay:fade", "g", g)?;
+                let b = unit_f32("LOverlay:fade", "b", b)?;
+                let a = unit_f32("LOverlay:fade", "a", a.unwrap_or(1.0))?;
+                let dur = non_negative_f32("LOverlay:fade", "dur", dur.unwrap_or(1.0))?;
+                this.inner.trigger_fade(r, g, b, a, dur);
                 Ok(())
             },
         );
@@ -538,9 +645,11 @@ impl LuaUserData for LuaOverlay {
         methods.add_method_mut(
             "setWater",
             |_, this, (amplitude, frequency, speed): (f32, f32, f32)| {
-                this.inner.water.amplitude = amplitude;
-                this.inner.water.frequency = frequency;
-                this.inner.water.speed = speed;
+                this.inner.water.amplitude =
+                    finite_f32("LOverlay:setWater", "amplitude", amplitude)?;
+                this.inner.water.frequency =
+                    finite_f32("LOverlay:setWater", "frequency", frequency)?;
+                this.inner.water.speed = finite_f32("LOverlay:setWater", "speed", speed)?;
                 this.inner.water.enabled = true;
                 Ok(())
             },
@@ -554,10 +663,11 @@ impl LuaUserData for LuaOverlay {
         methods.add_method_mut(
             "setWaterTint",
             |_, this, (r, g, b, strength): (f32, f32, f32, f32)| {
-                this.inner.water.tint_r = r;
-                this.inner.water.tint_g = g;
-                this.inner.water.tint_b = b;
-                this.inner.water.tint_strength = strength;
+                this.inner.water.tint_r = unit_f32("LOverlay:setWaterTint", "r", r)?;
+                this.inner.water.tint_g = unit_f32("LOverlay:setWaterTint", "g", g)?;
+                this.inner.water.tint_b = unit_f32("LOverlay:setWaterTint", "b", b)?;
+                this.inner.water.tint_strength =
+                    unit_f32("LOverlay:setWaterTint", "strength", strength)?;
                 Ok(())
             },
         );
@@ -639,7 +749,13 @@ impl mlua::UserData for LuaScreenTransition {
         /// Advances this transition timer and returns whether it remains active.
         /// @param | dt | number | Delta time in seconds.
         /// @return | boolean | True when the transition is still active after the update.
-        methods.add_method_mut("update", |_, this, dt: f32| Ok(this.inner.update(dt)));
+        methods.add_method_mut("update", |_, this, dt: f32| {
+            Ok(this.inner.update(non_negative_f32(
+                "LScreenTransition:update",
+                "dt",
+                dt,
+            )?))
+        });
         // -- progress --
         /// Returns normalized transition progress.
         /// @return | number | Progress value between the transition start and end.
@@ -671,10 +787,26 @@ impl mlua::UserData for LuaScreenTransition {
         /// @param | color | table | Numeric color table using indices 1 through 4.
         methods.add_method_mut("setColor", |_, this, ct: mlua::Table| {
             this.inner.color = [
-                ct.get::<_, f32>(1).unwrap_or(0.0),
-                ct.get::<_, f32>(2).unwrap_or(0.0),
-                ct.get::<_, f32>(3).unwrap_or(0.0),
-                ct.get::<_, f32>(4).unwrap_or(1.0),
+                unit_f32(
+                    "LScreenTransition:setColor",
+                    "color[1]",
+                    ct.get::<_, f32>(1).unwrap_or(0.0),
+                )?,
+                unit_f32(
+                    "LScreenTransition:setColor",
+                    "color[2]",
+                    ct.get::<_, f32>(2).unwrap_or(0.0),
+                )?,
+                unit_f32(
+                    "LScreenTransition:setColor",
+                    "color[3]",
+                    ct.get::<_, f32>(3).unwrap_or(0.0),
+                )?,
+                unit_f32(
+                    "LScreenTransition:setColor",
+                    "color[4]",
+                    ct.get::<_, f32>(4).unwrap_or(1.0),
+                )?,
             ];
             Ok(())
         });
@@ -703,8 +835,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "new",
         lua.create_function(move |lua, (w, h): (Option<u32>, Option<u32>)| {
-            let width = w.unwrap_or(800);
-            let height = h.unwrap_or(600);
+            let width = positive_u32("lurek.overlay.new", "w", w.unwrap_or(800))?;
+            let height = positive_u32("lurek.overlay.new", "h", h.unwrap_or(600))?;
             lua.create_userdata(LuaOverlay {
                 inner: Overlay::new(width, height),
                 state: s.clone(),
@@ -722,13 +854,33 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(
             move |lua, (kind, duration, color_tbl): (Option<String>, Option<f32>, Option<LuaTable>)| {
                 let k = TransitionKind::from_str(kind.as_deref().unwrap_or("fade"));
-                let dur = duration.unwrap_or(1.0);
+                let dur = non_negative_f32(
+                    "lurek.overlay.newTransition",
+                    "duration",
+                    duration.unwrap_or(1.0),
+                )?;
                 let color = if let Some(ct) = color_tbl {
                     [
-                        ct.get::<_, f32>(1).unwrap_or(0.0),
-                        ct.get::<_, f32>(2).unwrap_or(0.0),
-                        ct.get::<_, f32>(3).unwrap_or(0.0),
-                        ct.get::<_, f32>(4).unwrap_or(1.0),
+                        unit_f32(
+                            "lurek.overlay.newTransition",
+                            "color_tbl[1]",
+                            ct.get::<_, f32>(1).unwrap_or(0.0),
+                        )?,
+                        unit_f32(
+                            "lurek.overlay.newTransition",
+                            "color_tbl[2]",
+                            ct.get::<_, f32>(2).unwrap_or(0.0),
+                        )?,
+                        unit_f32(
+                            "lurek.overlay.newTransition",
+                            "color_tbl[3]",
+                            ct.get::<_, f32>(3).unwrap_or(0.0),
+                        )?,
+                        unit_f32(
+                            "lurek.overlay.newTransition",
+                            "color_tbl[4]",
+                            ct.get::<_, f32>(4).unwrap_or(1.0),
+                        )?,
                     ]
                 } else {
                     [0.0, 0.0, 0.0, 1.0]

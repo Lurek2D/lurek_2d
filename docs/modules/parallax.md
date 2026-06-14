@@ -10,6 +10,7 @@
 - Preset layers provide quick-start setups for common depth planes.
 - Motion-stretch options add velocity-driven style cues.
 - Per-layer effect chains support stylized post-processing on background planes.
+- Layer and set telemetry expose tile counts, effect pressure, and autoscroll state for runtime dashboards.
 - Layer sets help organize multiple planes into reusable scene groups.
 - For users, this module turns depth presentation into a configurable runtime system.
 
@@ -601,6 +602,22 @@ do
     print("scroll = " .. sx .. "," .. sy)
 end
 ```
+
+---
+
+#### `LParallaxLayer:getStats`
+
+Returns telemetry for the current runtime camera and viewport.
+
+```lua
+LParallaxLayer:getStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Parallax layer telemetry fields. |
 
 ---
 
@@ -1421,6 +1438,22 @@ do
     print("name = " .. set:getName())
 end
 ```
+
+---
+
+#### `LParallaxSet:getStats`
+
+Returns aggregated telemetry for all layers in the set.
+
+```lua
+LParallaxSet:getStats()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Set-level telemetry fields. |
 
 ---
 
