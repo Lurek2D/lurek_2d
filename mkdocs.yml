@@ -15,7 +15,12 @@ exclude_docs: |
   wiki/
   templates/
   snippets.md
+  CHANGELOG.md
   linux_build.md
+  rust-api.md
+  howto.md
+  AGENTS.md
+  architecture/
 
 theme:
   name: material
@@ -80,26 +85,8 @@ extra:
 
 nav:
   - Home: index.md
-  - Changelog: CHANGELOG.md
-  - Architecture:
-    - Philosophy: architecture/philosophy.md
-    - Architecture Overview: architecture/README.md
-    - Engine Core: architecture/engine-core.md
-    - Render Pipeline: architecture/render-pipeline.md
-    - Scripting Bridge: architecture/scripting-bridge.md
-    - Modularity & Plugins: architecture/modularity-plugins.md
-    - Quality Assurance: architecture/quality-assurance.md
-    - Developer Ecosystem: architecture/developer-ecosystem.md
-    - Handbook: handbook.md
-    - VS Code Extension: extension_plan.md
-    - Coding Standards: codding_standards.md
-    - Use Cases: use_cases.md
-    - Competition: positioning.md
-    - Build: build_info.md
-  - Lua:
+  - Lua API:
     - Home: callbacks.md
-    - Agent: modules/agent.md
-    - AI: modules/ai.md
     - Animation: modules/animation.md
     - App: modules/app.md
     - Audio: modules/audio.md
@@ -165,72 +152,3 @@ nav:
     - Validator: modules/validator.md
     - Visibility: modules/visibility.md
     - Window: modules/window.md
-  - Rust:
-    - Home: rust-api.md
-    - Agent: rust_modules/agent.md
-    - AI: rust_modules/ai.md
-    - Animation: rust_modules/animation.md
-    - App: rust_modules/app.md
-    - Audio: rust_modules/audio.md
-    - Automation: rust_modules/automation.md
-    - Binary: rust_modules/binary.md
-    - Camera: rust_modules/camera.md
-    - Charts: rust_modules/charts.md
-    - Color: rust_modules/color.md
-    - Compute: rust_modules/compute.md
-    - Cursor: rust_modules/cursor.md
-    - Dataframe: rust_modules/dataframe.md
-    - Debug Bridge: rust_modules/debugbridge.md
-    - Dev Tools: rust_modules/devtools.md
-    - Dialog: rust_modules/dialog.md
-    - Docs: rust_modules/docs.md
-    - DSP: rust_modules/dsp.md
-    - ECS: rust_modules/ecs.md
-    - Effect: rust_modules/effect.md
-    - Event: rust_modules/event.md
-    - Filesystem: rust_modules/filesystem.md
-    - Flownet: rust_modules/flownet.md
-    - Font: rust_modules/font.md
-    - Globe: rust_modules/globe.md
-    - Grep: rust_modules/grep.md
-    - HTML: rust_modules/html.md
-    - I18n: rust_modules/i18n.md
-    - Image: rust_modules/image.md
-    - Input: rust_modules/input.md
-    - Layout: rust_modules/layout.md
-    - Learning: rust_modules/learning.md
-    - Light: rust_modules/light.md
-    - Log: rust_modules/log.md
-    - Mapblock: rust_modules/mapblock.md
-    - Math: rust_modules/math.md
-    - Midi: rust_modules/midi.md
-    - Minimap: rust_modules/minimap.md
-    - Mods: rust_modules/mods.md
-    - Network: rust_modules/network.md
-    - Overlay: rust_modules/overlay.md
-    - Parallax: rust_modules/parallax.md
-    - Particle: rust_modules/particle.md
-    - Pathfind: rust_modules/pathfind.md
-    - Patterns: rust_modules/patterns.md
-    - Physics: rust_modules/physics.md
-    - Pipeline: rust_modules/pipeline.md
-    - Procgen: rust_modules/procgen.md
-    - Province: rust_modules/province.md
-    - Raycaster: rust_modules/raycaster.md
-    - Render: rust_modules/render.md
-    - Repl: rust_modules/repl.md
-    - Runtime: rust_modules/runtime.md
-    - Save: rust_modules/save.md
-    - Scene: rust_modules/scene.md
-    - Serialize: rust_modules/serialize.md
-    - Spine: rust_modules/spine.md
-    - Sprite: rust_modules/sprite.md
-    - Terminal: rust_modules/terminal.md
-    - Thread: rust_modules/thread.md
-    - Tilemap: rust_modules/tilemap.md
-    - Timer: rust_modules/timer.md
-    - Tween: rust_modules/tween.md
-    - UI: rust_modules/ui.md
-    - Validator: rust_modules/validator.md
-    - Visibility: rust_modules/visibility.md
-    - Window: rust_modules/window.md

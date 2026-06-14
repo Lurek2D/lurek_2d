@@ -11,7 +11,7 @@
 - Source path: `src/overlay/`
 - Binding: `src/lua_api/overlay_api.rs`
 - Namespace: `lurek.overlay`
-- Lua API surface: `2` functions, `3` types, `88` methods
+- Lua API surface: `2` functions, `3` types, `89` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): tests/lua/unit/test_overlay_unit.lua
 
@@ -156,8 +156,8 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 - `LOverlay:getHeight() -> integer`: Returns the overlay height. This method is available to Lua scripts.
 - `LOverlay:getLightningAlpha() -> number`: Returns the current lightning alpha.
 - `LOverlay:getLightningColor() -> number`: Returns overlay lightning RGBA color.
-- `LOverlay:getStats() -> table`: Returns a telemetry snapshot for dashboard and debug workflows.
 - `LOverlay:getShakeOffset() -> number`: Returns the current screen shake offset.
+- `LOverlay:getStats() -> table`: Returns a telemetry snapshot for dashboard and debug workflows.
 - `LOverlay:getTimeOfDay() -> number`: Returns the overlay time-of-day value.
 - `LOverlay:getVignetteStrength() -> number`: Returns overlay vignette strength.
 - `LOverlay:getWater() -> table`: Returns a table describing the current water effect settings.

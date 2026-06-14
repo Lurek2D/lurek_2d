@@ -1,5 +1,7 @@
 -- Integration: compute statistics fed into dataframe reports
 -- @describe integration: compute statistics to dataframe
+
+-- @describe integration: compute statistics to dataframe
 describe("integration: compute statistics to dataframe", function()
     -- @integration LDataFrame:addColumn
     -- @integration LDataFrame:addRow
@@ -9,6 +11,11 @@ describe("integration: compute statistics to dataframe", function()
     -- @integration lurek.compute.ones
     -- @integration lurek.compute.range
     -- @integration lurek.dataframe.newDataFrame
+    -- @covers lurek.compute.fromTable
+    -- @covers lurek.compute.ones
+    -- @covers lurek.compute.range
+    -- @covers lurek.dataframe.newDataFrame
+    -- @covers lurek.image.newImageData
     it("compute array stats populate dataframe", function()
         -- Create arrays with known distributions
         local datasets = {

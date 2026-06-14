@@ -612,57 +612,89 @@ impl LuaUserData for LuaLineChart {
                 Ok(())
             },
         );
+        /// Sets the window.
+        ///
+        /// @param max_points : integer?
         methods.add_method("setWindow", |_, this, max_points: Option<usize>| {
             this.inner.borrow_mut().set_max_points(max_points);
             this.dirty.set(true);
             Ok(())
         });
+        /// Clears the state.
+        ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             this.count.set(0);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the title.
+        ///
+        /// @param title : string
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y max.
+        ///
+        /// @param value : number
         methods.add_method("setYMax", |_, this, value: f32| {
             this.inner.borrow_mut().y_max = value;
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x max.
+        ///
+        /// @param value : number
         methods.add_method("setXMax", |_, this, value: f32| {
             this.inner.borrow_mut().x_max = value;
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x label.
+        ///
+        /// @param label : string
         methods.add_method("setXLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.x_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y label.
+        ///
+        /// @param label : string
         methods.add_method("setYLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.y_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x tick count.
+        ///
+        /// @param count : integer
         methods.add_method("setXTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.x_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y tick count.
+        ///
+        /// @param count : integer
         methods.add_method("setYTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.y_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the show legend.
+        ///
+        /// @param value : boolean
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
+        /// Render.
+        ///
+        /// @return any
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -673,6 +705,8 @@ impl LuaUserData for LuaLineChart {
                 })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
+        /// Render image.
+        ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
             chart_image_userdata(
@@ -685,6 +719,9 @@ impl LuaUserData for LuaLineChart {
                 },
             )
         });
+        /// Draw to image.
+        ///
+        /// @param target : userdata
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -711,6 +748,11 @@ impl LuaUserData for LuaLineChart {
                 )
             },
         );
+        /// Nearest.
+        ///
+        /// @param x : number
+        /// @param y : number
+        /// @return any
         methods.add_method("nearest", |lua, this, (x, y): (f32, f32)| {
             let chart = this.inner.borrow();
             let margin = chart.config.margin;
@@ -755,13 +797,26 @@ impl LuaUserData for LuaLineChart {
                 ),
             )
         });
+        /// Returns the width.
+        ///
+        /// @return any
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
+        /// Returns the height.
+        ///
+        /// @return any
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
+        /// Type.
+        ///
+        /// @return any
         methods.add_method("type", |_, _, ()| Ok("LLineChart"));
+        /// Type of.
+        ///
+        /// @param name : string
+        /// @return any
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LLineChart" || name == "LObject")
         });
@@ -821,47 +876,73 @@ impl LuaUserData for LuaBarChart {
                 Ok(added)
             },
         );
+        /// Clears the state.
+        ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             this.count.set(0);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the bar width.
+        ///
+        /// @param width : number
         methods.add_method("setBarWidth", |_, this, width: f32| {
             this.inner.borrow_mut().set_bar_width(width);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the title.
+        ///
+        /// @param title : string
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x label.
+        ///
+        /// @param label : string
         methods.add_method("setXLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.x_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y label.
+        ///
+        /// @param label : string
         methods.add_method("setYLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.y_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x tick count.
+        ///
+        /// @param count : integer
         methods.add_method("setXTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.x_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y tick count.
+        ///
+        /// @param count : integer
         methods.add_method("setYTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.y_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the show legend.
+        ///
+        /// @param value : boolean
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
+        /// Render.
+        ///
+        /// @return any
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -872,6 +953,8 @@ impl LuaUserData for LuaBarChart {
                 })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
+        /// Render image.
+        ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
             chart_image_userdata(
@@ -884,6 +967,9 @@ impl LuaUserData for LuaBarChart {
                 },
             )
         });
+        /// Draw to image.
+        ///
+        /// @param target : userdata
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -910,13 +996,26 @@ impl LuaUserData for LuaBarChart {
                 )
             },
         );
+        /// Returns the width.
+        ///
+        /// @return any
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
+        /// Returns the height.
+        ///
+        /// @return any
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
+        /// Type.
+        ///
+        /// @return any
         methods.add_method("type", |_, _, ()| Ok("LBarChart"));
+        /// Type of.
+        ///
+        /// @param name : string
+        /// @return any
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LBarChart" || name == "LObject")
         });
@@ -1005,62 +1104,99 @@ impl LuaUserData for LuaScatterPlot {
                 Ok(())
             },
         );
+        /// Sets the window.
+        ///
+        /// @param max_points : integer?
         methods.add_method("setWindow", |_, this, max_points: Option<usize>| {
             this.inner.borrow_mut().set_max_points(max_points);
             this.dirty.set(true);
             Ok(())
         });
+        /// Clears the state.
+        ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             this.count.set(0);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the dot radius.
+        ///
+        /// @param radius : number
         methods.add_method("setDotRadius", |_, this, radius: f32| {
             this.inner.borrow_mut().set_dot_radius(radius);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the title.
+        ///
+        /// @param title : string
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x range.
+        ///
+        /// @param min_x : number
+        /// @param max_x : number
         methods.add_method("setXRange", |_, this, (min_x, max_x): (f32, f32)| {
             this.inner.borrow_mut().x_range = (min_x, max_x);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y range.
+        ///
+        /// @param min_y : number
+        /// @param max_y : number
         methods.add_method("setYRange", |_, this, (min_y, max_y): (f32, f32)| {
             this.inner.borrow_mut().y_range = (min_y, max_y);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x label.
+        ///
+        /// @param label : string
         methods.add_method("setXLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.x_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y label.
+        ///
+        /// @param label : string
         methods.add_method("setYLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.y_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x tick count.
+        ///
+        /// @param count : integer
         methods.add_method("setXTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.x_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y tick count.
+        ///
+        /// @param count : integer
         methods.add_method("setYTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.y_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the show legend.
+        ///
+        /// @param value : boolean
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
+        /// Render.
+        ///
+        /// @return any
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -1075,6 +1211,8 @@ impl LuaUserData for LuaScatterPlot {
             )?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
+        /// Render image.
+        ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
             chart_image_userdata(
@@ -1085,6 +1223,9 @@ impl LuaUserData for LuaScatterPlot {
                 |buffer| chart.render(buffer),
             )
         });
+        /// Draw to image.
+        ///
+        /// @param target : userdata
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -1111,6 +1252,11 @@ impl LuaUserData for LuaScatterPlot {
                 )
             },
         );
+        /// Nearest.
+        ///
+        /// @param x : number
+        /// @param y : number
+        /// @return any
         methods.add_method("nearest", |lua, this, (x, y): (f32, f32)| {
             let chart = this.inner.borrow();
             let margin = chart.config.margin;
@@ -1155,13 +1301,26 @@ impl LuaUserData for LuaScatterPlot {
                 ),
             )
         });
+        /// Returns the width.
+        ///
+        /// @return any
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
+        /// Returns the height.
+        ///
+        /// @return any
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
+        /// Type.
+        ///
+        /// @return any
         methods.add_method("type", |_, _, ()| Ok("LScatterPlot"));
+        /// Type of.
+        ///
+        /// @param name : string
+        /// @return any
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LScatterPlot" || name == "LObject")
         });
@@ -1223,22 +1382,33 @@ impl LuaUserData for LuaPieChart {
                 Ok(added)
             },
         );
+        /// Clears the state.
+        ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             this.count.set(0);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the title.
+        ///
+        /// @param title : string
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the show legend.
+        ///
+        /// @param value : boolean
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
+        /// Render.
+        ///
+        /// @return any
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -1249,6 +1419,8 @@ impl LuaUserData for LuaPieChart {
                 })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
+        /// Render image.
+        ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
             chart_image_userdata(
@@ -1261,6 +1433,9 @@ impl LuaUserData for LuaPieChart {
                 },
             )
         });
+        /// Draw to image.
+        ///
+        /// @param target : userdata
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -1287,13 +1462,26 @@ impl LuaUserData for LuaPieChart {
                 )
             },
         );
+        /// Returns the width.
+        ///
+        /// @return any
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
+        /// Returns the height.
+        ///
+        /// @return any
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
+        /// Type.
+        ///
+        /// @return any
         methods.add_method("type", |_, _, ()| Ok("LPieChart"));
+        /// Type of.
+        ///
+        /// @param name : string
+        /// @return any
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LPieChart" || name == "LObject")
         });
@@ -1383,52 +1571,81 @@ impl LuaUserData for LuaAreaChart {
                 Ok(())
             },
         );
+        /// Sets the window.
+        ///
+        /// @param max_points : integer?
         methods.add_method("setWindow", |_, this, max_points: Option<usize>| {
             this.inner.borrow_mut().set_max_points(max_points);
             this.dirty.set(true);
             Ok(())
         });
+        /// Clears the state.
+        ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             this.count.set(0);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the title.
+        ///
+        /// @param title : string
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y max.
+        ///
+        /// @param value : number
         methods.add_method("setYMax", |_, this, value: f32| {
             this.inner.borrow_mut().y_max = value;
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x label.
+        ///
+        /// @param label : string
         methods.add_method("setXLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.x_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y label.
+        ///
+        /// @param label : string
         methods.add_method("setYLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.y_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x tick count.
+        ///
+        /// @param count : integer
         methods.add_method("setXTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.x_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y tick count.
+        ///
+        /// @param count : integer
         methods.add_method("setYTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.y_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the show legend.
+        ///
+        /// @param value : boolean
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
+        /// Render.
+        ///
+        /// @return any
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -1439,6 +1656,8 @@ impl LuaUserData for LuaAreaChart {
                 })?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
+        /// Render image.
+        ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
             chart_image_userdata(
@@ -1451,6 +1670,9 @@ impl LuaUserData for LuaAreaChart {
                 },
             )
         });
+        /// Draw to image.
+        ///
+        /// @param target : userdata
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -1477,13 +1699,26 @@ impl LuaUserData for LuaAreaChart {
                 )
             },
         );
+        /// Returns the width.
+        ///
+        /// @return any
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
+        /// Returns the height.
+        ///
+        /// @return any
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
+        /// Type.
+        ///
+        /// @return any
         methods.add_method("type", |_, _, ()| Ok("LAreaChart"));
+        /// Type of.
+        ///
+        /// @param name : string
+        /// @return any
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LAreaChart" || name == "LObject")
         });
@@ -1605,67 +1840,105 @@ impl LuaUserData for LuaHistogramChart {
                 Ok(())
             },
         );
+        /// Sets the window.
+        ///
+        /// @param max_points : integer?
         methods.add_method("setWindow", |_, this, max_points: Option<usize>| {
             this.inner.borrow_mut().set_max_points(max_points);
             this.dirty.set(true);
             Ok(())
         });
+        /// Clears the state.
+        ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             this.count.set(0);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the bin count.
+        ///
+        /// @param bins : integer
         methods.add_method("setBinCount", |_, this, bins: u32| {
             this.inner.borrow_mut().set_bin_count(bins as usize);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the range.
+        ///
+        /// @param min : number
+        /// @param max : number
         methods.add_method("setRange", |_, this, (min, max): (f32, f32)| {
             this.inner.borrow_mut().set_range(min, max);
             this.dirty.set(true);
             Ok(())
         });
+        /// Clears range.
+        ///
         methods.add_method("clearRange", |_, this, ()| {
             this.inner.borrow_mut().clear_range();
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the density.
+        ///
+        /// @param enabled : boolean
         methods.add_method("setDensity", |_, this, enabled: bool| {
             this.inner.borrow_mut().set_density(enabled);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the title.
+        ///
+        /// @param title : string
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x label.
+        ///
+        /// @param label : string
         methods.add_method("setXLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.x_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y label.
+        ///
+        /// @param label : string
         methods.add_method("setYLabel", |_, this, label: String| {
             this.inner.borrow_mut().config.y_label = Some(label);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the x tick count.
+        ///
+        /// @param count : integer
         methods.add_method("setXTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.x_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the y tick count.
+        ///
+        /// @param count : integer
         methods.add_method("setYTickCount", |_, this, count: u32| {
             this.inner.borrow_mut().config.y_tick_count = count.max(2);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the show legend.
+        ///
+        /// @param value : boolean
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
+        /// Render.
+        ///
+        /// @return any
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -1680,6 +1953,8 @@ impl LuaUserData for LuaHistogramChart {
             )?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
+        /// Render image.
+        ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
             chart_image_userdata(
@@ -1690,6 +1965,9 @@ impl LuaUserData for LuaHistogramChart {
                 |buffer| chart.render(buffer),
             )
         });
+        /// Draw to image.
+        ///
+        /// @param target : userdata
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -1716,13 +1994,26 @@ impl LuaUserData for LuaHistogramChart {
                 )
             },
         );
+        /// Returns the width.
+        ///
+        /// @return any
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
+        /// Returns the height.
+        ///
+        /// @return any
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
+        /// Type.
+        ///
+        /// @return any
         methods.add_method("type", |_, _, ()| Ok("LHistogramChart"));
+        /// Type of.
+        ///
+        /// @param name : string
+        /// @return any
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LHistogramChart" || name == "LObject")
         });
@@ -1780,11 +2071,20 @@ impl LuaUserData for LuaHeatmapChart {
                 Ok(added)
             },
         );
+        /// Resize.
+        ///
+        /// @param rows : integer
+        /// @param cols : integer
         methods.add_method("resize", |_, this, (rows, cols): (u32, u32)| {
             this.inner.borrow_mut().resize(rows as usize, cols as usize);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the cell.
+        ///
+        /// @param row : integer
+        /// @param col : integer
+        /// @param value : number
         methods.add_method("setCell", |_, this, (row, col, value): (u32, u32, f32)| {
             if row == 0 || col == 0 {
                 return Err(LuaError::RuntimeError(
@@ -1802,11 +2102,16 @@ impl LuaUserData for LuaHeatmapChart {
             this.dirty.set(true);
             Ok(())
         });
+        /// Clears the state.
+        ///
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the row labels.
+        ///
+        /// @param labels : table
         methods.add_method("setRowLabels", |_, this, labels: LuaTable| {
             this.inner
                 .borrow_mut()
@@ -1814,6 +2119,9 @@ impl LuaUserData for LuaHeatmapChart {
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the column labels.
+        ///
+        /// @param labels : table
         methods.add_method("setColumnLabels", |_, this, labels: LuaTable| {
             this.inner
                 .borrow_mut()
@@ -1821,11 +2129,17 @@ impl LuaUserData for LuaHeatmapChart {
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the value range.
+        ///
+        /// @param min : number
+        /// @param max : number
         methods.add_method("setValueRange", |_, this, (min, max): (f32, f32)| {
             this.inner.borrow_mut().set_value_range(min, max);
             this.dirty.set(true);
             Ok(())
         });
+        /// Clears value range.
+        ///
         methods.add_method("clearValueRange", |_, this, ()| {
             this.inner.borrow_mut().clear_value_range();
             this.dirty.set(true);
@@ -1841,21 +2155,33 @@ impl LuaUserData for LuaHeatmapChart {
                 Ok(())
             },
         );
+        /// Sets the show values.
+        ///
+        /// @param value : boolean
         methods.add_method("setShowValues", |_, this, value: bool| {
             this.inner.borrow_mut().set_show_values(value);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the title.
+        ///
+        /// @param title : string
         methods.add_method("setTitle", |_, this, title: String| {
             this.inner.borrow_mut().config.title = Some(title);
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the show legend.
+        ///
+        /// @param value : boolean
         methods.add_method("setShowLegend", |_, this, value: bool| {
             this.inner.borrow_mut().config.show_legend = value;
             this.dirty.set(true);
             Ok(())
         });
+        /// Render.
+        ///
+        /// @return any
         methods.add_method("render", |lua, this, ()| {
             let chart = this.inner.borrow();
             let width = chart.config.width;
@@ -1870,6 +2196,8 @@ impl LuaUserData for LuaHeatmapChart {
             )?;
             Ok((width, height, lua.create_string(&buffer)?))
         });
+        /// Render image.
+        ///
         methods.add_method("renderImage", |lua, this, ()| {
             let chart = this.inner.borrow();
             chart_image_userdata(
@@ -1880,6 +2208,9 @@ impl LuaUserData for LuaHeatmapChart {
                 |buffer| chart.render(buffer),
             )
         });
+        /// Draw to image.
+        ///
+        /// @param target : userdata
         methods.add_method("drawToImage", |_, this, target: LuaAnyUserData| {
             let chart = this.inner.borrow();
             let mut image = target.borrow_mut::<ImageData>()?;
@@ -1906,13 +2237,26 @@ impl LuaUserData for LuaHeatmapChart {
                 )
             },
         );
+        /// Returns the width.
+        ///
+        /// @return any
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().config.width)
         });
+        /// Returns the height.
+        ///
+        /// @return any
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().config.height)
         });
+        /// Type.
+        ///
+        /// @return any
         methods.add_method("type", |_, _, ()| Ok("LHeatmapChart"));
+        /// Type of.
+        ///
+        /// @param name : string
+        /// @return any
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LHeatmapChart" || name == "LObject")
         });
@@ -1923,6 +2267,10 @@ impl LuaUserData for LuaHeatmapChart {
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let charts = lua.create_table()?;
 
+    /// New line.
+    ///
+    /// @param config : table?
+    /// @return any
     charts.set(
         "newLine",
         lua.create_function({
@@ -1939,6 +2287,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    /// New bar.
+    ///
+    /// @param config : table?
+    /// @return any
     charts.set(
         "newBar",
         lua.create_function({
@@ -1955,6 +2307,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    /// New scatter.
+    ///
+    /// @param config : table?
+    /// @return any
     charts.set(
         "newScatter",
         lua.create_function({
@@ -1971,6 +2327,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    /// New pie.
+    ///
+    /// @param config : table?
+    /// @return any
     charts.set(
         "newPie",
         lua.create_function({
@@ -1987,6 +2347,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    /// New area.
+    ///
+    /// @param config : table?
+    /// @return any
     charts.set(
         "newArea",
         lua.create_function({
@@ -2003,6 +2367,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    /// New histogram.
+    ///
+    /// @param config : table?
+    /// @return any
     charts.set(
         "newHistogram",
         lua.create_function({
@@ -2019,6 +2387,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    /// New heatmap.
+    ///
+    /// @param config : table?
+    /// @return any
     charts.set(
         "newHeatmap",
         lua.create_function({
@@ -2034,6 +2406,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    /// Default palette.
+    ///
+    /// @return any
     charts.set(
         "defaultPalette",
         lua.create_function(|lua, ()| {
@@ -2050,6 +2425,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    /// Series color.
+    ///
+    /// @param index : integer
+    /// @return any
     charts.set(
         "seriesColor",
         lua.create_function(|lua, index: usize| {

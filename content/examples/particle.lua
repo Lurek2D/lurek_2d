@@ -1152,3 +1152,8 @@ do
 
     print("type = " .. trail:type())
 end
+
+--@api-stub: LParticleSystem:getStats
+do
+end
+

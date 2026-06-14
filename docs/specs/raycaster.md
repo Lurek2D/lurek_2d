@@ -13,7 +13,7 @@
 - Source path: `src/raycaster/`
 - Binding: `src/lua_api/raycaster_api.rs`
 - Namespace: `lurek.raycaster`
-- Lua API surface: `12` functions, `16` types, `99` methods
+- Lua API surface: `16` functions, `21` types, `132` methods
 - Rust test path(s): tests/rust/unit/raycaster_tests.rs
 - Lua test path(s): tests/lua/unit/test_raycaster_core_unit.lua, tests/lua/evidence/test_raycaster_evidence.lua
 
@@ -64,6 +64,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `image`: Imports or references `image` from `src/image/`.
 - `math`: Imports or references `math` from `src/math/`.
+- `physics`: Imports or references `src/physics/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `render`: Imports or references `render` from `src/render/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 
@@ -77,7 +78,6 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - Lowered cells become pits with visible bottoms, side faces, and transitions that preserve depth cues instead of flattening into one plane.
 - Roofed regions are darkened differently from open regions so covered space reads denser even before dynamic lights are applied.
 - Point lights, ambient light, and distance falloff are blended here so every emitted surface leaves this file with its final light tint.
-- Repeated lighting samples within one scene build are memoized so dense textured worlds avoid recomputing the same tile-light state.
 - Billboard sprites are projected into the same camera space as walls, which keeps monsters, props, and pickups aligned with corridor depth.
 - Static meshes can be injected beside billboarded elements without asking later stages to reconstruct world-space context.
 - Ground projection helpers convert world corners into screen corners for both top and bottom planes with near-plane rejection baked in.
@@ -124,7 +124,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 ### draw.rs
 
 - This file turns a prepared raycaster scene into software pixels when GPU command generation is not the chosen output path.
-- It fills ceilings, floors, walls, and sprite shapes directly into image memory using the scene ordering established earlier in the pipeline.
+- It fills ceilings, floors, walls, billboard sprites, and transient model meshes directly into image memory.
 - Draw order stays deliberately simple so layered surfaces read correctly even without a richer hardware depth workflow.
 - The result is useful for offline images, debug previews, and tool-facing render outputs that need first-person content in CPU memory.
 
@@ -151,9 +151,9 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### lighting.rs
 
-- This file applies local lighting plus optional directional sun to raycast space using colored point emitters, ambient fill, and simple grid shadows.
+- This file applies simple but readable local lighting to raycast space using colored point emitters and ambient fill.
 - Visibility between a light and a sample point is checked against blocking tiles so illumination respects corridor walls and corners.
-- Contributions from multiple emitters are accumulated into one tint that later scene builders can stamp onto walls, floors, sprites, and injected meshes.
+- Contributions from multiple emitters are accumulated into one tint that later scene builders can stamp onto walls, floors, and sprites.
 - The model favors clear spatial mood and cheap evaluation over physically exact light transport.
 
 ### mod.rs
@@ -197,6 +197,13 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - Each record carries the texture routing, light tint, depth meaning, and UV state needed to survive the trip from world logic to renderer.
 - The scene container groups one frame of these surfaces into a single package sized to the active viewport.
 - In practice it is the raycaster's staging area for everything the camera can currently see.
+
+### scene_adapter.rs
+
+- Runtime scene-input adapter that maps static or physics-backed 2D transforms
+- into raycaster sprite, light, and optional model descriptors.
+- It exists so gameplay code can treat physics bodies as the source of truth
+- while still feeding the raycaster with pseudo-3D presentation inputs.
 
 ### segment.rs
 
@@ -256,18 +263,19 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 - `lurek.raycaster.applyLitShade(baseShade, r, g, b) -> number`: Applies an RGB light color to a scalar shade value.
 - `lurek.raycaster.buildMultiLevelScene(params, levels, lights?, sprites?, wallTextures?, models?) -> integer`: Builds a multilevel raycaster scene from a stack of plain Lua level tables.
-- `lurek.raycaster.buildMultiLevelSceneFromAdapter(params, levels, adapter, wallTextures?) -> integer`: Builds a multilevel raycaster scene from plain Lua level tables using a runtime scene adapter that may follow physics bodies.
+- `lurek.raycaster.buildMultiLevelSceneFromAdapter(params, levels, adapter, wallTextures?) -> integer`: Builds a multilevel raycaster scene from a stack of plain Lua level tables using a runtime scene adapter.
 - `lurek.raycaster.distanceShade(distance, maxDistance) -> number`: Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
+- `lurek.raycaster.getLastBuildStats() -> table?`: Returns stats for the last stored raycaster scene build.
 - `lurek.raycaster.new(w, h) -> LRaycaster`: Creates a new raycaster map with the given grid dimensions.
 - `lurek.raycaster.newDoorManager() -> LDoorManager`: Creates a new door manager for tracking and animating sliding doors.
 - `lurek.raycaster.newHeightMap(w, h) -> LHeightMap`: Creates a new height map for variable floor/ceiling heights across the grid.
 - `lurek.raycaster.newMap(w, h) -> LRaycaster`: Creates a new raycaster map (alias for `new`).
 - `lurek.raycaster.newMultiLevelGrid(levels?) -> LMultiLevelGrid`: Creates a persistent multi-level raycaster world from plain Lua level tables or as an empty container.
 - `lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity, level?) -> LPointLight`: Creates a new point light with position, color, radius, and intensity.
-- `lurek.raycaster.newSceneAdapter() -> LSceneAdapter`: Creates a runtime scene adapter for sprites, lights, and models that may follow physics bodies.
+- `lurek.raycaster.newSceneAdapter() -> LSceneAdapter`: Creates a runtime adapter for sprites, lights, and models that can follow physics bodies.
 - `lurek.raycaster.newSpriteManager() -> LSpriteManager`: Creates a new sprite manager for tracking and projecting billboard sprites.
 - `lurek.raycaster.pickScreenMultiLevel(sx, sy, params, levels, wallTextures?, sprites?, models?) -> table`: Resolves a screen-space click against a stack of plain Lua level tables and returns the owning level.
-- `lurek.raycaster.pickScreenMultiLevelFromAdapter(sx, sy, params, levels, wallTextures?, adapter) -> table`: Resolves a screen-space click against plain Lua level tables using a runtime scene adapter.
+- `lurek.raycaster.pickScreenMultiLevelFromAdapter(sx, sy, params, levels, wallTextures?, adapter) -> table`: Resolves a screen-space click against a stack of plain Lua level tables using a runtime scene adapter.
 - `lurek.raycaster.projectColumn(distance, fov, screenHeight) -> number`: Computes the projected wall-column height for a given distance, FOV, and screen height.
 
 ### Callbacks
@@ -346,7 +354,14 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LMultiLevelGrid:buildScene(params, lights?, sprites?, wallTextures?) -> integer`: Builds a textured multilevel raycaster scene from this persistent world and stores it for rendering.
 - `LMultiLevelGrid:buildSceneFromAdapter(params, adapter, wallTextures?) -> integer`: Builds a textured multilevel raycaster scene from a runtime scene adapter that may follow physics bodies.
 - `LMultiLevelGrid:clearWallFeatureCell(x, y) -> nil`: Removes any per-cell wall feature override from the active level.
+- `LMultiLevelGrid:getCeilingHeight() -> number`: Returns the ceiling height of the active level in world units.
+- `LMultiLevelGrid:getCeilingTexture() -> integer`: Returns the default ceiling texture id used by the active level, or nil when none is set.
+- `LMultiLevelGrid:getCeilingTextureCell(x, y) -> integer`: Returns the per-cell ceiling texture id assigned on the active level, or nil if none is set.
 - `LMultiLevelGrid:getCell(x, y) -> integer`: Returns the wall type value at a grid cell on the active level.
+- `LMultiLevelGrid:getFloorOffset() -> number`: Returns the floor height offset of the active level in world units.
+- `LMultiLevelGrid:getFloorTexture() -> integer`: Returns the default floor texture id used by the active level, or nil when none is set.
+- `LMultiLevelGrid:getFloorTextureCell(x, y) -> integer`: Returns the per-cell floor texture id assigned on the active level, or nil if none is set.
+- `LMultiLevelGrid:getLoweredFloorCell(x, y) -> table`: Returns the lowered-floor configuration at an active-level cell, or nil if the cell is normal.
 - `LMultiLevelGrid:getWallFeatureCell(x, y) -> table`: Returns the wall feature attached to an active-level cell, or nil when none is set.
 - `LMultiLevelGrid:isCeilingHole(x, y) -> boolean`: Returns true when an active-level cell is open to the level above.
 - `LMultiLevelGrid:isFloorHole(x, y) -> boolean`: Returns true when an active-level cell is open to the level below.
@@ -354,14 +369,52 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LMultiLevelGrid:pickScreen(sx, sy, params, wallTextures?, sprites?, models?) -> table`: Resolves a screen-space click against this persistent multi-level world and returns the owning level.
 - `LMultiLevelGrid:pickScreenFromAdapter(sx, sy, params, wallTextures?, adapter) -> table`: Resolves a screen-space click against this multilevel world using a runtime scene adapter.
 - `LMultiLevelGrid:setActiveLevel(level) -> nil`: Sets the currently active level index used for stacked camera height.
+- `LMultiLevelGrid:setCeilingHeight(height) -> nil`: Sets the ceiling height of the active level in world units.
 - `LMultiLevelGrid:setCeilingHole(x, y, hole) -> nil`: Sets whether an active-level cell is open to the level above.
+- `LMultiLevelGrid:setCeilingTexture(texture?) -> nil`: Sets the default ceiling texture used by the active level. Pass nil to clear it.
+- `LMultiLevelGrid:setCeilingTextureCell(x, y, texture?) -> nil`: Assigns a per-cell ceiling texture override on the active level. Pass nil to remove the override.
 - `LMultiLevelGrid:setCell(x, y, val) -> nil`: Sets the wall type value at a grid cell on the active level. Non-zero values are solid walls.
 - `LMultiLevelGrid:setDoorCell(x, y, direction, openAmount, alpha?) -> nil`: Attaches a sliding door feature to a blocking cell on the active level.
 - `LMultiLevelGrid:setFloorHole(x, y, hole) -> nil`: Sets whether an active-level cell is open to the level below.
+- `LMultiLevelGrid:setFloorOffset(offset) -> nil`: Sets the floor height offset of the active level in world units.
+- `LMultiLevelGrid:setFloorTexture(texture?) -> nil`: Sets the default floor texture used by the active level. Pass nil to clear it.
+- `LMultiLevelGrid:setFloorTextureCell(x, y, texture?) -> nil`: Assigns a per-cell floor texture override on the active level. Pass nil to remove the override.
 - `LMultiLevelGrid:setHalfWallCell(x, y, height) -> nil`: Attaches a half-height wall feature to a blocking cell on the active level.
+- `LMultiLevelGrid:setLoweredFloorCell(x, y, opts?) -> nil`: Marks an active-level cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
 - `LMultiLevelGrid:setWindowCell(x, y, sillHeight, lintelHeight, alpha?) -> nil`: Attaches a window feature to a blocking cell on the active level, leaving a visible opening between sill and lintel.
 - `LMultiLevelGrid:type() -> string`: Returns the type name of this object ("LMultiLevelGrid").
 - `LMultiLevelGrid:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
+#### LMultiLevelGridGetWallFeatureCellResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `alpha` (`number`): Feature alpha/transparency override.
+- `direction` (`string`): "horizontal" or "vertical" when `kind == "door"`.
+- `height` (`number`): Half-wall height in cell units when `kind == "half"`.
+- `kind` (`string`): "half", "window", or "door".
+- `lintel_height` (`number`): Window lintel height when `kind == "window"`.
+- `open_amount` (`number`): Door openness in 0.0..1.0 when `kind == "door"`.
+- `sill_height` (`number`): Window sill height when `kind == "window"`.
+
+##### Methods
+
+- No documented methods.
+
+#### LMultiLevelGridPickScreenResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `feature` (`table`): Optional wall feature table mirroring `getWallFeatureCell()` plus `section` for the solid band or door panel that was hit.
+- `wall_height` (`number`): Local wall height in cell units for wall hits against partial-height features.
+
+##### Methods
+
+- No documented methods.
 
 #### LPointLight Type
 
@@ -383,32 +436,6 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LPointLight:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 - `LPointLight:x() -> number`: Returns the X world position of this light.
 - `LPointLight:y() -> number`: Returns the Y world position of this light.
-
-#### LSceneAdapter Type
-
-- Lua-visible adapter that snapshots sprites, lights, and models from static data and physics bodies.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LSceneAdapter:addDirectionalSprite(x, y, front, right, back, left?, opts?) -> nil`: Adds a static directional billboard sprite entry.
-- `LSceneAdapter:addLight(x, y, radius, opts?) -> nil`: Adds a static point light entry.
-- `LSceneAdapter:addModel(model, x, y, opts?) -> nil`: Adds a static OBJ model instance entry.
-- `LSceneAdapter:addSprite(x, y, texture, opts?) -> nil`: Adds a static billboard sprite entry.
-- `LSceneAdapter:bindBodyDirectionalSprite(body, front, right, back, left?, opts?) -> nil`: Binds a directional billboard sprite to a live physics body.
-- `LSceneAdapter:bindBodyLight(body, radius, opts?) -> nil`: Binds a point light to a live physics body.
-- `LSceneAdapter:bindBodyModel(body, model, opts?) -> nil`: Binds an OBJ model instance to a live physics body.
-- `LSceneAdapter:bindBodySprite(body, texture, opts?) -> nil`: Binds a billboard sprite to a live physics body.
-- `LSceneAdapter:clear() -> nil`: Removes every tracked entry from the adapter.
-- `LSceneAdapter:clearLights() -> nil`: Removes every tracked light entry from the adapter.
-- `LSceneAdapter:clearModels() -> nil`: Removes every tracked model entry from the adapter.
-- `LSceneAdapter:clearSprites() -> nil`: Removes every tracked sprite entry from the adapter.
-- `LSceneAdapter:sceneInputs() -> table`: Resolves the current runtime snapshot into `{ lights, sprites, models }` tables.
-- `LSceneAdapter:type() -> string`: Returns the type name of this object ("LSceneAdapter").
-- `LSceneAdapter:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LRaycaster Type
 
@@ -559,6 +586,20 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 - No documented methods.
 
+#### LRaycasterGetLastBuildStatsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `lightingCacheHits` (`integer`): Number of reused lighting samples served from the per-build cache.
+- `lightingCacheMisses` (`integer`): Number of unique lighting samples computed during the last build.
+- `lightingSamples` (`integer`): Total lighting samples requested during the last build.
+
+##### Methods
+
+- No documented methods.
+
 #### LRaycasterGetLoweredFloorCellResult Type
 
 - Generated result shape from @field tags.
@@ -576,6 +617,24 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 - No documented methods.
 
+#### LRaycasterGetWallFeatureCellResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `alpha` (`number`): Feature alpha/transparency override.
+- `direction` (`string`): "horizontal" or "vertical" when `kind == "door"`.
+- `height` (`number`): Half-wall height in cell units when `kind == "half"`.
+- `kind` (`string`): "half", "window", or "door".
+- `lintel_height` (`number`): Window lintel height when `kind == "window"`.
+- `open_amount` (`number`): Door openness in 0.0..1.0 when `kind == "door"`.
+- `sill_height` (`number`): Window sill height when `kind == "window"`.
+
+##### Methods
+
+- No documented methods.
+
 #### LRaycasterPickScreenResult Type
 
 - Generated result shape from @field tags.
@@ -584,6 +643,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 - `cell_value` (`integer`): Cell value at the picked tile.
 - `distance` (`number`): Camera-space distance to the picked point.
+- `feature` (`table`): Optional wall feature table mirroring `getWallFeatureCell()` plus `section` for the solid band or door panel that was hit.
 - `hit_x` (`number`): World hit X.
 - `hit_y` (`number`): World hit Y.
 - `id` (`integer`): Optional caller-supplied entity id for sprite/model hits.
@@ -594,6 +654,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `texture` (`integer`): Raw floor/ceiling texture id when available.
 - `u` (`number`): Surface U coordinate in 0.0..1.0.
 - `v` (`number`): Surface V coordinate in 0.0..1.0.
+- `wall_height` (`number`): Local wall height in cell units for wall hits against partial-height features.
 - `x` (`number`): Grid X coordinate.
 - `y` (`number`): Grid Y coordinate.
 
@@ -629,6 +690,32 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 - No documented methods.
 
+#### LSceneAdapter Type
+
+- Lua-visible adapter that snapshots sprites, lights, and models from static data and physics bodies.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LSceneAdapter:addDirectionalSprite(x, y, front, right, back, left?, opts?) -> nil`: Adds a static directional billboard sprite entry.
+- `LSceneAdapter:addLight(x, y, radius, opts?) -> nil`: Adds a static point light entry.
+- `LSceneAdapter:addModel(model, x, y, opts?) -> nil`: Adds a static OBJ model instance entry.
+- `LSceneAdapter:addSprite(x, y, texture, opts?) -> nil`: Adds a static billboard sprite entry.
+- `LSceneAdapter:bindBodyDirectionalSprite(body, front, right, back, left?, opts?) -> nil`: Binds a directional billboard sprite to a live physics body.
+- `LSceneAdapter:bindBodyLight(body, radius, opts?) -> nil`: Binds a point light to a live physics body.
+- `LSceneAdapter:bindBodyModel(body, model, opts?) -> nil`: Binds an OBJ model instance to a live physics body.
+- `LSceneAdapter:bindBodySprite(body, texture, opts?) -> nil`: Binds a billboard sprite to a live physics body.
+- `LSceneAdapter:clear() -> nil`: Removes every tracked entry from the adapter.
+- `LSceneAdapter:clearLights() -> nil`: Removes every tracked light entry from the adapter.
+- `LSceneAdapter:clearModels() -> nil`: Lua-visible method.
+- `LSceneAdapter:clearSprites() -> nil`: Removes every tracked sprite entry from the adapter.
+- `LSceneAdapter:sceneInputs() -> table`: Resolves the current runtime snapshot into `{ lights, sprites, models }` tables.
+- `LSceneAdapter:type() -> string`: Returns the type name of this object.
+- `LSceneAdapter:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
+
 #### LSpriteManager Type
 
 - Lua-visible sprite manager that tracks world-space billboard sprites for sorting and projection.
@@ -657,6 +744,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `image`: Imports or references `image` from `src/image/`.
 - `math`: Imports or references `math` from `src/math/`.
+- `physics`: Imports or references `src/physics/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
 - `render`: Imports or references `render` from `src/render/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
 

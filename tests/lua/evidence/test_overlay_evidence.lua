@@ -1,5 +1,14 @@
 -- Evidence tests: overlay module
 -- Output-only evidence from direct lurek.overlay APIs.
+-- @covers lurek.charts.newBar
+-- @covers lurek.charts.newHeatmap
+-- @covers lurek.charts.newLine
+-- @covers lurek.dataframe.fromRows
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.overlay.new
+
 
 local OUT = evidence_output_dir("overlay")
 

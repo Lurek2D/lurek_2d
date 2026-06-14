@@ -7,10 +7,13 @@
 import * as assert from "assert";
 import * as fs from "fs";
 import * as path from "path";
+import * as ragService from "../../services/rag.js";
 import {
   handleGetApiDoc,
   handleListExamples,
   handleGetModuleInfo,
+  handleRagBuildIndex,
+  handleRagSearch,
   handleInspectLuaFile,
   handleGetTestCoverage,
   handleGetProjectStructure,

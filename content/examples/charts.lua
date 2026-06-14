@@ -444,3 +444,815 @@ do
     print("LScatterPlot:getHeight=" .. chart:getHeight())
     print("LScatterPlot:getWidth=" .. chart:getWidth())
 end
+
+--@api-stub: lurek.charts.newHistogram
+do
+    -- TODO: example for lurek.charts.newHistogram
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: lurek.charts.newHeatmap
+do
+    -- TODO: example for lurek.charts.newHeatmap
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:addLayer
+do
+    -- TODO: example for LAreaChart:addLayer
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:addLayerFromDataFrame
+do
+    -- TODO: example for LAreaChart:addLayerFromDataFrame
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:appendPoint
+do
+    -- TODO: example for LAreaChart:appendPoint
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:setWindow
+do
+    -- TODO: example for LAreaChart:setWindow
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:setYMax
+do
+    -- TODO: example for LAreaChart:setYMax
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:setXLabel
+do
+    -- TODO: example for LAreaChart:setXLabel
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:setYLabel
+do
+    -- TODO: example for LAreaChart:setYLabel
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:setXTickCount
+do
+    -- TODO: example for LAreaChart:setXTickCount
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:setYTickCount
+do
+    -- TODO: example for LAreaChart:setYTickCount
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:setShowLegend
+do
+    -- TODO: example for LAreaChart:setShowLegend
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:renderImage
+do
+    -- TODO: example for LAreaChart:renderImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:drawToImage
+do
+    -- TODO: example for LAreaChart:drawToImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:draw
+do
+    -- TODO: example for LAreaChart:draw
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:type
+do
+    -- TODO: example for LAreaChart:type
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LAreaChart:typeOf
+do
+    -- TODO: example for LAreaChart:typeOf
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:addCategory
+do
+    -- TODO: example for LBarChart:addCategory
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:addCategoriesFromDataFrame
+do
+    -- TODO: example for LBarChart:addCategoriesFromDataFrame
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:setXLabel
+do
+    -- TODO: example for LBarChart:setXLabel
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:setYLabel
+do
+    -- TODO: example for LBarChart:setYLabel
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:setXTickCount
+do
+    -- TODO: example for LBarChart:setXTickCount
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:setYTickCount
+do
+    -- TODO: example for LBarChart:setYTickCount
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:setShowLegend
+do
+    -- TODO: example for LBarChart:setShowLegend
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:renderImage
+do
+    -- TODO: example for LBarChart:renderImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:drawToImage
+do
+    -- TODO: example for LBarChart:drawToImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:draw
+do
+    -- TODO: example for LBarChart:draw
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:type
+do
+    -- TODO: example for LBarChart:type
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LBarChart:typeOf
+do
+    -- TODO: example for LBarChart:typeOf
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:setMatrix
+do
+    -- TODO: example for LHeatmapChart:setMatrix
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:setMatrixFromDataFrame
+do
+    -- TODO: example for LHeatmapChart:setMatrixFromDataFrame
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:resize
+do
+    -- TODO: example for LHeatmapChart:resize
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:setCell
+do
+    -- TODO: example for LHeatmapChart:setCell
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:clear
+do
+    -- TODO: example for LHeatmapChart:clear
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:setRowLabels
+do
+    -- TODO: example for LHeatmapChart:setRowLabels
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:setColumnLabels
+do
+    -- TODO: example for LHeatmapChart:setColumnLabels
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:setValueRange
+do
+    -- TODO: example for LHeatmapChart:setValueRange
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:clearValueRange
+do
+    -- TODO: example for LHeatmapChart:clearValueRange
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:setColorRange
+do
+    -- TODO: example for LHeatmapChart:setColorRange
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:setShowValues
+do
+    -- TODO: example for LHeatmapChart:setShowValues
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:setTitle
+do
+    -- TODO: example for LHeatmapChart:setTitle
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:setShowLegend
+do
+    -- TODO: example for LHeatmapChart:setShowLegend
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:render
+do
+    -- TODO: example for LHeatmapChart:render
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:renderImage
+do
+    -- TODO: example for LHeatmapChart:renderImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:drawToImage
+do
+    -- TODO: example for LHeatmapChart:drawToImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:draw
+do
+    -- TODO: example for LHeatmapChart:draw
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:getWidth
+do
+    -- TODO: example for LHeatmapChart:getWidth
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:getHeight
+do
+    -- TODO: example for LHeatmapChart:getHeight
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:type
+do
+    -- TODO: example for LHeatmapChart:type
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHeatmapChart:typeOf
+do
+    -- TODO: example for LHeatmapChart:typeOf
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:addSeries
+do
+    -- TODO: example for LHistogramChart:addSeries
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:addSeriesFromDataFrame
+do
+    -- TODO: example for LHistogramChart:addSeriesFromDataFrame
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:replaceSeries
+do
+    -- TODO: example for LHistogramChart:replaceSeries
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:appendValue
+do
+    -- TODO: example for LHistogramChart:appendValue
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:setWindow
+do
+    -- TODO: example for LHistogramChart:setWindow
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:clear
+do
+    -- TODO: example for LHistogramChart:clear
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:setBinCount
+do
+    -- TODO: example for LHistogramChart:setBinCount
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:setRange
+do
+    -- TODO: example for LHistogramChart:setRange
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:clearRange
+do
+    -- TODO: example for LHistogramChart:clearRange
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:setDensity
+do
+    -- TODO: example for LHistogramChart:setDensity
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:setTitle
+do
+    -- TODO: example for LHistogramChart:setTitle
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:setXLabel
+do
+    -- TODO: example for LHistogramChart:setXLabel
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:setYLabel
+do
+    -- TODO: example for LHistogramChart:setYLabel
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:setXTickCount
+do
+    -- TODO: example for LHistogramChart:setXTickCount
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:setYTickCount
+do
+    -- TODO: example for LHistogramChart:setYTickCount
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:setShowLegend
+do
+    -- TODO: example for LHistogramChart:setShowLegend
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:render
+do
+    -- TODO: example for LHistogramChart:render
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:renderImage
+do
+    -- TODO: example for LHistogramChart:renderImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:drawToImage
+do
+    -- TODO: example for LHistogramChart:drawToImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:draw
+do
+    -- TODO: example for LHistogramChart:draw
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:getWidth
+do
+    -- TODO: example for LHistogramChart:getWidth
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:getHeight
+do
+    -- TODO: example for LHistogramChart:getHeight
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:type
+do
+    -- TODO: example for LHistogramChart:type
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LHistogramChart:typeOf
+do
+    -- TODO: example for LHistogramChart:typeOf
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:addSeriesFromDataFrame
+do
+    -- TODO: example for LLineChart:addSeriesFromDataFrame
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:replaceSeries
+do
+    -- TODO: example for LLineChart:replaceSeries
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:appendPoint
+do
+    -- TODO: example for LLineChart:appendPoint
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:setWindow
+do
+    -- TODO: example for LLineChart:setWindow
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:setYMax
+do
+    -- TODO: example for LLineChart:setYMax
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:setXMax
+do
+    -- TODO: example for LLineChart:setXMax
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:setXLabel
+do
+    -- TODO: example for LLineChart:setXLabel
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:setYLabel
+do
+    -- TODO: example for LLineChart:setYLabel
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:setXTickCount
+do
+    -- TODO: example for LLineChart:setXTickCount
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:setYTickCount
+do
+    -- TODO: example for LLineChart:setYTickCount
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:setShowLegend
+do
+    -- TODO: example for LLineChart:setShowLegend
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:renderImage
+do
+    -- TODO: example for LLineChart:renderImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:drawToImage
+do
+    -- TODO: example for LLineChart:drawToImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:draw
+do
+    -- TODO: example for LLineChart:draw
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:nearest
+do
+    -- TODO: example for LLineChart:nearest
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:type
+do
+    -- TODO: example for LLineChart:type
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LLineChart:typeOf
+do
+    -- TODO: example for LLineChart:typeOf
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LPieChart:addSegment
+do
+    -- TODO: example for LPieChart:addSegment
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LPieChart:addSegmentsFromDataFrame
+do
+    -- TODO: example for LPieChart:addSegmentsFromDataFrame
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LPieChart:setShowLegend
+do
+    -- TODO: example for LPieChart:setShowLegend
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LPieChart:renderImage
+do
+    -- TODO: example for LPieChart:renderImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LPieChart:drawToImage
+do
+    -- TODO: example for LPieChart:drawToImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LPieChart:draw
+do
+    -- TODO: example for LPieChart:draw
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LPieChart:type
+do
+    -- TODO: example for LPieChart:type
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LPieChart:typeOf
+do
+    -- TODO: example for LPieChart:typeOf
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:addSeriesFromDataFrame
+do
+    -- TODO: example for LScatterPlot:addSeriesFromDataFrame
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:replaceSeries
+do
+    -- TODO: example for LScatterPlot:replaceSeries
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:appendPoint
+do
+    -- TODO: example for LScatterPlot:appendPoint
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:setWindow
+do
+    -- TODO: example for LScatterPlot:setWindow
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:setXRange
+do
+    -- TODO: example for LScatterPlot:setXRange
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:setYRange
+do
+    -- TODO: example for LScatterPlot:setYRange
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:setXLabel
+do
+    -- TODO: example for LScatterPlot:setXLabel
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:setYLabel
+do
+    -- TODO: example for LScatterPlot:setYLabel
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:setXTickCount
+do
+    -- TODO: example for LScatterPlot:setXTickCount
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:setYTickCount
+do
+    -- TODO: example for LScatterPlot:setYTickCount
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:setShowLegend
+do
+    -- TODO: example for LScatterPlot:setShowLegend
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:renderImage
+do
+    -- TODO: example for LScatterPlot:renderImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:drawToImage
+do
+    -- TODO: example for LScatterPlot:drawToImage
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:draw
+do
+    -- TODO: example for LScatterPlot:draw
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:nearest
+do
+    -- TODO: example for LScatterPlot:nearest
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:type
+do
+    -- TODO: example for LScatterPlot:type
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LScatterPlot:typeOf
+do
+    -- TODO: example for LScatterPlot:typeOf
+    -- keep this block until a real scenario is added
+end
+

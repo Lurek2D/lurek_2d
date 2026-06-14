@@ -1,5 +1,7 @@
 -- Integration: animation frame progression controlling sprite draw coordinates
 -- @describe animation + render integration
+
+-- @describe animation + render integration
 describe("animation + render integration", function()
     -- @integration lurek.animation.new
     -- @integration LAnimation:addFramesFromGrid
@@ -10,6 +12,9 @@ describe("animation + render integration", function()
     -- @integration LAnimation:getCurrentFrame
     -- @integration lurek.render.setColor
     -- @integration lurek.render.rectangle
+    -- @covers lurek.animation.new
+    -- @covers lurek.render.rectangle
+    -- @covers lurek.render.setColor
     it("animation frame index controls render source texture offset", function()
         local anim = lurek.animation.new()
         expect_type("userdata", anim, "animation constructor returns userdata")

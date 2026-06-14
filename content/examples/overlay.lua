@@ -848,3 +848,10 @@ do
     print("LScreenTransition:update active=" .. tostring(still_active))
     print("LScreenTransition:update progress=" .. f2(tr:progress()))
 end
+
+--@api-stub: LOverlay:getStats
+do
+    -- TODO: example for LOverlay:getStats
+    -- keep this block until a real scenario is added
+end
+

@@ -1,5 +1,7 @@
 -- Integration: serial encoding/decoding with compute array processing
 -- @describe data + compute integration
+
+-- @describe data + compute integration
 describe("data + compute integration", function()
     -- @integration lurek.serial.fromJson
     -- @integration lurek.compute.fromTable
@@ -29,6 +31,13 @@ describe("data + compute integration", function()
     -- @integration LArray:getSize
     -- @integration lurek.compute.zeros
     -- @integration lurek.serial.toToml
+    -- @covers lurek.binary.compress
+    -- @covers lurek.compute.fromTable
+    -- @covers lurek.compute.zeros
+    -- @covers lurek.serial.fromJson
+    -- @covers lurek.serial.fromToml
+    -- @covers lurek.serial.toJson
+    -- @covers lurek.serial.toToml
     it("TOML round-trip preserves typed data", function()
         local config = {
             compute = {

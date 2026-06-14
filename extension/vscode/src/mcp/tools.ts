@@ -2,7 +2,16 @@ import * as fs from "fs";
 import * as path from "path";
 import { resolveWorkspaceApiDocPath, searchApiDocumentation } from "../services/apiDocs.js";
 import { execParallelCargoCommand } from "../services/parallelCargo.js";
-import { execRagQuery, execRagBuildIndex } from "../services/rag.js";
+import {
+  DEFAULT_RAG_SEARCH_LIMIT,
+  MAX_RAG_SEARCH_LIMIT,
+  RagCommandResult,
+  RagQueryOptions,
+  DEFAULT_RAG_SEARCH_TIMEOUT_MS,
+  DEFAULT_RAG_BUILD_TIMEOUT_MS,
+  execRagQuery,
+  execRagBuildIndex,
+} from "../services/rag.js";
 import { ApiDataService } from "../services/apiData.js";
 import { LuaDocumentAnalyzer } from "../services/luaParser.js";
 
@@ -14,8 +23,19 @@ export interface ToolDefinition {
   description: string;
   inputSchema: {
     type: "object";
-    properties: Record<string, { type: string; description: string }>;
+    properties: Record<
+      string,
+      {
+        type: string;
+        description: string;
+        enum?: Array<string> | Array<number>;
+        default?: string | number | boolean;
+        minimum?: number;
+        maximum?: number;
+      }
+    >;
     required?: string[];
+    additionalProperties?: boolean;
   };
 }
 
@@ -25,6 +45,89 @@ export interface ToolDefinition {
 export type ToolHandler = (
   args: Record<string, unknown>
 ) => Promise<string>;
+
+interface RagToolSummary {
+  ok: boolean;
+  operation: string;
+  output: unknown;
+  exit_code: number;
+  stderr?: string;
+  error?: string;
+  spawnError?: string;
+}
+
+function ragResponseToText(result: RagCommandResult, operation: string): string {
+  const payload = result.payload as Record<string, unknown> | null;
+  const payloadError = payload && typeof payload === "object" && "error" in payload
+    ? String(payload.error)
+    : undefined;
+  const summary: RagToolSummary = {
+    ok: result.ok && !payloadError,
+    operation,
+    output: payload ?? null,
+    exit_code: result.exitCode,
+  };
+  if (payloadError) {
+    summary.error = payloadError;
+  }
+  if (!result.ok && (result.parseError || result.stderr || result.stdout)) {
+    summary.error = [payloadError, result.parseError, result.stderr, result.stdout]
+      .filter((value): value is string => Boolean(value && String(value).trim().length > 0))
+      .join(" | ");
+  } else if (result.parseError) {
+    summary.error = result.parseError;
+  }
+  if (result.stderr) {
+    summary.stderr = result.stderr.trim();
+  }
+  if (result.spawnError) {
+    summary.spawnError = result.spawnError;
+  }
+  return JSON.stringify(summary, null, 2);
+}
+
+function normalizeRagProfile(value: unknown): "game" | "engine" | "all" {
+  if (value === "game" || value === "engine" || value === "all") {
+    return value;
+  }
+  return "all";
+}
+
+function normalizeRagLimit(value: unknown): number {
+  if (value === undefined) {
+    return DEFAULT_RAG_SEARCH_LIMIT;
+  }
+  const normalized = Number(value);
+  if (!Number.isInteger(normalized)) {
+    throw new Error("`limit` must be an integer.");
+  }
+  if (normalized < 1 || normalized > MAX_RAG_SEARCH_LIMIT) {
+    throw new Error(
+      `limit` must be between 1 and ${MAX_RAG_SEARCH_LIMIT}.`
+    );
+  }
+  return normalized;
+}
+
+function toRagTargets(value: unknown, fieldName: string): string[] {
+  if (value === undefined || value === null) {
+    return [];
+  }
+  if (!Array.isArray(value)) {
+    throw new Error(`'${fieldName}' must be an array of strings.`);
+  }
+  const result: string[] = [];
+  for (const item of value) {
+    if (typeof item !== "string") {
+      throw new Error(`'${fieldName}' must contain only strings.`);
+    }
+    const normalized = item.trim();
+    if (normalized) {
+      result.push(normalized);
+    }
+  }
+  return result;
+}
 
 /**
  * Returns all MCP tool definitions for the Lurek2D server.
@@ -122,6 +225,34 @@ export function getToolDefinitions(): ToolDefinition[] {
             description:
               'Search query keywords (e.g. "lurek.graphics draw", "audio play").',
           },
+          limit: {
+            type: "number",
+            description: "Maximum number of results to return.",
+          },
+          profile: {
+            type: "string",
+            description: 'Target developer profile (game, engine, or all). Defaults to all. Game profile excludes src and test internals.',
+          },
+        },
+        required: ["query"],
+      },
+    },
+    {
+      name: "rag_search",
+      description:
+        "Search the local Lurek2D RAG index for API examples, specs, and best practices.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          query: {
+            type: "string",
+            description:
+              'Search query keywords (e.g. "lurek.graphics draw", "audio play").',
+          },
+          limit: {
+            type: "number",
+            description: "Maximum number of results to return.",
+          },
           profile: {
             type: "string",
             description: 'Target developer profile (game, engine, or all). Defaults to all. Game profile excludes src and test internals.',
@@ -140,6 +271,30 @@ export function getToolDefinitions(): ToolDefinition[] {
             type: "array",
             items: { type: "string" },
             description: "Optional list of specific directories to index. Defaults to all.",
+          },
+          targets: {
+            type: "array",
+            items: { type: "string" },
+            description: "Alias for directories.",
+          },
+        },
+      },
+    },
+    {
+      name: "rag_rebuild_index",
+      description: "Rebuild or incrementally refresh the local RAG index.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          targets: {
+            type: "array",
+            items: { type: "string" },
+            description: "Optional list of specific directories or files to index. Defaults to all.",
+          },
+          directories: {
+            type: "array",
+            items: { type: "string" },
+            description: "Alias for `targets`; kept for MCP naming parity.",
           },
         },
       },
@@ -384,12 +539,29 @@ export function handleRagSearch(
 ): ToolHandler {
   return async (args) => {
     const query = args.query as string | undefined;
-    const profile = (args.profile as "game" | "engine" | "all") || "all";
     if (!query) {
       return "Error: 'query' parameter is required.";
     }
+    if (typeof query !== "string" || !query.trim()) {
+      return "Error: 'query' must be a non-empty string.";
+    }
+    const profile = normalizeRagProfile(args.profile);
+    const limit = Number(args.limit);
+    if (args.profile !== undefined && !["game", "engine", "all"].includes(String(args.profile))) {
+      return "Error: profile must be one of: game, engine, all.";
+    }
+    if (args.limit !== undefined && (!Number.isInteger(limit) || limit <= 0)) {
+      return "Error: limit must be a positive integer.";
+    }
 
-    return execRagQuery(workspaceRoot, query, profile);
+    const result = await execRagQuery(
+      workspaceRoot,
+      query,
+      profile,
+      15_000,
+      limit > 0 ? limit : 8,
+    );
+    return ragResponseToText(result, "ragSearch");
   };
 }
 
@@ -402,8 +574,22 @@ export function handleRagBuildIndex(
   workspaceRoot: string
 ): ToolHandler {
   return async (args) => {
-    const directories = (args.directories as string[]) || [];
-    return execRagBuildIndex(workspaceRoot, directories);
+    const request = args as Record<string, unknown>;
+    let directories: string[];
+    try {
+      directories = toRagTargets(request.directories, "directories");
+    } catch (err) {
+      return `Error: ${err instanceof Error ? err.message : String(err)}`;
+    }
+    let targets: string[] = [];
+    try {
+      targets = toRagTargets(request.targets, "targets");
+    } catch (err) {
+      return `Error: ${err instanceof Error ? err.message : String(err)}`;
+    }
+    const merged = Array.from(new Set([...directories, ...targets]));
+    const result = await execRagBuildIndex(workspaceRoot, merged);
+    return ragResponseToText(result, "ragBuildIndex");
   };
 }
 

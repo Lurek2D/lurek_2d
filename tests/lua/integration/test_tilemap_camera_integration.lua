@@ -1,5 +1,7 @@
 -- Integration: camera position determining which tilemap tiles are in view
 -- @describe integration: tilemap visibility through camera
+
+-- @describe integration: tilemap visibility through camera
 describe("integration: tilemap visibility through camera", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
@@ -8,6 +10,8 @@ describe("integration: tilemap visibility through camera", function()
     -- @integration LTileMap:setTile
     -- @integration lurek.camera.newCamera
     -- @integration lurek.tilemap.newTileMap
+    -- @covers lurek.camera.newCamera
+    -- @covers lurek.tilemap.newTileMap
     it("camera scrolling reads different tiles (coordinate math)", function()
         local tm  = lurek.tilemap.newTileMap(50, 50, 32)
         tm:addLayer("tiles", 50, 50)

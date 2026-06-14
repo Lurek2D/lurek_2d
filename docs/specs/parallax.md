@@ -11,7 +11,7 @@
 - Source path: `src/parallax/`
 - Binding: `src/lua_api/parallax_api.rs`
 - Namespace: `lurek.parallax`
-- Lua API surface: `3` functions, `2` types, `48` methods
+- Lua API surface: `3` functions, `2` types, `50` methods
 - Rust test path(s): tests/rust/unit/parallax_tests.rs
 - Lua test path(s): tests/lua/unit/test_parallax_core_unit.lua, tests/lua/integration/test_parallax_camera.lua
 

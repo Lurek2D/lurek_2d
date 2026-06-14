@@ -1,5 +1,7 @@
 -- Integration: tween state animating entity component properties via ECS
 -- @describe integration: tween drives entity transform
+
+-- @describe integration: tween drives entity transform
 describe("integration: tween drives entity transform", function()
     -- @integration LTweenState:lerp
     -- @integration LTweenState:tick
@@ -8,6 +10,8 @@ describe("integration: tween drives entity transform", function()
     -- @integration LUniverse:spawn
     -- @integration lurek.ecs.newUniverse
     -- @integration lurek.tween.newState
+    -- @covers lurek.ecs.newUniverse
+    -- @covers lurek.tween.newState
     it("entity x position tweened from 0 to 300", function()
         local universe = lurek.ecs.newUniverse()
         local id = universe:spawn()

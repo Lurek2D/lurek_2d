@@ -1,5 +1,7 @@
 -- Integration: ECS entities driven by AI state machines
 -- @describe integration: entity with AI state machine
+
+-- @describe integration: entity with AI state machine
 describe("integration: entity with AI state machine", function()
     -- @integration LStateMachine:addState
     -- @integration LStateMachine:addTransition
@@ -11,6 +13,8 @@ describe("integration: entity with AI state machine", function()
     -- @integration LUniverse:spawn
     -- @integration lurek.ai.newStateMachine
     -- @integration lurek.ecs.newUniverse
+    -- @covers lurek.ai.newStateMachine
+    -- @covers lurek.ecs.newUniverse
     it("entities change state based on FSM", function()
         local universe = lurek.ecs.newUniverse()
 

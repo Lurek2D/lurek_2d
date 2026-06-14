@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import time
 import subprocess
 import sys
 import tempfile
@@ -17,6 +18,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 PYTHON = sys.executable
 SERVER_NAME = "lurek-tools"
 SERVER_VERSION = "0.2.0"
+RAG_MIN_LIMIT = 1
+RAG_MAX_LIMIT = 25
 
 
 @dataclass(frozen=True)
@@ -78,6 +81,7 @@ def _run_python_tool(
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tmp:
         tmp_path = Path(tmp.name)
 
+    start = time.perf_counter()
     try:
         if json_mode == "flag":
             cmd.append("--json")
@@ -98,31 +102,49 @@ def _run_python_tool(
             timeout=timeout_sec,
         )
         parsed: Any = None
+        parse_error: str | None = None
         if json_mode in {"flag", "format"} and proc.stdout.strip():
             try:
                 parsed = json.loads(proc.stdout)
             except json.JSONDecodeError:
-                parsed = None
+                parse_error = "Unable to parse JSON from stdout."
         elif json_mode in {"output", "flag_output"} and tmp_path.exists() and tmp_path.stat().st_size > 0:
             try:
                 parsed = json.loads(tmp_path.read_text(encoding="utf-8"))
             except json.JSONDecodeError:
-                parsed = None
+                parse_error = "Unable to parse JSON from output file."
+        elif json_mode in {"output", "flag_output"}:
+            parse_error = "Expected JSON output file was not produced."
 
+        duration_ms = round((time.perf_counter() - start) * 1000, 2)
         return {
             "ok": proc.returncode == 0,
             "exit_code": proc.returncode,
+            "elapsed_ms": duration_ms,
             "command": cmd,
             "stdout": proc.stdout,
             "stderr": proc.stderr,
+            "parse_error": parse_error,
             "parsed": parsed,
         }
     finally:
         tmp_path.unlink(missing_ok=True)
 
 
+def _coerce_int_in_range(value: Any, name: str, *, minimum: int, maximum: int) -> int:
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"`{name}` must be an integer.") from exc
+    if parsed < minimum or parsed > maximum:
+        raise ValueError(f"`{name}` must be between {minimum} and {maximum}.")
+    return parsed
+
+
 def _text_result(summary: str, data: dict[str, Any], *, is_error: bool | None = None) -> dict[str, Any]:
     error_state = (not data.get("ok", False)) if is_error is None else is_error
+    if "payload" not in data and "parsed" in data:
+        data = {**data, "payload": data.get("parsed")}
     result = {
         "content": [{"type": "text", "text": summary}],
         "structuredContent": data,
@@ -162,19 +184,58 @@ def _parse_json_stdout(data: dict[str, Any]) -> Any:
         return None
 
 
+def _normalize_rag_targets(args: dict[str, Any]) -> list[str]:
+    candidates: list[str] = []
+    seen: set[str] = set()
+
+    if isinstance(args.get("targets"), list):
+        for item in args["targets"]:
+            if not isinstance(item, str):
+                raise ValueError("`targets` must be an array of strings.")
+            trimmed = item.strip()
+            if trimmed:
+                normalized = trimmed.replace("\\", "/").lstrip("/")
+                if normalized not in seen:
+                    candidates.append(normalized)
+                    seen.add(normalized)
+    if isinstance(args.get("directories"), list):
+        for item in args["directories"]:
+            if not isinstance(item, str):
+                raise ValueError("`directories` must be an array of strings.")
+            trimmed = item.strip()
+            if trimmed:
+                normalized = trimmed.replace("\\", "/").lstrip("/")
+                if normalized not in seen:
+                    candidates.append(normalized)
+                    seen.add(normalized)
+    return candidates
+
+
 def handle_rag_search(args: dict[str, Any]) -> dict[str, Any]:
     query = str(args.get("query", "")).strip()
     if not query:
         return _text_result("`query` is required.", {"ok": False}, is_error=True)
 
     profile = str(args.get("profile", "all"))
-    limit = int(args.get("limit", 8))
+    if profile not in {"all", "engine", "game"}:
+        return _text_result("`profile` must be one of: all, engine, game.", {"ok": False}, is_error=True)
+    try:
+        limit = _coerce_int_in_range(
+            args.get("limit", 8),
+            "limit",
+            minimum=RAG_MIN_LIMIT,
+            maximum=RAG_MAX_LIMIT,
+        )
+    except ValueError as exc:
+        return _text_result(str(exc), {"ok": False}, is_error=True)
+
     data = _run_python_tool(
         "tools/rag/query.py",
         [query, "--profile", profile, "--limit", str(limit)],
         timeout_sec=60,
+        json_mode="flag_output",
     )
-    parsed = _parse_json_stdout(data) or {}
+    parsed = data.get("parsed") or {}
     data["parsed"] = parsed
     results = parsed.get("results", [])
     lines = [f"RAG search returned {len(results)} result(s) for `{query}` under `{profile}`."]
@@ -186,8 +247,20 @@ def handle_rag_search(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def handle_rag_rebuild(args: dict[str, Any]) -> dict[str, Any]:
-    targets = [str(item) for item in args.get("targets", [])]
-    data = _run_python_tool("tools/rag/build_index.py", targets, timeout_sec=900)
+    try:
+        targets = _normalize_rag_targets(args)
+    except ValueError as exc:
+        return _text_result(str(exc), {"ok": False, "targets": args.get("targets")}, is_error=True)
+
+    data = _run_python_tool(
+        "tools/rag/build_index.py",
+        targets,
+        timeout_sec=900,
+        json_mode="flag_output",
+    )
+    parsed = data.get("parsed") or {}
+    if parsed:
+        return _text_result(str(parsed), data)
     stdout = data.get("stdout", "").strip()
     summary = stdout or "RAG index build finished."
     return _text_result(summary, data)
@@ -198,11 +271,28 @@ def handle_rag_read(args: dict[str, Any]) -> dict[str, Any]:
     if not chunk_id:
         return _text_result("`id` is required.", {"ok": False}, is_error=True)
 
-    cmd = [chunk_id, "--neighbors", str(int(args.get("neighbors", 1)))]
-    if args.get("content_chars"):
-        cmd.extend(["--content-chars", str(int(args["content_chars"]))])
-    data = _run_python_tool("tools/rag/read.py", cmd, timeout_sec=60)
-    parsed = _parse_json_stdout(data) or {}
+    try:
+        neighbors = int(args.get("neighbors", 1))
+    except (TypeError, ValueError):
+        return _text_result("`neighbors` must be an integer.", {"ok": False}, is_error=True)
+    if neighbors < 0:
+        return _text_result("`neighbors` must be >= 0.", {"ok": False}, is_error=True)
+
+    cmd = [chunk_id, "--neighbors", str(neighbors)]
+    content_chars = args.get("content_chars")
+    if content_chars is not None:
+        try:
+            content_chars = _coerce_int_in_range(
+                content_chars,
+                "content_chars",
+                minimum=500,
+                maximum=100_000,
+            )
+        except ValueError as exc:
+            return _text_result(str(exc), {"ok": False}, is_error=True)
+        cmd.extend(["--content-chars", str(content_chars)])
+    data = _run_python_tool("tools/rag/read.py", cmd, timeout_sec=60, json_mode="flag_output")
+    parsed = data.get("parsed") or {}
     data["parsed"] = parsed
     chunk = parsed.get("chunk", {})
     if parsed.get("error"):
@@ -218,20 +308,49 @@ def handle_rag_context(args: dict[str, Any]) -> dict[str, Any]:
     prompt = str(args.get("prompt", "")).strip()
     if not prompt:
         return _text_result("`prompt` is required.", {"ok": False}, is_error=True)
+    profile = str(args.get("profile", "all"))
+    if profile not in {"all", "engine", "game"}:
+        return _text_result("`profile` must be one of: all, engine, game.", {"ok": False}, is_error=True)
+    try:
+        limit = _coerce_int_in_range(
+            args.get("limit", 8),
+            "limit",
+            minimum=RAG_MIN_LIMIT,
+            maximum=RAG_MAX_LIMIT,
+        )
+    except ValueError as exc:
+        return _text_result(str(exc), {"ok": False}, is_error=True)
+    try:
+        neighbors = int(args.get("neighbors", 1))
+    except (TypeError, ValueError):
+        return _text_result("`limit` and `neighbors` must be integers.", {"ok": False}, is_error=True)
+    if neighbors < 0:
+        return _text_result("`neighbors` must be >= 0.", {"ok": False}, is_error=True)
+    content_chars = args.get("content_chars")
+    if content_chars is not None:
+        try:
+            content_chars = _coerce_int_in_range(
+                content_chars,
+                "content_chars",
+                minimum=500,
+                maximum=100_000,
+            )
+        except ValueError as exc:
+            return _text_result(str(exc), {"ok": False}, is_error=True)
 
     cmd = [
         prompt,
         "--profile",
-        str(args.get("profile", "all")),
+        profile,
         "--limit",
-        str(int(args.get("limit", 8))),
+        str(limit),
         "--neighbors",
-        str(int(args.get("neighbors", 1))),
+        str(neighbors),
     ]
-    if args.get("content_chars"):
-        cmd.extend(["--content-chars", str(int(args["content_chars"]))])
-    data = _run_python_tool("tools/rag/context.py", cmd, timeout_sec=90)
-    parsed = _parse_json_stdout(data) or {}
+    if content_chars:
+        cmd.extend(["--content-chars", str(content_chars)])
+    data = _run_python_tool("tools/rag/context.py", cmd, timeout_sec=90, json_mode="flag_output")
+    parsed = data.get("parsed") or {}
     data["parsed"] = parsed
     results = parsed.get("results", [])
     lines = [f"RAG context bundle returned {len(results)} chunk(s) for `{prompt}`."]
@@ -243,8 +362,8 @@ def handle_rag_context(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def handle_rag_stats(args: dict[str, Any]) -> dict[str, Any]:
-    data = _run_python_tool("tools/rag/query.py", ["--stats"], timeout_sec=60)
-    parsed = _parse_json_stdout(data) or {}
+    data = _run_python_tool("tools/rag/query.py", ["--stats"], timeout_sec=60, json_mode="flag_output")
+    parsed = data.get("parsed") or {}
     data["parsed"] = parsed
     if parsed.get("error"):
         return _text_result(parsed["error"], data, is_error=True)
@@ -255,9 +374,19 @@ def handle_rag_stats(args: dict[str, Any]) -> dict[str, Any]:
 
 
 def handle_rag_eval(args: dict[str, Any]) -> dict[str, Any]:
-    cmd = ["--json", "--limit", str(int(args.get("limit", 10)))]
-    data = _run_python_tool("tools/rag/eval.py", cmd, timeout_sec=180)
-    parsed = _parse_json_stdout(data) or {}
+    try:
+        limit = _coerce_int_in_range(
+            args.get("limit", 10),
+            "limit",
+            minimum=1,
+            maximum=RAG_MAX_LIMIT,
+        )
+    except ValueError as exc:
+        return _text_result(str(exc), {"ok": False}, is_error=True)
+
+    cmd = ["--json", "--limit", str(limit)]
+    data = _run_python_tool("tools/rag/eval.py", cmd, timeout_sec=180, json_mode="flag_output")
+    parsed = data.get("parsed") or {}
     data["parsed"] = parsed
     lines = [f"RAG recall: {parsed.get('passed', 0)}/{parsed.get('total', 0)} ({parsed.get('pass_rate', 0)}%)."]
     for item in parsed.get("results", []):
@@ -741,6 +870,21 @@ def handle_lua_api_health_suite(args: dict[str, Any]) -> dict[str, Any]:
 
 
 TOOLS: dict[str, ToolSpec] = {
+    "lurek2d.ragSearch": ToolSpec(
+        name="lurek2d.ragSearch",
+        description="Search the local Lurek2D RAG index across docs, code, tests, and Codex workspace files.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "query": {"type": "string"},
+                "profile": {"type": "string", "enum": ["all", "engine", "game"], "default": "all"},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 25, "default": 8},
+            },
+            "required": ["query"],
+            "additionalProperties": False,
+        },
+        handler=handle_rag_search,
+    ),
     "rag_search": ToolSpec(
         name="rag_search",
         description="Search the local Lurek2D RAG index across docs, code, tests, and Codex workspace files.",
@@ -756,6 +900,27 @@ TOOLS: dict[str, ToolSpec] = {
         },
         handler=handle_rag_search,
     ),
+    "lurek2d.ragBuildIndex": ToolSpec(
+        name="lurek2d.ragBuildIndex",
+        description="Rebuild or incrementally refresh the local RAG index after changing indexed sources.",
+        input_schema={
+            "type": "object",
+            "properties": {
+                "directories": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Optional repo-relative directories or files to re-index.",
+                },
+                "targets": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Alias for directories.",
+                },
+            },
+            "additionalProperties": False,
+        },
+        handler=handle_rag_rebuild,
+    ),
     "rag_rebuild_index": ToolSpec(
         name="rag_rebuild_index",
         description="Rebuild or incrementally refresh the local RAG index after changing indexed sources.",
@@ -766,7 +931,12 @@ TOOLS: dict[str, ToolSpec] = {
                     "type": "array",
                     "items": {"type": "string"},
                     "description": "Optional repo-relative directories or files to re-index.",
-                }
+                },
+                "directories": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Alias for targets.",
+                },
             },
             "additionalProperties": False,
         },

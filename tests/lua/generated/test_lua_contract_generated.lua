@@ -3673,9 +3673,9 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.physics.newBody)
     end)
 
-    -- @covers lurek.physics.newCellular
-    it("lurek.physics.newCellular exists", function()
-        expect_type("function", lurek.physics.newCellular)
+    -- @covers lurek.procgen.newCellular
+    it("lurek.procgen.newCellular exists", function()
+        expect_type("function", lurek.procgen.newCellular)
     end)
 
     -- @covers lurek.physics.newChainShape

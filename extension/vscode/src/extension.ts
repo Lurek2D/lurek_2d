@@ -1058,23 +1058,109 @@ window.addEventListener('resize',draw);
   });
 
   if (workspaceRoot) {
-    const ragWatcher = vscode.workspace.createFileSystemWatcher("**/*.{lua,md,rs}");
-    const updateRagIndex = (uri: vscode.Uri) => {
-      // Don't auto-index things outside main folders
-      const relativePath = vscode.workspace.asRelativePath(uri);
-      if (relativePath.match(/^(src|content|docs|library|tests|\.github)[\\/]/)) {
-        execRagBuildIndex(workspaceRoot, [relativePath])
-          .catch((err: any) => console.error("RAG auto-index error:", err));
+    const RAG_WATCH_EXTENSIONS = [
+      ".md",
+      ".lua",
+      ".rs",
+      ".py",
+      ".toml",
+      ".json",
+      ".html",
+      ".js",
+      ".ts",
+      ".css",
+      ".wgsl",
+    ];
+    const RAG_WATCH_PREFIXES = new Set([
+      "AGENTS.md",
+      ".agents",
+      ".codex",
+      ".github",
+      "content",
+      "docs",
+      "extension",
+      "ideas",
+      "library",
+      "pages",
+      "src",
+      "tests",
+      "tools",
+    ]);
+    const RAG_WATCH_DEBOUNCE_MS = 500;
+    const pendingRagTargets = new Set<string>();
+    let ragWatchTimer: ReturnType<typeof setTimeout> | undefined;
+    let ragIndexingInFlight = false;
+
+    const asRagWatchPath = (uri: vscode.Uri): string | undefined => {
+      const relativePath = vscode.workspace.asRelativePath(uri).replace(/\\/g, "/");
+      if (!relativePath || relativePath.includes("..")) {
+        return undefined;
+      }
+      const topLevel = relativePath.split("/")[0];
+      if (!RAG_WATCH_PREFIXES.has(topLevel)) {
+        return undefined;
+      }
+      if (topLevel === "AGENTS.md") {
+        return relativePath;
+      }
+      const extension = path.extname(relativePath).toLowerCase();
+      return RAG_WATCH_EXTENSIONS.includes(extension) ? relativePath : undefined;
+    };
+
+    const runQueuedRagIndex = async () => {
+      if (ragIndexingInFlight) {
+        return;
+      }
+
+      const targets = Array.from(pendingRagTargets);
+      pendingRagTargets.clear();
+      if (!targets.length) {
+        return;
+      }
+
+      ragIndexingInFlight = true;
+      try {
+        const result = await execRagBuildIndex(workspaceRoot, targets);
+        if (!result.ok) {
+          const reasons = [result.parseError, result.stderr, result.stdout]
+            .filter((item): item is string => Boolean(item && item.trim().length > 0))
+            .map((item) => item.trim());
+          console.error(`RAG auto-index error for targets [${targets.join(", ")}]:`, reasons.join(" | "));
+        }
+      } catch (err: any) {
+        console.error("RAG auto-index error:", err);
+      } finally {
+        ragIndexingInFlight = false;
+        if (pendingRagTargets.size > 0) {
+          ragWatchTimer = setTimeout(() => {
+            void runQueuedRagIndex();
+          }, RAG_WATCH_DEBOUNCE_MS);
+        }
       }
     };
 
+    const queueRagIndex = (uri: vscode.Uri): void => {
+      const relativePath = asRagWatchPath(uri);
+      if (!relativePath) {
+        return;
+      }
+      pendingRagTargets.add(relativePath);
+      if (ragWatchTimer) {
+        clearTimeout(ragWatchTimer);
+      }
+      ragWatchTimer = setTimeout(() => {
+        void runQueuedRagIndex();
+      }, RAG_WATCH_DEBOUNCE_MS);
+    };
+
+    const ragWatcher = vscode.workspace.createFileSystemWatcher(
+      `**/*.{${RAG_WATCH_EXTENSIONS.map((ext) => ext.slice(1)).join(",")}}`,
+    );
+
     context.subscriptions.push(
-      ragWatcher.onDidChange(updateRagIndex),
-      ragWatcher.onDidCreate(updateRagIndex),
-      ragWatcher.onDidDelete((uri) => {
-        // We could run build_index with a delete flag, but for now we'll just let it be.
-        // It'll be cleaned up on the next full build.
-      }),
+      ragWatcher.onDidChange(queueRagIndex),
+      ragWatcher.onDidCreate(queueRagIndex),
+      ragWatcher.onDidDelete(queueRagIndex),
       ragWatcher
     );
   }

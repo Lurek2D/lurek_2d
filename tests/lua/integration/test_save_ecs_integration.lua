@@ -1,5 +1,7 @@
 -- Integration: save manager tracking entity state and TOML config blueprints
 -- @describe integration: save entity world state
+
+-- @describe integration: save entity world state
 describe("integration: save entity world state", function()
 
     -- @integration LSaveManager:isDirty
@@ -9,6 +11,9 @@ describe("integration: save entity world state", function()
     -- @integration LUniverse:spawn
     -- @integration lurek.ecs.newUniverse
     -- @integration lurek.save.newSaveManager
+    -- @covers lurek.binary.parseToml
+    -- @covers lurek.ecs.newUniverse
+    -- @covers lurek.save.newSaveManager
     it("save manager tracks entity dirty state", function()
         local mgr = lurek.save.newSaveManager()
         local universe = lurek.ecs.newUniverse()

@@ -1,4 +1,14 @@
 -- Canonical evidence file for lurek.globe artifacts.
+-- @covers lurek.filesystem.write
+-- @covers lurek.globe.greatCircleDistance
+-- @covers lurek.globe.greatCirclePath
+-- @covers lurek.globe.latLonToUnit
+-- @covers lurek.globe.new
+-- @covers lurek.globe.raySphereIntersect
+-- @covers lurek.globe.remove
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 local OUT = evidence_output_dir("globe")
 

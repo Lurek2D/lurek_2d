@@ -1,5 +1,7 @@
 -- Integration: AI world agent position is mirrored by camera while scene stack is active.
 -- @describe integration: ai + scene + camera
+
+-- @describe integration: ai + scene + camera
 describe("integration: ai + scene + camera", function()
     -- @integration lurek.ai.newWorld
     -- @integration lurek.camera.newCamera
@@ -9,6 +11,11 @@ describe("integration: ai + scene + camera", function()
     -- @integration LAIWorld:addAgent
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
+    -- @covers lurek.ai.newWorld
+    -- @covers lurek.camera.newCamera
+    -- @covers lurek.scene.clear
+    -- @covers lurek.scene.getStackSize
+    -- @covers lurek.scene.push
     it("keeps camera aligned with AI agent position", function()
         local world = lurek.ai.newWorld()
         local cam = lurek.camera.newCamera()

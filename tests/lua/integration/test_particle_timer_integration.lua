@@ -1,5 +1,7 @@
 -- Integration: particle emitter controlled by timer bursts
 -- @describe integration: particle emitter driven by timer
+
+-- @describe integration: particle emitter driven by timer
 describe("integration: particle emitter driven by timer", function()
 
     -- @integration LParticleSystem:emit
@@ -7,6 +9,8 @@ describe("integration: particle emitter driven by timer", function()
     -- @integration LParticleSystem:setPosition
     -- @integration lurek.particle.newSystem
     -- @integration lurek.timer.getTime
+    -- @covers lurek.particle.newSystem
+    -- @covers lurek.timer.getTime
     it("emitter tracks time between bursts", function()
         local pe             = lurek.particle.newSystem()
         local burst_interval = 0.5  -- seconds

@@ -1,5 +1,67 @@
 -- test_render_evidence.lua
 -- Canonical evidence file for lurek.render.
+-- @covers lurek.filesystem.write
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+-- @covers lurek.render.arc
+-- @covers lurek.render.beginSortGroup
+-- @covers lurek.render.captureScreenshot
+-- @covers lurek.render.circle
+-- @covers lurek.render.clear
+-- @covers lurek.render.clearStencil
+-- @covers lurek.render.currentLayer
+-- @covers lurek.render.drawBevelRect
+-- @covers lurek.render.drawColoredPolygon
+-- @covers lurek.render.drawCubicBezier
+-- @covers lurek.render.drawGradientRect
+-- @covers lurek.render.drawHexTile
+-- @covers lurek.render.drawIsoCubeTile
+-- @covers lurek.render.drawQuadBezier
+-- @covers lurek.render.ellipse
+-- @covers lurek.render.flushSortGroup
+-- @covers lurek.render.getBackgroundColor
+-- @covers lurek.render.getCanvas
+-- @covers lurek.render.getCanvasSize
+-- @covers lurek.render.getColor
+-- @covers lurek.render.getPointSize
+-- @covers lurek.render.getShader
+-- @covers lurek.render.intersectScissor
+-- @covers lurek.render.line
+-- @covers lurek.render.newCanvas
+-- @covers lurek.render.newDrawLayer
+-- @covers lurek.render.newLayer
+-- @covers lurek.render.newShader
+-- @covers lurek.render.points
+-- @covers lurek.render.polygon
+-- @covers lurek.render.pop
+-- @covers lurek.render.popLayer
+-- @covers lurek.render.print
+-- @covers lurek.render.printRich
+-- @covers lurek.render.printf
+-- @covers lurek.render.push
+-- @covers lurek.render.pushLayer
+-- @covers lurek.render.pushSortKey
+-- @covers lurek.render.rectangle
+-- @covers lurek.render.resetCanvas
+-- @covers lurek.render.rotate
+-- @covers lurek.render.scale
+-- @covers lurek.render.setBackgroundColor
+-- @covers lurek.render.setBlendMode
+-- @covers lurek.render.setCanvas
+-- @covers lurek.render.setColor
+-- @covers lurek.render.setColorMask
+-- @covers lurek.render.setDepthMode
+-- @covers lurek.render.setLayer
+-- @covers lurek.render.setLineWidth
+-- @covers lurek.render.setPointSize
+-- @covers lurek.render.setScissor
+-- @covers lurek.render.setShader
+-- @covers lurek.render.setStencilMode
+-- @covers lurek.render.setStencilTest
+-- @covers lurek.render.setWireframe
+-- @covers lurek.render.translate
+-- @covers lurek.render.triangle
+
 
 local OUT = evidence_output_dir("render")
 

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { execRagQuery } from "../services/rag.js";
+import { execRagQuery, RagQueryPayload } from "../services/rag.js";
 
 export class RagPanel {
   public static currentPanel: RagPanel | undefined;
@@ -57,13 +57,26 @@ export class RagPanel {
   private async handleSearch(query: string, profile: "all" | "game" | "engine") {
     try {
       this._panel.webview.postMessage({ command: "loading" });
-      const rawOutput = await execRagQuery(this.workspaceRoot, query, profile);
-      const data = JSON.parse(rawOutput);
-      
-      if (data.error) {
-        this._panel.webview.postMessage({ command: "error", error: data.error });
+      const result = await execRagQuery(this.workspaceRoot, query, profile);
+      if (!result.ok) {
+        const extra = [result.parseError, result.stderr || result.stdout]
+          .filter(Boolean)
+          .join("\n")
+          .trim();
+        this._panel.webview.postMessage({ command: "error", error: extra || "RAG query failed." });
+        return;
+      }
+
+      const payload = result.payload as RagQueryPayload | undefined;
+      if (!payload) {
+        this._panel.webview.postMessage({ command: "error", error: "RAG returned an empty JSON payload." });
+        return;
+      }
+      if (payload.error) {
+        this._panel.webview.postMessage({ command: "error", error: payload.error });
       } else {
-        this._panel.webview.postMessage({ command: "results", results: data.results });
+        const results = payload.results || [];
+        this._panel.webview.postMessage({ command: "results", results });
       }
     } catch (e: any) {
       this._panel.webview.postMessage({ command: "error", error: e.toString() });

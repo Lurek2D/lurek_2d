@@ -11,7 +11,7 @@
 - Source path: `src/particle/`
 - Binding: `src/lua_api/particle_api.rs`
 - Namespace: `lurek.particle`
-- Lua API surface: `5` functions, `3` types, `105` methods
+- Lua API surface: `5` functions, `3` types, `106` methods
 - Rust test path(s): tests/rust/unit/particle_tests.rs
 - Lua test path(s): tests/lua/unit/test_particle.lua, tests/lua/stress/test_particle_stress.lua, tests/lua/integration/test_particle_timer.lua, tests/lua/evidence/test_evidence_particle.lua
 
@@ -215,10 +215,10 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 - `LParticleSystem:getSizeVariation() -> number`: Returns size variation. This method is available to Lua scripts.
 - `LParticleSystem:getSizes() -> number[]`: Returns particle size keyframes. This method is available to Lua scripts.
 - `LParticleSystem:getSpeed() -> number`: Returns particle speed range. This method is available to Lua scripts.
-- `LParticleSystem:getStats() -> table`: Returns a telemetry snapshot for dashboard and debug workflows.
 - `LParticleSystem:getSpin() -> number`: Returns particle spin range. This method is available to Lua scripts.
 - `LParticleSystem:getSpinVariation() -> number`: Returns spin variation. This method is available to Lua scripts.
 - `LParticleSystem:getSpread() -> number`: Returns emission spread. This method is available to Lua scripts.
+- `LParticleSystem:getStats() -> table`: Returns a telemetry snapshot for dashboard and debug workflows.
 - `LParticleSystem:getTangentialAcceleration() -> number`: Returns tangential acceleration range.
 - `LParticleSystem:hasCollidesWithPhysics() -> boolean`: Returns whether particle physics collision is enabled.
 - `LParticleSystem:hasRelativeRotation() -> boolean`: Returns whether relative rotation is enabled.

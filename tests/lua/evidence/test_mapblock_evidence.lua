@@ -1,4 +1,7 @@
 -- Canonical evidence file for lurek.mapblock artifacts.
+-- @covers lurek.image.savePNG
+-- @covers lurek.serial.toJson
+
 
 local World = require("content.games.puzzle.mapblock_labyrinth.modules.world")
 
@@ -72,6 +75,7 @@ local function manifest_payload(world)
     }
 end
 
+-- @describe Evidence: lurek.mapblock scenarios
 describe("Evidence: lurek.mapblock scenarios", function()
     -- Does: Runs the shared two-stage province builder and exports the complete pipeline view.
     -- Shows: The artifact exposes stage 1 macro block placement on an irregular province and stage 2 tile expansion into two detailed levels.

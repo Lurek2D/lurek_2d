@@ -1,10 +1,15 @@
 -- Integration: effect overlay ambient state bridged to light world
 -- @describe effect + light ambient bridge
+
+-- @describe effect + light ambient bridge
 describe("effect + light ambient bridge", function()
     -- @integration lurek.light.getAmbient
     -- @integration LOverlay:getAmbientColor
     -- @integration LOverlay:pullAmbientFromLight
     -- @integration lurek.light.setAmbient
+    -- @covers lurek.effect.newOverlay
+    -- @covers lurek.light.getAmbient
+    -- @covers lurek.light.setAmbient
     it("pullAmbientFromLight copies light ambient into overlay", function()
         lurek.light.setAmbient(0.12, 0.34, 0.56, 0.78)
         local ov = lurek.effect.newOverlay()

@@ -217,10 +217,12 @@ function buildToolRegistry(
   registry.set("lurek2d.listExamples", handleListExamples(workspaceRoot));
   registry.set("lurek2d.runLuaTest", handleRunLuaTest(workspaceRoot));
   registry.set("lurek2d.checkBuild", handleCheckBuild(workspaceRoot));
-  registry.set("lurek2d.getLogs", handleGetLogs(workspaceRoot));
-  registry.set("lurek2d.ragSearch", handleRagSearch(workspaceRoot));
-  registry.set("lurek2d.ragBuildIndex", handleRagBuildIndex(workspaceRoot));
-  registry.set("lurek2d.getModuleInfo", handleGetModuleInfo(workspaceRoot));
+    registry.set("lurek2d.getLogs", handleGetLogs(workspaceRoot));
+    registry.set("lurek2d.ragSearch", handleRagSearch(workspaceRoot));
+    registry.set("rag_search", handleRagSearch(workspaceRoot));
+    registry.set("lurek2d.ragBuildIndex", handleRagBuildIndex(workspaceRoot));
+    registry.set("rag_rebuild_index", handleRagBuildIndex(workspaceRoot));
+    registry.set("lurek2d.getModuleInfo", handleGetModuleInfo(workspaceRoot));
   registry.set("lurek2d.inspectLuaFile", handleInspectLuaFile(workspaceRoot));
   registry.set("lurek2d.getTestCoverage", handleGetTestCoverage(workspaceRoot));
   registry.set("lurek2d.getProjectStructure", handleGetProjectStructure(workspaceRoot));

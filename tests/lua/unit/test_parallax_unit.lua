@@ -244,6 +244,7 @@ describe("lurek.parallax", function()
         expect_true(stats.autoscroll_speed > 0.0)
     end)
 
+    -- @covers LParallaxLayer:setClamp
     it("normalizes reversed clamp bounds before rendering", function()
         local layer = make_layer()
         layer:setClamp(120, 80, -20, -10)

@@ -395,6 +395,7 @@ describe("lurek.particle rendering settings", function()
         expect_equal(200, lurek.particle.getBufferSize(ps), "buffer size")
     end)
 
+    -- @covers LParticleSystem:setBufferSize
     it("setBufferSize truncates live particles when shrinking the pool", function()
         local ps = lurek.particle.newSystem({
             emissionRate = 0,

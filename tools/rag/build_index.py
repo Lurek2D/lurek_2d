@@ -72,6 +72,7 @@ GENERATED_PATH_PATTERNS = RANKING.get(
 VENDOR_PATH_PATTERNS = RANKING.get("vendor_path_patterns", ["node_modules/", "/vendor/"])
 
 
+
 @dataclass(frozen=True)
 class Chunk:
     title: str
@@ -160,6 +161,30 @@ def init_db(db_path: Path) -> sqlite3.Connection:
         """
     )
     return conn
+
+
+def _normalize_target(target: str) -> str:
+    normalized = target.replace("\\", "/").strip()
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+    return normalized.rstrip("/")
+
+
+def _escape_like(value: str) -> str:
+    return value.replace("\\", "\\\\").replace("_", "\\_").replace("%", "\\%")
+
+
+def _delete_path_prefix(cursor: sqlite3.Cursor, target: str) -> int:
+    cleaned = _normalize_target(target).strip()
+    if not cleaned:
+        return 0
+    removed_exact = cursor.execute("DELETE FROM documents WHERE path = ?", (cleaned,)).rowcount
+    like_prefix = f"{_escape_like(cleaned)}/%"
+    removed_nested = cursor.execute(
+        "DELETE FROM documents WHERE path LIKE ? ESCAPE '\\\\'",
+        (like_prefix,),
+    ).rowcount
+    return int(removed_exact) + int(removed_nested)
 
 
 def _line_chunks(lines: list[str], title: str, start_line: int = 1) -> list[Chunk]:
@@ -433,7 +458,9 @@ def iter_files(target_path: Path) -> list[Path]:
     return paths
 
 
-def build_index(targets: list[str] | None = None, db_path_override: Path | None = None) -> None:
+def build_index(
+    targets: list[str] | None = None, db_path_override: Path | None = None
+) -> dict[str, Any]:
     active_db = db_path_override if db_path_override else DB_PATH
     print(f"Building RAG index at: {active_db}")
     active_db.parent.mkdir(parents=True, exist_ok=True)
@@ -442,6 +469,7 @@ def build_index(targets: list[str] | None = None, db_path_override: Path | None 
     cursor = conn.cursor()
     indexed_files = 0
     indexed_chunks = 0
+    removed_targets = 0
 
     full_rebuild = not targets
     if full_rebuild:
@@ -453,15 +481,22 @@ def build_index(targets: list[str] | None = None, db_path_override: Path | None 
         indexed_chunks += api_chunks
         print(f"Indexed {api_chunks} API functions from lua_api_data.json")
 
-    for target in targets:
+    for raw_target in targets:
+        target = _normalize_target(raw_target)
+        if not target:
+            continue
         target_path = WORKSPACE_ROOT / target
         if not target_path.exists():
-            print(f"Skipping {target}, does not exist.")
+            removed_targets += _delete_path_prefix(cursor, target)
+            print(f"Index cleanup for missing target: {target}")
             continue
 
         if target_path.is_dir():
-            dir_prefix = rel_path_for(target_path) + "/%"
-            cursor.execute("DELETE FROM documents WHERE path LIKE ?", (dir_prefix,))
+            dir_prefix = f"{_escape_like(rel_path_for(target_path))}/%"
+            cursor.execute(
+                "DELETE FROM documents WHERE path LIKE ? ESCAPE '\\\\'",
+                (dir_prefix,),
+            )
 
         for file_path in iter_files(target_path):
             chunks_added = process_single_file(cursor, file_path)
@@ -471,15 +506,30 @@ def build_index(targets: list[str] | None = None, db_path_override: Path | None 
 
     conn.commit()
     conn.close()
+    if removed_targets:
+        print(f"Removed {removed_targets} stale chunks for deleted targets.")
     print(f"Index built successfully! Indexed/Updated {indexed_files} files into {indexed_chunks} chunks.")
+    return {
+        "full_rebuild": full_rebuild,
+        "targets": targets,
+        "indexed_files": indexed_files,
+        "indexed_chunks": indexed_chunks,
+        "removed_chunks": removed_targets,
+    }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build Lurek2D RAG index")
     parser.add_argument("targets", nargs="*", help="Specific directories or files to index")
     parser.add_argument("--db", help="Override DB path for tests")
+    parser.add_argument("--json", action="store_true", help="Emit JSON output")
+    parser.add_argument("--output", help="Write JSON output to file")
     args = parser.parse_args()
-    build_index(args.targets, Path(args.db) if args.db else None)
+    report = build_index(args.targets, Path(args.db) if args.db else None)
+    if args.output:
+        Path(args.output).write_text(json.dumps(report, ensure_ascii=False), encoding="utf-8")
+    elif args.json:
+        print(json.dumps(report, ensure_ascii=False))
 
 
 if __name__ == "__main__":

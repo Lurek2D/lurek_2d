@@ -1,4 +1,42 @@
 -- Canonical evidence file for lurek.ai data outputs.
+-- @covers lurek.ai.newAIDirector
+-- @covers lurek.ai.newAILod
+-- @covers lurek.ai.newAction
+-- @covers lurek.ai.newBandit
+-- @covers lurek.ai.newBehaviorTree
+-- @covers lurek.ai.newBlackboard
+-- @covers lurek.ai.newCommandQueue
+-- @covers lurek.ai.newCondition
+-- @covers lurek.ai.newContextSteering
+-- @covers lurek.ai.newDialogueAI
+-- @covers lurek.ai.newEmotionModel
+-- @covers lurek.ai.newGOAPPlanner
+-- @covers lurek.ai.newGeneticAlgorithm
+-- @covers lurek.ai.newGuard
+-- @covers lurek.ai.newHTNDomain
+-- @covers lurek.ai.newInfluenceMap
+-- @covers lurek.ai.newInverter
+-- @covers lurek.ai.newMCTSEngine
+-- @covers lurek.ai.newNeedSystem
+-- @covers lurek.ai.newNeuralNet
+-- @covers lurek.ai.newNeuroevolution
+-- @covers lurek.ai.newORCASolver
+-- @covers lurek.ai.newParallel
+-- @covers lurek.ai.newQLearner
+-- @covers lurek.ai.newRepeater
+-- @covers lurek.ai.newSelector
+-- @covers lurek.ai.newSequence
+-- @covers lurek.ai.newSquad
+-- @covers lurek.ai.newStateMachine
+-- @covers lurek.ai.newSteeringManager
+-- @covers lurek.ai.newStimulusWorld
+-- @covers lurek.ai.newStrategyAI
+-- @covers lurek.ai.newSucceeder
+-- @covers lurek.ai.newTraitProfile
+-- @covers lurek.ai.newUtilityAI
+-- @covers lurek.ai.newWorld
+-- @covers lurek.filesystem.write
+
 
 local OUT = evidence_output_dir("ai")
 

@@ -1,4 +1,19 @@
 -- Canonical evidence file for lurek.dsp artifacts.
+-- @covers lurek.dsp.applyBandpass
+-- @covers lurek.dsp.applyHighpass
+-- @covers lurek.dsp.applyLowpass
+-- @covers lurek.dsp.newSawtoothWave
+-- @covers lurek.dsp.newSineWave
+-- @covers lurek.dsp.newSquareWave
+-- @covers lurek.dsp.newTriangleWave
+-- @covers lurek.dsp.newWhiteNoise
+-- @covers lurek.dsp.normalize
+-- @covers lurek.dsp.processOffline
+-- @covers lurek.dsp.spectrogramToPng
+-- @covers lurek.dsp.waveformToPng
+-- @covers lurek.image.newImageData
+-- @covers lurek.image.savePNG
+
 
 local OUT = evidence_output_dir("dsp")
 local FIXTURE_WAVE = "tests/fixtures/sine_mono_44100.wav"

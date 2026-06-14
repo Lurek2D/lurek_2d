@@ -28,6 +28,10 @@ if hasattr(sys.stdout, "reconfigure"):
 
 BM25_WEIGHTS = config.get("search", {}).get("bm25_weights", [1.0, 8.0, 1.0])
 SNIPPET_TOKENS = int(config.get("search", {}).get("snippet_tokens", 96))
+MAX_QUERY_LENGTH = 2048
+RAG_SEARCH_MIN_LIMIT = 1
+RAG_SEARCH_MAX_LIMIT = 25
+RAG_SEARCH_DEFAULT_LIMIT = 8
 
 
 def connect(db_path_override: Path | None = None) -> sqlite3.Connection:
@@ -40,8 +44,55 @@ def connect(db_path_override: Path | None = None) -> sqlite3.Connection:
 
 
 def sanitize_fts_query(query: str) -> str:
-    tokens = re.findall(r"[A-Za-z0-9_]+", query)
-    return " ".join(tokens)
+    if len(query) > MAX_QUERY_LENGTH:
+        query = query[:MAX_QUERY_LENGTH]
+    raw_tokens = re.findall(r"[A-Za-z0-9_./:-]+", query)
+    safe_tokens = []
+    for token in raw_tokens:
+        token = token.strip("._:/-")
+        if token:
+            safe_tokens.append(token)
+    return " ".join(safe_tokens)
+
+
+def emit_payload(payload: dict[str, Any], *, json_output: bool = False, output_path: str | None = None) -> None:
+    if output_path:
+        Path(output_path).write_text(
+            json.dumps(payload, ensure_ascii=False), encoding="utf-8"
+        )
+        return
+    if json_output:
+        print(json.dumps(payload, ensure_ascii=False))
+    else:
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
+
+
+def _query_intent_boost(safe_query: str, source_kind: str) -> float:
+    if source_kind == "api":
+        tokens = {"api", "function", "method", "callback", "doc", "reference"}
+    elif source_kind == "spec":
+        tokens = {"spec", "specification", "contract", "requirement", "behavior"}
+    elif source_kind == "contract":
+        tokens = {"contract", "guide", "instruction", "workflow", "policy"}
+    elif source_kind == "skill":
+        tokens = {"skill", "skillset", "agent", "prompt"}
+    elif source_kind == "agent":
+        tokens = {"agent", "assistant", "persona", "prompt"}
+    elif source_kind == "prompt_mirror":
+        tokens = {"prompt", "prompt_mirror", "persona"}
+    elif source_kind == "example":
+        tokens = {"example", "tutorial", "snippet", "demo"}
+    elif source_kind == "test":
+        tokens = {"test", "coverage", "validate"}
+    elif source_kind == "docs":
+        tokens = {"doc", "documentation", "reference", "guide"}
+    elif source_kind == "page":
+        tokens = {"page", "wiki", "documentation"}
+    else:
+        tokens = set[str]()
+
+    lowered = [token.lower() for token in safe_query.split() if len(token) > 2]
+    return -4.5 if set(lowered).intersection(tokens) else 0.0
 
 
 def row_to_dict(row: sqlite3.Row, *, include_content: bool = False, content_chars: int = 6000) -> dict[str, Any]:
@@ -89,13 +140,18 @@ def _profile_clause(profile: str) -> str:
 def search_index(
     query: str,
     profile: str = "all",
-    limit: int = 10,
+    limit: int = RAG_SEARCH_DEFAULT_LIMIT,
     db_path_override: Path | None = None,
     *,
     include_content: bool = False,
     content_chars: int = 6000,
     neighbors: int = 0,
 ) -> dict[str, Any]:
+    if not query:
+        return {"error": "query cannot be empty", "results": []}
+    if len(query) > MAX_QUERY_LENGTH:
+        return {"error": f"query is too long (max {MAX_QUERY_LENGTH} chars)", "results": []}
+
     safe_query = sanitize_fts_query(query)
     if not safe_query:
         return {"query": query, "profile": profile, "results": []}
@@ -106,6 +162,8 @@ def search_index(
         return {"error": str(exc)}
 
     try:
+        if limit < RAG_SEARCH_MIN_LIMIT or limit > RAG_SEARCH_MAX_LIMIT:
+            return {"error": f"`limit` must be between {RAG_SEARCH_MIN_LIMIT} and {RAG_SEARCH_MAX_LIMIT}.", "results": []}
         results = _search_once(conn, safe_query, profile, limit, include_content, content_chars)
         mode = "and"
         if len(results) < limit and " " in safe_query:
@@ -197,6 +255,11 @@ def _adjusted_rank(row: sqlite3.Row, safe_query: str) -> float:
             score -= 8.0
         if token in title:
             score -= 5.0
+    generated_request = "generated" in tokens
+    source_kind = row["source_kind"]
+    score += _query_intent_boost(safe_query, source_kind)
+    if row["is_generated"] and not generated_request and source_kind not in {"skill", "agent", "contract", "api"}:
+        score += 7.0
     if specific_tokens and source_kind in {"skill", "contract", "prompt_mirror"}:
         if not any(token in path or token in title for token in specific_tokens):
             score += 6.0
@@ -296,13 +359,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Query or read the Lurek2D RAG index")
     parser.add_argument("query", nargs="?", help="Search query keywords")
     parser.add_argument("--profile", choices=["all", "game", "engine"], default="all", help="Filter profile")
-    parser.add_argument("--limit", type=int, default=10, help="Max results")
+    parser.add_argument("--limit", type=int, default=RAG_SEARCH_DEFAULT_LIMIT, help="Max results")
     parser.add_argument("--db", help="Override DB path for tests")
     parser.add_argument("--include-content", action="store_true", help="Include full chunk content in search results")
     parser.add_argument("--content-chars", type=int, default=6000, help="Max content chars per returned chunk")
     parser.add_argument("--neighbors", type=int, default=0, help="Include adjacent chunks from the same file")
     parser.add_argument("--id", help="Read a chunk by exact RAG id")
     parser.add_argument("--stats", action="store_true", help="Print index stats")
+    parser.add_argument("--json", action="store_true", help="Emit compact JSON output")
+    parser.add_argument("--output", help="Write JSON output to file")
     args = parser.parse_args()
 
     db_override = Path(args.db) if args.db else None
@@ -322,7 +387,7 @@ def main() -> None:
         )
     else:
         parser.error("query, --id, or --stats is required")
-    print(json.dumps(res, indent=2, ensure_ascii=False))
+    emit_payload(res, json_output=args.json, output_path=args.output)
 
 
 if __name__ == "__main__":

@@ -1,20 +1,63 @@
 import * as child_process from "child_process";
+import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
 
-const PYTHON_EXECUTABLE = "python";
+const PYTHON_EXECUTABLE = process.env.LUREK_PYTHON || process.env.PYTHON || "python";
 const QUERY_SCRIPT = "tools/rag/query.py";
 const BUILD_SCRIPT = "tools/rag/build_index.py";
+export const DEFAULT_RAG_SEARCH_LIMIT = 8;
+export const MAX_RAG_SEARCH_LIMIT = 25;
+export const DEFAULT_RAG_SEARCH_TIMEOUT_MS = 15_000;
+export const DEFAULT_RAG_BUILD_TIMEOUT_MS = 60_000;
 
-export function execRagQuery(
+export interface RagCommandResult {
+  ok: boolean;
+  exitCode: number;
+  spawnError?: string;
+  stdout: string;
+  stderr: string;
+  payload?: unknown;
+  parseError?: string;
+  errorCode?: string | number;
+  signal?: string;
+}
+
+export interface RagQueryPayload {
+  query?: string;
+  profile?: string;
+  fts_query?: string;
+  mode?: string;
+  error?: string;
+  results?: unknown[];
+}
+
+export interface RagQueryOptions {
+  profile?: "game" | "engine" | "all";
+  limit?: number;
+  timeoutMs?: number;
+}
+
+function createTempOutputPath(): string {
+  return path.join(
+    os.tmpdir(),
+    `lurek2d-rag-${Date.now()}-${Math.random().toString(36).slice(2, 10)}.json`,
+  );
+}
+
+function execRagCommand(
   workspaceRoot: string,
-  query: string,
-  profile: "game" | "engine" | "all" = "all",
-  timeoutMs = 15_000,
-): Promise<string> {
+  script: string,
+  args: string[],
+  timeoutMs: number,
+): Promise<RagCommandResult> {
+  const outputPath = createTempOutputPath();
+  const command = [script, ...args, "--json", "--output", outputPath];
+
   return new Promise((resolve) => {
     child_process.execFile(
       PYTHON_EXECUTABLE,
-      [QUERY_SCRIPT, query, "--profile", profile],
+      command,
       {
         cwd: workspaceRoot,
         timeout: timeoutMs,
@@ -22,40 +65,82 @@ export function execRagQuery(
         encoding: "utf-8",
       },
       (error, stdout, stderr) => {
-        const output = `${stdout || ""}${stderr || ""}`;
+        let exitCode = 0;
+        let spawnError: string | undefined;
         if (error) {
-          resolve(`${output}\n[RAG query exit code: ${error.code ?? "unknown"}]`);
-          return;
+          if (typeof error.code === "number") {
+            exitCode = error.code;
+          } else {
+            exitCode = -1;
+            if (typeof error.code === "string") {
+              spawnError = `${error.code}: ${error.message}`;
+            } else if (error.message) {
+              spawnError = error.message;
+            } else {
+              spawnError = "Unknown process spawn error";
+            }
+          }
+          if (error.signal && !spawnError) {
+            spawnError = `Process terminated with signal: ${error.signal}`;
+          }
         }
-        resolve(output || "(no output)");
+        let payload: unknown = undefined;
+        let parseError: string | undefined;
+        const commandStdout = stdout || "";
+        const commandStderr = stderr || "";
+
+        try {
+          if (fs.existsSync(outputPath)) {
+            payload = JSON.parse(fs.readFileSync(outputPath, "utf-8"));
+          }
+        } catch (jsonError) {
+          parseError = jsonError instanceof Error ? jsonError.message : String(jsonError);
+        } finally {
+          if (fs.existsSync(outputPath)) {
+            fs.unlinkSync(outputPath);
+          }
+        }
+
+        const wasFailure = exitCode !== 0;
+        resolve({
+          ok: !wasFailure,
+          exitCode,
+          spawnError,
+          stdout: commandStdout,
+          stderr: commandStderr,
+          payload,
+          parseError,
+          errorCode: error?.code,
+          signal: error?.signal,
+        });
       },
     );
   });
+}
+
+export function execRagQuery(
+  workspaceRoot: string,
+  query: string,
+  options: RagQueryOptions = {},
+): Promise<RagCommandResult> {
+  const {
+    profile = "all",
+    limit = DEFAULT_RAG_SEARCH_LIMIT,
+    timeoutMs = DEFAULT_RAG_SEARCH_TIMEOUT_MS,
+  } = options;
+
+  return execRagCommand(
+    workspaceRoot,
+    QUERY_SCRIPT,
+    [query, "--profile", profile, "--limit", String(limit)],
+    timeoutMs,
+  );
 }
 
 export function execRagBuildIndex(
   workspaceRoot: string,
   directories: string[] = [],
   timeoutMs = 60_000,
-): Promise<string> {
-  return new Promise((resolve) => {
-    child_process.execFile(
-      PYTHON_EXECUTABLE,
-      [BUILD_SCRIPT, ...directories],
-      {
-        cwd: workspaceRoot,
-        timeout: timeoutMs,
-        maxBuffer: 1024 * 1024 * 5,
-        encoding: "utf-8",
-      },
-      (error, stdout, stderr) => {
-        const output = `${stdout || ""}${stderr || ""}`;
-        if (error) {
-          resolve(`${output}\n[RAG build exit code: ${error.code ?? "unknown"}]`);
-          return;
-        }
-        resolve(output || "Index built successfully.");
-      },
-    );
-  });
+): Promise<RagCommandResult> {
+  return execRagCommand(workspaceRoot, BUILD_SCRIPT, directories, timeoutMs);
 }

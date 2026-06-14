@@ -1,7 +1,7 @@
 -- Integration: pathfinding results reflected on minimap overlays
--- @covers lurek.minimap.newMinimap
--- @covers lurek.pathfind.newNavGrid
--- @covers lurek.pathfind.newPathfinder
+-- @integration lurek.minimap.newMinimap
+-- @integration lurek.pathfind.newNavGrid
+-- @integration lurek.pathfind.newPathfinder
 
 
 

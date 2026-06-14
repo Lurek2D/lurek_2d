@@ -1,5 +1,7 @@
 -- Integration: timer scheduler callbacks emitting event signals
 -- @describe timer + event integration
+
+-- @describe timer + event integration
 describe("timer + event integration", function()
 
     -- @integration LScheduler:after
@@ -8,6 +10,8 @@ describe("timer + event integration", function()
     -- @integration LSignal:emit
     -- @integration lurek.event.newSignal
     -- @integration lurek.timer.newScheduler
+    -- @covers lurek.event.newSignal
+    -- @covers lurek.timer.newScheduler
     it("timer callback can emit a signal", function()
         local sched = lurek.timer.newScheduler()
         local sig = lurek.event.newSignal()

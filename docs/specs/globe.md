@@ -11,7 +11,7 @@
 - Source path: `src/globe/`
 - Binding: `src/lua_api/globe_api.rs`
 - Namespace: `lurek.globe`
-- Lua API surface: `12` functions, `4` types, `72` methods
+- Lua API surface: `12` functions, `4` types, `92` methods
 - Rust test path(s): tests/rust/unit/globe_tests.rs
 - Lua test path(s): tests/lua/unit/test_globe_unit.lua
 
@@ -134,10 +134,10 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 ### picking.rs
 
-- Provides screen-space globe picking that identifies visible regions under pointer coordinates.
-- Projects region geometry into 2D and applies point-in-polygon hit testing for selection.
-- Chooses the front-most valid candidate using camera-facing depth information.
-- Delivers interaction picking results consumed by UI and gameplay selection flows.
+- Provides globe picking helpers that translate screen-space clicks into front-hemisphere surface hits.
+- Converts pointer coordinates into spherical latitude and longitude using the current orbit camera.
+- Applies geographic point-in-polygon tests so province and region queries share one hit surface.
+- Exposes marker and region selection results consumed by rendering, UI, and gameplay layers.
 
 ### projection.rs
 
@@ -208,8 +208,8 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `lurek.globe.greatCirclePath(la, lo, lb, lo2, n) -> table`: Computes sampled latitude-longitude points along a great-circle path.
 - `lurek.globe.latLonToUnit(lat, lon) -> table`: Converts latitude and longitude to a unit-sphere 3D vector table.
 - `lurek.globe.loadFromPNG(name, png_path, spec_tbl?) -> LGlobe`: Creates a globe and populates provinces from a PNG file.
-- `lurek.globe.loadFromTOML(name, toml_src, spec_tbl?) -> LGlobe`: Creates a globe and populates provinces from TOML source text, accepting either `vertices` or multipart `parts` with optional `holes`.
-- `lurek.globe.loadFromTOMLFile(name, path, spec_tbl?) -> LGlobe`: Creates a globe and populates provinces from a TOML file path, accepting either `vertices` or multipart `parts` with optional `holes`.
+- `lurek.globe.loadFromTOML(name, toml_src, spec_tbl?) -> LGlobe`: Creates a globe and populates provinces from TOML source text.
+- `lurek.globe.loadFromTOMLFile(name, path, spec_tbl?) -> LGlobe`: Creates a globe and populates provinces from a TOML file path.
 - `lurek.globe.new(name, spec_tbl?) -> LGlobe`: Creates a named globe with optional specification fields in the module registry.
 - `lurek.globe.newRegistry() -> LGlobeRegistry`: Creates an empty globe registry handle independent from the module registry.
 - `lurek.globe.raySphereIntersect(ox, oy, oz, dx, dy, dz, radius) -> number`: Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
@@ -241,12 +241,15 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:addMarker(mtype, lat, lon, label?) -> integer`: Adds a marker at latitude and longitude with an optional label.
 - `LGlobe:addProvince(p) -> boolean`: Adds a province described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
 - `LGlobe:addRegion(p) -> boolean`: Adds a region described by id, centroid, polygon vertices or multipart geometry, neighbors, and optional base color.
-- Provinces and semantic regions remain separate stores: provinces drive rendered topology and default traversal, while semantic regions may overlap and are queried independently for coverage and interaction.
+- `LGlobe:applyMouseDrag(start_x, start_y, end_x, end_y) -> nil`: Applies a pointer drag to the globe camera using screen-space deltas.
+- `LGlobe:applyWheelZoom(delta) -> nil`: Applies a wheel delta using an exponential zoom scale.
 - `LGlobe:cacheReachability(faction, start_id, max_cost) -> nil`: Caches default-cost reachability for a named faction.
 - `LGlobe:clearProvinceTexture(id) -> boolean`: Removes texture metadata from a province.
 - `LGlobe:decodeFogBase64(viewer, payload) -> boolean`: Loads one viewer's fog state from a base64 string.
+- `LGlobe:distanceBetweenMarkers(a, b) -> number`: Computes great-circle distance between two markers on the unit sphere.
+- `LGlobe:draw(opts?) -> nil`: Emits the globe's render commands into the shared renderer command queue.
 - `LGlobe:encodeFogBase64(viewer) -> string`: Serializes one viewer's fog state to a base64 string.
-- `LGlobe:exportProvinceMeshOBJ() -> string`: Exports province geometry as Wavefront OBJ text with grouped multipart boundaries and any available fill faces.
+- `LGlobe:exportProvinceMeshOBJ() -> string`: Exports province geometry as Wavefront OBJ text, preserving multipart boundaries and hole loops.
 - `LGlobe:findPath(from_id, to_id) -> integer[]`: Finds a default-cost province path between two province ids.
 - `LGlobe:findPathWithCosts(from_id, to_id, opts?) -> table`: Finds a province path using caller-supplied traversal costs, blocked ids, and edge-tag surcharges.
 - `LGlobe:getCachedReachability(faction) -> table`: Returns cached reachability costs for a faction.
@@ -259,6 +262,7 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:getNeighbors(id) -> integer[]`: Returns neighboring province ids for a province.
 - `LGlobe:getProvinceAttr(id, key) -> string`: Reads a string attribute from a province.
 - `LGlobe:getProvinceSector(id) -> string`: Returns the sector name assigned to a province.
+- `LGlobe:getRegionAttr(id, key) -> string`: Reads a string attribute from a semantic region.
 - `LGlobe:getSectorProvinces(sector) -> integer[]`: Returns province ids assigned to a sector.
 - `LGlobe:getTimeOfDay() -> number`: Returns globe time of day. This method is available to Lua scripts.
 - `LGlobe:hideProvince(viewer, id) -> nil`: Hides a province for one fog-of-war viewer.
@@ -267,11 +271,15 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:pan(dlat, dlon) -> nil`: Pans the globe camera by latitude and longitude deltas.
 - `LGlobe:pick(sx, sy) -> integer`: Picks a province at screen coordinates.
 - `LGlobe:pickLatLon(sx, sy) -> number`: Picks at screen coordinates and returns the hit surface latitude and longitude.
+- `LGlobe:pickMarker(sx, sy, radius?) -> integer`: Returns the nearest visible marker at a screen position within an optional pixel radius.
 - `LGlobe:pickRaycast(sx, sy, steps?) -> integer`: Samples along the screen-space line from the globe center to the target and returns the first hit province.
+- `LGlobe:pickRegions(sx, sy) -> integer[]`: Returns semantic region ids under a screen-space hit.
+- `LGlobe:pickSurface(sx, sy, marker_radius?) -> table`: Resolves a screen-space hit into globe surface data plus province, marker, and semantic-region hits.
 - `LGlobe:provinceCount() -> integer`: Returns the number of rendered provinces in this globe.
 - `LGlobe:reachable(start_id, max_cost) -> table`: Returns provinces reachable from a start province within a cost budget.
 - `LGlobe:reachableWithCosts(start_id, max_cost, opts?) -> table`: Returns provinces reachable under caller-supplied traversal costs, blocked ids, and edge-tag surcharges.
 - `LGlobe:regionCount() -> integer`: Returns the number of stored semantic regions in this globe.
+- `LGlobe:regionsAtLatLon(lat, lon) -> integer[]`: Returns semantic region ids containing a latitude-longitude point.
 - `LGlobe:removeArc(id) -> boolean`: Removes an arc by id. This method is available to Lua scripts.
 - `LGlobe:removeHeatLayer(name) -> boolean`: Removes a heat layer by name. This method is available to Lua scripts.
 - `LGlobe:removeLabel(id) -> boolean`: Removes a label by id. This method is available to Lua scripts.
@@ -281,10 +289,13 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:removeRegion(id) -> boolean`: Removes a region by id. This method is available to Lua scripts.
 - `LGlobe:revealAll(viewer) -> nil`: Reveals every province for one fog-of-war viewer.
 - `LGlobe:revealProvince(viewer, id) -> nil`: Reveals a province for one fog-of-war viewer.
+- `LGlobe:screenDeltaToPan(dx, dy) -> number`: Converts a screen-space drag delta into latitude and longitude pan deltas.
+- `LGlobe:screenToLatLon(sx, sy) -> number`: Converts a visible screen position into globe latitude, longitude, and unit-sphere coordinates.
 - `LGlobe:setActiveViewer(viewer?) -> nil`: Sets the active fog-of-war viewer name or clears it.
 - `LGlobe:setAutoRotationSpeed(dps) -> nil`: Sets automatic globe rotation speed.
 - `LGlobe:setBorders(show) -> nil`: Enables or disables province border rendering.
 - `LGlobe:setCamera(lat, lon, z) -> nil`: Sets camera latitude, longitude, and zoom.
+- `LGlobe:setEdgeTags(a, b, tags) -> boolean`: Replaces the tag set stored on an existing province edge.
 - `LGlobe:setFogState(viewer, id, state) -> nil`: Sets fog-of-war state for one viewer and province.
 - `LGlobe:setHeatLayer(name, attr_key, min, max, alpha) -> nil`: Creates or replaces a heat layer that maps province attributes into colors.
 - `LGlobe:setLabelText(id, text) -> boolean`: Changes text for an existing label.
@@ -293,13 +304,17 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - `LGlobe:setLayerColor(layer, id, r, g, b, a) -> boolean`: Sets a province color override inside a render layer.
 - `LGlobe:setLayerVisible(name, vis) -> boolean`: Shows or hides a render layer. This method is available to Lua scripts.
 - `LGlobe:setMarkerAttr(id, key, val) -> boolean`: Sets a string attribute on a marker.
-- `LGlobe:setEdgeTags(a, b, tags) -> boolean`: Replaces the tag set stored on an existing province edge.
+- `LGlobe:setMarkerColor(id, r, g, b, a?) -> boolean`: Sets marker tint color.
+- `LGlobe:setMarkerIconTexture(id, tex_raw?) -> boolean`: Assigns or clears a raw texture handle for a marker icon.
 - `LGlobe:setMarkerPulse(id, hz, amp) -> boolean`: Sets marker pulse frequency and amplitude.
 - `LGlobe:setMarkerRotation(id, dps) -> boolean`: Sets marker rotation speed. This method is available to Lua scripts.
+- `LGlobe:setMarkerShape(id, shape) -> boolean`: Sets the vector fallback shape used by a marker.
+- `LGlobe:setMarkerSize(id, size) -> boolean`: Sets marker size in screen units.
 - `LGlobe:setMarkerVisible(id, vis) -> boolean`: Shows or hides a marker. This method is available to Lua scripts.
 - `LGlobe:setProvinceAttr(id, key, val) -> boolean`: Sets a string attribute on a province.
 - `LGlobe:setProvinceSector(id, sector) -> boolean`: Assigns a province to a named sector.
 - `LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1) -> boolean`: Assigns a raw texture handle and UV rectangle to a province.
+- `LGlobe:setRegionAttr(id, key, val) -> boolean`: Sets a string attribute on a semantic region.
 - `LGlobe:setRotation(deg) -> nil`: Sets globe rotation angle. This method is available to Lua scripts.
 - `LGlobe:setTimeOfDay(t) -> nil`: Sets globe time of day modulo 24 hours.
 - `LGlobe:type() -> string`: Returns the Lua-visible type name for this globe handle.

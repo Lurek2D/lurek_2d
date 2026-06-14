@@ -1,4 +1,28 @@
 -- Canonical evidence file for lurek.binary data outputs.
+-- @covers lurek.binary.compress
+-- @covers lurek.binary.compressChunks
+-- @covers lurek.binary.crc32
+-- @covers lurek.binary.decode
+-- @covers lurek.binary.decompress
+-- @covers lurek.binary.decompressChunks
+-- @covers lurek.binary.encode
+-- @covers lurek.binary.encodeToml
+-- @covers lurek.binary.fromMsgPack
+-- @covers lurek.binary.getPackedSize
+-- @covers lurek.binary.hash
+-- @covers lurek.binary.newByteData
+-- @covers lurek.binary.newDataView
+-- @covers lurek.binary.newRingBuffer
+-- @covers lurek.binary.newWriter
+-- @covers lurek.binary.pack
+-- @covers lurek.binary.parseToml
+-- @covers lurek.binary.read
+-- @covers lurek.binary.size
+-- @covers lurek.binary.toMsgPack
+-- @covers lurek.binary.unpack
+-- @covers lurek.binary.write
+-- @covers lurek.filesystem.write
+
 
 local OUT = evidence_output_dir("binary")
 

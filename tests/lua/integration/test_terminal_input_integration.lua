@@ -1,5 +1,7 @@
 -- Integration: in-game terminal widget capturing keyboard text input
 -- @describe terminal + input integration
+
+-- @describe terminal + input integration
 describe("terminal + input integration", function()
     -- @integration lurek.input.keyboard.hasTextInput
     -- @integration lurek.input.keyboard.setTextInput
@@ -10,6 +12,10 @@ describe("terminal + input integration", function()
     -- @integration LWidget:getText
     -- @integration lurek.terminal.newTerminal
     -- @integration lurek.terminal.newTextBox
+    -- @covers lurek.input.keyboard
+    -- @covers lurek.terminal.newButton
+    -- @covers lurek.terminal.newTerminal
+    -- @covers lurek.terminal.newTextBox
     it("focused terminal text box accepts text while keyboard text input mode is enabled", function()
         local term = lurek.terminal.newTerminal(40, 12)
         local input = lurek.terminal.newTextBox(2, 2, 18)

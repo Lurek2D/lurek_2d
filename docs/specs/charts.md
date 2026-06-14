@@ -184,7 +184,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ##### Methods
 
-- `LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts?) -> nil`: Lua-visible method.
+- `LBarChart:addCategoriesFromDataFrame() -> nil`: Lua-visible method.
 - `LBarChart:addCategory(label, values) -> nil`: Lua-visible method.
 - `LBarChart:addSeries(name, data, color?) -> nil`: Lua-visible method.
 - `LBarChart:clear() -> nil`: Lua-visible method.
@@ -227,7 +227,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - `LHeatmapChart:setColorRange(low, high) -> nil`: Lua-visible method.
 - `LHeatmapChart:setColumnLabels(labels) -> nil`: Lua-visible method.
 - `LHeatmapChart:setMatrix(matrix, row_labels?, col_labels?) -> nil`: Lua-visible method.
-- `LHeatmapChart:setMatrixFromDataFrame(df, row_col, col_col, value_col, opts?) -> nil`: Lua-visible method.
+- `LHeatmapChart:setMatrixFromDataFrame() -> nil`: Lua-visible method.
 - `LHeatmapChart:setRowLabels(labels) -> nil`: Lua-visible method.
 - `LHeatmapChart:setShowLegend(value) -> nil`: Lua-visible method.
 - `LHeatmapChart:setShowValues(value) -> nil`: Lua-visible method.
@@ -316,7 +316,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 ##### Methods
 
 - `LPieChart:addSegment(label, value, color?) -> nil`: Lua-visible method.
-- `LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts?) -> nil`: Lua-visible method.
+- `LPieChart:addSegmentsFromDataFrame() -> nil`: Lua-visible method.
 - `LPieChart:addSlice(label, value, color?) -> nil`: Lua-visible method.
 - `LPieChart:clear() -> nil`: Lua-visible method.
 - `LPieChart:draw(x, y, opts?) -> nil`: Lua-visible method.

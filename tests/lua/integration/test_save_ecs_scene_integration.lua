@@ -1,5 +1,7 @@
 -- Integration: save/load cycle preserving entity state across scene transitions
 -- @describe savegame + entity + scene integration
+
+-- @describe savegame + entity + scene integration
 describe("savegame + entity + scene integration", function()
     -- @integration LSaveManager:collect
     -- @integration LSaveManager:register
@@ -9,6 +11,8 @@ describe("savegame + entity + scene integration", function()
     -- @integration LUniverse:spawn
     -- @integration lurek.ecs.newUniverse
     -- @integration lurek.save.newSaveManager
+    -- @covers lurek.ecs.newUniverse
+    -- @covers lurek.save.newSaveManager
     it("save manager collects entity state", function()
         local universe = lurek.ecs.newUniverse()
         local sm = lurek.save.newSaveManager()

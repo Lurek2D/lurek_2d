@@ -1322,14 +1322,6 @@ do
     print("height in segments = " .. block:getHeightInSegments())
 end
 
--- Duplicate coverage lives in content/examples/mapblock.lua.
---@api-stub: LMapBlock:getWeight
-do
-    local block = lurek.tilemap.newMapBlock(2, 2)
-    block:setWeight(2.5)
-    print("getWeight = " .. tostring(block:getWeight()))
-end
-
 --@api-stub: LMapBlock:setSide
 do
     local block = lurek.tilemap.newMapBlock(4, 4, 1, 2) ; block:setSide("north", 1, 10)

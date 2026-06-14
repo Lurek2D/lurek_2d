@@ -1,5 +1,7 @@
 -- Integration: AI state machine + pathfinding A*
 -- @describe integration: AI agent uses pathfinding to navigate
+
+-- @describe integration: AI agent uses pathfinding to navigate
 describe("integration: AI agent uses pathfinding to navigate", function()
     -- @integration LStateMachine:addState
     -- @integration LStateMachine:addTransition
@@ -9,6 +11,9 @@ describe("integration: AI agent uses pathfinding to navigate", function()
     -- @integration lurek.ai.newStateMachine
     -- @integration lurek.pathfind.newNavGrid
     -- @integration lurek.pathfind.newPathfinder
+    -- @covers lurek.ai.newStateMachine
+    -- @covers lurek.pathfind.newNavGrid
+    -- @covers lurek.pathfind.newPathfinder
     it("AI state machine requests path and transitions to moving state", function()
         local grid = lurek.pathfind.newNavGrid(20, 20)
         local pf   = lurek.pathfind.newPathfinder(grid)

@@ -1,5 +1,7 @@
 -- Integration: tween state driving smooth camera position and zoom transitions
 -- @describe integration: tween drives camera position and zoom
+
+-- @describe integration: tween drives camera position and zoom
 describe("integration: tween drives camera position and zoom", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
@@ -7,6 +9,8 @@ describe("integration: tween drives camera position and zoom", function()
     -- @integration LTweenState:tick
     -- @integration lurek.camera.newCamera
     -- @integration lurek.tween.newState
+    -- @covers lurek.camera.newCamera
+    -- @covers lurek.tween.newState
     it("tween advances camera from A to B over simulated time", function()
         local cam   = lurek.camera.newCamera()
         local state = lurek.tween.newState(1.0, "linear")

@@ -1,5 +1,7 @@
 -- Integration: JSON serialization round-trip via filesystem I/O
 -- @describe integration: data serialization with filesystem I/O
+
+-- @describe integration: data serialization with filesystem I/O
 describe("integration: data serialization with filesystem I/O", function()
     local TMP_PATH = "save/test_binary_fs_tmp.json"
 
@@ -9,6 +11,12 @@ describe("integration: data serialization with filesystem I/O", function()
     -- @integration lurek.filesystem.write
     -- @integration lurek.serial.fromJson
     -- @integration lurek.serial.toJson
+    -- @covers lurek.filesystem.exists
+    -- @covers lurek.filesystem.read
+    -- @covers lurek.filesystem.remove
+    -- @covers lurek.filesystem.write
+    -- @covers lurek.serial.fromJson
+    -- @covers lurek.serial.toJson
     it("encodes table to JSON, writes, and reads back", function()
         local record = {
             name  = "player1",

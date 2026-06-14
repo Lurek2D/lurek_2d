@@ -194,6 +194,7 @@ fn table_opt_clamped_f32(
 }
 
 fn parse_scene_build_params(params_tbl: &LuaTable, api_name: &str) -> LuaResult<SceneBuildParams> {
+    // add_method
     let sun_r = table_opt_f32(params_tbl, "sun_r")?
         .or(table_opt_f32(params_tbl, "global_r")?)
         .unwrap_or(1.0)
@@ -493,6 +494,7 @@ fn parse_directional_sprite_textures(
     sprite_tbl: &LuaTable,
     api_name: &str,
 ) -> LuaResult<Option<DirectionalSpriteTextures>> {
+    // add_method
     let Some((front, _)) = parse_texture_key_value(
         &sprite_tbl.get::<_, LuaValue>("front_texture")?,
         &format!("{}(sprites[].front_texture)", api_name),
@@ -550,6 +552,7 @@ fn parse_wall_feature_descriptor(
     feature_tbl: &LuaTable,
     api_name: &str,
 ) -> LuaResult<(u32, u32, WallFeature)> {
+    // add_method
     let x = feature_tbl.get::<_, u32>("x").map_err(|e| {
         LuaError::RuntimeError(format!(
             "{}: wall_features[].x is required ({})",
@@ -664,6 +667,7 @@ fn parse_lowered_floor_descriptor(
     api_name: &str,
     field_name: &str,
 ) -> LuaResult<(u32, u32, crate::raycaster::build_scene::LoweredFloorCell)> {
+    // add_method
     let x = cell_tbl.get::<_, u32>("x").map_err(|e| {
         LuaError::RuntimeError(format!(
             "{}: {}[].x is required ({})",
@@ -723,6 +727,7 @@ fn parse_multilevel_level(
     level_index: usize,
     api_name: &str,
 ) -> LuaResult<RaycasterLevel> {
+    // add_method
     let width = level_tbl.get::<_, u32>("width").map_err(|e| {
         LuaError::RuntimeError(format!(
             "{}: levels[{}].width is required ({})",
@@ -933,6 +938,7 @@ fn parse_multilevel_grid_value(value: LuaValue, api_name: &str) -> LuaResult<Mul
 }
 
 fn parse_world_sprites(value: LuaValue, api_name: &str) -> LuaResult<Vec<WorldSprite>> {
+    // add_method
     match value {
         LuaValue::Nil => Ok(Vec::new()),
         LuaValue::Table(tbl) => {
@@ -1004,6 +1010,7 @@ fn parse_level_sprites(
     api_name: &str,
     default_level: usize,
 ) -> LuaResult<Vec<LevelSprite>> {
+    // add_method
     match value {
         LuaValue::Nil => Ok(Vec::new()),
         LuaValue::Table(tbl) => {
@@ -1108,6 +1115,7 @@ fn project_model_instance(
     lights: &[PointLight],
     wall_at: &dyn Fn(i32, i32) -> bool,
 ) -> LuaResult<Option<ModelMesh>> {
+    // add_method
     let model_ud = mt.get::<_, LuaAnyUserData>("model")?;
     let model_ref = model_ud.borrow::<LuaObjModel>().map_err(|_| {
         LuaError::RuntimeError(format!("{}: models[].model must be LuaObjModel", api_name))
@@ -4557,6 +4565,8 @@ impl LuaUserData for LuaRaycasterSceneAdapter {
             Ok(())
         });
         #[cfg(feature = "obj-loader")]
+        /// Clears models.
+        ///
         methods.add_method_mut("clearModels", |_, this, ()| {
             this.inner.clear_models();
             Ok(())

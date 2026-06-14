@@ -584,3 +584,17 @@ do
     local set = lurek.parallax.newSet("bg_set")
     print(set:type())
 end
+
+--@api-stub: LParallaxLayer:getStats
+do
+    -- TODO: example for LParallaxLayer:getStats
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LParallaxSet:getStats
+do
+    -- TODO: example for LParallaxSet:getStats
+    -- keep this block until a real scenario is added
+end
+

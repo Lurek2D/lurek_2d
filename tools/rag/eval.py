@@ -70,12 +70,15 @@ def main() -> None:
     parser.add_argument("--baseline", default=str(BASELINE_PATH), help="Recall baseline JSON path")
     parser.add_argument("--limit", type=int, default=10, help="Search result limit per case")
     parser.add_argument("--db", help="Override DB path for tests")
-    parser.add_argument("--json", action="store_true", help="Print JSON report")
+    parser.add_argument("--json", action="store_true", help="Emit JSON report")
+    parser.add_argument("--output", help="Write JSON output to file")
     args = parser.parse_args()
 
     report = evaluate(Path(args.baseline), limit=args.limit, db_path=Path(args.db) if args.db else None)
-    if args.json:
-        print(json.dumps(report, indent=2, ensure_ascii=False))
+    if args.output:
+        Path(args.output).write_text(json.dumps(report, ensure_ascii=False), encoding="utf-8")
+    elif args.json:
+        print(json.dumps(report, ensure_ascii=False))
     else:
         print(f"RAG recall: {report['passed']}/{report['total']} ({report['pass_rate']}%)")
         for item in report["results"]:

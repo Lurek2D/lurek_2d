@@ -191,8 +191,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ##### Methods
 
-- `LMapBlock:getHeight() -> integer`: Get height in tiles for this object.
 - `LMapBlock:getFootprintCellCount() -> integer`: Get the number of occupied footprint cells.
+- `LMapBlock:getHeight() -> integer`: Get height in tiles for this object.
 - `LMapBlock:getLayerCount() -> integer`: Get the number of tile layers in this map block.
 - `LMapBlock:getName() -> string`: Get the map block's display or lookup name string value.
 - `LMapBlock:getSocket(x, y, edge) -> integer`: Get a previously stored per-cell socket type.
@@ -325,8 +325,8 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 - `LPlacementGrid:addPosition(x, y) -> nil`: Add a position to the grid â€” Lua userdata object exposed by the engine.
 - `LPlacementGrid:clear() -> nil`: Clear all positions and placed blocks.
 - `LPlacementGrid:getAvailableCount() -> integer`: Get available position count for this object.
-- `LPlacementGrid:isEdgePosition(x, y) -> boolean`: Check whether a cell touches the placement-shape boundary.
 - `LPlacementGrid:isAvailable(x, y) -> boolean`: Check whether a placement grid position is currently available.
+- `LPlacementGrid:isEdgePosition(x, y) -> boolean`: Check whether a cell touches the placement-shape boundary.
 - `LPlacementGrid:removePosition(x, y) -> nil`: Remove an available position from the grid.
 
 #### LTilesetRef Type

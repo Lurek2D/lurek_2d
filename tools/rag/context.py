@@ -22,6 +22,16 @@ DEFAULT_EXPANSIONS = [
 ]
 
 
+def emit_payload(payload: dict[str, Any], *, json_output: bool = False, output_path: str | None = None) -> None:
+    if output_path:
+        Path(output_path).write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        return
+    if json_output:
+        print(json.dumps(payload, ensure_ascii=False))
+    else:
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
+
+
 def build_context_bundle(
     prompt: str,
     *,
@@ -87,6 +97,8 @@ def main() -> None:
     parser.add_argument("--neighbors", type=int, default=1)
     parser.add_argument("--content-chars", type=int, default=8000)
     parser.add_argument("--db", help="Override DB path for tests")
+    parser.add_argument("--json", action="store_true", help="Emit compact JSON output")
+    parser.add_argument("--output", help="Write JSON output to file")
     args = parser.parse_args()
     result = build_context_bundle(
         args.prompt,
@@ -96,7 +108,7 @@ def main() -> None:
         content_chars=args.content_chars,
         db_path=Path(args.db) if args.db else None,
     )
-    print(json.dumps(result, indent=2, ensure_ascii=False))
+    emit_payload(result, json_output=args.json, output_path=args.output)
 
 
 if __name__ == "__main__":

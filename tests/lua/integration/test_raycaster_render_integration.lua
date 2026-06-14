@@ -1,5 +1,7 @@
 -- Integration: raycaster per-cell texture overrides and render image userdata
 -- @describe raycaster + render integration
+
+-- @describe raycaster + render integration
 describe("raycaster + render integration", function()
     -- @integration LImage:getId
     -- @integration LRaycaster:getFloorTextureCell
@@ -8,6 +10,8 @@ describe("raycaster + render integration", function()
     -- @integration LRaycaster:setCeilingTextureCell
     -- @integration lurek.raycaster.new
     -- @integration lurek.render.newImage
+    -- @covers lurek.raycaster.new
+    -- @covers lurek.render.newImage
     it("accepts LImage userdata in per-cell overrides", function()
         local rc = lurek.raycaster.new(8, 8)
         local floor_img = lurek.render.newImage("assets/icon.png")

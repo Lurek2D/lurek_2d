@@ -688,3 +688,143 @@ do
     })
     print("region count = " .. g:regionCount())
 end
+
+--@api-stub: LGlobe:setEdgeTags
+do
+    -- TODO: example for LGlobe:setEdgeTags
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:getEdgeTags
+do
+    -- TODO: example for LGlobe:getEdgeTags
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:setRegionAttr
+do
+    -- TODO: example for LGlobe:setRegionAttr
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:getRegionAttr
+do
+    -- TODO: example for LGlobe:getRegionAttr
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:screenDeltaToPan
+do
+    -- TODO: example for LGlobe:screenDeltaToPan
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:applyMouseDrag
+do
+    -- TODO: example for LGlobe:applyMouseDrag
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:applyWheelZoom
+do
+    -- TODO: example for LGlobe:applyWheelZoom
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:screenToLatLon
+do
+    -- TODO: example for LGlobe:screenToLatLon
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:pickRegions
+do
+    -- TODO: example for LGlobe:pickRegions
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:regionsAtLatLon
+do
+    -- TODO: example for LGlobe:regionsAtLatLon
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:pickMarker
+do
+    -- TODO: example for LGlobe:pickMarker
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:pickSurface
+do
+    -- TODO: example for LGlobe:pickSurface
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:setMarkerColor
+do
+    -- TODO: example for LGlobe:setMarkerColor
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:setMarkerSize
+do
+    -- TODO: example for LGlobe:setMarkerSize
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:setMarkerShape
+do
+    -- TODO: example for LGlobe:setMarkerShape
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:setMarkerIconTexture
+do
+    -- TODO: example for LGlobe:setMarkerIconTexture
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:distanceBetweenMarkers
+do
+    -- TODO: example for LGlobe:distanceBetweenMarkers
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:draw
+do
+    -- TODO: example for LGlobe:draw
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:findPathWithCosts
+do
+    -- TODO: example for LGlobe:findPathWithCosts
+    -- keep this block until a real scenario is added
+end
+
+
+--@api-stub: LGlobe:reachableWithCosts
+do
+    -- TODO: example for LGlobe:reachableWithCosts
+    -- keep this block until a real scenario is added
+end
+
