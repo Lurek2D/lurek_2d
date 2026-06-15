@@ -7,33 +7,33 @@
 -- Topics: mapblock config, block creation, grids, rules, generators.
 -- ==========================================================================
 
---@api-stub: lurek.mapblock.newConfig
+--@api: lurek.mapblock.newConfig
 do
     local cfg = lurek.mapblock.newConfig()
     print("lurek.mapblock.newConfig slotCount=" .. cfg:getSlotCount())
 end
 
---@api-stub: lurek.mapblock.newEmptyConfig
+--@api: lurek.mapblock.newEmptyConfig
 do
     local cfg = lurek.mapblock.newEmptyConfig()
     cfg:addSlot("floor", true, 0)
     print("lurek.mapblock.newEmptyConfig slotCount=" .. cfg:getSlotCount())
 end
 
---@api-stub: lurek.mapblock.newBlock
+--@api: lurek.mapblock.newBlock
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
     print("lurek.mapblock.newBlock=" .. block:getWidth() .. "x" .. block:getHeight())
 end
 
---@api-stub: lurek.mapblock.newGroup
+--@api: lurek.mapblock.newGroup
 do
     local group = lurek.mapblock.newGroup("rooms")
     print("lurek.mapblock.newGroup=" .. group:getName())
 end
 
---@api-stub: lurek.mapblock.newScript
+--@api: lurek.mapblock.newScript
 do
     local script = lurek.mapblock.newScript("layout_pass")
     script:addStep("fill_rect", { x = 0, y = 0, width = 4, height = 3, tile_id = 1, slot = 0, layer = 0 })
@@ -41,28 +41,28 @@ do
     print("lurek.mapblock.newScript name=" .. script:getName())
 end
 
---@api-stub: lurek.mapblock.newRules
+--@api: lurek.mapblock.newRules
 do
     local rules = lurek.mapblock.newRules()
     rules:addCompatible(1, 2)
     print("lurek.mapblock.newRules compatible=" .. tostring(rules:isCompatible(1, 2)))
 end
 
---@api-stub: lurek.mapblock.newGrid
+--@api: lurek.mapblock.newGrid
 do
     local grid = lurek.mapblock.newGrid(10, 10)
     grid:addPosition(3, 4)
     print("lurek.mapblock.newGrid available=" .. grid:getAvailableCount())
 end
 
---@api-stub: lurek.mapblock.newEmptyGrid
+--@api: lurek.mapblock.newEmptyGrid
 do
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(2, 2)
     print("lurek.mapblock.newEmptyGrid available=" .. grid:getAvailableCount())
 end
 
---@api-stub: lurek.mapblock.newGenerator
+--@api: lurek.mapblock.newGenerator
 do
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -70,14 +70,14 @@ do
     print("lurek.mapblock.newGenerator ready=true")
 end
 
---@api-stub: lurek.mapblock.newTilesetRef
+--@api: lurek.mapblock.newTilesetRef
 do
     local ref = lurek.mapblock.newTilesetRef(1, "ground_tiles", 64, 8, 32, 32)
     print("lurek.mapblock.newTilesetRef id=" .. ref:getId())
     print("lurek.mapblock.newTilesetRef name=" .. ref:getName())
 end
 
---@api-stub: LMapBlock:setEdge
+--@api: LMapBlock:setEdge
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
@@ -86,7 +86,7 @@ do
     print("LMapBlock:setEdge width=" .. block:getWidth())
 end
 
---@api-stub: LMapBlock:setEdgeOnly
+--@api: LMapBlock:setEdgeOnly
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
@@ -94,7 +94,7 @@ do
     print("LMapBlock:setEdgeOnly height=" .. block:getHeight())
 end
 
---@api-stub: LMapBlock:setInteriorOnly
+--@api: LMapBlock:setInteriorOnly
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
@@ -102,7 +102,7 @@ do
     print("LMapBlock:setInteriorOnly width=" .. block:getWidth())
 end
 
---@api-stub: LMapBlock:setLevelSpan
+--@api: LMapBlock:setLevelSpan
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 4, 2, cfg)
@@ -110,7 +110,7 @@ do
     print("LMapBlock:setLevelSpan layers=" .. block:getLayerCount())
 end
 
---@api-stub: LMapBlockConfig:addSlot
+--@api: LMapBlockConfig:addSlot
 do
     local cfg = lurek.mapblock.newConfig()
     cfg:addSlot("wall", true, 0)
@@ -118,7 +118,7 @@ do
     print("LMapBlockConfig:addSlot slotCount=" .. cfg:getSlotCount())
 end
 
---@api-stub: LMapBlockConfig:removeSlot
+--@api: LMapBlockConfig:removeSlot
 do
     local cfg = lurek.mapblock.newConfig()
     cfg:addSlot("door", false, 0)
@@ -126,7 +126,7 @@ do
     print("LMapBlockConfig:removeSlot slotCount=" .. cfg:getSlotCount())
 end
 
---@api-stub: LMapBlockConfig:getSlotCount
+--@api: LMapBlockConfig:getSlotCount
 do
     local cfg = lurek.mapblock.newConfig()
     cfg:addSlot("layer1", true, 0)
@@ -135,7 +135,7 @@ do
     print("LMapBlockConfig:getSlotCount=" .. cfg:getSlotCount())
 end
 
---@api-stub: LMapBlockConfig:setMaxLayers
+--@api: LMapBlockConfig:setMaxLayers
 do
     local cfg = lurek.mapblock.newConfig()
     cfg:setMaxLayers(3)
@@ -143,14 +143,14 @@ do
     print("LMapBlockConfig:setMaxLayers slotCount=" .. cfg:getSlotCount())
 end
 
---@api-stub: LMapBlockConfig:setDefaultSegmentSize
+--@api: LMapBlockConfig:setDefaultSegmentSize
 do
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(32)
     print("LMapBlockConfig:setDefaultSegmentSize slotCount=" .. cfg:getSlotCount())
 end
 
---@api-stub: LMapBlockGenerator:setRectShape
+--@api: LMapBlockGenerator:setRectShape
 do
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -158,7 +158,7 @@ do
     print("LMapBlockGenerator:setRectShape ready=true")
 end
 
---@api-stub: LMapBlockGenerator:setShape
+--@api: LMapBlockGenerator:setShape
 do
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -166,7 +166,7 @@ do
     print("LMapBlockGenerator:setShape ready=true")
 end
 
---@api-stub: LMapBlockGenerator:setOrientation
+--@api: LMapBlockGenerator:setOrientation
 do
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -174,7 +174,7 @@ do
     print("LMapBlockGenerator:setOrientation ready=true")
 end
 
---@api-stub: LMapBlockGenerator:setMaxLevels
+--@api: LMapBlockGenerator:setMaxLevels
 do
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -182,7 +182,7 @@ do
     print("LMapBlockGenerator:setMaxLevels ready=true")
 end
 
---@api-stub: LMapBlockGenerator:setRules
+--@api: LMapBlockGenerator:setRules
 do
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -192,7 +192,7 @@ do
     print("LMapBlockGenerator:setRules compatible=" .. tostring(rules:isCompatible(1, 2)))
 end
 
---@api-stub: LMapBlockGenerator:setSeed
+--@api: LMapBlockGenerator:setSeed
 do
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -200,7 +200,7 @@ do
     print("LMapBlockGenerator:setSeed ready=true")
 end
 
---@api-stub: LMapBlockGenerator:setTileSize
+--@api: LMapBlockGenerator:setTileSize
 do
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -208,7 +208,7 @@ do
     print("LMapBlockGenerator:setTileSize ready=true")
 end
 
---@api-stub: LMapBlockGenerator:addGroup
+--@api: LMapBlockGenerator:addGroup
 do
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -217,7 +217,7 @@ do
     print("LMapBlockGenerator:addGroup group=" .. group:getName())
 end
 
---@api-stub: LMapBlockGenerator:generate
+--@api: LMapBlockGenerator:generate
 do
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
@@ -230,7 +230,7 @@ do
     print("LMapBlockGenerator:generate width=" .. result:getWidth())
 end
 
---@api-stub: LMapBlockGenerator:getLastPlacedCount
+--@api: LMapBlockGenerator:getLastPlacedCount
 do
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
@@ -242,7 +242,7 @@ do
     print("LMapBlockGenerator:getLastPlacedCount=" .. gen:getLastPlacedCount())
 end
 
---@api-stub: LMapBlockResult:getWidth
+--@api: LMapBlockResult:getWidth
 do
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
@@ -253,7 +253,7 @@ do
     print("LMapBlockResult:getWidth=" .. result:getWidth())
 end
 
---@api-stub: LMapBlockResult:getHeight
+--@api: LMapBlockResult:getHeight
 do
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
@@ -264,7 +264,7 @@ do
     print("LMapBlockResult:getHeight=" .. result:getHeight())
 end
 
---@api-stub: LMapBlockResult:getLevelCount
+--@api: LMapBlockResult:getLevelCount
 do
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
@@ -276,7 +276,7 @@ do
     print("LMapBlockResult:getLevelCount=" .. result:getLevelCount())
 end
 
---@api-stub: LMapBlockResult:getLayerCount
+--@api: LMapBlockResult:getLayerCount
 do
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
@@ -287,7 +287,7 @@ do
     print("LMapBlockResult:getLayerCount=" .. result:getLayerCount())
 end
 
---@api-stub: LMapBlockResult:getGid
+--@api: LMapBlockResult:getGid
 do
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("rect_fill")
@@ -299,7 +299,7 @@ do
     print("LMapBlockResult:getGid=" .. tostring(gid))
 end
 
---@api-stub: LMapBlockResult:getBlocksPlaced
+--@api: LMapBlockResult:getBlocksPlaced
 do
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("place_once")
@@ -311,7 +311,7 @@ do
     print("LMapBlockResult:getBlocksPlaced=" .. result:getBlocksPlaced())
 end
 
---@api-stub: LMapBlockResult:isEmpty
+--@api: LMapBlockResult:isEmpty
 do
     local cfg = lurek.mapblock.newConfig()
     local script = lurek.mapblock.newScript("empty")
@@ -321,7 +321,7 @@ do
     print("LMapBlockResult:isEmpty=" .. tostring(result:isEmpty()))
 end
 
---@api-stub: LMapScript:clear
+--@api: LMapScript:clear
 do
     local script = lurek.mapblock.newScript("cleanup")
     script:addStep("fill_rect", { x = 0, y = 0, width = 2, height = 2, tile_id = 1, slot = 0, layer = 0 })
@@ -330,13 +330,13 @@ do
     print("LMapScript:clear stepCount=" .. script:getStepCount())
 end
 
---@api-stub: LMapScript:getName
+--@api: LMapScript:getName
 do
     local script = lurek.mapblock.newScript("dungeon_gen")
     print("LMapScript:getName=" .. tostring(script:getName()))
 end
 
---@api-stub: LNeighborRules:addCompatible
+--@api: LNeighborRules:addCompatible
 do
     local rules = lurek.mapblock.newRules()
     rules:addCompatible(10, 20)
@@ -344,7 +344,7 @@ do
     print("LNeighborRules:addCompatible=" .. tostring(rules:isCompatible(20, 10)))
 end
 
---@api-stub: LNeighborRules:addCompatibleOneWay
+--@api: LNeighborRules:addCompatibleOneWay
 do
     local rules = lurek.mapblock.newRules()
     rules:addCompatibleOneWay(5, 9)
@@ -352,14 +352,14 @@ do
     print("LNeighborRules:addCompatibleOneWay reverse=" .. tostring(rules:isCompatible(9, 5)))
 end
 
---@api-stub: LNeighborRules:isCompatible
+--@api: LNeighborRules:isCompatible
 do
     local rules = lurek.mapblock.newRules()
     rules:addCompatible(4, 6)
     print("LNeighborRules:isCompatible=" .. tostring(rules:isCompatible(4, 6)))
 end
 
---@api-stub: LNeighborRules:clear
+--@api: LNeighborRules:clear
 do
     local rules = lurek.mapblock.newRules()
     rules:addCompatible(1, 2)
@@ -367,21 +367,21 @@ do
     print("LNeighborRules:clear=" .. tostring(rules:isCompatible(1, 2)))
 end
 
---@api-stub: LPlacementGrid:addPosition
+--@api: LPlacementGrid:addPosition
 do
     local grid = lurek.mapblock.newGrid(10, 10)
     grid:addPosition(3, 4)
     print("LPlacementGrid:addPosition availCount=" .. grid:getAvailableCount())
 end
 
---@api-stub: LPlacementGrid:isAvailable
+--@api: LPlacementGrid:isAvailable
 do
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(5, 5)
     print("LPlacementGrid:isAvailable=" .. tostring(grid:isAvailable(5, 5)))
 end
 
---@api-stub: LPlacementGrid:getAvailableCount
+--@api: LPlacementGrid:getAvailableCount
 do
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(1, 1)
@@ -390,7 +390,7 @@ do
     print("LPlacementGrid:getAvailableCount=" .. grid:getAvailableCount())
 end
 
---@api-stub: LPlacementGrid:clear
+--@api: LPlacementGrid:clear
 do
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(1, 1)
@@ -398,19 +398,19 @@ do
     print("LPlacementGrid:clear availCount=" .. grid:getAvailableCount())
 end
 
---@api-stub: LTilesetRef:getId
+--@api: LTilesetRef:getId
 do
     local ref = lurek.mapblock.newTilesetRef(2, "ground_tiles", 64, 8, 32, 32)
     print("LTilesetRef:getId=" .. tostring(ref:getId()))
 end
 
---@api-stub: LTilesetRef:getName
+--@api: LTilesetRef:getName
 do
     local ref = lurek.mapblock.newTilesetRef(3, "world_tileset", 128, 16, 16, 16)
     print("LTilesetRef:getName=" .. tostring(ref:getName()))
 end
 
---@api-stub: LTilesetRef:setImagePath
+--@api: LTilesetRef:setImagePath
 do
     local ref = lurek.mapblock.newTilesetRef(4, "cave_tiles", 64, 8, 32, 32)
     ref:setImagePath("assets/textures/cave.png")
@@ -419,21 +419,21 @@ end
 
 -- --- LMapBlock / LMapGroup / LMapScript (also in tilemap_api.rs) ------------
 
---@api-stub: LMapBlock:getHeight
+--@api: LMapBlock:getHeight
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 3, 1, cfg)
     print("getHeight=" .. block:getHeight())
 end
 
---@api-stub: LMapBlock:getLayerCount
+--@api: LMapBlock:getLayerCount
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 3, 2, cfg)
     print("getLayerCount=" .. block:getLayerCount())
 end
 
---@api-stub: LMapBlock:getName
+--@api: LMapBlock:getName
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -441,7 +441,7 @@ do
     print("getName=" .. block:getName())
 end
 
---@api-stub: LMapBlock:getTile
+--@api: LMapBlock:getTile
 do
     local cfg = lurek.mapblock.newEmptyConfig()
     cfg:addSlot("floor", true, 0)
@@ -451,14 +451,14 @@ do
     print("getTile value=" .. tostring(tile))
 end
 
---@api-stub: LMapBlock:getWidth
+--@api: LMapBlock:getWidth
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(4, 3, 1, cfg)
     print("getWidth=" .. block:getWidth())
 end
 
---@api-stub: LMapBlock:setName
+--@api: LMapBlock:setName
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -466,7 +466,7 @@ do
     print("setName=" .. block:getName())
 end
 
---@api-stub: LMapBlock:setTile
+--@api: LMapBlock:setTile
 do
     local cfg = lurek.mapblock.newEmptyConfig()
     cfg:addSlot("wall", true, 0)
@@ -475,7 +475,7 @@ do
     print("setTile value=" .. tostring(block:getTile(0, 1, 1, 0)))
 end
 
---@api-stub: LMapBlock:setWeight
+--@api: LMapBlock:setWeight
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -483,7 +483,7 @@ do
     print("setWeight ok")
 end
 
---@api-stub: LMapGroup:addBlock
+--@api: LMapGroup:addBlock
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -492,7 +492,7 @@ do
     print("addBlock count=" .. group:getBlockCount())
 end
 
---@api-stub: LMapGroup:addScript
+--@api: LMapGroup:addScript
 do
     local script = lurek.mapblock.newScript("rooms_pass")
     script:addStep("fill_rect", { x = 0, y = 0, width = 1, height = 1, tile_id = 1, slot = 0, layer = 0 })
@@ -501,7 +501,7 @@ do
     print("addScript group=" .. group:getName())
 end
 
---@api-stub: LMapGroup:getBlockCount
+--@api: LMapGroup:getBlockCount
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -510,20 +510,52 @@ do
     print("getBlockCount=" .. group:getBlockCount())
 end
 
---@api-stub: LMapGroup:getName
+--@api: LMapGroup:getName
 do
     local group = lurek.mapblock.newGroup("dungeon_rooms")
     print("getName=" .. group:getName())
 end
 
---@api-stub: LMapScript:addStep
+--@api: LMapGroup:removeBlock
+do
+    local block_a = lurek.tilemap.newMapBlock(2, 2, 1, 1)
+    local block_b = lurek.tilemap.newMapBlock(3, 3, 1, 1)
+    local group = lurek.tilemap.newMapGroup("rooms")
+    group:addBlock(block_a)
+    group:addBlock(block_b)
+    group:removeBlock(1)
+    print("removeBlock count=" .. tostring(group:getBlockCount()))
+end
+
+--@api: LMapGroup:getScriptCount
+do
+    local script = lurek.tilemap.newMapScript()
+    script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 1, h = 1 })
+    local group = lurek.tilemap.newMapGroup("rooms")
+    group:addScript(script)
+    print("getScriptCount=" .. tostring(group:getScriptCount()))
+end
+
+--@api: LMapGroup:type
+do
+    local group = lurek.tilemap.newMapGroup("rooms")
+    print("LMapGroup:type=" .. tostring(group:type()))
+end
+
+--@api: LMapGroup:typeOf
+do
+    local group = lurek.tilemap.newMapGroup("rooms")
+    print("LMapGroup:typeOf=" .. tostring(group:typeOf("LMapGroup")))
+end
+
+--@api: LMapScript:addStep
 do
     local script = lurek.mapblock.newScript("block_fill")
     script:addStep("fill_rect", { x = 1, y = 1, width = 2, height = 2, tile_id = 5, slot = 0, layer = 0 })
     print("addStep count=" .. script:getStepCount())
 end
 
---@api-stub: LMapScript:getStepCount
+--@api: LMapScript:getStepCount
 do
     local script = lurek.mapblock.newScript("multi_step")
     script:addStep("fill_rect", { x = 0, y = 0, width = 2, height = 2, tile_id = 1, slot = 0, layer = 0 })
@@ -531,7 +563,19 @@ do
     print("getStepCount=" .. script:getStepCount())
 end
 
---@api-stub: LMapBlock:getWeight
+--@api: LMapScript:type
+do
+    local script = lurek.tilemap.newMapScript()
+    print("LMapScript:type=" .. tostring(script:type()))
+end
+
+--@api: LMapScript:typeOf
+do
+    local script = lurek.tilemap.newMapScript()
+    print("LMapScript:typeOf=" .. tostring(script:typeOf("LMapScript")))
+end
+
+--@api: LMapBlock:getWeight
 do
     local cfg = lurek.mapblock.newConfig()
     local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
@@ -539,7 +583,58 @@ do
     print("getWeight=" .. tostring(block:getWeight()))
 end
 
---@api-stub: LMapBlock:setFootprint
+--@api: LMapBlock:setSide
+do
+    local block = lurek.tilemap.newMapBlock(4, 4, 1, 1)
+    block:setSide("north", 1, 7)
+    print("setSide north1=" .. tostring(block:getSide("north", 1)))
+end
+
+--@api: LMapBlock:getSide
+do
+    local block = lurek.tilemap.newMapBlock(4, 4, 1, 1)
+    block:setSide("east", 1, 11)
+    print("getSide east1=" .. tostring(block:getSide("east", 1)))
+end
+
+--@api: LMapBlock:getDimensions
+do
+    local block = lurek.tilemap.newMapBlock(6, 4, 1, 1)
+    local width, height = block:getDimensions()
+    print("getDimensions=" .. tostring(width) .. "x" .. tostring(height))
+end
+
+--@api: LMapBlock:getSegmentSize
+do
+    local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
+    print("getSegmentSize=" .. tostring(block:getSegmentSize()))
+end
+
+--@api: LMapBlock:getWidthInSegments
+do
+    local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
+    print("getWidthInSegments=" .. tostring(block:getWidthInSegments()))
+end
+
+--@api: LMapBlock:getHeightInSegments
+do
+    local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
+    print("getHeightInSegments=" .. tostring(block:getHeightInSegments()))
+end
+
+--@api: LMapBlock:type
+do
+    local block = lurek.tilemap.newMapBlock(2, 2, 1, 1)
+    print("LMapBlock:type=" .. tostring(block:type()))
+end
+
+--@api: LMapBlock:typeOf
+do
+    local block = lurek.tilemap.newMapBlock(2, 2, 1, 1)
+    print("LMapBlock:typeOf=" .. tostring(block:typeOf("LMapBlock")))
+end
+
+--@api: LMapBlock:setFootprint
 do
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)
@@ -548,7 +643,7 @@ do
     print("setFootprint cells=" .. tostring(block:getFootprintCellCount()))
 end
 
---@api-stub: LMapBlock:getFootprintCellCount
+--@api: LMapBlock:getFootprintCellCount
 do
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)
@@ -557,7 +652,7 @@ do
     print("getFootprintCellCount=" .. tostring(block:getFootprintCellCount()))
 end
 
---@api-stub: LMapBlock:isFootprintCell
+--@api: LMapBlock:isFootprintCell
 do
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)
@@ -566,7 +661,7 @@ do
     print("isFootprintCell=" .. tostring(block:isFootprintCell(1, 0)))
 end
 
---@api-stub: LMapBlock:setSocket
+--@api: LMapBlock:setSocket
 do
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)
@@ -576,7 +671,7 @@ do
     print("setSocket ok")
 end
 
---@api-stub: LMapBlock:getSocket
+--@api: LMapBlock:getSocket
 do
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)
@@ -586,7 +681,7 @@ do
     print("getSocket=" .. tostring(block:getSocket(1, 0, "east")))
 end
 
---@api-stub: LPlacementGrid:removePosition
+--@api: LPlacementGrid:removePosition
 do
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(1, 1)
@@ -594,7 +689,7 @@ do
     print("LPlacementGrid:removePosition availCount=" .. grid:getAvailableCount())
 end
 
---@api-stub: LPlacementGrid:isEdgePosition
+--@api: LPlacementGrid:isEdgePosition
 do
     local grid = lurek.mapblock.newEmptyGrid()
     grid:addPosition(0, 0)
@@ -603,7 +698,7 @@ do
     print("LPlacementGrid:isEdgePosition=" .. tostring(grid:isEdgePosition(1, 1)))
 end
 
---@api-stub: LMapBlockGenerator:setGrid
+--@api: LMapBlockGenerator:setGrid
 do
     local cfg = lurek.mapblock.newConfig()
     local gen = lurek.mapblock.newGenerator(cfg)
@@ -615,7 +710,7 @@ do
     print("LMapBlockGenerator:setGrid ready=true")
 end
 
---@api-stub: LMapBlockResult:getPlacements
+--@api: LMapBlockResult:getPlacements
 do
     local cfg = lurek.mapblock.newConfig()
     cfg:setDefaultSegmentSize(1)

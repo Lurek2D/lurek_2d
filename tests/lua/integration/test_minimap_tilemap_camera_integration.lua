@@ -13,9 +13,9 @@ describe("integration: minimap + tilemap + camera", function()
     -- @integration lurek.camera.newCamera
     -- @integration lurek.minimap.newMinimap
     -- @integration lurek.tilemap.newTileMap
-    -- @covers lurek.camera.newCamera
-    -- @covers lurek.minimap.newMinimap
-    -- @covers lurek.tilemap.newTileMap
+    -- @integration lurek.camera.newCamera
+    -- @integration lurek.minimap.newMinimap
+    -- @integration lurek.tilemap.newTileMap
     it("maps camera world position to minimap space on populated tilemap", function()
         local map = lurek.tilemap.newTileMap(20, 20, 16)
         map:addLayer("base", 20, 20)

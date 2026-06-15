@@ -2,6 +2,8 @@
 //! Exposes the LSvgImage userdata and lurek.svg.load API.
 //! Methods mirror the image/sprite module patterns: factory, dimension queries,
 //! element state reads/writes/resets, hierarchy navigation, bounds, and GPU canvas caching.
+//! Module API documentation
+//!
 
 use crate::lua_api::math_api::LuaVec2;
 use crate::runtime::SharedState;

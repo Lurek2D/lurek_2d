@@ -1,6 +1,13 @@
 //! Registers the `lurek.charts` Lua API and keeps chart userdata wrappers thin.
 //! Parses chart config/data inputs at the Lua boundary, delegates rendering to `src/charts`,
 //! and bridges CPU-generated chart images into the engine's texture-backed draw queue.
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
+//! TODO: add doc note 3
+//! TODO: add doc note 4
+//! TODO: add doc note 5
 
 use super::dataframe_api::LuaDataFrame;
 use super::SharedState;
@@ -140,6 +147,7 @@ impl RenderDrawTransform {
     }
 }
 
+/// Lua handle for a line chart with named x/y series and cached draw output.
 struct LuaLineChart {
     inner: RefCell<LineChart>,
     count: Cell<usize>,
@@ -147,6 +155,7 @@ struct LuaLineChart {
     cache: ChartTextureCache,
 }
 
+/// Lua handle for a grouped bar chart with named series and category labels.
 struct LuaBarChart {
     inner: RefCell<BarChart>,
     count: Cell<usize>,
@@ -154,6 +163,7 @@ struct LuaBarChart {
     cache: ChartTextureCache,
 }
 
+/// Lua handle for a scatter plot with named point series and cached draw output.
 struct LuaScatterPlot {
     inner: RefCell<ScatterPlot>,
     count: Cell<usize>,
@@ -161,6 +171,7 @@ struct LuaScatterPlot {
     cache: ChartTextureCache,
 }
 
+/// Lua handle for a pie chart with labeled slices and cached draw output.
 struct LuaPieChart {
     inner: RefCell<PieChart>,
     count: Cell<usize>,
@@ -168,6 +179,7 @@ struct LuaPieChart {
     cache: ChartTextureCache,
 }
 
+/// Lua handle for an area chart with stacked layers or named series.
 struct LuaAreaChart {
     inner: RefCell<AreaChart>,
     count: Cell<usize>,
@@ -175,6 +187,7 @@ struct LuaAreaChart {
     cache: ChartTextureCache,
 }
 
+/// Lua handle for a histogram chart that bins named numeric samples.
 struct LuaHistogramChart {
     inner: RefCell<HistogramChart>,
     count: Cell<usize>,
@@ -182,6 +195,7 @@ struct LuaHistogramChart {
     cache: ChartTextureCache,
 }
 
+/// Lua handle for a heatmap chart backed by a numeric matrix.
 struct LuaHeatmapChart {
     inner: RefCell<HeatmapChart>,
     dirty: Cell<bool>,
@@ -532,6 +546,12 @@ fn push_nearest_point<'lua>(
 
 impl LuaUserData for LuaLineChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Adds a named line series from an array-style Lua table of points.
+        ///
+        /// @param name : string
+        /// @param data : table
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "addSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -545,6 +565,15 @@ impl LuaUserData for LuaLineChart {
                 Ok(())
             },
         );
+        /// Builds a named line series from x and y columns in a dataframe.
+        ///
+        /// @param name : string
+        /// @param df : userdata
+        /// @param x_col : string
+        /// @param y_col : string
+        /// @param color : table?
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "addSeriesFromDataFrame",
             |_,
@@ -584,6 +613,12 @@ impl LuaUserData for LuaLineChart {
                 Ok(added)
             },
         );
+        /// Replaces a named line series with a new array-style Lua table of points.
+        ///
+        /// @param name : string
+        /// @param data : table
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "replaceSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -596,6 +631,13 @@ impl LuaUserData for LuaLineChart {
                 Ok(())
             },
         );
+        /// Appends one finite point to a named line series.
+        ///
+        /// @param name : string
+        /// @param x : number
+        /// @param y : number
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "appendPoint",
             |_, this, (name, x, y, color): (String, f32, f32, Option<LuaTable>)| {
@@ -733,6 +775,12 @@ impl LuaUserData for LuaLineChart {
                 |buffer| chart.render(buffer),
             )
         });
+        /// Draws the line chart at world or screen coordinates using optional transform options.
+        ///
+        /// @param x : number
+        /// @param y : number
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -825,6 +873,12 @@ impl LuaUserData for LuaLineChart {
 
 impl LuaUserData for LuaBarChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Adds a named bar series from an array-style Lua table of values or points.
+        ///
+        /// @param name : string
+        /// @param data : table
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "addSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -838,6 +892,11 @@ impl LuaUserData for LuaBarChart {
                 Ok(())
             },
         );
+        /// Adds one category label with a numeric value list for grouped bars.
+        ///
+        /// @param label : string
+        /// @param values : table
+        /// @return nil
         methods.add_method(
             "addCategory",
             |_, this, (label, values): (String, LuaTable)| {
@@ -847,6 +906,13 @@ impl LuaUserData for LuaBarChart {
                 Ok(())
             },
         );
+        /// Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.
+        ///
+        /// @param df : userdata
+        /// @param label_col : string
+        /// @param value_cols : table
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "addCategoriesFromDataFrame",
             |_,
@@ -981,6 +1047,12 @@ impl LuaUserData for LuaBarChart {
                 |buffer| chart.render(buffer),
             )
         });
+        /// Draws the bar chart at world or screen coordinates using optional transform options.
+        ///
+        /// @param x : number
+        /// @param y : number
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -1024,6 +1096,12 @@ impl LuaUserData for LuaBarChart {
 
 impl LuaUserData for LuaScatterPlot {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Adds a named scatter series from an array-style Lua table of points.
+        ///
+        /// @param name : string
+        /// @param data : table
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "addSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1037,6 +1115,15 @@ impl LuaUserData for LuaScatterPlot {
                 Ok(())
             },
         );
+        /// Builds a named scatter series from x and y columns in a dataframe.
+        ///
+        /// @param name : string
+        /// @param df : userdata
+        /// @param x_col : string
+        /// @param y_col : string
+        /// @param color : table?
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "addSeriesFromDataFrame",
             |_,
@@ -1076,6 +1163,12 @@ impl LuaUserData for LuaScatterPlot {
                 Ok(added)
             },
         );
+        /// Replaces a named scatter series with a new array-style Lua table of points.
+        ///
+        /// @param name : string
+        /// @param data : table
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "replaceSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1088,6 +1181,13 @@ impl LuaUserData for LuaScatterPlot {
                 Ok(())
             },
         );
+        /// Appends one finite point to a named scatter series.
+        ///
+        /// @param name : string
+        /// @param x : number
+        /// @param y : number
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "appendPoint",
             |_, this, (name, x, y, color): (String, f32, f32, Option<LuaTable>)| {
@@ -1237,6 +1337,12 @@ impl LuaUserData for LuaScatterPlot {
                 |buffer| chart.render(buffer),
             )
         });
+        /// Draws the scatter plot at world or screen coordinates using optional transform options.
+        ///
+        /// @param x : number
+        /// @param y : number
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -1329,6 +1435,12 @@ impl LuaUserData for LuaScatterPlot {
 
 impl LuaUserData for LuaPieChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Legacy alias that adds one pie slice with a non-negative value.
+        ///
+        /// @param label : string
+        /// @param value : number
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "addSlice",
             |_, this, (label, value, color): (String, f32, Option<LuaTable>)| {
@@ -1341,6 +1453,12 @@ impl LuaUserData for LuaPieChart {
                 Ok(())
             },
         );
+        /// Adds one pie segment with a non-negative value.
+        ///
+        /// @param label : string
+        /// @param value : number
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "addSegment",
             |_, this, (label, value, color): (String, f32, Option<LuaTable>)| {
@@ -1353,6 +1471,13 @@ impl LuaUserData for LuaPieChart {
                 Ok(())
             },
         );
+        /// Adds pie segments by reading label and value columns from a dataframe.
+        ///
+        /// @param df : userdata
+        /// @param label_col : string
+        /// @param value_col : string
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "addSegmentsFromDataFrame",
             |_,
@@ -1447,6 +1572,12 @@ impl LuaUserData for LuaPieChart {
                 |buffer| chart.render(buffer),
             )
         });
+        /// Draws the pie chart at world or screen coordinates using optional transform options.
+        ///
+        /// @param x : number
+        /// @param y : number
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -1490,6 +1621,12 @@ impl LuaUserData for LuaPieChart {
 
 impl LuaUserData for LuaAreaChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Adds a named area series from an array-style Lua table of points.
+        ///
+        /// @param name : string
+        /// @param data : table
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "addSeries",
             |_, this, (name, data, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1505,6 +1642,12 @@ impl LuaUserData for LuaAreaChart {
                 Ok(())
             },
         );
+        /// Adds one filled area layer from a numeric value list.
+        ///
+        /// @param name : string
+        /// @param values : table
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "addLayer",
             |_, this, (name, values, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1518,6 +1661,14 @@ impl LuaUserData for LuaAreaChart {
                 Ok(())
             },
         );
+        /// Builds one filled area layer from a dataframe value column.
+        ///
+        /// @param name : string
+        /// @param df : userdata
+        /// @param value_col : string
+        /// @param color : table?
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "addLayerFromDataFrame",
             |_,
@@ -1555,6 +1706,13 @@ impl LuaUserData for LuaAreaChart {
                 Ok(added)
             },
         );
+        /// Appends one finite point to a named area series.
+        ///
+        /// @param name : string
+        /// @param x : number
+        /// @param y : number
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "appendPoint",
             |_, this, (name, x, y, color): (String, f32, f32, Option<LuaTable>)| {
@@ -1684,6 +1842,12 @@ impl LuaUserData for LuaAreaChart {
                 |buffer| chart.render(buffer),
             )
         });
+        /// Draws the area chart at world or screen coordinates using optional transform options.
+        ///
+        /// @param x : number
+        /// @param y : number
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -1727,6 +1891,12 @@ impl LuaUserData for LuaAreaChart {
 
 impl LuaUserData for LuaHistogramChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Adds a named histogram sample series from a numeric value list.
+        ///
+        /// @param name : string
+        /// @param data : table
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "addSeries",
             |_, this, (name, values, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1748,6 +1918,15 @@ impl LuaUserData for LuaHistogramChart {
                 Ok(())
             },
         );
+        /// Builds a named histogram sample series from one dataframe value column.
+        ///
+        /// @param name : string
+        /// @param df : userdata
+        /// @param x_col : string
+        /// @param y_col : string
+        /// @param color : table?
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "addSeriesFromDataFrame",
             |_,
@@ -1793,6 +1972,12 @@ impl LuaUserData for LuaHistogramChart {
                 Ok(added)
             },
         );
+        /// Replaces a named histogram sample series with a new numeric value list.
+        ///
+        /// @param name : string
+        /// @param data : table
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "replaceSeries",
             |_, this, (name, values, color): (String, LuaTable, Option<LuaTable>)| {
@@ -1815,6 +2000,12 @@ impl LuaUserData for LuaHistogramChart {
                 Ok(())
             },
         );
+        /// Appends one finite numeric sample to a named histogram series.
+        ///
+        /// @param name : string
+        /// @param value : number
+        /// @param color : table?
+        /// @return nil
         methods.add_method(
             "appendValue",
             |_, this, (name, value, color): (String, f32, Option<LuaTable>)| {
@@ -1979,6 +2170,12 @@ impl LuaUserData for LuaHistogramChart {
                 |buffer| chart.render(buffer),
             )
         });
+        /// Draws the histogram at world or screen coordinates using optional transform options.
+        ///
+        /// @param x : number
+        /// @param y : number
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {
@@ -2022,6 +2219,12 @@ impl LuaUserData for LuaHistogramChart {
 
 impl LuaUserData for LuaHeatmapChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Replaces the heatmap contents from a numeric matrix with optional row and column labels.
+        ///
+        /// @param matrix : table
+        /// @param row_labels : table?
+        /// @param col_labels : table?
+        /// @return nil
         methods.add_method(
             "setMatrix",
             |_,
@@ -2044,6 +2247,14 @@ impl LuaUserData for LuaHeatmapChart {
                 Ok(())
             },
         );
+        /// Builds the heatmap contents from dataframe row, column, and value fields.
+        ///
+        /// @param df : userdata
+        /// @param row_col : string
+        /// @param col_col : string
+        /// @param value_col : string
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "setMatrixFromDataFrame",
             |_,
@@ -2145,6 +2356,11 @@ impl LuaUserData for LuaHeatmapChart {
             this.dirty.set(true);
             Ok(())
         });
+        /// Sets the low and high RGBA colors used for the heatmap gradient.
+        ///
+        /// @param low : table
+        /// @param high : table
+        /// @return nil
         methods.add_method(
             "setColorRange",
             |_, this, (low, high): (LuaTable, LuaTable)| {
@@ -2222,6 +2438,12 @@ impl LuaUserData for LuaHeatmapChart {
                 |buffer| chart.render(buffer),
             )
         });
+        /// Draws the heatmap at world or screen coordinates using optional transform options.
+        ///
+        /// @param x : number
+        /// @param y : number
+        /// @param opts : table?
+        /// @return nil
         methods.add_method(
             "draw",
             |_, this, (x, y, opts): (f32, f32, Option<LuaTable>)| {

@@ -47,11 +47,20 @@ def _run_tool(script: str, extra_args: list = None) -> dict:
     try:
         data = json.loads(tmp.read_text(encoding="utf-8"))
     except Exception:
-        data = {"error": f"{script} failed: {result.stderr[:200]}"}
+        snippet = (result.stderr or result.stdout or "").strip()[:400]
+        data = {"error": f"{script} failed: {snippet}"}
     finally:
         tmp.unlink(missing_ok=True)
 
+    if result.returncode not in (0, 1) and "error" not in data:
+        snippet = (result.stderr or result.stdout or "").strip()[:400]
+        data = {"error": f"{script} exited with {result.returncode}: {snippet}"}
+
     return data
+
+
+def _tool_failed(payload: dict) -> bool:
+    return isinstance(payload, dict) and isinstance(payload.get("error"), str)
 
 
 def _module_count(module_data: dict) -> int:
@@ -170,9 +179,28 @@ def generate_report(
                     lines.append(f"  - **{game_name}**: {game_issues} issues")
         lines.append("")
 
+    if _tool_failed(doc_data) or _tool_failed(test_data) or _tool_failed(module_data) or _tool_failed(validation_data):
+        lines.extend([
+            "## Tool Errors",
+            "",
+        ])
+        for label, payload in (
+            ("docs-general audit", doc_data),
+            ("test coverage", test_data),
+            ("module audit", module_data),
+            ("API validation", validation_data),
+        ):
+            if _tool_failed(payload):
+                lines.append(f"- **{label}**: {payload['error']}")
+        lines.append("")
+
     # Overall verdict
     all_pass = (
-        rust_doc_pct >= 90
+        not _tool_failed(doc_data)
+        and not _tool_failed(test_data)
+        and not _tool_failed(module_data)
+        and not _tool_failed(validation_data)
+        and rust_doc_pct >= 90
         and lua_doc_pct >= 50
         and rust_test_pct >= 50
         and lua_test_pct >= 30
@@ -229,8 +257,15 @@ def main() -> int:
     else:
         print(report)
 
+    if any(_tool_failed(payload) for payload in (doc_data, test_data, module_data, validation_data)):
+        return 2
     return 0
 
 
 if __name__ == "__main__":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
+    except AttributeError:
+        pass
     sys.exit(main())

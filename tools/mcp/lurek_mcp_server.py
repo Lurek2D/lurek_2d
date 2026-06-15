@@ -18,8 +18,34 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 PYTHON = sys.executable
 SERVER_NAME = "lurek-tools"
 SERVER_VERSION = "0.2.0"
-RAG_MIN_LIMIT = 1
-RAG_MAX_LIMIT = 25
+
+RAG_DIR = REPO_ROOT / "tools" / "rag"
+if str(RAG_DIR) not in sys.path:
+    sys.path.insert(0, str(RAG_DIR))
+
+from contract import (
+    RAG_CONTEXT_CONTENT_CHARS_DEFAULT,
+    RAG_CONTEXT_CONTENT_CHARS_MAX,
+    RAG_CONTEXT_CONTENT_CHARS_MIN,
+    RAG_CONTEXT_LIMIT_DEFAULT,
+    RAG_CONTEXT_LIMIT_MAX,
+    RAG_CONTEXT_LIMIT_MIN,
+    RAG_CONTEXT_NEIGHBORS_DEFAULT,
+    RAG_CONTEXT_NEIGHBORS_MAX,
+    RAG_CONTEXT_NEIGHBORS_MIN,
+    RAG_EVAL_LIMIT_DEFAULT,
+    RAG_EVAL_LIMIT_MAX,
+    RAG_EVAL_LIMIT_MIN,
+    RAG_READ_CONTENT_CHARS_DEFAULT,
+    RAG_READ_CONTENT_CHARS_MAX,
+    RAG_READ_CONTENT_CHARS_MIN,
+    RAG_READ_NEIGHBORS_DEFAULT,
+    RAG_READ_NEIGHBORS_MAX,
+    RAG_READ_NEIGHBORS_MIN,
+    RAG_SEARCH_LIMIT_DEFAULT,
+    RAG_SEARCH_LIMIT_MAX,
+    RAG_SEARCH_LIMIT_MIN,
+)  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -223,8 +249,8 @@ def handle_rag_search(args: dict[str, Any]) -> dict[str, Any]:
         limit = _coerce_int_in_range(
             args.get("limit", 8),
             "limit",
-            minimum=RAG_MIN_LIMIT,
-            maximum=RAG_MAX_LIMIT,
+            minimum=RAG_SEARCH_LIMIT_MIN,
+            maximum=RAG_SEARCH_LIMIT_MAX,
         )
     except ValueError as exc:
         return _text_result(str(exc), {"ok": False}, is_error=True)
@@ -272,11 +298,14 @@ def handle_rag_read(args: dict[str, Any]) -> dict[str, Any]:
         return _text_result("`id` is required.", {"ok": False}, is_error=True)
 
     try:
-        neighbors = int(args.get("neighbors", 1))
-    except (TypeError, ValueError):
-        return _text_result("`neighbors` must be an integer.", {"ok": False}, is_error=True)
-    if neighbors < 0:
-        return _text_result("`neighbors` must be >= 0.", {"ok": False}, is_error=True)
+        neighbors = _coerce_int_in_range(
+            args.get("neighbors", RAG_READ_NEIGHBORS_DEFAULT),
+            "neighbors",
+            minimum=RAG_READ_NEIGHBORS_MIN,
+            maximum=RAG_READ_NEIGHBORS_MAX,
+        )
+    except ValueError as exc:
+        return _text_result(str(exc), {"ok": False}, is_error=True)
 
     cmd = [chunk_id, "--neighbors", str(neighbors)]
     content_chars = args.get("content_chars")
@@ -285,8 +314,8 @@ def handle_rag_read(args: dict[str, Any]) -> dict[str, Any]:
             content_chars = _coerce_int_in_range(
                 content_chars,
                 "content_chars",
-                minimum=500,
-                maximum=100_000,
+                minimum=RAG_READ_CONTENT_CHARS_MIN,
+                maximum=RAG_READ_CONTENT_CHARS_MAX,
             )
         except ValueError as exc:
             return _text_result(str(exc), {"ok": False}, is_error=True)
@@ -313,27 +342,30 @@ def handle_rag_context(args: dict[str, Any]) -> dict[str, Any]:
         return _text_result("`profile` must be one of: all, engine, game.", {"ok": False}, is_error=True)
     try:
         limit = _coerce_int_in_range(
-            args.get("limit", 8),
+            args.get("limit", RAG_CONTEXT_LIMIT_DEFAULT),
             "limit",
-            minimum=RAG_MIN_LIMIT,
-            maximum=RAG_MAX_LIMIT,
+            minimum=RAG_CONTEXT_LIMIT_MIN,
+            maximum=RAG_CONTEXT_LIMIT_MAX,
         )
     except ValueError as exc:
         return _text_result(str(exc), {"ok": False}, is_error=True)
     try:
-        neighbors = int(args.get("neighbors", 1))
-    except (TypeError, ValueError):
-        return _text_result("`limit` and `neighbors` must be integers.", {"ok": False}, is_error=True)
-    if neighbors < 0:
-        return _text_result("`neighbors` must be >= 0.", {"ok": False}, is_error=True)
+        neighbors = _coerce_int_in_range(
+            args.get("neighbors", RAG_CONTEXT_NEIGHBORS_DEFAULT),
+            "neighbors",
+            minimum=RAG_CONTEXT_NEIGHBORS_MIN,
+            maximum=RAG_CONTEXT_NEIGHBORS_MAX,
+        )
+    except ValueError:
+        return _text_result("`neighbors` must be an integer.", {"ok": False}, is_error=True)
     content_chars = args.get("content_chars")
     if content_chars is not None:
         try:
             content_chars = _coerce_int_in_range(
                 content_chars,
                 "content_chars",
-                minimum=500,
-                maximum=100_000,
+                minimum=RAG_CONTEXT_CONTENT_CHARS_MIN,
+                maximum=RAG_CONTEXT_CONTENT_CHARS_MAX,
             )
         except ValueError as exc:
             return _text_result(str(exc), {"ok": False}, is_error=True)
@@ -376,10 +408,10 @@ def handle_rag_stats(args: dict[str, Any]) -> dict[str, Any]:
 def handle_rag_eval(args: dict[str, Any]) -> dict[str, Any]:
     try:
         limit = _coerce_int_in_range(
-            args.get("limit", 10),
+            args.get("limit", RAG_EVAL_LIMIT_DEFAULT),
             "limit",
-            minimum=1,
-            maximum=RAG_MAX_LIMIT,
+            minimum=RAG_EVAL_LIMIT_MIN,
+            maximum=RAG_EVAL_LIMIT_MAX,
         )
     except ValueError as exc:
         return _text_result(str(exc), {"ok": False}, is_error=True)
@@ -878,7 +910,7 @@ TOOLS: dict[str, ToolSpec] = {
             "properties": {
                 "query": {"type": "string"},
                 "profile": {"type": "string", "enum": ["all", "engine", "game"], "default": "all"},
-                "limit": {"type": "integer", "minimum": 1, "maximum": 25, "default": 8},
+                "limit": {"type": "integer", "minimum": RAG_SEARCH_LIMIT_MIN, "maximum": RAG_SEARCH_LIMIT_MAX, "default": RAG_SEARCH_LIMIT_DEFAULT},
             },
             "required": ["query"],
             "additionalProperties": False,
@@ -893,7 +925,7 @@ TOOLS: dict[str, ToolSpec] = {
             "properties": {
                 "query": {"type": "string"},
                 "profile": {"type": "string", "enum": ["all", "engine", "game"], "default": "all"},
-                "limit": {"type": "integer", "minimum": 1, "maximum": 25, "default": 8},
+                "limit": {"type": "integer", "minimum": RAG_SEARCH_LIMIT_MIN, "maximum": RAG_SEARCH_LIMIT_MAX, "default": RAG_SEARCH_LIMIT_DEFAULT},
             },
             "required": ["query"],
             "additionalProperties": False,
@@ -949,8 +981,8 @@ TOOLS: dict[str, ToolSpec] = {
             "type": "object",
             "properties": {
                 "id": {"type": "string"},
-                "neighbors": {"type": "integer", "minimum": 0, "maximum": 3, "default": 1},
-                "content_chars": {"type": "integer", "minimum": 1000, "maximum": 40000, "default": 12000},
+                "neighbors": {"type": "integer", "minimum": RAG_READ_NEIGHBORS_MIN, "maximum": RAG_READ_NEIGHBORS_MAX, "default": RAG_READ_NEIGHBORS_DEFAULT},
+                "content_chars": {"type": "integer", "minimum": RAG_READ_CONTENT_CHARS_MIN, "maximum": RAG_READ_CONTENT_CHARS_MAX, "default": RAG_READ_CONTENT_CHARS_DEFAULT},
             },
             "required": ["id"],
             "additionalProperties": False,
@@ -965,9 +997,9 @@ TOOLS: dict[str, ToolSpec] = {
             "properties": {
                 "prompt": {"type": "string"},
                 "profile": {"type": "string", "enum": ["all", "engine", "game"], "default": "all"},
-                "limit": {"type": "integer", "minimum": 1, "maximum": 20, "default": 8},
-                "neighbors": {"type": "integer", "minimum": 0, "maximum": 3, "default": 1},
-                "content_chars": {"type": "integer", "minimum": 1000, "maximum": 40000, "default": 8000},
+                "limit": {"type": "integer", "minimum": RAG_CONTEXT_LIMIT_MIN, "maximum": RAG_CONTEXT_LIMIT_MAX, "default": RAG_CONTEXT_LIMIT_DEFAULT},
+                "neighbors": {"type": "integer", "minimum": RAG_CONTEXT_NEIGHBORS_MIN, "maximum": RAG_CONTEXT_NEIGHBORS_MAX, "default": RAG_CONTEXT_NEIGHBORS_DEFAULT},
+                "content_chars": {"type": "integer", "minimum": RAG_CONTEXT_CONTENT_CHARS_MIN, "maximum": RAG_CONTEXT_CONTENT_CHARS_MAX, "default": RAG_CONTEXT_CONTENT_CHARS_DEFAULT},
             },
             "required": ["prompt"],
             "additionalProperties": False,
@@ -990,7 +1022,7 @@ TOOLS: dict[str, ToolSpec] = {
         input_schema={
             "type": "object",
             "properties": {
-                "limit": {"type": "integer", "minimum": 3, "maximum": 25, "default": 10},
+                "limit": {"type": "integer", "minimum": RAG_EVAL_LIMIT_MIN, "maximum": RAG_EVAL_LIMIT_MAX, "default": RAG_EVAL_LIMIT_DEFAULT},
             },
             "additionalProperties": False,
         },

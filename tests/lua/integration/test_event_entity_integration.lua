@@ -8,8 +8,8 @@ describe("integration: entity events via signal", function()
     -- @integration LUniverse:spawn
     -- @integration lurek.ecs.newUniverse
     -- @integration lurek.event.newSignal
-    -- @covers lurek.ecs.newUniverse
-    -- @covers lurek.event.newSignal
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.event.newSignal
     it("entity creation triggers signal", function()
         local universe    = lurek.ecs.newUniverse()
         local on_spawn    = lurek.event.newSignal()

@@ -1,4 +1,11 @@
 //! File: src/lua_api/minimap_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
+//! TODO: add doc note 3
+//! TODO: add doc note 4
+//! TODO: add doc note 5
 
 use super::camera_api::LuaCamera2D;
 use super::render_api::LuaImage;

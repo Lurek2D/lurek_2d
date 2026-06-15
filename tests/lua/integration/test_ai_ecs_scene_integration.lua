@@ -16,9 +16,9 @@ describe("ai + entity + scene integration", function()
     -- @integration lurek.ai.newStateMachine
     -- @integration lurek.ecs.newUniverse
     -- @integration lurek.scene.newScene
-    -- @covers lurek.ai.newStateMachine
-    -- @covers lurek.ecs.newUniverse
-    -- @covers lurek.scene.newScene
+    -- @integration lurek.ai.newStateMachine
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.scene.newScene
     it("AI FSM drives entity state in scene", function()
         local universe = lurek.ecs.newUniverse()
         local scene = lurek.scene.newScene()

@@ -4,7 +4,7 @@
 
 --- REPL Module: interactive Lua evaluation session
 
---@api-stub: lurek.repl.new
+--@api: lurek.repl.new
 do
     ---@type LReplSession
     local repl = lurek.repl.new(8)
@@ -12,7 +12,7 @@ do
     print("initial len = " .. repl:len())
 end
 
---@api-stub: LReplSession:eval
+--@api: LReplSession:eval
 do
     ---@type LReplSession
     local repl = lurek.repl.new()
@@ -22,7 +22,7 @@ do
     print("history len = " .. repl:len())
 end
 
---@api-stub: LReplSession:history
+--@api: LReplSession:history
 do
     local repl = lurek.repl.new()
     repl:eval("return 'first'")
@@ -32,7 +32,7 @@ do
     print("last entry = " .. hist[#hist])
 end
 
---@api-stub: LReplSession:complete
+--@api: LReplSession:complete
 do
     ---@type LReplSession
     local repl = lurek.repl.new()
@@ -41,7 +41,7 @@ do
     print("first match = " .. tostring(completions[1]))
 end
 
---@api-stub: LReplSession:clear
+--@api: LReplSession:clear
 do
     local repl = lurek.repl.new()
     repl:eval("return 1")
@@ -50,7 +50,7 @@ do
     print("after clear = " .. repl:len() .. " history=" .. #repl:history())
 end
 
---@api-stub: LReplSession:len
+--@api: LReplSession:len
 do
     local repl = lurek.repl.new()
     repl:eval("return 'a'")
@@ -60,14 +60,14 @@ do
     print("after clear = " .. repl:len())
 end
 
---@api-stub: LReplSession:type
+--@api: LReplSession:type
 do
     ---@type LReplSession
     local sess = lurek.repl.new()
     print("type = " .. sess:type())
 end
 
---@api-stub: LReplSession:typeOf
+--@api: LReplSession:typeOf
 do
     ---@type LReplSession
     local sess = lurek.repl.new()

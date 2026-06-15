@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""API Stub Validator -- Validate --@api-stub: block structure and content.
+"""API Stub Validator -- Validate pending --@api-stub: block structure and content.
 
 Each API stub block must:
   1. Have NO comments on the marker line (--@api-stub: NAME)
@@ -15,7 +15,7 @@ Usage:
     python tools/audit/api_stub_validator.py --report          # exit 1 if errors
 
 Exit codes:
-    0  - all stub blocks valid
+    0  - all pending stub blocks valid
     1  - structural issues found (--report only)
     2  - fatal error
 """
@@ -34,7 +34,7 @@ OUTPUT_JSON = ROOT / 'logs' / 'data' / 'stub_validation_report.json'
 
 MIN_BODY_LINES = 3
 
-STUB_MARKER_RE = re.compile(r'^--@api-stub:\s*(.+)$')
+API_MARKER_RE = re.compile(r'^--@api-stub:\s*(.+)$')
 DO_BLOCK_RE = re.compile(r'^do\s*$')
 END_BLOCK_RE = re.compile(r'^end\s*$')
 
@@ -49,7 +49,7 @@ class StubViolation:
 
 
 def validate_stub_blocks(lua_file: Path) -> List[StubViolation]:
-    """Scan a Lua file for --@api-stub: blocks and validate their structure."""
+    """Scan a Lua file for pending --@api-stub: blocks and validate their structure."""
     violations: List[StubViolation] = []
 
     try:
@@ -66,7 +66,7 @@ def validate_stub_blocks(lua_file: Path) -> List[StubViolation]:
         line = lines[i]
         stripped = line.strip()
 
-        m = STUB_MARKER_RE.match(stripped)
+        m = API_MARKER_RE.match(stripped)
         if not m:
             i += 1
             continue
@@ -162,7 +162,7 @@ def validate_stub_blocks(lua_file: Path) -> List[StubViolation]:
 
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Validate --@api-stub: block structure in example files.",
+        description="Validate pending --@api-stub: block structure in example files.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--examples-dir", metavar="PATH",
@@ -248,7 +248,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     print(f"Report: {OUTPUT_JSON}")
 
     if len(all_violations) == 0:
-        print("[OK] All stub blocks are valid.")
+        print("[OK] All pending stub blocks are valid.")
     else:
         print(f"[!] {len(all_violations)} violations found.")
         if args.report:

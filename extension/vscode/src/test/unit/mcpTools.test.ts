@@ -142,6 +142,89 @@ suite("MCP Tools — lurek2d.listExamples", () => {
 
 // ── lurek2d.getModuleInfo ───────────────────────────────────
 
+suite("MCP Tools — lurek2d.ragSearch", () => {
+  const stubs: { restore: () => void }[] = [];
+
+  teardown(() => {
+    stubs.forEach(s => s.restore());
+    stubs.length = 0;
+  });
+
+  test("returns error when query parameter is missing", async () => {
+    const handler = handleRagSearch(WORKSPACE_ROOT);
+    const result = await handler({});
+
+    assert.ok(result.includes("Error: 'query' parameter is required."));
+  });
+
+  test("returns error for invalid profile values", async () => {
+    const handler = handleRagSearch(WORKSPACE_ROOT);
+    const result = await handler({ query: "RAG", profile: "invalid" });
+
+    assert.ok(result.includes("Error: profile must be one of"));
+  });
+
+  test("returns error for invalid limit value", async () => {
+    const handler = handleRagSearch(WORKSPACE_ROOT);
+    const result = await handler({ query: "RAG", limit: 99 });
+
+    assert.ok(result.includes("Error"));
+  });
+
+  test("calls execRagQuery with profile and bounded limit", async () => {
+    stubs.push(stub(ragService, "execRagQuery", (workspaceRoot: string, query: string, opts: { profile?: string; limit?: number }) => {
+      assert.strictEqual(workspaceRoot, WORKSPACE_ROOT);
+      assert.strictEqual(query, "audio play");
+      assert.deepStrictEqual(opts, { profile: "engine", limit: 8 });
+      return Promise.resolve({
+        ok: true,
+        exitCode: 0,
+        stdout: "",
+        stderr: "",
+        payload: { results: [] },
+      });
+    }));
+
+    const handler = handleRagSearch(WORKSPACE_ROOT);
+    const result = await handler({ query: "audio play", profile: "engine", limit: 8 });
+
+    assert.ok(result.includes('"operation":"ragSearch"'));
+  });
+});
+
+suite("MCP Tools — lurek2d.ragBuildIndex", () => {
+  const stubs: { restore: () => void }[] = [];
+
+  teardown(() => {
+    stubs.forEach(s => s.restore());
+    stubs.length = 0;
+  });
+
+  test("merges directories and targets while deduplicating inputs", async () => {
+    const captured: { dirs?: string[] }[] = [];
+    stubs.push(stub(ragService, "execRagBuildIndex", async (_workspaceRoot: string, targets: string[]) => {
+      captured.push({ dirs: targets });
+      return {
+        ok: true,
+        exitCode: 0,
+        stdout: "",
+        stderr: "",
+        payload: { ok: true },
+      };
+    }));
+
+    const handler = handleRagBuildIndex(WORKSPACE_ROOT);
+    const result = await handler({
+      directories: ["content", "content"],
+      targets: ["tools", "tools", "content"],
+    });
+
+    const parsed = JSON.parse(result);
+    assert.deepStrictEqual(captured[0]?.dirs, ["content", "tools"]);
+    assert.ok(parsed.ok);
+  });
+});
+
 suite("MCP Tools — lurek2d.getModuleInfo", () => {
   const stubs: { restore: () => void }[] = [];
 

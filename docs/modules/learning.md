@@ -3603,7 +3603,7 @@ LOnnxModel:inputCount()
 do
     -- local model = lurek.learning.loadOnnx("model.onnx")
     -- print("LOnnxModel:inputCount", model:inputCount())
-    print("LOnnxModel:inputCount stub ok", true)
+    print("LOnnxModel:inputCount ok", true)
 end
 ```
 
@@ -3629,7 +3629,7 @@ LOnnxModel:outputCount()
 do
     -- local model = lurek.learning.loadOnnx("model.onnx")
     -- print("LOnnxModel:outputCount", model:outputCount())
-    print("LOnnxModel:outputCount stub ok", true)
+    print("LOnnxModel:outputCount ok", true)
 end
 ```
 
@@ -3659,11 +3659,11 @@ LOnnxModel:run(inputs)
 
 ```lua
 do
-    -- Requires a real .onnx file; stub demonstrates the call shape only.
-    -- local model = lurek.learning.loadOnnx("model.onnx")
-    -- local input = lurek.learning.newTensor({1, 4}, {0.1, 0.2, 0.3, 0.4})
-    -- local outputs = model:run({input})
-    print("LOnnxModel:run stub ok", true)
+    local model = lurek.learning.loadOnnx("tests/lua/fixtures/minimal_identity.onnx")
+    local input = lurek.learning.newTensor({1}, {42.0})
+    local outputs = model:run({ input })
+    print("LOnnxModel:run outputs", #outputs)
+    print("LOnnxModel:run first value", outputs[1]:data()[1])
 end
 ```
 
@@ -3689,7 +3689,7 @@ LOnnxModel:type()
 do
     -- local model = lurek.learning.loadOnnx("model.onnx")
     -- print("LOnnxModel:type", model:type())
-    print("LOnnxModel:type stub ok", true)
+    print("LOnnxModel:type ok", true)
 end
 ```
 
@@ -3721,7 +3721,7 @@ LOnnxModel:typeOf(name)
 do
     -- local model = lurek.learning.loadOnnx("model.onnx")
     -- print("LOnnxModel:typeOf LOnnxModel", tostring(model:typeOf("LOnnxModel")))
-    print("LOnnxModel:typeOf stub ok", true)
+    print("LOnnxModel:typeOf ok", true)
 end
 ```
 

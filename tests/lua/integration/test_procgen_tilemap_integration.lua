@@ -8,8 +8,8 @@ describe("procgen + tilemap integration", function()
     -- @integration LTileMap:setTile
     -- @integration lurek.procgen.perlinNoise
     -- @integration lurek.tilemap.newTileMap
-    -- @covers lurek.procgen.perlinNoise
-    -- @covers lurek.tilemap.newTileMap
+    -- @integration lurek.procgen.perlinNoise
+    -- @integration lurek.tilemap.newTileMap
     it("noise2d generates tile terrain", function()
         local map = lurek.tilemap.newTileMap(32, 32)
         map:addLayer("tiles", 16, 16)

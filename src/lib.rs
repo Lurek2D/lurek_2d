@@ -94,8 +94,12 @@ pub mod light;
 pub mod log;
 /// Exposes the Lua API bridge subsystem module.
 pub mod lua_api;
+/// Exposes the director compatibility subsystem module.
+pub mod director;
 /// Exposes the map block generation subsystem module.
 pub mod mapblock;
+/// Exposes the legacy map compatibility module.
+pub mod map;
 /// Exposes the math subsystem module.
 pub mod math;
 /// Exposes the MIDI playback and SoundFont management module.
@@ -163,6 +167,8 @@ pub mod ui;
 pub mod validator;
 /// Exposes the vector graphics SVG subsystem module.
 pub mod vector;
+/// Exposes the locomotion compatibility subsystem module.
+pub mod locomotion;
 /// Exposes the visibility subsystem module.
 pub mod visibility;
 /// Exposes the window subsystem module.

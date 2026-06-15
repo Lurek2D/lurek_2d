@@ -4,7 +4,7 @@
 
 --- Procgen Module: noise, dungeons, heightmaps, caves, L-systems, Voronoi, WFC, biomes, names
 
---@api-stub: lurek.procgen.simplex2d
+--@api: lurek.procgen.simplex2d
 do
     local value = lurek.procgen.simplex2d(1.5, 2.3)
     local mirrored = lurek.procgen.simplex2d(2.3, 1.5)
@@ -13,7 +13,7 @@ do
     print(string.format("simplex2d mirrored=%.4f", mirrored))
 end
 
---@api-stub: lurek.procgen.perlinNoise
+--@api: lurek.procgen.perlinNoise
 do
     local first = lurek.procgen.perlinNoise(0.5, 0.5, 4.0, 4.0)
     local tiled = lurek.procgen.perlinNoise(4.5, 0.5, 4.0, 4.0)
@@ -22,7 +22,7 @@ do
     print(string.format("perlinNoise tiled=%.4f", tiled))
 end
 
---@api-stub: lurek.procgen.noiseMap
+--@api: lurek.procgen.noiseMap
 do
     local map = lurek.procgen.noiseMap(64, 64, {
         scale_x = 0.05,
@@ -37,7 +37,7 @@ do
     print(string.format("noiseMap first=%.4f", map[1]))
 end
 
---@api-stub: lurek.procgen.noiseMapParallel
+--@api: lurek.procgen.noiseMapParallel
 do
     local map = lurek.procgen.noiseMapParallel(128, 128, {
         scale_x = 0.02,
@@ -51,7 +51,7 @@ do
     print(string.format("noiseMapParallel midpoint=%.4f", map[4096]))
 end
 
---@api-stub: lurek.procgen.heightmap
+--@api: lurek.procgen.heightmap
 do
     local hm = lurek.procgen.heightmap({
         width = 128,
@@ -68,7 +68,7 @@ do
     print("heightmap cells=" .. #hm.cells)
 end
 
---@api-stub: lurek.procgen.cellularAutomata
+--@api: lurek.procgen.cellularAutomata
 do
     local cave = lurek.procgen.cellularAutomata(80, 60, {
         fill = 0.45,
@@ -82,7 +82,7 @@ do
     print("cellularAutomata first=" .. tostring(cave[1]))
 end
 
---@api-stub: lurek.procgen.heightmapFromCellular
+--@api: lurek.procgen.heightmapFromCellular
 do
     local cells = lurek.procgen.cellularAutomata(64, 64, {
         fill = 0.4,
@@ -95,7 +95,7 @@ do
     print(string.format("heightmapFromCellular first=%.4f", hm.cells[1]))
 end
 
---@api-stub: lurek.procgen.floodFill
+--@api: lurek.procgen.floodFill
 do
     local cells = {
         200, 200, 0, 0,
@@ -109,7 +109,7 @@ do
     print("floodFill first=" .. tostring(filled[1]))
 end
 
---@api-stub: lurek.procgen.bspDungeon
+--@api: lurek.procgen.bspDungeon
 do
     local dungeon = lurek.procgen.bspDungeon({
         width = 80,
@@ -124,7 +124,7 @@ do
     print("bspDungeon corridors=" .. #dungeon.corridors)
 end
 
---@api-stub: lurek.procgen.roomsDungeon
+--@api: lurek.procgen.roomsDungeon
 do
     local dungeon = lurek.procgen.roomsDungeon({
         width = 60,
@@ -139,7 +139,7 @@ do
     print("roomsDungeon grid=" .. #dungeon.grid)
 end
 
---@api-stub: lurek.procgen.bspDungeonWithPrefabs
+--@api: lurek.procgen.bspDungeonWithPrefabs
 do
     local prefabs = {
         { name = "boss_room", width = 10, height = 10 },
@@ -156,7 +156,7 @@ do
     print("bspDungeonWithPrefabs placed=" .. #placed)
 end
 
---@api-stub: lurek.procgen.roomsDungeonWithPrefabs
+--@api: lurek.procgen.roomsDungeonWithPrefabs
 do
     local prefabs = {
         { name = "shop", width = 5, height = 5 },
@@ -172,7 +172,7 @@ do
     print("roomsDungeonWithPrefabs placed=" .. #placed)
 end
 
---@api-stub: lurek.procgen.poissonDisk
+--@api: lurek.procgen.poissonDisk
 do
     local points = lurek.procgen.poissonDisk(200, 200, 15, 30, 42)
     local first = points[1]
@@ -181,7 +181,7 @@ do
     print(string.format("poissonDisk first=(%.2f, %.2f)", first.x, first.y))
 end
 
---@api-stub: lurek.procgen.voronoi
+--@api: lurek.procgen.voronoi
 do
     local regions, dist1, dist2 = lurek.procgen.voronoi(100, 100, {
         { x = 20, y = 20 },
@@ -194,7 +194,7 @@ do
     print("voronoi first region=" .. tostring(regions[1]))
 end
 
---@api-stub: lurek.procgen.lsystem
+--@api: lurek.procgen.lsystem
 do
     local result = lurek.procgen.lsystem({
         axiom = "F",
@@ -206,7 +206,7 @@ do
     print("lsystem preview=" .. result:sub(1, 40))
 end
 
---@api-stub: lurek.procgen.lsystemSegments
+--@api: lurek.procgen.lsystemSegments
 do
     local segments = lurek.procgen.lsystemSegments({
         axiom = "F",
@@ -218,7 +218,7 @@ do
     print("lsystemSegments firstExists=" .. tostring(segments[1] ~= nil))
 end
 
---@api-stub: lurek.procgen.wfcGenerate
+--@api: lurek.procgen.wfcGenerate
 do
     local result = lurek.procgen.wfcGenerate({
         width = 4,
@@ -239,7 +239,7 @@ do
     print("wfcGenerate cells=" .. #result.cells)
 end
 
---@api-stub: lurek.procgen.generateName
+--@api: lurek.procgen.generateName
 do
     local samples = { "Aldric", "Baldric", "Cedric", "Eldric", "Godric", "Fredric" }
     local name = lurek.procgen.generateName(samples, 4, 8, 1)
@@ -247,7 +247,7 @@ do
     print("generateName result=" .. name)
 end
 
---@api-stub: lurek.procgen.newBiomeClassifier
+--@api: lurek.procgen.newBiomeClassifier
 do
     local classifier = lurek.procgen.newBiomeClassifier({
         ocean_threshold = 0.3,
@@ -260,14 +260,14 @@ do
     print("newBiomeClassifier type=" .. classifier:type())
 end
 
---@api-stub: lurek.procgen.biomeColor
+--@api: lurek.procgen.biomeColor
 do
     local r, g, b, a = lurek.procgen.biomeColor("ocean")
 
     print("biomeColor ocean=" .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: lurek.procgen.worldGraph
+--@api: lurek.procgen.worldGraph
 do
     local world = lurek.procgen.worldGraph(500, 500, 12, 42)
 
@@ -277,7 +277,7 @@ end
 
 --- Procgen Module Part 1: BiomeClassifier, generateNames, noiseMapParallelSeeded, simplex3d
 
---@api-stub: LBiomeClassifier:classify
+--@api: LBiomeClassifier:classify
 do
     local classifier = lurek.procgen.newBiomeClassifier({
         ocean_threshold = 0.28,
@@ -290,7 +290,7 @@ do
     print("LBiomeClassifier:classify=" .. biome)
 end
 
---@api-stub: LBiomeClassifier:classifyMap
+--@api: LBiomeClassifier:classifyMap
 do
     local classifier = lurek.procgen.newBiomeClassifier({
         ocean_threshold = 0.3,
@@ -309,7 +309,7 @@ do
     print("LBiomeClassifier:classifyMap last=" .. map[#map])
 end
 
---@api-stub: LBiomeClassifier:type
+--@api: LBiomeClassifier:type
 do
     local classifier = lurek.procgen.newBiomeClassifier()
     local type_name = classifier:type()
@@ -317,7 +317,7 @@ do
     print("LBiomeClassifier:type=" .. type_name)
 end
 
---@api-stub: LBiomeClassifier:typeOf
+--@api: LBiomeClassifier:typeOf
 do
     local classifier = lurek.procgen.newBiomeClassifier()
     local matches = classifier:typeOf("LBiomeClassifier")
@@ -325,7 +325,7 @@ do
     print("LBiomeClassifier:typeOf=" .. tostring(matches))
 end
 
---@api-stub: lurek.procgen.generateNames
+--@api: lurek.procgen.generateNames
 do
     local samples = { "Alon", "Beren", "Caran", "Doran", "Elan" }
     local names = lurek.procgen.generateNames(samples, 5, 3, 8, 42)
@@ -334,7 +334,7 @@ do
     print("generateNames first=" .. names[1])
 end
 
---@api-stub: lurek.procgen.noiseMapParallelSeeded
+--@api: lurek.procgen.noiseMapParallelSeeded
 do
     local map = lurek.procgen.noiseMapParallelSeeded(16, 16, {
         scale_x = 0.1,
@@ -347,7 +347,7 @@ do
     print(string.format("noiseMapParallelSeeded first=%.4f", map[1]))
 end
 
---@api-stub: lurek.procgen.simplex3d
+--@api: lurek.procgen.simplex3d
 do
     local value = lurek.procgen.simplex3d(0.1, 0.5, 0.9)
     local shifted = lurek.procgen.simplex3d(0.1, 0.5, 1.1)
@@ -356,7 +356,7 @@ do
     print(string.format("simplex3d shifted=%.4f", shifted))
 end
 
---@api-stub: lurek.procgen.perlin4d
+--@api: lurek.procgen.perlin4d
 do
     local value = lurek.procgen.perlin4d(0.1, 0.2, 0.3, 0.4)
     local seeded = lurek.procgen.perlin4d(0.1, 0.2, 0.3, 0.4, 17)
@@ -365,7 +365,7 @@ do
     print(string.format("perlin4d seeded=%.4f", seeded))
 end
 
---@api-stub: LNoiseGenerator:fbm
+--@api: LNoiseGenerator:fbm
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:fbm(0.5, 0.5, 4, 2.0, 0.5)
@@ -373,7 +373,7 @@ do
     print(string.format("LNoiseGenerator:fbm=%.4f", value))
 end
 
---@api-stub: LNoiseGenerator:generateMap
+--@api: LNoiseGenerator:generateMap
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local map = generator:generateMap(16, 16, {
@@ -390,7 +390,7 @@ do
     print(string.format("LNoiseGenerator:generateMap first=%.4f", map[1]))
 end
 
---@api-stub: LNoiseGenerator:generateMapCompute
+--@api: LNoiseGenerator:generateMapCompute
 do
     local generator = lurek.procgen.newNoiseGenerator(99)
     local map = generator:generateMapCompute(32, 32, {
@@ -407,7 +407,7 @@ do
     print(string.format("LNoiseGenerator:generateMapCompute first=%.4f", map[1]))
 end
 
---@api-stub: LNoiseGenerator:getSeed
+--@api: LNoiseGenerator:getSeed
 do
     local generator = lurek.procgen.newNoiseGenerator(12345)
     local seed = generator:getSeed()
@@ -415,7 +415,7 @@ do
     print("LNoiseGenerator:getSeed=" .. seed)
 end
 
---@api-stub: LNoiseGenerator:perlin1d
+--@api: LNoiseGenerator:perlin1d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin1d(0.5)
@@ -423,7 +423,7 @@ do
     print(string.format("LNoiseGenerator:perlin1d=%.4f", value))
 end
 
---@api-stub: LNoiseGenerator:perlin2d
+--@api: LNoiseGenerator:perlin2d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin2d(0.3, 0.7)
@@ -431,7 +431,7 @@ do
     print(string.format("LNoiseGenerator:perlin2d=%.4f", value))
 end
 
---@api-stub: LNoiseGenerator:perlin3d
+--@api: LNoiseGenerator:perlin3d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin3d(0.2, 0.4, 0.8)
@@ -439,7 +439,7 @@ do
     print(string.format("LNoiseGenerator:perlin3d=%.4f", value))
 end
 
---@api-stub: LNoiseGenerator:perlin4d
+--@api: LNoiseGenerator:perlin4d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin4d(0.1, 0.2, 0.3, 0.6)
@@ -447,7 +447,7 @@ do
     print(string.format("LNoiseGenerator:perlin4d=%.4f", value))
 end
 
---@api-stub: LNoiseGenerator:ridged
+--@api: LNoiseGenerator:ridged
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:ridged(0.4, 0.6)
@@ -455,7 +455,7 @@ do
     print(string.format("LNoiseGenerator:ridged=%.4f", value))
 end
 
---@api-stub: LNoiseGenerator:setSeed
+--@api: LNoiseGenerator:setSeed
 do
     local generator = lurek.procgen.newNoiseGenerator(1)
 
@@ -464,7 +464,7 @@ do
     print("LNoiseGenerator:setSeed=" .. generator:getSeed())
 end
 
---@api-stub: LNoiseGenerator:simplex1d
+--@api: LNoiseGenerator:simplex1d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:simplex1d(0.5)
@@ -472,7 +472,7 @@ do
     print(string.format("LNoiseGenerator:simplex1d=%.4f", value))
 end
 
---@api-stub: LNoiseGenerator:simplex2d
+--@api: LNoiseGenerator:simplex2d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:simplex2d(0.3, 0.8)
@@ -480,7 +480,7 @@ do
     print(string.format("LNoiseGenerator:simplex2d=%.4f", value))
 end
 
---@api-stub: LNoiseGenerator:simplex3d
+--@api: LNoiseGenerator:simplex3d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:simplex3d(0.1, 0.5, 0.9)
@@ -488,7 +488,7 @@ do
     print(string.format("LNoiseGenerator:simplex3d=%.4f", value))
 end
 
---@api-stub: LNoiseGenerator:turbulence
+--@api: LNoiseGenerator:turbulence
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:turbulence(0.5, 0.5, 4)
@@ -496,7 +496,7 @@ do
     print(string.format("LNoiseGenerator:turbulence=%.4f", value))
 end
 
---@api-stub: LNoiseGenerator:type
+--@api: LNoiseGenerator:type
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local type_name = generator:type()
@@ -504,7 +504,7 @@ do
     print("LNoiseGenerator:type=" .. type_name)
 end
 
---@api-stub: LNoiseGenerator:typeOf
+--@api: LNoiseGenerator:typeOf
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local matches = generator:typeOf("LNoiseGenerator")
@@ -512,7 +512,7 @@ do
     print("LNoiseGenerator:typeOf=" .. tostring(matches))
 end
 
---@api-stub: LNoiseGenerator:warpDomain
+--@api: LNoiseGenerator:warpDomain
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local warped_x, warped_y = generator:warpDomain(0.3, 0.7, 0.1)
@@ -521,7 +521,7 @@ do
     print(string.format("LNoiseGenerator:warpDomain y=%.4f", warped_y))
 end
 
---@api-stub: LNoiseGenerator:worley2d
+--@api: LNoiseGenerator:worley2d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:worley2d(0.5, 0.5)
@@ -529,7 +529,7 @@ do
     print(string.format("LNoiseGenerator:worley2d=%.4f", value))
 end
 
---@api-stub: LNoiseGenerator:worley3d
+--@api: LNoiseGenerator:worley3d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:worley3d(0.5, 0.5, 0.5)
@@ -537,7 +537,7 @@ do
     print(string.format("LNoiseGenerator:worley3d=%.4f", value))
 end
 
---@api-stub: lurek.procgen.fbm
+--@api: lurek.procgen.fbm
 do
     local value = lurek.procgen.fbm(0.5, 0.5, 7, 4, 2.0, 0.5)
     local other = lurek.procgen.fbm(0.75, 0.25, 7, 4, 2.0, 0.5)
@@ -546,7 +546,7 @@ do
     print(string.format("lurek.procgen.fbm other=%.4f", other))
 end
 
---@api-stub: lurek.procgen.newNoiseGenerator
+--@api: lurek.procgen.newNoiseGenerator
 do
     local generator = lurek.procgen.newNoiseGenerator(777)
 
@@ -554,7 +554,7 @@ do
     print("lurek.procgen.newNoiseGenerator seed=" .. generator:getSeed())
 end
 
---@api-stub: lurek.procgen.perlin2d
+--@api: lurek.procgen.perlin2d
 do
     local value = lurek.procgen.perlin2d(0.2, 0.6)
     local seeded = lurek.procgen.perlin2d(0.2, 0.6, 9)
@@ -563,7 +563,7 @@ do
     print(string.format("lurek.procgen.perlin2d seeded=%.4f", seeded))
 end
 
---@api-stub: lurek.procgen.perlin3d
+--@api: lurek.procgen.perlin3d
 do
     local value = lurek.procgen.perlin3d(0.1, 0.3, 0.7)
     local seeded = lurek.procgen.perlin3d(0.1, 0.3, 0.7, 11)
@@ -572,7 +572,7 @@ do
     print(string.format("lurek.procgen.perlin3d seeded=%.4f", seeded))
 end
 
---@api-stub: lurek.procgen.simplexNoise
+--@api: lurek.procgen.simplexNoise
 do
     local value2d = lurek.procgen.simplexNoise(0.4, 0.9)
     local value3d = lurek.procgen.simplexNoise(0.4, 0.9, 1.2)
@@ -581,14 +581,14 @@ do
     print(string.format("lurek.procgen.simplexNoise3d=%.4f", value3d))
 end
 
---@api-stub: lurek.procgen.setConstraintsFromLLM
+--@api: lurek.procgen.setConstraintsFromLLM
 do
     -- LLM may be offline in CI; result is always a table (empty on error)
     local constraints = lurek.procgen.setConstraintsFromLLM("2 tiles: grass and water. Grass can be next to grass or water. Water can only be next to water.")
     print("setConstraintsFromLLM type=" .. type(constraints))
 end
 
---@api-stub: lurek.procgen.wfcFromPrompt
+--@api: lurek.procgen.wfcFromPrompt
 do
     -- LLM may be offline in CI; result always has the required shape fields
     local grid = lurek.procgen.wfcFromPrompt(
@@ -600,7 +600,7 @@ do
     print("wfcFromPrompt failed_type=" .. type(grid.failed_cells))
 end
 
---@api-stub: lurek.procgen.newCellular
+--@api: lurek.procgen.newCellular
 do
     local ca = lurek.procgen.newCellular(32, 32)
     ca:setCell(5, 5, lurek.procgen.CELL_SAND)
@@ -608,28 +608,28 @@ do
     print("cellular type = " .. ca:type())
 end
 
---@api-stub: LCellular:countCells
+--@api: LCellular:countCells
 do
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(0, 0, lurek.procgen.CELL_ROCK)
     print("rock count = " .. ca:countCells(lurek.procgen.CELL_ROCK))
 end
 
---@api-stub: LCellular:fillCircle
+--@api: LCellular:fillCircle
 do
     local ca = lurek.procgen.newCellular(32, 32)
     ca:fillCircle(16, 16, 5, lurek.procgen.CELL_WATER)
     print("fillCircle done")
 end
 
---@api-stub: LCellular:fillRect
+--@api: LCellular:fillRect
 do
     local ca = lurek.procgen.newCellular(32, 32)
     ca:fillRect(0, 0, 8, 8, lurek.procgen.CELL_ROCK)
     print("fillRect done")
 end
 
---@api-stub: LCellular:findCells
+--@api: LCellular:findCells
 do
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(3, 7, lurek.procgen.CELL_WATER)
@@ -637,14 +637,14 @@ do
     print("found count = " .. #found)
 end
 
---@api-stub: LCellular:getCell
+--@api: LCellular:getCell
 do
     local ca = lurek.procgen.newCellular(16, 16)
     local v = ca:getCell(0, 0)
     print("cell = " .. v)
 end
 
---@api-stub: LCellular:loadFromBytes
+--@api: LCellular:loadFromBytes
 do
     local ca = lurek.procgen.newCellular(8, 8)
     local bytes = ca:toBytes()
@@ -653,55 +653,55 @@ do
     print("loadFromBytes done")
 end
 
---@api-stub: LCellular:setCell
+--@api: LCellular:setCell
 do
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(3, 3, lurek.procgen.CELL_SAND)
     print("setCell done")
 end
 
---@api-stub: LCellular:step
+--@api: LCellular:step
 do
     local ca = lurek.procgen.newCellular(16, 16)
     ca:step()
     print("step done")
 end
 
---@api-stub: LCellular:stepN
+--@api: LCellular:stepN
 do
     local ca = lurek.procgen.newCellular(16, 16)
     ca:stepN(5)
     print("stepN done")
 end
 
---@api-stub: LCellular:toBytes
+--@api: LCellular:toBytes
 do
     local ca = lurek.procgen.newCellular(8, 8)
     local bytes = ca:toBytes()
     print("toBytes length = " .. #bytes)
 end
 
---@api-stub: LCellular:toImageData
+--@api: LCellular:toImageData
 do
     local ca = lurek.procgen.newCellular(16, 16)
     local img = ca:toImageData()
     print("toImageData bytes = " .. #img)
 end
 
---@api-stub: LCellular:toImageDataRegion
+--@api: LCellular:toImageDataRegion
 do
     local ca = lurek.procgen.newCellular(32, 32)
     local img = ca:toImageDataRegion(0, 0, 16, 16)
     print("toImageDataRegion bytes = " .. #img)
 end
 
---@api-stub: LCellular:type
+--@api: LCellular:type
 do
     local ca = lurek.procgen.newCellular(8, 8)
     print("type = " .. ca:type())
 end
 
---@api-stub: LCellular:typeOf
+--@api: LCellular:typeOf
 do
     local ca = lurek.procgen.newCellular(8, 8)
     print("typeOf LCellular = " .. tostring(ca:typeOf("LCellular")))

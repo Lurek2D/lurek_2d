@@ -11,9 +11,9 @@ describe("integration: effect + camera", function()
     -- @integration lurek.camera.newCamera
     -- @integration lurek.effect.newEffect
     -- @integration lurek.effect.newStack
-    -- @covers lurek.camera.newCamera
-    -- @covers lurek.effect.newEffect
-    -- @covers lurek.effect.newStack
+    -- @integration lurek.camera.newCamera
+    -- @integration lurek.effect.newEffect
+    -- @integration lurek.effect.newStack
     it("applies effect stack while camera zoom changes", function()
         local cam = lurek.camera.newCamera()
         local stack = lurek.effect.newStack(320, 240)

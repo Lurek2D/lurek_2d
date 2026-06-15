@@ -4,13 +4,13 @@
 
 --- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
 
---@api-stub: lurek.scene.new
+--@api: lurek.scene.new
 do
     local myScene = lurek.scene.new({ name = "menu", enter = function() print("entering menu scene") end, leave = function() print("leaving menu scene") end, update = function() end, draw = function() end })
     print("scene created")
 end
 
---@api-stub: lurek.scene.define
+--@api: lurek.scene.define
 do
     local GameplayFactory = lurek.scene.define({
         name = "gameplay",
@@ -32,7 +32,7 @@ do
     print("two instances: " .. tostring(instance1 ~= instance2))
 end
 
---@api-stub: lurek.scene.push
+--@api: lurek.scene.push
 do
     local scene1 = lurek.scene.new({ name = "title", enter = function() print("title enter") end, leave = function() print("title leave") end })
     lurek.scene.push(scene1)
@@ -40,7 +40,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.switchTo
+--@api: lurek.scene.switchTo
 do
     local sceneA = lurek.scene.new({
         name = "level1",
@@ -68,21 +68,21 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.registerScene
+--@api: lurek.scene.registerScene
 do
     local menuScene = lurek.scene.new({ name = "mainMenu" })
     lurek.scene.registerScene("mainMenu", menuScene)
     print("has mainMenu = " .. tostring(lurek.scene.hasRegistered("mainMenu")))
 end
 
---@api-stub: lurek.scene.setData
+--@api: lurek.scene.setData
 do
     lurek.scene.setData("selectedLevel", 5)
     print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
     print("selectedLevel = " .. lurek.scene.getData("selectedLevel"))
 end
 
---@api-stub: lurek.scene.popTo
+--@api: lurek.scene.popTo
 do
     local base = lurek.scene.new({ name = "base" })
     local mid = lurek.scene.new({ name = "middle" })
@@ -101,38 +101,38 @@ end
 
 --- Scene Module Part 2: transitions, overlays, preload, depth sorter, serialization
 
---@api-stub: lurek.scene.transitions.fade
+--@api: lurek.scene.transitions.fade
 do
     local fade = lurek.scene.transitions.fade(0.5)
     print("fade type = " .. fade.type .. " dur = " .. fade.duration)
 end
 
---@api-stub: lurek.scene.transitions.slide
+--@api: lurek.scene.transitions.slide
 do
     local slide = lurek.scene.transitions.slide("left", 0.4)
     print("slide type = " .. slide.type .. " dur = " .. slide.duration)
 end
 
---@api-stub: lurek.scene.transitions.iris
+--@api: lurek.scene.transitions.iris
 do
     local iris = lurek.scene.transitions.iris(0.6)
     print("iris type = " .. iris.type .. " dur = " .. iris.duration)
 end
 
---@api-stub: lurek.scene.transitions.wipe
+--@api: lurek.scene.transitions.wipe
 do
     local wipe = lurek.scene.transitions.wipe(0.5)
     print("wipe type = " .. wipe.type .. " dur = " .. wipe.duration)
 end
 
---@api-stub: lurek.scene.getTransitionTypes
+--@api: lurek.scene.getTransitionTypes
 do
     local types = lurek.scene.getTransitionTypes()
     print("transition types = " .. #types)
     print("first type = " .. tostring(types[1]))
 end
 
---@api-stub: lurek.scene.queueTransition
+--@api: lurek.scene.queueTransition
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base" }))
@@ -145,7 +145,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.pushOverlay
+--@api: lurek.scene.pushOverlay
 do
     lurek.scene.clear()
     local gameScene = lurek.scene.new({ name = "game" })
@@ -159,7 +159,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.preload
+--@api: lurek.scene.preload
 do
     local loadCount = 0
     lurek.scene.clear()
@@ -174,7 +174,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.getActiveScenes
+--@api: lurek.scene.getActiveScenes
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base" }))
@@ -186,7 +186,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.serializeScene
+--@api: lurek.scene.serializeScene
 do
     lurek.scene.clear()
     local menu = lurek.scene.new({ name = "menu" })
@@ -206,7 +206,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.newDepthSorter
+--@api: lurek.scene.newDepthSorter
 do
     local sorter = lurek.scene.newDepthSorter()
     print("type = " .. sorter:type() .. " is LDepthSorter = " .. tostring(sorter:typeOf("LDepthSorter")))
@@ -221,7 +221,7 @@ do
     print("after flush count = " .. sorter:getCount())
 end
 
---@api-stub: LDepthSorter:addObject
+--@api: LDepthSorter:addObject
 do
     local sorter = lurek.scene.newDepthSorter()
     local obj1 = { depth = 3, drawSorted = function(self) print("draw obj at depth " .. self.depth) end }
@@ -232,7 +232,7 @@ do
     sorter:flush()
 end
 
---@api-stub: LDepthSorter:sort
+--@api: LDepthSorter:sort
 do
     local sorter = lurek.scene.newDepthSorter()
     sorter:add(function()
@@ -246,7 +246,7 @@ do
     sorter:clear()
 end
 
---@api-stub: LDepthSorter:clear
+--@api: LDepthSorter:clear
 do
     local sorter = lurek.scene.newDepthSorter()
     sorter:add(function()
@@ -257,7 +257,7 @@ do
     print("cleared count = " .. sorter:getCount())
 end
 
---@api-stub: LDepthSorter:setStable
+--@api: LDepthSorter:setStable
 do
     local sorter = lurek.scene.newDepthSorter()
     sorter:setStable(true)
@@ -266,7 +266,7 @@ do
     print("stable after disable = " .. tostring(sorter:isStable()))
 end
 
---@api-stub: LDepthSorter:isStable
+--@api: LDepthSorter:isStable
 do
     local sorter = lurek.scene.newDepthSorter()
     print("stable default = " .. tostring(sorter:isStable()))
@@ -274,7 +274,7 @@ do
     print("stable after enable = " .. tostring(sorter:isStable()))
 end
 
---@api-stub: lurek.scene.processLate
+--@api: lurek.scene.processLate
 do
     local lateCount = 0
     local physCount = 0
@@ -294,7 +294,7 @@ do
 end
 
 --- Scene Part 2: full scene module API coverage
---@api-stub: lurek.scene.clear
+--@api: lurek.scene.clear
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -302,7 +302,7 @@ do
     print("is empty = " .. tostring(lurek.scene.isEmpty()))
 end
 
---@api-stub: lurek.scene.clearQueuedTransitions
+--@api: lurek.scene.clearQueuedTransitions
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -313,7 +313,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.deserializeScene
+--@api: lurek.scene.deserializeScene
 do
     lurek.scene.clear()
     lurek.scene.setData("score", 42)
@@ -324,7 +324,7 @@ do
     print("stack size after load = " .. lurek.scene.getStackSize())
 end
 
---@api-stub: lurek.scene.draw
+--@api: lurek.scene.draw
 do
     local draws = 0
     lurek.scene.clear()
@@ -334,7 +334,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.getCurrent
+--@api: lurek.scene.getCurrent
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -343,7 +343,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.getCurrentLayer
+--@api: lurek.scene.getCurrentLayer
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -352,14 +352,14 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.getData
+--@api: lurek.scene.getData
 do
     lurek.scene.clear()
     lurek.scene.setData("score", 42)
     print("score = " .. tostring(lurek.scene.getData("score")))
 end
 
---@api-stub: lurek.scene.getQueuedTransitionCount
+--@api: lurek.scene.getQueuedTransitionCount
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -368,7 +368,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.getRegistered
+--@api: lurek.scene.getRegistered
 do
     lurek.scene.clear()
     lurek.scene.registerScene("main_scene", lurek.scene.new({ name = "main_scene" }))
@@ -376,7 +376,7 @@ do
     print("registered scene = " .. tostring(scene and scene.name))
 end
 
---@api-stub: lurek.scene.getRegisteredNames
+--@api: lurek.scene.getRegisteredNames
 do
     lurek.scene.clear()
     lurek.scene.registerScene("main_scene", lurek.scene.new({ name = "main_scene" }))
@@ -386,7 +386,7 @@ do
     print("first name = " .. tostring(names[1]))
 end
 
---@api-stub: lurek.scene.getStackSize
+--@api: lurek.scene.getStackSize
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -394,7 +394,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.getTransitionProgress
+--@api: lurek.scene.getTransitionProgress
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base_scene" }))
@@ -403,7 +403,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.getTransitionProgressEased
+--@api: lurek.scene.getTransitionProgressEased
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base_scene" }))
@@ -412,21 +412,21 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.hasData
+--@api: lurek.scene.hasData
 do
     lurek.scene.clear()
     lurek.scene.setData("score", 42)
     print("has score = " .. tostring(lurek.scene.hasData("score")))
 end
 
---@api-stub: lurek.scene.hasRegistered
+--@api: lurek.scene.hasRegistered
 do
     lurek.scene.clear()
     lurek.scene.registerScene("main_scene", lurek.scene.new({ name = "main_scene" }))
     print("has main_scene = " .. tostring(lurek.scene.hasRegistered("main_scene")))
 end
 
---@api-stub: lurek.scene.isEmpty
+--@api: lurek.scene.isEmpty
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -435,7 +435,7 @@ do
     print("after clear = " .. tostring(lurek.scene.isEmpty()))
 end
 
---@api-stub: lurek.scene.isOverlay
+--@api: lurek.scene.isOverlay
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -444,7 +444,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.isPreloaded
+--@api: lurek.scene.isPreloaded
 do
     lurek.scene.clear()
     lurek.scene.preload("main_scene", function()
@@ -457,7 +457,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.isTransitioning
+--@api: lurek.scene.isTransitioning
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base_scene" }))
@@ -466,7 +466,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.pop
+--@api: lurek.scene.pop
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "first_scene" }))
@@ -476,7 +476,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.pushPreloaded
+--@api: lurek.scene.pushPreloaded
 do
     lurek.scene.clear()
     lurek.scene.preload("main_scene", function()
@@ -489,7 +489,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: LDepthSorter:add
+--@api: LDepthSorter:add
 do
     local ds = lurek.scene.newDepthSorter()
     ds:add(function()
@@ -503,7 +503,7 @@ do
     print("depth sorter count = " .. count)
 end
 
---@api-stub: LDepthSorter:flush
+--@api: LDepthSorter:flush
 do
     local ds = lurek.scene.newDepthSorter()
     ds:add(function()
@@ -517,7 +517,7 @@ do
     print("depth sorter count = " .. count)
 end
 
---@api-stub: LDepthSorter:getCount
+--@api: LDepthSorter:getCount
 do
     local ds = lurek.scene.newDepthSorter()
     ds:add(function()
@@ -530,27 +530,27 @@ do
     ds:clear()
 end
 
---@api-stub: LDepthSorter:type
+--@api: LDepthSorter:type
 do
     local ds = lurek.scene.newDepthSorter()
     print("type = " .. ds:type())
 end
 
---@api-stub: LDepthSorter:typeOf
+--@api: LDepthSorter:typeOf
 do
     local ds = lurek.scene.newDepthSorter()
     print("is depth sorter = " .. tostring(ds:typeOf("LDepthSorter")))
     print("is object = " .. tostring(ds:typeOf("Object")))
 end
 
---@api-stub: lurek.scene.newScene
+--@api: lurek.scene.newScene
 do
     local scene = lurek.scene.newScene({ name = "test_new" })
     print("scene name = " .. tostring(scene.name))
     print("has metatable = " .. tostring(getmetatable(scene) ~= nil))
 end
 
---@api-stub: lurek.scene.process
+--@api: lurek.scene.process
 do
     lurek.scene.clear()
     local processCount = 0
@@ -567,7 +567,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.processPhysics
+--@api: lurek.scene.processPhysics
 do
     lurek.scene.clear()
     local physicsCount = 0
@@ -584,7 +584,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.removeData
+--@api: lurek.scene.removeData
 do
     lurek.scene.clear()
     lurek.scene.setData("_test_key", 42)
@@ -593,7 +593,7 @@ do
     print("after remove = " .. tostring(lurek.scene.hasData("_test_key")))
 end
 
---@api-stub: lurek.scene.render
+--@api: lurek.scene.render
 do
     lurek.scene.clear()
     local renderCount = 0
@@ -603,7 +603,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.renderUi
+--@api: lurek.scene.renderUi
 do
     lurek.scene.clear()
     local uiCount = 0
@@ -613,7 +613,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.setCurrentLayer
+--@api: lurek.scene.setCurrentLayer
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "layer_scene" }))
@@ -623,7 +623,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.unregisterScene
+--@api: lurek.scene.unregisterScene
 do
     lurek.scene.clear()
     lurek.scene.registerScene("_tmp_unreg", lurek.scene.new({ name = "_tmp_unreg" }))
@@ -632,7 +632,7 @@ do
     print("after unregister = " .. tostring(lurek.scene.hasRegistered("_tmp_unreg")))
 end
 
---@api-stub: lurek.scene.getRenderActiveScenes
+--@api: lurek.scene.getRenderActiveScenes
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "base" }))
@@ -643,7 +643,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.setProcessEnabled
+--@api: lurek.scene.setProcessEnabled
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -655,7 +655,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.setPhysicsEnabled
+--@api: lurek.scene.setPhysicsEnabled
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -666,7 +666,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.setLateEnabled
+--@api: lurek.scene.setLateEnabled
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -677,7 +677,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.setUpdateEnabled
+--@api: lurek.scene.setUpdateEnabled
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -688,7 +688,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.isProcessEnabled
+--@api: lurek.scene.isProcessEnabled
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -696,7 +696,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.isPhysicsEnabled
+--@api: lurek.scene.isPhysicsEnabled
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -704,7 +704,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.isLateEnabled
+--@api: lurek.scene.isLateEnabled
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -712,7 +712,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.isUpdateEnabled
+--@api: lurek.scene.isUpdateEnabled
 do
     lurek.scene.clear()
     lurek.scene.push(lurek.scene.new({ name = "main_scene" }))
@@ -720,7 +720,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.update
+--@api: lurek.scene.update
 do
     -- update advances transitions and dispatches the update callback to the top scene
     lurek.scene.clear()
@@ -731,7 +731,7 @@ do
     print("lurek.scene.update ok")
 end
 
---@api-stub: lurek.scene.depth
+--@api: lurek.scene.depth
 do
     lurek.scene.clear()
     local d0 = lurek.scene.depth()
@@ -741,7 +741,7 @@ do
     print("depth 0=" .. d0 .. " 1=" .. d1)
 end
 
---@api-stub: lurek.scene.newObjectContainer
+--@api: lurek.scene.newObjectContainer
 do
     local container = lurek.scene.newObjectContainer()
 
@@ -779,7 +779,7 @@ do
     print("after_clear=" .. container:getCount())
 end
 
---@api-stub: LSceneObjectContainer:add
+--@api: LSceneObjectContainer:add
 do
     local container = lurek.scene.newObjectContainer()
     local obj = { layer = 2 }
@@ -787,7 +787,7 @@ do
     print("count after add = " .. container:getCount())
 end
 
---@api-stub: LSceneObjectContainer:clear
+--@api: LSceneObjectContainer:clear
 do
     local container = lurek.scene.newObjectContainer()
     container:add({ layer = 1 })
@@ -795,7 +795,7 @@ do
     print("count after clear = " .. container:getCount())
 end
 
---@api-stub: LSceneObjectContainer:draw
+--@api: LSceneObjectContainer:draw
 do
     local container = lurek.scene.newObjectContainer()
     container:add({ layer = 1, draw = function() print("draw layer 1") end })
@@ -803,7 +803,7 @@ do
     print("container draw called")
 end
 
---@api-stub: LSceneObjectContainer:getByLayer
+--@api: LSceneObjectContainer:getByLayer
 do
     local container = lurek.scene.newObjectContainer()
     container:add({ layer = 3 })
@@ -811,7 +811,7 @@ do
     print("layer 3 count = " .. tostring(#objects))
 end
 
---@api-stub: LSceneObjectContainer:getCount
+--@api: LSceneObjectContainer:getCount
 do
     local container = lurek.scene.newObjectContainer()
     container:add({ layer = 1 })
@@ -819,7 +819,7 @@ do
     print("container count = " .. container:getCount())
 end
 
---@api-stub: LSceneObjectContainer:getObjects
+--@api: LSceneObjectContainer:getObjects
 do
     local container = lurek.scene.newObjectContainer()
     container:add({ layer = 1 })
@@ -827,7 +827,7 @@ do
     print("objects count = " .. tostring(#objects))
 end
 
---@api-stub: LSceneObjectContainer:has
+--@api: LSceneObjectContainer:has
 do
     local container = lurek.scene.newObjectContainer()
     local obj = { layer = 1 }
@@ -835,7 +835,7 @@ do
     print("has obj = " .. tostring(container:has(obj)))
 end
 
---@api-stub: LSceneObjectContainer:remove
+--@api: LSceneObjectContainer:remove
 do
     local container = lurek.scene.newObjectContainer()
     local obj = { layer = 1 }
@@ -844,19 +844,19 @@ do
     print("count after remove = " .. container:getCount())
 end
 
---@api-stub: LSceneObjectContainer:type
+--@api: LSceneObjectContainer:type
 do
     local container = lurek.scene.newObjectContainer()
     print("container type = " .. container:type())
 end
 
---@api-stub: LSceneObjectContainer:typeOf
+--@api: LSceneObjectContainer:typeOf
 do
     local container = lurek.scene.newObjectContainer()
     print("is LSceneObjectContainer = " .. tostring(container:typeOf("LSceneObjectContainer")))
 end
 
---@api-stub: LSceneObjectContainer:update
+--@api: LSceneObjectContainer:update
 do
     local container = lurek.scene.newObjectContainer()
     local ticks = 0

@@ -10,9 +10,9 @@ describe("integration: thread channel with serialized data", function()
     -- @integration lurek.serial.fromJson
     -- @integration lurek.serial.toJson
     -- @integration lurek.thread.newChannel
-    -- @covers lurek.serial.fromJson
-    -- @covers lurek.serial.toJson
-    -- @covers lurek.thread.newChannel
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.toJson
+    -- @integration lurek.thread.newChannel
     it("pushes JSON-encoded table and receives raw string", function()
         local ch      = lurek.thread.newChannel()
         local payload = {x = 10, y = 20, label = "pos"}

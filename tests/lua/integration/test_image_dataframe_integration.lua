@@ -11,8 +11,8 @@ describe("image + dataframe integration", function()
     -- @integration LImageData:setPixel
     -- @integration lurek.dataframe.newDataFrame
     -- @integration lurek.image.newImageData
-    -- @covers lurek.dataframe.newDataFrame
-    -- @covers lurek.image.newImageData
+    -- @integration lurek.dataframe.newDataFrame
+    -- @integration lurek.image.newImageData
     it("creates ImageData and records pixel stats in a DataFrame", function()
         local img = lurek.image.newImageData(4, 4)
         -- fill with known pixels

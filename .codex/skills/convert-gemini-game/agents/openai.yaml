@@ -1,0 +1,4 @@
+interface:
+  display_name: "Convert Gemini Game"
+  short_description: "Map React prototypes into Lurek demos"
+  default_prompt: "Use $convert-gemini-game to convert this Gemini React game prototype into a runnable Lurek2D Lua demo."

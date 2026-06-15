@@ -3,15 +3,13 @@ import * as path from "path";
 import { resolveWorkspaceApiDocPath, searchApiDocumentation } from "../services/apiDocs.js";
 import { execParallelCargoCommand } from "../services/parallelCargo.js";
 import {
-  DEFAULT_RAG_SEARCH_LIMIT,
-  MAX_RAG_SEARCH_LIMIT,
   RagCommandResult,
   RagQueryOptions,
-  DEFAULT_RAG_SEARCH_TIMEOUT_MS,
   DEFAULT_RAG_BUILD_TIMEOUT_MS,
   execRagQuery,
   execRagBuildIndex,
 } from "../services/rag.js";
+import { getRagContract } from "../services/ragContract.js";
 import { ApiDataService } from "../services/apiData.js";
 import { LuaDocumentAnalyzer } from "../services/luaParser.js";
 
@@ -93,17 +91,20 @@ function normalizeRagProfile(value: unknown): "game" | "engine" | "all" {
   return "all";
 }
 
-function normalizeRagLimit(value: unknown): number {
+function normalizeRagLimit(
+  value: unknown,
+  range: { min: number; max: number; default: number }
+): number {
   if (value === undefined) {
-    return DEFAULT_RAG_SEARCH_LIMIT;
+    return range.default;
   }
   const normalized = Number(value);
   if (!Number.isInteger(normalized)) {
     throw new Error("`limit` must be an integer.");
   }
-  if (normalized < 1 || normalized > MAX_RAG_SEARCH_LIMIT) {
+  if (normalized < range.min || normalized > range.max) {
     throw new Error(
-      `limit` must be between 1 and ${MAX_RAG_SEARCH_LIMIT}.`
+      `limit` must be between ${range.min} and ${range.max}.`
     );
   }
   return normalized;
@@ -132,7 +133,9 @@ function toRagTargets(value: unknown, fieldName: string): string[] {
 /**
  * Returns all MCP tool definitions for the Lurek2D server.
  */
-export function getToolDefinitions(): ToolDefinition[] {
+export function getToolDefinitions(workspaceRoot: string = process.cwd()): ToolDefinition[] {
+  const ragContract = getRagContract(workspaceRoot);
+
   return [
     {
       name: "lurek2d.runExample",
@@ -226,14 +229,20 @@ export function getToolDefinitions(): ToolDefinition[] {
               'Search query keywords (e.g. "lurek.graphics draw", "audio play").',
           },
           limit: {
-            type: "number",
+            type: "integer",
             description: "Maximum number of results to return.",
+            minimum: ragContract.searchLimit.min,
+            maximum: ragContract.searchLimit.max,
+            default: ragContract.searchLimit.default,
           },
           profile: {
             type: "string",
-            description: 'Target developer profile (game, engine, or all). Defaults to all. Game profile excludes src and test internals.',
+            description: "Target developer profile (game, engine, or all).",
+            enum: ["game", "engine", "all"],
+            default: "all",
           },
         },
+        additionalProperties: false,
         required: ["query"],
       },
     },
@@ -250,14 +259,20 @@ export function getToolDefinitions(): ToolDefinition[] {
               'Search query keywords (e.g. "lurek.graphics draw", "audio play").',
           },
           limit: {
-            type: "number",
+            type: "integer",
             description: "Maximum number of results to return.",
+            minimum: ragContract.searchLimit.min,
+            maximum: ragContract.searchLimit.max,
+            default: ragContract.searchLimit.default,
           },
           profile: {
             type: "string",
-            description: 'Target developer profile (game, engine, or all). Defaults to all. Game profile excludes src and test internals.',
+            description: "Target developer profile (game, engine, or all).",
+            enum: ["game", "engine", "all"],
+            default: "all",
           },
         },
+        additionalProperties: false,
         required: ["query"],
       },
     },
@@ -278,6 +293,7 @@ export function getToolDefinitions(): ToolDefinition[] {
             description: "Alias for directories.",
           },
         },
+        additionalProperties: false,
       },
     },
     {
@@ -297,6 +313,7 @@ export function getToolDefinitions(): ToolDefinition[] {
             description: "Alias for `targets`; kept for MCP naming parity.",
           },
         },
+        additionalProperties: false,
       },
     },
     {
@@ -546,20 +563,25 @@ export function handleRagSearch(
       return "Error: 'query' must be a non-empty string.";
     }
     const profile = normalizeRagProfile(args.profile);
-    const limit = Number(args.limit);
-    if (args.profile !== undefined && !["game", "engine", "all"].includes(String(args.profile))) {
+    if (args.profile !== undefined && profile !== args.profile) {
       return "Error: profile must be one of: game, engine, all.";
     }
-    if (args.limit !== undefined && (!Number.isInteger(limit) || limit <= 0)) {
-      return "Error: limit must be a positive integer.";
+    const ragContract = getRagContract(workspaceRoot);
+    let limit: number;
+    try {
+      limit = normalizeRagLimit(args.limit, ragContract.searchLimit);
+    } catch (err) {
+      return `Error: ${err instanceof Error ? err.message : String(err)}`;
     }
 
+    const options: RagQueryOptions = {
+      profile,
+      limit,
+    };
     const result = await execRagQuery(
       workspaceRoot,
       query,
-      profile,
-      15_000,
-      limit > 0 ? limit : 8,
+      options,
     );
     return ragResponseToText(result, "ragSearch");
   };
@@ -588,7 +610,11 @@ export function handleRagBuildIndex(
       return `Error: ${err instanceof Error ? err.message : String(err)}`;
     }
     const merged = Array.from(new Set([...directories, ...targets]));
-    const result = await execRagBuildIndex(workspaceRoot, merged);
+    const result = await execRagBuildIndex(
+      workspaceRoot,
+      merged,
+      DEFAULT_RAG_BUILD_TIMEOUT_MS,
+    );
     return ragResponseToText(result, "ragBuildIndex");
   };
 }

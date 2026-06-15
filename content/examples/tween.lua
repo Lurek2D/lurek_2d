@@ -4,7 +4,7 @@
 
 --- Tween Module Part 1: basic tweens, easing, LTween, LTweenState, springs, color tweens
 
---@api-stub: lurek.tween.tween
+--@api: lurek.tween.tween
 do
     local obj = { x = 0, y = 0 }
     local tw = lurek.tween.tween(1.0, obj, { x = 100, y = 50 })
@@ -13,7 +13,7 @@ do
     print("at 0.5s: x=" .. obj.x .. " y=" .. obj.y)
 end
 
---@api-stub: lurek.tween.update
+--@api: lurek.tween.update
 do
     local pos = { x = 100, y = 200 }
     lurek.tween.to(pos, { x = 0, y = 0 }, 0.5, "easeOutBounce")
@@ -21,7 +21,7 @@ do
     print("moved to: x=" .. pos.x .. " y=" .. pos.y)
 end
 
---@api-stub: lurek.tween.to
+--@api: lurek.tween.to
 do
     local pos = { x = 100, y = 200 }
     lurek.tween.to(pos, { x = 0, y = 0 }, 0.5, "easeOutBounce")
@@ -29,7 +29,7 @@ do
     print("moved to: x=" .. pos.x .. " y=" .. pos.y)
 end
 
---@api-stub: LTween:onComplete
+--@api: LTween:onComplete
 do
     local obj = { scale = 1 }
     local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
@@ -37,7 +37,7 @@ do
     lurek.tween.update(0.5)
 end
 
---@api-stub: LTween:onUpdate
+--@api: LTween:onUpdate
 do
     local obj = { scale = 1 }
     local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
@@ -45,7 +45,7 @@ do
     lurek.tween.update(0.5)
 end
 
---@api-stub: LTween:onCancel
+--@api: LTween:onCancel
 do
     local obj = { scale = 1 }
     local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
@@ -53,7 +53,7 @@ do
     tw:cancel()
 end
 
---@api-stub: LTween:pause
+--@api: LTween:pause
 do
     local obj = { rotation = 0 }
     local tw = lurek.tween.tween(2.0, obj, { rotation = 360 })
@@ -65,7 +65,7 @@ do
     print("while paused: " .. obj.rotation)
 end
 
---@api-stub: LTween:resume
+--@api: LTween:resume
 do
     local obj = { rotation = 0 }
     local tw = lurek.tween.tween(2.0, obj, { rotation = 360 })
@@ -81,7 +81,7 @@ do
     print("after resume: " .. obj.rotation)
 end
 
---@api-stub: LTween:cancel
+--@api: LTween:cancel
 do
     local obj = { w = 100 }
     local tw = lurek.tween.tween(1.0, obj, { w = 200 })
@@ -94,7 +94,7 @@ do
     print("after update: w=" .. obj.w)
 end
 
---@api-stub: LTween:setRepeat
+--@api: LTween:setRepeat
 do
     local obj = { x = 0 }
     ---@type LTween
@@ -103,7 +103,7 @@ do
     print("repeat set")
 end
 
---@api-stub: LTween:setYoyo
+--@api: LTween:setYoyo
 do
     local obj = { x = 0 }
     ---@type LTween
@@ -112,7 +112,7 @@ do
     print("yoyo set")
 end
 
---@api-stub: LTween:relative
+--@api: LTween:relative
 do
     local obj = { x = 50, y = 50 }
     ---@type LTween
@@ -121,7 +121,7 @@ do
     print("relative result: x=" .. obj.x .. " y=" .. obj.y)
 end
 
---@api-stub: LTween:getFields
+--@api: LTween:getFields
 do
     local obj = { a = 0, b = 0, c = 0 }
     ---@type LTween
@@ -130,7 +130,7 @@ do
     print("fields: " .. table.concat(fields, ", "))
 end
 
---@api-stub: lurek.tween.tweenColor
+--@api: lurek.tween.tweenColor
 do
     local color = { r = 1.0, g = 0.0, b = 0.0, a = 1.0 }
     local tw = lurek.tween.tweenColor(2.0, color, { r = 0.0, g = 0.0, b = 1.0 }, "linear")
@@ -141,7 +141,7 @@ do
     print("end: r=" .. color.r .. " b=" .. color.b)
 end
 
---@api-stub: lurek.tween.newState
+--@api: lurek.tween.newState
 do
     local state = lurek.tween.newState(2.0, "easeInOutCubic")
     print("type = " .. state:type())
@@ -158,7 +158,7 @@ do
     print("complete = " .. tostring(state:isComplete()))
 end
 
---@api-stub: LTweenState:reset
+--@api: LTweenState:reset
 do
     local state = lurek.tween.newState(1.0)
     state:tick(1.0)
@@ -168,7 +168,7 @@ do
     print("t = " .. state:t())
 end
 
---@api-stub: lurek.tween.spring
+--@api: lurek.tween.spring
 do
     local obj = { x = 0, y = 0 }
     local spring = lurek.tween.spring(obj, { x = 100, y = 50 }, {
@@ -184,7 +184,7 @@ do
     print("settled = " .. tostring(spring:isSettled()))
 end
 
---@api-stub: LSpring:setTarget
+--@api: LSpring:setTarget
 do
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
@@ -206,7 +206,7 @@ do
     print("getPosition = " .. tostring(pos))
 end
 
---@api-stub: LSpring:setStiffness
+--@api: LSpring:setStiffness
 do
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
@@ -216,7 +216,7 @@ do
     print("position = " .. tostring(spring:getPosition("size")))
 end
 
---@api-stub: LSpring:setDamping
+--@api: LSpring:setDamping
 do
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
@@ -226,7 +226,7 @@ do
     print("settled = " .. tostring(spring:isSettled()))
 end
 
---@api-stub: LSpring:getPosition
+--@api: LSpring:getPosition
 do
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
@@ -237,7 +237,7 @@ do
     print("getPosition = " .. tostring(pos))
 end
 
---@api-stub: LSpring:cancel
+--@api: LSpring:cancel
 do
     local obj = { val = 0 }
     local spring = lurek.tween.spring(obj, { val = 100 })
@@ -246,7 +246,7 @@ do
     print("active after cancel = " .. tostring(spring:isActive()))
 end
 
---@api-stub: lurek.tween.getActiveCount
+--@api: lurek.tween.getActiveCount
 do
     local a = { x = 0 }
     local b = { y = 0 }
@@ -257,7 +257,7 @@ do
     print("after cancelAll = " .. lurek.tween.getActiveCount())
 end
 
---@api-stub: lurek.tween.registerEasing
+--@api: lurek.tween.registerEasing
 do
     lurek.tween.registerEasing("bounce3", function(t)
         return 1 - math.abs(math.cos(t * math.pi * 3)) * (1 - t)
@@ -273,7 +273,7 @@ end
 
 --- Tween Module Part 2: sequences, parallels, delay, tweenChain, update
 
---@api-stub: lurek.tween.sequence
+--@api: lurek.tween.sequence
 do
     local obj = { x = 0, y = 0 }
     local seq = lurek.tween.sequence()
@@ -290,7 +290,7 @@ do
     print("after step 2: x=" .. obj.x .. " y=" .. obj.y)
 end
 
---@api-stub: LTweenSequence:delay
+--@api: LTweenSequence:delay
 do
     local obj = { alpha = 0 }
     local seq = lurek.tween.sequence()
@@ -307,7 +307,7 @@ do
     print("fade out done: alpha=" .. obj.alpha)
 end
 
---@api-stub: LTweenSequence:callback
+--@api: LTweenSequence:callback
 do
     local obj = { scale = 1 }
     local seq = lurek.tween.sequence()
@@ -321,7 +321,7 @@ do
     lurek.tween.update(0.5)
 end
 
---@api-stub: LTweenSequence:getProgress
+--@api: LTweenSequence:getProgress
 do
     local obj = { w = 0 }
     local seq = lurek.tween.sequence()
@@ -335,7 +335,7 @@ do
     print("active after cancel = " .. tostring(seq:isActive()))
 end
 
---@api-stub: LTweenSequence:cancel
+--@api: LTweenSequence:cancel
 do
     local obj = { w = 0 }
     local seq = lurek.tween.sequence()
@@ -349,7 +349,7 @@ do
     print("active after cancel = " .. tostring(seq:isActive()))
 end
 
---@api-stub: lurek.tween.parallel
+--@api: lurek.tween.parallel
 do
     local a = { x = 0 }
     local b = { y = 0 }
@@ -369,7 +369,7 @@ do
     print("done: x=" .. a.x .. " y=" .. b.y .. " rot=" .. c.rot)
 end
 
---@api-stub: LTweenParallel:add
+--@api: LTweenParallel:add
 do
     local obj1 = { alpha = 1 }
     local obj2 = { scale = 1 }
@@ -386,7 +386,7 @@ do
     print("alpha=" .. obj1.alpha .. " scale=" .. obj2.scale)
 end
 
---@api-stub: LTweenParallel:cancel
+--@api: LTweenParallel:cancel
 do
     local a = { x = 0 }
     local b = { y = 0 }
@@ -401,7 +401,7 @@ do
     print("x=" .. a.x .. " y=" .. b.y)
 end
 
---@api-stub: lurek.tween.delay
+--@api: lurek.tween.delay
 do
     local d = lurek.tween.delay(1.5, function() print("  delay complete") end)
     print("delay active = " .. tostring(d:isActive()))
@@ -409,7 +409,7 @@ do
     print("delay done = " .. tostring(not d:isActive()))
 end
 
---@api-stub: lurek.tween.tweenChain
+--@api: lurek.tween.tweenChain
 do
     local obj = { x = 0, y = 0 }
     local chain = lurek.tween.tweenChain({
@@ -423,177 +423,256 @@ do
     print("chain result: x=" .. obj.x .. " y=" .. obj.y)
 end
 
---@api-stub: lurek.tween.newChain
+--@api: lurek.tween.newChain
 do
     local chain = lurek.tween.newChain()
-    print("newChain ok = " .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "intro" })
+    print("steps = " .. tostring(chain:len()))
 end
 
---@api-stub: LTweenChain:to
+--@api: LTweenChain:to
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("to marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.25, "linear")
+    chain:start()
+    lurek.tween.update(0.25)
+    print("x = " .. tostring(obj.x))
 end
 
---@api-stub: LTweenChain:wait
+--@api: LTweenChain:wait
 do
+    local fired = false
     local chain = lurek.tween.newChain()
-    print("wait marker chain=" .. tostring(chain ~= nil))
+    chain:wait(0.1, function() fired = true end)
+    chain:start()
+    lurek.tween.update(0.1)
+    print("wait fired = " .. tostring(fired))
 end
 
---@api-stub: LTweenChain:call
+--@api: LTweenChain:call
 do
+    local called = false
     local chain = lurek.tween.newChain()
-    print("call marker chain=" .. tostring(chain ~= nil))
+    chain:call(function() called = true end)
+    chain:start()
+    lurek.tween.update(0.01)
+    print("called = " .. tostring(called))
 end
 
---@api-stub: LTweenChain:loop
+--@api: LTweenChain:loop
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("loop marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 1 }, 0.01, "linear"):loop(2)
+    chain:start()
+    lurek.tween.update(0.03)
+    print("iteration = " .. tostring(chain:getIteration()))
 end
 
---@api-stub: LTweenChain:onLoop
+--@api: LTweenChain:onLoop
 do
+    local loops = 0
     local chain = lurek.tween.newChain()
-    print("onLoop marker chain=" .. tostring(chain ~= nil))
+    chain:to({ x = 0 }, { x = 1 }, 0.01, "linear"):loop(2):onLoop(function() loops = loops + 1 end)
+    chain:start()
+    lurek.tween.update(0.03)
+    print("loops = " .. tostring(loops))
 end
 
---@api-stub: LTweenChain:onComplete
+--@api: LTweenChain:onComplete
 do
+    local done = false
     local chain = lurek.tween.newChain()
-    print("onComplete marker chain=" .. tostring(chain ~= nil))
+    chain:wait(0.01):onComplete(function() done = true end)
+    chain:start()
+    lurek.tween.update(0.02)
+    print("complete callback = " .. tostring(done))
 end
 
---@api-stub: LTweenChain:start
+--@api: LTweenChain:start
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("start marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.1, "linear")
+    chain:start()
+    print("active = " .. tostring(chain:isActive()))
 end
 
---@api-stub: LTweenChain:pause
+--@api: LTweenChain:pause
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("pause marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.1, "linear")
+    chain:start()
+    lurek.tween.update(0.05)
+    chain:pause()
+    print("progress after pause = " .. tostring(chain:getProgress()))
 end
 
---@api-stub: LTweenChain:resume
+--@api: LTweenChain:resume
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("resume marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.1, "linear")
+    chain:start()
+    chain:pause()
+    chain:resume()
+    print("active after resume = " .. tostring(chain:isActive()))
 end
 
---@api-stub: LTweenChain:stop
+--@api: LTweenChain:stop
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("stop marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.1, "linear")
+    chain:start()
+    chain:stop()
+    print("active after stop = " .. tostring(chain:isActive()))
 end
 
---@api-stub: LTweenChain:getProgress
+--@api: LTweenChain:getProgress
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("getProgress marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.2, "linear")
+    chain:start()
+    lurek.tween.update(0.1)
+    print("progress = " .. tostring(chain:getProgress()))
 end
 
---@api-stub: LTweenChain:isComplete
+--@api: LTweenChain:isComplete
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("isComplete marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.05, "linear")
+    chain:start()
+    lurek.tween.update(0.06)
+    print("isComplete = " .. tostring(chain:isComplete()))
 end
 
---@api-stub: LTweenChain:isActive
+--@api: LTweenChain:isActive
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("isActive marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.1, "linear")
+    chain:start()
+    print("isActive = " .. tostring(chain:isActive()))
 end
 
---@api-stub: LTweenChain:getIteration
+--@api: LTweenChain:getIteration
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("getIteration marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 1 }, 0.01, "linear"):loop(2)
+    chain:start()
+    lurek.tween.update(0.03)
+    print("iteration = " .. tostring(chain:getIteration()))
 end
 
---@api-stub: LTweenChain:clear
+--@api: LTweenChain:clear
 do
     local chain = lurek.tween.newChain()
-    print("clear marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1 })
+    chain:clear()
+    print("len after clear = " .. tostring(chain:len()))
 end
 
---@api-stub: LTweenChain:cursor
+--@api: LTweenChain:cursor
 do
     local chain = lurek.tween.newChain()
-    print("cursor marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1 })
+    print("cursor = " .. tostring(chain:cursor()))
 end
 
---@api-stub: LTweenChain:isFinished
+--@api: LTweenChain:isFinished
 do
     local chain = lurek.tween.newChain()
-    print("isFinished marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.01 })
+    chain:tick(0.02)
+    print("isFinished = " .. tostring(chain:isFinished()))
 end
 
---@api-stub: LTweenChain:isLooping
+--@api: LTweenChain:isLooping
 do
     local chain = lurek.tween.newChain()
-    print("isLooping marker chain=" .. tostring(chain ~= nil))
+    chain:setLooping(true)
+    print("isLooping = " .. tostring(chain:isLooping()))
 end
 
---@api-stub: LTweenChain:jumpTo
+--@api: LTweenChain:jumpTo
 do
     local chain = lurek.tween.newChain()
-    print("jumpTo marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "a" })
+    chain:push({ from = 1.0, to = 2.0, duration = 0.1, label = "b" })
+    chain:jumpTo(2)
+    print("cursor after jump = " .. tostring(chain:cursor()))
 end
 
---@api-stub: LTweenChain:len
+--@api: LTweenChain:len
 do
     local chain = lurek.tween.newChain()
-    print("len marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1 })
+    chain:push({ from = 1.0, to = 2.0, duration = 0.1 })
+    print("len = " .. tostring(chain:len()))
 end
 
---@api-stub: LTweenChain:push
+--@api: LTweenChain:push
 do
     local chain = lurek.tween.newChain()
-    print("push marker chain=" .. tostring(chain ~= nil))
+    local idx = chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "intro" })
+    print("push index = " .. tostring(idx))
 end
 
---@api-stub: LTweenChain:reset
+--@api: LTweenChain:reset
 do
     local chain = lurek.tween.newChain()
-    print("reset marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 5.0, duration = 1.0 })
+    chain:tick(0.5)
+    chain:reset()
+    print("value after reset = " .. tostring(chain:value()))
 end
 
---@api-stub: LTweenChain:setLooping
+--@api: LTweenChain:setLooping
 do
     local chain = lurek.tween.newChain()
-    print("setLooping marker chain=" .. tostring(chain ~= nil))
+    chain:setLooping(true)
+    print("looping = " .. tostring(chain:isLooping()))
 end
 
---@api-stub: LTweenChain:tick
+--@api: LTweenChain:tick
 do
     local chain = lurek.tween.newChain()
-    print("tick marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "step" })
+    local events = chain:tick(0.2)
+    print("tick events = " .. tostring(#events))
 end
 
---@api-stub: LTweenChain:type
+--@api: LTweenChain:type
 do
     local chain = lurek.tween.newChain()
-    print("type marker chain=" .. tostring(chain ~= nil))
+    print("type = " .. tostring(chain:type()))
+    print("typeOf LTweenChain = " .. tostring(chain:typeOf("LTweenChain")))
 end
 
---@api-stub: LTweenChain:typeOf
+--@api: LTweenChain:typeOf
 do
     local chain = lurek.tween.newChain()
-    print("typeOf marker chain=" .. tostring(chain ~= nil))
+    print("typeOf LTweenChain = " .. tostring(chain:typeOf("LTweenChain")))
+    print("type = " .. tostring(chain:type()))
 end
 
---@api-stub: LTweenChain:value
+--@api: LTweenChain:value
 do
     local chain = lurek.tween.newChain()
-    print("value marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 5.0, duration = 1.0 })
+    chain:tick(0.5)
+    print("value = " .. tostring(chain:value()))
 end
 
 --- Tween Part 2: LTween extended, LTweenParallel, LTweenSequence, LTweenState, advanced module fns
 
---@api-stub: Lto:getDuration
+--@api: Lto:getDuration
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
@@ -602,7 +681,7 @@ do
     print("type=" .. tw:type())
 end
 
---@api-stub: LTween:await
+--@api: LTween:await
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
@@ -616,7 +695,7 @@ do
     print("coroutine status = " .. coroutine.status(co))
 end
 
---@api-stub: LTween:getDuration
+--@api: LTween:getDuration
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
@@ -624,7 +703,7 @@ do
     print("remaining=" .. tw:getRemaining())
 end
 
---@api-stub: LTween:getEasingName
+--@api: LTween:getEasingName
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
@@ -635,7 +714,7 @@ do
     print("typeOf=" .. tostring(tw:typeOf("LTween")))
 end
 
---@api-stub: LTween:getElapsed
+--@api: LTween:getElapsed
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
@@ -644,7 +723,7 @@ do
     print("x=" .. target.x)
 end
 
---@api-stub: LTween:getProgress
+--@api: LTween:getProgress
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
@@ -653,7 +732,7 @@ do
     print("x=" .. target.x)
 end
 
---@api-stub: LTween:getRemaining
+--@api: LTween:getRemaining
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
@@ -662,7 +741,7 @@ do
     print("active=" .. tostring(tw:isActive()))
 end
 
---@api-stub: LTween:isActive
+--@api: LTween:isActive
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
@@ -671,7 +750,7 @@ do
     print("active after = " .. tostring(tw:isActive()))
 end
 
---@api-stub: LTween:setRelative
+--@api: LTween:setRelative
 do
     local target = { x = 10.0 }
     local tw = lurek.tween.to(target, { x = 5 }, 1.0, "linear")
@@ -681,7 +760,7 @@ do
     print("type=" .. tw:type())
 end
 
---@api-stub: LTween:type
+--@api: LTween:type
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
@@ -689,7 +768,7 @@ do
     print("active=" .. tostring(tw:isActive()))
 end
 
---@api-stub: LTween:typeOf
+--@api: LTween:typeOf
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
@@ -697,7 +776,7 @@ do
     print("typeOf Object = " .. tostring(tw:typeOf("Object")))
 end
 
---@api-stub: Lparallel:tween
+--@api: Lparallel:tween
 do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
@@ -706,7 +785,7 @@ do
     par:start() ; par:cancel()
 end
 
---@api-stub: LTweenParallel:isActive
+--@api: LTweenParallel:isActive
 do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
@@ -715,7 +794,7 @@ do
     par:start() ; par:cancel()
 end
 
---@api-stub: LTweenParallel:onComplete
+--@api: LTweenParallel:onComplete
 do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
@@ -724,7 +803,7 @@ do
     par:start() ; par:cancel()
 end
 
---@api-stub: LTweenParallel:start
+--@api: LTweenParallel:start
 do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
@@ -733,7 +812,7 @@ do
     par:start() ; par:cancel()
 end
 
---@api-stub: LTweenParallel:tween
+--@api: LTweenParallel:tween
 do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
@@ -742,7 +821,7 @@ do
     par:start() ; par:cancel()
 end
 
---@api-stub: LTweenParallel:type
+--@api: LTweenParallel:type
 do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
@@ -751,7 +830,7 @@ do
     par:start() ; par:cancel()
 end
 
---@api-stub: LTweenParallel:typeOf
+--@api: LTweenParallel:typeOf
 do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear") ; par:tween(0.5, b, { y = 20 }, "easeinquad") ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
@@ -760,7 +839,7 @@ do
     par:start() ; par:cancel()
 end
 
---@api-stub: Lsequence:tween
+--@api: Lsequence:tween
 do
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
@@ -774,7 +853,7 @@ do
     print("seq alpha=" .. obj.alpha)
 end
 
---@api-stub: LTweenSequence:onComplete
+--@api: LTweenSequence:onComplete
 do
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
@@ -785,7 +864,7 @@ do
     print("seq active = " .. tostring(seq:isActive()))
 end
 
---@api-stub: LTweenSequence:tween
+--@api: LTweenSequence:tween
 do
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
@@ -797,7 +876,7 @@ do
     print("seq active = " .. tostring(seq:isActive()))
 end
 
---@api-stub: LTweenSequence:await
+--@api: LTweenSequence:await
 do
     local obj = { x = 0.0 }
     local seq = lurek.tween.sequence()
@@ -813,7 +892,7 @@ do
     print("coroutine status = " .. coroutine.status(co))
 end
 
---@api-stub: LTweenSequence:isActive
+--@api: LTweenSequence:isActive
 do
     local obj = { x = 0.0 }
     local seq = lurek.tween.sequence()
@@ -823,7 +902,7 @@ do
     print("seq active after = " .. tostring(seq:isActive()))
 end
 
---@api-stub: LTweenSequence:start
+--@api: LTweenSequence:start
 do
     local obj = { x = 0.0 }
     local seq = lurek.tween.sequence()
@@ -834,21 +913,21 @@ do
     print("seq x = " .. obj.x)
 end
 
---@api-stub: LTweenSequence:type
+--@api: LTweenSequence:type
 do
     local seq = lurek.tween.sequence()
     print("seq type = " .. seq:type())
     print("seq typeOf = " .. tostring(seq:typeOf("LTweenSequence")))
 end
 
---@api-stub: LTweenSequence:typeOf
+--@api: LTweenSequence:typeOf
 do
     local seq = lurek.tween.sequence()
     print("typeOf LTweenSequence = " .. tostring(seq:typeOf("LTweenSequence")))
     print("typeOf Object = " .. tostring(seq:typeOf("Object")))
 end
 
---@api-stub: LTweenState:isComplete
+--@api: LTweenState:isComplete
 do
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
@@ -859,7 +938,7 @@ do
     print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 
---@api-stub: LTweenState:lerp
+--@api: LTweenState:lerp
 do
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
@@ -870,7 +949,7 @@ do
     print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 
---@api-stub: LTweenState:t
+--@api: LTweenState:t
 do
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
@@ -881,7 +960,7 @@ do
     print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 
---@api-stub: LTweenState:tick
+--@api: LTweenState:tick
 do
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
@@ -892,7 +971,7 @@ do
     print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 
---@api-stub: LTweenState:type
+--@api: LTweenState:type
 do
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
@@ -903,7 +982,7 @@ do
     print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 
---@api-stub: LTweenState:typeOf
+--@api: LTweenState:typeOf
 do
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
@@ -914,7 +993,7 @@ do
     print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 
---@api-stub: lurek.tween.cancelAll
+--@api: lurek.tween.cancelAll
 do
     local target = { v = 0.0 }
     lurek.tween.to(target, { v = 1 }, 2.0, "linear")
@@ -925,7 +1004,7 @@ do
     print("easing_count=" .. #names)
 end
 
---@api-stub: lurek.tween.getEasingNames
+--@api: lurek.tween.getEasingNames
 do
     local target = { v = 0.0 }
     lurek.tween.to(target, { v = 1 }, 2.0, "linear")
@@ -936,7 +1015,7 @@ do
     print("easing_count=" .. #names)
 end
 
---@api-stub: LSpring:isActive
+--@api: LSpring:isActive
 do
     local obj = { x = 0 }
     local sp = lurek.tween.spring(obj, { x = 100 }, { stiffness = 200, damping = 20 })
@@ -946,7 +1025,7 @@ do
     print("spring active:", active, "settled:", settled)
 end
 
---@api-stub: LSpring:isSettled
+--@api: LSpring:isSettled
 do
     local obj = { x = 0 }
     local sp = lurek.tween.spring(obj, { x = 100 }, { stiffness = 200, damping = 20 })
@@ -956,7 +1035,7 @@ do
     print("spring active:", active, "settled:", settled)
 end
 
---@api-stub: LSpring:update
+--@api: LSpring:update
 do
     local obj = { x = 0 }
     local sp = lurek.tween.spring(obj, { x = 100 }, { stiffness = 200, damping = 20 })
@@ -965,7 +1044,7 @@ do
     print("spring still active:", still_active)
 end
 
---@api-stub: LSpring:type
+--@api: LSpring:type
 do
     local state = {v = 0}
     local sp = lurek.tween.spring(state, {v = 50}, {stiffness = 150, damping = 15})
@@ -974,7 +1053,7 @@ do
     print("spring type:", t, "typeOf:", ok)
 end
 
---@api-stub: LSpring:typeOf
+--@api: LSpring:typeOf
 do
     local state = {v = 0}
     local sp = lurek.tween.spring(state, {v = 50}, {stiffness = 150, damping = 15})

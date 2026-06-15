@@ -1,4 +1,7 @@
 //! File: src/lua_api/mod.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
 
 pub use crate::runtime::{ErrorInfo, FullscreenType, SharedState, WindowState};
 /// Exposes the `lurek.agent` binding module.

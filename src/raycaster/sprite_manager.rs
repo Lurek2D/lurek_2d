@@ -2,6 +2,7 @@
 //! It keeps sprite placement, identity, and visibility data in one registry so gameplay systems can add props, pickups, or actors cheaply.
 //! When the camera needs them, sprites are exposed in depth-aware order that fits alpha-friendly first-person rendering.
 //! The registry therefore acts as the dynamic object layer that rides on top of static map geometry.
+//! Module API documentation
 
 fn normalize_signed_angle(mut angle: f32) -> f32 {
     while angle > std::f32::consts::PI {

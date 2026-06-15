@@ -4,44 +4,44 @@
 
 --- Globe Module Part 1: factories, registry, constants, utilities
 
---@api-stub: lurek.globe.MAX_PROVINCES
+--@api: lurek.globe.MAX_PROVINCES
 do
     print("max provinces = " .. lurek.globe.MAX_PROVINCES)
     print("capacity ok = " .. tostring(lurek.globe.MAX_PROVINCES > 0))
 end
 
---@api-stub: lurek.globe.LOD_FAR
+--@api: lurek.globe.LOD_FAR
 do
     print("LOD_FAR = " .. lurek.globe.LOD_FAR)
     print("LOD_FAR > LOD_MID: " .. tostring(lurek.globe.LOD_FAR > lurek.globe.LOD_MID))
 end
 
---@api-stub: lurek.globe.LOD_MID
+--@api: lurek.globe.LOD_MID
 do
     print("LOD_MID = " .. lurek.globe.LOD_MID)
     print("LOD_MID between FAR and NEAR: " .. tostring(lurek.globe.LOD_FAR > lurek.globe.LOD_MID and lurek.globe.LOD_MID > lurek.globe.LOD_NEAR))
 end
 
---@api-stub: lurek.globe.LOD_NEAR
+--@api: lurek.globe.LOD_NEAR
 do
     print("LOD_NEAR = " .. lurek.globe.LOD_NEAR)
     print("LOD_NEAR smallest: " .. tostring(lurek.globe.LOD_NEAR < lurek.globe.LOD_MID))
 end
 
---@api-stub: lurek.globe.new
+--@api: lurek.globe.new
 do
     local g = lurek.globe.new("test_globe")
     print("globe type = " .. g:type())
 end
 
---@api-stub: lurek.globe.newRegistry
+--@api: lurek.globe.newRegistry
 do
     local reg = lurek.globe.newRegistry()
     print("registry created = " .. tostring(reg ~= nil))
     print("registry type = " .. reg:type())
 end
 
---@api-stub: lurek.globe.get
+--@api: lurek.globe.get
 do
     lurek.globe.new("my_globe")
     local g = lurek.globe.get("my_globe")
@@ -50,20 +50,20 @@ do
     end
 end
 
---@api-stub: lurek.globe.generateVoronoi
+--@api: lurek.globe.generateVoronoi
 do
     local g = lurek.globe.generateVoronoi("voronoi_globe", { { 0, 0 }, { 30, 45 }, { -20, 90 }, { 60, -30 } }, {})
     print("voronoi provinces = " .. g:provinceCount())
 end
 
---@api-stub: lurek.globe.loadFromTOML
+--@api: lurek.globe.loadFromTOML
 do
     local toml = '[[province]]\nid = 1\ncentroid = [10.0, 20.0]\nvertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]'
     local g = lurek.globe.loadFromTOML("toml_globe", toml)
     print("toml globe provinces = " .. g:provinceCount())
 end
 
---@api-stub: lurek.globe.loadFromTOMLFile
+--@api: lurek.globe.loadFromTOMLFile
 do
     local path = "save/globe_example.toml"
     lurek.filesystem.write(path, "[[province]]\nid = 1\ncentroid = [10.0, 20.0]\nvertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]\n")
@@ -72,19 +72,19 @@ do
     print("toml file globe provinces = " .. g:provinceCount())
 end
 
---@api-stub: lurek.globe.loadFromPNG
+--@api: lurek.globe.loadFromPNG
 do
     local g = lurek.globe.loadFromPNG("png_globe", "assets/textures/province_map.png")
     print("png globe provinces = " .. g:provinceCount())
 end
 
---@api-stub: lurek.globe.greatCircleDistance
+--@api: lurek.globe.greatCircleDistance
 do
     local d = lurek.globe.greatCircleDistance(0, 0, 90, 0)
     print("distance 0,0 -> 90,0 = " .. d)
 end
 
---@api-stub: lurek.globe.greatCirclePath
+--@api: lurek.globe.greatCirclePath
 do
     local points = lurek.globe.greatCirclePath(0, 0, 45, 90, 5)
     print("path has " .. #points .. " points")
@@ -93,13 +93,13 @@ do
     end
 end
 
---@api-stub: lurek.globe.latLonToUnit
+--@api: lurek.globe.latLonToUnit
 do
     local v = lurek.globe.latLonToUnit(0, 0)
     print("unit vec = " .. v[1] .. "," .. v[2] .. "," .. v[3])
 end
 
---@api-stub: lurek.globe.raySphereIntersect
+--@api: lurek.globe.raySphereIntersect
 do
     local t = lurek.globe.raySphereIntersect(0.0, 0.0, -2.0, 0.0, 0.0, 1.0, 1.0)
     print("hit distance = " .. tostring(t))
@@ -108,26 +108,26 @@ end
 
 --- Globe Module Part 2: LGlobe methods (camera, provinces, markers, layers, fog)
 
---@api-stub: LGlobe:getName
+--@api: LGlobe:getName
 do
     local g = lurek.globe.new("named_globe")
     print("name = " .. g:getName())
 end
 
---@api-stub: LGlobe:provinceCount
+--@api: LGlobe:provinceCount
 do
     local g = lurek.globe.new("count_globe")
     print("provinces = " .. g:provinceCount())
 end
 
---@api-stub: LGlobe:addProvince
+--@api: LGlobe:addProvince
 do
     local g = lurek.globe.new("prov_globe")
     local ok = g:addProvince({ id = 1, centroid = { 10.0, 20.0 }, vertices = { { 9, 19 }, { 11, 19 }, { 11, 21 }, { 9, 21 } } })
     print("added = " .. tostring(ok))
 end
 
---@api-stub: LGlobe:removeProvince
+--@api: LGlobe:removeProvince
 do
     local g = lurek.globe.new("rem_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -135,7 +135,7 @@ do
     print("removed = " .. tostring(ok))
 end
 
---@api-stub: LGlobe:getNeighbors
+--@api: LGlobe:getNeighbors
 do
     local g = lurek.globe.new("neigh_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}, neighbors = {2}})
@@ -143,7 +143,7 @@ do
     print("neighbors of 1: " .. #n)
 end
 
---@api-stub: LGlobe:setProvinceAttr
+--@api: LGlobe:setProvinceAttr
 do
     local g = lurek.globe.new("attr_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -151,7 +151,7 @@ do
     print("set attr owner")
 end
 
---@api-stub: LGlobe:getProvinceAttr
+--@api: LGlobe:getProvinceAttr
 do
     local g = lurek.globe.new("rattr_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -160,7 +160,7 @@ do
     print("terrain = " .. tostring(val))
 end
 
---@api-stub: LGlobe:setProvinceSector
+--@api: LGlobe:setProvinceSector
 do
     local g = lurek.globe.new("sec_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -168,7 +168,7 @@ do
     print("sector set")
 end
 
---@api-stub: LGlobe:getProvinceSector
+--@api: LGlobe:getProvinceSector
 do
     local g = lurek.globe.new("gsec_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -177,7 +177,7 @@ do
     print("sector = " .. tostring(s))
 end
 
---@api-stub: LGlobe:getSectorProvinces
+--@api: LGlobe:getSectorProvinces
 do
     local g = lurek.globe.new("sp_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -186,14 +186,14 @@ do
     print("west has " .. #ids .. " provinces")
 end
 
---@api-stub: LGlobe:setCamera
+--@api: LGlobe:setCamera
 do
     local g = lurek.globe.new("cam_globe")
     g:setCamera(45, 90, 2.0)
     print("camera set")
 end
 
---@api-stub: LGlobe:getCamera
+--@api: LGlobe:getCamera
 do
     local g = lurek.globe.new("gcam_globe")
     g:setCamera(30, 60, 1.5)
@@ -201,7 +201,7 @@ do
     print("camera: " .. lat .. "," .. lon .. " z=" .. z)
 end
 
---@api-stub: LGlobe:pan
+--@api: LGlobe:pan
 do
     local g = lurek.globe.new("pan_globe")
     g:setCamera(0, 0, 1.0)
@@ -210,7 +210,7 @@ do
     print("after pan: " .. lat .. "," .. lon)
 end
 
---@api-stub: LGlobe:zoom
+--@api: LGlobe:zoom
 do
     local g = lurek.globe.new("zoom_globe")
     g:setCamera(0, 0, 1.0)
@@ -219,21 +219,21 @@ do
     print("zoom = " .. z)
 end
 
---@api-stub: LGlobe:getLod
+--@api: LGlobe:getLod
 do
     local g = lurek.globe.new("lod_globe")
     g:setCamera(0, 0, 0.5)
     print("lod = " .. g:getLod())
 end
 
---@api-stub: LGlobe:addMarker
+--@api: LGlobe:addMarker
 do
     local g = lurek.globe.new("mark_globe")
     local id = g:addMarker("city", 51.5, -0.12, "London")
     print("marker id = " .. id)
 end
 
---@api-stub: LGlobe:moveMarker
+--@api: LGlobe:moveMarker
 do
     local g = lurek.globe.new("mv_globe")
     local id = g:addMarker("pin", 0, 0)
@@ -241,7 +241,7 @@ do
     print("marker moved")
 end
 
---@api-stub: LGlobe:removeMarker
+--@api: LGlobe:removeMarker
 do
     local g = lurek.globe.new("rm_globe")
     local id = g:addMarker("pin", 0, 0)
@@ -249,7 +249,7 @@ do
     print("removed marker = " .. tostring(ok))
 end
 
---@api-stub: LGlobe:setMarkerAttr
+--@api: LGlobe:setMarkerAttr
 do
     local g = lurek.globe.new("ma_globe")
     local id = g:addMarker("city", 48.8, 2.3, "Paris")
@@ -257,7 +257,7 @@ do
     print("marker attr set")
 end
 
---@api-stub: LGlobe:getMarkerAttr
+--@api: LGlobe:getMarkerAttr
 do
     local g = lurek.globe.new("ga_globe")
     local id = g:addMarker("city", 48.8, 2.3, "Paris")
@@ -266,7 +266,7 @@ do
     print("country = " .. tostring(val))
 end
 
---@api-stub: LGlobe:setMarkerVisible
+--@api: LGlobe:setMarkerVisible
 do
     local g = lurek.globe.new("vis_globe")
     local id = g:addMarker("pin", 0, 0)
@@ -274,7 +274,7 @@ do
     print("marker hidden")
 end
 
---@api-stub: LGlobe:setMarkerPulse
+--@api: LGlobe:setMarkerPulse
 do
     local g = lurek.globe.new("pulse_globe")
     local id = g:addMarker("alert", 0, 0, "!")
@@ -282,7 +282,7 @@ do
     print("pulse set")
 end
 
---@api-stub: LGlobe:setMarkerRotation
+--@api: LGlobe:setMarkerRotation
 do
     local g = lurek.globe.new("rot_globe")
     local id = g:addMarker("spin", 0, 0)
@@ -290,14 +290,14 @@ do
     print("rotation = 90 dps")
 end
 
---@api-stub: LGlobe:addLabel
+--@api: LGlobe:addLabel
 do
     local g = lurek.globe.new("lbl_globe")
     local id = g:addLabel("region", 40, -74, "New York")
     print("label id = " .. id)
 end
 
---@api-stub: LGlobe:setLabelText
+--@api: LGlobe:setLabelText
 do
     local g = lurek.globe.new("ltxt_globe")
     local id = g:addLabel("city", 0, 0, "old")
@@ -305,7 +305,7 @@ do
     print("label updated")
 end
 
---@api-stub: LGlobe:setLabelVisible
+--@api: LGlobe:setLabelVisible
 do
     local g = lurek.globe.new("lvis_globe")
     local id = g:addLabel("info", 0, 0, "text")
@@ -313,7 +313,7 @@ do
     print("label hidden")
 end
 
---@api-stub: LGlobe:removeLabel
+--@api: LGlobe:removeLabel
 do
     local g = lurek.globe.new("rlbl_globe")
     local id = g:addLabel("tmp", 0, 0, "temp")
@@ -321,14 +321,14 @@ do
     print("label removed = " .. tostring(ok))
 end
 
---@api-stub: LGlobe:addArc
+--@api: LGlobe:addArc
 do
     local g = lurek.globe.new("arc_globe")
     local id = g:addArc(0, 0, 45, 90, 12)
     print("arc id = " .. id)
 end
 
---@api-stub: LGlobe:removeArc
+--@api: LGlobe:removeArc
 do
     local g = lurek.globe.new("rarc_globe")
     local id = g:addArc(0, 0, 30, 60)
@@ -336,7 +336,7 @@ do
     print("arc removed = " .. tostring(ok))
 end
 
---@api-stub: LGlobe:addLayer
+--@api: LGlobe:addLayer
 do
     local g = lurek.globe.new("layer_globe")
     g:addLayer("terrain", 0)
@@ -344,7 +344,7 @@ do
     print("layers added")
 end
 
---@api-stub: LGlobe:removeLayer
+--@api: LGlobe:removeLayer
 do
     local g = lurek.globe.new("rl_globe")
     g:addLayer("temp_layer")
@@ -352,7 +352,7 @@ do
     print("layer removed = " .. tostring(ok))
 end
 
---@api-stub: LGlobe:setLayerVisible
+--@api: LGlobe:setLayerVisible
 do
     local g = lurek.globe.new("lv_globe")
     g:addLayer("overlay")
@@ -360,7 +360,7 @@ do
     print("overlay hidden")
 end
 
---@api-stub: LGlobe:setLayerAlpha
+--@api: LGlobe:setLayerAlpha
 do
     local g = lurek.globe.new("la_globe")
     g:addLayer("fog_layer")
@@ -368,7 +368,7 @@ do
     print("layer alpha = 0.5")
 end
 
---@api-stub: LGlobe:setLayerColor
+--@api: LGlobe:setLayerColor
 do
     local g = lurek.globe.new("lc_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -377,14 +377,14 @@ do
     print("province 1 colored red in highlight layer")
 end
 
---@api-stub: LGlobe:setHeatLayer
+--@api: LGlobe:setHeatLayer
 do
     local g = lurek.globe.new("heat_globe")
     g:setHeatLayer("population", "pop", 0, 1000000, 0.7)
     print("heat layer set")
 end
 
---@api-stub: LGlobe:removeHeatLayer
+--@api: LGlobe:removeHeatLayer
 do
     local g = lurek.globe.new("rheat_globe")
     g:setHeatLayer("income", "gdp", 0, 50000, 0.5)
@@ -392,21 +392,21 @@ do
     print("heat removed = " .. tostring(ok))
 end
 
---@api-stub: LGlobe:setBorders
+--@api: LGlobe:setBorders
 do
     local g = lurek.globe.new("bord_globe")
     g:setBorders(true)
     print("borders enabled")
 end
 
---@api-stub: LGlobe:setActiveViewer
+--@api: LGlobe:setActiveViewer
 do
     local g = lurek.globe.new("fow_globe")
     g:setActiveViewer("player1")
     print("active viewer = player1")
 end
 
---@api-stub: LGlobe:revealProvince
+--@api: LGlobe:revealProvince
 do
     local g = lurek.globe.new("rev_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -414,7 +414,7 @@ do
     print("province 1 revealed")
 end
 
---@api-stub: LGlobe:hideProvince
+--@api: LGlobe:hideProvince
 do
     local g = lurek.globe.new("hide_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -422,14 +422,14 @@ do
     print("province 1 hidden")
 end
 
---@api-stub: LGlobe:revealAll
+--@api: LGlobe:revealAll
 do
     local g = lurek.globe.new("rall_globe")
     g:revealAll("player1")
     print("all revealed for player1")
 end
 
---@api-stub: LGlobe:isVisible
+--@api: LGlobe:isVisible
 do
     local g = lurek.globe.new("isv_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -437,7 +437,7 @@ do
     print("visible = " .. tostring(g:isVisible("p1", 1)))
 end
 
---@api-stub: LGlobe:setFogState
+--@api: LGlobe:setFogState
 do
     local g = lurek.globe.new("fs_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -445,7 +445,7 @@ do
     print("fog state set to explored")
 end
 
---@api-stub: LGlobe:getFogState
+--@api: LGlobe:getFogState
 do
     local g = lurek.globe.new("gfs_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -454,14 +454,14 @@ do
     print("fog = " .. state)
 end
 
---@api-stub: LGlobe:encodeFogBase64
+--@api: LGlobe:encodeFogBase64
 do
     local g = lurek.globe.new("enc_globe")
     local b64 = g:encodeFogBase64("p1")
     print("encoded fog length = " .. #b64)
 end
 
---@api-stub: LGlobe:decodeFogBase64
+--@api: LGlobe:decodeFogBase64
 do
     local g = lurek.globe.new("dec_globe")
     local b64 = g:encodeFogBase64("p1")
@@ -469,7 +469,7 @@ do
     print("decoded = " .. tostring(ok))
 end
 
---@api-stub: LGlobe:findPath
+--@api: LGlobe:findPath
 do
     local g = lurek.globe.new("path_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}, neighbors = {2}})
@@ -477,7 +477,7 @@ do
     print("path length = " .. #(g:findPath(1, 2) or {}))
 end
 
---@api-stub: LGlobe:reachable
+--@api: LGlobe:reachable
 do
     local g = lurek.globe.new("reach_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}, neighbors = {2}})
@@ -487,7 +487,7 @@ do
     print("cost to 2 = " .. tostring(costs[2]))
 end
 
---@api-stub: LGlobe:cacheReachability
+--@api: LGlobe:cacheReachability
 do
     local g = lurek.globe.new("cache_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -495,7 +495,7 @@ do
     print("reachability cached")
 end
 
---@api-stub: LGlobe:getCachedReachability
+--@api: LGlobe:getCachedReachability
 do
     local g = lurek.globe.new("gcache_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -505,28 +505,28 @@ do
     print("cached cost to 1 = " .. tostring(costs[1]))
 end
 
---@api-stub: LGlobe:pick
+--@api: LGlobe:pick
 do
     local g = lurek.globe.new("pick_globe")
     local id = g:pick(400, 300)
     print("picked province = " .. tostring(id))
 end
 
---@api-stub: LGlobe:pickLatLon
+--@api: LGlobe:pickLatLon
 do
     local g = lurek.globe.new("pll_globe")
     local cx, cy = g:pickLatLon(400, 300)
     print("centroid = " .. tostring(cx) .. "," .. tostring(cy))
 end
 
---@api-stub: LGlobe:pickRaycast
+--@api: LGlobe:pickRaycast
 do
     local g = lurek.globe.new("pray_globe")
     local id = g:pickRaycast(400, 300, 32)
     print("raycast pick = " .. tostring(id))
 end
 
---@api-stub: LGlobe:setProvinceTexture
+--@api: LGlobe:setProvinceTexture
 do
     local g = lurek.globe.new("tex_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -534,7 +534,7 @@ do
     print("province texture set")
 end
 
---@api-stub: LGlobe:clearProvinceTexture
+--@api: LGlobe:clearProvinceTexture
 do
     local g = lurek.globe.new("ctex_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -543,7 +543,7 @@ do
     print("texture cleared")
 end
 
---@api-stub: LGlobe:exportProvinceMeshOBJ
+--@api: LGlobe:exportProvinceMeshOBJ
 do
     local g = lurek.globe.new("obj_globe")
     g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
@@ -551,28 +551,28 @@ do
     print("OBJ length = " .. #obj)
 end
 
---@api-stub: LGlobe:setRotation
+--@api: LGlobe:setRotation
 do
     local g = lurek.globe.new("srot_globe")
     g:setRotation(45)
     print("rotation = 45 deg")
 end
 
---@api-stub: LGlobe:setAutoRotationSpeed
+--@api: LGlobe:setAutoRotationSpeed
 do
     local g = lurek.globe.new("arot_globe")
     g:setAutoRotationSpeed(10)
     print("auto rotation = 10 dps")
 end
 
---@api-stub: LGlobe:setTimeOfDay
+--@api: LGlobe:setTimeOfDay
 do
     local g = lurek.globe.new("tod_globe")
     g:setTimeOfDay(14.5)
     print("time = 14:30")
 end
 
---@api-stub: LGlobe:getTimeOfDay
+--@api: LGlobe:getTimeOfDay
 do
     local g = lurek.globe.new("gtod_globe")
     g:setTimeOfDay(8.0)
@@ -580,20 +580,20 @@ do
     print("time of day = " .. t)
 end
 
---@api-stub: LGlobe:update
+--@api: LGlobe:update
 do
     local g = lurek.globe.new("upd_globe")
     g:update(0.016)
     print("globe updated")
 end
 
---@api-stub: LGlobe:type
+--@api: LGlobe:type
 do
     local g = lurek.globe.new("type_globe")
     print("type = " .. g:type())
 end
 
---@api-stub: LGlobe:typeOf
+--@api: LGlobe:typeOf
 do
     local g = lurek.globe.new("typeof_globe")
     print("is Globe = " .. tostring(g:typeOf("LGlobe")))
@@ -601,14 +601,14 @@ end
 
 --- Globe Module: LGlobeRegistry methods
 
---@api-stub: LGlobeRegistry:get
+--@api: LGlobeRegistry:get
 do
     local reg = lurek.globe.newRegistry()
     reg:new("earth")
     print("registry get = " .. tostring(reg:get("earth")))
 end
 
---@api-stub: LGlobeRegistry:names
+--@api: LGlobeRegistry:names
 do
     local reg = lurek.globe.newRegistry()
     reg:new("earth")
@@ -616,39 +616,39 @@ do
     print("registry names count = " .. #reg:names())
 end
 
---@api-stub: LGlobeRegistry:new
+--@api: LGlobeRegistry:new
 do
     local reg = lurek.globe.newRegistry()
     print("registry new = " .. tostring(reg:new("mars", { radius = 1.0 })))
 end
 
---@api-stub: LGlobeRegistry:remove
+--@api: LGlobeRegistry:remove
 do
     local reg = lurek.globe.newRegistry()
     reg:new("mars")
     print("registry remove = " .. tostring(reg:remove("mars")))
 end
 
---@api-stub: LGlobeRegistry:type
+--@api: LGlobeRegistry:type
 do
     local reg = lurek.globe.newRegistry()
     print("registry type = " .. tostring(reg:type()))
 end
 
---@api-stub: LGlobeRegistry:typeOf
+--@api: LGlobeRegistry:typeOf
 do
     local reg = lurek.globe.newRegistry()
     print("registry typeOf = " .. tostring(reg:typeOf("LGlobeRegistry")))
 end
 
---@api-stub: lurek.globe.remove
+--@api: lurek.globe.remove
 do
     local g = lurek.globe.new("tmp_remove")
     local ok = lurek.globe.remove("tmp_remove")
     print("removed=" .. tostring(ok))
 end
 
---@api-stub: LGlobe:addRegion
+--@api: LGlobe:addRegion
 do
     local g = lurek.globe.new("region_globe")
     local ok = g:addRegion({
@@ -660,7 +660,7 @@ do
     print("region count = " .. g:regionCount())
 end
 
---@api-stub: LGlobe:removeRegion
+--@api: LGlobe:removeRegion
 do
     local g = lurek.globe.new("remove_region_globe")
     g:addRegion({
@@ -673,7 +673,7 @@ do
     print("region count = " .. g:regionCount())
 end
 
---@api-stub: LGlobe:regionCount
+--@api: LGlobe:regionCount
 do
     local g = lurek.globe.new("count_region_globe")
     g:addRegion({
@@ -689,142 +689,163 @@ do
     print("region count = " .. g:regionCount())
 end
 
---@api-stub: LGlobe:setEdgeTags
-do
-    -- TODO: example for LGlobe:setEdgeTags
-    -- keep this block until a real scenario is added
+local function build_demo_globe(name)
+    local g = lurek.globe.new(name)
+    g:addProvince({ id = 1, centroid = { 0, 0 }, vertices = { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } }, neighbors = { 2 } })
+    g:addProvince({ id = 2, centroid = { 0, 5 }, vertices = { { -1, 4 }, { 1, 4 }, { 1, 6 }, { -1, 6 } }, neighbors = { 1, 3 } })
+    g:addProvince({ id = 3, centroid = { 0, 10 }, vertices = { { -1, 9 }, { 1, 9 }, { 1, 11 }, { -1, 11 } }, neighbors = { 2 } })
+    g:addRegion({ id = 10, centroid = { 0, 0 }, vertices = { { -2, -2 }, { 2, -2 }, { 2, 2 }, { -2, 2 } } })
+    g:addRegion({ id = 11, centroid = { 0, 10 }, vertices = { { -2, 8 }, { 2, 8 }, { 2, 12 }, { -2, 12 } } })
+    local a = g:addMarker("city", 0, 0, "Alpha")
+    local b = g:addMarker("city", 0, 10, "Beta")
+    g:setCamera(0, 0, 1.2)
+    return g, a, b
 end
 
-
---@api-stub: LGlobe:getEdgeTags
+--@api: LGlobe:setEdgeTags
 do
-    -- TODO: example for LGlobe:getEdgeTags
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("edge_tags_globe")
+    local ok = g:setEdgeTags(1, 2, { "road", "river" })
+    print("set edge tags = " .. tostring(ok))
+    print("tags count = " .. #(g:getEdgeTags(1, 2) or {}))
 end
 
-
---@api-stub: LGlobe:setRegionAttr
+--@api: LGlobe:getEdgeTags
 do
-    -- TODO: example for LGlobe:setRegionAttr
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("get_edge_tags_globe")
+    g:setEdgeTags(1, 2, { "road", "trade" })
+    local tags = g:getEdgeTags(1, 2)
+    print("edge tags = " .. table.concat(tags, ","))
 end
 
-
---@api-stub: LGlobe:getRegionAttr
+--@api: LGlobe:setRegionAttr
 do
-    -- TODO: example for LGlobe:getRegionAttr
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("region_attr_globe")
+    local ok = g:setRegionAttr(10, "climate", "temperate")
+    print("set region attr = " .. tostring(ok))
+    print("value = " .. tostring(g:getRegionAttr(10, "climate")))
 end
 
-
---@api-stub: LGlobe:screenDeltaToPan
+--@api: LGlobe:getRegionAttr
 do
-    -- TODO: example for LGlobe:screenDeltaToPan
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("get_region_attr_globe")
+    g:setRegionAttr(11, "owner", "faction_b")
+    print("owner = " .. tostring(g:getRegionAttr(11, "owner")))
 end
 
-
---@api-stub: LGlobe:applyMouseDrag
+--@api: LGlobe:screenDeltaToPan
 do
-    -- TODO: example for LGlobe:applyMouseDrag
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("screen_delta_globe")
+    local dlat, dlon = g:screenDeltaToPan(32, -16)
+    print("pan delta = " .. tostring(dlat) .. "," .. tostring(dlon))
 end
 
-
---@api-stub: LGlobe:applyWheelZoom
+--@api: LGlobe:applyMouseDrag
 do
-    -- TODO: example for LGlobe:applyWheelZoom
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("mouse_drag_globe")
+    g:applyMouseDrag(320, 180, 360, 210)
+    local lat, lon, zoom = g:getCamera()
+    print("camera after drag = " .. lat .. "," .. lon .. "," .. zoom)
 end
 
-
---@api-stub: LGlobe:screenToLatLon
+--@api: LGlobe:applyWheelZoom
 do
-    -- TODO: example for LGlobe:screenToLatLon
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("wheel_zoom_globe")
+    g:applyWheelZoom(-1.0)
+    local _, _, zoom = g:getCamera()
+    print("camera zoom = " .. zoom)
 end
 
-
---@api-stub: LGlobe:pickRegions
+--@api: LGlobe:screenToLatLon
 do
-    -- TODO: example for LGlobe:pickRegions
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("screen_latlon_globe")
+    local lat, lon = g:screenToLatLon(320, 180)
+    print("latlon = " .. tostring(lat) .. "," .. tostring(lon))
 end
 
-
---@api-stub: LGlobe:regionsAtLatLon
+--@api: LGlobe:pickRegions
 do
-    -- TODO: example for LGlobe:regionsAtLatLon
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("pick_regions_globe")
+    local ids = g:pickRegions(320, 180)
+    print("picked regions = " .. #ids)
 end
 
-
---@api-stub: LGlobe:pickMarker
+--@api: LGlobe:regionsAtLatLon
 do
-    -- TODO: example for LGlobe:pickMarker
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("regions_at_latlon_globe")
+    local ids = g:regionsAtLatLon(0, 0)
+    print("regions at latlon = " .. #ids)
 end
 
-
---@api-stub: LGlobe:pickSurface
+--@api: LGlobe:pickMarker
 do
-    -- TODO: example for LGlobe:pickSurface
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("pick_marker_globe")
+    local id = g:pickMarker(320, 180, 24)
+    print("picked marker = " .. tostring(id))
 end
 
-
---@api-stub: LGlobe:setMarkerColor
+--@api: LGlobe:pickSurface
 do
-    -- TODO: example for LGlobe:setMarkerColor
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("pick_surface_globe")
+    local hit = g:pickSurface(320, 180, 24)
+    print("picked surface table = " .. tostring(hit ~= nil))
 end
 
-
---@api-stub: LGlobe:setMarkerSize
+--@api: LGlobe:setMarkerColor
 do
-    -- TODO: example for LGlobe:setMarkerSize
-    -- keep this block until a real scenario is added
+    local g, a = build_demo_globe("marker_color_globe")
+    local ok = g:setMarkerColor(a, 1.0, 0.3, 0.2, 0.9)
+    print("set marker color = " .. tostring(ok))
 end
 
-
---@api-stub: LGlobe:setMarkerShape
+--@api: LGlobe:setMarkerSize
 do
-    -- TODO: example for LGlobe:setMarkerShape
-    -- keep this block until a real scenario is added
+    local g, a = build_demo_globe("marker_size_globe")
+    local ok = g:setMarkerSize(a, 18)
+    print("set marker size = " .. tostring(ok))
 end
 
-
---@api-stub: LGlobe:setMarkerIconTexture
+--@api: LGlobe:setMarkerShape
 do
-    -- TODO: example for LGlobe:setMarkerIconTexture
-    -- keep this block until a real scenario is added
+    local g, a = build_demo_globe("marker_shape_globe")
+    local ok = g:setMarkerShape(a, "diamond")
+    print("set marker shape = " .. tostring(ok))
 end
 
-
---@api-stub: LGlobe:distanceBetweenMarkers
+--@api: LGlobe:setMarkerIconTexture
 do
-    -- TODO: example for LGlobe:distanceBetweenMarkers
-    -- keep this block until a real scenario is added
+    local g, a = build_demo_globe("marker_icon_globe")
+    local ok = g:setMarkerIconTexture(a, 7)
+    print("set marker icon texture = " .. tostring(ok))
 end
 
-
---@api-stub: LGlobe:draw
+--@api: LGlobe:distanceBetweenMarkers
 do
-    -- TODO: example for LGlobe:draw
-    -- keep this block until a real scenario is added
+    local g, a, b = build_demo_globe("marker_distance_globe")
+    local d = g:distanceBetweenMarkers(a, b)
+    print("marker distance = " .. tostring(d))
 end
 
-
---@api-stub: LGlobe:findPathWithCosts
+--@api: LGlobe:draw
 do
-    -- TODO: example for LGlobe:findPathWithCosts
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("draw_globe")
+    g:draw()
+    print("draw issued")
+    print("type = " .. g:type())
 end
 
-
---@api-stub: LGlobe:reachableWithCosts
+--@api: LGlobe:findPathWithCosts
 do
-    -- TODO: example for LGlobe:reachableWithCosts
-    -- keep this block until a real scenario is added
+    local g = build_demo_globe("find_costs_globe")
+    local path = g:findPathWithCosts(1, 3)
+    print("path table = " .. type(path))
+    print("path first = " .. tostring(path and path[1]))
 end
 
+--@api: LGlobe:reachableWithCosts
+do
+    local g = build_demo_globe("reachable_costs_globe")
+    local costs = g:reachableWithCosts(1, 10.0)
+    print("cost table = " .. type(costs))
+    print("cost to 2 = " .. tostring(costs[2]))
+end

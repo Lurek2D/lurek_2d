@@ -10,12 +10,12 @@ describe("math + physics integration", function()
     -- @integration lurek.physics.destroyWorld
     -- @integration lurek.physics.newBody
     -- @integration lurek.physics.newWorld
-    -- @covers lurek.math.cos
-    -- @covers lurek.math.sin
-    -- @covers lurek.math.sqrt
-    -- @covers lurek.physics.destroyWorld
-    -- @covers lurek.physics.newBody
-    -- @covers lurek.physics.newWorld
+    -- @integration lurek.math.cos
+    -- @integration lurek.math.sin
+    -- @integration lurek.math.sqrt
+    -- @integration lurek.physics.destroyWorld
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
     it("Vec2 can be used for body positions", function()
         local world_id = lurek.physics.newWorld(0, 100)
         local body_id = lurek.physics.newBody(world_id, 50, 50, "dynamic")

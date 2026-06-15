@@ -9,10 +9,10 @@ describe("integration: localized strings in UI labels", function()
     -- @integration LLabel:getText
     -- @integration LLabel:setText
     -- @integration lurek.ui.newLabel
-    -- @covers lurek.i18n.loadTable
-    -- @covers lurek.i18n.setLanguage
-    -- @covers lurek.i18n.t
-    -- @covers lurek.ui.newLabel
+    -- @integration lurek.i18n.loadTable
+    -- @integration lurek.i18n.setLanguage
+    -- @integration lurek.i18n.t
+    -- @integration lurek.ui.newLabel
     it("localization provides string and UI label stores it", function()
         -- Load English locale inline
         lurek.i18n.setLanguage("en")

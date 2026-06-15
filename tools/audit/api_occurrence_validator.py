@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """API Occurrence Validator -- Check that each lurek.* API has examples.
 
-This tool validates coverage: each API should have at least one --@api-stub:
-marker across all example files. It also flags APIs whose marker appears more
-than once across example files. It counts stub markers only (not actual usage).
+This tool validates coverage: each API should have at least one --@api: or
+--@api-stub: marker across all example files. It also flags APIs whose marker
+appears more than once across example files. It counts markers only
+(not actual usage).
 
 Usage:
     python tools/audit/api_occurrence_validator.py                # coverage report
@@ -11,7 +12,7 @@ Usage:
     python tools/audit/api_occurrence_validator.py --report       # exit 1 if gaps
 
 Exit codes:
-    0  - all APIs have at least one stub
+    0  - all APIs have at least one example marker
     1  - some APIs missing from examples or duplicated (--report only)
     2  - fatal error
 """
@@ -65,8 +66,11 @@ def load_api_entries(json_path: Path) -> Set[str]:
         return set()
 
 
+API_MARKER_RE = re.compile(r'^--@api(?:-stub)?:\s*(.+)$')
+
+
 def scan_example_stubs(examples_dir: Path) -> Dict[str, List[str]]:
-    """Scan all example files for --@api-stub: markers.
+    """Scan all example files for --@api: / --@api-stub: markers.
 
     Returns dict: api_name -> list of files where it appears
     """
@@ -76,8 +80,9 @@ def scan_example_stubs(examples_dir: Path) -> Dict[str, List[str]]:
         try:
             content = lua_file.read_text(encoding='utf-8', errors='replace')
             for line in content.splitlines():
-                if line.strip().startswith('--@api-stub:'):
-                    marker = line.strip()[len('--@api-stub:'):].strip()
+                match = API_MARKER_RE.match(line.strip())
+                if match:
+                    marker = match.group(1).strip()
                     if marker:
                         if marker not in stubs:
                             stubs[marker] = []
@@ -90,7 +95,7 @@ def scan_example_stubs(examples_dir: Path) -> Dict[str, List[str]]:
 
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Check that each lurek.* API has example stubs.",
+        description="Check that each lurek.* API has example markers.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--examples-dir", metavar="PATH",
@@ -150,13 +155,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     pct = (covered / len(all_apis) * 100) if all_apis else 0
     print(f"\n=== API Example Coverage ===")
     print(f"Total APIs: {len(all_apis)}")
-    print(f"With stubs: {covered} ({pct:.1f}%)")
+    print(f"With example markers: {covered} ({pct:.1f}%)")
     print(f"Missing: {len(missing)}")
     print(f"Duplicated: {len(duplicates)}")
     print()
 
     if missing:
-        print("Missing API stubs:")
+        print("Missing API example markers:")
         for api in missing[:20]:
             print(f"  - {api}")
         if len(missing) > 20:
@@ -164,7 +169,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         print()
 
     if duplicates:
-        print("Duplicated API stubs:")
+        print("Duplicated API example markers:")
         for api in duplicates[:20]:
             print(f"  - {api}  [{len(stubs.get(api, []))} markers]")
         if len(duplicates) > 20:

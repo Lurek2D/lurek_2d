@@ -1,4 +1,8 @@
 //! File: src/lua_api/validator_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
 
 use super::SharedState;
 use crate::validator::{

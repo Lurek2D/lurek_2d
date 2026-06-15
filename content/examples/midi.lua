@@ -1,7 +1,7 @@
 --- MIDI Playback Example
 --- Demonstrates MIDI file playback with per-channel control using lurek.midi.
 
---@api-stub: lurek.midi.newPlayer
+--@api: lurek.midi.newPlayer
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.midi.newPlayer(path)
@@ -10,7 +10,7 @@ do
     print("path = " .. tostring(player:getFilePath()))
 end
 
---@api-stub: lurek.midi.loadSoundFont
+--@api: lurek.midi.loadSoundFont
 do
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     local ok, err = pcall(function()
@@ -21,7 +21,7 @@ do
     if not ok then print("loadSoundFont skipped: " .. tostring(err)) end
 end
 
---@api-stub: lurek.midi.hasSoundFont
+--@api: lurek.midi.hasSoundFont
 do
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     lurek.midi.clearSoundFont()
@@ -35,7 +35,7 @@ do
     lurek.midi.clearSoundFont()
 end
 
---@api-stub: lurek.midi.clearSoundFont
+--@api: lurek.midi.clearSoundFont
 do
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     local ok, err = pcall(function()

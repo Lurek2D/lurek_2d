@@ -9,9 +9,9 @@ describe("integration: entity position drives draw coordinates", function()
     -- @integration lurek.ecs.newUniverse
     -- @integration lurek.render.rectangle
     -- @integration lurek.render.setColor
-    -- @covers lurek.ecs.newUniverse
-    -- @covers lurek.render.rectangle
-    -- @covers lurek.render.setColor
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.render.rectangle
+    -- @integration lurek.render.setColor
     it("entity position stored and usable for rectangle draw", function()
         local universe = lurek.ecs.newUniverse()
         local id = universe:spawn()

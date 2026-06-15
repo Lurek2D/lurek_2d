@@ -12,9 +12,9 @@ describe("animation + render integration", function()
     -- @integration LAnimation:getCurrentFrame
     -- @integration lurek.render.setColor
     -- @integration lurek.render.rectangle
-    -- @covers lurek.animation.new
-    -- @covers lurek.render.rectangle
-    -- @covers lurek.render.setColor
+    -- @integration lurek.animation.new
+    -- @integration lurek.render.rectangle
+    -- @integration lurek.render.setColor
     it("animation frame index controls render source texture offset", function()
         local anim = lurek.animation.new()
         expect_type("userdata", anim, "animation constructor returns userdata")

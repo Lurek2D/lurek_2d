@@ -1,6 +1,9 @@
 //! Imports standard Spine and DragonBones JSON skeleton shapes into runtime Skeleton data.
 //! The importer focuses on common production fields for bones, slots, skins, and basic timelines.
 //! It intentionally rejects malformed or unsupported structures with explicit, stable errors.
+//! Module API documentation
+//!
+//! TODO: add doc note 1
 
 use crate::spine::timeline::{BoneProperty, EasingType, SkeletonAnimation};
 use crate::spine::{BoneParams, Skeleton};

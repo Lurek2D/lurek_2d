@@ -4,7 +4,7 @@
 
 --- Network Module Part 1: LNetworkHost — server, client, peer management
 
---@api-stub: lurek.network.newServer
+--@api: lurek.network.newServer
 do
     local server = lurek.network.newServer({port = 7777, maxPeers = 16, channels = 2})
     print("role=" .. server:getRole())
@@ -12,7 +12,7 @@ do
     server:destroy()
 end
 
---@api-stub: lurek.network.newClient
+--@api: lurek.network.newClient
 do
     local server = lurek.network.newServer({port = 7778, maxPeers = 4, channels = 2})
     local client = lurek.network.newClient({addr = "127.0.0.1:7778", channels = 2, data = 21})
@@ -22,7 +22,7 @@ do
     server:destroy()
 end
 
---@api-stub: lurek.network.newHost
+--@api: lurek.network.newHost
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:8888", maxPeers = 32, channels = 4})
     print("address=" .. host:getAddress())
@@ -30,7 +30,7 @@ do
     host:destroy()
 end
 
---@api-stub: LNetworkHost:connect
+--@api: LNetworkHost:connect
 do
     local function wait_for_event(host, expected_type, max_attempts)
         max_attempts = max_attempts or 60
@@ -54,7 +54,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:service
+--@api: LNetworkHost:service
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -109,7 +109,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:send
+--@api: LNetworkHost:send
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -179,7 +179,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:broadcast
+--@api: LNetworkHost:broadcast
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -249,7 +249,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:getConnectedPeerCount
+--@api: LNetworkHost:getConnectedPeerCount
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -303,7 +303,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:getConnectedPeerIds
+--@api: LNetworkHost:getConnectedPeerIds
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -359,7 +359,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:getPeerState
+--@api: LNetworkHost:getPeerState
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -413,7 +413,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:getPeerAddress
+--@api: LNetworkHost:getPeerAddress
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -467,7 +467,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:getRoundTripTime
+--@api: LNetworkHost:getRoundTripTime
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -523,7 +523,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:getPeerStats
+--@api: LNetworkHost:getPeerStats
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -579,7 +579,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:setBandwidthLimit
+--@api: LNetworkHost:setBandwidthLimit
 do
     local server = lurek.network.newServer({port = 7783, maxPeers = 4})
     server:setBandwidthLimit(100000, 50000)
@@ -589,7 +589,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:getBandwidthLimit
+--@api: LNetworkHost:getBandwidthLimit
 do
     local server = lurek.network.newServer({port = 7789, maxPeers = 4})
     server:setBandwidthLimit(64000, 32000)
@@ -599,7 +599,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:setChannelLimit
+--@api: LNetworkHost:setChannelLimit
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:7790", maxPeers = 2, channels = 1})
     host:setChannelLimit(4)
@@ -607,7 +607,7 @@ do
     host:destroy()
 end
 
---@api-stub: LNetworkHost:disconnect
+--@api: LNetworkHost:disconnect
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -677,7 +677,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:disconnectLater
+--@api: LNetworkHost:disconnectLater
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -749,7 +749,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:disconnectNow
+--@api: LNetworkHost:disconnectNow
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -819,7 +819,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:flush
+--@api: LNetworkHost:flush
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -889,7 +889,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:ping
+--@api: LNetworkHost:ping
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -946,7 +946,7 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:resetPeer
+--@api: LNetworkHost:resetPeer
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -1006,7 +1006,7 @@ end
 
 --- Network Module Part 2: LNetworkRuntime, rooms, lobbies, pack/unpack, prediction
 
---@api-stub: lurek.network.newRuntime
+--@api: lurek.network.newRuntime
 do
     local rt = lurek.network.newRuntime()
     print("type=" .. rt:type())
@@ -1014,7 +1014,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:httpGet
+--@api: LNetworkRuntime:httpGet
 do
     local rt = lurek.network.newRuntime()
     local req_id = rt:httpGet("http://127.0.0.1:1/status", {Accept = "text/plain"})
@@ -1023,7 +1023,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:httpPost
+--@api: LNetworkRuntime:httpPost
 do
     local rt = lurek.network.newRuntime()
     local req_id = rt:httpPost("http://127.0.0.1:1/data", '{"key":"value"}', {["Content-Type"] = "application/json"})
@@ -1032,7 +1032,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:httpRequest
+--@api: LNetworkRuntime:httpRequest
 do
     local rt = lurek.network.newRuntime()
     local req_id = rt:httpRequest({url = "http://127.0.0.1:1/resource", method = "PUT", body = "updated data", timeout = 5})
@@ -1041,7 +1041,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:poll
+--@api: LNetworkRuntime:poll
 do
     local rt = lurek.network.newRuntime()
     rt:httpGet("http://127.0.0.1:1/poll")
@@ -1050,7 +1050,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:tcpConnect
+--@api: LNetworkRuntime:tcpConnect
 do
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9")
@@ -1059,7 +1059,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:tcpSend
+--@api: LNetworkRuntime:tcpSend
 do
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9")
@@ -1069,7 +1069,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:tcpClose
+--@api: LNetworkRuntime:tcpClose
 do
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9")
@@ -1079,7 +1079,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:wsConnect
+--@api: LNetworkRuntime:wsConnect
 do
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:1/game")
@@ -1088,7 +1088,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:wsSend
+--@api: LNetworkRuntime:wsSend
 do
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:1/game")
@@ -1098,7 +1098,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:wsClose
+--@api: LNetworkRuntime:wsClose
 do
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:1/game")
@@ -1108,7 +1108,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: lurek.network.createRoom
+--@api: lurek.network.createRoom
 do
     local room = lurek.network.createRoom("Arena", "player1", 8)
     local joined = lurek.network.joinRoom(room.id)
@@ -1117,7 +1117,7 @@ do
     print("players=" .. joined.player_count .. "->" .. left.player_count)
 end
 
---@api-stub: lurek.network.createLobby
+--@api: lurek.network.createLobby
 do
     local lobby = lurek.network.createLobby("My Game", 7777, 1, 4)
     local found = lurek.network.discoverLobbies(200)
@@ -1125,7 +1125,7 @@ do
     print("discovered=" .. #found)
 end
 
---@api-stub: lurek.network.pack
+--@api: lurek.network.pack
 do
     local data = {hp = 100, pos = {x = 10.5, y = 20.3}, name = "Hero"}
     local packed = lurek.network.pack(data)
@@ -1134,7 +1134,7 @@ do
     print("unpacked_name=" .. unpacked.name)
 end
 
---@api-stub: lurek.network.syncEntity
+--@api: lurek.network.syncEntity
 do
     local function connect_pair(port, channels)
         local server = lurek.network.newServer({port = port, maxPeers = 4, channels = channels or 2})
@@ -1205,7 +1205,7 @@ do
     server:destroy()
 end
 
---@api-stub: lurek.network.predictLinear
+--@api: lurek.network.predictLinear
 do
     local snapshot = {id = 1, tick = 10, x = 10, y = 20, vx = 5, vy = 0}
     local predicted = lurek.network.predictLinear(snapshot, 0.016)
@@ -1213,7 +1213,7 @@ do
     print("x=" .. predicted.x)
 end
 
---@api-stub: lurek.network.newRelayTicket
+--@api: lurek.network.newRelayTicket
 do
     local token = lurek.network.newRelayTicket("room_abc", "peer_42")
     local ticket = lurek.network.parseRelayTicket(token)
@@ -1221,7 +1221,7 @@ do
     print("peer_id=" .. ticket.peer_id)
 end
 
---@api-stub: lurek.network.makePunchProbe
+--@api: lurek.network.makePunchProbe
 do
     local probe = lurek.network.makePunchProbe("peer_99")
     local peer_id = lurek.network.parsePunchProbe(probe)
@@ -1231,7 +1231,7 @@ end
 
 --- Network Module Part 2: host queries, runtime lifecycle, room, relay, and snapshot
 
---@api-stub: LNetworkHost:destroy
+--@api: LNetworkHost:destroy
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("before=" .. tostring(host:isDestroyed()))
@@ -1239,35 +1239,35 @@ do
     print("after=" .. tostring(host:isDestroyed()))
 end
 
---@api-stub: LNetworkHost:getAddress
+--@api: LNetworkHost:getAddress
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("addr=" .. host:getAddress())
     host:destroy()
 end
 
---@api-stub: LNetworkHost:getChannelLimit
+--@api: LNetworkHost:getChannelLimit
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("channels=" .. host:getChannelLimit())
     host:destroy()
 end
 
---@api-stub: LNetworkHost:getPeerLimit
+--@api: LNetworkHost:getPeerLimit
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("peer_limit=" .. host:getPeerLimit())
     host:destroy()
 end
 
---@api-stub: LNetworkHost:getRole
+--@api: LNetworkHost:getRole
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("role=" .. host:getRole())
     host:destroy()
 end
 
---@api-stub: LNetworkHost:isClient
+--@api: LNetworkHost:isClient
 do
     local server = lurek.network.newServer({port = 7798, maxPeers = 4, channels = 2})
     local client = lurek.network.newClient({addr = "127.0.0.1:7798", channels = 2})
@@ -1276,35 +1276,35 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:isDestroyed
+--@api: LNetworkHost:isDestroyed
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("is_destroyed=" .. tostring(host:isDestroyed()))
     host:destroy()
 end
 
---@api-stub: LNetworkHost:isServer
+--@api: LNetworkHost:isServer
 do
     local server = lurek.network.newServer({port = 7799, maxPeers = 4, channels = 2})
     print("is_server=" .. tostring(server:isServer()))
     server:destroy()
 end
 
---@api-stub: LNetworkHost:type
+--@api: LNetworkHost:type
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("type=" .. host:type())
     host:destroy()
 end
 
---@api-stub: LNetworkHost:typeOf
+--@api: LNetworkHost:typeOf
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
     print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
     host:destroy()
 end
 
---@api-stub: LNetworkRuntime:shutdown
+--@api: LNetworkRuntime:shutdown
 do
     local rt = lurek.network.newRuntime()
     print("rt_type=" .. rt:type())
@@ -1312,21 +1312,21 @@ do
     print("shutdown=true")
 end
 
---@api-stub: LNetworkRuntime:type
+--@api: LNetworkRuntime:type
 do
     local rt = lurek.network.newRuntime()
     print("rt_type=" .. rt:type())
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:typeOf
+--@api: LNetworkRuntime:typeOf
 do
     local rt = lurek.network.newRuntime()
     print("rt_typeOf=" .. tostring(rt:typeOf("LNetworkRuntime")))
     rt:shutdown()
 end
 
---@api-stub: lurek.network.discoverLobbies
+--@api: lurek.network.discoverLobbies
 do
     lurek.network.createLobby("Discovery", 7788, 1, 4)
     local lobbies = lurek.network.discoverLobbies(200)
@@ -1334,7 +1334,7 @@ do
     print("first_name=" .. tostring(lobbies[1] and lobbies[1].name or "nil"))
 end
 
---@api-stub: lurek.network.joinRoom
+--@api: lurek.network.joinRoom
 do
     local room = lurek.network.createRoom("Joinable", "host-B", 4)
     local joined = lurek.network.joinRoom(room.id)
@@ -1342,7 +1342,7 @@ do
     print("player_count=" .. joined.player_count)
 end
 
---@api-stub: lurek.network.leaveRoom
+--@api: lurek.network.leaveRoom
 do
     local room = lurek.network.createRoom("Leavable", "host-C", 4)
     lurek.network.joinRoom(room.id)
@@ -1351,7 +1351,7 @@ do
     print("player_count=" .. left.player_count)
 end
 
---@api-stub: lurek.network.listRooms
+--@api: lurek.network.listRooms
 do
     local rooms = lurek.network.listRooms()
     local room = lurek.network.createRoom("Listed", "host-D", 3)
@@ -1360,14 +1360,14 @@ do
     print("last_room=" .. room.name)
 end
 
---@api-stub: lurek.network.parsePunchProbe
+--@api: lurek.network.parsePunchProbe
 do
     local probe = lurek.network.makePunchProbe("peer_parse")
     local peer_id = lurek.network.parsePunchProbe(probe)
     print("peer_id=" .. tostring(peer_id))
 end
 
---@api-stub: lurek.network.parseRelayTicket
+--@api: lurek.network.parseRelayTicket
 do
     local token = lurek.network.newRelayTicket("room_parse", "peer_parse")
     local ticket = lurek.network.parseRelayTicket(token)
@@ -1375,7 +1375,7 @@ do
     print("peer_id=" .. ticket.peer_id)
 end
 
---@api-stub: lurek.network.reconcileSnapshot
+--@api: lurek.network.reconcileSnapshot
 do
     local pred = {id = 3, tick = 20, x = 10, y = 10, vx = 1, vy = 0}
     local auth = {id = 3, tick = 21, x = 12, y = 11, vx = 1, vy = 0}
@@ -1384,7 +1384,7 @@ do
     print("x=" .. result.x)
 end
 
---@api-stub: lurek.network.unpack
+--@api: lurek.network.unpack
 do
     local raw = lurek.network.pack({ id = 1, data = "hello" })
     local msg = lurek.network.unpack(raw)
@@ -1392,7 +1392,7 @@ do
     print("data=" .. msg.data)
 end
 
---@api-stub: lurek.network.sseConnect
+--@api: lurek.network.sseConnect
 do
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(ev)
@@ -1406,7 +1406,7 @@ do
     stream:close()
 end
 
---@api-stub: lurek.network.sseCollect
+--@api: lurek.network.sseCollect
 do
     local events = lurek.network.sseCollect("http://127.0.0.1:9999/events", 10, 2.0)
     for _, ev in ipairs(events) do
@@ -1414,7 +1414,7 @@ do
     end
 end
 
---@api-stub: LSseStream:next
+--@api: LSseStream:next
 do
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
@@ -1425,14 +1425,14 @@ do
     stream:close()
 end
 
---@api-stub: LSseStream:close
+--@api: LSseStream:close
 do
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
     stream:close()
 end
 
---@api-stub: LSseStream:isOpen
+--@api: LSseStream:isOpen
 do
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
@@ -1440,7 +1440,7 @@ do
     stream:close()
 end
 
---@api-stub: LSseStream:type
+--@api: LSseStream:type
 do
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
@@ -1448,7 +1448,7 @@ do
     stream:close()
 end
 
---@api-stub: LSseStream:typeOf
+--@api: LSseStream:typeOf
 do
     ---@type LSseStream
     local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
@@ -1456,7 +1456,7 @@ do
     stream:close()
 end
 
---@api-stub: LNetworkRuntime:httpJson
+--@api: LNetworkRuntime:httpJson
 do
     local rt = lurek.network.newRuntime()
     local ok, response = pcall(function()
@@ -1467,7 +1467,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:httpStream
+--@api: LNetworkRuntime:httpStream
 do
     local rt = lurek.network.newRuntime()
     local ok, response = pcall(function()
@@ -1478,7 +1478,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:authBootstrap
+--@api: LNetworkRuntime:authBootstrap
 do
     local rt = lurek.network.newRuntime()
     local ok, id = pcall(function()
@@ -1489,7 +1489,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:getAuthToken
+--@api: LNetworkRuntime:getAuthToken
 do
     local rt = lurek.network.newRuntime()
     local token = rt:getAuthToken()
@@ -1497,7 +1497,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:getAuthStatus
+--@api: LNetworkRuntime:getAuthStatus
 do
     local rt = lurek.network.newRuntime()
     local status = rt:getAuthStatus()
@@ -1505,14 +1505,14 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:authCancel
+--@api: LNetworkRuntime:authCancel
 do
     local rt = lurek.network.newRuntime()
     rt:authCancel()
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:matchmakeStart
+--@api: LNetworkRuntime:matchmakeStart
 do
     local rt = lurek.network.newRuntime()
     local ok, id = pcall(function()
@@ -1523,14 +1523,14 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:matchmakeCancel
+--@api: LNetworkRuntime:matchmakeCancel
 do
     local rt = lurek.network.newRuntime()
     rt:matchmakeCancel(1)
     rt:shutdown()
 end
 
---@api-stub: LNetworkHost:registerLease
+--@api: LNetworkHost:registerLease
 do
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(1, 30)
@@ -1538,7 +1538,7 @@ do
     host:destroy()
 end
 
---@api-stub: LNetworkHost:getLeasePeer
+--@api: LNetworkHost:getLeasePeer
 do
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(2, 30)
@@ -1547,7 +1547,7 @@ do
     host:destroy()
 end
 
---@api-stub: LNetworkHost:renewLease
+--@api: LNetworkHost:renewLease
 do
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(3, 30)
@@ -1556,7 +1556,7 @@ do
     host:destroy()
 end
 
---@api-stub: LNetworkHost:clearLease
+--@api: LNetworkHost:clearLease
 do
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(4, 30)
@@ -1565,7 +1565,7 @@ do
     host:destroy()
 end
 
---@api-stub: LNetworkHost:getMetrics
+--@api: LNetworkHost:getMetrics
 do
     local host = lurek.network.newHost({ port = 0 })
     local metrics = host:getMetrics()
@@ -1573,7 +1573,7 @@ do
     host:destroy()
 end
 
---@api-stub: LNetworkRuntime:getMetrics
+--@api: LNetworkRuntime:getMetrics
 do
     local rt = lurek.network.newRuntime()
     local metrics = rt:getMetrics()
@@ -1581,7 +1581,7 @@ do
     rt:shutdown()
 end
 
---@api-stub: lurek.network.packSnapshot
+--@api: lurek.network.packSnapshot
 do
     local snapshot = {
         type = "full",
@@ -1594,7 +1594,7 @@ do
     print("packed_snapshot_bytes=" .. #packed)
 end
 
---@api-stub: lurek.network.unpackSnapshot
+--@api: lurek.network.unpackSnapshot
 do
     local snapshot = {
         type = "delta",
@@ -1611,7 +1611,7 @@ do
     print("unpacked_tick=" .. unpacked.tick)
 end
 
---@api-stub: lurek.network.reconcileWithPolicy
+--@api: lurek.network.reconcileWithPolicy
 do
     local pred = { id = 1, tick = 10, x = 10.0, y = 0.0, vx = 0.0, vy = 0.0 }
     local auth = { id = 1, tick = 10, x = 12.0, y = 0.0, vx = 1.0, vy = 2.0 }
@@ -1619,7 +1619,7 @@ do
     print("reconciled_x=" .. result.x)
 end
 
---@api-stub: lurek.network.setReady
+--@api: lurek.network.setReady
 do
     lurek.network.setReady("game_room", 1, true)
     lurek.network.setReady("game_room", 2, false)
@@ -1627,7 +1627,7 @@ do
     print("set_player_2_ready=false")
 end
 
---@api-stub: lurek.network.isAllReady
+--@api: lurek.network.isAllReady
 do
     lurek.network.setReady("lobby_room", 1, true)
     lurek.network.setReady("lobby_room", 2, true)
@@ -1635,7 +1635,7 @@ do
     print("all_ready=" .. tostring(all_ready))
 end
 
---@api-stub: lurek.network.getRoom
+--@api: lurek.network.getRoom
 do
     lurek.network.setReady("session_room", 1, true)
     lurek.network.setReady("session_room", 2, false)
@@ -1645,7 +1645,7 @@ do
     print("room_players=" .. room.player_count)
 end
 
---@api-stub: lurek.network.getPlayerList
+--@api: lurek.network.getPlayerList
 do
     lurek.network.setReady("match_room", 1, true)
     lurek.network.setReady("match_room", 3, true)
@@ -1657,7 +1657,7 @@ do
     end
 end
 
---@api-stub: lurek.network.newRpc
+--@api: lurek.network.newRpc
 do
     local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
     local ok, rpc = pcall(function()
@@ -1673,7 +1673,7 @@ do
     end
 end
 
---@api-stub: lurek.network.newNetState
+--@api: lurek.network.newNetState
 do
     local host = lurek.network.newHost({ addr = "127.0.0.1:0" })
     local ok, state = pcall(function()

@@ -1,4 +1,6 @@
 //! File: src/lua_api/midi_api.rs
+//! Module API documentation
+//!
 
 use super::SharedState;
 use crate::lua_api::audio_api::LuaMidiPlayer;

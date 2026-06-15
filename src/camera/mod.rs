@@ -26,6 +26,6 @@ pub use types::{Camera, Camera2D, CameraEasing};
 pub use walker::CameraWalker;
 
 /// Re-export for backwards compatibility.
-pub type CameraFollowEasing = CameraEasing;
+pub use types::CameraEasing as CameraFollowEasing;
 pub use viewport::{ScaleMode, Viewport};
 pub use viewport_scale::ViewportScale;

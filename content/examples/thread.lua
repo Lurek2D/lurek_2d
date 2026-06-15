@@ -4,7 +4,7 @@
 
 --- Thread Module: channels, threads, pools, promises, async, worker capabilities
 
---@api-stub: lurek.thread.newChannel
+--@api: lurek.thread.newChannel
 do
     local ch = lurek.thread.newChannel()
     print("type = " .. ch:type())
@@ -12,7 +12,7 @@ do
     print("bounded = " .. tostring(ch:isBounded()))
 end
 
---@api-stub: lurek.thread.newBoundedChannel
+--@api: lurek.thread.newBoundedChannel
 do
     ---@type LChannel
     local ch = lurek.thread.newBoundedChannel(10)
@@ -21,7 +21,7 @@ do
     print("count = " .. ch:getCount())
 end
 
---@api-stub: LChannel:push
+--@api: LChannel:push
 do
     ---@type LChannel
     local ch = lurek.thread.newChannel()
@@ -30,7 +30,7 @@ do
     print("count = " .. ch:getCount())
 end
 
---@api-stub: LChannel:pop
+--@api: LChannel:pop
 do
     ---@type LChannel
     local ch = lurek.thread.newChannel()
@@ -39,7 +39,7 @@ do
     print("pop 1 = " .. tostring(val1))
 end
 
---@api-stub: LChannel:peek
+--@api: LChannel:peek
 do
     local ch = lurek.thread.newChannel()
     ch:push("first")
@@ -47,7 +47,7 @@ do
     print("count after peek = " .. ch:getCount())
 end
 
---@api-stub: LChannel:demand
+--@api: LChannel:demand
 do
     local ch = lurek.thread.newChannel()
     ch:push("ready")
@@ -55,7 +55,7 @@ do
     print("demand timeout = " .. tostring(ch:demand(0.01)))
 end
 
---@api-stub: LChannel:supply
+--@api: LChannel:supply
 do
     local ch = lurek.thread.newBoundedChannel(2)
     ch:tryPush("a")
@@ -63,7 +63,7 @@ do
     print("supply when full = " .. tostring(ch:supply("d")))
 end
 
---@api-stub: LChannel:tryPush
+--@api: LChannel:tryPush
 do
     ---@type LChannel
     local ch = lurek.thread.newBoundedChannel(2)
@@ -71,7 +71,7 @@ do
     print("tryPush 1 = " .. tostring(ok1))
 end
 
---@api-stub: LChannel:pushBytes
+--@api: LChannel:pushBytes
 do
     ---@type LChannel
     local ch = lurek.thread.newChannel()
@@ -80,14 +80,14 @@ do
     print("pushBytes id = " .. id)
 end
 
---@api-stub: LChannel:popBytes
+--@api: LChannel:popBytes
 do
     local ch = lurek.thread.newChannel()
     ch:pushBytes(string.rep("\x00\xFF", 100))
     print("popBytes length = " .. #ch:popBytes())
 end
 
---@api-stub: LChannel:pushTable
+--@api: LChannel:pushTable
 do
     ---@type LChannel
     local ch = lurek.thread.newChannel()
@@ -96,7 +96,7 @@ do
     print("pushTable id = " .. id)
 end
 
---@api-stub: LChannel:popTable
+--@api: LChannel:popTable
 do
     local ch = lurek.thread.newChannel()
     ch:pushTable({ name = "player" })
@@ -104,7 +104,7 @@ do
     print("popTable name = " .. result.name)
 end
 
---@api-stub: LChannel:clear
+--@api: LChannel:clear
 do
     local ch = lurek.thread.newChannel()
     ch:push("x")
@@ -113,14 +113,14 @@ do
     print("after clear = " .. ch:getCount())
 end
 
---@api-stub: LChannel:getCount
+--@api: LChannel:getCount
 do
     local ch = lurek.thread.newChannel()
     ch:push("x")
     print("count = " .. ch:getCount())
 end
 
---@api-stub: lurek.thread.getChannel
+--@api: lurek.thread.getChannel
 do
     local ch = lurek.thread.getChannel("events")
     ch:push("player_died")
@@ -129,7 +129,7 @@ do
     print("same instance = " .. tostring(ch == same))
 end
 
---@api-stub: lurek.thread.newThread
+--@api: lurek.thread.newThread
 do
     local results = lurek.thread.getChannel("results")
     results:clear()
@@ -142,7 +142,7 @@ do
     print("result = " .. tostring(results:pop()))
 end
 
---@api-stub: lurek.thread.newPool
+--@api: lurek.thread.newPool
 
 do
     local pool = lurek.thread.newPool(2, [[
@@ -157,7 +157,7 @@ do
     print("pool size = " .. pool:size())
 end
 
---@api-stub: LThreadPool:submit
+--@api: LThreadPool:submit
 do
     local pool = lurek.thread.newPool(2, [[
         local input = lurek.thread.getChannel("__pool_input")
@@ -172,7 +172,7 @@ do
     print("input count = " .. pool:getInputChannel():getCount())
 end
 
---@api-stub: LThreadPool:collect
+--@api: LThreadPool:collect
 do
     local pool = lurek.thread.newPool(2, [[
         local input = lurek.thread.getChannel("__pool_input")
@@ -187,7 +187,7 @@ do
     print("collected = " .. tostring(pool:collect()))
 end
 
---@api-stub: LThreadPool:getInputChannel
+--@api: LThreadPool:getInputChannel
 do
     local pool = lurek.thread.newPool(2, [[
         local input = lurek.thread.getChannel("__pool_input")
@@ -202,7 +202,7 @@ do
     print("input bounded = " .. tostring(inCh:isBounded()))
 end
 
---@api-stub: LThreadPool:getOutputChannel
+--@api: LThreadPool:getOutputChannel
 do
     local pool = lurek.thread.newPool(2, [[
         local input = lurek.thread.getChannel("__pool_input")
@@ -217,40 +217,40 @@ do
     print("output count = " .. outCh:getCount())
 end
 
---@api-stub: LThreadPool:join
+--@api: LThreadPool:join
 do
     local pool = lurek.thread.newPool(2, "return nil")
     print("join result = " .. tostring(pool:join(2.0)))
 end
 
---@api-stub: lurek.thread.async
+--@api: lurek.thread.async
 do
     local promise = lurek.thread.async("return 42")
     print("type = " .. promise:type())
     print("done immediately = " .. tostring(promise:isDone()))
 end
 
---@api-stub: LPromise:result
+--@api: LPromise:result
 do
     local promise = lurek.thread.async("return 42")
     print("result = " .. tostring(promise:result()))
 end
 
---@api-stub: LPromise:isDone
+--@api: LPromise:isDone
 do
     local promise = lurek.thread.async("return 42")
     promise:result()
     print("done = " .. tostring(promise:isDone()))
 end
 
---@api-stub: LPromise:getError
+--@api: LPromise:getError
 do
     local promise = lurek.thread.async("return 42")
     promise:result()
     print("error = " .. tostring(promise:getError()))
 end
 
---@api-stub: LPromise:chain
+--@api: LPromise:chain
 do
     local first = lurek.thread.async([[
         local result = lurek.thread.getChannel("__promise_result")
@@ -272,7 +272,7 @@ do
     print("chain result = " .. tostring(second:result()))
 end
 
---@api-stub: lurek.thread.getWorkerCapabilities
+--@api: lurek.thread.getWorkerCapabilities
 do
     local caps = lurek.thread.getWorkerCapabilities()
     print("capabilities = " .. #caps)
@@ -280,31 +280,31 @@ end
 
 --- Thread Module Part 1: LChannel, LThread, newBoundedChannel, newPool, newChannel, newThread
 
---@api-stub: LChannel:getCapacity
+--@api: LChannel:getCapacity
 do
     local ch = lurek.thread.newChannel()
     print("capacity=" .. tostring(ch:getCapacity()))
 end
 
---@api-stub: LChannel:isBounded
+--@api: LChannel:isBounded
 do
     local ch = lurek.thread.newChannel()
     print("bounded=" .. tostring(ch:isBounded()))
 end
 
---@api-stub: LChannel:type
+--@api: LChannel:type
 do
     local ch = lurek.thread.newChannel()
     print("type=" .. ch:type())
 end
 
---@api-stub: LChannel:typeOf
+--@api: LChannel:typeOf
 do
     local ch = lurek.thread.newChannel()
     print("typeOf=" .. tostring(ch:typeOf("LChannel")))
 end
 
---@api-stub: LThread:getError
+--@api: LThread:getError
 do
     local t = lurek.thread.newThread([[
         lurek.thread.getChannel("thread_status"):push("done")
@@ -314,47 +314,47 @@ do
     print("error=" .. tostring(t:getError()))
 end
 
---@api-stub: LThread:isRunning
+--@api: LThread:isRunning
 do
     local t = lurek.thread.newThread("return 1")
     t:start()
     print("running=" .. tostring(t:isRunning()))
 end
 
---@api-stub: LThread:start
+--@api: LThread:start
 do
     local t = lurek.thread.newThread("return 1")
     t:start()
     print("start ok")
 end
 
---@api-stub: LThread:type
+--@api: LThread:type
 do
     local t = lurek.thread.newThread("return 1")
     print("type=" .. t:type())
 end
 
---@api-stub: LThread:typeOf
+--@api: LThread:typeOf
 do
     local t = lurek.thread.newThread("return 1")
     print("typeOf=" .. tostring(t:typeOf("LThread")))
 end
 
---@api-stub: LPromise:type
+--@api: LPromise:type
 do
     local p = lurek.thread.async("return 42")
     local t = p:type()
     print("LPromise type:", t)
 end
 
---@api-stub: LPromise:typeOf
+--@api: LPromise:typeOf
 do
     local p = lurek.thread.async("return 42")
     local ok = p:typeOf("LPromise")
     print("LPromise typeOf:", ok)
 end
 
---@api-stub: LThread:wait
+--@api: LThread:wait
 do
     local thread = lurek.thread.newThread("return 'done'")
     thread:start()
@@ -362,7 +362,7 @@ do
     print("LThread:wait ok")
 end
 
---@api-stub: LThreadPool:size
+--@api: LThreadPool:size
 do
     local pool = lurek.thread.newPool(3, [[
         local input = lurek.thread.getChannel("__pool_input")
@@ -376,7 +376,7 @@ do
     print("pool size = " .. sz)
 end
 
---@api-stub: LThreadPool:type
+--@api: LThreadPool:type
 do
     local pool = lurek.thread.newPool(3, [[
         local input = lurek.thread.getChannel("__pool_input")
@@ -390,7 +390,7 @@ do
     print("type = " .. t)
 end
 
---@api-stub: LThreadPool:typeOf
+--@api: LThreadPool:typeOf
 do
     local pool = lurek.thread.newPool(3, [[
         local input = lurek.thread.getChannel("__pool_input")
@@ -404,14 +404,14 @@ do
     print("typeOf = " .. tostring(ok))
 end
 
---@api-stub: LThreadHandle:start
+--@api: LThreadHandle:start
 do
     local t = lurek.thread.newThread("return 1")
     t:start()
     print("LThreadHandle:start ok")
 end
 
---@api-stub: LThreadHandle:wait
+--@api: LThreadHandle:wait
 do
     local t = lurek.thread.newThread("return 1")
     t:start()
@@ -419,14 +419,14 @@ do
     print("LThreadHandle:wait ok")
 end
 
---@api-stub: LThreadHandle:isRunning
+--@api: LThreadHandle:isRunning
 do
     local t = lurek.thread.newThread("return 1")
     t:start()
     print("LThreadHandle:isRunning = " .. tostring(t:isRunning()))
 end
 
---@api-stub: LThreadHandle:getError
+--@api: LThreadHandle:getError
 do
     local t = lurek.thread.newThread("return 1")
     t:start()
@@ -434,13 +434,13 @@ do
     print("LThreadHandle:getError = " .. tostring(t:getError()))
 end
 
---@api-stub: LThreadHandle:type
+--@api: LThreadHandle:type
 do
     local t = lurek.thread.newThread("return 1")
     print("LThreadHandle:type = " .. t:type())
 end
 
---@api-stub: LThreadHandle:typeOf
+--@api: LThreadHandle:typeOf
 do
     local t = lurek.thread.newThread("return 1")
     print("LThreadHandle:typeOf = " .. tostring(t:typeOf("LThread")))

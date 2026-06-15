@@ -10,8 +10,8 @@ describe("integration: savegame collects and restores tilemap state", function()
     -- @integration LTileMap:setTile
     -- @integration lurek.save.newSaveManager
     -- @integration lurek.tilemap.newTileMap
-    -- @covers lurek.save.newSaveManager
-    -- @covers lurek.tilemap.newTileMap
+    -- @integration lurek.save.newSaveManager
+    -- @integration lurek.tilemap.newTileMap
     it("registers tilemap handler and collects tile data", function()
         local sm = lurek.save.newSaveManager()
         local tm = lurek.tilemap.newTileMap(16, 16)

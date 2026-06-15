@@ -4,7 +4,7 @@
 
 --- Mods Module Part 1: LMod creation, metadata, hooks, config, registry
 
---@api-stub: lurek.mods.newMod
+--@api: lurek.mods.newMod
 do
     local mod = lurek.mods.newMod({
         id = "my_mod",
@@ -18,7 +18,7 @@ do
     print("priority = " .. mod:getPriority())
 end
 
---@api-stub: LMod:setEnabled
+--@api: LMod:setEnabled
 do
     local mod = lurek.mods.newMod({ id = "toggle", name = "Toggle" })
     print("before = " .. tostring(mod:isEnabled()))
@@ -26,20 +26,20 @@ do
     print("after = " .. tostring(mod:isEnabled()))
 end
 
---@api-stub: LMod:isEnabled
+--@api: LMod:isEnabled
 do
     local mod = lurek.mods.newMod({ id = "toggle", name = "Toggle" })
     mod:setEnabled(false)
     print("enabled = " .. tostring(mod:isEnabled()))
 end
 
---@api-stub: LMod:isLoaded
+--@api: LMod:isLoaded
 do
     local mod = lurek.mods.newMod({ id = "toggle", name = "Toggle" })
     print("loaded = " .. tostring(mod:isLoaded()))
 end
 
---@api-stub: LMod:setHook
+--@api: LMod:setHook
 do
     local mod = lurek.mods.newMod({ id = "hooks", name = "Hooks" })
     mod:setHook("onLoad", function()
@@ -49,7 +49,7 @@ do
     print("hook value = " .. tostring(mod:getHook("onLoad") ~= nil))
 end
 
---@api-stub: LMod:getHook
+--@api: LMod:getHook
 do
     local mod = lurek.mods.newMod({ id = "hooks", name = "Hooks" })
     mod:setHook("onLoad", function()
@@ -59,7 +59,7 @@ do
     print("hook exists = " .. tostring(hook ~= nil))
 end
 
---@api-stub: LMod:hasHook
+--@api: LMod:hasHook
 do
     local mod = lurek.mods.newMod({ id = "hooks", name = "Hooks" })
     print("before = " .. tostring(mod:hasHook("onLoad")))
@@ -68,7 +68,7 @@ do
     print("after = " .. tostring(mod:hasHook("onLoad")))
 end
 
---@api-stub: LMod:getHookNames
+--@api: LMod:getHookNames
 do
     local mod = lurek.mods.newMod({ id = "hooks", name = "Hooks" })
     mod:setHook("onLoad", function()
@@ -80,7 +80,7 @@ do
     print("has onLoad = " .. tostring(mod:hasHook("onLoad")))
 end
 
---@api-stub: LMod:setConfig
+--@api: LMod:setConfig
 do
     local mod = lurek.mods.newMod({ id = "cfg", name = "Cfg" })
     mod:setConfig({ difficulty = "hard", volume = 0.8 })
@@ -89,7 +89,7 @@ do
     print("volume = " .. tostring(config.volume))
 end
 
---@api-stub: LMod:getConfig
+--@api: LMod:getConfig
 do
     local mod = lurek.mods.newMod({ id = "cfg", name = "Cfg" })
     mod:setConfig({ difficulty = "story", subtitles = true })
@@ -98,7 +98,7 @@ do
     print("subtitles = " .. tostring(config.subtitles))
 end
 
---@api-stub: LMod:setConfigSchema
+--@api: LMod:setConfigSchema
 do
     local mod = lurek.mods.newMod({ id = "schema", name = "Schema" })
     mod:setConfigSchema({
@@ -110,7 +110,7 @@ do
     print("first key = " .. schema[1].key)
 end
 
---@api-stub: LMod:getConfigSchema
+--@api: LMod:getConfigSchema
 do
     local mod = lurek.mods.newMod({ id = "schema", name = "Schema" })
     mod:setConfigSchema({
@@ -122,21 +122,21 @@ do
     print("second default = " .. schema[2].default)
 end
 
---@api-stub: LMod:setApiVersion
+--@api: LMod:setApiVersion
 do
     local mod = lurek.mods.newMod({ id = "ver", name = "Ver" })
     mod:setApiVersion("2.0.0")
     print("api version = " .. mod:getApiVersion())
 end
 
---@api-stub: LMod:getApiVersion
+--@api: LMod:getApiVersion
 do
     local mod = lurek.mods.newMod({ id = "ver", name = "Ver" })
     mod:setApiVersion("1.2.0")
     print("api version = " .. mod:getApiVersion())
 end
 
---@api-stub: LMod:setCapabilities
+--@api: LMod:setCapabilities
 do
     local mod = lurek.mods.newMod({ id = "caps", name = "Caps" })
     mod:setCapabilities({ "renderer", "audio", "physics" })
@@ -145,7 +145,7 @@ do
     print("first = " .. capabilities[1])
 end
 
---@api-stub: LMod:getCapabilities
+--@api: LMod:getCapabilities
 do
     local mod = lurek.mods.newMod({ id = "caps", name = "Caps" })
     mod:setCapabilities({ "renderer", "audio", "physics" })
@@ -153,7 +153,7 @@ do
     print("capabilities = " .. table.concat(capabilities, ", "))
 end
 
---@api-stub: LMod:getDependencies
+--@api: LMod:getDependencies
 do
     local mod = lurek.mods.newMod({
         id = "deps",
@@ -165,7 +165,7 @@ do
     print("first dependency = " .. dependencies[1])
 end
 
---@api-stub: LMod:releaseRefs
+--@api: LMod:releaseRefs
 do
     local mod = lurek.mods.newMod({ id = "release", name = "Release" })
     mod:setHook("test", function()
@@ -176,14 +176,14 @@ do
     print("config exists = " .. tostring(mod:getConfig() ~= nil))
 end
 
---@api-stub: lurek.mods.newRegistry
+--@api: lurek.mods.newRegistry
 do
     local reg = lurek.mods.newRegistry()
     print("registry created = " .. tostring(reg ~= nil))
     print("type = " .. reg:type())
 end
 
---@api-stub: LContentRegistry:register
+--@api: LContentRegistry:register
 do
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
@@ -193,7 +193,7 @@ do
     print("damage = " .. tostring(sword.damage))
 end
 
---@api-stub: LContentRegistry:get
+--@api: LContentRegistry:get
 do
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
@@ -203,7 +203,7 @@ do
     print("name = " .. sword.name)
 end
 
---@api-stub: LContentRegistry:getAll
+--@api: LContentRegistry:getAll
 do
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
@@ -214,7 +214,7 @@ do
     print("sword damage = " .. tostring(items.sword.damage))
 end
 
---@api-stub: lurek.mods.checkApiVersion
+--@api: lurek.mods.checkApiVersion
 do
     local mod = lurek.mods.newMod({ id = "compat", name = "Compat" })
     mod:setApiVersion("2.0.0")
@@ -225,14 +225,14 @@ end
 
 --- Mods Module Part 2: LModManager — registration, load order, scanning, reload
 
---@api-stub: lurek.mods.newModManager
+--@api: lurek.mods.newModManager
 do
     local mgr = lurek.mods.newModManager()
     print("mod count = " .. mgr:getModCount())
     print("type = " .. mgr:type())
 end
 
---@api-stub: LModManager:registerMod
+--@api: LModManager:registerMod
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "core", name = "Core", priority = 0 })
@@ -241,7 +241,7 @@ do
     print("count = " .. mgr:getModCount())
 end
 
---@api-stub: LModManager:hasMod
+--@api: LModManager:hasMod
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "core", name = "Core", priority = 0 })
@@ -250,7 +250,7 @@ do
     print("after = " .. tostring(mgr:hasMod("core")))
 end
 
---@api-stub: LModManager:getModCount
+--@api: LModManager:getModCount
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "core", name = "Core", priority = 0 })
@@ -259,7 +259,7 @@ do
     print("after = " .. mgr:getModCount())
 end
 
---@api-stub: LModManager:unregisterMod
+--@api: LModManager:unregisterMod
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "temp", name = "Temp" })
@@ -268,7 +268,7 @@ do
     print("removed = " .. tostring(removed) .. " after = " .. mgr:getModCount())
 end
 
---@api-stub: LModManager:getAllMods
+--@api: LModManager:getAllMods
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "list", name = "List", version = "2.0.0" })
@@ -278,7 +278,7 @@ do
     print("first id = " .. mods[1].id)
 end
 
---@api-stub: LModManager:getLoadOrder
+--@api: LModManager:getLoadOrder
 do
     local mgr = lurek.mods.newModManager()
     local core = lurek.mods.newMod({ id = "core", name = "Core", priority = 0 })
@@ -295,7 +295,7 @@ do
     print("second = " .. order[2].id)
 end
 
---@api-stub: LModManager:setLoadOrder
+--@api: LModManager:setLoadOrder
 do
     local mgr = lurek.mods.newModManager()
     local mod_a = lurek.mods.newMod({ id = "a", name = "A", priority = 0 })
@@ -308,7 +308,7 @@ do
     print("second = " .. order[2].id)
 end
 
---@api-stub: LModManager:clearLoadOrder
+--@api: LModManager:clearLoadOrder
 do
     local mgr = lurek.mods.newModManager()
     local mod_a = lurek.mods.newMod({ id = "a", name = "A", priority = 0 })
@@ -321,7 +321,7 @@ do
     print("default first = " .. mgr:getLoadOrder()[1].id)
 end
 
---@api-stub: LModManager:hasCircularDependencies
+--@api: LModManager:hasCircularDependencies
 do
     local mgr = lurek.mods.newModManager()
     local mod_a = lurek.mods.newMod({ id = "a", name = "A", dependencies = { "b" } })
@@ -331,7 +331,7 @@ do
     print("circular = " .. tostring(mgr:hasCircularDependencies()))
 end
 
---@api-stub: LModManager:validateDependencies
+--@api: LModManager:validateDependencies
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({
@@ -345,7 +345,7 @@ do
     print("first missing = " .. tostring(missing[1]))
 end
 
---@api-stub: LModManager:markForReload
+--@api: LModManager:markForReload
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "hot", name = "Hot" })
@@ -355,7 +355,7 @@ do
     print("queued = " .. #mgr:getReloadQueue())
 end
 
---@api-stub: LModManager:getReloadQueue
+--@api: LModManager:getReloadQueue
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "hot", name = "Hot" })
@@ -364,7 +364,7 @@ do
     print("queued = " .. #mgr:getReloadQueue())
 end
 
---@api-stub: LModManager:processReloadQueue
+--@api: LModManager:processReloadQueue
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "hot", name = "Hot" })
@@ -375,7 +375,7 @@ do
     print("queued after = " .. #mgr:getReloadQueue())
 end
 
---@api-stub: LModManager:clearReloadQueue
+--@api: LModManager:clearReloadQueue
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "hot", name = "Hot" })
@@ -385,7 +385,7 @@ do
     print("queued = " .. #mgr:getReloadQueue())
 end
 
---@api-stub: LModManager:getModPath
+--@api: LModManager:getModPath
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "memory_only", name = "Memory Only" })
@@ -395,7 +395,7 @@ do
     print("path = " .. tostring(path))
 end
 
---@api-stub: LModManager:getModsByCapability
+--@api: LModManager:getModsByCapability
 do
     local mgr = lurek.mods.newModManager()
     local mod = lurek.mods.newMod({ id = "render_mod", name = "Renderer Mod" })
@@ -406,7 +406,7 @@ do
     print("first id = " .. renderers[1].id)
 end
 
---@api-stub: LModManager:scanFolder
+--@api: LModManager:scanFolder
 do
     local mgr = lurek.mods.newModManager()
     local found = mgr:scanFolder("content/examples")
@@ -416,7 +416,7 @@ end
 
 --- Mods Module: LContentRegistry, LMod, LModManager
 
---@api-stub: LContentRegistry:getTypes
+--@api: LContentRegistry:getTypes
 do
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
@@ -425,7 +425,7 @@ do
     print("type count = " .. #types)
 end
 
---@api-stub: LContentRegistry:registerType
+--@api: LContentRegistry:registerType
 do
     local reg = lurek.mods.newRegistry()
     reg:registerType("item")
@@ -434,25 +434,25 @@ do
     print("types = " .. #types)
 end
 
---@api-stub: LContentRegistry:type
+--@api: LContentRegistry:type
 do
     local reg = lurek.mods.newRegistry()
     print("type = " .. reg:type())
 end
 
---@api-stub: LContentRegistry:typeOf
+--@api: LContentRegistry:typeOf
 do
     local reg = lurek.mods.newRegistry()
     print("is registry = " .. tostring(reg:typeOf("LContentRegistry")))
 end
 
---@api-stub: LMod:getAuthor
+--@api: LMod:getAuthor
 do
     local mod = lurek.mods.newMod({ id = "my_mod", name = "My Mod", author = "Dev" })
     print("author = " .. mod:getAuthor())
 end
 
---@api-stub: LMod:getDescription
+--@api: LMod:getDescription
 do
     local mod = lurek.mods.newMod({
         id = "my_mod",
@@ -462,49 +462,49 @@ do
     print("description = " .. mod:getDescription())
 end
 
---@api-stub: LMod:getId
+--@api: LMod:getId
 do
     local mod = lurek.mods.newMod({ id = "my_mod", name = "My Mod" })
     print("id = " .. mod:getId())
 end
 
---@api-stub: LMod:getName
+--@api: LMod:getName
 do
     local mod = lurek.mods.newMod({ id = "my_mod", name = "My Mod" })
     print("name = " .. mod:getName())
 end
 
---@api-stub: LMod:getPriority
+--@api: LMod:getPriority
 do
     local mod = lurek.mods.newMod({ id = "my_mod", name = "My Mod", priority = 25 })
     print("priority = " .. mod:getPriority())
 end
 
---@api-stub: LMod:getVersion
+--@api: LMod:getVersion
 do
     local mod = lurek.mods.newMod({ id = "my_mod", name = "My Mod", version = "1.4.2" })
     print("version = " .. mod:getVersion())
 end
 
---@api-stub: LMod:type
+--@api: LMod:type
 do
     local mod = lurek.mods.newMod({ id = "my_mod", name = "My Mod" })
     print("type = " .. mod:type())
 end
 
---@api-stub: LMod:typeOf
+--@api: LMod:typeOf
 do
     local mod = lurek.mods.newMod({ id = "my_mod", name = "My Mod" })
     print("is LMod = " .. tostring(mod:typeOf("LMod")))
 end
 
---@api-stub: LModManager:type
+--@api: LModManager:type
 do
     local mgr = lurek.mods.newModManager()
     print("type = " .. mgr:type())
 end
 
---@api-stub: LModManager:typeOf
+--@api: LModManager:typeOf
 do
     local mgr = lurek.mods.newModManager()
     print("is manager = " .. tostring(mgr:typeOf("LModManager")))

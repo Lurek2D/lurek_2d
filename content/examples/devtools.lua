@@ -4,118 +4,133 @@
 
 --- DevTools Module Part 1: Logging, Profiling, Frame Stats, File Watches, Console, Inspector
 
---@api-stub: lurek.devtools.log
+--@api: lurek.devtools.log
 do
     lurek.devtools.log("info", "game started")
     print("logged info message")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 
---@api-stub: lurek.devtools.trace
+--@api: lurek.devtools.trace
 do
     lurek.devtools.trace("entering update loop")
     print("trace logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 
---@api-stub: lurek.devtools.debug
+--@api: lurek.devtools.debug
 do
     lurek.devtools.debug("player pos = 100, 200")
     print("debug logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 
---@api-stub: lurek.devtools.info
+--@api: lurek.devtools.info
 do
     lurek.devtools.info("level loaded")
     print("info logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 
---@api-stub: lurek.devtools.warn
+--@api: lurek.devtools.warn
 do
     lurek.devtools.warn("texture missing fallback used")
     print("warn logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 
---@api-stub: lurek.devtools.error
+--@api: lurek.devtools.error
 do
     lurek.devtools.error("save file warning emitted")
     print("error logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 
---@api-stub: lurek.devtools.fatal
+--@api: lurek.devtools.fatal
 do
     lurek.devtools.fatal("unrecoverable GPU error")
     print("fatal logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 
---@api-stub: lurek.devtools.setLogLevel
+--@api: lurek.devtools.setLogLevel
 do
     lurek.devtools.setLogLevel("warn")
     print("log level set to warn")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 
---@api-stub: lurek.devtools.getLogLevel
+--@api: lurek.devtools.getLogLevel
 do
     local level = lurek.devtools.getLogLevel()
     print("log level = " .. level)
+    print("lua type = " .. type(level))
 end
 
---@api-stub: lurek.devtools.setLogConsole
+--@api: lurek.devtools.setLogConsole
 do
     lurek.devtools.setLogConsole(true)
     print("console logging enabled")
+    print("console logging = " .. tostring(lurek.devtools.getLogConsole()))
 end
 
---@api-stub: lurek.devtools.getLogConsole
+--@api: lurek.devtools.getLogConsole
 do
     local console = lurek.devtools.getLogConsole()
     print("console = " .. tostring(console))
+    print("lua type = " .. type(console))
 end
 
---@api-stub: lurek.devtools.setLogFile
+--@api: lurek.devtools.setLogFile
 do
     lurek.devtools.setLogFile("logs/devtools.log")
     print("log file set")
+    print("log file = " .. tostring(lurek.devtools.getLogFile()))
 end
 
---@api-stub: lurek.devtools.getLogFile
+--@api: lurek.devtools.getLogFile
 do
     local fp = lurek.devtools.getLogFile()
     print("log file = " .. fp)
+    print("lua type = " .. type(fp))
 end
 
---@api-stub: lurek.devtools.getLogHistory
+--@api: lurek.devtools.getLogHistory
 do
     lurek.devtools.info("test entry")
     local entries = lurek.devtools.getLogHistory(5)
     print("log entries = " .. #entries)
 end
 
---@api-stub: lurek.devtools.clearLog
+--@api: lurek.devtools.clearLog
 do
     lurek.devtools.info("will be cleared")
     lurek.devtools.clearLog()
     print("log cleared")
 end
 
---@api-stub: lurek.devtools.setProfilingEnabled
+--@api: lurek.devtools.setProfilingEnabled
 do
     lurek.devtools.setProfilingEnabled(true)
     print("profiling enabled")
+    print("profiling = " .. tostring(lurek.devtools.isProfilingEnabled()))
 end
 
---@api-stub: lurek.devtools.isProfilingEnabled
+--@api: lurek.devtools.isProfilingEnabled
 do
     local v = lurek.devtools.isProfilingEnabled()
     print("profiling = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 
---@api-stub: lurek.devtools.profilePush
+--@api: lurek.devtools.profilePush
 do
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("physics")
     print("pushed physics zone")
 end
 
---@api-stub: lurek.devtools.profilePop
+--@api: lurek.devtools.profilePop
 do
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("render")
@@ -123,7 +138,7 @@ do
     print("popped render zone")
 end
 
---@api-stub: lurek.devtools.profileFrame
+--@api: lurek.devtools.profileFrame
 do
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("update")
@@ -132,13 +147,14 @@ do
     print("frame stored")
 end
 
---@api-stub: lurek.devtools.getProfileFrameCount
+--@api: lurek.devtools.getProfileFrameCount
 do
     local n = lurek.devtools.getProfileFrameCount()
     print("profile frames = " .. n)
+    print("lua type = " .. type(n))
 end
 
---@api-stub: lurek.devtools.getProfileData
+--@api: lurek.devtools.getProfileData
 do
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("update")
@@ -151,20 +167,21 @@ do
     end
 end
 
---@api-stub: lurek.devtools.resetProfile
+--@api: lurek.devtools.resetProfile
 do
     lurek.devtools.resetProfile()
     print("profile reset, frames = " .. lurek.devtools.getProfileFrameCount())
+    print("profile frames = " .. tostring(lurek.devtools.getProfileFrameCount()))
 end
 
---@api-stub: lurek.devtools.recordFrameTime
+--@api: lurek.devtools.recordFrameTime
 do
     lurek.devtools.recordFrameTime(0.016)
     lurek.devtools.recordFrameTime(0.017)
     print("frame times recorded")
 end
 
---@api-stub: lurek.devtools.getFrameStats
+--@api: lurek.devtools.getFrameStats
 do
     lurek.devtools.recordFrameTime(0.016)
     lurek.devtools.recordFrameTime(0.018)
@@ -173,13 +190,14 @@ do
     print("samples = " .. tostring(stats.samples))
 end
 
---@api-stub: lurek.devtools.recordGpuFrameTime
+--@api: lurek.devtools.recordGpuFrameTime
 do
     lurek.devtools.recordGpuFrameTime(0.008)
     print("gpu frame time recorded")
+    print("profiling = " .. tostring(lurek.devtools.isProfilingEnabled()))
 end
 
---@api-stub: lurek.devtools.getGpuFrameStats
+--@api: lurek.devtools.getGpuFrameStats
 do
     lurek.devtools.recordGpuFrameTime(0.008)
     lurek.devtools.recordGpuFrameTime(0.009)
@@ -188,46 +206,49 @@ do
     print("gpu samples = " .. tostring(stats.samples))
 end
 
---@api-stub: lurek.devtools.getFrameHistory
+--@api: lurek.devtools.getFrameHistory
 do
     lurek.devtools.recordFrameTime(0.016)
     local h = lurek.devtools.getFrameHistory()
     print("history count = " .. #h)
 end
 
---@api-stub: lurek.devtools.setFrameHistorySize
+--@api: lurek.devtools.setFrameHistorySize
 do
     lurek.devtools.setFrameHistorySize(120)
     print("history size set to 120")
+    print("frame history size = " .. tostring(lurek.devtools.getFrameHistorySize()))
 end
 
---@api-stub: lurek.devtools.getFrameHistorySize
+--@api: lurek.devtools.getFrameHistorySize
 do
     local n = lurek.devtools.getFrameHistorySize()
     print("history capacity = " .. n)
+    print("lua type = " .. type(n))
 end
 
---@api-stub: lurek.devtools.watch
+--@api: lurek.devtools.watch
 do
     local added = lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
     print("watch added = " .. tostring(added))
+    print("watched paths = " .. tostring(#lurek.devtools.getWatchedPaths()))
 end
 
---@api-stub: lurek.devtools.unwatch
+--@api: lurek.devtools.unwatch
 do
     lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
     local removed = lurek.devtools.unwatch("content/examples/assets/layouts/sample_menu.html")
     print("removed = " .. tostring(removed))
 end
 
---@api-stub: lurek.devtools.getWatchedPaths
+--@api: lurek.devtools.getWatchedPaths
 do
     lurek.devtools.watch("content/examples/assets/images")
     local paths = lurek.devtools.getWatchedPaths()
     print("watched = " .. #paths)
 end
 
---@api-stub: lurek.devtools.scan
+--@api: lurek.devtools.scan
 do
     lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
     local changed = lurek.devtools.scan()
@@ -235,83 +256,91 @@ do
     print("watched paths = " .. #lurek.devtools.getWatchedPaths())
 end
 
---@api-stub: lurek.devtools.clearWatches
+--@api: lurek.devtools.clearWatches
 do
     lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
     lurek.devtools.clearWatches()
     print("watches cleared, count = " .. #lurek.devtools.getWatchedPaths())
 end
 
---@api-stub: lurek.devtools.getWatchInterval
+--@api: lurek.devtools.getWatchInterval
 do
     local v = lurek.devtools.getWatchInterval()
     print("interval = " .. v)
+    print("lua type = " .. type(v))
 end
 
---@api-stub: lurek.devtools.setWatchInterval
+--@api: lurek.devtools.setWatchInterval
 do
     lurek.devtools.setWatchInterval(0.5)
     print("interval set to 0.5s")
+    print("watch interval = " .. tostring(lurek.devtools.getWatchInterval()))
 end
 
---@api-stub: lurek.devtools.getCallStack
+--@api: lurek.devtools.getCallStack
 do
     local frames = lurek.devtools.getCallStack(5)
     print("stack frames = " .. #frames)
+    print("lua type = " .. type(frames))
 end
 
---@api-stub: lurek.devtools.eval
+--@api: lurek.devtools.eval
 do
     local ok, value = lurek.devtools.eval("return 2 + 2")
     print("eval ok = " .. tostring(ok))
     print("eval value = " .. tostring(value))
 end
 
---@api-stub: lurek.devtools.openConsole
+--@api: lurek.devtools.openConsole
 do
     local ok = lurek.devtools.openConsole()
     print("console opened = " .. tostring(ok))
+    print("console open = " .. tostring(lurek.devtools.isConsoleOpen()))
 end
 
---@api-stub: lurek.devtools.isConsoleOpen
+--@api: lurek.devtools.isConsoleOpen
 do
     local v = lurek.devtools.isConsoleOpen()
     print("console open = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 
---@api-stub: lurek.devtools.openEntityInspector
+--@api: lurek.devtools.openEntityInspector
 do
     local ok = lurek.devtools.openEntityInspector()
     print("inspector opened = " .. tostring(ok))
+    print("entity inspector open = " .. tostring(lurek.devtools.isEntityInspectorOpen()))
 end
 
---@api-stub: lurek.devtools.isEntityInspectorOpen
+--@api: lurek.devtools.isEntityInspectorOpen
 do
     local v = lurek.devtools.isEntityInspectorOpen()
     print("inspector open = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 
---@api-stub: lurek.devtools.exposeWatch
+--@api: lurek.devtools.exposeWatch
 do
     local id = lurek.devtools.exposeWatch("health", function() return 100 end, "player")
     print("watch id = " .. id)
+    print("watch entries = " .. tostring(#lurek.devtools.getWatches()))
 end
 
---@api-stub: lurek.devtools.removeWatch
+--@api: lurek.devtools.removeWatch
 do
     local id = lurek.devtools.exposeWatch("temp", function() return 0 end)
     local ok = lurek.devtools.removeWatch(id)
     print("removed = " .. tostring(ok))
 end
 
---@api-stub: lurek.devtools.getWatches
+--@api: lurek.devtools.getWatches
 do
     lurek.devtools.exposeWatch("score", function() return 42 end)
     local watches = lurek.devtools.getWatches()
     print("watch entries = " .. #watches)
 end
 
---@api-stub: lurek.devtools.snapshot
+--@api: lurek.devtools.snapshot
 do
     lurek.devtools.recordFrameTime(0.016)
     lurek.devtools.info("snapshot ready")
@@ -323,7 +352,7 @@ do
     print("log rows = " .. tostring(#snap.log))
 end
 
---@api-stub: lurek.devtools.profilerReport
+--@api: lurek.devtools.profilerReport
 do
     lurek.devtools.setProfilingEnabled(true)
     lurek.devtools.profilePush("render")
@@ -336,13 +365,14 @@ do
     end
 end
 
---@api-stub: lurek.devtools.newFileWatcher
+--@api: lurek.devtools.newFileWatcher
 do
     local watcher = lurek.devtools.newFileWatcher("content/")
     print("watcher path = " .. watcher:getPath())
+    print("lua type = " .. type(watcher))
 end
 
---@api-stub: lurek.devtools.newRepl
+--@api: lurek.devtools.newRepl
 do
     local repl = lurek.devtools.newRepl(50)
     repl:eval("return 5 * 5")
@@ -352,7 +382,7 @@ end
 
 --- DevTools Module Part 2: LFileWatcher and LReplConsole Methods
 
---@api-stub: LFileWatcher:onChanged
+--@api: LFileWatcher:onChanged
 do
     local watcher = lurek.devtools.newFileWatcher("assets/")
     watcher:onChanged(function()
@@ -361,39 +391,42 @@ do
     print("onChange callback set")
 end
 
---@api-stub: LFileWatcher:check
+--@api: LFileWatcher:check
 do
     local watcher = lurek.devtools.newFileWatcher("content/")
     local changed = watcher:check()
     print("change detected = " .. tostring(changed))
 end
 
---@api-stub: LFileWatcher:getPath
+--@api: LFileWatcher:getPath
 do
     local watcher = lurek.devtools.newFileWatcher("content/")
     print("watching = " .. watcher:getPath())
+    print("owner type = " .. tostring(watcher:type()))
 end
 
---@api-stub: LFileWatcher:cancel
+--@api: LFileWatcher:cancel
 do
     local watcher = lurek.devtools.newFileWatcher("save/")
     watcher:cancel()
     print("watcher cancelled")
 end
 
---@api-stub: LFileWatcher:type
+--@api: LFileWatcher:type
 do
     local watcher = lurek.devtools.newFileWatcher("assets/")
     print("type = " .. watcher:type())
+    print("typeOf LObject = " .. tostring(watcher:typeOf("LObject")))
 end
 
---@api-stub: LFileWatcher:typeOf
+--@api: LFileWatcher:typeOf
 do
     local watcher = lurek.devtools.newFileWatcher("assets/textures/")
     print("is LFileWatcher = " .. tostring(watcher:typeOf("LFileWatcher")))
+    print("type = " .. tostring(watcher:type()))
 end
 
---@api-stub: LReplConsole:eval
+--@api: LReplConsole:eval
 do
     local repl = lurek.devtools.newRepl(100)
     local result = repl:eval("return 1 + 1")
@@ -401,7 +434,7 @@ do
     print("history len = " .. repl:len())
 end
 
---@api-stub: LReplConsole:history
+--@api: LReplConsole:history
 do
     local repl = lurek.devtools.newRepl(100)
     repl:eval("local x = 1")
@@ -410,7 +443,7 @@ do
     print("history entries = " .. #h)
 end
 
---@api-stub: LReplConsole:clear
+--@api: LReplConsole:clear
 do
     local repl = lurek.devtools.newRepl(100)
     repl:eval("print('hi')")
@@ -418,7 +451,7 @@ do
     print("history after clear = " .. repl:len())
 end
 
---@api-stub: LReplConsole:len
+--@api: LReplConsole:len
 do
     local repl = lurek.devtools.newRepl(100)
     repl:eval("a = 1")
@@ -426,14 +459,16 @@ do
     print("history len = " .. repl:len())
 end
 
---@api-stub: LReplConsole:type
+--@api: LReplConsole:type
 do
     local repl = lurek.devtools.newRepl()
     print("type = " .. repl:type())
+    print("typeOf LObject = " .. tostring(repl:typeOf("LObject")))
 end
 
---@api-stub: LReplConsole:typeOf
+--@api: LReplConsole:typeOf
 do
     local repl = lurek.devtools.newRepl()
     print("is LReplConsole = " .. tostring(repl:typeOf("LReplConsole")))
+    print("type = " .. tostring(repl:type()))
 end

@@ -3,6 +3,7 @@
 //! Computes automatic value range bounds across multiple series to establish default axis domains avoiding degenerate zero-width ranges.
 //! Maintains consistent low-level drawing semantics across all chart renderer implementations enabling uniform image generation behavior.
 //! Clamps coordinates to buffer bounds, handling edge cases like zero-sized ranges and out-of-bounds pixel access silently.
+//! Module API documentation
 
 use crate::charts::config::{ChartConfig, ChartSeries};
 use crate::image::ImageData;

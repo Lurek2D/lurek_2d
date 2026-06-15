@@ -2,12 +2,11 @@ import * as child_process from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { loadRagContract } from "./ragContract.js";
 
 const PYTHON_EXECUTABLE = process.env.LUREK_PYTHON || process.env.PYTHON || "python";
 const QUERY_SCRIPT = "tools/rag/query.py";
 const BUILD_SCRIPT = "tools/rag/build_index.py";
-export const DEFAULT_RAG_SEARCH_LIMIT = 8;
-export const MAX_RAG_SEARCH_LIMIT = 25;
 export const DEFAULT_RAG_SEARCH_TIMEOUT_MS = 15_000;
 export const DEFAULT_RAG_BUILD_TIMEOUT_MS = 60_000;
 
@@ -36,6 +35,10 @@ export interface RagQueryOptions {
   profile?: "game" | "engine" | "all";
   limit?: number;
   timeoutMs?: number;
+}
+
+export function getRagContract(workspaceRoot: string) {
+  return loadRagContract(workspaceRoot);
 }
 
 function createTempOutputPath(): string {
@@ -125,14 +128,17 @@ export function execRagQuery(
 ): Promise<RagCommandResult> {
   const {
     profile = "all",
-    limit = DEFAULT_RAG_SEARCH_LIMIT,
+    limit,
     timeoutMs = DEFAULT_RAG_SEARCH_TIMEOUT_MS,
   } = options;
+  const contract = getRagContract(workspaceRoot);
+  const resolvedLimit = limit ?? contract.searchLimit.default;
+  const normalizedLimit = Number(resolvedLimit);
 
   return execRagCommand(
     workspaceRoot,
     QUERY_SCRIPT,
-    [query, "--profile", profile, "--limit", String(limit)],
+    [query, "--profile", profile, "--limit", String(normalizedLimit)],
     timeoutMs,
   );
 }

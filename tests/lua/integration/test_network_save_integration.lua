@@ -8,9 +8,9 @@ describe("network + save integration", function()
     -- @integration lurek.network.pack
     -- @integration lurek.network.unpack
     -- @integration lurek.save.newSaveManager
-    -- @covers lurek.network.pack
-    -- @covers lurek.network.unpack
-    -- @covers lurek.save.newSaveManager
+    -- @integration lurek.network.pack
+    -- @integration lurek.network.unpack
+    -- @integration lurek.save.newSaveManager
     it("serialises a collected save snapshot to network packet format", function()
         local sm = lurek.save.newSaveManager()
 

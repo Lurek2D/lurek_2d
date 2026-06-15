@@ -3,6 +3,9 @@
 //! Screen size, camera pose, and tile scale are all part of the picker state, which keeps repeated queries stable across a frame.
 //! The result reports both tile identity and hit character so callers can tell which cell was reached and from which side it was approached.
 //! This makes the file the practical bridge between first-person view coordinates and gameplay selection on the underlying map.
+//! Module API documentation
+//!
+//! TODO: add doc note 1
 
 use super::dda::Raycaster2D;
 use super::doors::DoorDirection;

@@ -12,7 +12,7 @@
 ## Rules
 - Teach clear API usage, not full game state machines.
 - Keep examples executable and free of stubs.
-- Map `-- @api-stub:` comments to working code.
+- Map `-- @api:` comments to working code.
 - Use forward-slash paths inside `assets/`.
 
 ## Workflow

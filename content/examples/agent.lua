@@ -5,7 +5,7 @@
 
 -- ─── lurek.agent.new ─────────────────────────────────────────────────────────
 
---@api-stub: lurek.agent.new
+--@api: lurek.agent.new
 do
     local agent = lurek.agent.new({
         url          = "http://localhost:11434/api/generate",
@@ -27,7 +27,7 @@ end
 
 -- ─── lurek.agent.newManager ──────────────────────────────────────────────────
 
---@api-stub: lurek.agent.newManager
+--@api: lurek.agent.newManager
 do
     local manager = lurek.agent.newManager()
     print("Manager created:", manager)
@@ -35,7 +35,7 @@ end
 
 -- ─── lurek.agent.newSystem ───────────────────────────────────────────────────
 
---@api-stub: lurek.agent.newSystem
+--@api: lurek.agent.newSystem
 do
     local system = lurek.agent.newSystem({
         system_prompt = "You are a multi-agent game orchestrator. Respond concisely.",
@@ -45,7 +45,7 @@ end
 
 -- ─── LAgent:setName ──────────────────────────────────────────────────────────
 
---@api-stub: LAgent:setName
+--@api: LAgent:setName
 do
     local agent = lurek.agent.new({})
     agent:setName("npc_writer")
@@ -54,7 +54,7 @@ end
 
 -- ─── LAgent:setDescription ───────────────────────────────────────────────────
 
---@api-stub: LAgent:setDescription
+--@api: LAgent:setDescription
 do
     local agent = lurek.agent.new({})
     agent:setDescription("Specialises in writing NPC dialogue with emotional depth.")
@@ -63,7 +63,7 @@ end
 
 -- ─── LAgent:setModel ─────────────────────────────────────────────────────────
 
---@api-stub: LAgent:setModel
+--@api: LAgent:setModel
 do
     local agent = lurek.agent.new({ model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M" })
     agent:setModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M")
@@ -72,7 +72,7 @@ end
 
 -- ─── LAgent:setUrl ───────────────────────────────────────────────────────────
 
---@api-stub: LAgent:setUrl
+--@api: LAgent:setUrl
 do
     local agent = lurek.agent.new({})
     agent:setUrl("http://10.0.0.5:11434/api/generate")
@@ -81,7 +81,7 @@ end
 
 -- ─── LAgent:setTimeout ───────────────────────────────────────────────────────
 
---@api-stub: LAgent:setTimeout
+--@api: LAgent:setTimeout
 do
     local agent = lurek.agent.new({})
     agent:setTimeout(90)
@@ -90,7 +90,7 @@ end
 
 -- ─── LAgent:getName ──────────────────────────────────────────────────────────
 
---@api-stub: LAgent:getName
+--@api: LAgent:getName
 do
     local agent = lurek.agent.new({})
     agent:setName("planner")
@@ -100,7 +100,7 @@ end
 
 -- ─── LAgent:getDescription ───────────────────────────────────────────────────
 
---@api-stub: LAgent:getDescription
+--@api: LAgent:getDescription
 do
     local agent = lurek.agent.new({})
     agent:setDescription("Plans tasks.")
@@ -110,7 +110,7 @@ end
 
 -- ─── LAgent:getModel ─────────────────────────────────────────────────────────
 
---@api-stub: LAgent:getModel
+--@api: LAgent:getModel
 do
     local agent = lurek.agent.new({ model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M" })
     local m     = agent:getModel()
@@ -119,7 +119,7 @@ end
 
 -- ─── LAgent:getUrl ───────────────────────────────────────────────────────────
 
---@api-stub: LAgent:getUrl
+--@api: LAgent:getUrl
 do
     local agent = lurek.agent.new({ url = "http://127.0.0.1:11434/api/generate" })
     local url   = agent:getUrl()
@@ -128,7 +128,7 @@ end
 
 -- ─── LAgent:getFormat ────────────────────────────────────────────────────────
 
---@api-stub: LAgent:getFormat
+--@api: LAgent:getFormat
 do
     local agent = lurek.agent.new({ format = "json" })
     local fmt   = agent:getFormat()
@@ -137,7 +137,7 @@ end
 
 -- ─── LAgent:hasSkill ─────────────────────────────────────────────────────────
 
---@api-stub: LAgent:hasSkill
+--@api: LAgent:hasSkill
 do
     local agent = lurek.agent.new({})
     agent:addSkill("location", "The player is in the Darkwood forest.")
@@ -147,7 +147,7 @@ end
 
 -- ─── LAgent:skillCount ───────────────────────────────────────────────────────
 
---@api-stub: LAgent:skillCount
+--@api: LAgent:skillCount
 do
     local agent = lurek.agent.new({})
     agent:addSkill("s1", "Context A.")
@@ -157,7 +157,7 @@ end
 
 -- ─── LAgent:listSkills ───────────────────────────────────────────────────────
 
---@api-stub: LAgent:listSkills
+--@api: LAgent:listSkills
 do
     local agent = lurek.agent.new({})
     agent:addSkill("combat",    "Turn-based combat.")
@@ -170,7 +170,7 @@ end
 
 -- ─── LAgent:addSkill ─────────────────────────────────────────────────────────
 
---@api-stub: LAgent:addSkill
+--@api: LAgent:addSkill
 do
     local agent = lurek.agent.new({})
     agent:addSkill("location", "The player is currently in the Darkwood forest.")
@@ -180,7 +180,7 @@ end
 
 -- ─── LAgent:clearSkills ──────────────────────────────────────────────────────
 
---@api-stub: LAgent:clearSkills
+--@api: LAgent:clearSkills
 do
     local agent = lurek.agent.new({})
     agent:addSkill("temp", "Some context.")
@@ -190,7 +190,7 @@ end
 
 -- ─── LAgent:setOption ────────────────────────────────────────────────────────
 
---@api-stub: LAgent:setOption
+--@api: LAgent:setOption
 do
     local agent = lurek.agent.new({})
     agent:setOption("temperature", 0.4)
@@ -200,7 +200,7 @@ end
 
 -- ─── LAgent:setFormat ────────────────────────────────────────────────────────
 
---@api-stub: LAgent:setFormat
+--@api: LAgent:setFormat
 do
     local agent = lurek.agent.new({})
     agent:setFormat("text")
@@ -209,7 +209,7 @@ end
 
 -- ─── LAgent:setMaxRetries ────────────────────────────────────────────────────
 
---@api-stub: LAgent:setMaxRetries
+--@api: LAgent:setMaxRetries
 do
     local agent = lurek.agent.new({})
     agent:setMaxRetries(3)
@@ -218,7 +218,7 @@ end
 
 -- ─── LAgent:setContextSize ───────────────────────────────────────────────────
 
---@api-stub: LAgent:setContextSize
+--@api: LAgent:setContextSize
 do
     local agent = lurek.agent.new({})
     agent:setContextSize(8192)
@@ -227,7 +227,7 @@ end
 
 -- ─── LAgent:setTemperature ───────────────────────────────────────────────────
 
---@api-stub: LAgent:setTemperature
+--@api: LAgent:setTemperature
 do
     local agent = lurek.agent.new({})
     agent:setTemperature(0.9)
@@ -236,7 +236,7 @@ end
 
 -- ─── LAgent:prompt ───────────────────────────────────────────────────────────
 
---@api-stub: LAgent:prompt
+--@api: LAgent:prompt
 do
     local agent = lurek.agent.new({
         url    = "http://localhost:11434/api/generate",
@@ -257,7 +257,7 @@ end
 
 -- ─── LAgent:promptBatch ──────────────────────────────────────────────────────
 
---@api-stub: LAgent:promptBatch
+--@api: LAgent:promptBatch
 do
     local agent = lurek.agent.new({
         url    = "http://localhost:11434/api/generate",
@@ -283,7 +283,7 @@ end
 
 -- ─── LAgent:cancel ───────────────────────────────────────────────────────────
 
---@api-stub: LAgent:cancel
+--@api: LAgent:cancel
 do
     local agent = lurek.agent.new({
         url = "http://localhost:11434/api/generate",
@@ -296,7 +296,7 @@ end
 
 -- ─── LAgent:pendingCount ─────────────────────────────────────────────────────
 
---@api-stub: LAgent:pendingCount
+--@api: LAgent:pendingCount
 do
     local agent = lurek.agent.new({})
     local n = agent:pendingCount()
@@ -305,7 +305,7 @@ end
 
 -- ─── LAgent:update ───────────────────────────────────────────────────────────
 
---@api-stub: LAgent:update
+--@api: LAgent:update
 do
     local agent = lurek.agent.new({})
     -- Called every frame in the game loop to deliver completed LLM responses.
@@ -315,7 +315,7 @@ end
 
 -- ─── LAgent:evalCode ─────────────────────────────────────────────────────────
 
---@api-stub: LAgent:evalCode
+--@api: LAgent:evalCode
 do
     local agent = lurek.agent.new({})
     local ok = agent:evalCode("local x = 1 + 1; print('eval result:', x)")
@@ -324,7 +324,7 @@ end
 
 -- ─── LAgentManager:runAll ────────────────────────────────────────────────────
 
---@api-stub: LAgentManager:runAll
+--@api: LAgentManager:runAll
 do
     local manager = lurek.agent.newManager()
 
@@ -344,7 +344,7 @@ end
 
 -- ─── LAgentManager:update ────────────────────────────────────────────────────
 
---@api-stub: LAgentManager:update
+--@api: LAgentManager:update
 do
     local manager = lurek.agent.newManager()
     -- Called every frame in the game loop.
@@ -354,7 +354,7 @@ end
 
 -- ─── LAISystem:addAgent ──────────────────────────────────────────────────────
 
---@api-stub: LAISystem:addAgent
+--@api: LAISystem:addAgent
 do
     local system = lurek.agent.newSystem({ system_prompt = "You are a game design AI." })
 
@@ -367,7 +367,7 @@ end
 
 -- ─── LAISystem:removeAgent ───────────────────────────────────────────────────
 
---@api-stub: LAISystem:removeAgent
+--@api: LAISystem:removeAgent
 do
     local system = lurek.agent.newSystem({})
     local agent  = lurek.agent.new({})
@@ -378,7 +378,7 @@ end
 
 -- ─── LAISystem:listAgents ────────────────────────────────────────────────────
 
---@api-stub: LAISystem:listAgents
+--@api: LAISystem:listAgents
 do
     local system = lurek.agent.newSystem({})
     local a = lurek.agent.new({})
@@ -392,7 +392,7 @@ end
 
 -- ─── LAISystem:hasAgent ──────────────────────────────────────────────────────
 
---@api-stub: LAISystem:hasAgent
+--@api: LAISystem:hasAgent
 do
     local system = lurek.agent.newSystem({})
     local agent  = lurek.agent.new({})
@@ -403,7 +403,7 @@ end
 
 -- ─── LAISystem:agentCount ────────────────────────────────────────────────────
 
---@api-stub: LAISystem:agentCount
+--@api: LAISystem:agentCount
 do
     local system = lurek.agent.newSystem({})
     local agent  = lurek.agent.new({})
@@ -414,7 +414,7 @@ end
 
 -- ─── LAISystem:addInstruction ────────────────────────────────────────────────
 
---@api-stub: LAISystem:addInstruction
+--@api: LAISystem:addInstruction
 do
     local system = lurek.agent.newSystem({})
     system:addInstruction("art_style", "Use a 16-bit pixel art visual style. Palettes are limited to 16 colours per sprite.")
@@ -424,7 +424,7 @@ end
 
 -- ─── LAISystem:removeInstruction ─────────────────────────────────────────────
 
---@api-stub: LAISystem:removeInstruction
+--@api: LAISystem:removeInstruction
 do
     local system = lurek.agent.newSystem({})
     system:addInstruction("debug_hint", "Temporary debug context.")
@@ -434,7 +434,7 @@ end
 
 -- ─── LAISystem:hasInstruction ────────────────────────────────────────────────
 
---@api-stub: LAISystem:hasInstruction
+--@api: LAISystem:hasInstruction
 do
     local system = lurek.agent.newSystem({})
     system:addInstruction("tone", "Be concise.")
@@ -444,7 +444,7 @@ end
 
 -- ─── LAISystem:instructionCount ──────────────────────────────────────────────
 
---@api-stub: LAISystem:instructionCount
+--@api: LAISystem:instructionCount
 do
     local system = lurek.agent.newSystem({})
     system:addInstruction("tone",      "Be concise.")
@@ -454,7 +454,7 @@ end
 
 -- ─── LAISystem:listInstructions ──────────────────────────────────────────────
 
---@api-stub: LAISystem:listInstructions
+--@api: LAISystem:listInstructions
 do
     local system = lurek.agent.newSystem({})
     system:addInstruction("tone",      "Be concise.")
@@ -467,7 +467,7 @@ end
 
 -- ─── LAISystem:addSkill ──────────────────────────────────────────────────────
 
---@api-stub: LAISystem:addSkill
+--@api: LAISystem:addSkill
 do
     local system = lurek.agent.newSystem({})
     -- Lurek auto-injects this skill when the user prompt contains any listed keyword.
@@ -486,7 +486,7 @@ end
 
 -- ─── LAISystem:removeSkill ───────────────────────────────────────────────────
 
---@api-stub: LAISystem:removeSkill
+--@api: LAISystem:removeSkill
 do
     local system = lurek.agent.newSystem({})
     system:addSkill("temp_skill", { "test" }, "Temporary.")
@@ -496,7 +496,7 @@ end
 
 -- ─── LAISystem:hasSkill ──────────────────────────────────────────────────────
 
---@api-stub: LAISystem:hasSkill
+--@api: LAISystem:hasSkill
 do
     local system = lurek.agent.newSystem({})
     system:addSkill("combat_rules", { "combat", "attack" }, "Turn-based combat.")
@@ -506,7 +506,7 @@ end
 
 -- ─── LAISystem:skillCount ────────────────────────────────────────────────────
 
---@api-stub: LAISystem:skillCount
+--@api: LAISystem:skillCount
 do
     local system = lurek.agent.newSystem({})
     system:addSkill("combat_rules",   { "combat" },        "Turn-based combat.")
@@ -516,7 +516,7 @@ end
 
 -- ─── LAISystem:buildContext ──────────────────────────────────────────────────
 
---@api-stub: LAISystem:buildContext
+--@api: LAISystem:buildContext
 do
     local system = lurek.agent.newSystem({ system_prompt = "You are a game AI." })
     system:addInstruction("art_style", "Use pixel art, 16 colours max.")
@@ -536,7 +536,7 @@ end
 
 -- ─── LAISystem:prompt ────────────────────────────────────────────────────────
 
---@api-stub: LAISystem:prompt
+--@api: LAISystem:prompt
 do
     local system = lurek.agent.newSystem({ system_prompt = "You are a game design AI." })
     system:addInstruction("art_style", "Use 16-bit pixel art.")
@@ -569,7 +569,7 @@ end
 
 -- ─── LAISystem:runAll ────────────────────────────────────────────────────────
 
---@api-stub: LAISystem:runAll
+--@api: LAISystem:runAll
 do
     local system = lurek.agent.newSystem({ system_prompt = "You are a game AI team." })
     system:addInstruction("art_style", "16-bit pixel art.")
@@ -596,7 +596,7 @@ end
 
 -- ─── LAISystem:update ────────────────────────────────────────────────────────
 
---@api-stub: LAISystem:update
+--@api: LAISystem:update
 do
     local system = lurek.agent.newSystem({})
     -- Called every frame in the game loop.
@@ -606,7 +606,7 @@ end
 
 -- ─── lurek.agent.newOllama ───────────────────────────────────────────────────
 
---@api-stub: lurek.agent.newOllama
+--@api: lurek.agent.newOllama
 do
     local ollama = lurek.agent.newOllama()
     print("OllamaManager created, default URL http://127.0.0.1:11434")
@@ -614,7 +614,7 @@ end
 
 -- ─── LOllamaManager:isRunning ────────────────────────────────────────────────
 
---@api-stub: LOllamaManager:isRunning
+--@api: LOllamaManager:isRunning
 do
     local ollama  = lurek.agent.newOllama()
     local running = ollama:isRunning()
@@ -623,7 +623,7 @@ end
 
 -- ─── LOllamaManager:version ──────────────────────────────────────────────────
 
---@api-stub: LOllamaManager:version
+--@api: LOllamaManager:version
 do
     local ollama = lurek.agent.newOllama()
     local v      = ollama:version()
@@ -632,7 +632,7 @@ end
 
 -- ─── LOllamaManager:baseUrl ──────────────────────────────────────────────────
 
---@api-stub: LOllamaManager:baseUrl
+--@api: LOllamaManager:baseUrl
 do
     local ollama = lurek.agent.newOllama({ url = "http://127.0.0.1:11434" })
     local url    = ollama:baseUrl()
@@ -641,7 +641,7 @@ end
 
 -- ─── LOllamaManager:listModels ───────────────────────────────────────────────
 
---@api-stub: LOllamaManager:listModels
+--@api: LOllamaManager:listModels
 do
     local ollama = lurek.agent.newOllama()
     local models = ollama:listModels()
@@ -652,7 +652,7 @@ end
 
 -- ─── LOllamaManager:modelNames ───────────────────────────────────────────────
 
---@api-stub: LOllamaManager:modelNames
+--@api: LOllamaManager:modelNames
 do
     local ollama = lurek.agent.newOllama()
     local names  = ollama:modelNames()
@@ -663,7 +663,7 @@ end
 
 -- ─── LOllamaManager:hasModel ─────────────────────────────────────────────────
 
---@api-stub: LOllamaManager:hasModel
+--@api: LOllamaManager:hasModel
 do
     local ollama = lurek.agent.newOllama()
     local found  = ollama:hasModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M")
@@ -672,7 +672,7 @@ end
 
 -- ─── LOllamaManager:start ────────────────────────────────────────────────────
 
---@api-stub: LOllamaManager:start
+--@api: LOllamaManager:start
 do
     local ollama = lurek.agent.newOllama()
     local ok     = ollama:start()
@@ -681,7 +681,7 @@ end
 
 -- ─── LOllamaManager:stop ─────────────────────────────────────────────────────
 
---@api-stub: LOllamaManager:stop
+--@api: LOllamaManager:stop
 do
     local ollama  = lurek.agent.newOllama()
     local stopped = ollama:stop()
@@ -690,7 +690,7 @@ end
 
 -- ─── LOllamaManager:restart ──────────────────────────────────────────────────
 
---@api-stub: LOllamaManager:restart
+--@api: LOllamaManager:restart
 do
     local ollama = lurek.agent.newOllama()
     local ok     = ollama:restart()
@@ -699,7 +699,7 @@ end
 
 -- ─── LOllamaManager:pullModel ────────────────────────────────────────────────
 
---@api-stub: LOllamaManager:pullModel
+--@api: LOllamaManager:pullModel
 do
     local ollama = lurek.agent.newOllama()
     local id     = ollama:pullModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", function(success, err_msg)
@@ -714,7 +714,7 @@ end
 
 -- ─── LOllamaManager:deleteModel ──────────────────────────────────────────────
 
---@api-stub: LOllamaManager:deleteModel
+--@api: LOllamaManager:deleteModel
 do
     local ollama = lurek.agent.newOllama()
     local ok     = ollama:deleteModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M")
@@ -723,7 +723,7 @@ end
 
 -- ─── LOllamaManager:pendingCount ─────────────────────────────────────────────
 
---@api-stub: LOllamaManager:pendingCount
+--@api: LOllamaManager:pendingCount
 do
     local ollama = lurek.agent.newOllama()
     local n      = ollama:pendingCount()
@@ -732,7 +732,7 @@ end
 
 -- ─── LOllamaManager:update ───────────────────────────────────────────────────
 
---@api-stub: LOllamaManager:update
+--@api: LOllamaManager:update
 do
     local ollama = lurek.agent.newOllama()
     -- Dispatch pull callbacks that completed since the last frame.
@@ -741,7 +741,7 @@ end
 
 -- ─── lurek.agent.configure ───────────────────────────────────────────────────
 
---@api-stub: lurek.agent.configure
+--@api: lurek.agent.configure
 do
     lurek.agent.configure({
         provider    = "ollama",
@@ -754,7 +754,7 @@ end
 
 -- ─── lurek.agent.complete ────────────────────────────────────────────────────
 
---@api-stub: lurek.agent.complete
+--@api: lurek.agent.complete
 do
     local ok, reply = pcall(function()
         return lurek.agent.complete("Hello, world!")
@@ -765,7 +765,7 @@ end
 
 -- ─── lurek.agent.completeAsync ───────────────────────────────────────────────
 
---@api-stub: lurek.agent.completeAsync
+--@api: lurek.agent.completeAsync
 do
     local ok, err = pcall(function()
         local id = lurek.agent.completeAsync("What is Lua?", function(text, async_err)
@@ -782,19 +782,19 @@ do
     if not ok then print("completeAsync error:", err) end
 end
 
---@api-stub: lurek.agent.update
+--@api: lurek.agent.update
 do
     lurek.agent.update()
     print("lurek.agent.update: polled")
 end
 
---@api-stub: lurek.agent.pendingCount
+--@api: lurek.agent.pendingCount
 do
     local pending = lurek.agent.pendingCount()
     print("lurek.agent.pendingCount:", pending)
 end
 
---@api-stub: lurek.agent.cancel
+--@api: lurek.agent.cancel
 do
     lurek.agent.cancel(999999)
     print("lurek.agent.cancel: accepted")
@@ -802,7 +802,7 @@ end
 
 -- ─── lurek.agent.newChat ─────────────────────────────────────────────────────
 
---@api-stub: lurek.agent.newChat
+--@api: lurek.agent.newChat
 do
     ---@type LAgentChat
     local chat = lurek.agent.newChat()
@@ -811,7 +811,7 @@ end
 
 -- ─── LAgentChat:setSystemPrompt ──────────────────────────────────────────────
 
---@api-stub: LAgentChat:setSystemPrompt
+--@api: LAgentChat:setSystemPrompt
 do
     local chat = lurek.agent.newChat()
     chat:setSystemPrompt("You are a helpful assistant.")
@@ -819,7 +819,7 @@ end
 
 -- ─── LAgentChat:addMessage ───────────────────────────────────────────────────
 
---@api-stub: LAgentChat:addMessage
+--@api: LAgentChat:addMessage
 do
     local chat = lurek.agent.newChat()
     chat:addMessage("user", "Tell me a joke.")
@@ -827,7 +827,7 @@ end
 
 -- ─── LAgentChat:complete ─────────────────────────────────────────────────────
 
---@api-stub: LAgentChat:complete
+--@api: LAgentChat:complete
 do
     local chat = lurek.agent.newChat()
     chat:addMessage("user", "Hi!")
@@ -840,7 +840,7 @@ end
 
 -- ─── LAgentChat:clear ────────────────────────────────────────────────────────
 
---@api-stub: LAgentChat:clear
+--@api: LAgentChat:clear
 do
     local chat = lurek.agent.newChat()
     chat:addMessage("user", "Hello")
@@ -849,7 +849,7 @@ end
 
 -- ─── LAgentChat:getHistory ───────────────────────────────────────────────────
 
---@api-stub: LAgentChat:getHistory
+--@api: LAgentChat:getHistory
 do
     local chat = lurek.agent.newChat()
     local history = chat:getHistory()
@@ -858,7 +858,7 @@ end
 
 -- ─── lurek.agent.newTemplate ─────────────────────────────────────────────────
 
---@api-stub: lurek.agent.newTemplate
+--@api: lurek.agent.newTemplate
 do
     ---@type LAgentTemplate
     local tmpl = lurek.agent.newTemplate("Hello, {name}!")
@@ -867,7 +867,7 @@ end
 
 -- ─── LAgentTemplate:render ───────────────────────────────────────────────────
 
---@api-stub: LAgentTemplate:render
+--@api: LAgentTemplate:render
 do
     local tmpl = lurek.agent.newTemplate("Hello, {name}! You are {age} years old.")
     local out  = tmpl:render({ name = "Alice", age = "30" })
@@ -876,7 +876,7 @@ end
 
 -- ─── lurek.agent.completeJson ────────────────────────────────────────────────
 
---@api-stub: lurek.agent.completeJson
+--@api: lurek.agent.completeJson
 do
     local ok, result = pcall(function()
         return lurek.agent.completeJson("List three colors as JSON.")
@@ -887,7 +887,7 @@ end
 
 -- ─── lurek.agent.embed ───────────────────────────────────────────────────────
 
---@api-stub: lurek.agent.embed
+--@api: lurek.agent.embed
 do
     local ok, vec = pcall(function()
         return lurek.agent.embed("Semantic embedding test.")
@@ -898,7 +898,7 @@ end
 
 -- ─── lurek.agent.isAvailable ─────────────────────────────────────────────────
 
---@api-stub: lurek.agent.isAvailable
+--@api: lurek.agent.isAvailable
 do
     local ok = lurek.agent.isAvailable()
     print("LLM available:", ok)
@@ -906,7 +906,7 @@ end
 
 -- ─── lurek.agent.listModels ──────────────────────────────────────────────────
 
---@api-stub: lurek.agent.listModels
+--@api: lurek.agent.listModels
 do
     local models = lurek.agent.listModels()
     print("Available models:", #models)
@@ -914,7 +914,7 @@ end
 
 -- ─── lurek.agent.newWorkingMemory ────────────────────────────────────────────
 
---@api-stub: lurek.agent.newWorkingMemory
+--@api: lurek.agent.newWorkingMemory
 do
     ---@type LWorkingMemory
     local wm = lurek.agent.newWorkingMemory(16)
@@ -923,7 +923,7 @@ end
 
 -- ─── LWorkingMemory:push ─────────────────────────────────────────────────────
 
---@api-stub: LWorkingMemory:push
+--@api: LWorkingMemory:push
 do
     local wm = lurek.agent.newWorkingMemory(8)
     wm:push("last_action", "jump")
@@ -931,7 +931,7 @@ end
 
 -- ─── LWorkingMemory:get ──────────────────────────────────────────────────────
 
---@api-stub: LWorkingMemory:get
+--@api: LWorkingMemory:get
 do
     local wm = lurek.agent.newWorkingMemory(8)
     wm:push("hp", 100)
@@ -941,7 +941,7 @@ end
 
 -- ─── LWorkingMemory:forget ───────────────────────────────────────────────────
 
---@api-stub: LWorkingMemory:forget
+--@api: LWorkingMemory:forget
 do
     local wm = lurek.agent.newWorkingMemory(8)
     wm:push("temp", "value")
@@ -951,7 +951,7 @@ end
 
 -- ─── LWorkingMemory:getRecent ────────────────────────────────────────────────
 
---@api-stub: LWorkingMemory:getRecent
+--@api: LWorkingMemory:getRecent
 do
     local wm = lurek.agent.newWorkingMemory(8)
     wm:push("a", 1)
@@ -962,7 +962,7 @@ end
 
 -- ─── LWorkingMemory:len ──────────────────────────────────────────────────────
 
---@api-stub: LWorkingMemory:len
+--@api: LWorkingMemory:len
 do
     local wm = lurek.agent.newWorkingMemory(8)
     wm:push("x", 42)
@@ -971,7 +971,7 @@ end
 
 -- ─── LWorkingMemory:capacity ─────────────────────────────────────────────────
 
---@api-stub: LWorkingMemory:capacity
+--@api: LWorkingMemory:capacity
 do
     local wm = lurek.agent.newWorkingMemory(32)
     print("WM capacity:", wm:capacity())
@@ -979,7 +979,7 @@ end
 
 -- ─── lurek.agent.newEpisodicMemory ───────────────────────────────────────────
 
---@api-stub: lurek.agent.newEpisodicMemory
+--@api: lurek.agent.newEpisodicMemory
 do
     ---@type LEpisodicMemory
     local em = lurek.agent.newEpisodicMemory()
@@ -988,7 +988,7 @@ end
 
 -- ─── LEpisodicMemory:record ──────────────────────────────────────────────────
 
---@api-stub: LEpisodicMemory:record
+--@api: LEpisodicMemory:record
 do
     local em = lurek.agent.newEpisodicMemory()
     em:record(100, { event = "player_hit", damage = 10 })
@@ -996,7 +996,7 @@ end
 
 -- ─── LEpisodicMemory:query ───────────────────────────────────────────────────
 
---@api-stub: LEpisodicMemory:query
+--@api: LEpisodicMemory:query
 do
     local em = lurek.agent.newEpisodicMemory()
     em:record(1, { type = "kill" })
@@ -1006,7 +1006,7 @@ end
 
 -- ─── LEpisodicMemory:forgetBefore ────────────────────────────────────────────
 
---@api-stub: LEpisodicMemory:forgetBefore
+--@api: LEpisodicMemory:forgetBefore
 do
     local em = lurek.agent.newEpisodicMemory()
     em:record(10, { note = "old" })
@@ -1017,7 +1017,7 @@ end
 
 -- ─── LEpisodicMemory:len ─────────────────────────────────────────────────────
 
---@api-stub: LEpisodicMemory:len
+--@api: LEpisodicMemory:len
 do
     local em = lurek.agent.newEpisodicMemory()
     em:record(1, { x = 1 })
@@ -1026,7 +1026,7 @@ end
 
 -- ─── lurek.agent.newSemanticMemory ───────────────────────────────────────────
 
---@api-stub: lurek.agent.newSemanticMemory
+--@api: lurek.agent.newSemanticMemory
 do
     ---@type LSemanticMemory
     local sm = lurek.agent.newSemanticMemory()
@@ -1035,7 +1035,7 @@ end
 
 -- ─── LSemanticMemory:learn ───────────────────────────────────────────────────
 
---@api-stub: LSemanticMemory:learn
+--@api: LSemanticMemory:learn
 do
     local sm = lurek.agent.newSemanticMemory()
     sm:learn("capital_of_france", { value = "Paris" })
@@ -1043,7 +1043,7 @@ end
 
 -- ─── LSemanticMemory:recall ──────────────────────────────────────────────────
 
---@api-stub: LSemanticMemory:recall
+--@api: LSemanticMemory:recall
 do
     local sm = lurek.agent.newSemanticMemory()
     sm:learn("color", { hex = "#FF0000" })
@@ -1053,7 +1053,7 @@ end
 
 -- ─── LSemanticMemory:forget ──────────────────────────────────────────────────
 
---@api-stub: LSemanticMemory:forget
+--@api: LSemanticMemory:forget
 do
     local sm = lurek.agent.newSemanticMemory()
     sm:learn("temp_fact", { value = 42 })
@@ -1063,7 +1063,7 @@ end
 
 -- ─── LSemanticMemory:query ───────────────────────────────────────────────────
 
---@api-stub: LSemanticMemory:query
+--@api: LSemanticMemory:query
 do
     local sm = lurek.agent.newSemanticMemory()
     sm:learn("fact_a", { category = "geo" })
@@ -1074,7 +1074,7 @@ end
 
 -- ─── LSemanticMemory:len ─────────────────────────────────────────────────────
 
---@api-stub: LSemanticMemory:len
+--@api: LSemanticMemory:len
 do
     local sm = lurek.agent.newSemanticMemory()
     sm:learn("k", { v = 1 })
@@ -1083,7 +1083,7 @@ end
 
 -- ─── lurek.agent.newAgentMemory ──────────────────────────────────────────────
 
---@api-stub: lurek.agent.newAgentMemory
+--@api: lurek.agent.newAgentMemory
 do
     ---@type LAgentMemory
     local mem = lurek.agent.newAgentMemory({ working_capacity = 32, persist_path = nil })
@@ -1092,7 +1092,7 @@ end
 
 -- ─── LAgentMemory:working ────────────────────────────────────────────────────
 
---@api-stub: LAgentMemory:working
+--@api: LAgentMemory:working
 do
     local mem = lurek.agent.newAgentMemory({ working_capacity = 8 })
     local wm = mem:working()
@@ -1101,7 +1101,7 @@ end
 
 -- ─── LAgentMemory:episodic ───────────────────────────────────────────────────
 
---@api-stub: LAgentMemory:episodic
+--@api: LAgentMemory:episodic
 do
     local mem = lurek.agent.newAgentMemory({ working_capacity = 8 })
     local em = mem:episodic()
@@ -1110,7 +1110,7 @@ end
 
 -- ─── LAgentMemory:semantic ───────────────────────────────────────────────────
 
---@api-stub: LAgentMemory:semantic
+--@api: LAgentMemory:semantic
 do
     local mem = lurek.agent.newAgentMemory({ working_capacity = 8 })
     local sm = mem:semantic()
@@ -1119,7 +1119,7 @@ end
 
 -- ─── LAgentMemory:save ───────────────────────────────────────────────────────
 
---@api-stub: LAgentMemory:save
+--@api: LAgentMemory:save
 do
     local mem = lurek.agent.newAgentMemory({ persist_path = "save/agent_mem.json" })
     local ok  = mem:save()
@@ -1128,7 +1128,7 @@ end
 
 -- ─── LAgentMemory:load ───────────────────────────────────────────────────────
 
---@api-stub: LAgentMemory:load
+--@api: LAgentMemory:load
 do
     local mem = lurek.agent.newAgentMemory({ persist_path = "save/agent_mem.json" })
     local ok  = mem:load()

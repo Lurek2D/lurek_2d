@@ -130,6 +130,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 
 ## /rag
 - `rag/build_index.py` - Build the local SQLite FTS5 RAG index for Lurek2D docs, code, tests, and Codex assets. [durable; mcp:no]
+- `rag/contract.py` - Shared RAG contract constants and defaults for query/read/context tooling. [durable; mcp:no]
 - `rag/context.py` - Build an agent-friendly context bundle from the local Lurek2D RAG index. [durable; mcp:no]
 - `rag/eval.py` - Evaluate local RAG recall against a prompt baseline for agent workflows. [durable; mcp:no]
 - `rag/query.py` - Query and read the local SQLite FTS5 RAG index for Lurek2D. [durable; mcp:candidate]
@@ -168,4 +169,3 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `validate/validate_rust_file_docs.py` - validate_rust_file_docs.py — Check that every Rust source file in src/ [durable; mcp:no]
 - `validate/validate_rust_source_docs.py` - Validate file-level and public-item Rust docs-general under src/. [durable; mcp:no]
 - `validate/validate_snippets.py` - Validate content/snippets marker structure and VS Code snippet output freshness. [durable; mcp:candidate]
-

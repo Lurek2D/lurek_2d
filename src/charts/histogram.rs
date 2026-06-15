@@ -1,6 +1,8 @@
 //! Implements histogram rasterization for distribution analysis and dashboard telemetry.
 //! Buckets numeric samples into configurable bins and renders grouped bars for one or more series.
 //! Supports streaming sample windows, dataframe ingestion, explicit ranges, and density mode.
+//! Module API documentation
+//!
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions};
 use crate::charts::render_utils::{
@@ -11,6 +13,7 @@ use crate::dataframe::frame::{ColRef, DataFrame};
 use crate::image::ImageData;
 
 #[derive(Debug, Clone)]
+/// TODO: add chart API documentation
 pub struct HistogramSeries {
     pub name: String,
     pub color: [f32; 4],
@@ -18,6 +21,7 @@ pub struct HistogramSeries {
 }
 
 #[derive(Debug, Clone)]
+/// TODO: add chart API documentation
 pub struct HistogramChart {
     pub config: ChartConfig,
     series: Vec<HistogramSeries>,
@@ -41,6 +45,7 @@ fn trim_values_to_window(data: &mut Vec<f32>, max_points: Option<usize>) {
 }
 
 impl HistogramChart {
+/// TODO: add chart API documentation
     pub fn new(config: ChartConfig) -> Self {
         Self {
             config,
@@ -51,10 +56,12 @@ impl HistogramChart {
         }
     }
 
+/// TODO: add chart API documentation
     pub fn add_series(&mut self, name: &str, values: &[f32], color: Color) {
         self.replace_series(name, values, color);
     }
 
+/// TODO: add chart API documentation
     pub fn add_series_from_dataframe(
         &mut self,
         name: &str,
@@ -79,6 +86,7 @@ impl HistogramChart {
         Ok(added)
     }
 
+/// TODO: add chart API documentation
     pub fn replace_series(&mut self, name: &str, values: &[f32], color: Color) {
         let color = [color.r, color.g, color.b, color.a];
         let mut clean_values: Vec<f32> = values
@@ -99,6 +107,7 @@ impl HistogramChart {
         });
     }
 
+/// TODO: add chart API documentation
     pub fn append_value(&mut self, name: &str, value: f32, color: Color) {
         if !value.is_finite() {
             return;
@@ -115,32 +124,39 @@ impl HistogramChart {
         });
     }
 
+/// TODO: add chart API documentation
     pub fn clear(&mut self) {
         self.series.clear();
     }
 
+/// TODO: add chart API documentation
     pub fn series(&self) -> &[HistogramSeries] {
         &self.series
     }
 
+/// TODO: add chart API documentation
     pub fn set_bin_count(&mut self, bins: usize) {
         self.bin_count = bins.max(1);
     }
 
+/// TODO: add chart API documentation
     pub fn set_range(&mut self, min: f32, max: f32) {
         if min.is_finite() && max.is_finite() && max > min {
             self.x_range = Some((min, max));
         }
     }
 
+/// TODO: add chart API documentation
     pub fn clear_range(&mut self) {
         self.x_range = None;
     }
 
+/// TODO: add chart API documentation
     pub fn set_density(&mut self, density: bool) {
         self.density = density;
     }
 
+/// TODO: add chart API documentation
     pub fn set_max_points(&mut self, max_points: Option<usize>) {
         self.config.max_points = max_points;
         for series in &mut self.series {
@@ -148,10 +164,12 @@ impl HistogramChart {
         }
     }
 
+/// TODO: add chart API documentation
     pub fn draw_to_image(&self, img: &mut ImageData) {
         self.render(img.as_mut_bytes());
     }
 
+/// TODO: add chart API documentation
     pub fn render(&self, buffer: &mut [u8]) {
         let w = self.config.width;
         let h = self.config.height;

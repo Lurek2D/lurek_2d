@@ -4,7 +4,7 @@
 
 --- Physics Module Part 1: world creation, gravity, stepping, body creation, body properties
 
---@api-stub: lurek.physics.newWorld
+--@api: lurek.physics.newWorld
 do
     local world = lurek.physics.newWorld(0, 400)
     local gx, gy = world:getGravity()
@@ -12,7 +12,7 @@ do
     print("type", world:type())
 end
 
---@api-stub: LWorld:getGravity
+--@api: LWorld:getGravity
 do
     local world = lurek.physics.newWorld(0, 400)
     local gx, gy = world:getGravity()
@@ -21,7 +21,7 @@ do
     print("updated", world:getGravity())
 end
 
---@api-stub: LWorld:setGravity
+--@api: LWorld:setGravity
 do
     local world = lurek.physics.newWorld(0, 200)
     world:setGravity(25, 600)
@@ -30,7 +30,7 @@ do
     print("body_count", world:getBodyCount())
 end
 
---@api-stub: LWorld:step
+--@api: LWorld:step
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 12, "dynamic")
@@ -39,7 +39,7 @@ do
     print("velocity", body:getVelocity())
 end
 
---@api-stub: LWorld:stepFixed
+--@api: LWorld:stepFixed
 do
     local world = lurek.physics.newWorld(0, 400)
     local remainder = world:stepFixed(0.025, 1 / 60, 4)
@@ -47,7 +47,7 @@ do
     print("iterations", world:getSolverIterations())
 end
 
---@api-stub: LWorld:setMeter
+--@api: LWorld:setMeter
 do
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
@@ -55,7 +55,7 @@ do
     print("physics", world:toPhysics(128))
 end
 
---@api-stub: LWorld:getMeter
+--@api: LWorld:getMeter
 do
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
@@ -63,7 +63,7 @@ do
     print("pixels", world:toPixels(2.0))
 end
 
---@api-stub: LWorld:toPhysics
+--@api: LWorld:toPhysics
 do
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
@@ -71,7 +71,7 @@ do
     print("pixels", world:toPixels(1.5))
 end
 
---@api-stub: LWorld:toPixels
+--@api: LWorld:toPixels
 do
     local world = lurek.physics.newWorld(0, 9.81)
     world:setMeter(64)
@@ -79,21 +79,21 @@ do
     print("meters", world:toPhysics(160))
 end
 
---@api-stub: LWorld:setSolverIterations
+--@api: LWorld:setSolverIterations
 do
     local world = lurek.physics.newWorld(0, 400)
     world:setSolverIterations(8)
     print("solver_iterations", world:getSolverIterations())
 end
 
---@api-stub: LWorld:getSolverIterations
+--@api: LWorld:getSolverIterations
 do
     local world = lurek.physics.newWorld(0, 400)
     world:setSolverIterations(10)
     print("solver_iterations", world:getSolverIterations())
 end
 
---@api-stub: LWorld:newBody
+--@api: LWorld:newBody
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 50, "dynamic")
@@ -103,7 +103,7 @@ do
     print("position", body:getPosition())
 end
 
---@api-stub: LWorld:newCircleBody
+--@api: LWorld:newCircleBody
 do
     local world = lurek.physics.newWorld(0, 400)
     local ball = world:newCircleBody(200, 100, 16, "dynamic")
@@ -111,7 +111,7 @@ do
     print("size", ball:getWidth(), ball:getHeight())
 end
 
---@api-stub: LWorld:kinematic
+--@api: LWorld:kinematic
 do
     local world = lurek.physics.newWorld(0, 400)
     local floor = world:newBody(400, 580, "static")
@@ -120,7 +120,7 @@ do
     print("types", floor:getType(), platform:getType(), trigger:getType())
 end
 
---@api-stub: LBody:setPosition
+--@api: LBody:setPosition
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
@@ -129,7 +129,7 @@ do
     print("velocity", body:getVelocity())
 end
 
---@api-stub: LBody:setVelocity
+--@api: LBody:setVelocity
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
@@ -139,7 +139,7 @@ do
     print("position", body:getPosition())
 end
 
---@api-stub: LBody:getVelocity
+--@api: LBody:getVelocity
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
@@ -148,7 +148,7 @@ do
     print("type", body:getType())
 end
 
---@api-stub: LBody:setAngle
+--@api: LBody:setAngle
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
@@ -157,7 +157,7 @@ do
     print("angular_velocity", body:getAngularVelocity())
 end
 
---@api-stub: LBody:getAngle
+--@api: LBody:getAngle
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
@@ -166,7 +166,7 @@ do
     print("position", body:getPosition())
 end
 
---@api-stub: LBody:setAngularVelocity
+--@api: LBody:setAngularVelocity
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
@@ -176,7 +176,7 @@ do
     print("angle", body:getAngle())
 end
 
---@api-stub: LBody:getAngularVelocity
+--@api: LBody:getAngularVelocity
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
@@ -185,7 +185,7 @@ do
     print("angle", body:getAngle())
 end
 
---@api-stub: LBody:getMass
+--@api: LBody:getMass
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
@@ -195,7 +195,7 @@ do
     print("restitution", body:getRestitution())
 end
 
---@api-stub: LBody:setMass
+--@api: LBody:setMass
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
@@ -204,7 +204,7 @@ do
     print("type", body:getType())
 end
 
---@api-stub: LBody:setFriction
+--@api: LBody:setFriction
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
@@ -213,7 +213,7 @@ do
     print("mass", body:getMass())
 end
 
---@api-stub: LBody:getFriction
+--@api: LBody:getFriction
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
@@ -222,7 +222,7 @@ do
     print("restitution", body:getRestitution())
 end
 
---@api-stub: LBody:setRestitution
+--@api: LBody:setRestitution
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
@@ -231,7 +231,7 @@ do
     print("mass", body:getMass())
 end
 
---@api-stub: LBody:getRestitution
+--@api: LBody:getRestitution
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, "dynamic")
@@ -240,7 +240,7 @@ do
     print("friction", body:getFriction())
 end
 
---@api-stub: LBody:setLinearDamping
+--@api: LBody:setLinearDamping
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
@@ -249,7 +249,7 @@ do
     print("angular_damping", body:getAngularDamping())
 end
 
---@api-stub: LBody:getLinearDamping
+--@api: LBody:getLinearDamping
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
@@ -258,7 +258,7 @@ do
     print("velocity", body:getVelocity())
 end
 
---@api-stub: LBody:setAngularDamping
+--@api: LBody:setAngularDamping
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
@@ -267,7 +267,7 @@ do
     print("angle", body:getAngle())
 end
 
---@api-stub: LBody:getAngularDamping
+--@api: LBody:getAngularDamping
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, "dynamic")
@@ -276,7 +276,7 @@ do
     print("linear_damping", body:getLinearDamping())
 end
 
---@api-stub: LBody:setGravityScale
+--@api: LBody:setGravityScale
 do
     local world = lurek.physics.newWorld(0, 400)
     local normal = world:newBody(100, 100, "dynamic")
@@ -286,7 +286,7 @@ do
     print("floaty", floaty:getGravityScale())
 end
 
---@api-stub: LBody:getGravityScale
+--@api: LBody:getGravityScale
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -295,7 +295,7 @@ do
     print("type", body:getType())
 end
 
---@api-stub: LBody:applyForce
+--@api: LBody:applyForce
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, "dynamic")
@@ -305,7 +305,7 @@ do
     print("position", body:getPosition())
 end
 
---@api-stub: LBody:applyForceAtPoint
+--@api: LBody:applyForceAtPoint
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, "dynamic")
@@ -315,7 +315,7 @@ do
     print("angular_velocity", body:getAngularVelocity())
 end
 
---@api-stub: LBody:applyImpulse
+--@api: LBody:applyImpulse
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, "dynamic")
@@ -325,7 +325,7 @@ do
     print("position", body:getPosition())
 end
 
---@api-stub: LBody:applyAngularImpulse
+--@api: LBody:applyAngularImpulse
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, "dynamic")
@@ -335,7 +335,7 @@ do
     print("angle", body:getAngle())
 end
 
---@api-stub: LBody:applyTorque
+--@api: LBody:applyTorque
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, "dynamic")
@@ -345,7 +345,7 @@ do
     print("angle", body:getAngle())
 end
 
---@api-stub: LBody:setBullet
+--@api: LBody:setBullet
 do
     local world = lurek.physics.newWorld(0, 400)
     local bullet = world:newCircleBody(100, 100, 4, "dynamic")
@@ -354,7 +354,7 @@ do
     print("type", bullet:getType())
 end
 
---@api-stub: LBody:isBullet
+--@api: LBody:isBullet
 do
     local world = lurek.physics.newWorld(0, 400)
     local bullet = world:newCircleBody(100, 100, 4, "dynamic")
@@ -363,7 +363,7 @@ do
     print("position", bullet:getPosition())
 end
 
---@api-stub: LBody:setFixedRotation
+--@api: LBody:setFixedRotation
 do
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newBody(200, 200, "dynamic")
@@ -372,7 +372,7 @@ do
     print("angle", player:getAngle())
 end
 
---@api-stub: LBody:isFixedRotation
+--@api: LBody:isFixedRotation
 do
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newBody(200, 200, "dynamic")
@@ -381,7 +381,7 @@ do
     print("type", player:getType())
 end
 
---@api-stub: LBody:setType
+--@api: LBody:setType
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -390,7 +390,7 @@ do
     print("layer", body:getLayer())
 end
 
---@api-stub: LBody:getType
+--@api: LBody:getType
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "sensor")
@@ -398,7 +398,7 @@ do
     print("id", body:getId())
 end
 
---@api-stub: LBody:setLayer
+--@api: LBody:setLayer
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -407,7 +407,7 @@ do
     print("mask", body:getMask())
 end
 
---@api-stub: LBody:getLayer
+--@api: LBody:getLayer
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -416,7 +416,7 @@ do
     print("type", body:getType())
 end
 
---@api-stub: LBody:setMask
+--@api: LBody:setMask
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -425,7 +425,7 @@ do
     print("layer", body:getLayer())
 end
 
---@api-stub: LBody:getMask
+--@api: LBody:getMask
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -434,7 +434,7 @@ do
     print("id", body:getId())
 end
 
---@api-stub: LBody:sleep
+--@api: LBody:sleep
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -444,7 +444,7 @@ do
     print("allowed", body:isSleepingAllowed())
 end
 
---@api-stub: LBody:wakeUp
+--@api: LBody:wakeUp
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -455,7 +455,7 @@ do
     print("allowed", body:isSleepingAllowed())
 end
 
---@api-stub: LBody:isSleeping
+--@api: LBody:isSleeping
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -465,7 +465,7 @@ do
     print("id", body:getId())
 end
 
---@api-stub: LBody:setSleepingAllowed
+--@api: LBody:setSleepingAllowed
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -474,7 +474,7 @@ do
     print("sleeping", body:isSleeping())
 end
 
---@api-stub: LBody:isSleepingAllowed
+--@api: LBody:isSleepingAllowed
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -483,7 +483,7 @@ do
     print("type", body:getType())
 end
 
---@api-stub: LBody:destroy
+--@api: LBody:destroy
 do
     local world = lurek.physics.newWorld(0, 400)
     local temp = world:newBody(400, 400, "dynamic")
@@ -492,7 +492,7 @@ do
     print("after", world:getBodyCount())
 end
 
---@api-stub: LBody:isValid
+--@api: LBody:isValid
 do
     local world = lurek.physics.newWorld(0, 400)
     local temp = world:newBody(400, 400, "dynamic")
@@ -501,7 +501,7 @@ do
     print("valid_after_destroy", temp:isValid())
 end
 
---@api-stub: LWorld:getBodyCount
+--@api: LWorld:getBodyCount
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(100, 100, "dynamic")
@@ -509,7 +509,7 @@ do
     print("body_count", world:getBodyCount())
 end
 
---@api-stub: LWorld:getStats
+--@api: LWorld:getStats
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -522,7 +522,7 @@ do
     print("after_destroy", stats.bodies, "slots", stats.bodySlots)
 end
 
---@api-stub: LBody:type
+--@api: LBody:type
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
@@ -530,7 +530,7 @@ do
     print("type_of", body:typeOf("LBody"), body:typeOf("LObject"))
 end
 
---@api-stub: LBody:typeOf
+--@api: LBody:typeOf
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, "dynamic")
@@ -538,14 +538,14 @@ do
     print("type", body:type())
 end
 
---@api-stub: LWorld:type
+--@api: LWorld:type
 do
     local world = lurek.physics.newWorld(0, 400)
     print("type", world:type())
     print("type_of", world:typeOf("LWorld"))
 end
 
---@api-stub: LWorld:typeOf
+--@api: LWorld:typeOf
 do
     local world = lurek.physics.newWorld(0, 400)
     print("type_of", world:typeOf("LWorld"), world:typeOf("LObject"))
@@ -554,7 +554,7 @@ end
 
 --- Physics Module Part 2: shapes, attachShape, fixtures, collision filtering
 
---@api-stub: lurek.physics.newCircleShape
+--@api: lurek.physics.newCircleShape
 do
     local circle = lurek.physics.newCircleShape(16)
     local minX, minY, maxX, maxY = circle:getBoundingBox()
@@ -563,7 +563,7 @@ do
     print("bounds", minX, minY, maxX, maxY)
 end
 
---@api-stub: lurek.physics.newRectangleShape
+--@api: lurek.physics.newRectangleShape
 do
     local rect = lurek.physics.newRectangleShape(64, 32)
     local minX, minY, maxX, maxY = rect:getBoundingBox()
@@ -571,7 +571,7 @@ do
     print("bounds", minX, minY, maxX, maxY)
 end
 
---@api-stub: lurek.physics.newPolygonShape
+--@api: lurek.physics.newPolygonShape
 do
     local triangle = lurek.physics.newPolygonShape(0, -20, -15, 15, 15, 15)
     local minX, minY, maxX, maxY = triangle:getBoundingBox()
@@ -579,7 +579,7 @@ do
     print("bounds", minX, minY, maxX, maxY)
 end
 
---@api-stub: lurek.physics.newEdgeShape
+--@api: lurek.physics.newEdgeShape
 do
     local edge = lurek.physics.newEdgeShape(0, 0, 100, 0)
     local minX, minY, maxX, maxY = edge:getBoundingBox()
@@ -587,7 +587,7 @@ do
     print("bounds", minX, minY, maxX, maxY)
 end
 
---@api-stub: lurek.physics.newChainShape
+--@api: lurek.physics.newChainShape
 do
     local chain = lurek.physics.newChainShape(false, 0, 100, 50, 80, 100, 90, 150, 70, 200, 100)
     local loop = lurek.physics.newChainShape(true, 0, 0, 100, 0, 100, 100, 0, 100)
@@ -595,7 +595,7 @@ do
     print("closed_type", loop:getType())
 end
 
---@api-stub: LPhysicsShape:setDensity
+--@api: LPhysicsShape:setDensity
 do
     local shape = lurek.physics.newCircleShape(12)
     shape:setDensity(2.5)
@@ -603,7 +603,7 @@ do
     print("radius", shape:getRadius())
 end
 
---@api-stub: LPhysicsShape:setFriction
+--@api: LPhysicsShape:setFriction
 do
     local shape = lurek.physics.newCircleShape(12)
     shape:setFriction(0.9)
@@ -611,7 +611,7 @@ do
     print("radius", shape:getRadius())
 end
 
---@api-stub: LPhysicsShape:setRestitution
+--@api: LPhysicsShape:setRestitution
 do
     local shape = lurek.physics.newCircleShape(12)
     shape:setRestitution(0.3)
@@ -619,7 +619,7 @@ do
     print("radius", shape:getRadius())
 end
 
---@api-stub: LPhysicsShape:setSensor
+--@api: LPhysicsShape:setSensor
 do
     local shape = lurek.physics.newCircleShape(12)
     shape:setSensor(true)
@@ -627,7 +627,7 @@ do
     print("bounds", shape:getBoundingBox())
 end
 
---@api-stub: lurek.physics.attachShape
+--@api: lurek.physics.attachShape
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(120, 120, "dynamic")
@@ -638,7 +638,7 @@ do
     print("position", body:getPosition())
 end
 
---@api-stub: LWorld:setFixtureFriction
+--@api: LWorld:setFixtureFriction
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -648,7 +648,7 @@ do
     print("fixture_count", world:fixtureCount(body:getId()))
 end
 
---@api-stub: LWorld:setFixtureRestitution
+--@api: LWorld:setFixtureRestitution
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -658,7 +658,7 @@ do
     print("fixture_count", world:fixtureCount(body:getId()))
 end
 
---@api-stub: LWorld:setFixtureSensor
+--@api: LWorld:setFixtureSensor
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -668,7 +668,7 @@ do
     print("fixture_count", world:fixtureCount(body:getId()))
 end
 
---@api-stub: LWorld:newPolygonBody
+--@api: LWorld:newPolygonBody
 do
     local world = lurek.physics.newWorld(0, 400)
     local tri = world:newPolygonBody(100, 200, { 0, -20, -15, 15, 15, 15 }, "dynamic")
@@ -676,7 +676,7 @@ do
     print("type", tri:getType())
 end
 
---@api-stub: LWorld:newEdgeBody
+--@api: LWorld:newEdgeBody
 do
     local world = lurek.physics.newWorld(0, 400)
     local wall = world:newEdgeBody(0, 500, 0, 0, 800, 0, "static")
@@ -684,7 +684,7 @@ do
     print("type", wall:getType())
 end
 
---@api-stub: LWorld:newChainBody
+--@api: LWorld:newChainBody
 do
     local world = lurek.physics.newWorld(0, 400)
     local ground = world:newChainBody(0, 500, { 0, 100, 100, 80, 200, 90, 300, 60, 400, 100 }, false, "static")
@@ -692,7 +692,7 @@ do
     print("type", ground:getType())
 end
 
---@api-stub: LWorld:newBodies
+--@api: LWorld:newBodies
 do
     local world = lurek.physics.newWorld(0, 400)
     local ids = world:newBodies({
@@ -704,7 +704,7 @@ do
     print("body_count", world:getBodyCount())
 end
 
---@api-stub: LWorld:getBodyIds
+--@api: LWorld:getBodyIds
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(100, 100, "dynamic")
@@ -714,7 +714,7 @@ do
     print("first", ids[1])
 end
 
---@api-stub: LWorld:hasBody
+--@api: LWorld:hasBody
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -723,7 +723,7 @@ do
     print("has_body_after_destroy", world:hasBody(body:getId()))
 end
 
---@api-stub: LWorld:getBodyType
+--@api: LWorld:getBodyType
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, "dynamic")
@@ -731,20 +731,20 @@ do
     print("id", body:getId())
 end
 
---@api-stub: LPhysicsShape:type
+--@api: LPhysicsShape:type
 do
     local shape = lurek.physics.newCircleShape(10)
     print("type", shape:type())
 end
 
---@api-stub: LPhysicsShape:typeOf
+--@api: LPhysicsShape:typeOf
 do
     local shape = lurek.physics.newCircleShape(10)
     print("type_of", shape:typeOf("LPhysicsShape"))
     print("type", shape:type())
 end
 
---@api-stub: LPhysicsShape:destroy
+--@api: LPhysicsShape:destroy
 do
     local shape = lurek.physics.newCircleShape(10)
     shape:destroy()
@@ -753,7 +753,7 @@ end
 
 --- Physics Module Part 3: joints (revolute, distance, prismatic, weld, rope, wheel, mouse, motor, friction, gear, pulley)
 
---@api-stub: LWorld:addRevoluteJoint
+--@api: LWorld:addRevoluteJoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local pivot = world:newBody(200, 150, "static")
@@ -763,7 +763,7 @@ do
     print("joint_type", world:getJointType(jointId))
 end
 
---@api-stub: LWorld:addDistanceJoint
+--@api: LWorld:addDistanceJoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local bodyA = world:newCircleBody(100, 100, 10, "dynamic")
@@ -773,7 +773,7 @@ do
     print("joint_type", world:getJointType(jointId))
 end
 
---@api-stub: LWorld:addPrismaticJoint
+--@api: LWorld:addPrismaticJoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local rail = world:newBody(300, 300, "static")
@@ -783,7 +783,7 @@ do
     print("joint_type", world:getJointType(jointId))
 end
 
---@api-stub: LWorld:addWeldJoint
+--@api: LWorld:addWeldJoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local chassis = world:newBody(200, 200, "dynamic")
@@ -793,7 +793,7 @@ do
     print("joint_type", world:getJointType(jointId))
 end
 
---@api-stub: LWorld:addRopeJoint
+--@api: LWorld:addRopeJoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local ceiling = world:newBody(300, 50, "static")
@@ -803,7 +803,7 @@ do
     print("joint_type", world:getJointType(jointId))
 end
 
---@api-stub: LWorld:addWheelJoint
+--@api: LWorld:addWheelJoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local car = world:newBody(200, 200, "dynamic")
@@ -813,7 +813,7 @@ do
     print("joint_type", world:getJointType(jointId))
 end
 
---@api-stub: LWorld:addMouseJoint
+--@api: LWorld:addMouseJoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local box = world:newCircleBody(200, 200, 15, "dynamic")
@@ -823,7 +823,7 @@ do
     print("joint_type", world:getJointType(jointId))
 end
 
---@api-stub: LWorld:addMotorJoint
+--@api: LWorld:addMotorJoint
 do
     local world = lurek.physics.newWorld(0, 0)
     local platform = world:newBody(200, 200, "static")
@@ -833,7 +833,7 @@ do
     print("joint_type", world:getJointType(jointId))
 end
 
---@api-stub: LWorld:addFrictionJoint
+--@api: LWorld:addFrictionJoint
 do
     local world = lurek.physics.newWorld(0, 0)
     local ground = world:newBody(200, 400, "static")
@@ -843,7 +843,7 @@ do
     print("joint_type", world:getJointType(jointId))
 end
 
---@api-stub: LWorld:addGearJoint
+--@api: LWorld:addGearJoint
 do
     local world = lurek.physics.newWorld(0, 0)
     local gearA = world:newCircleBody(100, 200, 20, "dynamic")
@@ -853,7 +853,7 @@ do
     print("joint_type", world:getJointType(jointId))
 end
 
---@api-stub: LWorld:addPulleyJoint
+--@api: LWorld:addPulleyJoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local boxA = world:newCircleBody(100, 200, 10, "dynamic")
@@ -863,7 +863,7 @@ do
     print("joint_type", world:getJointType(jointId))
 end
 
---@api-stub: LWorld:getJointIds
+--@api: LWorld:getJointIds
 do
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
@@ -874,7 +874,7 @@ do
     print("first", ids[1])
 end
 
---@api-stub: LWorld:jointCount
+--@api: LWorld:jointCount
 do
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
@@ -883,7 +883,7 @@ do
     print("joint_count", world:jointCount())
 end
 
---@api-stub: LWorld:getJointBodies
+--@api: LWorld:getJointBodies
 do
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
@@ -892,7 +892,7 @@ do
     print("bodies", world:getJointBodies(jid))
 end
 
---@api-stub: LWorld:getJointType
+--@api: LWorld:getJointType
 do
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
@@ -901,7 +901,7 @@ do
     print("joint_type", world:getJointType(jid))
 end
 
---@api-stub: LWorld:setJointLimits
+--@api: LWorld:setJointLimits
 do
     local world = lurek.physics.newWorld(0, 400)
     local anchor = world:newBody(200, 100, "static")
@@ -911,7 +911,7 @@ do
     print("limits", world:getJointLimits(jid))
 end
 
---@api-stub: LWorld:getJointLimits
+--@api: LWorld:getJointLimits
 do
     local world = lurek.physics.newWorld(0, 400)
     local anchor = world:newBody(200, 100, "static")
@@ -921,7 +921,7 @@ do
     print("limits", world:getJointLimits(jid))
 end
 
---@api-stub: LWorld:setJointLimitsEnabled
+--@api: LWorld:setJointLimitsEnabled
 do
     local world = lurek.physics.newWorld(0, 400)
     local anchor = world:newBody(200, 100, "static")
@@ -931,7 +931,7 @@ do
     print("limits", world:getJointLimits(jid))
 end
 
---@api-stub: LWorld:setJointMotorSpeed
+--@api: LWorld:setJointMotorSpeed
 do
     local world = lurek.physics.newWorld(0, 0)
     local hub = world:newBody(200, 200, "static")
@@ -941,7 +941,7 @@ do
     print("motor_speed", world:getJointMotorSpeed(jid))
 end
 
---@api-stub: LWorld:getJointMotorSpeed
+--@api: LWorld:getJointMotorSpeed
 do
     local world = lurek.physics.newWorld(0, 0)
     local hub = world:newBody(200, 200, "static")
@@ -951,7 +951,7 @@ do
     print("motor_speed", world:getJointMotorSpeed(jid))
 end
 
---@api-stub: LWorld:setJointBreakForce
+--@api: LWorld:setJointBreakForce
 do
     local world = lurek.physics.newWorld(0, 400)
     local ceiling = world:newBody(200, 50, "static")
@@ -961,7 +961,7 @@ do
     print("break_force", world:getJointBreakForce(jid))
 end
 
---@api-stub: LWorld:getJointBreakForce
+--@api: LWorld:getJointBreakForce
 do
     local world = lurek.physics.newWorld(0, 400)
     local ceiling = world:newBody(200, 50, "static")
@@ -971,7 +971,7 @@ do
     print("break_force", world:getJointBreakForce(jid))
 end
 
---@api-stub: LWorld:destroyJoint
+--@api: LWorld:destroyJoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
@@ -982,7 +982,7 @@ do
     print("after", world:jointCount())
 end
 
---@api-stub: LWorld:hasJoint
+--@api: LWorld:hasJoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newBody(100, 100, "static")
@@ -995,7 +995,7 @@ end
 
 --- Physics Module Part 4: raycasting, AABB queries, contacts, collision events
 
---@api-stub: LWorld:raycast
+--@api: LWorld:raycast
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(200, 200, 20, "static")
@@ -1010,7 +1010,7 @@ do
     end
 end
 
---@api-stub: LWorld:raycastClosest
+--@api: LWorld:raycastClosest
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(200, 300, 15, "static")
@@ -1025,7 +1025,7 @@ do
     end
 end
 
---@api-stub: LWorld:raycastAll
+--@api: LWorld:raycastAll
 do
     local world = lurek.physics.newWorld(0, 0)
     for i = 1, 5 do
@@ -1039,7 +1039,7 @@ do
     end
 end
 
---@api-stub: LWorld:queryAABB
+--@api: LWorld:queryAABB
 do
     local world = lurek.physics.newWorld(0, 400)
     local a = world:newCircleBody(100, 100, 10, "dynamic")
@@ -1053,7 +1053,7 @@ do
     print("first", found[1])
 end
 
---@api-stub: LWorld:getBodyAtPoint
+--@api: LWorld:getBodyAtPoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(200, 200, 30, "static")
@@ -1064,7 +1064,7 @@ do
     print("miss", missId)
 end
 
---@api-stub: LWorld:getContacts
+--@api: LWorld:getContacts
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
@@ -1080,7 +1080,7 @@ do
     end
 end
 
---@api-stub: LWorld:getBeginContactEvents
+--@api: LWorld:getBeginContactEvents
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
@@ -1097,7 +1097,7 @@ do
     print("count", count)
 end
 
---@api-stub: LWorld:getEndContactEvents
+--@api: LWorld:getEndContactEvents
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
@@ -1115,7 +1115,7 @@ do
     print("count", count)
 end
 
---@api-stub: LWorld:getCollisionEvents
+--@api: LWorld:getCollisionEvents
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
@@ -1133,7 +1133,7 @@ do
     print("count", count)
 end
 
---@api-stub: LWorld:setBeginContact
+--@api: LWorld:setBeginContact
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
@@ -1149,7 +1149,7 @@ do
     print("count", contactCount)
 end
 
---@api-stub: LWorld:setEndContact
+--@api: LWorld:setEndContact
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
@@ -1166,7 +1166,7 @@ do
     print("count", endCount)
 end
 
---@api-stub: LWorld:getBodyContacts
+--@api: LWorld:getBodyContacts
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
@@ -1181,7 +1181,7 @@ do
     end
 end
 
---@api-stub: lurek.physics.testAABB
+--@api: lurek.physics.testAABB
 do
     local overlap = lurek.physics.testAABB(0, 0, 50, 50, 25, 25, 50, 50)
     local miss = lurek.physics.testAABB(0, 0, 10, 10, 100, 100, 10, 10)
@@ -1189,7 +1189,7 @@ do
     print("miss", miss)
 end
 
---@api-stub: lurek.physics.testCircleAABB
+--@api: lurek.physics.testCircleAABB
 do
     local hit = lurek.physics.testCircleAABB(50, 50, 20, 30, 30, 40, 40)
     local miss = lurek.physics.testCircleAABB(0, 0, 5, 100, 100, 10, 10)
@@ -1197,7 +1197,7 @@ do
     print("miss", miss)
 end
 
---@api-stub: lurek.physics.testCircles
+--@api: lurek.physics.testCircles
 do
     local touching = lurek.physics.testCircles(0, 0, 20, 30, 0, 20)
     local apart = lurek.physics.testCircles(0, 0, 5, 100, 0, 5)
@@ -1207,7 +1207,7 @@ end
 
 --- Physics Module Part 5: zones, cellular automaton, terrain, body data, sleeping, debug draw, CCD, advanced
 
---@api-stub: LWorld:addZone
+--@api: LWorld:addZone
 do
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(100, 100, 200, 200)
@@ -1216,7 +1216,7 @@ do
     print("type", zone:type())
 end
 
---@api-stub: LZone:setGravityDirectional
+--@api: LZone:setGravityDirectional
 do
     local world = lurek.physics.newWorld(0, 400)
     local windZone = world:addZone(0, 0, 300, 600)
@@ -1229,7 +1229,7 @@ do
     print("velocity", ball:getVelocity())
 end
 
---@api-stub: LZone:setGravityPoint
+--@api: LZone:setGravityPoint
 do
     local world = lurek.physics.newWorld(0, 400)
     local vortex = world:addZone(400, 200, 150, 150)
@@ -1242,7 +1242,7 @@ do
     print("velocity", ball:getVelocity())
 end
 
---@api-stub: LZone:setGravityRepulsor
+--@api: LZone:setGravityRepulsor
 do
     local world = lurek.physics.newWorld(0, 400)
     local repulsor = world:addZone(200, 200, 100, 100)
@@ -1255,7 +1255,7 @@ do
     print("velocity", ball:getVelocity())
 end
 
---@api-stub: LZone:setGravityZero
+--@api: LZone:setGravityZero
 do
     local world = lurek.physics.newWorld(0, 400)
     local zeroG = world:addZone(400, 100, 200, 200)
@@ -1268,7 +1268,7 @@ do
     print("velocity", ball:getVelocity())
 end
 
---@api-stub: LZone:setLinearDampingOverride
+--@api: LZone:setLinearDampingOverride
 do
     local world = lurek.physics.newWorld(0, 400)
     local water = world:addZone(100, 300, 400, 200)
@@ -1282,7 +1282,7 @@ do
     print("position", diver:getPosition())
 end
 
---@api-stub: LZone:setAngularDampingOverride
+--@api: LZone:setAngularDampingOverride
 do
     local world = lurek.physics.newWorld(0, 400)
     local water = world:addZone(100, 300, 400, 200)
@@ -1296,7 +1296,7 @@ do
     print("angle", diver:getAngle())
 end
 
---@api-stub: LZone:setCircle
+--@api: LZone:setCircle
 do
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(200, 200, 100, 100)
@@ -1306,7 +1306,7 @@ do
     print("type", zone:type())
 end
 
---@api-stub: LWorld:getZoneEvents
+--@api: LWorld:getZoneEvents
 do
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(150, 300, 200, 100)
@@ -1321,7 +1321,7 @@ do
     print("count", count)
 end
 
---@api-stub: LZone:destroy
+--@api: LZone:destroy
 do
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(0, 0, 100, 100)
@@ -1330,7 +1330,7 @@ do
     print("events", #world:getZoneEvents())
 end
 
---@api-stub: lurek.physics.newTerrain
+--@api: lurek.physics.newTerrain
 do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(128, 64, 4, world)
@@ -1341,7 +1341,7 @@ do
     print("type", terrain:type())
 end
 
---@api-stub: LTerrain:setCell
+--@api: LTerrain:setCell
 do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
@@ -1350,7 +1350,7 @@ do
     print("dirty", terrain:isDirty())
 end
 
---@api-stub: LTerrain:getCell
+--@api: LTerrain:getCell
 do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
@@ -1359,7 +1359,7 @@ do
     print("type", terrain:type())
 end
 
---@api-stub: LTerrain:fillRect
+--@api: LTerrain:fillRect
 do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
@@ -1368,7 +1368,7 @@ do
     print("cell", terrain:getCell(10, 10))
 end
 
---@api-stub: LTerrain:collapseColumns
+--@api: LTerrain:collapseColumns
 do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 8, world)
@@ -1379,7 +1379,7 @@ do
     print("dirty", terrain:isDirty())
 end
 
---@api-stub: LTerrain:solidPositions
+--@api: LTerrain:solidPositions
 do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 8, world)
@@ -1392,7 +1392,7 @@ do
     end
 end
 
---@api-stub: LTerrain:spawnDebris
+--@api: LTerrain:spawnDebris
 do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 8, world)
@@ -1403,7 +1403,7 @@ do
     print("body_count", world:getBodyCount())
 end
 
---@api-stub: LTerrain:toBytes
+--@api: LTerrain:toBytes
 do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 4, world)
@@ -1414,7 +1414,7 @@ do
     print("dirty", terrain:isDirty())
 end
 
---@api-stub: LTerrain:loadFromBytes
+--@api: LTerrain:loadFromBytes
 do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 4, world)
@@ -1425,7 +1425,7 @@ do
     print("cell", clone:getCell(0, 0))
 end
 
---@api-stub: LTerrain:toImageData
+--@api: LTerrain:toImageData
 do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 4, world)
@@ -1436,7 +1436,7 @@ do
     print("type", terrain:type())
 end
 
---@api-stub: LWorld:setBodyData
+--@api: LWorld:setBodyData
 do
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newCircleBody(100, 100, 10, "dynamic")
@@ -1446,7 +1446,7 @@ do
     print("hp", data.hp)
 end
 
---@api-stub: LWorld:getBodyData
+--@api: LWorld:getBodyData
 do
     local world = lurek.physics.newWorld(0, 400)
     local enemy = world:newCircleBody(300, 100, 10, "dynamic")
@@ -1456,7 +1456,7 @@ do
     print("hp", data.hp)
 end
 
---@api-stub: LWorld:clearBodyData
+--@api: LWorld:clearBodyData
 do
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newCircleBody(100, 100, 10, "dynamic")
@@ -1465,7 +1465,7 @@ do
     print("data", world:getBodyData(player:getId()))
 end
 
---@api-stub: LWorld:setBodyOneWay
+--@api: LWorld:setBodyOneWay
 do
     local world = lurek.physics.newWorld(0, 400)
     local platform = world:newBody(200, 400, "static")
@@ -1473,7 +1473,7 @@ do
     print("normal", world:getBodyOneWay(platform:getId()))
 end
 
---@api-stub: LWorld:getBodyOneWay
+--@api: LWorld:getBodyOneWay
 do
     local world = lurek.physics.newWorld(0, 400)
     local platform = world:newBody(200, 400, "static")
@@ -1481,7 +1481,7 @@ do
     print("normal", world:getBodyOneWay(platform:getId()))
 end
 
---@api-stub: LWorld:clearBodyOneWay
+--@api: LWorld:clearBodyOneWay
 do
     local world = lurek.physics.newWorld(0, 400)
     local platform = world:newBody(200, 400, "static")
@@ -1490,7 +1490,7 @@ do
     print("normal", world:getBodyOneWay(platform:getId()))
 end
 
---@api-stub: LWorld:setBodyCCD
+--@api: LWorld:setBodyCCD
 do
     local world = lurek.physics.newWorld(0, 0)
     local bullet = world:newCircleBody(100, 100, 3, "dynamic")
@@ -1499,7 +1499,7 @@ do
     print("id", bullet:getId())
 end
 
---@api-stub: LWorld:getBodyCCD
+--@api: LWorld:getBodyCCD
 do
     local world = lurek.physics.newWorld(0, 0)
     local bullet = world:newCircleBody(100, 100, 3, "dynamic")
@@ -1508,7 +1508,7 @@ do
     print("velocity", bullet:getVelocity())
 end
 
---@api-stub: LWorld:sleepBody
+--@api: LWorld:sleepBody
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
@@ -1517,7 +1517,7 @@ do
     print("sleeping", world:isBodySleeping(body:getId()))
 end
 
---@api-stub: LWorld:wakeUpBody
+--@api: LWorld:wakeUpBody
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
@@ -1527,7 +1527,7 @@ do
     print("sleeping", world:isBodySleeping(body:getId()))
 end
 
---@api-stub: LWorld:isBodySleeping
+--@api: LWorld:isBodySleeping
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
@@ -1536,7 +1536,7 @@ do
     print("sleeping", world:isBodySleeping(body:getId()))
 end
 
---@api-stub: LWorld:drawDebug
+--@api: LWorld:drawDebug
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newCircleBody(200, 200, 20, "dynamic")
@@ -1545,7 +1545,7 @@ do
     if ok then print("image", img:type()) else print("drawDebug skipped: " .. tostring(err)) end
 end
 
---@api-stub: lurek.physics.debugDraw
+--@api: lurek.physics.debugDraw
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newCircleBody(100, 100, 15, "dynamic")
@@ -1554,7 +1554,7 @@ do
     print("body_count", world:getBodyCount())
 end
 
---@api-stub: lurek.physics.destroyWorld
+--@api: lurek.physics.destroyWorld
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newCircleBody(100, 100, 10, "dynamic")
@@ -1563,7 +1563,7 @@ do
     print("after", world:getBodyCount())
 end
 
---@api-stub: LWorld:clear
+--@api: LWorld:clear
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newCircleBody(100, 100, 10, "dynamic")
@@ -1572,7 +1572,7 @@ do
     print("after", world:getBodyCount())
 end
 
---@api-stub: lurek.physics.step
+--@api: lurek.physics.step
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
@@ -1580,7 +1580,7 @@ do
     print("body", lurek.physics.getBody(world, body))
 end
 
---@api-stub: lurek.physics.getCollisions
+--@api: lurek.physics.getCollisions
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
@@ -1595,7 +1595,7 @@ do
     end
 end
 
---@api-stub: lurek.physics.isSleepingAllowed
+--@api: lurek.physics.isSleepingAllowed
 do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 10, "dynamic")
@@ -1607,7 +1607,7 @@ end
 
 --- Physics Module Part 5: LBody dims, LCellular, LPhysicsShape, LTerrain, LWorld advanced, LZone, module fns
 
---@api-stub: LBody:getHeight
+--@api: LBody:getHeight
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
@@ -1615,7 +1615,7 @@ do
     print("size", body:getWidth(), body:getHeight())
 end
 
---@api-stub: LBody:getId
+--@api: LBody:getId
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
@@ -1623,7 +1623,7 @@ do
     print("position", body:getPosition())
 end
 
---@api-stub: LBody:getPosition
+--@api: LBody:getPosition
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
@@ -1631,7 +1631,7 @@ do
     print("id", body:getId())
 end
 
---@api-stub: LBody:getWidth
+--@api: LBody:getWidth
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
@@ -1639,7 +1639,7 @@ do
     print("height", body:getHeight())
 end
 
---@api-stub: LBody:getX
+--@api: LBody:getX
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
@@ -1647,7 +1647,7 @@ do
     print("y", body:getY())
 end
 
---@api-stub: LBody:getY
+--@api: LBody:getY
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, "dynamic")
@@ -1655,28 +1655,28 @@ do
     print("x", body:getX())
 end
 
---@api-stub: LPhysicsShape:getBoundingBox
+--@api: LPhysicsShape:getBoundingBox
 do
     local circle = lurek.physics.newCircleShape(10.0)
     print("bounds", circle:getBoundingBox())
     print("type", circle:getType())
 end
 
---@api-stub: LPhysicsShape:getRadius
+--@api: LPhysicsShape:getRadius
 do
     local circle = lurek.physics.newCircleShape(10.0)
     print("radius", circle:getRadius())
     print("type", circle:getType())
 end
 
---@api-stub: LPhysicsShape:getType
+--@api: LPhysicsShape:getType
 do
     local circle = lurek.physics.newCircleShape(10.0)
     print("type", circle:getType())
     print("bounds", circle:getBoundingBox())
 end
 
---@api-stub: LTerrain:fillAll
+--@api: LTerrain:fillAll
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
@@ -1685,7 +1685,7 @@ do
     print("type", terrain:type())
 end
 
---@api-stub: LTerrain:fillCircle
+--@api: LTerrain:fillCircle
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
@@ -1695,7 +1695,7 @@ do
     print("type", terrain:type())
 end
 
---@api-stub: LTerrain:flush
+--@api: LTerrain:flush
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
@@ -1705,7 +1705,7 @@ do
     print("type", terrain:type())
 end
 
---@api-stub: LTerrain:isDirty
+--@api: LTerrain:isDirty
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
@@ -1714,7 +1714,7 @@ do
     print("type", terrain:type())
 end
 
---@api-stub: LTerrain:type
+--@api: LTerrain:type
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
@@ -1722,7 +1722,7 @@ do
     print("type_of", terrain:typeOf("LTerrain"))
 end
 
---@api-stub: LTerrain:typeOf
+--@api: LTerrain:typeOf
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
@@ -1730,7 +1730,7 @@ do
     print("type", terrain:type())
 end
 
---@api-stub: LWorld:addFixture
+--@api: LWorld:addFixture
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
@@ -1739,7 +1739,7 @@ do
     print("count", world:fixtureCount(body:getId()))
 end
 
---@api-stub: LWorld:clearBeginContact
+--@api: LWorld:clearBeginContact
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
@@ -1755,7 +1755,7 @@ do
     print("count", count)
 end
 
---@api-stub: LWorld:clearEndContact
+--@api: LWorld:clearEndContact
 do
     local world = lurek.physics.newWorld(0, 400)
     world:newBody(200, 500, "static")
@@ -1772,7 +1772,7 @@ do
     print("count", count)
 end
 
---@api-stub: LWorld:destroyBody
+--@api: LWorld:destroyBody
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
@@ -1781,7 +1781,7 @@ do
     print("after", world:getBodyCount())
 end
 
---@api-stub: LWorld:fixtureCount
+--@api: LWorld:fixtureCount
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
@@ -1789,7 +1789,7 @@ do
     print("count", world:fixtureCount(body:getId()))
 end
 
---@api-stub: LWorld:setBodyType
+--@api: LWorld:setBodyType
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
@@ -1797,7 +1797,7 @@ do
     print("type", world:getBodyType(body:getId()))
 end
 
---@api-stub: LWorld:setMouseJointTarget
+--@api: LWorld:setMouseJointTarget
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = world:newBody(0, 0, "dynamic")
@@ -1807,7 +1807,7 @@ do
     print("type", world:getJointType(jid))
 end
 
---@api-stub: LZone:getId
+--@api: LZone:getId
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
@@ -1815,7 +1815,7 @@ do
     print("type", zone:type())
 end
 
---@api-stub: LZone:setEnabled
+--@api: LZone:setEnabled
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
@@ -1824,7 +1824,7 @@ do
     print("type", zone:type())
 end
 
---@api-stub: LZone:setLayerMask
+--@api: LZone:setLayerMask
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
@@ -1833,7 +1833,7 @@ do
     print("type", zone:type())
 end
 
---@api-stub: LZone:setPriority
+--@api: LZone:setPriority
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
@@ -1842,7 +1842,7 @@ do
     print("type", zone:type())
 end
 
---@api-stub: LZone:type
+--@api: LZone:type
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
@@ -1850,7 +1850,7 @@ do
     print("type_of", zone:typeOf("LZone"))
 end
 
---@api-stub: LZone:typeOf
+--@api: LZone:typeOf
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
@@ -1858,14 +1858,14 @@ do
     print("type", zone:type())
 end
 
---@api-stub: lurek.physics.drawDebugGpu
+--@api: lurek.physics.drawDebugGpu
 do
     local world = lurek.physics.newWorld(0, 9.8)
     lurek.physics.drawDebugGpu(world, {})
     print("body_count", world:getBodyCount())
 end
 
---@api-stub: lurek.physics.getBody
+--@api: lurek.physics.getBody
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 0, 0, "dynamic")
@@ -1873,7 +1873,7 @@ do
     print("body", lurek.physics.getBody(world, body))
 end
 
---@api-stub: lurek.physics.newBody
+--@api: lurek.physics.newBody
 do
     local world = lurek.physics.newWorld(0, 0)
     local body = lurek.physics.newBody(world, 50, 50, "static")
@@ -1881,13 +1881,13 @@ do
     print("type", body:getType())
 end
 
---@api-stub: LChainShape:getType
+--@api: LChainShape:getType
 do
     local chain = lurek.physics.newChainShape(false, 0, 0, 10, 0, 10, 10, 0, 10)
     print("type", chain:getType())
 end
 
---@api-stub: lurek.physics.setBodyVelocity
+--@api: lurek.physics.setBodyVelocity
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 0, 0, "dynamic")
@@ -1895,7 +1895,7 @@ do
     print("velocity", body:getVelocity())
 end
 
---@api-stub: lurek.physics.setSleepingAllowed
+--@api: lurek.physics.setSleepingAllowed
 do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 0, 0, "dynamic")
@@ -1903,7 +1903,7 @@ do
     print("allowed", body:isSleepingAllowed())
 end
 
---@api-stub: lurek.physics.testPoint
+--@api: lurek.physics.testPoint
 do
     local inside = lurek.physics.testPoint(5, 5, 0, 0, 10, 10)
     local outside = lurek.physics.testPoint(20, 20, 0, 0, 10, 10)

@@ -4,19 +4,26 @@
 
 --- Docs Module Part 1: Scanning, Catalog, Schema, DocEntry, Validation, Quality, Export
 
---@api-stub: lurek.docs.scan
+local docs_example_cat = lurek.docs.scanModule("math")
+local docs_example_entry = docs_example_cat:getEntry("lurek.math.lerp")
+local docs_example_validate = lurek.docs.validate(docs_example_cat)
+local docs_example_quality = lurek.docs.quality(docs_example_cat)
+
+--@api: lurek.docs.scan
 do
     local cat = lurek.docs.scan()
     print("scanned entries = " .. cat:entryCount())
+    print("lua type = " .. type(cat))
 end
 
---@api-stub: lurek.docs.scanModule
+--@api: lurek.docs.scanModule
 do
     local cat = lurek.docs.scanModule("math")
     print("math entries = " .. cat:entryCount())
+    print("lua type = " .. type(cat))
 end
 
---@api-stub: lurek.docs.loadToml
+--@api: lurek.docs.loadToml
 do
     local path = "save/_fs_tests/docs_load_toml_example.toml"
     lurek.filesystem.write(path, '[[entries]]\nname = "play"\nqualifiedName = "lurek.audio.play"\nmodule = "audio"\nkind = "function"\ndescription = "Plays a sound"')
@@ -24,7 +31,7 @@ do
     print("loaded entries = " .. cat:entryCount())
 end
 
---@api-stub: lurek.docs.loadAll
+--@api: lurek.docs.loadAll
 do
     lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", '[[entries]]\nname = "one"\nqualifiedName = "lurek.test.one"\nmodule = "test"\nkind = "function"\ndescription = "First entry"')
     lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", '[[entries]]\nname = "two"\nqualifiedName = "lurek.test.two"\nmodule = "test"\nkind = "function"\ndescription = "Second entry"')
@@ -32,13 +39,14 @@ do
     print("all entries = " .. cat:entryCount())
 end
 
---@api-stub: lurek.docs.describe
+--@api: lurek.docs.describe
 do
     lurek.docs.describe("lurek.math.lerp", "Linearly interpolates between a and b.")
     print("description set")
+    print("catalog type = " .. type(lurek.docs.getCatalog()))
 end
 
---@api-stub: lurek.docs.setParamInfo
+--@api: lurek.docs.setParamInfo
 do
     lurek.docs.resetCatalog()
     lurek.docs.describe("lurek.test.blend", "Blend two values.")
@@ -49,7 +57,7 @@ do
     print("params set = " .. #entry:getParameters())
 end
 
---@api-stub: lurek.docs.setReturnInfo
+--@api: lurek.docs.setReturnInfo
 do
     lurek.docs.resetCatalog()
     lurek.docs.describe("lurek.test.blend", "Blend two values.")
@@ -60,13 +68,14 @@ do
     print("returns set = " .. #entry:getReturns())
 end
 
---@api-stub: lurek.docs.getCatalog
+--@api: lurek.docs.getCatalog
 do
     local cat = lurek.docs.getCatalog()
     print("catalog entries = " .. cat:entryCount())
+    print("lua type = " .. type(cat))
 end
 
---@api-stub: lurek.docs.resetCatalog
+--@api: lurek.docs.resetCatalog
 do
     lurek.docs.describe("lurek.test.temp", "Temporary entry")
     lurek.docs.resetCatalog()
@@ -74,104 +83,105 @@ do
     print("after reset entries = " .. cat:entryCount())
 end
 
---@api-stub: lurek.docs.validate
+--@api: lurek.docs.validate
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("valid = " .. tostring(report:isValid()))
 end
 
---@api-stub: lurek.docs.validateModule
+--@api: lurek.docs.validateModule
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local report = lurek.docs.validateModule("math", cat)
     print("math missing = " .. report:missingCount())
 end
 
---@api-stub: lurek.docs.checkStaleness
+--@api: lurek.docs.checkStaleness
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local result = lurek.docs.checkStaleness(cat, "src/math/")
     print("stale = " .. #result.stale .. " current = " .. #result.current)
 end
 
---@api-stub: lurek.docs.quality
+--@api: lurek.docs.quality
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("quality score = " .. qr:getOverallScore())
 end
 
---@api-stub: lurek.docs.qualityModule
+--@api: lurek.docs.qualityModule
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local qr = lurek.docs.qualityModule("math", cat)
     print("math quality = " .. qr:getOverallScore())
 end
 
---@api-stub: lurek.docs.coverage
+--@api: lurek.docs.coverage
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local documented, live = lurek.docs.coverage(cat)
     print("documented=" .. documented .. " live=" .. live)
 end
 
---@api-stub: lurek.docs.coverageModule
+--@api: lurek.docs.coverageModule
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local documented, live = lurek.docs.coverageModule("math", cat)
     print("math documented=" .. documented .. " live=" .. live)
 end
 
---@api-stub: lurek.docs.exportCompletions
+--@api: lurek.docs.exportCompletions
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportCompletions(cat, "build/completions.json")
     print("completions exported")
 end
 
---@api-stub: lurek.docs.exportHover
+--@api: lurek.docs.exportHover
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportHover(cat, "build/hover.json")
     print("hover exported")
 end
 
---@api-stub: lurek.docs.exportSignatures
+--@api: lurek.docs.exportSignatures
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportSignatures(cat, "build/signatures.json")
     print("signatures exported")
 end
 
---@api-stub: lurek.docs.exportAll
+--@api: lurek.docs.exportAll
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportAll(cat, "build/docs/")
     print("all docs exported")
 end
 
---@api-stub: lurek.docs.exportMarkdown
+--@api: lurek.docs.exportMarkdown
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportMarkdown(cat, "build/api.md")
     print("markdown exported")
 end
 
---@api-stub: lurek.docs.exportCheatsheet
+--@api: lurek.docs.exportCheatsheet
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportCheatsheet(cat, "build/cheatsheet.txt")
     print("cheatsheet exported")
 end
 
---@api-stub: lurek.docs.schema
+--@api: lurek.docs.schema
 do
     local s = lurek.docs.schema({ name = { type = "string", required = true }, age = { type = "number" } }, "PlayerSchema")
     print("schema name = " .. s:getName())
+    print("lua type = " .. type(s))
 end
 
---@api-stub: lurek.docs.schemaFromToml
+--@api: lurek.docs.schemaFromToml
 do
     local toml = [[
 name = "PlayerSchema"
@@ -185,212 +195,235 @@ required = true
     print("schema from toml, name = " .. s:getName())
 end
 
---@api-stub: lurek.docs.reflectLive
+--@api: lurek.docs.reflectLive
 do
     local data = lurek.docs.reflectLive("math")
     print("reflect math type = " .. type(data))
+    print("lua type = " .. type(data))
 end
 
---@api-stub: lurek.docs.reflectTable
+--@api: lurek.docs.reflectTable
 do
     local t = {foo = 1, bar = "hello"}
     local rows = lurek.docs.reflectTable(t, "mymod")
     print("reflected rows = " .. #rows)
 end
 
---@api-stub: LSchema:validate
+--@api: LSchema:validate
 do
     local s = lurek.docs.schema({name = {type = "string", required = true}})
     local ok, errors = s:validate({name = "test"})
     print("valid = " .. tostring(ok) .. " errors = " .. #errors)
 end
 
---@api-stub: LSchema:check
+--@api: LSchema:check
 do
     local s = lurek.docs.schema({x = {type = "number"}})
     print("check = " .. tostring(s:check({x = 42})))
+    print("owner type = " .. tostring(s:type()))
 end
 
---@api-stub: LSchema:assert
+--@api: LSchema:assert
 do
     local s = lurek.docs.schema({v = {type = "number"}})
     local ok = pcall(function() s["assert"](s, {v = 10}) end)
     print("assert passed = " .. tostring(ok))
 end
 
---@api-stub: LSchema:getName
+--@api: LSchema:getName
 do
     local s = lurek.docs.schema({}, "TestSchema")
     print("name = " .. s:getName())
+    print("owner type = " .. tostring(s:type()))
 end
 
---@api-stub: LSchema:getFields
+--@api: LSchema:getFields
 do
     local s = lurek.docs.schema({a = {type = "number"}, b = {type = "string"}})
     local fields = s:getFields()
     print("fields = " .. #fields)
 end
 
---@api-stub: LSchema:type
+--@api: LSchema:type
 do
     local s = lurek.docs.schema({})
     print("type = " .. s:type())
+    print("typeOf LObject = " .. tostring(s:typeOf("LObject")))
 end
 
---@api-stub: LSchema:typeOf
+--@api: LSchema:typeOf
 do
     local s = lurek.docs.schema({})
     print("is LSchema = " .. tostring(s:typeOf("LSchema")))
+    print("type = " .. tostring(s:type()))
 end
 
---@api-stub: LDocEntry:getName
+--@api: LDocEntry:getName
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("name = " .. entry:getName())
+    print("owner type = " .. tostring(entry:type()))
 end
 
---@api-stub: LDocEntry:getQualifiedName
+--@api: LDocEntry:getQualifiedName
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("qualified = " .. entry:getQualifiedName())
+    print("owner type = " .. tostring(entry:type()))
 end
 
---@api-stub: LDocEntry:getModule
+--@api: LDocEntry:getModule
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("module = " .. entry:getModule())
+    print("owner type = " .. tostring(entry:type()))
 end
 
---@api-stub: LDocEntry:getKind
+--@api: LDocEntry:getKind
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("kind = " .. entry:getKind())
+    print("owner type = " .. tostring(entry:type()))
 end
 
---@api-stub: LDocEntry:getDescription
+--@api: LDocEntry:getDescription
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("desc len = " .. #entry:getDescription())
+    print("owner type = " .. tostring(entry:type()))
 end
 
---@api-stub: LDocEntry:getParameters
+--@api: LDocEntry:getParameters
 do
-    local params = lurek.docs.scan():getEntry("lurek.math.lerp"):getParameters()
+    local params = docs_example_entry:getParameters()
     print("params = " .. #params)
+    print("params lua type = " .. type(params))
 end
 
---@api-stub: LDocEntry:getReturns
+--@api: LDocEntry:getReturns
 do
-    local returns = lurek.docs.scan():getEntry("lurek.math.lerp"):getReturns()
+    local returns = docs_example_entry:getReturns()
     print("returns = " .. #returns)
+    print("returns lua type = " .. type(returns))
 end
 
---@api-stub: LDocEntry:getExample
+--@api: LDocEntry:getExample
 do
-    local example = lurek.docs.scan():getEntry("lurek.math.lerp"):getExample()
+    local example = docs_example_entry:getExample()
     print("example = " .. type(example))
+    print("example length = " .. tostring(example and #example or 0))
 end
 
---@api-stub: LDocEntry:getSince
+--@api: LDocEntry:getSince
 do
-    local since = lurek.docs.scan():getEntry("lurek.math.lerp"):getSince()
+    local since = docs_example_entry:getSince()
     print("since = " .. type(since))
+    print("since value = " .. tostring(since))
 end
 
---@api-stub: LDocEntry:getDeprecated
+--@api: LDocEntry:getDeprecated
 do
-    local deprecated = lurek.docs.scan():getEntry("lurek.math.lerp"):getDeprecated()
+    local deprecated = docs_example_entry:getDeprecated()
     print("deprecated = " .. type(deprecated))
+    print("deprecated value = " .. tostring(deprecated))
 end
 
---@api-stub: LDocEntry:getScore
+--@api: LDocEntry:getScore
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("score = " .. entry:getScore())
+    print("owner type = " .. tostring(entry:type()))
 end
 
---@api-stub: LDocEntry:hasDescription
+--@api: LDocEntry:hasDescription
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("hasDesc = " .. tostring(entry:hasDescription()))
+    print("owner type = " .. tostring(entry:type()))
 end
 
---@api-stub: LDocEntry:hasParameters
+--@api: LDocEntry:hasParameters
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("hasParams = " .. tostring(entry:hasParameters()))
+    print("owner type = " .. tostring(entry:type()))
 end
 
---@api-stub: LDocEntry:hasReturnType
+--@api: LDocEntry:hasReturnType
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("hasReturn = " .. tostring(entry:hasReturnType()))
+    print("owner type = " .. tostring(entry:type()))
 end
 
---@api-stub: LDocEntry:hasExample
+--@api: LDocEntry:hasExample
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("hasExample = " .. tostring(entry:hasExample()))
+    print("owner type = " .. tostring(entry:type()))
 end
 
---@api-stub: LDocEntry:type
+--@api: LDocEntry:type
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("type = " .. entry:type())
+    print("typeOf LObject = " .. tostring(entry:typeOf("LObject")))
 end
 
---@api-stub: LDocEntry:typeOf
+--@api: LDocEntry:typeOf
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("is LDocEntry = " .. tostring(entry:typeOf("LDocEntry")))
+    print("type = " .. tostring(entry:type()))
 end
 
 --- Docs Module Part 2: LApiCatalog, LValidationReport, LQualityReport
 
---@api-stub: LApiCatalog:getModules
+--@api: LApiCatalog:getModules
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local modules = cat:getModules()
     print("modules = " .. #modules)
 end
 
---@api-stub: LApiCatalog:getEntries
+--@api: LApiCatalog:getEntries
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local all = cat:getEntries()
     local math_entries = cat:getEntries("math")
     print("all=" .. #all .. " math=" .. #math_entries)
 end
 
---@api-stub: LApiCatalog:getEntry
+--@api: LApiCatalog:getEntry
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     print("found entry = " .. tostring(cat:getEntry("lurek.math.lerp") ~= nil))
+    print("owner type = " .. tostring(cat:type()))
 end
 
---@api-stub: LApiCatalog:getTypes
+--@api: LApiCatalog:getTypes
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local types = cat:getTypes("math")
     print("math types = " .. #types)
 end
 
---@api-stub: LApiCatalog:getTypeMethods
+--@api: LApiCatalog:getTypeMethods
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local methods = cat:getTypeMethods("LVec2")
     print("LVec2 methods = " .. #methods)
 end
 
---@api-stub: LApiCatalog:entryCount
+--@api: LApiCatalog:entryCount
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local total = cat:entryCount()
     local math_count = cat:entryCount("math")
     print("total=" .. total .. " math=" .. math_count)
 end
 
---@api-stub: LApiCatalog:merge
+--@api: LApiCatalog:merge
 do
     local a = lurek.docs.scanModule("math")
     local b = lurek.docs.scanModule("timer")
@@ -398,214 +431,216 @@ do
     print("merged = " .. merged:entryCount())
 end
 
---@api-stub: LApiCatalog:filter
+--@api: LApiCatalog:filter
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local fns = cat:filter(function(entry) return entry:getKind() == "function" end)
     print("functions = " .. fns:entryCount())
 end
 
---@api-stub: LApiCatalog:search
+--@api: LApiCatalog:search
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local results = cat:search("lerp")
     print("search results = " .. #results)
 end
 
---@api-stub: LApiCatalog:toTable
+--@api: LApiCatalog:toTable
 do
     local cat = lurek.docs.scanModule("math")
     local rows = cat:toTable()
     print("rows = " .. #rows)
 end
 
---@api-stub: LApiCatalog:toJSON
+--@api: LApiCatalog:toJSON
 do
     local cat = lurek.docs.scanModule("timer")
     local json = cat:toJSON()
     print("json length = " .. #json)
 end
 
---@api-stub: LApiCatalog:type
+--@api: LApiCatalog:type
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     print("type = " .. cat:type())
+    print("typeOf LObject = " .. tostring(cat:typeOf("LObject")))
 end
 
---@api-stub: LApiCatalog:typeOf
+--@api: LApiCatalog:typeOf
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     print("is LApiCatalog = " .. tostring(cat:typeOf("LApiCatalog")))
+    print("type = " .. tostring(cat:type()))
 end
 
---@api-stub: LValidationReport:isValid
+--@api: LValidationReport:isValid
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("valid = " .. tostring(report:isValid()))
 end
 
---@api-stub: LValidationReport:getMissing
+--@api: LValidationReport:getMissing
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     local missing = report:getMissing()
     print("missing = " .. #missing)
 end
 
---@api-stub: LValidationReport:getPhantom
+--@api: LValidationReport:getPhantom
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     local phantom = report:getPhantom()
     print("phantom = " .. #phantom)
 end
 
---@api-stub: LValidationReport:getIncomplete
+--@api: LValidationReport:getIncomplete
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     local incomplete = report:getIncomplete()
     print("incomplete = " .. #incomplete)
 end
 
---@api-stub: LValidationReport:missingCount
+--@api: LValidationReport:missingCount
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("missing count = " .. report:missingCount())
 end
 
---@api-stub: LValidationReport:phantomCount
+--@api: LValidationReport:phantomCount
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("phantom count = " .. report:phantomCount())
 end
 
---@api-stub: LValidationReport:incompleteCount
+--@api: LValidationReport:incompleteCount
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("incomplete count = " .. report:incompleteCount())
 end
 
---@api-stub: LValidationReport:getSummary
+--@api: LValidationReport:getSummary
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("summary = " .. report:getSummary())
 end
 
---@api-stub: LValidationReport:toTable
+--@api: LValidationReport:toTable
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     local t = report:toTable()
     print("table keys: missing=" .. #t.missing .. " phantom=" .. #t.phantom)
 end
 
---@api-stub: LValidationReport:toJSON
+--@api: LValidationReport:toJSON
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     local json = report:toJSON()
     print("json length = " .. #json)
 end
 
---@api-stub: LValidationReport:type
+--@api: LValidationReport:type
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("type = " .. report:type())
 end
 
---@api-stub: LValidationReport:typeOf
+--@api: LValidationReport:typeOf
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("is report = " .. tostring(report:typeOf("LValidationReport")))
 end
 
---@api-stub: LQualityReport:getOverallScore
+--@api: LQualityReport:getOverallScore
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("score = " .. qr:getOverallScore())
 end
 
---@api-stub: LQualityReport:getGrade
+--@api: LQualityReport:getGrade
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("grade = " .. qr:getGrade())
 end
 
---@api-stub: LQualityReport:getModuleScores
+--@api: LQualityReport:getModuleScores
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local scores = qr:getModuleScores()
     print("module scores type = " .. type(scores))
 end
 
---@api-stub: LQualityReport:getWorst
+--@api: LQualityReport:getWorst
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local worst = qr:getWorst(5)
     print("worst 5 = " .. #worst)
 end
 
---@api-stub: LQualityReport:getBest
+--@api: LQualityReport:getBest
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local best = qr:getBest(5)
     print("best 5 = " .. #best)
 end
 
---@api-stub: LQualityReport:getByGrade
+--@api: LQualityReport:getByGrade
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local a_entries = qr:getByGrade("A")
     print("grade A entries = " .. #a_entries)
 end
 
---@api-stub: LQualityReport:getSummary
+--@api: LQualityReport:getSummary
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("summary = " .. qr:getSummary())
 end
 
---@api-stub: LQualityReport:toTable
+--@api: LQualityReport:toTable
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local t = qr:toTable()
     print("overall = " .. t.overallScore .. " grade = " .. t.grade)
 end
 
---@api-stub: LQualityReport:toJSON
+--@api: LQualityReport:toJSON
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local json = qr:toJSON()
     print("json length = " .. #json)
 end
 
---@api-stub: LQualityReport:type
+--@api: LQualityReport:type
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("type = " .. qr:type())
 end
 
---@api-stub: LQualityReport:typeOf
+--@api: LQualityReport:typeOf
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("is report = " .. tostring(qr:typeOf("LQualityReport")))
 end

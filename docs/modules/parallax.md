@@ -619,6 +619,20 @@ LParallaxLayer:getStats()
 |------|-------------|
 | table | Parallax layer telemetry fields. |
 
+**Example**
+
+```lua
+do
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local layer = lurek.parallax.newLayer({ texture = img, z = 3, depth = 0.4, tiling = true })
+    layer:setAutoscroll(16, 0)
+    layer:addEffectPass("tint", { r = 1.0, g = 0.8, b = 0.6, a = 1.0 })
+    local stats = layer:getStats()
+    print("layer stats tiles=" .. stats.visible_tile_count .. " effects=" .. stats.effect_pass_count)
+    print("layer stats z=" .. stats.z .. " depth=" .. stats.depth)
+end
+```
+
 ---
 
 #### `LParallaxLayer:getTiling`
@@ -1454,6 +1468,20 @@ LParallaxSet:getStats()
 | Type | Description |
 |------|-------------|
 | table | Set-level telemetry fields. |
+
+**Example**
+
+```lua
+do
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local set = lurek.parallax.newSet("stats_set")
+    set:addLayer(lurek.parallax.newLayer({ texture = img, z = 1, tiling = true }))
+    set:addLayer(lurek.parallax.newLayer({ texture = img, z = 5, depth = 0.7 }))
+    local stats = set:getStats()
+    print("set stats name=" .. stats.name .. " layers=" .. stats.layer_count)
+    print("set stats visible tiles=" .. stats.visible_tile_count .. " effects=" .. stats.effect_pass_count)
+end
+```
 
 ---
 

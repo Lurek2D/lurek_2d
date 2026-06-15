@@ -2032,24 +2032,31 @@ LCameraRig = {}
 ---@class LCameraWalker
 LCameraWalker = {}
 
+--- Lua handle for an area chart with stacked layers or named series.
 ---@class LAreaChart
 LAreaChart = {}
 
+--- Lua handle for a grouped bar chart with named series and category labels.
 ---@class LBarChart
 LBarChart = {}
 
+--- Lua handle for a heatmap chart backed by a numeric matrix.
 ---@class LHeatmapChart
 LHeatmapChart = {}
 
+--- Lua handle for a histogram chart that bins named numeric samples.
 ---@class LHistogramChart
 LHistogramChart = {}
 
+--- Lua handle for a line chart with named x/y series and cached draw output.
 ---@class LLineChart
 LLineChart = {}
 
+--- Lua handle for a pie chart with labeled slices and cached draw output.
 ---@class LPieChart
 LPieChart = {}
 
+--- Lua handle for a scatter plot with named point series and cached draw output.
 ---@class LScatterPlot
 LScatterPlot = {}
 
@@ -7498,476 +7505,631 @@ lurek.camera.newRig = function() end
 ---@return LCameraWalker New walker handle.
 lurek.camera.newWalker = function(map, opts) end
 
+--- Adds one filled area layer from a numeric value list.
 ---@param name any
 ---@param values any
 ---@param color? any
 function LAreaChart:addLayer(name, values, color) end
 
+--- Builds one filled area layer from a dataframe value column.
 function LAreaChart:addLayerFromDataFrame() end
 
+--- Adds a named area series from an array-style Lua table of points.
 ---@param name any
 ---@param data any
 ---@param color? any
 function LAreaChart:addSeries(name, data, color) end
 
+--- Appends one finite point to a named area series.
 ---@param name any
 ---@param x any
 ---@param y any
 ---@param color? any
 function LAreaChart:appendPoint(name, x, y, color) end
 
+--- Clears the state.
 function LAreaChart:clear() end
 
+--- Draws the area chart at world or screen coordinates using optional transform options.
 ---@param x any
 ---@param y any
 ---@param opts? any
 function LAreaChart:draw(x, y, opts) end
 
+--- Draw to image.
 ---@param target any
 function LAreaChart:drawToImage(target) end
 
+--- Returns the height.
 function LAreaChart:getHeight() end
 
+--- Returns the width.
 function LAreaChart:getWidth() end
 
+--- Render.
 function LAreaChart:render() end
 
+--- Render image.
 function LAreaChart:renderImage() end
 
+--- Sets the show legend.
 ---@param value any
 function LAreaChart:setShowLegend(value) end
 
+--- Sets the title.
 ---@param title any
 function LAreaChart:setTitle(title) end
 
+--- Sets the window.
 ---@param max_points? any
 function LAreaChart:setWindow(max_points) end
 
+--- Sets the x label.
 ---@param label any
 function LAreaChart:setXLabel(label) end
 
+--- Sets the x tick count.
 ---@param count any
 function LAreaChart:setXTickCount(count) end
 
+--- Sets the y label.
 ---@param label any
 function LAreaChart:setYLabel(label) end
 
+--- Sets the y max.
 ---@param value any
 function LAreaChart:setYMax(value) end
 
+--- Sets the y tick count.
 ---@param count any
 function LAreaChart:setYTickCount(count) end
 
+--- Type.
 function LAreaChart:type() end
 
+--- Type of.
 ---@param name any
 function LAreaChart:typeOf(name) end
 
+--- Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.
 function LBarChart:addCategoriesFromDataFrame() end
 
+--- Adds one category label with a numeric value list for grouped bars.
 ---@param label any
 ---@param values any
 function LBarChart:addCategory(label, values) end
 
+--- Adds a named bar series from an array-style Lua table of values or points.
 ---@param name any
 ---@param data any
 ---@param color? any
 function LBarChart:addSeries(name, data, color) end
 
+--- Clears the state.
 function LBarChart:clear() end
 
+--- Draws the bar chart at world or screen coordinates using optional transform options.
 ---@param x any
 ---@param y any
 ---@param opts? any
 function LBarChart:draw(x, y, opts) end
 
+--- Draw to image.
 ---@param target any
 function LBarChart:drawToImage(target) end
 
+--- Returns the height.
 function LBarChart:getHeight() end
 
+--- Returns the width.
 function LBarChart:getWidth() end
 
+--- Render.
 function LBarChart:render() end
 
+--- Render image.
 function LBarChart:renderImage() end
 
+--- Sets the bar width.
 ---@param width any
 function LBarChart:setBarWidth(width) end
 
+--- Sets the show legend.
 ---@param value any
 function LBarChart:setShowLegend(value) end
 
+--- Sets the title.
 ---@param title any
 function LBarChart:setTitle(title) end
 
+--- Sets the x label.
 ---@param label any
 function LBarChart:setXLabel(label) end
 
+--- Sets the x tick count.
 ---@param count any
 function LBarChart:setXTickCount(count) end
 
+--- Sets the y label.
 ---@param label any
 function LBarChart:setYLabel(label) end
 
+--- Sets the y tick count.
 ---@param count any
 function LBarChart:setYTickCount(count) end
 
+--- Type.
 function LBarChart:type() end
 
+--- Type of.
 ---@param name any
 function LBarChart:typeOf(name) end
 
+--- Clears the state.
 function LHeatmapChart:clear() end
 
+--- Clears value range.
 function LHeatmapChart:clearValueRange() end
 
+--- Draws the heatmap at world or screen coordinates using optional transform options.
 ---@param x any
 ---@param y any
 ---@param opts? any
 function LHeatmapChart:draw(x, y, opts) end
 
+--- Draw to image.
 ---@param target any
 function LHeatmapChart:drawToImage(target) end
 
+--- Returns the height.
 function LHeatmapChart:getHeight() end
 
+--- Returns the width.
 function LHeatmapChart:getWidth() end
 
+--- Render.
 function LHeatmapChart:render() end
 
+--- Render image.
 function LHeatmapChart:renderImage() end
 
+--- Resize.
 ---@param rows any
 ---@param cols any
 function LHeatmapChart:resize(rows, cols) end
 
+--- Sets the cell.
 ---@param row any
 ---@param col any
 ---@param value any
 function LHeatmapChart:setCell(row, col, value) end
 
+--- Sets the low and high RGBA colors used for the heatmap gradient.
 ---@param low any
 ---@param high any
 function LHeatmapChart:setColorRange(low, high) end
 
+--- Sets the column labels.
 ---@param labels any
 function LHeatmapChart:setColumnLabels(labels) end
 
+--- Replaces the heatmap contents from a numeric matrix with optional row and column labels.
 ---@param matrix any
 ---@param row_labels? any
 ---@param col_labels? any
 function LHeatmapChart:setMatrix(matrix, row_labels, col_labels) end
 
+--- Builds the heatmap contents from dataframe row, column, and value fields.
 function LHeatmapChart:setMatrixFromDataFrame() end
 
+--- Sets the row labels.
 ---@param labels any
 function LHeatmapChart:setRowLabels(labels) end
 
+--- Sets the show legend.
 ---@param value any
 function LHeatmapChart:setShowLegend(value) end
 
+--- Sets the show values.
 ---@param value any
 function LHeatmapChart:setShowValues(value) end
 
+--- Sets the title.
 ---@param title any
 function LHeatmapChart:setTitle(title) end
 
+--- Sets the value range.
 ---@param min any
 ---@param max any
 function LHeatmapChart:setValueRange(min, max) end
 
+--- Type.
 function LHeatmapChart:type() end
 
+--- Type of.
 ---@param name any
 function LHeatmapChart:typeOf(name) end
 
+--- Adds a named histogram sample series from a numeric value list.
 ---@param name any
 ---@param values any
 ---@param color? any
 function LHistogramChart:addSeries(name, values, color) end
 
+--- Builds a named histogram sample series from one dataframe value column.
 function LHistogramChart:addSeriesFromDataFrame() end
 
+--- Appends one finite numeric sample to a named histogram series.
 ---@param name any
 ---@param value any
 ---@param color? any
 function LHistogramChart:appendValue(name, value, color) end
 
+--- Clears the state.
 function LHistogramChart:clear() end
 
+--- Clears range.
 function LHistogramChart:clearRange() end
 
+--- Draws the histogram at world or screen coordinates using optional transform options.
 ---@param x any
 ---@param y any
 ---@param opts? any
 function LHistogramChart:draw(x, y, opts) end
 
+--- Draw to image.
 ---@param target any
 function LHistogramChart:drawToImage(target) end
 
+--- Returns the height.
 function LHistogramChart:getHeight() end
 
+--- Returns the width.
 function LHistogramChart:getWidth() end
 
+--- Render.
 function LHistogramChart:render() end
 
+--- Render image.
 function LHistogramChart:renderImage() end
 
+--- Replaces a named histogram sample series with a new numeric value list.
 ---@param name any
 ---@param values any
 ---@param color? any
 function LHistogramChart:replaceSeries(name, values, color) end
 
+--- Sets the bin count.
 ---@param bins any
 function LHistogramChart:setBinCount(bins) end
 
+--- Sets the density.
 ---@param enabled any
 function LHistogramChart:setDensity(enabled) end
 
+--- Sets the range.
 ---@param min any
 ---@param max any
 function LHistogramChart:setRange(min, max) end
 
+--- Sets the show legend.
 ---@param value any
 function LHistogramChart:setShowLegend(value) end
 
+--- Sets the title.
 ---@param title any
 function LHistogramChart:setTitle(title) end
 
+--- Sets the window.
 ---@param max_points? any
 function LHistogramChart:setWindow(max_points) end
 
+--- Sets the x label.
 ---@param label any
 function LHistogramChart:setXLabel(label) end
 
+--- Sets the x tick count.
 ---@param count any
 function LHistogramChart:setXTickCount(count) end
 
+--- Sets the y label.
 ---@param label any
 function LHistogramChart:setYLabel(label) end
 
+--- Sets the y tick count.
 ---@param count any
 function LHistogramChart:setYTickCount(count) end
 
+--- Type.
 function LHistogramChart:type() end
 
+--- Type of.
 ---@param name any
 function LHistogramChart:typeOf(name) end
 
+--- Adds a named line series from an array-style Lua table of points.
 ---@param name any
 ---@param data any
 ---@param color? any
 function LLineChart:addSeries(name, data, color) end
 
+--- Builds a named line series from x and y columns in a dataframe.
 function LLineChart:addSeriesFromDataFrame() end
 
+--- Appends one finite point to a named line series.
 ---@param name any
 ---@param x any
 ---@param y any
 ---@param color? any
 function LLineChart:appendPoint(name, x, y, color) end
 
+--- Clears the state.
 function LLineChart:clear() end
 
+--- Draws the line chart at world or screen coordinates using optional transform options.
 ---@param x any
 ---@param y any
 ---@param opts? any
 function LLineChart:draw(x, y, opts) end
 
+--- Draw to image.
 ---@param target any
 function LLineChart:drawToImage(target) end
 
+--- Returns the height.
 function LLineChart:getHeight() end
 
+--- Returns the width.
 function LLineChart:getWidth() end
 
+--- Nearest.
 ---@param x any
 ---@param y any
 function LLineChart:nearest(x, y) end
 
+--- Render.
 function LLineChart:render() end
 
+--- Render image.
 function LLineChart:renderImage() end
 
+--- Replaces a named line series with a new array-style Lua table of points.
 ---@param name any
 ---@param data any
 ---@param color? any
 function LLineChart:replaceSeries(name, data, color) end
 
+--- Sets the show legend.
 ---@param value any
 function LLineChart:setShowLegend(value) end
 
+--- Sets the title.
 ---@param title any
 function LLineChart:setTitle(title) end
 
+--- Sets the window.
 ---@param max_points? any
 function LLineChart:setWindow(max_points) end
 
+--- Sets the x label.
 ---@param label any
 function LLineChart:setXLabel(label) end
 
+--- Sets the x max.
 ---@param value any
 function LLineChart:setXMax(value) end
 
+--- Sets the x tick count.
 ---@param count any
 function LLineChart:setXTickCount(count) end
 
+--- Sets the y label.
 ---@param label any
 function LLineChart:setYLabel(label) end
 
+--- Sets the y max.
 ---@param value any
 function LLineChart:setYMax(value) end
 
+--- Sets the y tick count.
 ---@param count any
 function LLineChart:setYTickCount(count) end
 
+--- Type.
 function LLineChart:type() end
 
+--- Type of.
 ---@param name any
 function LLineChart:typeOf(name) end
 
+--- Adds one pie segment with a non-negative value.
 ---@param label any
 ---@param value any
 ---@param color? any
 function LPieChart:addSegment(label, value, color) end
 
+--- Adds pie segments by reading label and value columns from a dataframe.
 function LPieChart:addSegmentsFromDataFrame() end
 
+--- Legacy alias that adds one pie slice with a non-negative value.
 ---@param label any
 ---@param value any
 ---@param color? any
 function LPieChart:addSlice(label, value, color) end
 
+--- Clears the state.
 function LPieChart:clear() end
 
+--- Draws the pie chart at world or screen coordinates using optional transform options.
 ---@param x any
 ---@param y any
 ---@param opts? any
 function LPieChart:draw(x, y, opts) end
 
+--- Draw to image.
 ---@param target any
 function LPieChart:drawToImage(target) end
 
+--- Returns the height.
 function LPieChart:getHeight() end
 
+--- Returns the width.
 function LPieChart:getWidth() end
 
+--- Render.
 function LPieChart:render() end
 
+--- Render image.
 function LPieChart:renderImage() end
 
+--- Sets the show legend.
 ---@param value any
 function LPieChart:setShowLegend(value) end
 
+--- Sets the title.
 ---@param title any
 function LPieChart:setTitle(title) end
 
+--- Type.
 function LPieChart:type() end
 
+--- Type of.
 ---@param name any
 function LPieChart:typeOf(name) end
 
+--- Adds a named scatter series from an array-style Lua table of points.
 ---@param name any
 ---@param data any
 ---@param color? any
 function LScatterPlot:addSeries(name, data, color) end
 
+--- Builds a named scatter series from x and y columns in a dataframe.
 function LScatterPlot:addSeriesFromDataFrame() end
 
+--- Appends one finite point to a named scatter series.
 ---@param name any
 ---@param x any
 ---@param y any
 ---@param color? any
 function LScatterPlot:appendPoint(name, x, y, color) end
 
+--- Clears the state.
 function LScatterPlot:clear() end
 
+--- Draws the scatter plot at world or screen coordinates using optional transform options.
 ---@param x any
 ---@param y any
 ---@param opts? any
 function LScatterPlot:draw(x, y, opts) end
 
+--- Draw to image.
 ---@param target any
 function LScatterPlot:drawToImage(target) end
 
+--- Returns the height.
 function LScatterPlot:getHeight() end
 
+--- Returns the width.
 function LScatterPlot:getWidth() end
 
+--- Nearest.
 ---@param x any
 ---@param y any
 function LScatterPlot:nearest(x, y) end
 
+--- Render.
 function LScatterPlot:render() end
 
+--- Render image.
 function LScatterPlot:renderImage() end
 
+--- Replaces a named scatter series with a new array-style Lua table of points.
 ---@param name any
 ---@param data any
 ---@param color? any
 function LScatterPlot:replaceSeries(name, data, color) end
 
+--- Sets the dot radius.
 ---@param radius any
 function LScatterPlot:setDotRadius(radius) end
 
+--- Sets the show legend.
 ---@param value any
 function LScatterPlot:setShowLegend(value) end
 
+--- Sets the title.
 ---@param title any
 function LScatterPlot:setTitle(title) end
 
+--- Sets the window.
 ---@param max_points? any
 function LScatterPlot:setWindow(max_points) end
 
+--- Sets the x label.
 ---@param label any
 function LScatterPlot:setXLabel(label) end
 
+--- Sets the x range.
 ---@param min_x any
 ---@param max_x any
 function LScatterPlot:setXRange(min_x, max_x) end
 
+--- Sets the x tick count.
 ---@param count any
 function LScatterPlot:setXTickCount(count) end
 
+--- Sets the y label.
 ---@param label any
 function LScatterPlot:setYLabel(label) end
 
+--- Sets the y range.
 ---@param min_y any
 ---@param max_y any
 function LScatterPlot:setYRange(min_y, max_y) end
 
+--- Sets the y tick count.
 ---@param count any
 function LScatterPlot:setYTickCount(count) end
 
+--- Type.
 function LScatterPlot:type() end
 
+--- Type of.
 ---@param name any
 function LScatterPlot:typeOf(name) end
 
+--- Default palette.
 lurek.charts.defaultPalette = function() end
 
+--- New area.
 ---@param config? any
 lurek.charts.newArea = function(config) end
 
+--- New bar.
 ---@param config? any
 lurek.charts.newBar = function(config) end
 
+--- New heatmap.
 ---@param config? any
 lurek.charts.newHeatmap = function(config) end
 
+--- New histogram.
 ---@param config? any
 lurek.charts.newHistogram = function(config) end
 
+--- New line.
 ---@param config? any
 lurek.charts.newLine = function(config) end
 
+--- New pie.
 ---@param config? any
 lurek.charts.newPie = function(config) end
 
+--- New scatter.
 ---@param config? any
 lurek.charts.newScatter = function(config) end
 
+--- Series color.
 ---@param index any
 lurek.charts.seriesColor = function(index) end
 
@@ -25021,6 +25183,7 @@ function LSceneAdapter:clear() end
 --- Removes every tracked light entry from the adapter.
 function LSceneAdapter:clearLights() end
 
+--- Clears models.
 function LSceneAdapter:clearModels() end
 
 --- Removes every tracked sprite entry from the adapter.

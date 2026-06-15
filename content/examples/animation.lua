@@ -4,14 +4,14 @@
 
 --- Animation Examples Part 1: Constructors, LAnimation methods, LAnimStateMachine, LBlendLayerSet
 
---@api-stub: lurek.animation.new
+--@api: lurek.animation.new
 do
     local anim = lurek.animation.new()
     print("animation created, frames = " .. anim:getFrameCount())
     print("animation type = " .. anim:type())
 end
 
---@api-stub: lurek.animation.fromAseprite
+--@api: lurek.animation.fromAseprite
 do
     local json = '{"frames":[{"filename":"f0","frame":{"x":0,"y":0,"w":16,"h":16}}],"meta":{"size":{"w":16,"h":16},"frameTags":[]}}'
     local anim = lurek.animation.fromAseprite(json)
@@ -21,7 +21,7 @@ do
     end
 end
 
---@api-stub: lurek.animation.newStateMachine
+--@api: lurek.animation.newStateMachine
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -31,28 +31,28 @@ do
     print("state machine type = " .. sm:type())
 end
 
---@api-stub: lurek.animation.newCurve
+--@api: lurek.animation.newCurve
 do
     local curve = lurek.animation.newCurve()
     print("curve created = " .. tostring(curve ~= nil))
     print("curve type = " .. curve:type())
 end
 
---@api-stub: lurek.animation.newSyncGroup
+--@api: lurek.animation.newSyncGroup
 do
     local sg = lurek.animation.newSyncGroup()
     print("sync group created = " .. tostring(sg ~= nil))
     print("sync group members = " .. sg:memberCount())
 end
 
---@api-stub: lurek.animation.newBlendLayerSet
+--@api: lurek.animation.newBlendLayerSet
 do
     local bls = lurek.animation.newBlendLayerSet()
     print("blend layer set created = " .. tostring(bls ~= nil))
     print("blend layer count = " .. bls:len())
 end
 
---@api-stub: lurek.animation.buildCharacter
+--@api: lurek.animation.buildCharacter
 do
     local char = lurek.animation.buildCharacter({
         texW = 64,
@@ -71,7 +71,7 @@ do
     print("has animation = " .. tostring(char.animation ~= nil))
 end
 
---@api-stub: LAnimation:addFrame
+--@api: LAnimation:addFrame
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -79,7 +79,7 @@ do
     print("current frame = " .. anim:getCurrentFrame())
 end
 
---@api-stub: LAnimation:addFramesFromGrid
+--@api: LAnimation:addFramesFromGrid
 do
     local anim = lurek.animation.new()
     local count = anim:addFramesFromGrid(256, 256, 32, 32, 0, 8)
@@ -87,7 +87,7 @@ do
     print("frame count = " .. anim:getFrameCount())
 end
 
---@api-stub: LAnimation:addFramesFromRects
+--@api: LAnimation:addFramesFromRects
 do
     local anim = lurek.animation.new()
     anim:addFramesFromRects({ { x = 0, y = 0, w = 16, h = 16 }, { x = 16, y = 0, w = 16, h = 16 } })
@@ -95,7 +95,7 @@ do
     print("animation type = " .. anim:type())
 end
 
---@api-stub: LAnimation:addClip
+--@api: LAnimation:addClip
 do
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
@@ -104,7 +104,7 @@ do
     print("walk mode = " .. tostring(anim:getClipMode("walk")))
 end
 
---@api-stub: LAnimation:setClipMode
+--@api: LAnimation:setClipMode
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -114,7 +114,7 @@ do
     print("clip mode now = " .. tostring(anim:getClipMode("test")))
 end
 
---@api-stub: LAnimation:getClipMode
+--@api: LAnimation:getClipMode
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -123,7 +123,7 @@ do
     print("run mode = " .. mode)
 end
 
---@api-stub: LAnimation:addClipFromGrid
+--@api: LAnimation:addClipFromGrid
 do
     local anim = lurek.animation.new()
     anim:addClipFromGrid("sprint", 256, 64, 32, 32, 0, 8, 15, true)
@@ -131,7 +131,7 @@ do
     print("clip count = " .. anim:getClipCount())
 end
 
---@api-stub: LAnimation:play
+--@api: LAnimation:play
 do
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
@@ -140,7 +140,7 @@ do
     print("playing = " .. tostring(anim:isPlaying()))
 end
 
---@api-stub: LAnimation:stop
+--@api: LAnimation:stop
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -151,7 +151,7 @@ do
     print("current frame after stop = " .. anim:getCurrentFrame())
 end
 
---@api-stub: LAnimation:pause
+--@api: LAnimation:pause
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -162,7 +162,7 @@ do
     print("clip after pause = " .. tostring(anim:getClip()))
 end
 
---@api-stub: LAnimation:resume
+--@api: LAnimation:resume
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -174,7 +174,7 @@ do
     print("clip after resume = " .. tostring(anim:getClip()))
 end
 
---@api-stub: LAnimation:update
+--@api: LAnimation:update
 do
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(64, 32, 32, 32, 0, 2)
@@ -184,7 +184,7 @@ do
     print("current frame after update = " .. anim:getCurrentFrame())
 end
 
---@api-stub: LAnimation:getQuad
+--@api: LAnimation:getQuad
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -195,9 +195,9 @@ do
     print("frame = " .. anim:getCurrentFrame())
 end
 
---@api-stub: LAnimation:draw
+--@api: LAnimation:draw
 do
-    local atlas = lurek.render.newImage("assets/icon.png")
+    local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("idle", { 0 }, 1, true)
@@ -209,9 +209,9 @@ do
     print("animation draw (stored image) queued = " .. tostring(queued2))
 end
 
---@api-stub: LAnimation:setImage
+--@api: LAnimation:setImage
 do
-    local atlas = lurek.render.newImage("assets/icon.png")
+    local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("idle", { 0 }, 1, true)
@@ -221,7 +221,7 @@ do
     print("setImage draw queued = " .. tostring(queued))
 end
 
---@api-stub: LAnimation:pollEvents
+--@api: LAnimation:pollEvents
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -232,7 +232,7 @@ do
     print("events count = " .. #events)
 end
 
---@api-stub: LAnimation:isPlaying
+--@api: LAnimation:isPlaying
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
@@ -241,7 +241,7 @@ do
     print("after play = " .. tostring(anim:isPlaying()))
 end
 
---@api-stub: LAnimation:isLooping
+--@api: LAnimation:isLooping
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
@@ -250,7 +250,7 @@ do
     print("looping = " .. tostring(anim:isLooping()))
 end
 
---@api-stub: LAnimation:getClip
+--@api: LAnimation:getClip
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
@@ -259,21 +259,21 @@ do
     print("clip = " .. anim:getClip())
 end
 
---@api-stub: LAnimation:getSpeed
+--@api: LAnimation:getSpeed
 do
     local anim = lurek.animation.new()
     print("default speed = " .. anim:getSpeed())
     print("type = " .. anim:type())
 end
 
---@api-stub: LAnimation:setSpeed
+--@api: LAnimation:setSpeed
 do
     local anim = lurek.animation.new()
     anim:setSpeed(2.0)
     print("speed = " .. anim:getSpeed())
 end
 
---@api-stub: LAnimation:getFrameCount
+--@api: LAnimation:getFrameCount
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -281,7 +281,7 @@ do
     print("frame count = " .. anim:getFrameCount())
 end
 
---@api-stub: LAnimation:getClipCount
+--@api: LAnimation:getClipCount
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
@@ -290,7 +290,7 @@ do
     print("clip count = " .. anim:getClipCount())
 end
 
---@api-stub: LAnimation:getCurrentFrame
+--@api: LAnimation:getCurrentFrame
 do
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(64, 32, 32, 32, 0, 2)
@@ -299,7 +299,7 @@ do
     print("current frame = " .. anim:getCurrentFrame())
 end
 
---@api-stub: LAnimation:setFrame
+--@api: LAnimation:setFrame
 do
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
@@ -309,7 +309,7 @@ do
     print("frame after setFrame = " .. anim:getCurrentFrame())
 end
 
---@api-stub: LAnimation:crossfade
+--@api: LAnimation:crossfade
 do
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
@@ -321,7 +321,7 @@ do
     print("blend state exists = " .. tostring(anim:getBlendState() ~= nil))
 end
 
---@api-stub: LAnimation:getBlendState
+--@api: LAnimation:getBlendState
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -331,7 +331,7 @@ do
     print("blend state = " .. tostring(bs ~= nil))
 end
 
---@api-stub: LAnimation:drawToImage
+--@api: LAnimation:drawToImage
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -341,7 +341,7 @@ do
     print("drawn to image = " .. tostring(img ~= nil))
 end
 
---@api-stub: LAnimation:drawPreviewGrid
+--@api: LAnimation:drawPreviewGrid
 do
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
@@ -349,20 +349,20 @@ do
     print("preview grid drawn")
 end
 
---@api-stub: LAnimation:type
+--@api: LAnimation:type
 do
     local anim = lurek.animation.new()
     print("type = " .. anim:type())
     print("matches = " .. tostring(anim:typeOf("LAnimation")))
 end
 
---@api-stub: LAnimation:typeOf
+--@api: LAnimation:typeOf
 do
     local anim = lurek.animation.new()
     print("is LAnimation = " .. tostring(anim:typeOf("LAnimation")))
 end
 
---@api-stub: LAnimStateMachine:update
+--@api: LAnimStateMachine:update
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -373,7 +373,7 @@ do
     print("sm updated, state = " .. sm:getState())
 end
 
---@api-stub: LAnimStateMachine:getState
+--@api: LAnimStateMachine:getState
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -383,7 +383,7 @@ do
     print("state = " .. sm:getState())
 end
 
---@api-stub: LAnimStateMachine:forceState
+--@api: LAnimStateMachine:forceState
 do
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(64, 32, 32, 32, 0, 2)
@@ -396,7 +396,7 @@ do
     print("forced to state = " .. sm:getState())
 end
 
---@api-stub: LAnimStateMachine:addState
+--@api: LAnimStateMachine:addState
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -407,7 +407,7 @@ do
     print("current state = " .. sm:getState())
 end
 
---@api-stub: LAnimStateMachine:addTransition
+--@api: LAnimStateMachine:addTransition
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -420,7 +420,7 @@ do
     print("transition added: idle -> run")
 end
 
---@api-stub: LAnimStateMachine:setParam
+--@api: LAnimStateMachine:setParam
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -432,7 +432,7 @@ do
     print("state after param = " .. sm:getState())
 end
 
---@api-stub: LAnimStateMachine:getQuad
+--@api: LAnimStateMachine:getQuad
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -443,9 +443,9 @@ do
     print("sm quad = " .. tostring(sm:getQuad() ~= nil))
 end
 
---@api-stub: LAnimStateMachine:draw
+--@api: LAnimStateMachine:draw
 do
-    local atlas = lurek.render.newImage("assets/icon.png")
+    local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("idle", { 0 }, 8, true)
@@ -459,9 +459,9 @@ do
     print("state machine draw (stored image) queued = " .. tostring(queued2))
 end
 
---@api-stub: LAnimStateMachine:setImage
+--@api: LAnimStateMachine:setImage
 do
-    local atlas = lurek.render.newImage("assets/icon.png")
+    local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("idle", { 0 }, 8, true)
@@ -473,7 +473,7 @@ do
     print("sm setImage draw queued = " .. tostring(queued))
 end
 
---@api-stub: LAnimStateMachine:type
+--@api: LAnimStateMachine:type
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -483,7 +483,7 @@ do
     print("matches = " .. tostring(sm:typeOf("LAnimStateMachine")))
 end
 
---@api-stub: LAnimStateMachine:typeOf
+--@api: LAnimStateMachine:typeOf
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
@@ -492,7 +492,7 @@ do
     print("is LAnimStateMachine = " .. tostring(sm:typeOf("LAnimStateMachine")))
 end
 
---@api-stub: LBlendLayerSet:addLayer
+--@api: LBlendLayerSet:addLayer
 do
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("base", "idle", 1.0)
@@ -500,7 +500,7 @@ do
     print("layer count = " .. bls:len())
 end
 
---@api-stub: LBlendLayerSet:removeLayer
+--@api: LBlendLayerSet:removeLayer
 do
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("temp", "idle", 1.0)
@@ -509,7 +509,7 @@ do
     print("layer count = " .. bls:len())
 end
 
---@api-stub: LBlendLayerSet:setWeight
+--@api: LBlendLayerSet:setWeight
 do
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("walk", "walk_clip", 0.5)
@@ -518,7 +518,7 @@ do
     print("layer count = " .. bls:len())
 end
 
---@api-stub: LBlendLayerSet:getWeight
+--@api: LBlendLayerSet:getWeight
 do
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("run", "run_clip", 0.7)
@@ -526,7 +526,7 @@ do
     print("run weight = " .. w)
 end
 
---@api-stub: LBlendLayerSet:setMask
+--@api: LBlendLayerSet:setMask
 do
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("arms", "swing", 1.0)
@@ -537,7 +537,7 @@ end
 
 --- Animation Examples Part 2: Blend Layer Set (cont.), Animation Curve, Sync Group
 
---@api-stub: LBlendLayerSet:listLayers
+--@api: LBlendLayerSet:listLayers
 do
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("base", "idle", 1.0)
@@ -546,7 +546,7 @@ do
     print("first layer = " .. tostring(names[1]))
 end
 
---@api-stub: LBlendLayerSet:len
+--@api: LBlendLayerSet:len
 do
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("a", "clip_a", 1.0)
@@ -554,20 +554,20 @@ do
     print("type = " .. bls:type())
 end
 
---@api-stub: LBlendLayerSet:type
+--@api: LBlendLayerSet:type
 do
     local bls = lurek.animation.newBlendLayerSet()
     print("type = " .. bls:type())
     print("matches = " .. tostring(bls:typeOf("LBlendLayerSet")))
 end
 
---@api-stub: LBlendLayerSet:typeOf
+--@api: LBlendLayerSet:typeOf
 do
     local bls = lurek.animation.newBlendLayerSet()
     print("is LBlendLayerSet = " .. tostring(bls:typeOf("LBlendLayerSet")))
 end
 
---@api-stub: LAnimCurve:addKeyframe
+--@api: LAnimCurve:addKeyframe
 do
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
@@ -576,7 +576,7 @@ do
     print("mid value = " .. curve:eval(0.5))
 end
 
---@api-stub: LAnimCurve:eval
+--@api: LAnimCurve:eval
 do
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
@@ -585,7 +585,7 @@ do
     print("value at 0.5 = " .. mid)
 end
 
---@api-stub: LAnimCurve:setEasing
+--@api: LAnimCurve:setEasing
 do
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
@@ -594,7 +594,7 @@ do
     print("eased value at 0.5 = " .. curve:eval(0.5))
 end
 
---@api-stub: LAnimCurve:keyframeCount
+--@api: LAnimCurve:keyframeCount
 do
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
@@ -602,7 +602,7 @@ do
     print("keyframe count = " .. curve:keyframeCount())
 end
 
---@api-stub: LAnimCurve:setCustomEasing
+--@api: LAnimCurve:setCustomEasing
 do
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
@@ -611,7 +611,7 @@ do
     print("custom eased at 0.5 = " .. curve:eval(0.5))
 end
 
---@api-stub: LAnimCurve:clear
+--@api: LAnimCurve:clear
 do
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 1.0)
@@ -620,20 +620,20 @@ do
     print("after clear, keyframes = " .. curve:keyframeCount())
 end
 
---@api-stub: LAnimCurve:type
+--@api: LAnimCurve:type
 do
     local curve = lurek.animation.newCurve()
     print("type = " .. curve:type())
     print("matches = " .. tostring(curve:typeOf("LAnimCurve")))
 end
 
---@api-stub: LAnimCurve:typeOf
+--@api: LAnimCurve:typeOf
 do
     local curve = lurek.animation.newCurve()
     print("is LAnimCurve = " .. tostring(curve:typeOf("LAnimCurve")))
 end
 
---@api-stub: LAnimSyncGroup:add
+--@api: LAnimSyncGroup:add
 do
     local sg = lurek.animation.newSyncGroup()
     sg:add(1)
@@ -641,7 +641,7 @@ do
     print("sync group type = " .. sg:type())
 end
 
---@api-stub: LAnimSyncGroup:remove
+--@api: LAnimSyncGroup:remove
 do
     local sg = lurek.animation.newSyncGroup()
     sg:add(1)
@@ -649,7 +649,7 @@ do
     print("after remove, members = " .. sg:memberCount())
 end
 
---@api-stub: LAnimSyncGroup:clear
+--@api: LAnimSyncGroup:clear
 do
     local sg = lurek.animation.newSyncGroup()
     sg:add(1)
@@ -657,21 +657,21 @@ do
     print("after clear, members = " .. sg:memberCount())
 end
 
---@api-stub: LAnimSyncGroup:memberCount
+--@api: LAnimSyncGroup:memberCount
 do
     local sg = lurek.animation.newSyncGroup()
     sg:add(1)
     print("member count = " .. sg:memberCount())
 end
 
---@api-stub: LAnimSyncGroup:type
+--@api: LAnimSyncGroup:type
 do
     local sg = lurek.animation.newSyncGroup()
     print("type = " .. sg:type())
     print("matches = " .. tostring(sg:typeOf("LAnimSyncGroup")))
 end
 
---@api-stub: LAnimSyncGroup:typeOf
+--@api: LAnimSyncGroup:typeOf
 do
     local sg = lurek.animation.newSyncGroup()
     print("is LAnimSyncGroup = " .. tostring(sg:typeOf("LAnimSyncGroup")))

@@ -1658,196 +1658,196 @@ LCameraWalker:update([dt]: number) -- Updates camera state and advances smooth i
 [Module page](Module-charts)
 
 ```lua
-lurek.charts.defaultPalette()
-lurek.charts.newArea([config]: any)
-lurek.charts.newBar([config]: any)
-lurek.charts.newHeatmap([config]: any)
-lurek.charts.newHistogram([config]: any)
-lurek.charts.newLine([config]: any)
-lurek.charts.newPie([config]: any)
-lurek.charts.newScatter([config]: any)
-lurek.charts.seriesColor(index: any)
+lurek.charts.defaultPalette() -- Default palette.
+lurek.charts.newArea([config]: any) -- New area.
+lurek.charts.newBar([config]: any) -- New bar.
+lurek.charts.newHeatmap([config]: any) -- New heatmap.
+lurek.charts.newHistogram([config]: any) -- New histogram.
+lurek.charts.newLine([config]: any) -- New line.
+lurek.charts.newPie([config]: any) -- New pie.
+lurek.charts.newScatter([config]: any) -- New scatter.
+lurek.charts.seriesColor(index: any) -- Series color.
 ```
 
 ### LAreaChart
 
 ```lua
-LAreaChart:addLayer(name: any, values: any, [color]: any)
-LAreaChart:addLayerFromDataFrame()
-LAreaChart:addSeries(name: any, data: any, [color]: any)
-LAreaChart:appendPoint(name: any, x: any, y: any, [color]: any)
-LAreaChart:clear()
-LAreaChart:draw(x: any, y: any, [opts]: any)
-LAreaChart:drawToImage(target: any)
-LAreaChart:getHeight()
-LAreaChart:getWidth()
-LAreaChart:render()
-LAreaChart:renderImage()
-LAreaChart:setShowLegend(value: any)
-LAreaChart:setTitle(title: any)
-LAreaChart:setWindow([max_points]: any)
-LAreaChart:setXLabel(label: any)
-LAreaChart:setXTickCount(count: any)
-LAreaChart:setYLabel(label: any)
-LAreaChart:setYMax(value: any)
-LAreaChart:setYTickCount(count: any)
-LAreaChart:type()
-LAreaChart:typeOf(name: any)
+LAreaChart:addLayer(name: any, values: any, [color]: any) -- Adds one filled area layer from a numeric value list.
+LAreaChart:addLayerFromDataFrame() -- Builds one filled area layer from a dataframe value column.
+LAreaChart:addSeries(name: any, data: any, [color]: any) -- Adds a named area series from an array-style Lua table of points.
+LAreaChart:appendPoint(name: any, x: any, y: any, [color]: any) -- Appends one finite point to a named area series.
+LAreaChart:clear() -- Clears the state.
+LAreaChart:draw(x: any, y: any, [opts]: any) -- Draws the area chart at world or screen coordinates using optional transform options.
+LAreaChart:drawToImage(target: any) -- Draw to image.
+LAreaChart:getHeight() -- Returns the height.
+LAreaChart:getWidth() -- Returns the width.
+LAreaChart:render() -- Render.
+LAreaChart:renderImage() -- Render image.
+LAreaChart:setShowLegend(value: any) -- Sets the show legend.
+LAreaChart:setTitle(title: any) -- Sets the title.
+LAreaChart:setWindow([max_points]: any) -- Sets the window.
+LAreaChart:setXLabel(label: any) -- Sets the x label.
+LAreaChart:setXTickCount(count: any) -- Sets the x tick count.
+LAreaChart:setYLabel(label: any) -- Sets the y label.
+LAreaChart:setYMax(value: any) -- Sets the y max.
+LAreaChart:setYTickCount(count: any) -- Sets the y tick count.
+LAreaChart:type() -- Type.
+LAreaChart:typeOf(name: any) -- Type of.
 ```
 
 ### LBarChart
 
 ```lua
-LBarChart:addCategoriesFromDataFrame()
-LBarChart:addCategory(label: any, values: any)
-LBarChart:addSeries(name: any, data: any, [color]: any)
-LBarChart:clear()
-LBarChart:draw(x: any, y: any, [opts]: any)
-LBarChart:drawToImage(target: any)
-LBarChart:getHeight()
-LBarChart:getWidth()
-LBarChart:render()
-LBarChart:renderImage()
-LBarChart:setBarWidth(width: any)
-LBarChart:setShowLegend(value: any)
-LBarChart:setTitle(title: any)
-LBarChart:setXLabel(label: any)
-LBarChart:setXTickCount(count: any)
-LBarChart:setYLabel(label: any)
-LBarChart:setYTickCount(count: any)
-LBarChart:type()
-LBarChart:typeOf(name: any)
+LBarChart:addCategoriesFromDataFrame() -- Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.
+LBarChart:addCategory(label: any, values: any) -- Adds one category label with a numeric value list for grouped bars.
+LBarChart:addSeries(name: any, data: any, [color]: any) -- Adds a named bar series from an array-style Lua table of values or points.
+LBarChart:clear() -- Clears the state.
+LBarChart:draw(x: any, y: any, [opts]: any) -- Draws the bar chart at world or screen coordinates using optional transform options.
+LBarChart:drawToImage(target: any) -- Draw to image.
+LBarChart:getHeight() -- Returns the height.
+LBarChart:getWidth() -- Returns the width.
+LBarChart:render() -- Render.
+LBarChart:renderImage() -- Render image.
+LBarChart:setBarWidth(width: any) -- Sets the bar width.
+LBarChart:setShowLegend(value: any) -- Sets the show legend.
+LBarChart:setTitle(title: any) -- Sets the title.
+LBarChart:setXLabel(label: any) -- Sets the x label.
+LBarChart:setXTickCount(count: any) -- Sets the x tick count.
+LBarChart:setYLabel(label: any) -- Sets the y label.
+LBarChart:setYTickCount(count: any) -- Sets the y tick count.
+LBarChart:type() -- Type.
+LBarChart:typeOf(name: any) -- Type of.
 ```
 
 ### LHeatmapChart
 
 ```lua
-LHeatmapChart:clear()
-LHeatmapChart:clearValueRange()
-LHeatmapChart:draw(x: any, y: any, [opts]: any)
-LHeatmapChart:drawToImage(target: any)
-LHeatmapChart:getHeight()
-LHeatmapChart:getWidth()
-LHeatmapChart:render()
-LHeatmapChart:renderImage()
-LHeatmapChart:resize(rows: any, cols: any)
-LHeatmapChart:setCell(row: any, col: any, value: any)
-LHeatmapChart:setColorRange(low: any, high: any)
-LHeatmapChart:setColumnLabels(labels: any)
-LHeatmapChart:setMatrix(matrix: any, [row_labels]: any, [col_labels]: any)
-LHeatmapChart:setMatrixFromDataFrame()
-LHeatmapChart:setRowLabels(labels: any)
-LHeatmapChart:setShowLegend(value: any)
-LHeatmapChart:setShowValues(value: any)
-LHeatmapChart:setTitle(title: any)
-LHeatmapChart:setValueRange(min: any, max: any)
-LHeatmapChart:type()
-LHeatmapChart:typeOf(name: any)
+LHeatmapChart:clear() -- Clears the state.
+LHeatmapChart:clearValueRange() -- Clears value range.
+LHeatmapChart:draw(x: any, y: any, [opts]: any) -- Draws the heatmap at world or screen coordinates using optional transform options.
+LHeatmapChart:drawToImage(target: any) -- Draw to image.
+LHeatmapChart:getHeight() -- Returns the height.
+LHeatmapChart:getWidth() -- Returns the width.
+LHeatmapChart:render() -- Render.
+LHeatmapChart:renderImage() -- Render image.
+LHeatmapChart:resize(rows: any, cols: any) -- Resize.
+LHeatmapChart:setCell(row: any, col: any, value: any) -- Sets the cell.
+LHeatmapChart:setColorRange(low: any, high: any) -- Sets the low and high RGBA colors used for the heatmap gradient.
+LHeatmapChart:setColumnLabels(labels: any) -- Sets the column labels.
+LHeatmapChart:setMatrix(matrix: any, [row_labels]: any, [col_labels]: any) -- Replaces the heatmap contents from a numeric matrix with optional row and column labels.
+LHeatmapChart:setMatrixFromDataFrame() -- Builds the heatmap contents from dataframe row, column, and value fields.
+LHeatmapChart:setRowLabels(labels: any) -- Sets the row labels.
+LHeatmapChart:setShowLegend(value: any) -- Sets the show legend.
+LHeatmapChart:setShowValues(value: any) -- Sets the show values.
+LHeatmapChart:setTitle(title: any) -- Sets the title.
+LHeatmapChart:setValueRange(min: any, max: any) -- Sets the value range.
+LHeatmapChart:type() -- Type.
+LHeatmapChart:typeOf(name: any) -- Type of.
 ```
 
 ### LHistogramChart
 
 ```lua
-LHistogramChart:addSeries(name: any, values: any, [color]: any)
-LHistogramChart:addSeriesFromDataFrame()
-LHistogramChart:appendValue(name: any, value: any, [color]: any)
-LHistogramChart:clear()
-LHistogramChart:clearRange()
-LHistogramChart:draw(x: any, y: any, [opts]: any)
-LHistogramChart:drawToImage(target: any)
-LHistogramChart:getHeight()
-LHistogramChart:getWidth()
-LHistogramChart:render()
-LHistogramChart:renderImage()
-LHistogramChart:replaceSeries(name: any, values: any, [color]: any)
-LHistogramChart:setBinCount(bins: any)
-LHistogramChart:setDensity(enabled: any)
-LHistogramChart:setRange(min: any, max: any)
-LHistogramChart:setShowLegend(value: any)
-LHistogramChart:setTitle(title: any)
-LHistogramChart:setWindow([max_points]: any)
-LHistogramChart:setXLabel(label: any)
-LHistogramChart:setXTickCount(count: any)
-LHistogramChart:setYLabel(label: any)
-LHistogramChart:setYTickCount(count: any)
-LHistogramChart:type()
-LHistogramChart:typeOf(name: any)
+LHistogramChart:addSeries(name: any, values: any, [color]: any) -- Adds a named histogram sample series from a numeric value list.
+LHistogramChart:addSeriesFromDataFrame() -- Builds a named histogram sample series from one dataframe value column.
+LHistogramChart:appendValue(name: any, value: any, [color]: any) -- Appends one finite numeric sample to a named histogram series.
+LHistogramChart:clear() -- Clears the state.
+LHistogramChart:clearRange() -- Clears range.
+LHistogramChart:draw(x: any, y: any, [opts]: any) -- Draws the histogram at world or screen coordinates using optional transform options.
+LHistogramChart:drawToImage(target: any) -- Draw to image.
+LHistogramChart:getHeight() -- Returns the height.
+LHistogramChart:getWidth() -- Returns the width.
+LHistogramChart:render() -- Render.
+LHistogramChart:renderImage() -- Render image.
+LHistogramChart:replaceSeries(name: any, values: any, [color]: any) -- Replaces a named histogram sample series with a new numeric value list.
+LHistogramChart:setBinCount(bins: any) -- Sets the bin count.
+LHistogramChart:setDensity(enabled: any) -- Sets the density.
+LHistogramChart:setRange(min: any, max: any) -- Sets the range.
+LHistogramChart:setShowLegend(value: any) -- Sets the show legend.
+LHistogramChart:setTitle(title: any) -- Sets the title.
+LHistogramChart:setWindow([max_points]: any) -- Sets the window.
+LHistogramChart:setXLabel(label: any) -- Sets the x label.
+LHistogramChart:setXTickCount(count: any) -- Sets the x tick count.
+LHistogramChart:setYLabel(label: any) -- Sets the y label.
+LHistogramChart:setYTickCount(count: any) -- Sets the y tick count.
+LHistogramChart:type() -- Type.
+LHistogramChart:typeOf(name: any) -- Type of.
 ```
 
 ### LLineChart
 
 ```lua
-LLineChart:addSeries(name: any, data: any, [color]: any)
-LLineChart:addSeriesFromDataFrame()
-LLineChart:appendPoint(name: any, x: any, y: any, [color]: any)
-LLineChart:clear()
-LLineChart:draw(x: any, y: any, [opts]: any)
-LLineChart:drawToImage(target: any)
-LLineChart:getHeight()
-LLineChart:getWidth()
-LLineChart:nearest(x: any, y: any)
-LLineChart:render()
-LLineChart:renderImage()
-LLineChart:replaceSeries(name: any, data: any, [color]: any)
-LLineChart:setShowLegend(value: any)
-LLineChart:setTitle(title: any)
-LLineChart:setWindow([max_points]: any)
-LLineChart:setXLabel(label: any)
-LLineChart:setXMax(value: any)
-LLineChart:setXTickCount(count: any)
-LLineChart:setYLabel(label: any)
-LLineChart:setYMax(value: any)
-LLineChart:setYTickCount(count: any)
-LLineChart:type()
-LLineChart:typeOf(name: any)
+LLineChart:addSeries(name: any, data: any, [color]: any) -- Adds a named line series from an array-style Lua table of points.
+LLineChart:addSeriesFromDataFrame() -- Builds a named line series from x and y columns in a dataframe.
+LLineChart:appendPoint(name: any, x: any, y: any, [color]: any) -- Appends one finite point to a named line series.
+LLineChart:clear() -- Clears the state.
+LLineChart:draw(x: any, y: any, [opts]: any) -- Draws the line chart at world or screen coordinates using optional transform options.
+LLineChart:drawToImage(target: any) -- Draw to image.
+LLineChart:getHeight() -- Returns the height.
+LLineChart:getWidth() -- Returns the width.
+LLineChart:nearest(x: any, y: any) -- Nearest.
+LLineChart:render() -- Render.
+LLineChart:renderImage() -- Render image.
+LLineChart:replaceSeries(name: any, data: any, [color]: any) -- Replaces a named line series with a new array-style Lua table of points.
+LLineChart:setShowLegend(value: any) -- Sets the show legend.
+LLineChart:setTitle(title: any) -- Sets the title.
+LLineChart:setWindow([max_points]: any) -- Sets the window.
+LLineChart:setXLabel(label: any) -- Sets the x label.
+LLineChart:setXMax(value: any) -- Sets the x max.
+LLineChart:setXTickCount(count: any) -- Sets the x tick count.
+LLineChart:setYLabel(label: any) -- Sets the y label.
+LLineChart:setYMax(value: any) -- Sets the y max.
+LLineChart:setYTickCount(count: any) -- Sets the y tick count.
+LLineChart:type() -- Type.
+LLineChart:typeOf(name: any) -- Type of.
 ```
 
 ### LPieChart
 
 ```lua
-LPieChart:addSegment(label: any, value: any, [color]: any)
-LPieChart:addSegmentsFromDataFrame()
-LPieChart:addSlice(label: any, value: any, [color]: any)
-LPieChart:clear()
-LPieChart:draw(x: any, y: any, [opts]: any)
-LPieChart:drawToImage(target: any)
-LPieChart:getHeight()
-LPieChart:getWidth()
-LPieChart:render()
-LPieChart:renderImage()
-LPieChart:setShowLegend(value: any)
-LPieChart:setTitle(title: any)
-LPieChart:type()
-LPieChart:typeOf(name: any)
+LPieChart:addSegment(label: any, value: any, [color]: any) -- Adds one pie segment with a non-negative value.
+LPieChart:addSegmentsFromDataFrame() -- Adds pie segments by reading label and value columns from a dataframe.
+LPieChart:addSlice(label: any, value: any, [color]: any) -- Legacy alias that adds one pie slice with a non-negative value.
+LPieChart:clear() -- Clears the state.
+LPieChart:draw(x: any, y: any, [opts]: any) -- Draws the pie chart at world or screen coordinates using optional transform options.
+LPieChart:drawToImage(target: any) -- Draw to image.
+LPieChart:getHeight() -- Returns the height.
+LPieChart:getWidth() -- Returns the width.
+LPieChart:render() -- Render.
+LPieChart:renderImage() -- Render image.
+LPieChart:setShowLegend(value: any) -- Sets the show legend.
+LPieChart:setTitle(title: any) -- Sets the title.
+LPieChart:type() -- Type.
+LPieChart:typeOf(name: any) -- Type of.
 ```
 
 ### LScatterPlot
 
 ```lua
-LScatterPlot:addSeries(name: any, data: any, [color]: any)
-LScatterPlot:addSeriesFromDataFrame()
-LScatterPlot:appendPoint(name: any, x: any, y: any, [color]: any)
-LScatterPlot:clear()
-LScatterPlot:draw(x: any, y: any, [opts]: any)
-LScatterPlot:drawToImage(target: any)
-LScatterPlot:getHeight()
-LScatterPlot:getWidth()
-LScatterPlot:nearest(x: any, y: any)
-LScatterPlot:render()
-LScatterPlot:renderImage()
-LScatterPlot:replaceSeries(name: any, data: any, [color]: any)
-LScatterPlot:setDotRadius(radius: any)
-LScatterPlot:setShowLegend(value: any)
-LScatterPlot:setTitle(title: any)
-LScatterPlot:setWindow([max_points]: any)
-LScatterPlot:setXLabel(label: any)
-LScatterPlot:setXRange(min_x: any, max_x: any)
-LScatterPlot:setXTickCount(count: any)
-LScatterPlot:setYLabel(label: any)
-LScatterPlot:setYRange(min_y: any, max_y: any)
-LScatterPlot:setYTickCount(count: any)
-LScatterPlot:type()
-LScatterPlot:typeOf(name: any)
+LScatterPlot:addSeries(name: any, data: any, [color]: any) -- Adds a named scatter series from an array-style Lua table of points.
+LScatterPlot:addSeriesFromDataFrame() -- Builds a named scatter series from x and y columns in a dataframe.
+LScatterPlot:appendPoint(name: any, x: any, y: any, [color]: any) -- Appends one finite point to a named scatter series.
+LScatterPlot:clear() -- Clears the state.
+LScatterPlot:draw(x: any, y: any, [opts]: any) -- Draws the scatter plot at world or screen coordinates using optional transform options.
+LScatterPlot:drawToImage(target: any) -- Draw to image.
+LScatterPlot:getHeight() -- Returns the height.
+LScatterPlot:getWidth() -- Returns the width.
+LScatterPlot:nearest(x: any, y: any) -- Nearest.
+LScatterPlot:render() -- Render.
+LScatterPlot:renderImage() -- Render image.
+LScatterPlot:replaceSeries(name: any, data: any, [color]: any) -- Replaces a named scatter series with a new array-style Lua table of points.
+LScatterPlot:setDotRadius(radius: any) -- Sets the dot radius.
+LScatterPlot:setShowLegend(value: any) -- Sets the show legend.
+LScatterPlot:setTitle(title: any) -- Sets the title.
+LScatterPlot:setWindow([max_points]: any) -- Sets the window.
+LScatterPlot:setXLabel(label: any) -- Sets the x label.
+LScatterPlot:setXRange(min_x: any, max_x: any) -- Sets the x range.
+LScatterPlot:setXTickCount(count: any) -- Sets the x tick count.
+LScatterPlot:setYLabel(label: any) -- Sets the y label.
+LScatterPlot:setYRange(min_y: any, max_y: any) -- Sets the y range.
+LScatterPlot:setYTickCount(count: any) -- Sets the y tick count.
+LScatterPlot:type() -- Type.
+LScatterPlot:typeOf(name: any) -- Type of.
 ```
 
 ## lurek.cinematic
@@ -6388,7 +6388,7 @@ LSceneAdapter:bindBodyModel(body: LBody, model: LObjModel, [opts]: table) -- Bin
 LSceneAdapter:bindBodySprite(body: LBody, texture: LImage|integer, [opts]: table) -- Binds a billboard sprite to a live physics body.
 LSceneAdapter:clear() -- Removes every tracked entry from the adapter.
 LSceneAdapter:clearLights() -- Removes every tracked light entry from the adapter.
-LSceneAdapter:clearModels()
+LSceneAdapter:clearModels() -- Clears models.
 LSceneAdapter:clearSprites() -- Removes every tracked sprite entry from the adapter.
 LSceneAdapter:sceneInputs() -> table -- Resolves the current runtime snapshot into `{ lights, sprites, models }` tables.
 LSceneAdapter:type() -> string -- Returns the type name of this object.

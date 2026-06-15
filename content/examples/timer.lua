@@ -4,31 +4,31 @@
 
 --- Timer Module: delta time, FPS, scheduler, real-time waits, physics timestep
 
---@api-stub: lurek.timer.getDelta
+--@api: lurek.timer.getDelta
 do
     local dt = lurek.timer.getDelta()
     print("delta time = " .. dt .. " seconds")
 end
 
---@api-stub: lurek.timer.getFPS
+--@api: lurek.timer.getFPS
 do
     local fps = lurek.timer.getFPS()
     print("current FPS = " .. fps)
 end
 
---@api-stub: lurek.timer.getTime
+--@api: lurek.timer.getTime
 do
     local t = lurek.timer.getTime()
     print("elapsed time = " .. t .. " seconds")
 end
 
---@api-stub: lurek.timer.getFrameCount
+--@api: lurek.timer.getFrameCount
 do
     local frames = lurek.timer.getFrameCount()
     print("total frames = " .. frames)
 end
 
---@api-stub: lurek.timer.getMicroTime
+--@api: lurek.timer.getMicroTime
 do
     local start = lurek.timer.getMicroTime()
     local sum = 0
@@ -37,26 +37,26 @@ do
     print("loop took " .. elapsed .. " seconds")
 end
 
---@api-stub: lurek.timer.getAverageDelta
+--@api: lurek.timer.getAverageDelta
 do
     local avg = lurek.timer.getAverageDelta()
     print("average delta = " .. avg)
 end
 
---@api-stub: lurek.timer.getSmoothedDelta
+--@api: lurek.timer.getSmoothedDelta
 do
     lurek.timer.setSmoothingFactor(0.1)
     local sd = lurek.timer.getSmoothedDelta()
     print("smoothed delta (alpha=0.1) = " .. sd)
 end
 
---@api-stub: lurek.timer.getPhysicsDelta
+--@api: lurek.timer.getPhysicsDelta
 do
     local pdt = lurek.timer.getPhysicsDelta()
     print("physics delta = " .. pdt)
 end
 
---@api-stub: lurek.timer.getPhysicsMaxSteps
+--@api: lurek.timer.getPhysicsMaxSteps
 do
     local max = lurek.timer.getPhysicsMaxSteps()
     print("max physics steps = " .. max)
@@ -64,13 +64,13 @@ do
     print("set to 8: " .. lurek.timer.getPhysicsMaxSteps())
 end
 
---@api-stub: lurek.timer.step
+--@api: lurek.timer.step
 do
     local dt = lurek.timer.step()
     print("stepped, dt = " .. dt)
 end
 
---@api-stub: lurek.timer.newScheduler
+--@api: lurek.timer.newScheduler
 do
     ---@type LScheduler
     local sched = lurek.timer.newScheduler()
@@ -79,14 +79,14 @@ do
     print("empty = " .. tostring(sched:isEmpty()))
 end
 
---@api-stub: LScheduler:after
+--@api: LScheduler:after
 do
     local sched = lurek.timer.newScheduler()
     local id = sched:after(0.5, function() end)
     print("scheduled id = " .. id)
 end
 
---@api-stub: LScheduler:update
+--@api: LScheduler:update
 do
     local fired = 0
     local sched = lurek.timer.newScheduler()
@@ -95,7 +95,7 @@ do
     print("fired = " .. fired)
 end
 
---@api-stub: LScheduler:every
+--@api: LScheduler:every
 do
     local count = 0
     local sched = lurek.timer.newScheduler()
@@ -105,14 +105,14 @@ do
     print("final count = " .. count)
 end
 
---@api-stub: LScheduler:afterNamed
+--@api: LScheduler:afterNamed
 do
     local sched = lurek.timer.newScheduler()
     sched:afterNamed("save", 2.0, function() end)
     print("named timer scheduled")
 end
 
---@api-stub: LScheduler:cancelNamed
+--@api: LScheduler:cancelNamed
 do
     local sched = lurek.timer.newScheduler()
     sched:afterNamed("save", 2.0, function() end)
@@ -120,7 +120,7 @@ do
     print("cancelled = " .. tostring(cancelled))
 end
 
---@api-stub: LScheduler:everyNamed
+--@api: LScheduler:everyNamed
 do
     local count = 0
     local sched = lurek.timer.newScheduler()
@@ -130,7 +130,7 @@ do
     print("ticks = " .. count)
 end
 
---@api-stub: LScheduler:afterFrames
+--@api: LScheduler:afterFrames
 do
     local fired_count = 0
     local sched = lurek.timer.newScheduler()
@@ -142,7 +142,7 @@ do
     print("callback count = " .. fired_count)
 end
 
---@api-stub: LScheduler:everyFrames
+--@api: LScheduler:everyFrames
 do
     local count = 0
     local sched = lurek.timer.newScheduler()
@@ -154,14 +154,14 @@ do
     print("frame ticks = " .. count)
 end
 
---@api-stub: LScheduler:updateFrames
+--@api: LScheduler:updateFrames
 do
     local sched = lurek.timer.newScheduler()
     sched:afterFrames(1, function() end)
     print("frame events = " .. sched:updateFrames())
 end
 
---@api-stub: LScheduler:cancel
+--@api: LScheduler:cancel
 do
     local sched = lurek.timer.newScheduler()
     sched:after(1.0, function() end)
@@ -172,7 +172,7 @@ do
     print("count after = " .. sched:getCount())
 end
 
---@api-stub: LScheduler:cancelAll
+--@api: LScheduler:cancelAll
 do
     local sched = lurek.timer.newScheduler()
     sched:after(1.0, function() end)
@@ -183,7 +183,7 @@ do
     print("empty = " .. tostring(sched:isEmpty()))
 end
 
---@api-stub: LScheduler:pause
+--@api: LScheduler:pause
 do
     local sched = lurek.timer.newScheduler()
     local id = sched:after(1.0, function() end)
@@ -191,7 +191,7 @@ do
     print("paused = " .. tostring(sched:isPaused(id)))
 end
 
---@api-stub: LScheduler:resume
+--@api: LScheduler:resume
 do
     local sched = lurek.timer.newScheduler()
     local id = sched:after(1.0, function() end)
@@ -200,7 +200,7 @@ do
     print("resumed, paused = " .. tostring(sched:isPaused(id)))
 end
 
---@api-stub: LScheduler:isPaused
+--@api: LScheduler:isPaused
 do
     local sched = lurek.timer.newScheduler()
     local id = sched:after(1.0, function() end)
@@ -208,7 +208,7 @@ do
     print("paused = " .. tostring(sched:isPaused(id)))
 end
 
---@api-stub: LScheduler:getRemaining
+--@api: LScheduler:getRemaining
 do
     ---@type LScheduler
     local sched = lurek.timer.newScheduler()
@@ -217,7 +217,7 @@ do
     print("found = " .. tostring(found) .. ", remaining = " .. remaining)
 end
 
---@api-stub: LScheduler:getInterval
+--@api: LScheduler:getInterval
 do
     ---@type LScheduler
     local sched = lurek.timer.newScheduler()
@@ -226,7 +226,7 @@ do
     print("interval = " .. interval)
 end
 
---@api-stub: LScheduler:getRepeatCount
+--@api: LScheduler:getRepeatCount
 do
     ---@type LScheduler
     local sched = lurek.timer.newScheduler()
@@ -235,7 +235,7 @@ do
     print("repeat count = " .. repeats)
 end
 
---@api-stub: LScheduler:resetEvent
+--@api: LScheduler:resetEvent
 do
     local sched = lurek.timer.newScheduler()
     local id = sched:every(0.5, function() end, 10)
@@ -245,7 +245,7 @@ do
     print("after reset, remaining = " .. remaining)
 end
 
---@api-stub: LScheduler:setInterval
+--@api: LScheduler:setInterval
 do
     local sched = lurek.timer.newScheduler()
     local id = sched:every(1.0, function() end)
@@ -253,7 +253,7 @@ do
     print("interval changed to 0.5")
 end
 
---@api-stub: LScheduler:setTimeScale
+--@api: LScheduler:setTimeScale
 do
     ---@type LScheduler
     local sched = lurek.timer.newScheduler()
@@ -261,7 +261,7 @@ do
     print("time scale = " .. sched:getTimeScale())
 end
 
---@api-stub: LScheduler:getTimeScale
+--@api: LScheduler:getTimeScale
 do
     ---@type LScheduler
     local sched = lurek.timer.newScheduler()
@@ -269,7 +269,7 @@ do
     print("time scale = " .. sched:getTimeScale())
 end
 
---@api-stub: lurek.timer.chain
+--@api: lurek.timer.chain
 do
     local count = 0
     local sched = lurek.timer.chain({
@@ -282,14 +282,14 @@ do
     print("chain steps = " .. count)
 end
 
---@api-stub: lurek.timer.afterReal
+--@api: lurek.timer.afterReal
 do
     lurek.timer.afterReal(1.0, function() end)
     local fired = lurek.timer.tickRealTimers()
     print("real timers fired = " .. fired)
 end
 
---@api-stub: lurek.timer.sleep
+--@api: lurek.timer.sleep
 do
     print("sleeping 0.01s...")
     lurek.timer.sleep(0.01)
@@ -298,34 +298,34 @@ end
 
 --- Timer Part 1: advanced timer functions, scheduler full coverage
 
---@api-stub: lurek.timer.setPhysicsDelta
+--@api: lurek.timer.setPhysicsDelta
 do
     lurek.timer.setPhysicsDelta(1/60)
     local pd = lurek.timer.getPhysicsDelta()
     print("physics_delta=" .. pd)
 end
 
---@api-stub: lurek.timer.setPhysicsMaxSteps
+--@api: lurek.timer.setPhysicsMaxSteps
 do
     lurek.timer.setPhysicsMaxSteps(5)
     local pm = lurek.timer.getPhysicsMaxSteps()
     print("physics_max_steps=" .. pm)
 end
 
---@api-stub: lurek.timer.setSmoothingFactor
+--@api: lurek.timer.setSmoothingFactor
 do
     lurek.timer.setSmoothingFactor(0.1)
     local sd = lurek.timer.getSmoothedDelta()
     print("smoothed_delta=" .. sd)
 end
 
---@api-stub: lurek.timer.tickRealTimers
+--@api: lurek.timer.tickRealTimers
 do
     local fired = lurek.timer.tickRealTimers()
     print("real timers fired = " .. fired)
 end
 
---@api-stub: lurek.timer.tickWaits
+--@api: lurek.timer.tickWaits
 do
     local co = coroutine.create(function()
         lurek.timer.waitFrames(1)
@@ -337,7 +337,7 @@ do
     print("wait coroutine = " .. coroutine.status(co))
 end
 
---@api-stub: lurek.timer.waitFrames
+--@api: lurek.timer.waitFrames
 do
     local co = coroutine.create(function() lurek.timer.waitFrames(1) end)
     coroutine.resume(co)
@@ -346,7 +346,7 @@ do
     print("wait coroutine = " .. coroutine.status(co))
 end
 
---@api-stub: lurek.timer.waitSeconds
+--@api: lurek.timer.waitSeconds
 do
     local co = coroutine.create(function() lurek.timer.waitSeconds(0) end)
     coroutine.resume(co)
@@ -354,7 +354,7 @@ do
     print("wait coroutine = " .. coroutine.status(co))
 end
 
---@api-stub: LScheduler:getCount
+--@api: LScheduler:getCount
 do
     local sched = lurek.timer.newScheduler()
     print("count=" .. sched:getCount())
@@ -363,7 +363,7 @@ do
     print("count_after=" .. sched:getCount())
 end
 
---@api-stub: LScheduler:isEmpty
+--@api: LScheduler:isEmpty
 do
     local sched = lurek.timer.newScheduler()
     print("empty=" .. tostring(sched:isEmpty()))
@@ -371,7 +371,7 @@ do
     print("empty_after=" .. tostring(sched:isEmpty()))
 end
 
---@api-stub: LScheduler:isPausedNamed
+--@api: LScheduler:isPausedNamed
 do
     local sched = lurek.timer.newScheduler()
     sched:afterNamed("named_once", 2.0, function() end)
@@ -379,7 +379,7 @@ do
     print("paused_named=" .. tostring(sched:isPausedNamed("named_once")))
 end
 
---@api-stub: LScheduler:pauseNamed
+--@api: LScheduler:pauseNamed
 do
     local sched = lurek.timer.newScheduler()
     sched:afterNamed("named_once", 2.0, function() end)
@@ -387,7 +387,7 @@ do
     print("paused_named=" .. tostring(sched:isPausedNamed("named_once")))
 end
 
---@api-stub: LScheduler:resumeNamed
+--@api: LScheduler:resumeNamed
 do
     local sched = lurek.timer.newScheduler()
     sched:afterNamed("named_once", 2.0, function() end)
@@ -397,13 +397,13 @@ do
     print("paused_named = " .. tostring(sched:isPausedNamed("named_once")))
 end
 
---@api-stub: LScheduler:type
+--@api: LScheduler:type
 do
     local sched = lurek.timer.newScheduler()
     print("type=" .. sched:type())
 end
 
---@api-stub: LScheduler:typeOf
+--@api: LScheduler:typeOf
 do
     local sched = lurek.timer.newScheduler()
     print("typeOf=" .. tostring(sched:typeOf("LScheduler")))

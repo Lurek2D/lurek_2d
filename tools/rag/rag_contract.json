@@ -1,0 +1,25 @@
+{
+  "search": {
+    "limit": {"min": 1, "max": 25, "default": 8}
+  },
+  "read": {
+    "neighbors": {"min": 0, "max": 3, "default": 1},
+    "content_chars": {"min": 500, "max": 100000, "default": 12000}
+  },
+  "context": {
+    "limit": {"min": 1, "max": 25, "default": 8},
+    "neighbors": {"min": 0, "max": 3, "default": 1},
+    "content_chars": {"min": 500, "max": 100000, "default": 8000}
+  },
+  "eval": {
+    "limit": {"min": 3, "max": 25, "default": 10}
+  },
+  "indexing": {
+    "allowed_extensions": [".md", ".lua", ".rs", ".py", ".toml", ".json", ".html", ".js", ".ts", ".css", ".wgsl"],
+    "default_target_dirs": ["AGENTS.md", ".agents", ".codex", ".github", "content", "docs", "extension", "ideas", "library", "pages", "src", "tests", "tools"]
+  },
+  "watch": {
+    "extensions": [".md", ".lua", ".rs", ".py", ".toml", ".html", ".js", ".ts", ".css", ".wgsl", ".json"],
+    "prefixes": ["AGENTS.md", ".agents", ".codex", ".github", "content", "docs", "extension", "ideas", "library", "pages", "src", "tests", "tools"]
+  }
+}

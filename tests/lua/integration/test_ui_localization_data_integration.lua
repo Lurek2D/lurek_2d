@@ -13,14 +13,14 @@ describe("integration: ui + i18n + data", function()
     -- @integration lurek.ui.getRoot
     -- @integration lurek.ui.getWidgetCount
     -- @integration lurek.ui.loadLayout
-    -- @covers lurek.binary.pack
-    -- @covers lurek.binary.unpack
-    -- @covers lurek.i18n.loadTable
-    -- @covers lurek.i18n.setLanguage
-    -- @covers lurek.i18n.t
-    -- @covers lurek.ui.getRoot
-    -- @covers lurek.ui.getWidgetCount
-    -- @covers lurek.ui.loadLayout
+    -- @integration lurek.binary.pack
+    -- @integration lurek.binary.unpack
+    -- @integration lurek.i18n.loadTable
+    -- @integration lurek.i18n.setLanguage
+    -- @integration lurek.i18n.t
+    -- @integration lurek.ui.getRoot
+    -- @integration lurek.ui.getWidgetCount
+    -- @integration lurek.ui.loadLayout
     it("builds a localized UI label from serialized bytes", function()
         local src = "Hello"
         local packed = lurek.binary.pack("s", src)

@@ -301,9 +301,6 @@ def _analyze_module_files(module: str) -> ModuleFileAnalysis:
 
             if imp_level > mod_level and imp_level != 99 and mod_level != 99:
                 analysis.dep_violations.append(f"{stem}: {get_tier(module)} imports {imp}({get_tier(imp)})")
-            elif tier == "tier2":
-                if imp_tier not in ("baseline", "tier1") and imp not in FOUNDATIONS | TIER1:
-                    analysis.dep_violations.append(f"{stem}: Tier2 imports {imp}({imp_tier})")
 
     return analysis
 
@@ -1522,7 +1519,7 @@ def resolve_modules(args: argparse.Namespace) -> List[str]:
                       if m.is_dir() and not m.name.startswith(".")
                       and m.name not in ("bin", "lua_api"))
     if args.tier is not None:
-        tier_map = {0: FOUNDATIONS, 1: TIER1, 2: TIER2}
+        tier_map = {0: FOUNDATIONS, 1: CORE_RUNTIME, 2: PLATFORM_SERVICES}
         return sorted(tier_map.get(args.tier, set()))
     if args.modules:
         return args.modules

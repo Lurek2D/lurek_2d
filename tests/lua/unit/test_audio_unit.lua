@@ -1150,12 +1150,12 @@ describe("audio midi player", function()
     end)
 
     -- @covers LMidiPlayer:getSoundFontPath
-    it("getSoundFontPath returns nil in the stub implementation", function()
+    it("getSoundFontPath returns nil in the unloaded implementation", function()
         expect_nil(new_midi():getSoundFontPath())
     end)
 
     -- @covers LMidiPlayer:useDefaultSoundFont
-    it("useDefaultSoundFont is callable as a stubbed hook", function()
+    it("useDefaultSoundFont is callable on an unloaded player", function()
         expect_no_error(function()
             new_midi():useDefaultSoundFont()
         end)
@@ -1347,21 +1347,21 @@ describe("audio midi player", function()
     end)
 
     -- @covers LMidiPlayer:setOnNoteOn
-    it("setOnNoteOn accepts a callback in the stub implementation", function()
+    it("setOnNoteOn accepts a callback on an unloaded player", function()
         expect_no_error(function()
             new_midi():setOnNoteOn(function() end)
         end)
     end)
 
     -- @covers LMidiPlayer:setOnNoteOff
-    it("setOnNoteOff accepts a callback in the stub implementation", function()
+    it("setOnNoteOff accepts a callback on an unloaded player", function()
         expect_no_error(function()
             new_midi():setOnNoteOff(function() end)
         end)
     end)
 
     -- @covers LMidiPlayer:setOnEnd
-    it("setOnEnd accepts a callback in the stub implementation", function()
+    it("setOnEnd accepts a callback on an unloaded player", function()
         expect_no_error(function()
             new_midi():setOnEnd(function() end)
         end)

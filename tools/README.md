@@ -145,6 +145,7 @@ Single registry for all durable tooling under `tools/`.
 ## rag
 
 - `rag/build_index.py` [query; durable; mcp:no] - Build the local SQLite FTS5 RAG index for Lurek2D docs, code, tests, and Codex assets.
+- `rag/contract.py` [query; durable; mcp:no] - Shared RAG contract constants and defaults for query/read/context tooling.
 - `rag/context.py` [query; durable; mcp:no] - Build an agent-friendly context bundle from the local Lurek2D RAG index.
 - `rag/eval.py` [query; durable; mcp:no] - Evaluate local RAG recall against a prompt baseline for agent workflows.
 - `rag/query.py` [query; durable; mcp:candidate] - Query and read the local SQLite FTS5 RAG index for Lurek2D.
@@ -187,4 +188,3 @@ Single registry for all durable tooling under `tools/`.
 - `validate/validate_rust_file_docs.py` [validate; durable; mcp:no] - validate_rust_file_docs.py — Check that every Rust source file in src/
 - `validate/validate_rust_source_docs.py` [validate; durable; mcp:no] - Validate file-level and public-item Rust docs-general under src/.
 - `validate/validate_snippets.py` [validate; durable; mcp:candidate] - Validate content/snippets marker structure and VS Code snippet output freshness.
-

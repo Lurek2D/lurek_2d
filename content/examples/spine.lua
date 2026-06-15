@@ -4,7 +4,7 @@
 
 --- Spine Module: skeleton creation, bones, slots, IK, skins, animations, keyframes, events
 
---@api-stub: lurek.spine.newSkeleton
+--@api: lurek.spine.newSkeleton
 do
     ---@type LSkeleton
     local skel = lurek.spine.newSkeleton("hero")
@@ -13,7 +13,7 @@ do
     print("slot count = " .. skel:slotCount())
 end
 
---@api-stub: LSkeleton:addBone
+--@api: LSkeleton:addBone
 do
     ---@type LSkeleton
     local skel = lurek.spine.newSkeleton("character")
@@ -21,7 +21,7 @@ do
     print("root bone index = " .. root)
 end
 
---@api-stub: LSkeleton:addChildBone
+--@api: LSkeleton:addChildBone
 do
     ---@type LSkeleton
     local skel = lurek.spine.newSkeleton("character")
@@ -30,7 +30,7 @@ do
     print("spine bone index = " .. spine_bone)
 end
 
---@api-stub: LSkeleton:addSlot
+--@api: LSkeleton:addSlot
 do
     local skel = lurek.spine.newSkeleton("slotted")
     local bone = skel:addBone("torso", { y = -10 })
@@ -38,7 +38,7 @@ do
     print("slot count = " .. skel:slotCount())
 end
 
---@api-stub: LSkeleton:addIKConstraint
+--@api: LSkeleton:addIKConstraint
 do
     local skel = lurek.spine.newSkeleton("ik_demo")
     local root = skel:addBone("root")
@@ -47,7 +47,7 @@ do
     print("ik constraint id = " .. skel:addIKConstraint("arm_ik", { upper, lower }, true))
 end
 
---@api-stub: LSkeleton:setIKTarget
+--@api: LSkeleton:setIKTarget
 do
     local skel = lurek.spine.newSkeleton("ik_demo")
     local root = skel:addBone("root")
@@ -58,7 +58,7 @@ do
     print("IK target set = " .. tostring(ok))
 end
 
---@api-stub: LSkeleton:addSkin
+--@api: LSkeleton:addSkin
 do
     local skel = lurek.spine.newSkeleton("skinned")
     skel:addBone("root")
@@ -66,7 +66,7 @@ do
     print("skin added")
 end
 
---@api-stub: LSkeleton:setSkin
+--@api: LSkeleton:setSkin
 do
     local skel = lurek.spine.newSkeleton("skinned")
     skel:addSkin("default")
@@ -74,7 +74,7 @@ do
     print("current skin = " .. skel:getSkin())
 end
 
---@api-stub: LSkeleton:setSkinMapping
+--@api: LSkeleton:setSkinMapping
 do
     local skel = lurek.spine.newSkeleton("skinned")
     local body = skel:addBone("body")
@@ -86,7 +86,7 @@ do
     print("current skin = " .. tostring(skel:getSkin()))
 end
 
---@api-stub: LSkeleton:getSkin
+--@api: LSkeleton:getSkin
 do
     local skel = lurek.spine.newSkeleton("skinned")
     skel:addSkin("warrior")
@@ -94,7 +94,7 @@ do
     print("current skin = " .. skel:getSkin())
 end
 
---@api-stub: LSkeleton:addAnimation
+--@api: LSkeleton:addAnimation
 do
     local skel = lurek.spine.newSkeleton("animated")
     skel:addBone("root")
@@ -102,7 +102,7 @@ do
     print("animation time = " .. skel:getAnimationTime())
 end
 
---@api-stub: LSkeleton:playAnimation
+--@api: LSkeleton:playAnimation
 do
     local skel = lurek.spine.newSkeleton("animated")
     skel:addBone("root")
@@ -112,7 +112,7 @@ do
     print("time = " .. skel:getAnimationTime())
 end
 
---@api-stub: LSkeleton:stopAnimation
+--@api: LSkeleton:stopAnimation
 do
     local skel = lurek.spine.newSkeleton("animated")
     skel:addBone("root")
@@ -122,7 +122,7 @@ do
     print("stopped at time = " .. skel:getAnimationTime())
 end
 
---@api-stub: LSkeleton:getAnimationTime
+--@api: LSkeleton:getAnimationTime
 do
     local skel = lurek.spine.newSkeleton("animated")
     skel:addBone("root")
@@ -131,7 +131,7 @@ do
     print("time = " .. string.format("%.1f", skel:getAnimationTime()))
 end
 
---@api-stub: LSkeleton:blendAnimation
+--@api: LSkeleton:blendAnimation
 do
     local skel = lurek.spine.newSkeleton("animated")
     skel:addBone("root")
@@ -145,7 +145,7 @@ do
     print("blended run")
 end
 
---@api-stub: LSkeleton:findBone
+--@api: LSkeleton:findBone
 do
     local skel = lurek.spine.newSkeleton("query")
     skel:addBone("root", { x = 100, y = 200 })
@@ -153,7 +153,7 @@ do
     print("found arm = " .. skel:findBone("arm"))
 end
 
---@api-stub: LSkeleton:findSlot
+--@api: LSkeleton:findSlot
 do
     local skel = lurek.spine.newSkeleton("query")
     local arm = skel:addBone("arm", { x = 30, y = 0 })
@@ -161,14 +161,14 @@ do
     print("found slot = " .. skel:findSlot("arm_slot"))
 end
 
---@api-stub: LSkeleton:setPosition
+--@api: LSkeleton:setPosition
 do
     local skel = lurek.spine.newSkeleton("query")
     skel:setPosition(200, 300)
     print("position set")
 end
 
---@api-stub: LSkeleton:getBoneWorld
+--@api: LSkeleton:getBoneWorld
 do
     local skel = lurek.spine.newSkeleton("query")
     local root = skel:addBone("root", { x = 100, y = 200 })
@@ -177,7 +177,7 @@ do
     print("root world = " .. string.format("%.0f, %.0f", world.x, world.y))
 end
 
---@api-stub: LSkeleton:updateWorldTransforms
+--@api: LSkeleton:updateWorldTransforms
 do
     local skel = lurek.spine.newSkeleton("query")
     skel:addBone("root", { x = 100, y = 200 })
@@ -185,7 +185,7 @@ do
     print("world transforms updated")
 end
 
---@api-stub: LSkeleton:updateAnimation
+--@api: LSkeleton:updateAnimation
 do
     local skel = lurek.spine.newSkeleton("frame_loop")
     skel:addBone("root")
@@ -201,7 +201,7 @@ do
     print("frame loop time = " .. string.format("%.3f", skel:getAnimationTime()))
 end
 
---@api-stub: LSkeleton:drawToImage
+--@api: LSkeleton:drawToImage
 do
     local skel = lurek.spine.newSkeleton("render_test")
     local root = skel:addBone("root", { x = 64, y = 64 })
@@ -211,7 +211,7 @@ do
     print("image size = " .. img:getWidth() .. "x" .. img:getHeight())
 end
 
---@api-stub: lurek.spine.newSkeletonAnimation
+--@api: lurek.spine.newSkeletonAnimation
 do
     local anim = lurek.spine.newSkeletonAnimation("walk_cycle", 0.8)
     print("type = " .. anim:type())
@@ -219,7 +219,7 @@ do
     print("timelines = " .. anim:getTimelineCount())
 end
 
---@api-stub: LSkeletonAnimation:addKeyframe
+--@api: LSkeletonAnimation:addKeyframe
 do
     local anim = lurek.spine.newSkeletonAnimation("bob", 1.0)
     anim:addKeyframe(0, "y", 0.0, 0)
@@ -227,7 +227,7 @@ do
     print("timeline count = " .. anim:getTimelineCount())
 end
 
---@api-stub: LSkeletonAnimation:addEventKey
+--@api: LSkeletonAnimation:addEventKey
 do
     local anim = lurek.spine.newSkeletonAnimation("attack", 0.5)
     anim:addEventKey(0.2, "whoosh", 1)
@@ -235,7 +235,7 @@ do
     print("events = " .. #anim:getEvents(0.0, 0.5))
 end
 
---@api-stub: LSkeletonAnimation:getEvents
+--@api: LSkeletonAnimation:getEvents
 do
     local anim = lurek.spine.newSkeletonAnimation("attack", 0.5)
     anim:addEventKey(0.2, "whoosh", 1)
@@ -243,7 +243,7 @@ do
     print("partial events = " .. #anim:getEvents(0.15, 0.35))
 end
 
---@api-stub: LSkeletonAnimation:reverse
+--@api: LSkeletonAnimation:reverse
 do
     local anim = lurek.spine.newSkeletonAnimation("swing", 0.6)
     anim:addKeyframe(0, "rotation", 0.0, 0)
@@ -252,14 +252,14 @@ do
     print("reversed duration = " .. reversed:getDuration())
 end
 
---@api-stub: lurek.spine.animationFromJson
+--@api: lurek.spine.animationFromJson
 do
     local jsonData = '{"name":"idle_bounce","duration":1.2,"timelines":[{"bone":0,"property":"y","keys":[{"time":0,"value":0},{"time":1.2,"value":0}]}]}'
     local anim = lurek.spine.animationFromJson(jsonData)
     print("timelines = " .. (anim and tostring(anim:getTimelineCount()) or "nil"))
 end
 
---@api-stub: lurek.spine.skeletonFromJson
+--@api: lurek.spine.skeletonFromJson
 do
         local jsonData = [[
         {
@@ -293,7 +293,7 @@ end
 
 --- Spine Module Part 1: LSkeleton, LSkeletonAnimation, animationFromJson, newSkeleton, newSkeletonAnimation
 
---@api-stub: LSkeleton:boneCount
+--@api: LSkeleton:boneCount
 do
     local skel = lurek.spine.newSkeleton("hero")
     skel:addBone("root", {})
@@ -301,7 +301,7 @@ do
     print("bones = " .. skel:boneCount())
 end
 
---@api-stub: LSkeleton:slotCount
+--@api: LSkeleton:slotCount
 do
     local skel = lurek.spine.newSkeleton("hero")
     local arm = skel:addBone("arm", {})
@@ -309,32 +309,32 @@ do
     print("slots = " .. skel:slotCount())
 end
 
---@api-stub: LSkeleton:type
+--@api: LSkeleton:type
 do
     local skel = lurek.spine.newSkeleton("hero")
     print("type = " .. skel:type())
 end
 
---@api-stub: LSkeleton:typeOf
+--@api: LSkeleton:typeOf
 do
     local skel = lurek.spine.newSkeleton("hero")
     print("is LSkeleton = " .. tostring(skel:typeOf("LSkeleton")))
 end
 
---@api-stub: LSkeletonAnimation:getDuration
+--@api: LSkeletonAnimation:getDuration
 do
     local anim = lurek.spine.newSkeletonAnimation("run", 0.8)
     print("duration=" .. anim:getDuration())
 end
 
---@api-stub: LSkeletonAnimation:getTimelineCount
+--@api: LSkeletonAnimation:getTimelineCount
 do
     local anim = lurek.spine.newSkeletonAnimation("run", 0.8)
     anim:addKeyframe(0, "rotation", 0.0, 0.0, "linear")
     print("timelines=" .. anim:getTimelineCount())
 end
 
---@api-stub: LSkeletonAnimation:poseAt
+--@api: LSkeletonAnimation:poseAt
 do
     local anim = lurek.spine.newSkeletonAnimation("run", 0.8)
     anim:addKeyframe(0, "rotation", 0.0, 0.0, "linear")
@@ -342,13 +342,13 @@ do
     print("pose type=" .. type(pose))
 end
 
---@api-stub: LSkeletonAnimation:type
+--@api: LSkeletonAnimation:type
 do
     local anim = lurek.spine.newSkeletonAnimation("run", 0.8)
     print("type=" .. anim:type())
 end
 
---@api-stub: LSkeletonAnimation:typeOf
+--@api: LSkeletonAnimation:typeOf
 do
     local anim = lurek.spine.newSkeletonAnimation("run", 0.8)
     print("typeOf=" .. tostring(anim:typeOf("LSkeletonAnimation")))

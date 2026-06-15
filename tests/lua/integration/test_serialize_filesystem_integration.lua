@@ -13,14 +13,14 @@ describe("serial + filesystem integration", function()
     -- @integration lurek.filesystem.write
     -- @integration lurek.serial.fromJson
     -- @integration lurek.serial.toJson
-    -- @covers lurek.filesystem.mkdir
-    -- @covers lurek.filesystem.read
-    -- @covers lurek.filesystem.write
-    -- @covers lurek.serial.fromCsv
-    -- @covers lurek.serial.fromJson
-    -- @covers lurek.serial.fromToml
-    -- @covers lurek.serial.toJson
-    -- @covers lurek.serial.toToml
+    -- @integration lurek.filesystem.mkdir
+    -- @integration lurek.filesystem.read
+    -- @integration lurek.filesystem.write
+    -- @integration lurek.serial.fromCsv
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.fromToml
+    -- @integration lurek.serial.toJson
+    -- @integration lurek.serial.toToml
     it("round-trips a Lua table through JSON via the filesystem", function()
         local data = { name = "Luna", version = 2, active = true }
         local json_str = lurek.serial.toJson(data)

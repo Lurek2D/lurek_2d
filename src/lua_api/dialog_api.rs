@@ -1,4 +1,9 @@
 //! File: src/lua_api/dialog_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
+//! TODO: add doc note 3
 
 use crate::dialog::{
     DialogSequencer, DialogueAI, DialogueState, SequencerNode, Speaker, SpeakerRegistry,

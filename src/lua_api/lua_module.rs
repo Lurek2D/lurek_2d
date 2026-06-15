@@ -1,4 +1,6 @@
 //! File: src/lua_api/lua_module.rs
+//! Module API documentation
+//!
 
 use crate::runtime::config::ModulesConfig;
 use crate::runtime::SharedState;

@@ -3486,6 +3486,8 @@ end
 
 #### `LAreaChart:addLayer`
 
+Adds one filled area layer from a numeric value list.
+
 ```lua
 LAreaChart:addLayer(name, values, color)
 ```
@@ -3498,41 +3500,21 @@ LAreaChart:addLayer(name, values, color)
 | `values` | any |  |
 | `color?` | any |  |
 
-**Example**
-
-```lua
-do
-    local cb = lurek.ui.newCheckbox("old")
-    cb:setText("new label")
-    local chart = lurek.ui.newAreaChart({width = 200, height = 100})
-    chart:setYMax(100)
-    chart:addLayer("series1", {10, 20, 30, 25, 15}, 1.0, 0.2, 0.2)
-    print("checkbox setText ok; addLayer, setYMax ok")
-end
-```
-
 ---
 
 #### `LAreaChart:addLayerFromDataFrame`
+
+Builds one filled area layer from a dataframe value column.
 
 ```lua
 LAreaChart:addLayerFromDataFrame()
 ```
 
-**Example**
-
-```lua
-do
-    local df = lurek.dataframe.fromRows({ "balance" }, { { 1200 }, { "1325" }, { "bad" } })
-    local chart = lurek.ui.newAreaChart({width = 200, height = 100})
-    local count = chart:addLayerFromDataFrame("Balance", df, "balance", 0.2, 0.6, 0.9)
-    print("area df values=" .. count)
-end
-```
-
 ---
 
 #### `LAreaChart:addSeries`
+
+Adds a named area series from an array-style Lua table of points.
 
 ```lua
 LAreaChart:addSeries(name, data, color)
@@ -3549,6 +3531,8 @@ LAreaChart:addSeries(name, data, color)
 ---
 
 #### `LAreaChart:appendPoint`
+
+Appends one finite point to a named area series.
 
 ```lua
 LAreaChart:appendPoint(name, x, y, color)
@@ -3567,6 +3551,8 @@ LAreaChart:appendPoint(name, x, y, color)
 
 #### `LAreaChart:clear`
 
+Clears the state.
+
 ```lua
 LAreaChart:clear()
 ```
@@ -3574,6 +3560,8 @@ LAreaChart:clear()
 ---
 
 #### `LAreaChart:draw`
+
+Draws the area chart at world or screen coordinates using optional transform options.
 
 ```lua
 LAreaChart:draw(x, y, opts)
@@ -3591,6 +3579,8 @@ LAreaChart:draw(x, y, opts)
 
 #### `LAreaChart:drawToImage`
 
+Draw to image.
+
 ```lua
 LAreaChart:drawToImage(target)
 ```
@@ -3601,24 +3591,11 @@ LAreaChart:drawToImage(target)
 |------|------|-------------|
 | `target` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newAreaChart({width = 64, height = 64})
-    chart:setYMax(50)
-    chart:addLayer("d", {5, 10, 15}, 0.5, 0.8, 0.2)
-    local img = lurek.image.newImageData(64, 64)
-    chart:drawToImage(img)
-    local t = chart:type()
-    local ok = chart:typeOf("LAreaChart")
-    print("drawToImage ok, type:", t, "typeOf:", ok)
-end
-```
-
 ---
 
 #### `LAreaChart:getHeight`
+
+Returns the height.
 
 ```lua
 LAreaChart:getHeight()
@@ -3628,6 +3605,8 @@ LAreaChart:getHeight()
 
 #### `LAreaChart:getWidth`
 
+Returns the width.
+
 ```lua
 LAreaChart:getWidth()
 ```
@@ -3635,6 +3614,8 @@ LAreaChart:getWidth()
 ---
 
 #### `LAreaChart:render`
+
+Render.
 
 ```lua
 LAreaChart:render()
@@ -3644,6 +3625,8 @@ LAreaChart:render()
 
 #### `LAreaChart:renderImage`
 
+Render image.
+
 ```lua
 LAreaChart:renderImage()
 ```
@@ -3651,6 +3634,8 @@ LAreaChart:renderImage()
 ---
 
 #### `LAreaChart:setShowLegend`
+
+Sets the show legend.
 
 ```lua
 LAreaChart:setShowLegend(value)
@@ -3662,19 +3647,11 @@ LAreaChart:setShowLegend(value)
 |------|------|-------------|
 | `value` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
-    chart:setShowLegend(true)
-    print("area legend enabled")
-end
-```
-
 ---
 
 #### `LAreaChart:setTitle`
+
+Sets the title.
 
 ```lua
 LAreaChart:setTitle(title)
@@ -3690,6 +3667,8 @@ LAreaChart:setTitle(title)
 
 #### `LAreaChart:setWindow`
 
+Sets the window.
+
 ```lua
 LAreaChart:setWindow(max_points)
 ```
@@ -3704,6 +3683,8 @@ LAreaChart:setWindow(max_points)
 
 #### `LAreaChart:setXLabel`
 
+Sets the x label.
+
 ```lua
 LAreaChart:setXLabel(label)
 ```
@@ -3714,19 +3695,11 @@ LAreaChart:setXLabel(label)
 |------|------|-------------|
 | `label` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
-    chart:setXLabel("Frame")
-    print("area x label set")
-end
-```
-
 ---
 
 #### `LAreaChart:setXTickCount`
+
+Sets the x tick count.
 
 ```lua
 LAreaChart:setXTickCount(count)
@@ -3738,19 +3711,11 @@ LAreaChart:setXTickCount(count)
 |------|------|-------------|
 | `count` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
-    chart:setXTickCount(6)
-    print("area x ticks set")
-end
-```
-
 ---
 
 #### `LAreaChart:setYLabel`
+
+Sets the y label.
 
 ```lua
 LAreaChart:setYLabel(label)
@@ -3762,19 +3727,11 @@ LAreaChart:setYLabel(label)
 |------|------|-------------|
 | `label` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
-    chart:setYLabel("Usage")
-    print("area y label set")
-end
-```
-
 ---
 
 #### `LAreaChart:setYMax`
+
+Sets the y max.
 
 ```lua
 LAreaChart:setYMax(value)
@@ -3786,22 +3743,11 @@ LAreaChart:setYMax(value)
 |------|------|-------------|
 | `value` | any |  |
 
-**Example**
-
-```lua
-do
-    local cb = lurek.ui.newCheckbox("old")
-    cb:setText("new label")
-    local chart = lurek.ui.newAreaChart({width = 200, height = 100})
-    chart:setYMax(100)
-    chart:addLayer("series1", {10, 20, 30, 25, 15}, 1.0, 0.2, 0.2)
-    print("checkbox setText ok; addLayer, setYMax ok")
-end
-```
-
 ---
 
 #### `LAreaChart:setYTickCount`
+
+Sets the y tick count.
 
 ```lua
 LAreaChart:setYTickCount(count)
@@ -3813,42 +3759,21 @@ LAreaChart:setYTickCount(count)
 |------|------|-------------|
 | `count` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newAreaChart({ width = 240, height = 140, title = "Area" })
-    chart:setYTickCount(4)
-    print("area y ticks set")
-end
-```
-
 ---
 
 #### `LAreaChart:type`
+
+Type.
 
 ```lua
 LAreaChart:type()
 ```
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newAreaChart({width = 64, height = 64})
-    chart:setYMax(50)
-    chart:addLayer("d", {5, 10, 15}, 0.5, 0.8, 0.2)
-    local img = lurek.image.newImageData(64, 64)
-    chart:drawToImage(img)
-    local t = chart:type()
-    local ok = chart:typeOf("LAreaChart")
-    print("drawToImage ok, type:", t, "typeOf:", ok)
-end
-```
-
 ---
 
 #### `LAreaChart:typeOf`
+
+Type of.
 
 ```lua
 LAreaChart:typeOf(name)
@@ -3859,21 +3784,6 @@ LAreaChart:typeOf(name)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | any |  |
-
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newAreaChart({width = 64, height = 64})
-    chart:setYMax(50)
-    chart:addLayer("d", {5, 10, 15}, 0.5, 0.8, 0.2)
-    local img = lurek.image.newImageData(64, 64)
-    chart:drawToImage(img)
-    local t = chart:type()
-    local ok = chart:typeOf("LAreaChart")
-    print("drawToImage ok, type:", t, "typeOf:", ok)
-end
-```
 
 ---
 
@@ -3985,26 +3895,17 @@ end
 
 #### `LBarChart:addCategoriesFromDataFrame`
 
+Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.
+
 ```lua
 LBarChart:addCategoriesFromDataFrame()
-```
-
-**Example**
-
-```lua
-do
-    local df = lurek.dataframe.fromRows({ "month", "income", "expense" }, { { "Jan", 100, 60 }, { "Feb", "120", "bad" } })
-    local chart = lurek.ui.newBarChart({width = 200, height = 100})
-    chart:addSeries("Income", 0.2, 0.6, 0.9)
-    chart:addSeries("Expense", 0.9, 0.4, 0.2)
-    local count = chart:addCategoriesFromDataFrame(df, "month", { "income", "expense" })
-    print("bar df categories=" .. count)
-end
 ```
 
 ---
 
 #### `LBarChart:addCategory`
+
+Adds one category label with a numeric value list for grouped bars.
 
 ```lua
 LBarChart:addCategory(label, values)
@@ -4017,24 +3918,11 @@ LBarChart:addCategory(label, values)
 | `label` | any |  |
 | `values` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newBarChart({width = 200, height = 100})
-    chart:addSeries("Q1", 0.2, 0.6, 1.0)
-    chart:addSeries("Q2", 1.0, 0.5, 0.1)
-    chart:addCategory("Jan", {30, 45})
-    chart:addCategory("Feb", {40, 35})
-    local img = lurek.image.newImageData(200, 100)
-    chart:drawToImage(img)
-    print("barChart addSeries/addCategory/drawToImage ok")
-end
-```
-
 ---
 
 #### `LBarChart:addSeries`
+
+Adds a named bar series from an array-style Lua table of values or points.
 
 ```lua
 LBarChart:addSeries(name, data, color)
@@ -4052,6 +3940,8 @@ LBarChart:addSeries(name, data, color)
 
 #### `LBarChart:clear`
 
+Clears the state.
+
 ```lua
 LBarChart:clear()
 ```
@@ -4059,6 +3949,8 @@ LBarChart:clear()
 ---
 
 #### `LBarChart:draw`
+
+Draws the bar chart at world or screen coordinates using optional transform options.
 
 ```lua
 LBarChart:draw(x, y, opts)
@@ -4076,6 +3968,8 @@ LBarChart:draw(x, y, opts)
 
 #### `LBarChart:drawToImage`
 
+Draw to image.
+
 ```lua
 LBarChart:drawToImage(target)
 ```
@@ -4086,24 +3980,11 @@ LBarChart:drawToImage(target)
 |------|------|-------------|
 | `target` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newBarChart({width = 200, height = 100})
-    chart:addSeries("Q1", 0.2, 0.6, 1.0)
-    chart:addSeries("Q2", 1.0, 0.5, 0.1)
-    chart:addCategory("Jan", {30, 45})
-    chart:addCategory("Feb", {40, 35})
-    local img = lurek.image.newImageData(200, 100)
-    chart:drawToImage(img)
-    print("barChart addSeries/addCategory/drawToImage ok")
-end
-```
-
 ---
 
 #### `LBarChart:getHeight`
+
+Returns the height.
 
 ```lua
 LBarChart:getHeight()
@@ -4113,6 +3994,8 @@ LBarChart:getHeight()
 
 #### `LBarChart:getWidth`
 
+Returns the width.
+
 ```lua
 LBarChart:getWidth()
 ```
@@ -4120,6 +4003,8 @@ LBarChart:getWidth()
 ---
 
 #### `LBarChart:render`
+
+Render.
 
 ```lua
 LBarChart:render()
@@ -4129,6 +4014,8 @@ LBarChart:render()
 
 #### `LBarChart:renderImage`
 
+Render image.
+
 ```lua
 LBarChart:renderImage()
 ```
@@ -4136,6 +4023,8 @@ LBarChart:renderImage()
 ---
 
 #### `LBarChart:setBarWidth`
+
+Sets the bar width.
 
 ```lua
 LBarChart:setBarWidth(width)
@@ -4151,6 +4040,8 @@ LBarChart:setBarWidth(width)
 
 #### `LBarChart:setShowLegend`
 
+Sets the show legend.
+
 ```lua
 LBarChart:setShowLegend(value)
 ```
@@ -4161,19 +4052,11 @@ LBarChart:setShowLegend(value)
 |------|------|-------------|
 | `value` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
-    chart:setShowLegend(true)
-    print("bar legend enabled")
-end
-```
-
 ---
 
 #### `LBarChart:setTitle`
+
+Sets the title.
 
 ```lua
 LBarChart:setTitle(title)
@@ -4189,6 +4072,8 @@ LBarChart:setTitle(title)
 
 #### `LBarChart:setXLabel`
 
+Sets the x label.
+
 ```lua
 LBarChart:setXLabel(label)
 ```
@@ -4199,19 +4084,11 @@ LBarChart:setXLabel(label)
 |------|------|-------------|
 | `label` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
-    chart:setXLabel("Category")
-    print("bar x label set")
-end
-```
-
 ---
 
 #### `LBarChart:setXTickCount`
+
+Sets the x tick count.
 
 ```lua
 LBarChart:setXTickCount(count)
@@ -4223,19 +4100,11 @@ LBarChart:setXTickCount(count)
 |------|------|-------------|
 | `count` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
-    chart:setXTickCount(5)
-    print("bar x ticks set")
-end
-```
-
 ---
 
 #### `LBarChart:setYLabel`
+
+Sets the y label.
 
 ```lua
 LBarChart:setYLabel(label)
@@ -4247,19 +4116,11 @@ LBarChart:setYLabel(label)
 |------|------|-------------|
 | `label` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
-    chart:setYLabel("Amount")
-    print("bar y label set")
-end
-```
-
 ---
 
 #### `LBarChart:setYTickCount`
+
+Sets the y tick count.
 
 ```lua
 LBarChart:setYTickCount(count)
@@ -4271,39 +4132,21 @@ LBarChart:setYTickCount(count)
 |------|------|-------------|
 | `count` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newBarChart({ width = 240, height = 140, title = "Bars" })
-    chart:setYTickCount(5)
-    print("bar y ticks set")
-end
-```
-
 ---
 
 #### `LBarChart:type`
+
+Type.
 
 ```lua
 LBarChart:type()
 ```
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newBarChart({width = 100, height = 50})
-    local t = chart:type()
-    local ok = chart:typeOf("LBarChart")
-    local notOk = chart:typeOf("LAreaChart")
-    print("LBarChart type:", t, "typeOf:", ok, "typeOf LAreaChart:", notOk)
-end
-```
-
 ---
 
 #### `LBarChart:typeOf`
+
+Type of.
 
 ```lua
 LBarChart:typeOf(name)
@@ -4314,18 +4157,6 @@ LBarChart:typeOf(name)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | any |  |
-
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newBarChart({width = 100, height = 50})
-    local t = chart:type()
-    local ok = chart:typeOf("LBarChart")
-    local notOk = chart:typeOf("LAreaChart")
-    print("LBarChart type:", t, "typeOf:", ok, "typeOf LAreaChart:", notOk)
-end
-```
 
 ---
 
@@ -8494,6 +8325,7 @@ LLayout:setDirection(dir)
 do
     ---@type LLayout
     local grid = lurek.ui.newLayout("grid")
+    grid:setDirection("vertical")
     grid:setColumns(3)
     grid:setSpacing(5)
     print("direction = " .. grid:getDirection())
@@ -8602,6 +8434,8 @@ end
 
 #### `LLineChart:addSeries`
 
+Adds a named line series from an array-style Lua table of points.
+
 ```lua
 LLineChart:addSeries(name, data, color)
 ```
@@ -8618,24 +8452,17 @@ LLineChart:addSeries(name, data, color)
 
 #### `LLineChart:addSeriesFromDataFrame`
 
+Builds a named line series from x and y columns in a dataframe.
+
 ```lua
 LLineChart:addSeriesFromDataFrame()
-```
-
-**Example**
-
-```lua
-do
-    local df = lurek.dataframe.fromRows({ "month", "savings" }, { { 1, 240 }, { 2, "260" }, { 3, "bad" } })
-    local chart = lurek.ui.newLineChart({width = 200, height = 100})
-    local count = chart:addSeriesFromDataFrame("Savings", df, "month", "savings", 0.2, 0.8, 0.4)
-    print("line df points=" .. count)
-end
 ```
 
 ---
 
 #### `LLineChart:appendPoint`
+
+Appends one finite point to a named line series.
 
 ```lua
 LLineChart:appendPoint(name, x, y, color)
@@ -8654,6 +8481,8 @@ LLineChart:appendPoint(name, x, y, color)
 
 #### `LLineChart:clear`
 
+Clears the state.
+
 ```lua
 LLineChart:clear()
 ```
@@ -8661,6 +8490,8 @@ LLineChart:clear()
 ---
 
 #### `LLineChart:draw`
+
+Draws the line chart at world or screen coordinates using optional transform options.
 
 ```lua
 LLineChart:draw(x, y, opts)
@@ -8678,6 +8509,8 @@ LLineChart:draw(x, y, opts)
 
 #### `LLineChart:drawToImage`
 
+Draw to image.
+
 ```lua
 LLineChart:drawToImage(target)
 ```
@@ -8688,23 +8521,11 @@ LLineChart:drawToImage(target)
 |------|------|-------------|
 | `target` | any |  |
 
-**Example**
-
-```lua
-do
-    local layout = lurek.ui.newLayout("horizontal")
-    layout:setWrap(true)
-    local lc = lurek.ui.newLineChart({width = 200, height = 100})
-    lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
-    local img = lurek.image.newImageData(200, 100)
-    lc:drawToImage(img)
-    print("setWrap ok; addSeries/drawToImage ok")
-end
-```
-
 ---
 
 #### `LLineChart:getHeight`
+
+Returns the height.
 
 ```lua
 LLineChart:getHeight()
@@ -8714,6 +8535,8 @@ LLineChart:getHeight()
 
 #### `LLineChart:getWidth`
 
+Returns the width.
+
 ```lua
 LLineChart:getWidth()
 ```
@@ -8721,6 +8544,8 @@ LLineChart:getWidth()
 ---
 
 #### `LLineChart:nearest`
+
+Nearest.
 
 ```lua
 LLineChart:nearest(x, y)
@@ -8737,6 +8562,8 @@ LLineChart:nearest(x, y)
 
 #### `LLineChart:render`
 
+Render.
+
 ```lua
 LLineChart:render()
 ```
@@ -8745,6 +8572,8 @@ LLineChart:render()
 
 #### `LLineChart:renderImage`
 
+Render image.
+
 ```lua
 LLineChart:renderImage()
 ```
@@ -8752,6 +8581,8 @@ LLineChart:renderImage()
 ---
 
 #### `LLineChart:replaceSeries`
+
+Replaces a named line series with a new array-style Lua table of points.
 
 ```lua
 LLineChart:replaceSeries(name, data, color)
@@ -8769,6 +8600,8 @@ LLineChart:replaceSeries(name, data, color)
 
 #### `LLineChart:setShowLegend`
 
+Sets the show legend.
+
 ```lua
 LLineChart:setShowLegend(value)
 ```
@@ -8779,19 +8612,11 @@ LLineChart:setShowLegend(value)
 |------|------|-------------|
 | `value` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
-    chart:setShowLegend(true)
-    print("line legend enabled")
-end
-```
-
 ---
 
 #### `LLineChart:setTitle`
+
+Sets the title.
 
 ```lua
 LLineChart:setTitle(title)
@@ -8807,6 +8632,8 @@ LLineChart:setTitle(title)
 
 #### `LLineChart:setWindow`
 
+Sets the window.
+
 ```lua
 LLineChart:setWindow(max_points)
 ```
@@ -8821,6 +8648,8 @@ LLineChart:setWindow(max_points)
 
 #### `LLineChart:setXLabel`
 
+Sets the x label.
+
 ```lua
 LLineChart:setXLabel(label)
 ```
@@ -8831,19 +8660,11 @@ LLineChart:setXLabel(label)
 |------|------|-------------|
 | `label` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
-    chart:setXLabel("Time")
-    print("line x label set")
-end
-```
-
 ---
 
 #### `LLineChart:setXMax`
+
+Sets the x max.
 
 ```lua
 LLineChart:setXMax(value)
@@ -8855,22 +8676,11 @@ LLineChart:setXMax(value)
 |------|------|-------------|
 | `value` | any |  |
 
-**Example**
-
-```lua
-do
-    local lc = lurek.ui.newLineChart({width = 150, height = 80})
-    lc:setXMax(100)
-    lc:setYMax(50)
-    lc:addSeries("data", {{0,0},{100,50}}, 1.0, 0.2, 0.2)
-    local t = lc:type()
-    print("setXMax/setYMax ok; type:", t)
-end
-```
-
 ---
 
 #### `LLineChart:setXTickCount`
+
+Sets the x tick count.
 
 ```lua
 LLineChart:setXTickCount(count)
@@ -8882,19 +8692,11 @@ LLineChart:setXTickCount(count)
 |------|------|-------------|
 | `count` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
-    chart:setXTickCount(6)
-    print("line x ticks set")
-end
-```
-
 ---
 
 #### `LLineChart:setYLabel`
+
+Sets the y label.
 
 ```lua
 LLineChart:setYLabel(label)
@@ -8906,19 +8708,11 @@ LLineChart:setYLabel(label)
 |------|------|-------------|
 | `label` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
-    chart:setYLabel("Value")
-    print("line y label set")
-end
-```
-
 ---
 
 #### `LLineChart:setYMax`
+
+Sets the y max.
 
 ```lua
 LLineChart:setYMax(value)
@@ -8930,22 +8724,11 @@ LLineChart:setYMax(value)
 |------|------|-------------|
 | `value` | any |  |
 
-**Example**
-
-```lua
-do
-    local lc = lurek.ui.newLineChart({width = 150, height = 80})
-    lc:setXMax(100)
-    lc:setYMax(50)
-    lc:addSeries("data", {{0,0},{100,50}}, 1.0, 0.2, 0.2)
-    local t = lc:type()
-    print("setXMax/setYMax ok; type:", t)
-end
-```
-
 ---
 
 #### `LLineChart:setYTickCount`
+
+Sets the y tick count.
 
 ```lua
 LLineChart:setYTickCount(count)
@@ -8957,40 +8740,21 @@ LLineChart:setYTickCount(count)
 |------|------|-------------|
 | `count` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newLineChart({ width = 240, height = 140, title = "Trend" })
-    chart:setYTickCount(4)
-    print("line y ticks set")
-end
-```
-
 ---
 
 #### `LLineChart:type`
+
+Type.
 
 ```lua
 LLineChart:type()
 ```
 
-**Example**
-
-```lua
-do
-    local lc = lurek.ui.newLineChart({width = 150, height = 80})
-    lc:setXMax(100)
-    lc:setYMax(50)
-    lc:addSeries("data", {{0,0},{100,50}}, 1.0, 0.2, 0.2)
-    local t = lc:type()
-    print("setXMax/setYMax ok; type:", t)
-end
-```
-
 ---
 
 #### `LLineChart:typeOf`
+
+Type of.
 
 ```lua
 LLineChart:typeOf(name)
@@ -9001,17 +8765,6 @@ LLineChart:typeOf(name)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | any |  |
-
-**Example**
-
-```lua
-do
-    local lc = lurek.ui.newLineChart({width = 100, height = 60})
-    local ok = lc:typeOf("LLineChart")
-    local notOk = lc:typeOf("LBarChart")
-    print("LLineChart typeOf:", ok, "typeOf LBarChart:", notOk)
-end
-```
 
 ---
 
@@ -10285,6 +10038,8 @@ end
 
 #### `LPieChart:addSegment`
 
+Adds one pie segment with a non-negative value.
+
 ```lua
 LPieChart:addSegment(label, value, color)
 ```
@@ -10297,43 +10052,21 @@ LPieChart:addSegment(label, value, color)
 | `value` | any |  |
 | `color?` | any |  |
 
-**Example**
-
-```lua
-do
-    local panel = lurek.ui.newPanel()
-    panel:setScrollable(true)
-    panel:setTitle("Data")
-    local pc = lurek.ui.newPieChart({width = 128, height = 128})
-    pc:addSegment("A", 30, 0.9, 0.2, 0.2)
-    pc:addSegment("B", 50, 0.2, 0.9, 0.2)
-    pc:addSegment("C", 20, 0.2, 0.2, 0.9)
-    print("panel scrollable ok; pie segments added")
-end
-```
-
 ---
 
 #### `LPieChart:addSegmentsFromDataFrame`
+
+Adds pie segments by reading label and value columns from a dataframe.
 
 ```lua
 LPieChart:addSegmentsFromDataFrame()
 ```
 
-**Example**
-
-```lua
-do
-    local df = lurek.dataframe.fromRows({ "category", "amount" }, { { "Food", 420 }, { "Rent", "1200" }, { "Skip", "bad" } })
-    local chart = lurek.ui.newPieChart({width = 128, height = 128})
-    local count = chart:addSegmentsFromDataFrame(df, "category", "amount")
-    print("pie df segments=" .. count)
-end
-```
-
 ---
 
 #### `LPieChart:addSlice`
+
+Legacy alias that adds one pie slice with a non-negative value.
 
 ```lua
 LPieChart:addSlice(label, value, color)
@@ -10351,6 +10084,8 @@ LPieChart:addSlice(label, value, color)
 
 #### `LPieChart:clear`
 
+Clears the state.
+
 ```lua
 LPieChart:clear()
 ```
@@ -10358,6 +10093,8 @@ LPieChart:clear()
 ---
 
 #### `LPieChart:draw`
+
+Draws the pie chart at world or screen coordinates using optional transform options.
 
 ```lua
 LPieChart:draw(x, y, opts)
@@ -10375,6 +10112,8 @@ LPieChart:draw(x, y, opts)
 
 #### `LPieChart:drawToImage`
 
+Draw to image.
+
 ```lua
 LPieChart:drawToImage(target)
 ```
@@ -10385,24 +10124,11 @@ LPieChart:drawToImage(target)
 |------|------|-------------|
 | `target` | any |  |
 
-**Example**
-
-```lua
-do
-    local pc = lurek.ui.newPieChart({width = 64, height = 64})
-    pc:addSegment("X", 60, 1.0, 0.5, 0.1)
-    pc:addSegment("Y", 40, 0.1, 0.5, 1.0)
-    local img = lurek.image.newImageData(64, 64)
-    pc:drawToImage(img)
-    local t = pc:type()
-    local ok = pc:typeOf("LPieChart")
-    print("drawToImage ok, type:", t, "typeOf:", ok)
-end
-```
-
 ---
 
 #### `LPieChart:getHeight`
+
+Returns the height.
 
 ```lua
 LPieChart:getHeight()
@@ -10412,6 +10138,8 @@ LPieChart:getHeight()
 
 #### `LPieChart:getWidth`
 
+Returns the width.
+
 ```lua
 LPieChart:getWidth()
 ```
@@ -10419,6 +10147,8 @@ LPieChart:getWidth()
 ---
 
 #### `LPieChart:render`
+
+Render.
 
 ```lua
 LPieChart:render()
@@ -10428,6 +10158,8 @@ LPieChart:render()
 
 #### `LPieChart:renderImage`
 
+Render image.
+
 ```lua
 LPieChart:renderImage()
 ```
@@ -10435,6 +10167,8 @@ LPieChart:renderImage()
 ---
 
 #### `LPieChart:setShowLegend`
+
+Sets the show legend.
 
 ```lua
 LPieChart:setShowLegend(value)
@@ -10446,19 +10180,11 @@ LPieChart:setShowLegend(value)
 |------|------|-------------|
 | `value` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newPieChart({ width = 160, height = 160, title = "Pie" })
-    chart:setShowLegend(true)
-    print("pie legend enabled")
-end
-```
-
 ---
 
 #### `LPieChart:setTitle`
+
+Sets the title.
 
 ```lua
 LPieChart:setTitle(title)
@@ -10474,28 +10200,17 @@ LPieChart:setTitle(title)
 
 #### `LPieChart:type`
 
+Type.
+
 ```lua
 LPieChart:type()
-```
-
-**Example**
-
-```lua
-do
-    local pc = lurek.ui.newPieChart({width = 64, height = 64})
-    pc:addSegment("X", 60, 1.0, 0.5, 0.1)
-    pc:addSegment("Y", 40, 0.1, 0.5, 1.0)
-    local img = lurek.image.newImageData(64, 64)
-    pc:drawToImage(img)
-    local t = pc:type()
-    local ok = pc:typeOf("LPieChart")
-    print("drawToImage ok, type:", t, "typeOf:", ok)
-end
 ```
 
 ---
 
 #### `LPieChart:typeOf`
+
+Type of.
 
 ```lua
 LPieChart:typeOf(name)
@@ -10506,21 +10221,6 @@ LPieChart:typeOf(name)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | any |  |
-
-**Example**
-
-```lua
-do
-    local pc = lurek.ui.newPieChart({width = 64, height = 64})
-    pc:addSegment("X", 60, 1.0, 0.5, 0.1)
-    pc:addSegment("Y", 40, 0.1, 0.5, 1.0)
-    local img = lurek.image.newImageData(64, 64)
-    pc:drawToImage(img)
-    local t = pc:type()
-    local ok = pc:typeOf("LPieChart")
-    print("drawToImage ok, type:", t, "typeOf:", ok)
-end
-```
 
 ---
 
@@ -10951,6 +10651,8 @@ end
 
 #### `LScatterPlot:addSeries`
 
+Adds a named scatter series from an array-style Lua table of points.
+
 ```lua
 LScatterPlot:addSeries(name, data, color)
 ```
@@ -10967,26 +10669,17 @@ LScatterPlot:addSeries(name, data, color)
 
 #### `LScatterPlot:addSeriesFromDataFrame`
 
+Builds a named scatter series from x and y columns in a dataframe.
+
 ```lua
 LScatterPlot:addSeriesFromDataFrame()
-```
-
-**Example**
-
-```lua
-do
-    -- Adds a series of points to a scatter plot by pulling 'x' and 'y' columns
-    -- directly from a dataframe.
-    local df = lurek.dataframe.fromRows({ "x", "y" }, { { 1, 2 }, { 3, 4 }, { 5, 6 } })
-    local chart = lurek.ui.newScatterPlot({width = 200, height = 100})
-    local count = chart:addSeriesFromDataFrame("Data", df, "x", "y", 0.5, 0.5, 0.5)
-    print("scatter df points=" .. count)
-end
 ```
 
 ---
 
 #### `LScatterPlot:appendPoint`
+
+Appends one finite point to a named scatter series.
 
 ```lua
 LScatterPlot:appendPoint(name, x, y, color)
@@ -11005,6 +10698,8 @@ LScatterPlot:appendPoint(name, x, y, color)
 
 #### `LScatterPlot:clear`
 
+Clears the state.
+
 ```lua
 LScatterPlot:clear()
 ```
@@ -11012,6 +10707,8 @@ LScatterPlot:clear()
 ---
 
 #### `LScatterPlot:draw`
+
+Draws the scatter plot at world or screen coordinates using optional transform options.
 
 ```lua
 LScatterPlot:draw(x, y, opts)
@@ -11029,6 +10726,8 @@ LScatterPlot:draw(x, y, opts)
 
 #### `LScatterPlot:drawToImage`
 
+Draw to image.
+
 ```lua
 LScatterPlot:drawToImage(target)
 ```
@@ -11039,23 +10738,11 @@ LScatterPlot:drawToImage(target)
 |------|------|-------------|
 | `target` | any |  |
 
-**Example**
-
-```lua
-do
-    local sp = lurek.ui.newScatterPlot({width = 200, height = 150})
-    sp:setXRange(0, 100)
-    sp:setYRange(0, 100)
-    sp:addSeries("data1", {{10,20},{30,40},{50,30},{70,60}}, 0.9, 0.2, 0.2)
-    local img = lurek.image.newImageData(200, 150)
-    sp:drawToImage(img)
-    print("ScatterPlot addSeries/setXRange/drawToImage ok")
-end
-```
-
 ---
 
 #### `LScatterPlot:getHeight`
+
+Returns the height.
 
 ```lua
 LScatterPlot:getHeight()
@@ -11065,6 +10752,8 @@ LScatterPlot:getHeight()
 
 #### `LScatterPlot:getWidth`
 
+Returns the width.
+
 ```lua
 LScatterPlot:getWidth()
 ```
@@ -11072,6 +10761,8 @@ LScatterPlot:getWidth()
 ---
 
 #### `LScatterPlot:nearest`
+
+Nearest.
 
 ```lua
 LScatterPlot:nearest(x, y)
@@ -11088,6 +10779,8 @@ LScatterPlot:nearest(x, y)
 
 #### `LScatterPlot:render`
 
+Render.
+
 ```lua
 LScatterPlot:render()
 ```
@@ -11096,6 +10789,8 @@ LScatterPlot:render()
 
 #### `LScatterPlot:renderImage`
 
+Render image.
+
 ```lua
 LScatterPlot:renderImage()
 ```
@@ -11103,6 +10798,8 @@ LScatterPlot:renderImage()
 ---
 
 #### `LScatterPlot:replaceSeries`
+
+Replaces a named scatter series with a new array-style Lua table of points.
 
 ```lua
 LScatterPlot:replaceSeries(name, data, color)
@@ -11120,6 +10817,8 @@ LScatterPlot:replaceSeries(name, data, color)
 
 #### `LScatterPlot:setDotRadius`
 
+Sets the dot radius.
+
 ```lua
 LScatterPlot:setDotRadius(radius)
 ```
@@ -11134,6 +10833,8 @@ LScatterPlot:setDotRadius(radius)
 
 #### `LScatterPlot:setShowLegend`
 
+Sets the show legend.
+
 ```lua
 LScatterPlot:setShowLegend(value)
 ```
@@ -11144,19 +10845,11 @@ LScatterPlot:setShowLegend(value)
 |------|------|-------------|
 | `value` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
-    chart:setShowLegend(true)
-    print("scatter legend enabled")
-end
-```
-
 ---
 
 #### `LScatterPlot:setTitle`
+
+Sets the title.
 
 ```lua
 LScatterPlot:setTitle(title)
@@ -11172,6 +10865,8 @@ LScatterPlot:setTitle(title)
 
 #### `LScatterPlot:setWindow`
 
+Sets the window.
+
 ```lua
 LScatterPlot:setWindow(max_points)
 ```
@@ -11186,6 +10881,8 @@ LScatterPlot:setWindow(max_points)
 
 #### `LScatterPlot:setXLabel`
 
+Sets the x label.
+
 ```lua
 LScatterPlot:setXLabel(label)
 ```
@@ -11196,19 +10893,11 @@ LScatterPlot:setXLabel(label)
 |------|------|-------------|
 | `label` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
-    chart:setXLabel("X")
-    print("scatter x label set")
-end
-```
-
 ---
 
 #### `LScatterPlot:setXRange`
+
+Sets the x range.
 
 ```lua
 LScatterPlot:setXRange(min_x, max_x)
@@ -11221,23 +10910,11 @@ LScatterPlot:setXRange(min_x, max_x)
 | `min_x` | any |  |
 | `max_x` | any |  |
 
-**Example**
-
-```lua
-do
-    local sp = lurek.ui.newScatterPlot({width = 200, height = 150})
-    sp:setXRange(0, 100)
-    sp:setYRange(0, 100)
-    sp:addSeries("data1", {{10,20},{30,40},{50,30},{70,60}}, 0.9, 0.2, 0.2)
-    local img = lurek.image.newImageData(200, 150)
-    sp:drawToImage(img)
-    print("ScatterPlot addSeries/setXRange/drawToImage ok")
-end
-```
-
 ---
 
 #### `LScatterPlot:setXTickCount`
+
+Sets the x tick count.
 
 ```lua
 LScatterPlot:setXTickCount(count)
@@ -11249,19 +10926,11 @@ LScatterPlot:setXTickCount(count)
 |------|------|-------------|
 | `count` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
-    chart:setXTickCount(5)
-    print("scatter x ticks set")
-end
-```
-
 ---
 
 #### `LScatterPlot:setYLabel`
+
+Sets the y label.
 
 ```lua
 LScatterPlot:setYLabel(label)
@@ -11273,19 +10942,11 @@ LScatterPlot:setYLabel(label)
 |------|------|-------------|
 | `label` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
-    chart:setYLabel("Y")
-    print("scatter y label set")
-end
-```
-
 ---
 
 #### `LScatterPlot:setYRange`
+
+Sets the y range.
 
 ```lua
 LScatterPlot:setYRange(min_y, max_y)
@@ -11298,22 +10959,11 @@ LScatterPlot:setYRange(min_y, max_y)
 | `min_y` | any |  |
 | `max_y` | any |  |
 
-**Example**
-
-```lua
-do
-    local sp = lurek.ui.newScatterPlot({width = 100, height = 80})
-    sp:setXRange(0, 50)
-    sp:setYRange(0, 50)
-    local t = sp:type()
-    local ok = sp:typeOf("LScatterPlot")
-    print("setYRange ok, type:", t, "typeOf:", ok)
-end
-```
-
 ---
 
 #### `LScatterPlot:setYTickCount`
+
+Sets the y tick count.
 
 ```lua
 LScatterPlot:setYTickCount(count)
@@ -11325,40 +10975,21 @@ LScatterPlot:setYTickCount(count)
 |------|------|-------------|
 | `count` | any |  |
 
-**Example**
-
-```lua
-do
-    local chart = lurek.ui.newScatterPlot({ width = 240, height = 140, title = "Scatter" })
-    chart:setYTickCount(5)
-    print("scatter y ticks set")
-end
-```
-
 ---
 
 #### `LScatterPlot:type`
+
+Type.
 
 ```lua
 LScatterPlot:type()
 ```
 
-**Example**
-
-```lua
-do
-    local sp = lurek.ui.newScatterPlot({width = 100, height = 80})
-    sp:setXRange(0, 50)
-    sp:setYRange(0, 50)
-    local t = sp:type()
-    local ok = sp:typeOf("LScatterPlot")
-    print("setYRange ok, type:", t, "typeOf:", ok)
-end
-```
-
 ---
 
 #### `LScatterPlot:typeOf`
+
+Type of.
 
 ```lua
 LScatterPlot:typeOf(name)
@@ -11369,19 +11000,6 @@ LScatterPlot:typeOf(name)
 | Name | Type | Description |
 |------|------|-------------|
 | `name` | any |  |
-
-**Example**
-
-```lua
-do
-    local sp = lurek.ui.newScatterPlot({width = 100, height = 80})
-    sp:setXRange(0, 50)
-    sp:setYRange(0, 50)
-    local t = sp:type()
-    local ok = sp:typeOf("LScatterPlot")
-    print("setYRange ok, type:", t, "typeOf:", ok)
-end
-```
 
 ---
 

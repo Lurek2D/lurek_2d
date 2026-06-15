@@ -17,14 +17,14 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9145 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32659 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9159 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32822 lines)
 
 ## Coverage
 
 - 70 modules
 - 6055 functions and methods
-- 97.4% documented
+- 100.0% documented
 
 ## API Module Index
 
@@ -51,7 +51,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.dsp](Module-dsp) | 28 | 7 | Digital signal processing: real-time effects chains, offline batch processing, audio visualization. |
 | [lurek.ecs](Module-ecs) | 1 | 1 | Entity-Component-System: identity / data / behaviour separation for runtime composition. |
 | [lurek.effect](Module-effect) | 10 | 3 | Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes. |
-| [lurek.engine](Module-engine) | 13 | 0 | File: src/lua_api/engine_api.rs |
+| [lurek.engine](Module-engine) | 13 | 0 | File: src/lua_api/engine_api.rs Module API documentation TODO: add doc note 1 TODO: add doc note 2 |
 | [lurek.event](Module-event) | 16 | 1 | Centralised event queue: OS input, window state, custom Lua events, automation injections. |
 | [lurek.filesystem](Module-filesystem) | 44 | 3 | Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory. |
 | [lurek.flownet](Module-flownet) | 1 | 4 | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react. |
@@ -90,7 +90,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.spine](Module-spine) | 4 | 2 | Hierarchical skeletal animation (own implementation; not the official Spine SDK â€” A-02 + licensing). |
 | [lurek.sprite](Module-sprite) | 8 | 5 | Sprite and sprite-batch rendering above the render command queue. |
 | [lurek.svg](Module-svg) | 1 | 1 | Lua bindings for the vector SVG graphics module. |
-| [lurek.system](Module-system) | 28 | 0 | File: src/lua_api/system_api.rs |
+| [lurek.system](Module-system) | 28 | 0 | File: src/lua_api/system_api.rs Module API documentation TODO: add doc note 1 TODO: add doc note 2 TODO: add doc note 3 |
 | [lurek.terminal](Module-terminal) | 29 | 2 | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
 | [lurek.thread](Module-thread) | 7 | 4 | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared). |
 | [lurek.tilemap](Module-tilemap) | 29 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |

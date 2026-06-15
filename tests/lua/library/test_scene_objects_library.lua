@@ -6,7 +6,7 @@
 require("tests/lua/init")
 local sceneobj = require("library/scene-objects")
 
--- ── Helper: make a stub object ────────────────────────────────────────────────
+-- ── Helper: make a test object ────────────────────────────────────────────────
 
 local function make_obj(name, layer, opts)
     opts = opts or {}

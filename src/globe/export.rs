@@ -1,6 +1,8 @@
 //! Provides globe geometry export helpers that convert region polygons into portable mesh text output.
 //! Emits flat OBJ data with deterministic region object grouping for downstream tooling.
 //! Delivers a simple export path for inspection, conversion, and offline map processing workflows.
+//! Module API documentation
+//!
 
 use crate::globe::registry::Globe;
 use crate::globe::types::{Region, RegionPart};

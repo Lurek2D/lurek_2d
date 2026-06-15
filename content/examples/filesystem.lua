@@ -4,49 +4,49 @@
 
 --- Filesystem Module Part 1: paths, read/write, directory ops
 
---@api-stub: lurek.filesystem.getSource
+--@api: lurek.filesystem.getSource
 do
     local src = lurek.filesystem.getSource()
     print("source = " .. src)
 end
 
---@api-stub: lurek.filesystem.getSaveDirectory
+--@api: lurek.filesystem.getSaveDirectory
 do
     local save = lurek.filesystem.getSaveDirectory()
     print("save dir = " .. save)
 end
 
---@api-stub: lurek.filesystem.getWorkingDirectory
+--@api: lurek.filesystem.getWorkingDirectory
 do
     local cwd = lurek.filesystem.getWorkingDirectory()
     print("cwd = " .. cwd)
 end
 
---@api-stub: lurek.filesystem.getUserDirectory
+--@api: lurek.filesystem.getUserDirectory
 do
     local home = lurek.filesystem.getUserDirectory()
     print("home = " .. home)
 end
 
---@api-stub: lurek.filesystem.getIdentity
+--@api: lurek.filesystem.getIdentity
 do
     local id = lurek.filesystem.getIdentity()
     print("identity = " .. id)
 end
 
---@api-stub: lurek.filesystem.setIdentity
+--@api: lurek.filesystem.setIdentity
 do
     lurek.filesystem.setIdentity("my_game")
     print("identity set to 'my_game'")
 end
 
---@api-stub: lurek.filesystem.toAbsolutePath
+--@api: lurek.filesystem.toAbsolutePath
 do
     local abs = lurek.filesystem.toAbsolutePath("content/examples/assets/data/sample_config.toml")
     print("absolute = " .. abs)
 end
 
---@api-stub: lurek.filesystem.exists
+--@api: lurek.filesystem.exists
 do
     local path = "save/options_exists.json"
     lurek.filesystem.write(path, "{\"ok\":true}")
@@ -54,20 +54,20 @@ do
     print(path .. " exists = " .. tostring(found))
 end
 
---@api-stub: lurek.filesystem.isFile
+--@api: lurek.filesystem.isFile
 do
     local path = "save/is_file.txt"
     lurek.filesystem.write(path, "hello")
     print("is file = " .. tostring(lurek.filesystem.isFile(path)))
 end
 
---@api-stub: lurek.filesystem.isDirectory
+--@api: lurek.filesystem.isDirectory
 do
     local path = "save"
     print("is dir = " .. tostring(lurek.filesystem.isDirectory(path)))
 end
 
---@api-stub: lurek.filesystem.getInfo
+--@api: lurek.filesystem.getInfo
 do
     local path = "save/info.txt"
     lurek.filesystem.write(path, "info sample")
@@ -77,7 +77,7 @@ do
     end
 end
 
---@api-stub: lurek.filesystem.stat
+--@api: lurek.filesystem.stat
 do
     local path = "save/stat.txt"
     lurek.filesystem.write(path, "stat sample")
@@ -87,7 +87,7 @@ do
     end
 end
 
---@api-stub: lurek.filesystem.read
+--@api: lurek.filesystem.read
 do
     local path = "save/read_sample.txt"
     lurek.filesystem.write(path, "read me")
@@ -96,73 +96,73 @@ do
     print("contents = " .. contents)
 end
 
---@api-stub: lurek.filesystem.write
+--@api: lurek.filesystem.write
 do
     local path = "save/test_write.txt"
     lurek.filesystem.write(path, "hello world")
     print("wrote to " .. path)
 end
 
---@api-stub: lurek.filesystem.append
+--@api: lurek.filesystem.append
 do
     local path = "save/test_write.txt"
     lurek.filesystem.append(path, "\nline 2")
     print("appended to " .. path)
 end
 
---@api-stub: lurek.filesystem.copy
+--@api: lurek.filesystem.copy
 do
     lurek.filesystem.write("save/test_write.txt", "copy source")
     local ok = lurek.filesystem.copy("save/test_write.txt", "save/test_copy.txt")
     print("copy ok = " .. tostring(ok))
 end
 
---@api-stub: lurek.filesystem.move
+--@api: lurek.filesystem.move
 do
     lurek.filesystem.write("save/test_copy.txt", "move source")
     local ok = lurek.filesystem.move("save/test_copy.txt", "save/test_moved.txt")
     print("move ok = " .. tostring(ok))
 end
 
---@api-stub: lurek.filesystem.remove
+--@api: lurek.filesystem.remove
 do
     lurek.filesystem.write("save/test_moved.txt", "remove source")
     local ok = lurek.filesystem.remove("save/test_moved.txt")
     print("remove ok = " .. tostring(ok))
 end
 
---@api-stub: lurek.filesystem.createDirectory
+--@api: lurek.filesystem.createDirectory
 do
     local ok = lurek.filesystem.createDirectory("save/new_dir")
     print("mkdir ok = " .. tostring(ok))
 end
 
---@api-stub: lurek.filesystem.mkdir
+--@api: lurek.filesystem.mkdir
 do
     local ok = lurek.filesystem.mkdir("save/another_dir")
     print("mkdir ok = " .. tostring(ok))
 end
 
---@api-stub: lurek.filesystem.removeDir
+--@api: lurek.filesystem.removeDir
 do
     lurek.filesystem.mkdir("save/another_dir")
     local ok = lurek.filesystem.removeDir("save/another_dir")
     print("removeDir ok = " .. tostring(ok))
 end
 
---@api-stub: lurek.filesystem.getDirectoryItems
+--@api: lurek.filesystem.getDirectoryItems
 do
     local items = lurek.filesystem.getDirectoryItems("save")
     print("save/ has " .. #items .. " items")
 end
 
---@api-stub: lurek.filesystem.listRecursive
+--@api: lurek.filesystem.listRecursive
 do
     local files = lurek.filesystem.listRecursive("save")
     print("recursive: " .. #files .. " files")
 end
 
---@api-stub: lurek.filesystem.glob
+--@api: lurek.filesystem.glob
 do
     lurek.filesystem.write("save/glob_a.txt", "A")
     lurek.filesystem.write("save/glob_b.txt", "B")
@@ -170,7 +170,7 @@ do
     print("glob matches: " .. #matches)
 end
 
---@api-stub: lurek.filesystem.lines
+--@api: lurek.filesystem.lines
 do
     local path = "save/test_write.txt"
     lurek.filesystem.write(path, "line1\nline2\nline3")
@@ -179,13 +179,13 @@ do
     print("lines: " .. count)
 end
 
---@api-stub: lurek.filesystem.createTempFile
+--@api: lurek.filesystem.createTempFile
 do
     local tmp = lurek.filesystem.createTempFile("test_")
     print("temp file = " .. tmp)
 end
 
---@api-stub: lurek.filesystem.readJson
+--@api: lurek.filesystem.readJson
 do
     local path = "save/options.json"
     lurek.filesystem.writeJson(path, '{"name":"test","value":42}')
@@ -194,14 +194,14 @@ do
     print("json bytes = " .. #data)
 end
 
---@api-stub: lurek.filesystem.writeJson
+--@api: lurek.filesystem.writeJson
 do
     local path = "save/test_json.json"
     lurek.filesystem.writeJson(path, '{"name":"test","value":42}')
     print("wrote JSON to " .. path)
 end
 
---@api-stub: lurek.filesystem.readOrWriteJson
+--@api: lurek.filesystem.readOrWriteJson
 do
     local path = "save/settings.json"
     local data = lurek.filesystem.readOrWriteJson(path, '{"volume":80,"fullscreen":false}')
@@ -211,7 +211,7 @@ end
 
 --- Filesystem Module Part 2: file handles, binary, async, mount, watch, load
 
---@api-stub: lurek.filesystem.openFile
+--@api: lurek.filesystem.openFile
 do
     local fh = lurek.filesystem.openFile("save/test_handle.txt", "w")
     fh:write("hello from handle")
@@ -219,7 +219,7 @@ do
     print("file handle write done")
 end
 
---@api-stub: LFileHandle:read
+--@api: LFileHandle:read
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
@@ -228,7 +228,7 @@ do
     fh:close()
 end
 
---@api-stub: LFileHandle:readLine
+--@api: LFileHandle:readLine
 do
     lurek.filesystem.write("save/lines.txt", "alpha\nbeta\ngamma")
     local fh = lurek.filesystem.openFile("save/lines.txt", "r")
@@ -237,7 +237,7 @@ do
     fh:close()
 end
 
---@api-stub: LFileHandle:write
+--@api: LFileHandle:write
 do
     local fh = lurek.filesystem.openFile("save/append_test.txt", "w")
     fh:write("part1")
@@ -246,7 +246,7 @@ do
     print("wrote via handle")
 end
 
---@api-stub: LFileHandle:seek
+--@api: LFileHandle:seek
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
@@ -256,7 +256,7 @@ do
     fh:close()
 end
 
---@api-stub: LFileHandle:tell
+--@api: LFileHandle:tell
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
@@ -266,7 +266,7 @@ do
     fh:close()
 end
 
---@api-stub: LFileHandle:getSize
+--@api: LFileHandle:getSize
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
@@ -274,7 +274,7 @@ do
     fh:close()
 end
 
---@api-stub: LFileHandle:getMode
+--@api: LFileHandle:getMode
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
@@ -282,7 +282,7 @@ do
     fh:close()
 end
 
---@api-stub: LFileHandle:isEOF
+--@api: LFileHandle:isEOF
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
@@ -291,7 +291,7 @@ do
     fh:close()
 end
 
---@api-stub: LFileHandle:flush
+--@api: LFileHandle:flush
 do
     local fh = lurek.filesystem.openFile("save/flush_test.txt", "w")
     fh:write("buffered data")
@@ -300,7 +300,7 @@ do
     print("flushed")
 end
 
---@api-stub: LFileHandle:close
+--@api: LFileHandle:close
 do
     local fh = lurek.filesystem.openFile("save/close_test.txt", "w")
     fh:write("done")
@@ -308,7 +308,7 @@ do
     print("closed")
 end
 
---@api-stub: LFileHandle:type
+--@api: LFileHandle:type
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
@@ -316,7 +316,7 @@ do
     fh:close()
 end
 
---@api-stub: LFileHandle:typeOf
+--@api: LFileHandle:typeOf
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fh = lurek.filesystem.openFile("save/test_handle.txt", "r")
@@ -324,21 +324,21 @@ do
     fh:close()
 end
 
---@api-stub: lurek.filesystem.newFileData
+--@api: lurek.filesystem.newFileData
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fd = lurek.filesystem.newFileData("save/test_handle.txt")
     print("filedata size = " .. fd:getSize())
 end
 
---@api-stub: LFileData:getSize
+--@api: LFileData:getSize
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fd = lurek.filesystem.newFileData("save/test_handle.txt")
     print("size = " .. fd:getSize())
 end
 
---@api-stub: LFileData:getString
+--@api: LFileData:getString
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fd = lurek.filesystem.newFileData("save/test_handle.txt")
@@ -346,48 +346,48 @@ do
     print("content = " .. str)
 end
 
---@api-stub: LFileData:getFilename
+--@api: LFileData:getFilename
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fd = lurek.filesystem.newFileData("save/test_handle.txt")
     print("filename = " .. fd:getFilename())
 end
 
---@api-stub: LFileData:type
+--@api: LFileData:type
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fd = lurek.filesystem.newFileData("save/test_handle.txt")
     print("type = " .. fd:type())
 end
 
---@api-stub: LFileData:typeOf
+--@api: LFileData:typeOf
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local fd = lurek.filesystem.newFileData("save/test_handle.txt")
     print("is FileData = " .. tostring(fd:typeOf("LFileData")))
 end
 
---@api-stub: lurek.filesystem.readBytes
+--@api: lurek.filesystem.readBytes
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local bytes = lurek.filesystem.readBytes("save/test_handle.txt")
     print("binary read " .. #bytes .. " bytes")
 end
 
---@api-stub: lurek.filesystem.writeBytes
+--@api: lurek.filesystem.writeBytes
 do
     lurek.filesystem.writeBytes("save/binary.bin", "\x00\x01\x02\x03")
     print("wrote 4 binary bytes")
 end
 
---@api-stub: lurek.filesystem.readAsync
+--@api: lurek.filesystem.readAsync
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local ticket = lurek.filesystem.readAsync("save/test_handle.txt")
     print("async read ticket = " .. ticket)
 end
 
---@api-stub: lurek.filesystem.pollAsync
+--@api: lurek.filesystem.pollAsync
 do
     lurek.filesystem.write("save/test_handle.txt", "hello from handle")
     local ticket = lurek.filesystem.readAsync("save/test_handle.txt")
@@ -395,76 +395,76 @@ do
     print("poll result = " .. tostring(result))
 end
 
---@api-stub: lurek.filesystem.writeAsync
+--@api: lurek.filesystem.writeAsync
 do
     local ticket = lurek.filesystem.writeAsync("save/async_out.txt", "async data")
     print("async write ticket = " .. ticket)
 end
 
---@api-stub: lurek.filesystem.pollAsyncWrite
+--@api: lurek.filesystem.pollAsyncWrite
 do
     local ticket = lurek.filesystem.writeAsync("save/async_out.txt", "data")
     local result = lurek.filesystem.pollAsyncWrite(ticket)
     print("write poll = " .. tostring(result))
 end
 
---@api-stub: lurek.filesystem.mount
+--@api: lurek.filesystem.mount
 do
-    local ok = lurek.filesystem.mount("assets", "game_assets")
+    local ok = lurek.filesystem.mount("content/examples/assets", "game_assets")
     print("mount ok = " .. tostring(ok))
 end
 
---@api-stub: lurek.filesystem.unmount
+--@api: lurek.filesystem.unmount
 do
     local ok = lurek.filesystem.unmount("game_assets")
     print("unmount ok = " .. tostring(ok))
 end
 
---@api-stub: lurek.filesystem.mountZip
+--@api: lurek.filesystem.mountZip
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     print("zip prefix = " .. zip:prefix())
 end
 
---@api-stub: LZipMount:readFile
+--@api: LZipMount:readFile
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     local ok, txt = pcall(function() return zip:readFile("data/sample_hello.txt") end)
     print("zip read bytes: " .. (ok and txt and tostring(#txt) or "unavailable"))
 end
 
---@api-stub: LZipMount:contains
+--@api: LZipMount:contains
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     print("has hello = " .. tostring(zip:contains("data/sample_hello.txt")))
 end
 
---@api-stub: LZipMount:listFiles
+--@api: LZipMount:listFiles
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     local files = zip:listFiles()
     print("zip files: " .. #files)
 end
 
---@api-stub: LZipMount:prefix
+--@api: LZipMount:prefix
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     print("prefix = " .. zip:prefix())
 end
 
---@api-stub: LZipMount:type
+--@api: LZipMount:type
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     print("type = " .. zip:type())
 end
 
---@api-stub: LZipMount:typeOf
+--@api: LZipMount:typeOf
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
     print("is ZipMount = " .. tostring(zip:typeOf("LZipMount")))
 end
 
---@api-stub: lurek.filesystem.load
+--@api: lurek.filesystem.load
 do
     local path = "save/hello.lua"
     lurek.filesystem.write(path, "return 'hello from save'\n")
@@ -472,19 +472,19 @@ do
     print("loaded chunk type = " .. type(chunk))
 end
 
---@api-stub: lurek.filesystem.watchPath
+--@api: lurek.filesystem.watchPath
 do
     lurek.filesystem.watchPath("save")
     print("watching save/")
 end
 
---@api-stub: lurek.filesystem.unwatchPath
+--@api: lurek.filesystem.unwatchPath
 do
     lurek.filesystem.unwatchPath("save")
     print("unwatched save/")
 end
 
---@api-stub: lurek.filesystem.pollWatchers
+--@api: lurek.filesystem.pollWatchers
 do
     lurek.filesystem.watchPath("save")
     local changed = lurek.filesystem.pollWatchers()

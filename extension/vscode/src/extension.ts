@@ -48,6 +48,7 @@ import * as codeLensProvider from "./providers/codeLens.js";
 import { openWatchersPanel, addWatchFromEditor, setConnected as setWatchersConnected, setEvaluator as setWatchersEvaluator } from "./providers/debugWatchers.js";
 import { openSystemMonitor } from "./providers/systemMonitor.js";
 import { openApiUsageReport, quickInsertLurekApi } from "./providers/apiUsage.js";
+import { getRagContract } from "./services/ragContract.js";
 
 
 
@@ -1058,34 +1059,9 @@ window.addEventListener('resize',draw);
   });
 
   if (workspaceRoot) {
-    const RAG_WATCH_EXTENSIONS = [
-      ".md",
-      ".lua",
-      ".rs",
-      ".py",
-      ".toml",
-      ".json",
-      ".html",
-      ".js",
-      ".ts",
-      ".css",
-      ".wgsl",
-    ];
-    const RAG_WATCH_PREFIXES = new Set([
-      "AGENTS.md",
-      ".agents",
-      ".codex",
-      ".github",
-      "content",
-      "docs",
-      "extension",
-      "ideas",
-      "library",
-      "pages",
-      "src",
-      "tests",
-      "tools",
-    ]);
+    const ragContract = getRagContract(workspaceRoot);
+    const RAG_WATCH_EXTENSIONS = ragContract.watch.extensions;
+    const RAG_WATCH_PREFIXES = new Set(ragContract.watch.prefixes);
     const RAG_WATCH_DEBOUNCE_MS = 500;
     const pendingRagTargets = new Set<string>();
     let ragWatchTimer: ReturnType<typeof setTimeout> | undefined;
@@ -1103,7 +1079,8 @@ window.addEventListener('resize',draw);
       if (topLevel === "AGENTS.md") {
         return relativePath;
       }
-      const extension = path.extname(relativePath).toLowerCase();
+      const normalized = relativePath.replace(/\\/g, "/");
+      const extension = path.extname(normalized).toLowerCase();
       return RAG_WATCH_EXTENSIONS.includes(extension) ? relativePath : undefined;
     };
 

@@ -31,7 +31,7 @@ end
 -- @describe lurek.animation functions
 describe("lurek.animation functions", function()
     -- @covers lurek.animation.buildCharacter
-    it("buildCharacter returns animation and state machine handles", function()
+    it("buildCharacter returns handles and rejects non-positive clip fps", function()
         local char = lurek.animation.buildCharacter({
             texW = 64,
             texH = 16,
@@ -47,10 +47,7 @@ describe("lurek.animation functions", function()
         })
         expect_not_nil(char.animation)
         expect_not_nil(char.stateMachine)
-    end)
 
-    -- @covers lurek.animation.buildCharacter
-    it("buildCharacter rejects non-positive clip fps", function()
         expect_error(function()
             lurek.animation.buildCharacter({
                 texW = 64,
@@ -107,16 +104,12 @@ end)
 -- @describe LAnimCurve methods
 describe("LAnimCurve methods", function()
     -- @covers LAnimCurve:addKeyframe
-    it("addKeyframe stores keyframes on the curve", function()
+    it("addKeyframe stores keyframes and rejects non-finite times", function()
         local curve = lurek.animation.newCurve()
         curve:addKeyframe(0.0, 0.0)
         curve:addKeyframe(1.0, 10.0)
         expect_equal(2, curve:keyframeCount())
-    end)
 
-    -- @covers LAnimCurve:addKeyframe
-    it("addKeyframe rejects non-finite times", function()
-        local curve = lurek.animation.newCurve()
         expect_error(function()
             curve:addKeyframe(0 / 0, 1.0)
         end)
@@ -312,35 +305,28 @@ end)
 -- @describe LAnimation methods
 describe("LAnimation methods", function()
     -- @covers LAnimation:addClip
-    it("addClip registers a named clip over existing frames", function()
+    it("addClip registers named clips and rejects missing frame indices", function()
         local anim = lurek.animation.new()
         anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
         anim:addClip("walk", { 0, 1, 2, 3 }, 10, true, "forward")
         expect_equal(1, anim:getClipCount())
-    end)
 
-    -- @covers LAnimation:addClip
-    it("addClip rejects missing frame indices", function()
-        local anim = lurek.animation.new()
-        anim:addFramesFromGrid(128, 32, 32, 32, 0, 1)
+        local invalid = lurek.animation.new()
+        invalid:addFramesFromGrid(128, 32, 32, 32, 0, 1)
         expect_error(function()
-            anim:addClip("walk", { 0, 9 }, 10, true, "forward")
+            invalid:addClip("walk", { 0, 9 }, 10, true, "forward")
         end)
     end)
 
     -- @covers LAnimation:addClipFromGrid
-    it("addClipFromGrid creates frames and a clip in one call", function()
+    it("addClipFromGrid creates frames and rejects non-positive fps", function()
         local anim = lurek.animation.new()
         anim:addClipFromGrid("sprint", 256, 64, 32, 32, 0, 8, 15, true)
         expect_true(anim:getFrameCount() >= 8)
         expect_equal(1, anim:getClipCount())
-    end)
 
-    -- @covers LAnimation:addClipFromGrid
-    it("addClipFromGrid rejects non-positive fps", function()
-        local anim = lurek.animation.new()
         expect_error(function()
-            anim:addClipFromGrid("sprint", 256, 64, 32, 32, 0, 8, 0, true)
+            lurek.animation.new():addClipFromGrid("sprint", 256, 64, 32, 32, 0, 8, 0, true)
         end)
     end)
 
@@ -371,16 +357,11 @@ describe("LAnimation methods", function()
     end)
 
     -- @covers LAnimation:crossfade
-    it("crossfade starts a blend toward another clip", function()
+    it("crossfade starts blends and rejects negative duration", function()
         local anim = make_basic_animation()
         anim:play("idle")
         expect_true(anim:crossfade("run", 0.3))
-    end)
 
-    -- @covers LAnimation:crossfade
-    it("crossfade rejects negative duration", function()
-        local anim = make_basic_animation()
-        anim:play("idle")
         expect_error(function()
             anim:crossfade("run", -0.3)
         end)
@@ -538,15 +519,11 @@ describe("LAnimation methods", function()
     end)
 
     -- @covers LAnimation:setSpeed
-    it("setSpeed updates the playback speed multiplier", function()
+    it("setSpeed updates the playback multiplier and rejects negatives", function()
         local anim = lurek.animation.new()
         anim:setSpeed(2.0)
         expect_near(2.0, anim:getSpeed(), 1e-5)
-    end)
 
-    -- @covers LAnimation:setSpeed
-    it("setSpeed rejects negative values", function()
-        local anim = lurek.animation.new()
         expect_error(function()
             anim:setSpeed(-1.0)
         end)
@@ -573,17 +550,12 @@ describe("LAnimation methods", function()
     end)
 
     -- @covers LAnimation:update
-    it("update advances playback over time", function()
+    it("update advances playback and rejects negative delta time", function()
         local anim = make_basic_animation()
         anim:play("idle")
         anim:update(0.6)
         expect_type("number", anim:getCurrentFrame())
-    end)
 
-    -- @covers LAnimation:update
-    it("update rejects negative delta time", function()
-        local anim = make_basic_animation()
-        anim:play("idle")
         expect_error(function()
             anim:update(-0.1)
         end)

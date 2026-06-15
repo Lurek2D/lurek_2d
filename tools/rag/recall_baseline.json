@@ -21,8 +21,9 @@
   },
   {
     "query": "keyboard input lua API examples tests",
+    "runner": "context",
     "profile": "all",
-    "must_match_any": ["content/examples/input.lua", "tests/lua/unit/test_input_core_unit.lua", "docs/wiki/API-Reference.md"]
+    "must_match_any": ["content/examples/input.lua", "tests/lua/unit/test_input_unit.lua", "docs/modules/input.md", "docs/specs/input.md"]
   },
   {
     "query": "Lua unit tests public API coverage",
@@ -81,8 +82,9 @@
   },
   {
     "query": "Lua evidence tests golden artifacts",
+    "runner": "context",
     "profile": "game",
-    "must_match_any": [".codex/skills/create-test-evidence/SKILL.md", "tests/lua/evidence/", "tools/audit/golden_test.py"]
+    "must_match_any": [".codex/skills/create-test-evidence/SKILL.md", "tests/lua/evidence/", "tests/lua/golden/", "tools/audit/lua_evidence_golden_contract_audit.py"]
   },
   {
     "query": "tools audit validator CLI registry",
@@ -192,7 +194,7 @@
   {
     "query": "docs site generated pages output",
     "profile": "all",
-    "must_match_any": [".codex/skills/create-pages/SKILL.md", "pages/AGENTS.md", "docs/templates/AGENTS.md"]
+    "must_match_any": [".codex/skills/create-pages/SKILL.md", "docs/templates/AGENTS.md", "pages/"]
   },
   {
     "query": "RAG recall tests ranking chunking source priorities",
@@ -251,6 +253,7 @@
   },
   {
     "query": "root AGENTS repo workflow RAG MCP",
+    "runner": "context",
     "profile": "engine",
     "must_match_any": ["AGENTS.md", ".codex/AGENTS.md", "tools/AGENTS.md"]
   },
@@ -281,8 +284,9 @@
   },
   {
     "query": "pages AGENTS generated docs site output",
+    "runner": "context",
     "profile": "all",
-    "must_match_any": ["pages/AGENTS.md", ".codex/skills/create-pages/SKILL.md", "pages/"]
+    "must_match_any": [".codex/skills/create-pages/SKILL.md", "docs/templates/AGENTS.md", "docs/AGENTS.md"]
   },
   {
     "query": "src lua_api AGENTS thin wrappers registration only",
@@ -310,7 +314,33 @@
     "must_match_any": ["tools/rag/read.py", "tools/rag/query.py", "tools/rag/context.py"]
   },
   {
+    "query": "player movement keyboard input example",
+    "runner": "context",
+    "profile": "game",
+    "must_match_any": ["content/examples/input.lua", "docs/modules/input.md", "docs/specs/input.md"]
+  },
+  {
+    "query": "how do I use the window module fullscreen title dpi example",
+    "runner": "context",
+    "profile": "game",
+    "must_match_any": ["content/examples/window.lua", "docs/modules/window.md", "src/lua_api/window_api.rs"]
+  },
+  {
+    "query": "which mcp tool should I run for example coverage validation",
+    "runner": "context",
+    "profile": "engine",
+    "must_match_any": ["tools/mcp/lurek_mcp_server.py", "tools/audit/example_coverage.py"],
+    "must_tool_any": ["lua_example_coverage"]
+  },
+  {
+    "query": "AGENTS skill workflow mcp tool",
+    "runner": "context",
+    "profile": "engine",
+    "must_match_any": ["tools/AGENTS.md", ".codex/skills/create-rag-artifact/SKILL.md", "tools/mcp/lurek_mcp_server.py"]
+  },
+  {
     "query": "agent context bundle prompt searches deduplicated chunks",
+    "runner": "context",
     "profile": "engine",
     "must_match_any": ["tools/rag/context.py", "tools/rag/query.py", ".codex/skills/create-rag-artifact/SKILL.md"]
   },
@@ -333,5 +363,55 @@
     "query": "snippet validate vscode snippets",
     "profile": "game",
     "must_match_any": ["tools/validate/validate_snippets.py", "tools/snippets/gen_vscode_snippets.py", "content/snippets/AGENTS.md"]
+  },
+  {
+    "query": "how do I play music and sound effects in Lua example",
+    "runner": "context",
+    "profile": "game",
+    "must_match_any": ["content/examples/audio.lua", "docs/modules/audio.md", "src/lua_api/audio_api.rs"]
+  },
+  {
+    "query": "camera follow zoom shake Lua example",
+    "runner": "context",
+    "profile": "game",
+    "must_match_any": ["content/examples/camera.lua", "docs/modules/camera.md", "docs/specs/camera.md"]
+  },
+  {
+    "query": "physics collisions rigidbody sensors Lua example",
+    "runner": "context",
+    "profile": "game",
+    "must_match_any": ["content/examples/physics.lua", "docs/modules/physics.md", "docs/specs/physics.md"]
+  },
+  {
+    "query": "sprite draw animation image Lua example",
+    "runner": "context",
+    "profile": "game",
+    "must_match_any": ["content/examples/sprite.lua", "docs/modules/sprite.md", "src/lua_api/sprite_api.rs"]
+  },
+  {
+    "query": "scene switching state management Lua example",
+    "runner": "context",
+    "profile": "game",
+    "must_match_any": ["content/examples/scene.lua", "docs/modules/scene.md", "docs/specs/scene.md"]
+  },
+  {
+    "query": "which MCP tool gives agent RAG context bundle",
+    "runner": "context",
+    "profile": "engine",
+    "must_match_any": ["tools/mcp/lurek_mcp_server.py", "tools/rag/context.py"],
+    "must_tool_any": ["rag_context_bundle"]
+  },
+  {
+    "query": "which MCP tool rebuilds the RAG index",
+    "runner": "context",
+    "profile": "engine",
+    "must_match_any": ["tools/mcp/lurek_mcp_server.py", "tools/rag/build_index.py"],
+    "must_tool_any": ["rag_rebuild_index"]
+  },
+  {
+    "query": "which skill should I use to create a Lua API example",
+    "runner": "context",
+    "profile": "game",
+    "must_match_any": [".codex/skills/create-example/SKILL.md", "content/examples/AGENTS.md", "tools/AGENTS.md"]
   }
 ]

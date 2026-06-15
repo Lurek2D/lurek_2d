@@ -4,14 +4,14 @@
 
 --- System/Runtime Module: version, OS, hardware, args, clipboard, logging, config, batch, power, messages
 
---@api-stub: lurek.runtime.getVersion
+--@api: lurek.runtime.getVersion
 do
     local version = lurek.runtime.getVersion()
     print("engine version = " .. version)
     print("major tag = " .. tostring(version:match("^[^.]+")))
 end
 
---@api-stub: lurek.runtime.getInfo
+--@api: lurek.runtime.getInfo
 do
     local info = lurek.runtime.getInfo()
     print("engine = " .. info.engine .. " version = " .. info.version)
@@ -19,21 +19,21 @@ do
     print("processors = " .. info.processors .. " memory = " .. info.memory)
 end
 
---@api-stub: lurek.runtime.getProcessorCount
+--@api: lurek.runtime.getProcessorCount
 do
     local cpus = lurek.runtime.getProcessorCount()
     print("logical processors = " .. cpus)
     print("has cpu info = " .. tostring(cpus >= 1))
 end
 
---@api-stub: lurek.runtime.getArgs
+--@api: lurek.runtime.getArgs
 do
     local args = lurek.runtime.getArgs()
     print("raw args count = " .. #args)
     print("first arg = " .. tostring(args[1]))
 end
 
---@api-stub: lurek.runtime.parseArgs
+--@api: lurek.runtime.parseArgs
 do
     local parsed = lurek.runtime.parseArgs({"--debug", "--level=5", "demo.lua", "--", "tail.txt"})
     print("debug flag = " .. tostring(parsed.flags.debug))
@@ -41,14 +41,14 @@ do
     print("positional count = " .. #parsed.positional)
 end
 
---@api-stub: lurek.runtime.getEnv
+--@api: lurek.runtime.getEnv
 do
     local path = lurek.runtime.getEnv("PATH")
     print("PATH set = " .. tostring(path ~= nil))
     print("missing var = " .. tostring(lurek.runtime.getEnv("LUREK_NONEXISTENT_VAR") == nil))
 end
 
---@api-stub: lurek.runtime.getClipboardText
+--@api: lurek.runtime.getClipboardText
 do
     lurek.runtime.setClipboardText("Hello from Lurek2D!")
     local text = lurek.runtime.getClipboardText()
@@ -56,20 +56,20 @@ do
     print("clipboard len = " .. #text)
 end
 
---@api-stub: lurek.runtime.openURL
+--@api: lurek.runtime.openURL
 do
     local ok = lurek.runtime.openURL("https://lurek2d.dev")
     print("open https = " .. tostring(ok))
 end
 
---@api-stub: lurek.runtime.log
+--@api: lurek.runtime.log
 do
     lurek.runtime.log("info", "Game starting up")
     lurek.runtime.log("debug", "Loading runtime example block")
     print("logged runtime messages")
 end
 
---@api-stub: lurek.runtime.getConfig
+--@api: lurek.runtime.getConfig
 do
     local config = lurek.runtime.getConfig()
     print("runtime mode = " .. config.runtime_mode)
@@ -77,7 +77,7 @@ do
     print("config revision = " .. config.config_reload_revision)
 end
 
---@api-stub: lurek.runtime.setDebugOverlay
+--@api: lurek.runtime.setDebugOverlay
 do
     local before = lurek.runtime.getDebugOverlay()
     print("debug overlay before = " .. tostring(before))
@@ -87,7 +87,7 @@ do
     print("after disable = " .. tostring(lurek.runtime.getDebugOverlay()))
 end
 
---@api-stub: lurek.runtime.getPowerInfo
+--@api: lurek.runtime.getPowerInfo
 do
     local state, percent, seconds = lurek.runtime.getPowerInfo()
     print("power state = " .. state)
@@ -95,14 +95,14 @@ do
     print("seconds = " .. tostring(seconds))
 end
 
---@api-stub: lurek.runtime.getPreferredLocales
+--@api: lurek.runtime.getPreferredLocales
 do
     local locales = lurek.runtime.getPreferredLocales()
     print("locale count = " .. #locales)
     print("first locale = " .. tostring(locales[1]))
 end
 
---@api-stub: lurek.runtime.runBatch
+--@api: lurek.runtime.runBatch
 do
     local results = lurek.runtime.runBatch({
         ping = function()
@@ -117,7 +117,7 @@ do
     print("fail status = " .. results.fail.status)
 end
 
---@api-stub: lurek.runtime.errorSnapshot
+--@api: lurek.runtime.errorSnapshot
 do
     local snapshot = lurek.runtime.errorSnapshot("Something went wrong in level 3")
     print("snapshot type = " .. type(snapshot))
@@ -125,14 +125,14 @@ do
     print("contains message field = " .. tostring(snapshot:find('"message"') ~= nil))
 end
 
---@api-stub: lurek.runtime.getMessage
+--@api: lurek.runtime.getMessage
 do
     local key = "engine.welcome"
     print("has engine.welcome = " .. tostring(lurek.runtime.hasMessage(key)))
     print("message = " .. tostring(lurek.runtime.getMessage(key)))
 end
 
---@api-stub: lurek.runtime.getLastError
+--@api: lurek.runtime.getLastError
 do
     local err = lurek.runtime.getLastError()
     print("last error = " .. tostring(err and err.message))
@@ -141,26 +141,26 @@ end
 
 --- System/Runtime Part 1: coverage for lurek.runtime functions missing from system_00
 
---@api-stub: lurek.runtime.getOS
+--@api: lurek.runtime.getOS
 do
     local os = lurek.runtime.getOS()
     print("os = " .. os)
 end
 
---@api-stub: lurek.runtime.getArch
+--@api: lurek.runtime.getArch
 do
     local arch = lurek.runtime.getArch()
     print("arch = " .. arch)
 end
 
---@api-stub: lurek.runtime.getMemorySize
+--@api: lurek.runtime.getMemorySize
 do
     local memory = lurek.runtime.getMemorySize()
     print("mem_mb = " .. memory)
     print("memory ok = " .. tostring(memory >= 0))
 end
 
---@api-stub: lurek.runtime.setLogLevel
+--@api: lurek.runtime.setLogLevel
 do
     local before = lurek.runtime.getLogLevel()
     lurek.runtime.setLogLevel("info")
@@ -168,31 +168,31 @@ do
     print("after = " .. lurek.runtime.getLogLevel())
 end
 
---@api-stub: lurek.runtime.getLogLevel
+--@api: lurek.runtime.getLogLevel
 do
     local lvl = lurek.runtime.getLogLevel()
     print("log_level = " .. lvl)
 end
 
---@api-stub: lurek.runtime.setClipboardText
+--@api: lurek.runtime.setClipboardText
 do
     lurek.runtime.setClipboardText("lurek_test")
     print("clipboard = " .. tostring(lurek.runtime.getClipboardText()))
 end
 
---@api-stub: lurek.runtime.hasMessage
+--@api: lurek.runtime.hasMessage
 do
     local v = lurek.runtime.hasMessage("engine.welcome")
     print("has_msg = " .. tostring(v))
 end
 
---@api-stub: lurek.runtime.getMessageCount
+--@api: lurek.runtime.getMessageCount
 do
     local n = lurek.runtime.getMessageCount()
     print("msg_count = " .. n)
 end
 
---@api-stub: lurek.runtime.getBatchResults
+--@api: lurek.runtime.getBatchResults
 do
     local results = {
         ok = { status = "passed" },
@@ -203,13 +203,13 @@ do
     print("batch_results = " .. passed .. "/" .. failed .. "/" .. skipped)
 end
 
---@api-stub: lurek.runtime.getDebugOverlay
+--@api: lurek.runtime.getDebugOverlay
 do
     local overlay = lurek.runtime.getDebugOverlay()
     print("overlay enabled = " .. tostring(overlay))
 end
 
---@api-stub: lurek.runtime.reloadConfig
+--@api: lurek.runtime.reloadConfig
 do
     local before = lurek.runtime.getConfig().config_reload_revision
     lurek.runtime.reloadConfig()

@@ -4,7 +4,7 @@
 
 --- Parallax Module Part 1: layer creation, scroll, visibility, tiling, depth
 
---@api-stub: lurek.parallax.newLayer
+--@api: lurek.parallax.newLayer
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -21,7 +21,7 @@ do
     print("z = " .. layer:getZ())
 end
 
---@api-stub: lurek.parallax.newPresetLayer
+--@api: lurek.parallax.newPresetLayer
 do
     local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local far = lurek.parallax.newPresetLayer("far", img)
@@ -30,7 +30,7 @@ do
     print("mid z = " .. mid:getZ())
 end
 
---@api-stub: LParallaxLayer:setScrollFactor
+--@api: LParallaxLayer:setScrollFactor
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -39,7 +39,7 @@ do
     print("scroll = " .. sx .. "," .. sy)
 end
 
---@api-stub: LParallaxLayer:getScrollFactor
+--@api: LParallaxLayer:getScrollFactor
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -51,7 +51,7 @@ do
     print("scroll = " .. sx .. "," .. sy)
 end
 
---@api-stub: LParallaxLayer:setOffset
+--@api: LParallaxLayer:setOffset
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -60,7 +60,7 @@ do
     print("offset = " .. ox .. "," .. oy)
 end
 
---@api-stub: LParallaxLayer:getOffset
+--@api: LParallaxLayer:getOffset
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -72,7 +72,7 @@ do
     print("offset = " .. ox .. "," .. oy)
 end
 
---@api-stub: LParallaxLayer:setDepth
+--@api: LParallaxLayer:setDepth
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -80,7 +80,7 @@ do
     print("depth = " .. layer:getDepth())
 end
 
---@api-stub: LParallaxLayer:getDepth
+--@api: LParallaxLayer:getDepth
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -90,7 +90,7 @@ do
     print("depth = " .. layer:getDepth())
 end
 
---@api-stub: LParallaxLayer:setZ
+--@api: LParallaxLayer:setZ
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -98,7 +98,7 @@ do
     print("z = " .. layer:getZ())
 end
 
---@api-stub: LParallaxLayer:getZ
+--@api: LParallaxLayer:getZ
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -108,7 +108,7 @@ do
     print("z = " .. layer:getZ())
 end
 
---@api-stub: LParallaxLayer:setVisible
+--@api: LParallaxLayer:setVisible
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -118,7 +118,7 @@ do
     print("visible = " .. tostring(layer:isVisible()))
 end
 
---@api-stub: LParallaxLayer:isVisible
+--@api: LParallaxLayer:isVisible
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -128,7 +128,7 @@ do
     print("visible = " .. tostring(layer:isVisible()))
 end
 
---@api-stub: LParallaxLayer:setOpacity
+--@api: LParallaxLayer:setOpacity
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -136,7 +136,7 @@ do
     print("opacity = " .. layer:getOpacity())
 end
 
---@api-stub: LParallaxLayer:getOpacity
+--@api: LParallaxLayer:getOpacity
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -146,7 +146,7 @@ do
     print("opacity = " .. layer:getOpacity())
 end
 
---@api-stub: LParallaxLayer:setTiling
+--@api: LParallaxLayer:setTiling
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -154,7 +154,7 @@ do
     print("tiling = " .. tostring(layer:getTiling()))
 end
 
---@api-stub: LParallaxLayer:getTiling
+--@api: LParallaxLayer:getTiling
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -164,7 +164,7 @@ do
     print("tiling = " .. tostring(layer:getTiling()))
 end
 
---@api-stub: LParallaxLayer:setTileSize
+--@api: LParallaxLayer:setTileSize
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -177,7 +177,7 @@ do
     print("rendered tiled layer")
 end
 
---@api-stub: LParallaxLayer:setRepeat
+--@api: LParallaxLayer:setRepeat
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -187,7 +187,7 @@ do
     print("z = " .. layer:getZ())
 end
 
---@api-stub: LParallaxLayer:setScale
+--@api: LParallaxLayer:setScale
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -197,7 +197,7 @@ do
     print("type = " .. layer:type())
 end
 
---@api-stub: LParallaxLayer:setTint
+--@api: LParallaxLayer:setTint
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -206,7 +206,7 @@ do
     print("tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LParallaxLayer:getTint
+--@api: LParallaxLayer:getTint
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -220,7 +220,7 @@ do
     print("tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LParallaxLayer:setBlendMode
+--@api: LParallaxLayer:setBlendMode
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -230,7 +230,7 @@ do
     print("blend = " .. layer:getBlendMode())
 end
 
---@api-stub: LParallaxLayer:getBlendMode
+--@api: LParallaxLayer:getBlendMode
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -240,7 +240,7 @@ do
     print("blend = " .. layer:getBlendMode())
 end
 
---@api-stub: LParallaxLayer:setClamp
+--@api: LParallaxLayer:setClamp
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -250,7 +250,7 @@ do
     print("clamp cleared")
 end
 
---@api-stub: LParallaxLayer:clearClamp
+--@api: LParallaxLayer:clearClamp
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -262,7 +262,7 @@ end
 
 --- Parallax Module Part 2: autoscroll, motion stretch, effects, sets, rendering
 
---@api-stub: LParallaxLayer:setAutoscroll
+--@api: LParallaxLayer:setAutoscroll
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -274,7 +274,7 @@ do
     print("autoscroll reset")
 end
 
---@api-stub: LParallaxLayer:getAutoscroll
+--@api: LParallaxLayer:getAutoscroll
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -286,7 +286,7 @@ do
     print("autoscroll = " .. vx .. "," .. vy)
 end
 
---@api-stub: LParallaxLayer:resetAutoscroll
+--@api: LParallaxLayer:resetAutoscroll
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -298,7 +298,7 @@ do
     print("autoscroll reset")
 end
 
---@api-stub: LParallaxLayer:setMotionStretch
+--@api: LParallaxLayer:setMotionStretch
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -307,7 +307,7 @@ do
     print("stretch enabled=" .. tostring(enabled) .. " strength=" .. strength .. " max=" .. max_scale)
 end
 
---@api-stub: LParallaxLayer:getMotionStretch
+--@api: LParallaxLayer:getMotionStretch
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -320,7 +320,7 @@ do
     print("stretch enabled=" .. tostring(enabled) .. " strength=" .. strength .. " max=" .. max_scale)
 end
 
---@api-stub: LParallaxLayer:addEffectPass
+--@api: LParallaxLayer:addEffectPass
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -331,7 +331,7 @@ do
     print("after clear = " .. layer:effectCount())
 end
 
---@api-stub: LParallaxLayer:effectCount
+--@api: LParallaxLayer:effectCount
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -342,7 +342,7 @@ do
     print("after clear = " .. layer:effectCount())
 end
 
---@api-stub: LParallaxLayer:clearEffects
+--@api: LParallaxLayer:clearEffects
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -353,7 +353,7 @@ do
     print("after clear = " .. layer:effectCount())
 end
 
---@api-stub: LParallaxLayer:render
+--@api: LParallaxLayer:render
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -364,7 +364,7 @@ do
     print("rendered")
 end
 
---@api-stub: LParallaxLayer:renderAuto
+--@api: LParallaxLayer:renderAuto
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -375,7 +375,7 @@ do
     print("rendered")
 end
 
---@api-stub: LParallaxLayer:update
+--@api: LParallaxLayer:update
 do
     local image = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({ texture = image })
@@ -386,14 +386,14 @@ do
     print("rendered")
 end
 
---@api-stub: lurek.parallax.newSet
+--@api: lurek.parallax.newSet
 do
     local set = lurek.parallax.newSet("background")
     print("name = " .. set:getName() .. " type = " .. set:type())
     print("layers = " .. set:layerCount())
 end
 
---@api-stub: LParallaxSet:addLayer
+--@api: LParallaxSet:addLayer
 do
     local set = lurek.parallax.newSet("scene")
     set:addLayer(lurek.parallax.newLayer({
@@ -412,7 +412,7 @@ do
     print("removed = " .. tostring(set:removeLayerAt(2)) .. " layers = " .. set:layerCount())
 end
 
---@api-stub: LParallaxSet:layerCount
+--@api: LParallaxSet:layerCount
 do
     local set = lurek.parallax.newSet("scene")
     set:addLayer(lurek.parallax.newLayer({
@@ -431,7 +431,7 @@ do
     print("removed = " .. tostring(set:removeLayerAt(2)) .. " layers = " .. set:layerCount())
 end
 
---@api-stub: LParallaxSet:removeLayerAt
+--@api: LParallaxSet:removeLayerAt
 do
     local set = lurek.parallax.newSet("scene")
     set:addLayer(lurek.parallax.newLayer({
@@ -450,7 +450,7 @@ do
     print("removed = " .. tostring(set:removeLayerAt(2)) .. " layers = " .. set:layerCount())
 end
 
---@api-stub: LParallaxSet:getLayerZAt
+--@api: LParallaxSet:getLayerZAt
 do
     local set = lurek.parallax.newSet("sorted")
     set:addLayer(lurek.parallax.newLayer({
@@ -467,7 +467,7 @@ do
     print("sorted: z at 1 = " .. tostring(set:getLayerZAt(1)))
 end
 
---@api-stub: LParallaxSet:sortByZ
+--@api: LParallaxSet:sortByZ
 do
     local set = lurek.parallax.newSet("sorted")
     set:addLayer(lurek.parallax.newLayer({
@@ -484,7 +484,7 @@ do
     print("sorted: z at 1 = " .. tostring(set:getLayerZAt(1)))
 end
 
---@api-stub: LParallaxSet:setName
+--@api: LParallaxSet:setName
 do
     local set = lurek.parallax.newSet("temp")
     set:setName("sky_layers")
@@ -495,14 +495,14 @@ do
     print("visible = " .. tostring(set:isVisible()))
 end
 
---@api-stub: LParallaxSet:getName
+--@api: LParallaxSet:getName
 do
     local set = lurek.parallax.newSet("temp")
     set:setName("sky_layers")
     print("name = " .. set:getName())
 end
 
---@api-stub: LParallaxSet:setVisible
+--@api: LParallaxSet:setVisible
 do
     local set = lurek.parallax.newSet("temp")
     set:setName("sky_layers")
@@ -513,14 +513,14 @@ do
     print("visible = " .. tostring(set:isVisible()))
 end
 
---@api-stub: LParallaxSet:isVisible
+--@api: LParallaxSet:isVisible
 do
     local set = lurek.parallax.newSet("temp")
     set:setVisible(false)
     print("visible = " .. tostring(set:isVisible()))
 end
 
---@api-stub: LParallaxSet:render
+--@api: LParallaxSet:render
 do
     local set = lurek.parallax.newSet("world")
     local layer = lurek.parallax.newLayer({
@@ -535,7 +535,7 @@ do
     print("set rendered")
 end
 
---@api-stub: LParallaxSet:renderAuto
+--@api: LParallaxSet:renderAuto
 do
     local set = lurek.parallax.newSet("world")
     local layer = lurek.parallax.newLayer({
@@ -550,7 +550,7 @@ do
     print("set rendered")
 end
 
---@api-stub: LParallaxSet:update
+--@api: LParallaxSet:update
 do
     local set = lurek.parallax.newSet("world")
     local layer = lurek.parallax.newLayer({
@@ -567,7 +567,7 @@ end
 
 --- Parallax Module Part 2: layer type, set type
 
---@api-stub: LParallaxLayer:type
+--@api: LParallaxLayer:type
 do
     local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
     local layer = lurek.parallax.newLayer({
@@ -579,22 +579,32 @@ do
     print(layer:type())
 end
 
---@api-stub: LParallaxSet:type
+--@api: LParallaxSet:type
 do
     local set = lurek.parallax.newSet("bg_set")
     print(set:type())
 end
 
---@api-stub: LParallaxLayer:getStats
+--@api: LParallaxLayer:getStats
 do
-    -- TODO: example for LParallaxLayer:getStats
-    -- keep this block until a real scenario is added
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local layer = lurek.parallax.newLayer({ texture = img, z = 3, depth = 0.4, tiling = true })
+    layer:setAutoscroll(16, 0)
+    layer:addEffectPass("tint", { r = 1.0, g = 0.8, b = 0.6, a = 1.0 })
+    local stats = layer:getStats()
+    print("layer stats tiles=" .. stats.visible_tile_count .. " effects=" .. stats.effect_pass_count)
+    print("layer stats z=" .. stats.z .. " depth=" .. stats.depth)
 end
 
 
---@api-stub: LParallaxSet:getStats
+--@api: LParallaxSet:getStats
 do
-    -- TODO: example for LParallaxSet:getStats
-    -- keep this block until a real scenario is added
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
+    local set = lurek.parallax.newSet("stats_set")
+    set:addLayer(lurek.parallax.newLayer({ texture = img, z = 1, tiling = true }))
+    set:addLayer(lurek.parallax.newLayer({ texture = img, z = 5, depth = 0.7 }))
+    local stats = set:getStats()
+    print("set stats name=" .. stats.name .. " layers=" .. stats.layer_count)
+    print("set stats visible tiles=" .. stats.visible_tile_count .. " effects=" .. stats.effect_pass_count)
 end
 

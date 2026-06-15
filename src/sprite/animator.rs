@@ -2,6 +2,7 @@
 //!
 //! This module owns playback state transitions and frame stepping rules. Lua
 //! bindings should stay thin and delegate update logic to this type.
+//! Module API documentation
 
 use std::collections::HashMap;
 

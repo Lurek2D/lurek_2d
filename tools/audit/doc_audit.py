@@ -176,7 +176,7 @@ def generate_report(rust_analysis: dict, lua_analysis: dict) -> str:
     lines.append("|--------|-------|------------|---------|----------|")
     for mod_name, info in sorted(rust_analysis["by_module"].items()):
         pct = round(info["documented"] / info["total"] * 100, 1) if info["total"] else 100.0
-        status = "✓" if pct == 100.0 else ""
+        status = "OK" if pct == 100.0 else ""
         lines.append(
             f"| {mod_name} | {info['total']} | {info['documented']} | "
             f"{info['total'] - info['documented']} | {pct}% {status} |"

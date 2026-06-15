@@ -15,7 +15,7 @@ local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
 -- LOAD / UNLOAD  (text-like types read content; binary types store path ref)
 -- ─────────────────────────────────────────────────────────────────────────────
 
---@api-stub: lurek.asset.load
+--@api: lurek.asset.load
 do
     -- Minimal load: text type reads file content immediately.
     local h = lurek.asset.load(PATH_TEXT, "text")
@@ -69,14 +69,14 @@ do
     lurek.asset.unload(h)
 end
 
---@api-stub: lurek.asset.unload
+--@api: lurek.asset.unload
 do
     local h = lurek.asset.load(PATH_TEXT, "text")
     lurek.asset.unload(h)
     print("unloaded, isLoaded=" .. tostring(lurek.asset.isLoaded(h)))
 end
 
---@api-stub: lurek.asset.get
+--@api: lurek.asset.get
 do
     -- get() for text-like types returns cached file content as a string.
     local h = lurek.asset.load(PATH_TEXT, "text")
@@ -91,7 +91,7 @@ do
     lurek.asset.unload(ht)
 end
 
---@api-stub: lurek.asset.preload
+--@api: lurek.asset.preload
 do
     local results = {}
     lurek.asset.preload(
@@ -112,14 +112,14 @@ do
     lurek.asset.clear()
 end
 
---@api-stub: lurek.asset.refcount
+--@api: lurek.asset.refcount
 do
     local h = lurek.asset.load(PATH_TEXT, "text")
     print("refcount=" .. lurek.asset.refcount(h))
     lurek.asset.unload(h)
 end
 
---@api-stub: lurek.asset.isLoaded
+--@api: lurek.asset.isLoaded
 do
     local h = lurek.asset.load(PATH_TEXT, "text")
     print("isLoaded=" .. tostring(lurek.asset.isLoaded(h)))
@@ -127,7 +127,7 @@ do
     print("isLoaded after unload=" .. tostring(lurek.asset.isLoaded(h)))
 end
 
---@api-stub: lurek.asset.stats
+--@api: lurek.asset.stats
 do
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   "json",   {group = "data"})
@@ -141,7 +141,7 @@ do
     lurek.asset.clear()
 end
 
---@api-stub: lurek.asset.clear
+--@api: lurek.asset.clear
 do
     lurek.asset.load(PATH_TEXT, "text")
     lurek.asset.clear()
@@ -152,14 +152,14 @@ end
 -- GETPATH / GETTYPE / GETINFO
 -- ─────────────────────────────────────────────────────────────────────────────
 
---@api-stub: lurek.asset.getPath
+--@api: lurek.asset.getPath
 do
     local h = lurek.asset.load(PATH_TOML, "toml")
     print("path=" .. lurek.asset.getPath(h))
     lurek.asset.unload(h)
 end
 
---@api-stub: lurek.asset.getType
+--@api: lurek.asset.getType
 do
     local h = lurek.asset.load(PATH_TOML, "toml")
     print("type=" .. lurek.asset.getType(h))   -- "toml"
@@ -170,7 +170,7 @@ do
     lurek.asset.unload(hm)
 end
 
---@api-stub: lurek.asset.getInfo
+--@api: lurek.asset.getInfo
 do
     local h = lurek.asset.load(PATH_JSON, "json", {
         name  = "ui_config",
@@ -191,7 +191,7 @@ end
 -- NAME / GROUP
 -- ─────────────────────────────────────────────────────────────────────────────
 
---@api-stub: lurek.asset.setName
+--@api: lurek.asset.setName
 do
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.setName(h, "font_atlas")
@@ -199,7 +199,7 @@ do
     lurek.asset.unload(h)
 end
 
---@api-stub: lurek.asset.getName
+--@api: lurek.asset.getName
 do
     local h = lurek.asset.load(PATH_TOML, "toml")
     -- No explicit name: getName returns the path file-stem ("Cargo").
@@ -209,7 +209,7 @@ do
     lurek.asset.unload(h)
 end
 
---@api-stub: lurek.asset.setGroup
+--@api: lurek.asset.setGroup
 do
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.setGroup(h, "level_1")
@@ -217,7 +217,7 @@ do
     lurek.asset.unload(h)
 end
 
---@api-stub: lurek.asset.getGroup
+--@api: lurek.asset.getGroup
 do
     local h = lurek.asset.load(PATH_JSON, "json")
     print("getGroup (unset)=" .. lurek.asset.getGroup(h))   -- ""
@@ -230,7 +230,7 @@ end
 -- TAGS
 -- ─────────────────────────────────────────────────────────────────────────────
 
---@api-stub: lurek.asset.addTag
+--@api: lurek.asset.addTag
 do
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.addTag(h, "config")
@@ -239,7 +239,7 @@ do
     lurek.asset.unload(h)
 end
 
---@api-stub: lurek.asset.removeTag
+--@api: lurek.asset.removeTag
 do
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.addTag(h, "temp")
@@ -249,7 +249,7 @@ do
     lurek.asset.unload(h)
 end
 
---@api-stub: lurek.asset.getTags
+--@api: lurek.asset.getTags
 do
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.addTag(h, "sfx")
@@ -259,7 +259,7 @@ do
     lurek.asset.unload(h)
 end
 
---@api-stub: lurek.asset.hasTag
+--@api: lurek.asset.hasTag
 do
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.addTag(h, "enemy")
@@ -272,7 +272,7 @@ end
 -- SEARCH
 -- ─────────────────────────────────────────────────────────────────────────────
 
---@api-stub: lurek.asset.findByName
+--@api: lurek.asset.findByName
 do
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_TOML,   "toml", {name = "ProjectConfig"})
@@ -287,7 +287,7 @@ do
     lurek.asset.clear()
 end
 
---@api-stub: lurek.asset.findByGroup
+--@api: lurek.asset.findByGroup
 do
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   "json",   {group = "ui"})
@@ -301,7 +301,7 @@ do
     lurek.asset.clear()
 end
 
---@api-stub: lurek.asset.findByTag
+--@api: lurek.asset.findByTag
 do
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   "json")
@@ -318,7 +318,7 @@ do
     lurek.asset.clear()
 end
 
---@api-stub: lurek.asset.findByType
+--@api: lurek.asset.findByType
 do
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   "json")
@@ -339,14 +339,14 @@ end
 -- LAssetHandle methods
 -- ─────────────────────────────────────────────────────────────────────────────
 
---@api-stub: LAssetHandle:type
+--@api: LAssetHandle:type
 do
     local h = lurek.asset.load(PATH_TEXT, "text")
     print("type=" .. h:type())                    -- "LAssetHandle"
     lurek.asset.unload(h)
 end
 
---@api-stub: LAssetHandle:typeOf
+--@api: LAssetHandle:typeOf
 do
     local h = lurek.asset.load(PATH_TEXT, "text")
     print("typeOf LAssetHandle=" .. tostring(h:typeOf("LAssetHandle")))

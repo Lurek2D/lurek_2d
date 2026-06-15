@@ -678,6 +678,17 @@ LGlobe:applyMouseDrag(start_x, start_y, end_x, end_y)
 | `end_x` | number | Drag end x. |
 | `end_y` | number | Drag end y. |
 
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("mouse_drag_globe")
+    g:applyMouseDrag(320, 180, 360, 210)
+    local lat, lon, zoom = g:getCamera()
+    print("camera after drag = " .. lat .. "," .. lon .. "," .. zoom)
+end
+```
+
 ---
 
 #### `LGlobe:applyWheelZoom`
@@ -693,6 +704,17 @@ LGlobe:applyWheelZoom(delta)
 | Name | Type | Description |
 |------|------|-------------|
 | `delta` | number | Wheel delta where positive zooms in and negative zooms out. |
+
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("wheel_zoom_globe")
+    g:applyWheelZoom(-1.0)
+    local _, _, zoom = g:getCamera()
+    print("camera zoom = " .. zoom)
+end
+```
 
 ---
 
@@ -814,6 +836,16 @@ LGlobe:distanceBetweenMarkers(a, b)
 |------|-------------|
 | number | Great-circle distance, or nil when either marker is missing. |
 
+**Example**
+
+```lua
+do
+    local g, a, b = build_demo_globe("marker_distance_globe")
+    local d = g:distanceBetweenMarkers(a, b)
+    print("marker distance = " .. tostring(d))
+end
+```
+
 ---
 
 #### `LGlobe:draw`
@@ -829,6 +861,17 @@ LGlobe:draw(opts)
 | Name | Type | Description |
 |------|------|-------------|
 | `opts?` | table | Optional draw settings with `screen_cx` and `screen_cy`. |
+
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("draw_globe")
+    g:draw()
+    print("draw issued")
+    print("type = " .. g:type())
+end
+```
 
 ---
 
@@ -947,6 +990,17 @@ LGlobe:findPathWithCosts(from_id, to_id, opts)
 |------|-------------|
 | table | Result table with `ids` and `total_cost`, or nil when no path exists. |
 
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("find_costs_globe")
+    local path = g:findPathWithCosts(1, 3)
+    print("path table = " .. type(path))
+    print("path first = " .. tostring(path and path[1]))
+end
+```
+
 ---
 
 #### `LGlobe:getCachedReachability`
@@ -1033,6 +1087,17 @@ LGlobe:getEdgeTags(a, b)
 | Type | Description |
 |------|-------------|
 | string[] | Sequential table of edge tag strings, empty when none are set. |
+
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("get_edge_tags_globe")
+    g:setEdgeTags(1, 2, { "road", "trade" })
+    local tags = g:getEdgeTags(1, 2)
+    print("edge tags = " .. table.concat(tags, ","))
+end
+```
 
 ---
 
@@ -1279,6 +1344,16 @@ LGlobe:getRegionAttr(id, key)
 | Type | Description |
 |------|-------------|
 | string | Attribute string, or nil when the region or key is missing. |
+
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("get_region_attr_globe")
+    g:setRegionAttr(11, "owner", "faction_b")
+    print("owner = " .. tostring(g:getRegionAttr(11, "owner")))
+end
+```
 
 ---
 
@@ -1558,6 +1633,16 @@ LGlobe:pickMarker(sx, sy, radius)
 |------|-------------|
 | number | Marker id, or nil when no visible marker is within range. |
 
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("pick_marker_globe")
+    local id = g:pickMarker(320, 180, 24)
+    print("picked marker = " .. tostring(id))
+end
+```
+
 ---
 
 #### `LGlobe:pickRaycast`
@@ -1615,6 +1700,16 @@ LGlobe:pickRegions(sx, sy)
 |------|-------------|
 | number[] | Array table of semantic region ids. |
 
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("pick_regions_globe")
+    local ids = g:pickRegions(320, 180)
+    print("picked regions = " .. #ids)
+end
+```
+
 ---
 
 #### `LGlobe:pickSurface`
@@ -1638,6 +1733,16 @@ LGlobe:pickSurface(sx, sy, marker_radius)
 | Type | Description |
 |------|-------------|
 | table | Pick result table, or nil when the screen point is off the globe. |
+
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("pick_surface_globe")
+    local hit = g:pickSurface(320, 180, 24)
+    print("picked surface table = " .. tostring(hit ~= nil))
+end
+```
 
 ---
 
@@ -1724,6 +1829,17 @@ LGlobe:reachableWithCosts(start_id, max_cost, opts)
 |------|-------------|
 | table | Map table from province id (integer key) to accumulated traversal cost (number). |
 
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("reachable_costs_globe")
+    local costs = g:reachableWithCosts(1, 10.0)
+    print("cost table = " .. type(costs))
+    print("cost to 2 = " .. tostring(costs[2]))
+end
+```
+
 ---
 
 #### `LGlobe:regionCount`
@@ -1781,6 +1897,16 @@ LGlobe:regionsAtLatLon(lat, lon)
 | Type | Description |
 |------|-------------|
 | number[] | Array table of semantic region ids. |
+
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("regions_at_latlon_globe")
+    local ids = g:regionsAtLatLon(0, 0)
+    print("regions at latlon = " .. #ids)
+end
+```
 
 ---
 
@@ -2096,6 +2222,16 @@ LGlobe:screenDeltaToPan(dx, dy)
 | number | Latitude delta in degrees. |
 | number | Longitude delta in degrees. |
 
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("screen_delta_globe")
+    local dlat, dlon = g:screenDeltaToPan(32, -16)
+    print("pan delta = " .. tostring(dlat) .. "," .. tostring(dlon))
+end
+```
+
 ---
 
 #### `LGlobe:screenToLatLon`
@@ -2122,6 +2258,16 @@ LGlobe:screenToLatLon(sx, sy)
 | number | Unit-sphere x coordinate; or nil when the point is off the globe. |
 | number | Unit-sphere y coordinate; or nil when the point is off the globe. |
 | number | Unit-sphere z coordinate; or nil when the point is off the globe. |
+
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("screen_latlon_globe")
+    local lat, lon = g:screenToLatLon(320, 180)
+    print("latlon = " .. tostring(lat) .. "," .. tostring(lon))
+end
+```
 
 ---
 
@@ -2252,6 +2398,17 @@ LGlobe:setEdgeTags(a, b, tags)
 | Type | Description |
 |------|-------------|
 | boolean | True when the edge exists and the tags were stored. |
+
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("edge_tags_globe")
+    local ok = g:setEdgeTags(1, 2, { "road", "river" })
+    print("set edge tags = " .. tostring(ok))
+    print("tags count = " .. #(g:getEdgeTags(1, 2) or {}))
+end
+```
 
 ---
 
@@ -2548,6 +2705,16 @@ LGlobe:setMarkerColor(id, r, g, b, a)
 |------|-------------|
 | boolean | True when the marker exists. |
 
+**Example**
+
+```lua
+do
+    local g, a = build_demo_globe("marker_color_globe")
+    local ok = g:setMarkerColor(a, 1.0, 0.3, 0.2, 0.9)
+    print("set marker color = " .. tostring(ok))
+end
+```
+
 ---
 
 #### `LGlobe:setMarkerIconTexture`
@@ -2570,6 +2737,16 @@ LGlobe:setMarkerIconTexture(id, tex_raw)
 | Type | Description |
 |------|-------------|
 | boolean | True when the marker exists. |
+
+**Example**
+
+```lua
+do
+    local g, a = build_demo_globe("marker_icon_globe")
+    local ok = g:setMarkerIconTexture(a, 7)
+    print("set marker icon texture = " .. tostring(ok))
+end
+```
 
 ---
 
@@ -2663,6 +2840,16 @@ LGlobe:setMarkerShape(id, shape)
 |------|-------------|
 | boolean | True when the marker exists. |
 
+**Example**
+
+```lua
+do
+    local g, a = build_demo_globe("marker_shape_globe")
+    local ok = g:setMarkerShape(a, "diamond")
+    print("set marker shape = " .. tostring(ok))
+end
+```
+
 ---
 
 #### `LGlobe:setMarkerSize`
@@ -2685,6 +2872,16 @@ LGlobe:setMarkerSize(id, size)
 | Type | Description |
 |------|-------------|
 | boolean | True when the marker exists. |
+
+**Example**
+
+```lua
+do
+    local g, a = build_demo_globe("marker_size_globe")
+    local ok = g:setMarkerSize(a, 18)
+    print("set marker size = " .. tostring(ok))
+end
+```
 
 ---
 
@@ -2850,6 +3047,17 @@ LGlobe:setRegionAttr(id, key, val)
 | Type | Description |
 |------|-------------|
 | boolean | True when the region exists. |
+
+**Example**
+
+```lua
+do
+    local g = build_demo_globe("region_attr_globe")
+    local ok = g:setRegionAttr(10, "climate", "temperate")
+    print("set region attr = " .. tostring(ok))
+    print("value = " .. tostring(g:getRegionAttr(10, "climate")))
+end
+```
 
 ---
 

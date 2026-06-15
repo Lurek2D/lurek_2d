@@ -1,6 +1,9 @@
 //! CPU-side screenshot fallback for queued 2D render commands.
 //! Replays a practical subset of `RenderCommand` values into `ImageData`.
 //! Exists to support evidence capture in headless/unit environments where GPU readback is unavailable.
+//! Module API documentation
+//!
+//! TODO: add doc note 1
 
 use crate::image::ImageData;
 use crate::render::mesh::Mesh;

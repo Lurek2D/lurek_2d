@@ -1,4 +1,7 @@
 //! File: src/lua_api/repl_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
 
 use crate::repl::ReplSession;
 use crate::runtime::SharedState;

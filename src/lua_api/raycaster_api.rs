@@ -1,4 +1,13 @@
 //! File: src/lua_api/raycaster_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
+//! TODO: add doc note 3
+//! TODO: add doc note 4
+//! TODO: add doc note 5
+//! TODO: add doc note 6
+//! TODO: add doc note 7
 
 use super::SharedState;
 use crate::color::Color;
@@ -312,9 +321,12 @@ fn pick_result_to_table<'lua>(lua: &'lua Lua, pick: &PickResult) -> LuaResult<Lu
     if let Some(wall_height) = pick.wall_height {
         tbl.set("wall_height", wall_height)?;
     }
+    /// Picked wall cell value for this screen-space hit result.
     tbl.set("cell_value", pick.cell_value)?;
+    /// Ray angle in radians for this screen-space hit result.
     tbl.set("ray_angle", pick.ray_angle)?;
     if let Some(side) = pick.wall_side {
+        /// Wall side name when the screen-space hit intersects a wall face.
         tbl.set("side", side)?;
     }
     if let Some(feature) = pick.wall_feature {
@@ -322,6 +334,7 @@ fn pick_result_to_table<'lua>(lua: &'lua Lua, pick: &PickResult) -> LuaResult<Lu
         if let Some(section) = pick.wall_section {
             feature_tbl.set("section", section.as_str())?;
         }
+        /// Wall feature descriptor for this screen-space hit result.
         tbl.set("feature", feature_tbl)?;
     }
     Ok(tbl)
@@ -345,6 +358,7 @@ fn entity_pick_to_table<'lua>(
         tbl.set("id", entity_id)?;
     }
     if let Some(texture_key) = pick.texture_key {
+        /// Texture id for the picked entity surface when one is available.
         tbl.set("texture", texture_key.data().as_ffi())?;
     }
     Ok(tbl)
@@ -378,20 +392,26 @@ fn wall_feature_to_table<'lua>(lua: &'lua Lua, feature: WallFeature) -> LuaResul
             sill_height,
             lintel_height,
         } => {
+            /// Feature kind string for a window wall feature descriptor.
             tbl.set("kind", "window")?;
+            /// @field | sill_height | number | Window sill height when `kind == "window"`.
             tbl.set("sill_height", sill_height)?;
+            /// Window lintel height for a wall feature descriptor.
             tbl.set("lintel_height", lintel_height)?;
         }
         WallFeatureKind::Door {
             direction,
             open_amount,
         } => {
+            /// Feature kind string for a door wall feature descriptor.
             tbl.set("kind", "door")?;
             let direction = match direction {
                 DoorDirection::Horizontal => "horizontal",
                 DoorDirection::Vertical => "vertical",
             };
+            /// Door axis for a wall feature descriptor.
             tbl.set("direction", direction)?;
+            /// Door open amount for a wall feature descriptor.
             tbl.set("open_amount", open_amount)?;
         }
     }
@@ -1578,14 +1598,18 @@ impl LuaUserData for LuaRaycaster {
                     sill_height,
                     lintel_height,
                 } => {
+                    /// Feature kind string for a window wall feature descriptor.
                     tbl.set("kind", "window")?;
+                    /// @field | sill_height | number | Window sill height when `kind == "window"`.
                     tbl.set("sill_height", sill_height)?;
+                    /// Window lintel height for a wall feature descriptor.
                     tbl.set("lintel_height", lintel_height)?;
                 }
                 WallFeatureKind::Door {
                     direction,
                     open_amount,
                 } => {
+                    /// Feature kind string for a door wall feature descriptor.
                     tbl.set("kind", "door")?;
                     tbl.set(
                         "direction",
@@ -1594,6 +1618,7 @@ impl LuaUserData for LuaRaycaster {
                             DoorDirection::Vertical => "vertical",
                         },
                     )?;
+                    /// Door open amount for a wall feature descriptor.
                     tbl.set("open_amount", open_amount)?;
                 }
             }
@@ -2445,11 +2470,15 @@ impl LuaUserData for LuaRaycaster {
                             .lowered_floor_cells
                             .get(&(pick.grid_x as u32, pick.grid_y as u32))
                         {
+                            /// Texture id for the picked lowered floor cell.
+                            /// @field | texture | integer | Raw lowered-floor texture id.
                             tbl.set("texture", cell.raw_id)?;
                         } else if let Some((_, raw_id)) = this
                             .floor_cell_textures
                             .get(&(pick.grid_x as u32, pick.grid_y as u32))
                         {
+                            /// Texture id for the picked floor cell override.
+                            /// @field | texture | integer | Raw floor texture override id.
                             tbl.set("texture", *raw_id)?;
                         }
                     }
@@ -2458,6 +2487,8 @@ impl LuaUserData for LuaRaycaster {
                             .ceiling_cell_textures
                             .get(&(pick.grid_x as u32, pick.grid_y as u32))
                         {
+                            /// Texture id for the picked ceiling cell override.
+                            /// @field | texture | integer | Raw ceiling texture override id.
                             tbl.set("texture", *raw_id)?;
                         }
                     }
@@ -2581,11 +2612,13 @@ impl LuaUserData for LuaRaycaster {
                             .lowered_floor_cells
                             .get(&(pick.grid_x as u32, pick.grid_y as u32))
                         {
+                            /// @field | texture | integer | Raw lowered-floor texture id.
                             tbl.set("texture", cell.raw_id)?;
                         } else if let Some((_, raw_id)) = this
                             .floor_cell_textures
                             .get(&(pick.grid_x as u32, pick.grid_y as u32))
                         {
+                            /// @field | texture | integer | Raw floor texture override id.
                             tbl.set("texture", *raw_id)?;
                         }
                     }
@@ -2594,11 +2627,13 @@ impl LuaUserData for LuaRaycaster {
                             .ceiling_cell_textures
                             .get(&(pick.grid_x as u32, pick.grid_y as u32))
                         {
+                            /// @field | texture | integer | Raw ceiling texture override id.
                             tbl.set("texture", *raw_id)?;
                         }
                     }
                     PickSurface::Wall => {}
                 }
+                /// @field | texture | integer | Raw surface texture id when available.
                 Ok(LuaValue::Table(tbl))
             },
         );
@@ -3683,10 +3718,12 @@ impl LuaUserData for LuaMultiLevelGrid {
                     match pick.surface {
                         PickSurface::Floor => {
                             if let Some(cell) = level.lowered_floor(pick.grid_x, pick.grid_y) {
+                                /// Texture id for the picked lowered floor cell.
                                 tbl.set("texture", cell.texture_key.data().as_ffi())?;
                             } else if let Some(texture) =
                                 level.floor_texture_at(pick.grid_x, pick.grid_y)
                             {
+                                /// Texture id for the picked floor surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }
@@ -3694,11 +3731,13 @@ impl LuaUserData for LuaMultiLevelGrid {
                             if let Some(texture) =
                                 level.ceiling_texture_at(pick.grid_x, pick.grid_y)
                             {
+                                /// Texture id for the picked ceiling surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }
                         PickSurface::Wall => {
                             if let Some(texture) = wall_tex_map.get(&pick.cell_value) {
+                                /// Texture id for the picked wall surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }
@@ -3860,10 +3899,12 @@ impl LuaUserData for LuaMultiLevelGrid {
                     match pick.surface {
                         PickSurface::Floor => {
                             if let Some(cell) = level.lowered_floor(pick.grid_x, pick.grid_y) {
+                                /// Texture id for the picked lowered floor cell.
                                 tbl.set("texture", cell.texture_key.data().as_ffi())?;
                             } else if let Some(texture) =
                                 level.floor_texture_at(pick.grid_x, pick.grid_y)
                             {
+                                /// Texture id for the picked floor surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }
@@ -3871,11 +3912,13 @@ impl LuaUserData for LuaMultiLevelGrid {
                             if let Some(texture) =
                                 level.ceiling_texture_at(pick.grid_x, pick.grid_y)
                             {
+                                /// Texture id for the picked ceiling surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }
                         PickSurface::Wall => {
                             if let Some(texture) = wall_tex_map.get(&pick.cell_value) {
+                                /// Texture id for the picked wall surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }
@@ -5145,10 +5188,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     match pick.surface {
                         PickSurface::Floor => {
                             if let Some(cell) = level.lowered_floor(pick.grid_x, pick.grid_y) {
+                                /// Texture id for the picked lowered floor cell.
                                 tbl.set("texture", cell.texture_key.data().as_ffi())?;
                             } else if let Some(texture) =
                                 level.floor_texture_at(pick.grid_x, pick.grid_y)
                             {
+                                /// Texture id for the picked floor surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }
@@ -5156,11 +5201,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                             if let Some(texture) =
                                 level.ceiling_texture_at(pick.grid_x, pick.grid_y)
                             {
+                                /// Texture id for the picked ceiling surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }
                         PickSurface::Wall => {
                             if let Some(texture) = wall_tex_map.get(&pick.cell_value) {
+                                /// Texture id for the picked wall surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }
@@ -5334,10 +5381,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     match pick.surface {
                         PickSurface::Floor => {
                             if let Some(cell) = level.lowered_floor(pick.grid_x, pick.grid_y) {
+                                /// Texture id for the picked lowered floor cell.
                                 tbl.set("texture", cell.texture_key.data().as_ffi())?;
                             } else if let Some(texture) =
                                 level.floor_texture_at(pick.grid_x, pick.grid_y)
                             {
+                                /// Texture id for the picked floor surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }
@@ -5345,11 +5394,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                             if let Some(texture) =
                                 level.ceiling_texture_at(pick.grid_x, pick.grid_y)
                             {
+                                /// Texture id for the picked ceiling surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }
                         PickSurface::Wall => {
                             if let Some(texture) = wall_tex_map.get(&pick.cell_value) {
+                                /// Texture id for the picked wall surface.
                                 tbl.set("texture", texture.data().as_ffi())?;
                             }
                         }

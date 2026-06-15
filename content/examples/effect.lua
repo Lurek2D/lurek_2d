@@ -4,113 +4,126 @@
 
 --- Effect Module Part 1: Factory functions, LPostFxEffect, LPostFxStack
 
---@api-stub: lurek.effect.newEffect
+--@api: lurek.effect.newEffect
 do
     local fx = lurek.effect.newEffect("bloom")
     print("effect type = " .. fx:getType())
     print("built-in = " .. tostring(fx:isBuiltIn()))
 end
 
---@api-stub: lurek.effect.newCustomEffect
+--@api: lurek.effect.newCustomEffect
 do
     local fx = lurek.effect.newCustomEffect(1)
     print("custom effect built-in = " .. tostring(fx:isBuiltIn()))
+    print("lua type = " .. type(fx))
 end
 
---@api-stub: lurek.effect.newStack
+--@api: lurek.effect.newStack
 do
     local stack = lurek.effect.newStack(800, 600)
     print("stack w=" .. stack:getWidth() .. " h=" .. stack:getHeight())
+    print("lua type = " .. type(stack))
 end
 
---@api-stub: lurek.effect.newPresetStack
+--@api: lurek.effect.newPresetStack
 do
     local stack = lurek.effect.newPresetStack("retro_tv", 320, 240)
     print("preset stack effects = " .. stack:getEffectCount())
+    print("lua type = " .. type(stack))
 end
 
---@api-stub: lurek.effect.newPass
+--@api: lurek.effect.newPass
 do
     local fx = lurek.effect.newPass(2)
     print("pass type = " .. fx:getType())
+    print("lua type = " .. type(fx))
 end
 
---@api-stub: lurek.effect.getEffectTypes
+--@api: lurek.effect.getEffectTypes
 do
     local types = lurek.effect.getEffectTypes()
     print("available types = " .. #types)
+    print("lua type = " .. type(types))
 end
 
---@api-stub: lurek.effect.getPresetNames
+--@api: lurek.effect.getPresetNames
 do
     local names = lurek.effect.getPresetNames()
     print("preset count = " .. #names)
     print("first preset = " .. tostring(names[1]))
 end
 
---@api-stub: lurek.effect.newImageEffect
+--@api: lurek.effect.newImageEffect
 do
     local ie = lurek.effect.newImageEffect()
     print("image effect count = " .. ie:getEffectCount())
+    print("lua type = " .. type(ie))
 end
 
---@api-stub: lurek.effect.setShaderErrorDisplay
+--@api: lurek.effect.setShaderErrorDisplay
 do
     lurek.effect.setShaderErrorDisplay(true)
     print("shader errors on")
+    print("shader error display = " .. tostring(lurek.effect.getShaderErrorDisplay()))
 end
 
---@api-stub: lurek.effect.getShaderErrorDisplay
+--@api: lurek.effect.getShaderErrorDisplay
 do
     local on = lurek.effect.getShaderErrorDisplay()
     print("shader error display = " .. tostring(on))
+    print("lua type = " .. type(on))
 end
 
---@api-stub: LPostFxEffect:getType
+--@api: LPostFxEffect:getType
 do
     local fx = lurek.effect.newEffect("blur")
     print("type = " .. fx:getType())
+    print("owner type = " .. tostring(fx:type()))
 end
 
---@api-stub: LPostFxEffect:getTypeName
+--@api: LPostFxEffect:getTypeName
 do
     local fx = lurek.effect.newEffect("crt")
     print("typeName = " .. fx:getTypeName())
+    print("owner type = " .. tostring(fx:type()))
 end
 
---@api-stub: LPostFxEffect:getEffectType
+--@api: LPostFxEffect:getEffectType
 do
     local fx = lurek.effect.newEffect("bloom")
     print("effectType = " .. fx:getEffectType())
+    print("owner type = " .. tostring(fx:type()))
 end
 
---@api-stub: LPostFxEffect:isBuiltIn
+--@api: LPostFxEffect:isBuiltIn
 do
     local fx = lurek.effect.newEffect("blur")
     print("builtIn = " .. tostring(fx:isBuiltIn()))
+    print("owner type = " .. tostring(fx:type()))
 end
 
---@api-stub: LPostFxEffect:isEnabled
+--@api: LPostFxEffect:isEnabled
 do
     local fx = lurek.effect.newEffect("bloom")
     print("enabled = " .. tostring(fx:isEnabled()))
+    print("owner type = " .. tostring(fx:type()))
 end
 
---@api-stub: LPostFxEffect:setEnabled
+--@api: LPostFxEffect:setEnabled
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setEnabled(false)
     print("after disable = " .. tostring(fx:isEnabled()))
 end
 
---@api-stub: LPostFxEffect:setParameter
+--@api: LPostFxEffect:setParameter
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setParameter("threshold", 0.8)
     print("param set")
 end
 
---@api-stub: LPostFxEffect:getParameter
+--@api: LPostFxEffect:getParameter
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setParameter("intensity", 1.5)
@@ -118,14 +131,14 @@ do
     print("intensity = " .. v)
 end
 
---@api-stub: LPostFxEffect:hasParameter
+--@api: LPostFxEffect:hasParameter
 do
     local fx = lurek.effect.newEffect("blur")
     fx:setParameter("radius", 4)
     print("has radius = " .. tostring(fx:hasParameter("radius")))
 end
 
---@api-stub: LPostFxEffect:getParameterNames
+--@api: LPostFxEffect:getParameterNames
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setParameter("threshold", 0.5)
@@ -133,102 +146,105 @@ do
     print("param names = " .. #names)
 end
 
---@api-stub: LPostFxEffect:setIntensity
+--@api: LPostFxEffect:setIntensity
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setIntensity(2.0)
     print("intensity set")
 end
 
---@api-stub: LPostFxEffect:setStrength
+--@api: LPostFxEffect:setStrength
 do
     local fx = lurek.effect.newEffect("blur")
     fx:setStrength(0.5)
     print("strength set")
 end
 
---@api-stub: LPostFxEffect:setRadius
+--@api: LPostFxEffect:setRadius
 do
     local fx = lurek.effect.newEffect("blur")
     fx:setRadius(8)
     print("radius set")
 end
 
---@api-stub: LPostFxEffect:setThreshold
+--@api: LPostFxEffect:setThreshold
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setThreshold(0.6)
     print("threshold set")
 end
 
---@api-stub: LPostFxEffect:setBrightness
+--@api: LPostFxEffect:setBrightness
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setBrightness(1.2)
     print("brightness set")
 end
 
---@api-stub: LPostFxEffect:setContrast
+--@api: LPostFxEffect:setContrast
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setContrast(1.1)
     print("contrast set")
 end
 
---@api-stub: LPostFxEffect:setSaturation
+--@api: LPostFxEffect:setSaturation
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:setSaturation(0.8)
     print("saturation set")
 end
 
---@api-stub: LPostFxEffect:setOffset
+--@api: LPostFxEffect:setOffset
 do
     local fx = lurek.effect.newEffect("crt")
     fx:setOffset(0.002)
     print("offset set")
 end
 
---@api-stub: LPostFxEffect:setScanlineStrength
+--@api: LPostFxEffect:setScanlineStrength
 do
     local fx = lurek.effect.newEffect("crt")
     fx:setScanlineStrength(0.3)
     print("scanline set")
 end
 
---@api-stub: LPostFxEffect:enableAutoUniforms
+--@api: LPostFxEffect:enableAutoUniforms
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:enableAutoUniforms()
     print("auto uniforms on = " .. tostring(fx:isAutoUniforms()))
 end
 
---@api-stub: LPostFxEffect:disableAutoUniforms
+--@api: LPostFxEffect:disableAutoUniforms
 do
     local fx = lurek.effect.newEffect("bloom")
     fx:disableAutoUniforms()
     print("auto uniforms off = " .. tostring(fx:isAutoUniforms()))
 end
 
---@api-stub: LPostFxEffect:isAutoUniforms
+--@api: LPostFxEffect:isAutoUniforms
 do
     local fx = lurek.effect.newEffect("bloom")
     print("autoUniforms = " .. tostring(fx:isAutoUniforms()))
+    print("owner type = " .. tostring(fx:type()))
 end
 
---@api-stub: LPostFxEffect:type
+--@api: LPostFxEffect:type
 do
     local fx = lurek.effect.newEffect("blur")
     print("type = " .. fx:type())
+    print("typeOf LObject = " .. tostring(fx:typeOf("LObject")))
 end
 
---@api-stub: LPostFxEffect:typeOf
+--@api: LPostFxEffect:typeOf
 do
     local fx = lurek.effect.newEffect("blur")
     print("is PostFxEffect = " .. tostring(fx:typeOf("LPostFxEffect")))
+    print("type = " .. tostring(fx:type()))
 end
 
---@api-stub: LPostFxStack:add
+--@api: LPostFxStack:add
 do
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("bloom")
@@ -236,7 +252,7 @@ do
     print("stack count = " .. stack:getEffectCount())
 end
 
---@api-stub: LPostFxStack:remove
+--@api: LPostFxStack:remove
 do
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("blur")
@@ -245,7 +261,7 @@ do
     print("removed = " .. tostring(ok))
 end
 
---@api-stub: LPostFxStack:insert
+--@api: LPostFxStack:insert
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
@@ -253,7 +269,7 @@ do
     print("after insert count = " .. stack:getEffectCount())
 end
 
---@api-stub: LPostFxStack:setEnabled
+--@api: LPostFxStack:setEnabled
 do
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("bloom")
@@ -262,7 +278,7 @@ do
     print("pass 1 enabled = " .. tostring(stack:isEnabled(1)))
 end
 
---@api-stub: LPostFxStack:isEnabled
+--@api: LPostFxStack:isEnabled
 do
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("blur")
@@ -270,7 +286,7 @@ do
     print("pass enabled = " .. tostring(stack:isEnabled(1)))
 end
 
---@api-stub: LPostFxStack:getEffectCount
+--@api: LPostFxStack:getEffectCount
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
@@ -278,7 +294,7 @@ do
     print("effect count = " .. stack:getEffectCount())
 end
 
---@api-stub: LPostFxStack:getEffect
+--@api: LPostFxStack:getEffect
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
@@ -286,7 +302,7 @@ do
     print("got effect at 1 = " .. tostring(fx ~= nil))
 end
 
---@api-stub: LPostFxStack:getEnabledEffects
+--@api: LPostFxStack:getEnabledEffects
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
@@ -295,46 +311,49 @@ do
     print("enabled effects = " .. #enabled)
 end
 
---@api-stub: LPostFxStack:getWidth
+--@api: LPostFxStack:getWidth
 do
     local stack = lurek.effect.newStack(1024, 768)
     print("width = " .. stack:getWidth())
+    print("owner type = " .. tostring(stack:type()))
 end
 
---@api-stub: LPostFxStack:getHeight
+--@api: LPostFxStack:getHeight
 do
     local stack = lurek.effect.newStack(1024, 768)
     print("height = " .. stack:getHeight())
+    print("owner type = " .. tostring(stack:type()))
 end
 
---@api-stub: LPostFxStack:getDimensions
+--@api: LPostFxStack:getDimensions
 do
     local stack = lurek.effect.newStack(800, 600)
     local w, h = stack:getDimensions()
     print("dims = " .. w .. "x" .. h)
 end
 
---@api-stub: LPostFxStack:resize
+--@api: LPostFxStack:resize
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:resize(1920, 1080)
     print("resized w=" .. stack:getWidth())
 end
 
---@api-stub: LPostFxStack:len
+--@api: LPostFxStack:len
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
     print("len = " .. stack:len())
 end
 
---@api-stub: LPostFxStack:isEmpty
+--@api: LPostFxStack:isEmpty
 do
     local stack = lurek.effect.newStack(800, 600)
     print("empty = " .. tostring(stack:isEmpty()))
+    print("owner type = " .. tostring(stack:type()))
 end
 
---@api-stub: LPostFxStack:clear
+--@api: LPostFxStack:clear
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
@@ -344,7 +363,7 @@ end
 
 --- Effect Module Part 2: LPostFxStack feedback/capture, LImageEffect, LOverlay triggers and state
 
---@api-stub: LPostFxStack:dedup
+--@api: LPostFxStack:dedup
 do
     local stack = lurek.effect.newStack(800, 600)
     local fx = lurek.effect.newEffect("bloom")
@@ -354,13 +373,14 @@ do
     print("dedup removed = " .. removed)
 end
 
---@api-stub: LPostFxStack:isCapturing
+--@api: LPostFxStack:isCapturing
 do
     local stack = lurek.effect.newStack(800, 600)
     print("capturing = " .. tostring(stack:isCapturing()))
+    print("owner type = " .. tostring(stack:type()))
 end
 
---@api-stub: LPostFxStack:beginCapture
+--@api: LPostFxStack:beginCapture
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
@@ -368,7 +388,7 @@ do
     print("capture started")
 end
 
---@api-stub: LPostFxStack:endCapture
+--@api: LPostFxStack:endCapture
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
@@ -377,7 +397,7 @@ do
     print("capture ended")
 end
 
---@api-stub: LPostFxStack:apply
+--@api: LPostFxStack:apply
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:add(lurek.effect.newEffect("bloom"))
@@ -387,21 +407,21 @@ do
     print("applied")
 end
 
---@api-stub: LPostFxStack:setFeedback
+--@api: LPostFxStack:setFeedback
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:setFeedback(0.5)
     print("feedback = " .. stack:getFeedback())
 end
 
---@api-stub: LPostFxStack:getFeedback
+--@api: LPostFxStack:getFeedback
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:setFeedback(0.3)
     print("feedback = " .. stack:getFeedback())
 end
 
---@api-stub: LPostFxStack:clearFeedback
+--@api: LPostFxStack:clearFeedback
 do
     local stack = lurek.effect.newStack(800, 600)
     stack:setFeedback(0.8)
@@ -409,26 +429,28 @@ do
     print("cleared feedback = " .. stack:getFeedback())
 end
 
---@api-stub: LPostFxStack:type
+--@api: LPostFxStack:type
 do
     local stack = lurek.effect.newStack(800, 600)
     print("type = " .. stack:type())
+    print("typeOf LObject = " .. tostring(stack:typeOf("LObject")))
 end
 
---@api-stub: LPostFxStack:typeOf
+--@api: LPostFxStack:typeOf
 do
     local stack = lurek.effect.newStack(800, 600)
     print("is PostFxStack = " .. tostring(stack:typeOf("LPostFxStack")))
+    print("type = " .. tostring(stack:type()))
 end
 
---@api-stub: LImageEffect:addEffect
+--@api: LImageEffect:addEffect
 do
     local ie = lurek.effect.newImageEffect()
     local fx = ie:addEffect("bloom")
     print("added effect type = " .. fx:getType())
 end
 
---@api-stub: LImageEffect:getEffect
+--@api: LImageEffect:getEffect
 do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("blur")
@@ -436,7 +458,7 @@ do
     print("found effect = " .. tostring(fx ~= nil))
 end
 
---@api-stub: LImageEffect:getEffectCount
+--@api: LImageEffect:getEffectCount
 do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
@@ -444,14 +466,14 @@ do
     print("count = " .. ie:getEffectCount())
 end
 
---@api-stub: LImageEffect:effectCount
+--@api: LImageEffect:effectCount
 do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("crt")
     print("effectCount = " .. ie:effectCount())
 end
 
---@api-stub: LImageEffect:removeEffect
+--@api: LImageEffect:removeEffect
 do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
@@ -459,7 +481,7 @@ do
     print("removed = " .. tostring(ok))
 end
 
---@api-stub: LImageEffect:removeByName
+--@api: LImageEffect:removeByName
 do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("blur")
@@ -467,7 +489,7 @@ do
     print("removeByName = " .. tostring(ok))
 end
 
---@api-stub: LImageEffect:removeByIndex
+--@api: LImageEffect:removeByIndex
 do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
@@ -475,7 +497,7 @@ do
     print("removeByIndex = " .. tostring(ok))
 end
 
---@api-stub: LImageEffect:clear
+--@api: LImageEffect:clear
 do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
@@ -483,7 +505,7 @@ do
     print("after clear = " .. ie:getEffectCount())
 end
 
---@api-stub: LImageEffect:clearEffects
+--@api: LImageEffect:clearEffects
 do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("crt")
@@ -491,7 +513,7 @@ do
     print("after clearEffects = " .. ie:getEffectCount())
 end
 
---@api-stub: LImageEffect:clone
+--@api: LImageEffect:clone
 do
     local ie = lurek.effect.newImageEffect()
     ie:addEffect("bloom")
@@ -499,21 +521,23 @@ do
     print("clone count = " .. copy:getEffectCount())
 end
 
---@api-stub: LImageEffect:save
+--@api: LImageEffect:save
 do
     local ie = lurek.effect.newImageEffect()
     local ok = ie:save()
     print("save = " .. tostring(ok))
 end
 
---@api-stub: LImageEffect:type
+--@api: LImageEffect:type
 do
     local ie = lurek.effect.newImageEffect()
     print("type = " .. ie:type())
+    print("typeOf LObject = " .. tostring(ie:typeOf("LObject")))
 end
 
---@api-stub: LImageEffect:typeOf
+--@api: LImageEffect:typeOf
 do
     local ie = lurek.effect.newImageEffect()
     print("is ImageEffect = " .. tostring(ie:typeOf("LImageEffect")))
+    print("type = " .. tostring(ie:type()))
 end

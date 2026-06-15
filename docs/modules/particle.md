@@ -2244,6 +2244,22 @@ LParticleSystem:getStats()
 |------|-------------|
 | table | Particle-system telemetry fields. |
 
+**Example**
+
+```lua
+do
+    local ps = lurek.particle.newSystem({ emissionRate = 40, maxParticles = 32, lifetimeMin = 2.0, lifetimeMax = 2.0 })
+    ps:addAttractor(32, 32, 80, 64)
+    ps:setBounds(64, -64, 48, -48, 0.5)
+    ps:emit(6)
+    ps:update(0.1)
+    local stats = ps:getStats()
+
+    print("live_particles = " .. tostring(stats.live_particles))
+    print("state = " .. tostring(stats.state))
+end
+```
+
 ---
 
 #### `LParticleSystem:getTangentialAcceleration`

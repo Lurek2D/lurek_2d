@@ -43,7 +43,7 @@ lurek.grep.jsonSearch(file, key)
 
 ```lua
 do
-    local results = lurek.grep.jsonSearch("content/examples", "api-stub")
+    local results = lurek.grep.jsonSearch("content/examples", "lurek.math")
     print("json results = " .. #results)
 end
 ```
@@ -218,7 +218,7 @@ lurek.grep.search(path, pattern)
 
 ```lua
 do
-    local results = lurek.grep.search("content/examples", "api-stub")
+    local results = lurek.grep.search("content/examples", "lurek.math")
     print("files searched = " .. results.files_searched)
     print("total matches = " .. results.total_matches)
 end
@@ -390,7 +390,7 @@ LGrepEngine:count(path, pattern)
 ```lua
 do
     local eng = lurek.grep.newEngine()
-    local n = eng:count("content/examples", "api-stub")
+    local n = eng:count("content/examples", "lurek.math")
     print("LGrepEngine:count=" .. n)
 end
 ```
@@ -423,7 +423,7 @@ LGrepEngine:multiSearch(path, patterns)
 ```lua
 do
     local eng = lurek.grep.newEngine()
-    local results = eng:multiSearch("content/examples", { "api-stub", "lurek.math" })
+    local results = eng:multiSearch("content/examples", { "lurek.math", "lurek.color" })
     print("LGrepEngine:multiSearch files=" .. results.files_searched)
     print("LGrepEngine:multiSearch matches=" .. results.total_matches)
 end
@@ -457,7 +457,7 @@ LGrepEngine:search(path, pattern)
 ```lua
 do
     local eng = lurek.grep.newEngine()
-    local ok, results = pcall(function() return eng:search("content/examples", "api-stub") end)
+    local ok, results = pcall(function() return eng:search("content/examples", "lurek.math") end)
     if ok then
         print("LGrepEngine:search files=" .. results.files_searched)
         print("LGrepEngine:search matches=" .. results.total_matches)
@@ -496,7 +496,7 @@ LGrepEngine:searchExt(path, pattern, extensions)
 ```lua
 do
     local eng = lurek.grep.newEngine()
-    local ok, results = pcall(function() return eng:searchExt("content/examples", "api-stub", { "lua" }) end)
+    local ok, results = pcall(function() return eng:searchExt("content/examples", "lurek.math", { "lua" }) end)
     if ok then
         print("LGrepEngine:searchExt files=" .. results.files_searched)
         print("LGrepEngine:searchExt matches=" .. results.total_matches)
@@ -534,7 +534,7 @@ LGrepEngine:searchFiles(files, pattern)
 ```lua
 do
     local eng = lurek.grep.newEngine()
-    local results = eng:searchFiles({ "content/examples/grep.lua", "content/examples/font.lua" }, "api-stub")
+    local results = eng:searchFiles({ "content/examples/grep.lua", "content/examples/font.lua" }, "lurek.math")
     print("LGrepEngine:searchFiles files=" .. results.files_searched)
     print("LGrepEngine:searchFiles matches=" .. results.total_matches)
 end

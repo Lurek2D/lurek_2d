@@ -1,4 +1,8 @@
 //! File: src/lua_api/register.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
 
 #[cfg(feature = "automation-plugin")]
 use super::automation_api;

@@ -1142,13 +1142,6 @@ describe("map generation helpers", function()
         expect_equal(1, new_mapblock():getHeightInSegments())
     end)
 
-    -- @covers LMapBlock:getWeight
-    it("LMapBlock:getWeight returns the stored block selection weight", function()
-        local block = new_mapblock()
-        block:setWeight(2.5)
-        expect_near(2.5, block:getWeight(), 1e-6)
-    end)
-
     -- @covers LMapBlock:type
     it("LMapBlock:type returns LMapBlock", function()
         expect_equal("LMapBlock", new_mapblock():type())

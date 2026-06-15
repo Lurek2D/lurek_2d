@@ -376,7 +376,9 @@ def scan_all_tests(
     """Scan all Lua unit tests and return coverage results plus structure diagnostics."""
     known_lua_names: Set[str] = {entry.lua_name for entry in api_entries}
     known_methods: Dict[str, Set[str]] = defaultdict(set)
+    api_ref_capacity: Dict[str, int] = defaultdict(int)
     for entry in api_entries:
+        api_ref_capacity[entry.lua_name] += 1
         if entry.is_method:
             known_methods[entry.owner_type].add(entry.name)
 
@@ -402,16 +404,21 @@ def scan_all_tests(
         total_it_blocks += it_count
 
     all_explicit: Set[str] = set()
+    valid_single_marker_blocks = 0
     duplicate_api_refs = 0
     duplicated_api_list: List[str] = []
     for api_ref, occurrences in explicit_occurrences.items():
-        if len(occurrences) == 1:
+        allowed_occurrences = api_ref_capacity.get(api_ref, 1)
+        if len(occurrences) <= allowed_occurrences:
             all_explicit.add(api_ref)
+            valid_single_marker_blocks += len(occurrences)
             continue
-        duplicate_api_refs += 1
+        all_explicit.add(api_ref)
+        valid_single_marker_blocks += allowed_occurrences
+        duplicate_api_refs += len(occurrences) - allowed_occurrences
         duplicated_api_list.append(api_ref)
-        first = occurrences[0]
-        for occurrence in occurrences:
+        first = occurrences[allowed_occurrences - 1]
+        for occurrence in occurrences[allowed_occurrences:]:
             violations.append(
                 StructureViolation(
                     file=occurrence.file,
@@ -443,7 +450,7 @@ def scan_all_tests(
 
     structure = {
         "total_it_blocks": total_it_blocks,
-        "valid_single_marker_blocks": len(all_explicit),
+        "valid_single_marker_blocks": valid_single_marker_blocks,
         "invalid_it_blocks": sum(by_code.values()),
         "duplicate_api_markers": duplicate_api_refs,
         "duplicated_apis": sorted(duplicated_api_list),

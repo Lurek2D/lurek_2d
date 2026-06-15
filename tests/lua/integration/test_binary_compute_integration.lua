@@ -31,13 +31,13 @@ describe("data + compute integration", function()
     -- @integration LArray:getSize
     -- @integration lurek.compute.zeros
     -- @integration lurek.serial.toToml
-    -- @covers lurek.binary.compress
-    -- @covers lurek.compute.fromTable
-    -- @covers lurek.compute.zeros
-    -- @covers lurek.serial.fromJson
-    -- @covers lurek.serial.fromToml
-    -- @covers lurek.serial.toJson
-    -- @covers lurek.serial.toToml
+    -- @integration lurek.binary.compress
+    -- @integration lurek.compute.fromTable
+    -- @integration lurek.compute.zeros
+    -- @integration lurek.serial.fromJson
+    -- @integration lurek.serial.fromToml
+    -- @integration lurek.serial.toJson
+    -- @integration lurek.serial.toToml
     it("TOML round-trip preserves typed data", function()
         local config = {
             compute = {

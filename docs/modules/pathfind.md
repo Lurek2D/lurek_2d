@@ -2472,9 +2472,10 @@ LNavGrid:getHeight()
 do
     local ng = lurek.pathfind.newNavGrid(20, 15)
     local w, h = ng:getDimensions()
+    local height = ng:getHeight()
 
     print("dims = " .. w .. "x" .. h)
-    print("height = " .. h)
+    print("height = " .. height)
 end
 ```
 
@@ -2500,9 +2501,10 @@ LNavGrid:getWidth()
 do
     local ng = lurek.pathfind.newNavGrid(20, 15)
     local w, h = ng:getDimensions()
+    local width = ng:getWidth()
 
     print("dims = " .. w .. "x" .. h)
-    print("width = " .. w)
+    print("width = " .. width)
 end
 ```
 

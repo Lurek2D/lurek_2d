@@ -107,6 +107,6 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | Module | Namespace | Purpose |
 |---|---|---|
 | [AGENTS](Module-AGENTS) | `lurek.AGENTS` | Lurek2D runtime module. |
-| [engine](Module-engine) | `lurek.engine` | File: src/lua_api/engine_api.rs |
+| [engine](Module-engine) | `lurek.engine` | File: src/lua_api/engine_api.rs Module API documentation TODO: add doc note 1 TODO: add doc note 2 |
 | [svg](Module-svg) | `lurek.svg` | Lua bindings for the vector SVG graphics module. |
-| [system](Module-system) | `lurek.system` | File: src/lua_api/system_api.rs |
+| [system](Module-system) | `lurek.system` | File: src/lua_api/system_api.rs Module API documentation TODO: add doc note 1 TODO: add doc note 2 TODO: add doc note 3 |

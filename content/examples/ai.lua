@@ -2,7 +2,7 @@
 -- Auto-generated from content/examples2/ai_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/ai.lua
 
---@api-stub: lurek.ai.newWorld
+--@api: lurek.ai.newWorld
 do
   local world = lurek.ai.newWorld()
   local scout = world:addAgent("scout_preview")
@@ -11,14 +11,14 @@ do
   print("lurek.ai.newWorld: first_agent=" .. scout:getName())
 end
 
---@api-stub: lurek.ai.newBlackboard
+--@api: lurek.ai.newBlackboard
 do
   local bb = lurek.ai.newBlackboard()
   bb:setString("state", "idle")
   print("lurek.ai.newBlackboard: state=" .. bb:getString("state", "none"))
 end
 
---@api-stub: lurek.ai.newStateMachine
+--@api: lurek.ai.newStateMachine
 do
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
@@ -27,7 +27,7 @@ do
   print("lurek.ai.newStateMachine: current=" .. tostring(fsm:getCurrentState()))
 end
 
---@api-stub: lurek.ai.newBehaviorTree
+--@api: lurek.ai.newBehaviorTree
 do
   local bt = lurek.ai.newBehaviorTree()
   bt:setRoot(lurek.ai.newAction(function() return "success" end))
@@ -36,7 +36,7 @@ do
   print("lurek.ai.newBehaviorTree: node_count=" .. tostring(info.node_count))
 end
 
---@api-stub: lurek.ai.newSelector
+--@api: lurek.ai.newSelector
 do
   local sel = lurek.ai.newSelector()
   sel:addChild(lurek.ai.newAction(function() return "failure" end))
@@ -45,7 +45,7 @@ do
   print("lurek.ai.newSelector: children=" .. tostring(sel:getChildCount()))
 end
 
---@api-stub: lurek.ai.newSequence
+--@api: lurek.ai.newSequence
 do
   local seq = lurek.ai.newSequence()
   seq:addChild(lurek.ai.newCondition(function() return true end))
@@ -54,7 +54,7 @@ do
   print("lurek.ai.newSequence: children=" .. tostring(seq:getChildCount()))
 end
 
---@api-stub: lurek.ai.newParallel
+--@api: lurek.ai.newParallel
 do
   local par = lurek.ai.newParallel("requireAll", "requireOne")
   par:addChild(lurek.ai.newAction(function() return "running" end))
@@ -63,7 +63,7 @@ do
   print("lurek.ai.newParallel: children=" .. tostring(par:getChildCount()))
 end
 
---@api-stub: lurek.ai.newInverter
+--@api: lurek.ai.newInverter
 do
   local inv = lurek.ai.newInverter()
   inv:setChild(lurek.ai.newCondition(function() return false end))
@@ -71,7 +71,7 @@ do
   print("lurek.ai.newInverter: child_count=" .. tostring(inv:getChildCount()))
 end
 
---@api-stub: lurek.ai.newRepeater
+--@api: lurek.ai.newRepeater
 do
   local rep = lurek.ai.newRepeater(5)
   rep:setChild(lurek.ai.newAction(function() return "success" end))
@@ -79,7 +79,7 @@ do
   print("lurek.ai.newRepeater: type=" .. rep:getNodeType())
 end
 
---@api-stub: lurek.ai.newSucceeder
+--@api: lurek.ai.newSucceeder
 do
   local suc = lurek.ai.newSucceeder()
   suc:setChild(lurek.ai.newAction(function() return "failure" end))
@@ -87,7 +87,7 @@ do
   print("lurek.ai.newSucceeder: child_count=" .. tostring(suc:getChildCount()))
 end
 
---@api-stub: lurek.ai.newAction
+--@api: lurek.ai.newAction
 do
   local act = lurek.ai.newAction(function() return "success" end)
   act:reset()
@@ -95,7 +95,7 @@ do
   print("lurek.ai.newAction: child_count=" .. tostring(act:getChildCount()))
 end
 
---@api-stub: lurek.ai.newCondition
+--@api: lurek.ai.newCondition
 do
   local cond = lurek.ai.newCondition(function() return true end)
   cond:reset()
@@ -103,14 +103,14 @@ do
   print("lurek.ai.newCondition: child_count=" .. tostring(cond:getChildCount()))
 end
 
---@api-stub: lurek.ai.newGuard
+--@api: lurek.ai.newGuard
 do
   local child_action = lurek.ai.newAction(function() return "success" end)
   local guard = lurek.ai.newGuard(function() return true end, child_action)
   print("lurek.ai.newGuard: node=" .. guard:getNodeType())
 end
 
---@api-stub: lurek.ai.newSteeringManager
+--@api: lurek.ai.newSteeringManager
 do
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(320, 180, 1.0)
@@ -118,7 +118,7 @@ do
   print("lurek.ai.newSteeringManager: behaviors=" .. tostring(steer:getBehaviorCount()))
 end
 
---@api-stub: lurek.ai.newQLearner
+--@api: lurek.ai.newQLearner
 do
   local ql = lurek.ai.newQLearner(10, 4)
   ql:setQValue(1, 2, 0.75)
@@ -126,7 +126,7 @@ do
   print("lurek.ai.newQLearner: best_action=" .. tostring(ql:bestAction(1)))
 end
 
---@api-stub: lurek.ai.newUtilityAI
+--@api: lurek.ai.newUtilityAI
 do
   local util = lurek.ai.newUtilityAI()
   util:addAction("wait", function() return 0.2 end)
@@ -135,7 +135,7 @@ do
   print("lurek.ai.newUtilityAI: pick=" .. tostring(util:evaluate()))
 end
 
---@api-stub: lurek.ai.newDialogueAI
+--@api: lurek.ai.newDialogueAI
 do
   local dlg = lurek.ai.newDialogueAI()
   dlg:addTopic("greeting", 0.5, nil, nil, "greet_score")
@@ -144,7 +144,7 @@ do
   print("lurek.ai.newDialogueAI: topics=" .. tostring(dlg:getTopicCount()))
 end
 
---@api-stub: lurek.ai.newGOAPPlanner
+--@api: lurek.ai.newGOAPPlanner
 do
   local goap = lurek.ai.newGOAPPlanner()
   goap:addGoal("stay_alive", 5)
@@ -153,7 +153,7 @@ do
   print("lurek.ai.newGOAPPlanner: goals=" .. tostring(goap:getGoalCount()))
 end
 
---@api-stub: lurek.ai.newInfluenceMap
+--@api: lurek.ai.newInfluenceMap
 do
   local imap = lurek.ai.newInfluenceMap(32, 32, 16)
   imap:addLayer("danger")
@@ -162,7 +162,7 @@ do
   print("lurek.ai.newInfluenceMap: width=" .. tostring(imap:getWidth()))
 end
 
---@api-stub: lurek.ai.newSquad
+--@api: lurek.ai.newSquad
 do
   local squad = lurek.ai.newSquad("bravo")
   squad:addMember("leader")
@@ -171,7 +171,7 @@ do
   print("lurek.ai.newSquad: members=" .. tostring(squad:getMemberCount()))
 end
 
---@api-stub: lurek.ai.newCommandQueue
+--@api: lurek.ai.newCommandQueue
 do
   local cq = lurek.ai.newCommandQueue()
   cq:enqueue("move", function() print("moving") end, { targetX = 32, targetY = 64 })
@@ -179,7 +179,7 @@ do
   print("lurek.ai.newCommandQueue: count=" .. tostring(cq:getCount()))
 end
 
---@api-stub: lurek.ai.newTraitProfile
+--@api: lurek.ai.newTraitProfile
 do
   local traits = lurek.ai.newTraitProfile()
   traits:set("courage", 0.7)
@@ -187,7 +187,7 @@ do
   print("lurek.ai.newTraitProfile: courage=" .. tostring(traits:get("courage")))
 end
 
---@api-stub: lurek.ai.newStimulusWorld
+--@api: lurek.ai.newStimulusWorld
 do
   local sw = lurek.ai.newStimulusWorld()
   sw:addVisual(100, 150, 1.0, 48.0, "enemy")
@@ -195,7 +195,7 @@ do
   print("lurek.ai.newStimulusWorld: type=" .. sw:type())
 end
 
---@api-stub: lurek.ai.newContextSteering
+--@api: lurek.ai.newContextSteering
 do
   local cs = lurek.ai.newContextSteering(8)
   cs:addSeekTarget(256, 128, 1.0)
@@ -204,7 +204,7 @@ do
   print("lurek.ai.newContextSteering: dir=" .. tostring(dx) .. "," .. tostring(dy))
 end
 
---@api-stub: lurek.ai.newNeedSystem
+--@api: lurek.ai.newNeedSystem
 do
   local needs = lurek.ai.newNeedSystem()
   needs:addNeed("hunger", 0.1, 0.7, 2.0)
@@ -213,7 +213,7 @@ do
   print("lurek.ai.newNeedSystem: urgent=" .. tostring(needs:mostUrgent()))
 end
 
---@api-stub: lurek.ai.newAIDirector
+--@api: lurek.ai.newAIDirector
 do
   local dir = lurek.ai.newAIDirector()
   dir:pushEvent(0.6)
@@ -222,14 +222,14 @@ do
   print("lurek.ai.newAIDirector: phase=" .. dir:phase())
 end
 
---@api-stub: lurek.ai.newHTNDomain
+--@api: lurek.ai.newHTNDomain
 do
   local htn = lurek.ai.newHTNDomain()
   print("lurek.ai.newHTNDomain: ok=" .. tostring(htn ~= nil))
   print("lurek.ai.newHTNDomain: tasks=" .. tostring(htn:taskCount()))
 end
 
---@api-stub: lurek.ai.newMCTSEngine
+--@api: lurek.ai.newMCTSEngine
 do
   local mcts = lurek.ai.newMCTSEngine(100, 1.41, 20, 42)
   local get_actions = function(state)
@@ -241,7 +241,7 @@ do
   print("lurek.ai.newMCTSEngine: action=" .. tostring(best_action))
 end
 
---@api-stub: lurek.ai.newEmotionModel
+--@api: lurek.ai.newEmotionModel
 do
   local emo = lurek.ai.newEmotionModel()
   emo:add("fear", 0.1, 0.2, 0.3)
@@ -250,7 +250,7 @@ do
   print("lurek.ai.newEmotionModel: dominant=" .. tostring(emo:dominant()))
 end
 
---@api-stub: lurek.ai.newORCASolver
+--@api: lurek.ai.newORCASolver
 do
   local orca = lurek.ai.newORCASolver(1.5)
   orca:addAgent(0, 0, 0.5, 3.0)
@@ -258,7 +258,7 @@ do
   print("lurek.ai.newORCASolver: agents=" .. tostring(orca:agentCount()))
 end
 
---@api-stub: lurek.ai.newNeuralNet
+--@api: lurek.ai.newNeuralNet
 do
   local nn = lurek.ai.newNeuralNet()
   nn:addLayer(2, 3, "relu")
@@ -267,14 +267,14 @@ do
   print("lurek.ai.newNeuralNet: layers=" .. tostring(nn:layerCount()))
 end
 
---@api-stub: lurek.ai.newGeneticAlgorithm
+--@api: lurek.ai.newGeneticAlgorithm
 do
   local ga = lurek.ai.newGeneticAlgorithm(8, 5, 7)
   print("lurek.ai.newGeneticAlgorithm: ok=" .. tostring(ga ~= nil))
   print("lurek.ai.newGeneticAlgorithm: pop=" .. tostring(ga:popSize()))
 end
 
---@api-stub: lurek.ai.newBandit
+--@api: lurek.ai.newBandit
 do
   local bandit = lurek.ai.newBandit(3, "ucb1", 0.15, 55)
   local arm = bandit:select()
@@ -283,7 +283,7 @@ do
   print("lurek.ai.newBandit: arms=" .. tostring(bandit:armCount()))
 end
 
---@api-stub: lurek.ai.newNeuroevolution
+--@api: lurek.ai.newNeuroevolution
 do
   local layers = {
     { inputs = 3, outputs = 6, activation = "relu" },
@@ -294,7 +294,7 @@ do
   print("lurek.ai.newNeuroevolution: pop=" .. tostring(ne:popSize()))
 end
 
---@api-stub: lurek.ai.newStrategyAI
+--@api: lurek.ai.newStrategyAI
 do
   local strat = lurek.ai.newStrategyAI(3.0)
   strat:addGoal("expand")
@@ -303,21 +303,21 @@ do
   print("lurek.ai.newStrategyAI: next_eval=" .. tostring(strat:timeUntilNext()))
 end
 
---@api-stub: lurek.ai.newAILod
+--@api: lurek.ai.newAILod
 do
   local lod = lurek.ai.newAILod()
   print("lurek.ai.newAILod: ok=" .. tostring(lod ~= nil))
   print("lurek.ai.newAILod: tiers=" .. tostring(lod:tierCount()))
 end
 
---@api-stub: LAIWorld:addAgent
+--@api: LAIWorld:addAgent
 do
   local world = lurek.ai.newWorld()
   local archer = world:addAgent("archer_01")
   print("LAIWorld:addAgent: name=" .. archer:getName())
 end
 
---@api-stub: LAIWorld:getAgent
+--@api: LAIWorld:getAgent
 do
   local world = lurek.ai.newWorld()
   world:addAgent("scout_01")
@@ -325,7 +325,7 @@ do
   print("LAIWorld:getAgent: found=" .. tostring(found ~= nil))
 end
 
---@api-stub: LAIWorld:removeAgent
+--@api: LAIWorld:removeAgent
 do
   local world = lurek.ai.newWorld()
   local temp = world:addAgent("temp_npc")
@@ -333,7 +333,7 @@ do
   print("LAIWorld:removeAgent: removed")
 end
 
---@api-stub: LAIWorld:getAgentCount
+--@api: LAIWorld:getAgentCount
 do
   local world = lurek.ai.newWorld()
   world:addAgent("unit_a")
@@ -343,7 +343,7 @@ do
   print("LAIWorld:getAgentCount: " .. tostring(count))
 end
 
---@api-stub: LAIWorld:getGlobalBlackboard
+--@api: LAIWorld:getGlobalBlackboard
 do
   local world = lurek.ai.newWorld()
   local gb = world:getGlobalBlackboard()
@@ -352,7 +352,7 @@ do
   print("LAIWorld:getGlobalBlackboard: weather=" .. gb:getString("weather", "none"))
 end
 
---@api-stub: LAIWorld:update
+--@api: LAIWorld:update
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("worker")
@@ -363,7 +363,7 @@ do
   print("LAIWorld:update: ticked=" .. tostring(ticked))
 end
 
---@api-stub: LAIWorld:type
+--@api: LAIWorld:type
 do
   local world = lurek.ai.newWorld()
   local t = world:type()
@@ -372,7 +372,7 @@ do
   print("LAIWorld:type: matches=" .. tostring(ok))
 end
 
---@api-stub: LAIWorld:typeOf
+--@api: LAIWorld:typeOf
 do
   local world = lurek.ai.newWorld()
   local is_world = world:typeOf("LAIWorld")
@@ -380,7 +380,7 @@ do
   print("LAIWorld:typeOf: LAIWorld=" .. tostring(is_world) .. " LImage=" .. tostring(is_wrong))
 end
 
---@api-stub: LBot:getName
+--@api: LBot:getName
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("knight_03")
@@ -388,7 +388,7 @@ do
   print("LBot:getName: " .. name)
 end
 
---@api-stub: LBot:setPosition
+--@api: LBot:setPosition
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("mover")
@@ -398,7 +398,7 @@ do
   print("LBot:setPosition: pos=" .. tostring(x) .. ", " .. tostring(y))
 end
 
---@api-stub: LBot:getPosition
+--@api: LBot:getPosition
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("static_guard")
@@ -407,7 +407,7 @@ do
   print("LBot:getPosition: " .. tostring(x) .. ", " .. tostring(y))
 end
 
---@api-stub: LBot:setVelocity
+--@api: LBot:setVelocity
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("runner")
@@ -417,7 +417,7 @@ do
   print("LBot:setVelocity: vel=" .. tostring(vx) .. ", " .. tostring(vy))
 end
 
---@api-stub: LBot:getVelocity
+--@api: LBot:getVelocity
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("idle_npc")
@@ -426,7 +426,7 @@ do
   print("LBot:getVelocity: vx=" .. tostring(vx) .. " vy=" .. tostring(vy))
 end
 
---@api-stub: LBot:setMaxSpeed
+--@api: LBot:setMaxSpeed
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("sprinter")
@@ -435,7 +435,7 @@ do
   print("LBot:setMaxSpeed: speed=" .. tostring(npc:getMaxSpeed()))
 end
 
---@api-stub: LBot:getMaxSpeed
+--@api: LBot:getMaxSpeed
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("courier")
@@ -445,7 +445,7 @@ do
   print("LBot:getMaxSpeed: name=" .. npc:getName())
 end
 
---@api-stub: LBot:setMaxForce
+--@api: LBot:setMaxForce
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("tank")
@@ -454,7 +454,7 @@ do
   print("LBot:setMaxForce: force=" .. tostring(npc:getMaxForce()))
 end
 
---@api-stub: LBot:getMaxForce
+--@api: LBot:getMaxForce
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("scout")
@@ -464,7 +464,7 @@ do
   print("LBot:getMaxForce: name=" .. npc:getName())
 end
 
---@api-stub: LBot:setPriority
+--@api: LBot:setPriority
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("captain")
@@ -472,7 +472,7 @@ do
   print("LBot:setPriority: " .. tostring(npc:getPriority()))
 end
 
---@api-stub: LBot:getPriority
+--@api: LBot:getPriority
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("grunt")
@@ -481,7 +481,7 @@ do
   print("LBot:getPriority: " .. tostring(prio))
 end
 
---@api-stub: LBot:setDecisionModel
+--@api: LBot:setDecisionModel
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("worker")
@@ -490,7 +490,7 @@ do
   print("LBot:setDecisionModel: " .. model)
 end
 
---@api-stub: LBot:getDecisionModel
+--@api: LBot:getDecisionModel
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("farmer")
@@ -499,7 +499,7 @@ do
   print("LBot:getDecisionModel: " .. model)
 end
 
---@api-stub: LBot:setCustomModel
+--@api: LBot:setCustomModel
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("thinker")
@@ -510,7 +510,7 @@ do
   print("LBot:setCustomModel: dt=" .. tostring(called_with_dt))
 end
 
---@api-stub: LBot:addTag
+--@api: LBot:addTag
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("guard")
@@ -519,7 +519,7 @@ do
   print("LBot:addTag: hostile=" .. tostring(has_hostile))
 end
 
---@api-stub: LBot:removeTag
+--@api: LBot:removeTag
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("spy")
@@ -529,7 +529,7 @@ do
   print("LBot:removeTag: visible=" .. tostring(still_has))
 end
 
---@api-stub: LBot:hasTag
+--@api: LBot:hasTag
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("merchant")
@@ -539,7 +539,7 @@ do
   print("LBot:hasTag: friendly=" .. tostring(friendly) .. " hostile=" .. tostring(hostile))
 end
 
---@api-stub: LBot:getBlackboard
+--@api: LBot:getBlackboard
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("ranger")
@@ -549,7 +549,7 @@ do
   print("LBot:getBlackboard: hp=" .. tostring(hp))
 end
 
---@api-stub: LBot:type
+--@api: LBot:type
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("villager")
@@ -558,7 +558,7 @@ do
   print("LBot:type: matches=" .. tostring(npc:typeOf("LBot")))
 end
 
---@api-stub: LBot:typeOf
+--@api: LBot:typeOf
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("knight")
@@ -567,7 +567,7 @@ do
   print("LBot:typeOf: LBot=" .. tostring(is_agent) .. " LImage=" .. tostring(is_image))
 end
 
---@api-stub: LAIBlackboard:setNumber
+--@api: LAIBlackboard:setNumber
 do
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("distance", 42.5)
@@ -576,7 +576,7 @@ do
   print("LAIBlackboard:setNumber: distance=" .. tostring(dist))
 end
 
---@api-stub: LAIBlackboard:getNumber
+--@api: LAIBlackboard:getNumber
 do
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("score", 95.5)
@@ -585,7 +585,7 @@ do
   print("LAIBlackboard:getNumber: score=" .. tostring(score) .. " missing=" .. tostring(missing))
 end
 
---@api-stub: LAIBlackboard:setBool
+--@api: LAIBlackboard:setBool
 do
   local bb = lurek.ai.newBlackboard()
   bb:setBool("can_attack", true)
@@ -594,7 +594,7 @@ do
   print("LAIBlackboard:setBool: can_attack=" .. tostring(attack))
 end
 
---@api-stub: LAIBlackboard:getBool
+--@api: LAIBlackboard:getBool
 do
   local bb = lurek.ai.newBlackboard()
   bb:setBool("alert", true)
@@ -603,7 +603,7 @@ do
   print("LAIBlackboard:getBool: alert=" .. tostring(alert) .. " calm=" .. tostring(calm))
 end
 
---@api-stub: LAIBlackboard:setString
+--@api: LAIBlackboard:setString
 do
   local bb = lurek.ai.newBlackboard()
   bb:setString("target_name", "dragon")
@@ -612,7 +612,7 @@ do
   print("LAIBlackboard:setString: target=" .. target)
 end
 
---@api-stub: LAIBlackboard:getString
+--@api: LAIBlackboard:getString
 do
   local bb = lurek.ai.newBlackboard()
   bb:setString("weapon", "sword")
@@ -621,7 +621,7 @@ do
   print("LAIBlackboard:getString: weapon=" .. weapon .. " shield=" .. shield)
 end
 
---@api-stub: LAIBlackboard:has
+--@api: LAIBlackboard:has
 do
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("hp", 80)
@@ -630,7 +630,7 @@ do
   print("LAIBlackboard:has: hp=" .. tostring(has_hp) .. " mp=" .. tostring(has_mp))
 end
 
---@api-stub: LAIBlackboard:remove
+--@api: LAIBlackboard:remove
 do
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("temp", 99)
@@ -639,7 +639,7 @@ do
   print("LAIBlackboard:remove: has_temp=" .. tostring(still_has))
 end
 
---@api-stub: LAIBlackboard:clear
+--@api: LAIBlackboard:clear
 do
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("a", 1)
@@ -650,7 +650,7 @@ do
   print("LAIBlackboard:clear: size=" .. tostring(size))
 end
 
---@api-stub: LAIBlackboard:getKeys
+--@api: LAIBlackboard:getKeys
 do
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("hp", 100)
@@ -659,7 +659,7 @@ do
   print("LAIBlackboard:getKeys: count=" .. tostring(#keys))
 end
 
---@api-stub: LAIBlackboard:getSize
+--@api: LAIBlackboard:getSize
 do
   local bb = lurek.ai.newBlackboard()
   bb:setNumber("hp", 10)
@@ -668,7 +668,7 @@ do
   print("LAIBlackboard:getSize: " .. tostring(size))
 end
 
---@api-stub: LAIBlackboard:type
+--@api: LAIBlackboard:type
 do
   local bb = lurek.ai.newBlackboard()
   local t = bb:type()
@@ -676,7 +676,7 @@ do
   print("LAIBlackboard:type: matches=" .. tostring(bb:typeOf("LAIBlackboard")))
 end
 
---@api-stub: LAIBlackboard:typeOf
+--@api: LAIBlackboard:typeOf
 do
   local bb = lurek.ai.newBlackboard()
   local is_bb = bb:typeOf("LAIBlackboard")
@@ -684,7 +684,7 @@ do
   print("LAIBlackboard:typeOf: LAIBlackboard=" .. tostring(is_bb) .. " LBot=" .. tostring(is_agent))
 end
 
---@api-stub: LStateMachine:addState
+--@api: LStateMachine:addState
 do
   local fsm = lurek.ai.newStateMachine()
   local entered = ""
@@ -693,7 +693,7 @@ do
   print("LStateMachine:addState: entered=" .. entered)
 end
 
---@api-stub: LStateMachine:addTransition
+--@api: LStateMachine:addTransition
 do
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("idle", {})
@@ -702,7 +702,7 @@ do
   print("LStateMachine:addTransition: configured")
 end
 
---@api-stub: LStateMachine:setInitialState
+--@api: LStateMachine:setInitialState
 do
   local fsm = lurek.ai.newStateMachine()
   local log = ""
@@ -712,7 +712,7 @@ do
   print("LStateMachine:setInitialState: " .. current .. " log=" .. log)
 end
 
---@api-stub: LStateMachine:getCurrentState
+--@api: LStateMachine:getCurrentState
 do
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("wander", {})
@@ -722,7 +722,7 @@ do
   print("LStateMachine:getCurrentState: before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 
---@api-stub: LStateMachine:forceState
+--@api: LStateMachine:forceState
 do
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("alive", {})
@@ -733,7 +733,7 @@ do
   print("LStateMachine:forceState: " .. current)
 end
 
---@api-stub: LStateMachine:getTimeInState
+--@api: LStateMachine:getTimeInState
 do
   local fsm = lurek.ai.newStateMachine()
   fsm:addState("cooking", {})
@@ -742,7 +742,7 @@ do
   print("LStateMachine:getTimeInState: " .. tostring(time_in))
 end
 
---@api-stub: LStateMachine:type
+--@api: LStateMachine:type
 do
   local fsm = lurek.ai.newStateMachine()
   local t = fsm:type()
@@ -750,7 +750,7 @@ do
   print("LStateMachine:type: matches=" .. tostring(fsm:typeOf("LStateMachine")))
 end
 
---@api-stub: LStateMachine:typeOf
+--@api: LStateMachine:typeOf
 do
   local fsm = lurek.ai.newStateMachine()
   local is_fsm = fsm:typeOf("LStateMachine")
@@ -758,7 +758,7 @@ do
   print("LStateMachine:typeOf: LStateMachine=" .. tostring(is_fsm) .. " LBehaviorTree=" .. tostring(is_other))
 end
 
---@api-stub: LBehaviorTree:getLastStatus
+--@api: LBehaviorTree:getLastStatus
 do
   local bt = lurek.ai.newBehaviorTree()
   bt:setRoot(lurek.ai.newAction(function() return "success" end))
@@ -766,7 +766,7 @@ do
   print("LBehaviorTree:getLastStatus: " .. status)
 end
 
---@api-stub: LBehaviorTree:getDebugState
+--@api: LBehaviorTree:getDebugState
 do
   local bt = lurek.ai.newBehaviorTree()
   bt:setRoot(lurek.ai.newAction(function() return "success" end))
@@ -775,7 +775,7 @@ do
   print("LBehaviorTree:getDebugState: last_status=" .. tostring(info.last_status))
 end
 
---@api-stub: LBehaviorTree:type
+--@api: LBehaviorTree:type
 do
   local bt = lurek.ai.newBehaviorTree()
   local t = bt:type()
@@ -783,7 +783,7 @@ do
   print("LBehaviorTree:type: matches=" .. tostring(bt:typeOf("LBehaviorTree")))
 end
 
---@api-stub: LBehaviorTree:typeOf
+--@api: LBehaviorTree:typeOf
 do
   local bt = lurek.ai.newBehaviorTree()
   local is_bt = bt:typeOf("LBehaviorTree")
@@ -791,7 +791,7 @@ do
   print("LBehaviorTree:typeOf: LBehaviorTree=" .. tostring(is_bt) .. " LBot=" .. tostring(is_other))
 end
 
---@api-stub: LBTNode:addChild
+--@api: LBTNode:addChild
 do
   local seq = lurek.ai.newSequence()
   seq:addChild(lurek.ai.newAction(function() return "success" end))
@@ -799,7 +799,7 @@ do
   print("LBTNode:addChild: children=" .. tostring(count))
 end
 
---@api-stub: LBTNode:getChildCount
+--@api: LBTNode:getChildCount
 do
   local sel = lurek.ai.newSelector()
   sel:addChild(lurek.ai.newAction(function() return "success" end))
@@ -807,7 +807,7 @@ do
   print("LBTNode:getChildCount: " .. tostring(count))
 end
 
---@api-stub: LBTNode:reset
+--@api: LBTNode:reset
 do
   local seq = lurek.ai.newSequence()
   seq:addChild(lurek.ai.newAction(function() return "running" end))
@@ -815,7 +815,7 @@ do
   print("LBTNode:reset: done")
 end
 
---@api-stub: LBTNode:setChild
+--@api: LBTNode:setChild
 do
   local inv = lurek.ai.newInverter()
   inv:setChild(lurek.ai.newAction(function() return "failure" end))
@@ -823,7 +823,7 @@ do
   print("LBTNode:setChild: type=" .. inv:getNodeType())
 end
 
---@api-stub: LBTNode:setCount
+--@api: LBTNode:setCount
 do
   local rep = lurek.ai.newRepeater(3)
   rep:setCount(10)
@@ -831,14 +831,14 @@ do
   print("LBTNode:setCount: " .. tostring(count))
 end
 
---@api-stub: LBTNode:getCount
+--@api: LBTNode:getCount
 do
   local rep = lurek.ai.newRepeater(7)
   local count = rep:getCount()
   print("LBTNode:getCount: " .. tostring(count))
 end
 
---@api-stub: LBTNode:setSuccessPolicy
+--@api: LBTNode:setSuccessPolicy
 do
   local par = lurek.ai.newParallel("requireAll", "requireOne")
   par:setSuccessPolicy("requireOne")
@@ -846,7 +846,7 @@ do
   print("LBTNode:setSuccessPolicy: type=" .. par:getNodeType())
 end
 
---@api-stub: LBTNode:setFailurePolicy
+--@api: LBTNode:setFailurePolicy
 do
   local par = lurek.ai.newParallel("requireOne", "requireAll")
   par:setFailurePolicy("requireOne")
@@ -854,13 +854,13 @@ do
   print("LBTNode:setFailurePolicy: type=" .. par:getNodeType())
 end
 
---@api-stub: LBTNode:getNodeType
+--@api: LBTNode:getNodeType
 do
   local act = lurek.ai.newAction(function() return "success" end)
   print("LBTNode:getNodeType: " .. act:getNodeType())
 end
 
---@api-stub: LBTNode:type
+--@api: LBTNode:type
 do
   local node = lurek.ai.newAction(function() return "success" end)
   local t = node:type()
@@ -868,7 +868,7 @@ do
   print("LBTNode:type: matches=" .. tostring(node:typeOf("LBTNode")))
 end
 
---@api-stub: LBTNode:typeOf
+--@api: LBTNode:typeOf
 do
   local node = lurek.ai.newSelector()
   local is_node = node:typeOf("LBTNode")
@@ -876,7 +876,7 @@ do
   print("LBTNode:typeOf: LBTNode=" .. tostring(is_node) .. " LImage=" .. tostring(is_other))
 end
 
---@api-stub: LSteeringManager:addSeek
+--@api: LSteeringManager:addSeek
 do
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(400, 300, 1.0)
@@ -884,7 +884,7 @@ do
   print("LSteeringManager:addSeek: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 
---@api-stub: LSteeringManager:addFlee
+--@api: LSteeringManager:addFlee
 do
   local steer = lurek.ai.newSteeringManager()
   steer:addFlee(200, 200, 1.0)
@@ -892,7 +892,7 @@ do
   print("LSteeringManager:addFlee: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 
---@api-stub: LSteeringManager:addArrive
+--@api: LSteeringManager:addArrive
 do
   local steer = lurek.ai.newSteeringManager()
   steer:addArrive(300, 300, 50, 1.0)
@@ -900,7 +900,7 @@ do
   print("LSteeringManager:addArrive: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 
---@api-stub: LSteeringManager:addWander
+--@api: LSteeringManager:addWander
 do
   local steer = lurek.ai.newSteeringManager()
   steer:addWander(25, 50, 8, 0.5)
@@ -908,7 +908,7 @@ do
   print("LSteeringManager:addWander: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 
---@api-stub: LSteeringManager:addPursue
+--@api: LSteeringManager:addPursue
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setEntity("target_agent", 220, 120, 20, 0)
@@ -917,7 +917,7 @@ do
   print("LSteeringManager:addPursue: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 
---@api-stub: LSteeringManager:addEvade
+--@api: LSteeringManager:addEvade
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setEntity("enemy_agent", 140, 120, -10, 0)
@@ -926,7 +926,7 @@ do
   print("LSteeringManager:addEvade: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 
---@api-stub: LSteeringManager:addFlock
+--@api: LSteeringManager:addFlock
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setEntity("ally_1", 110, 100, 20, 0)
@@ -936,14 +936,14 @@ do
   print("LSteeringManager:addFlock: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 
---@api-stub: LSteeringManager:setEntity
+--@api: LSteeringManager:setEntity
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setEntity("scout", 100, 80, 12, 0)
   print("LSteeringManager:setEntity: count=" .. tostring(steer:entityCount()))
 end
 
---@api-stub: LSteeringManager:removeEntity
+--@api: LSteeringManager:removeEntity
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setEntity("scout", 100, 80, 12, 0)
@@ -951,7 +951,7 @@ do
   print("LSteeringManager:removeEntity: removed=" .. tostring(removed))
 end
 
---@api-stub: LSteeringManager:clearEntities
+--@api: LSteeringManager:clearEntities
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setEntity("a", 0, 0)
@@ -960,14 +960,14 @@ do
   print("LSteeringManager:clearEntities: count=" .. tostring(steer:entityCount()))
 end
 
---@api-stub: LSteeringManager:entityCount
+--@api: LSteeringManager:entityCount
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setEntity("a", 0, 0)
   print("LSteeringManager:entityCount: " .. tostring(steer:entityCount()))
 end
 
---@api-stub: LSteeringManager:getBehaviorCount
+--@api: LSteeringManager:getBehaviorCount
 do
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(100, 100, 1.0)
@@ -976,7 +976,7 @@ do
   print("LSteeringManager:getBehaviorCount: " .. tostring(count))
 end
 
---@api-stub: LSteeringManager:setCombineMode
+--@api: LSteeringManager:setCombineMode
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setCombineMode("priority")
@@ -984,7 +984,7 @@ do
   print("LSteeringManager:setCombineMode: " .. mode)
 end
 
---@api-stub: LSteeringManager:getCombineMode
+--@api: LSteeringManager:getCombineMode
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setCombineMode("truncated")
@@ -993,7 +993,7 @@ do
   print("LSteeringManager:getCombineMode: type=" .. steer:type())
 end
 
---@api-stub: LSteeringManager:getLastSteering
+--@api: LSteeringManager:getLastSteering
 do
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(200, 200, 1.0)
@@ -1002,7 +1002,7 @@ do
   print("LSteeringManager:getLastSteering: " .. tostring(lx) .. "," .. tostring(ly))
 end
 
---@api-stub: LSteeringManager:calculate
+--@api: LSteeringManager:calculate
 do
   local steer = lurek.ai.newSteeringManager()
   steer:addSeek(500, 300, 1.0)
@@ -1011,7 +1011,7 @@ do
   print("LSteeringManager:calculate: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 
---@api-stub: LSteeringManager:setPath
+--@api: LSteeringManager:setPath
 do
   local steer = lurek.ai.newSteeringManager()
   local waypoints = {
@@ -1025,7 +1025,7 @@ do
   print("LSteeringManager:setPath: hasPath=" .. tostring(has))
 end
 
---@api-stub: LSteeringManager:clearPath
+--@api: LSteeringManager:clearPath
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setPath({ { x = 10, y = 10 }, { x = 100, y = 100 } }, 8.0, 1.0)
@@ -1034,7 +1034,7 @@ do
   print("LSteeringManager:clearPath: hasPath=" .. tostring(has))
 end
 
---@api-stub: LSteeringManager:hasPath
+--@api: LSteeringManager:hasPath
 do
   local steer = lurek.ai.newSteeringManager()
   local before = steer:hasPath()
@@ -1043,7 +1043,7 @@ do
   print("LSteeringManager:hasPath: before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 
---@api-stub: LSteeringManager:getPathProgress
+--@api: LSteeringManager:getPathProgress
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setPath({ { x = 0, y = 0 }, { x = 100, y = 50 }, { x = 200, y = 100 } }, 10.0, 1.0)
@@ -1051,7 +1051,7 @@ do
   print("LSteeringManager:getPathProgress: " .. tostring(idx) .. "/" .. tostring(total))
 end
 
---@api-stub: LSteeringManager:type
+--@api: LSteeringManager:type
 do
   local steer = lurek.ai.newSteeringManager()
   local t = steer:type()
@@ -1059,7 +1059,7 @@ do
   print("LSteeringManager:type: matches=" .. tostring(steer:typeOf("LSteeringManager")))
 end
 
---@api-stub: LSteeringManager:typeOf
+--@api: LSteeringManager:typeOf
 do
   local steer = lurek.ai.newSteeringManager()
   local is_steer = steer:typeOf("LSteeringManager")
@@ -1067,14 +1067,14 @@ do
   print("LSteeringManager:typeOf: LSteeringManager=" .. tostring(is_steer) .. " LBot=" .. tostring(is_other))
 end
 
---@api-stub: LSteeringManager:setSpatialHashCellSize
+--@api: LSteeringManager:setSpatialHashCellSize
 do
   local steer = lurek.ai.newSteeringManager()
   steer:setSpatialHashCellSize(32)
   print("LSteeringManager:setSpatialHashCellSize: done")
 end
 
---@api-stub: LSteeringManager:enableSpatialHash
+--@api: LSteeringManager:enableSpatialHash
 do
   local steer = lurek.ai.newSteeringManager()
   steer:enableSpatialHash(true)
@@ -1082,7 +1082,7 @@ do
   print("LSteeringManager:enableSpatialHash: done")
 end
 
---@api-stub: LSteeringManager:addCustomBehavior
+--@api: LSteeringManager:addCustomBehavior
 do
   local steer = lurek.ai.newSteeringManager()
   steer:addCustomBehavior(function(agent, dt) return 50, 0 end, 0.8)
@@ -1090,7 +1090,7 @@ do
   print("LSteeringManager:addCustomBehavior: behaviors=" .. tostring(count))
 end
 
---@api-stub: LSteeringManager:applyCustomSteering
+--@api: LSteeringManager:applyCustomSteering
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("pusher")
@@ -1101,7 +1101,7 @@ do
   print("LSteeringManager:applyCustomSteering: fx=" .. tostring(fx) .. " fy=" .. tostring(fy))
 end
 
---@api-stub: LUtilityAI:addAction
+--@api: LUtilityAI:addAction
 do
     local uai = lurek.ai.newUtilityAI()
     uai:addAction("eat", function() return 0.8 end, 1.0)
@@ -1109,7 +1109,7 @@ do
     print("actions added = " .. uai:getActionCount())
 end
 
---@api-stub: LUtilityAI:evaluate
+--@api: LUtilityAI:evaluate
 do
     local uai = lurek.ai.newUtilityAI()
     uai:addAction("attack", function() return 0.9 end)
@@ -1118,7 +1118,7 @@ do
     print("chosen action = " .. tostring(chosen))
 end
 
---@api-stub: LUtilityAI:getActionCount
+--@api: LUtilityAI:getActionCount
 do
     local uai = lurek.ai.newUtilityAI()
     uai:addAction("patrol", function() return 0.5 end)
@@ -1127,7 +1127,7 @@ do
     print("action count = " .. uai:getActionCount())
 end
 
---@api-stub: LUtilityAI:getLastAction
+--@api: LUtilityAI:getLastAction
 do
   local uai = lurek.ai.newUtilityAI()
   uai:addAction("gather", function() return 0.6 end)
@@ -1137,7 +1137,7 @@ do
     print("last action = " .. tostring(last))
 end
 
---@api-stub: LUtilityAI:addConsideration
+--@api: LUtilityAI:addConsideration
 do
     local uai = lurek.ai.newUtilityAI()
     uai:addAction("heal", function() return 0.5 end)
@@ -1146,20 +1146,20 @@ do
     print("consideration added, last = " .. tostring(uai:getLastAction()))
 end
 
---@api-stub: LUtilityAI:type
+--@api: LUtilityAI:type
 do
     local uai = lurek.ai.newUtilityAI()
     print("type = " .. uai:type())
   print("matches = " .. tostring(uai:typeOf("LUtilityAI")))
 end
 
---@api-stub: LUtilityAI:typeOf
+--@api: LUtilityAI:typeOf
 do
     local uai = lurek.ai.newUtilityAI()
     print("is LUtilityAI = " .. tostring(uai:typeOf("LUtilityAI")))
 end
 
---@api-stub: LGOAPPlanner:addAction
+--@api: LGOAPPlanner:addAction
 do
     local goap = lurek.ai.newGOAPPlanner()
     goap:addAction("chop_wood", 2, function() print("  chopping wood") end)
@@ -1167,7 +1167,7 @@ do
     print("goap actions = " .. goap:getActionCount())
 end
 
---@api-stub: LGOAPPlanner:setPrecondition
+--@api: LGOAPPlanner:setPrecondition
 do
     local goap = lurek.ai.newGOAPPlanner()
     goap:addAction("cook", 1, function() end)
@@ -1175,7 +1175,7 @@ do
     print("precondition set for cook")
 end
 
---@api-stub: LGOAPPlanner:setEffect
+--@api: LGOAPPlanner:setEffect
 do
     local goap = lurek.ai.newGOAPPlanner()
     goap:addAction("mine_ore", 3, function() end)
@@ -1183,7 +1183,7 @@ do
     print("effect set for mine_ore")
 end
 
---@api-stub: LGOAPPlanner:addGoal
+--@api: LGOAPPlanner:addGoal
 do
     local goap = lurek.ai.newGOAPPlanner()
     goap:addGoal("survive", 10)
@@ -1191,7 +1191,7 @@ do
     print("goals = " .. goap:getGoalCount())
 end
 
---@api-stub: LGOAPPlanner:setGoalState
+--@api: LGOAPPlanner:setGoalState
 do
     local goap = lurek.ai.newGOAPPlanner()
     goap:addGoal("build_shelter", 5)
@@ -1199,7 +1199,7 @@ do
     print("goal state set for build_shelter")
 end
 
---@api-stub: LGOAPPlanner:plan
+--@api: LGOAPPlanner:plan
 do
   local goap = lurek.ai.newGOAPPlanner()
   goap:addAction("get_wood", 1, function() end)
@@ -1213,7 +1213,7 @@ do
   print("plan steps = " .. #plan)
 end
 
---@api-stub: LGOAPPlanner:getActionCount
+--@api: LGOAPPlanner:getActionCount
 do
     local goap = lurek.ai.newGOAPPlanner()
     goap:addAction("a1", 1, function() end)
@@ -1221,7 +1221,7 @@ do
     print("action count = " .. goap:getActionCount())
 end
 
---@api-stub: LGOAPPlanner:getGoalCount
+--@api: LGOAPPlanner:getGoalCount
 do
     local goap = lurek.ai.newGOAPPlanner()
     goap:addGoal("g1", 1)
@@ -1230,34 +1230,34 @@ do
     print("goal count = " .. goap:getGoalCount())
 end
 
---@api-stub: LGOAPPlanner:getMaxIterations
+--@api: LGOAPPlanner:getMaxIterations
 do
     local goap = lurek.ai.newGOAPPlanner()
     local max = goap:getMaxIterations()
     print("default max iterations = " .. max)
 end
 
---@api-stub: LGOAPPlanner:setMaxIterations
+--@api: LGOAPPlanner:setMaxIterations
 do
     local goap = lurek.ai.newGOAPPlanner()
     goap:setMaxIterations(500)
     print("max iterations = " .. goap:getMaxIterations())
 end
 
---@api-stub: LGOAPPlanner:type
+--@api: LGOAPPlanner:type
 do
     local goap = lurek.ai.newGOAPPlanner()
     print("type = " .. goap:type())
   print("matches = " .. tostring(goap:typeOf("LGOAPPlanner")))
 end
 
---@api-stub: LGOAPPlanner:typeOf
+--@api: LGOAPPlanner:typeOf
 do
     local goap = lurek.ai.newGOAPPlanner()
     print("is LGOAPPlanner = " .. tostring(goap:typeOf("LGOAPPlanner")))
 end
 
---@api-stub: LInfluenceMap:addLayer
+--@api: LInfluenceMap:addLayer
 do
     local im = lurek.ai.newInfluenceMap(16, 16, 1.0)
     im:addLayer("threat")
@@ -1265,7 +1265,7 @@ do
     print("layers added: threat, resources")
 end
 
---@api-stub: LInfluenceMap:hasLayer
+--@api: LInfluenceMap:hasLayer
 do
     local im = lurek.ai.newInfluenceMap(8, 8, 2.0)
     im:addLayer("heat")
@@ -1273,7 +1273,7 @@ do
     print("has cold = " .. tostring(im:hasLayer("cold")))
 end
 
---@api-stub: LInfluenceMap:setInfluence
+--@api: LInfluenceMap:setInfluence
 do
     local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
     im:addLayer("danger")
@@ -1282,7 +1282,7 @@ do
     print("set influence at (5,5) and (3,7)")
 end
 
---@api-stub: LInfluenceMap:getInfluence
+--@api: LInfluenceMap:getInfluence
 do
     local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
     im:addLayer("food")
@@ -1291,7 +1291,7 @@ do
     print("food at (4,4) = " .. val)
 end
 
---@api-stub: LInfluenceMap:stampInfluence
+--@api: LInfluenceMap:stampInfluence
 do
     local im = lurek.ai.newInfluenceMap(20, 20, 1.0)
     im:addLayer("noise")
@@ -1300,7 +1300,7 @@ do
     print("noise center = " .. center)
 end
 
---@api-stub: LInfluenceMap:propagate
+--@api: LInfluenceMap:propagate
 do
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
   im:addLayer("scent")
@@ -1310,7 +1310,7 @@ do
     print("scent propagated to (4,5) = " .. neighbor)
 end
 
---@api-stub: LInfluenceMap:decay
+--@api: LInfluenceMap:decay
 do
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
   im:addLayer("heat")
@@ -1320,7 +1320,7 @@ do
     print("heat after decay = " .. val)
 end
 
---@api-stub: LInfluenceMap:clearLayer
+--@api: LInfluenceMap:clearLayer
 do
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
   im:addLayer("marks")
@@ -1330,7 +1330,7 @@ do
     print("after clear = " .. val)
 end
 
---@api-stub: LInfluenceMap:clearAll
+--@api: LInfluenceMap:clearAll
 do
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
   im:addLayer("a")
@@ -1341,7 +1341,7 @@ do
     print("all cleared, a(1,1) = " .. im:getInfluence("a", 1, 1))
 end
 
---@api-stub: LInfluenceMap:getMaxPosition
+--@api: LInfluenceMap:getMaxPosition
 do
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
   im:addLayer("gold")
@@ -1351,7 +1351,7 @@ do
     print("max gold at (" .. mx .. ", " .. my .. ")")
 end
 
---@api-stub: LInfluenceMap:getMinPosition
+--@api: LInfluenceMap:getMinPosition
 do
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
   im:addLayer("cold")
@@ -1361,7 +1361,7 @@ do
     print("min cold at (" .. mx .. ", " .. my .. ")")
 end
 
---@api-stub: LInfluenceMap:queryRect
+--@api: LInfluenceMap:queryRect
 do
   local im = lurek.ai.newInfluenceMap(10, 10, 1.0)
   im:addLayer("energy")
@@ -1371,7 +1371,7 @@ do
     print("energy in rect = " .. total)
 end
 
---@api-stub: LInfluenceMap:blend
+--@api: LInfluenceMap:blend
 do
   local im = lurek.ai.newInfluenceMap(8, 8, 1.0)
   im:addLayer("threat")
@@ -1384,44 +1384,44 @@ do
     print("blended (4,4) = " .. val)
 end
 
---@api-stub: LInfluenceMap:getWidth
+--@api: LInfluenceMap:getWidth
 do
     local im = lurek.ai.newInfluenceMap(16, 12, 2.0)
     print("width = " .. im:getWidth())
 end
 
---@api-stub: LInfluenceMap:getHeight
+--@api: LInfluenceMap:getHeight
 do
     local im = lurek.ai.newInfluenceMap(16, 12, 2.0)
     print("height = " .. im:getHeight())
 end
 
---@api-stub: LInfluenceMap:getCellSize
+--@api: LInfluenceMap:getCellSize
 do
     local im = lurek.ai.newInfluenceMap(8, 8, 2.5)
     print("cell size = " .. im:getCellSize())
 end
 
---@api-stub: LInfluenceMap:type
+--@api: LInfluenceMap:type
 do
     local im = lurek.ai.newInfluenceMap(4, 4, 1.0)
     print("type = " .. im:type())
   print("matches = " .. tostring(im:typeOf("LInfluenceMap")))
 end
 
---@api-stub: LInfluenceMap:typeOf
+--@api: LInfluenceMap:typeOf
 do
     local im = lurek.ai.newInfluenceMap(4, 4, 1.0)
     print("is LInfluenceMap = " .. tostring(im:typeOf("LInfluenceMap")))
 end
 
---@api-stub: LSquad:getName
+--@api: LSquad:getName
 do
     local sq = lurek.ai.newSquad("alpha")
     print("squad name = " .. sq:getName())
 end
 
---@api-stub: LSquad:addMember
+--@api: LSquad:addMember
 do
     local sq = lurek.ai.newSquad("bravo")
     sq:addMember("soldier_1")
@@ -1429,7 +1429,7 @@ do
     print("members = " .. sq:getMemberCount())
 end
 
---@api-stub: LSquad:removeMember
+--@api: LSquad:removeMember
 do
     local sq = lurek.ai.newSquad("charlie")
     sq:addMember("scout")
@@ -1438,7 +1438,7 @@ do
     print("after remove = " .. sq:getMemberCount())
 end
 
---@api-stub: LSquad:getMemberCount
+--@api: LSquad:getMemberCount
 do
     local sq = lurek.ai.newSquad("delta")
     sq:addMember("a")
@@ -1447,7 +1447,7 @@ do
     print("count = " .. sq:getMemberCount())
 end
 
---@api-stub: LSquad:getMembers
+--@api: LSquad:getMembers
 do
     local sq = lurek.ai.newSquad("echo")
     sq:addMember("sniper")
@@ -1456,7 +1456,7 @@ do
     print("members: " .. table.concat(members, ", "))
 end
 
---@api-stub: LSquad:setLeader
+--@api: LSquad:setLeader
 do
     local sq = lurek.ai.newSquad("foxtrot")
     sq:addMember("captain")
@@ -1465,7 +1465,7 @@ do
     print("leader = " .. sq:getLeader())
 end
 
---@api-stub: LSquad:getLeader
+--@api: LSquad:getLeader
 do
     local sq = lurek.ai.newSquad("golf")
     sq:addMember("commander")
@@ -1474,7 +1474,7 @@ do
     print("leader = " .. tostring(leader))
 end
 
---@api-stub: LSquad:setFormation
+--@api: LSquad:setFormation
 do
   local sq = lurek.ai.newSquad("hotel")
   sq:addMember("point")
@@ -1486,7 +1486,7 @@ end
 
 --- AI Examples Part 4: Squad (cont.), Command Queue, Trait Profile, Stimulus World, Context Steering, Need System
 
---@api-stub: LSquad:getFormation
+--@api: LSquad:getFormation
 do
     local sq = lurek.ai.newSquad("recon")
     sq:setFormation("line", 3.0)
@@ -1494,7 +1494,7 @@ do
     print("formation = " .. f)
 end
 
---@api-stub: LSquad:getFormationSpacing
+--@api: LSquad:getFormationSpacing
 do
     local sq = lurek.ai.newSquad("assault")
     sq:setFormation("wedge", 2.5)
@@ -1502,7 +1502,7 @@ do
     print("spacing = " .. s)
 end
 
---@api-stub: LSquad:getFormationPosition
+--@api: LSquad:getFormationPosition
 do
   local sq = lurek.ai.newSquad("patrol")
   sq:addMember("lead")
@@ -1513,7 +1513,7 @@ do
     print("member 2 pos = " .. x .. ", " .. y)
 end
 
---@api-stub: LSquad:getBlackboard
+--@api: LSquad:getBlackboard
 do
     local sq = lurek.ai.newSquad("intel")
     local bb = sq:getBlackboard()
@@ -1521,20 +1521,20 @@ do
     print("squad bb threat = " .. bb:getNumber("threat_level"))
 end
 
---@api-stub: LSquad:type
+--@api: LSquad:type
 do
     local sq = lurek.ai.newSquad("test")
     print("type = " .. sq:type())
   print("matches = " .. tostring(sq:typeOf("LSquad")))
 end
 
---@api-stub: LSquad:typeOf
+--@api: LSquad:typeOf
 do
     local sq = lurek.ai.newSquad("test2")
     print("is LSquad = " .. tostring(sq:typeOf("LSquad")))
 end
 
---@api-stub: LCommandQueue:enqueue
+--@api: LCommandQueue:enqueue
 do
     local cq = lurek.ai.newCommandQueue()
     cq:enqueue("move", function() print("  moving") end, { targetX = 10, targetY = 20 })
@@ -1542,7 +1542,7 @@ do
     print("queue size = " .. cq:getCount())
 end
 
---@api-stub: LCommandQueue:pushFront
+--@api: LCommandQueue:pushFront
 do
     local cq = lurek.ai.newCommandQueue()
     cq:enqueue("patrol", function() end)
@@ -1550,7 +1550,7 @@ do
     print("next type = " .. cq:getCurrentType())
 end
 
---@api-stub: LCommandQueue:replace
+--@api: LCommandQueue:replace
 do
     local cq = lurek.ai.newCommandQueue()
     cq:enqueue("idle", function() end)
@@ -1559,7 +1559,7 @@ do
     print("after replace count = " .. cq:getCount())
 end
 
---@api-stub: LCommandQueue:cancelCurrent
+--@api: LCommandQueue:cancelCurrent
 do
     local cq = lurek.ai.newCommandQueue()
     cq:enqueue("walk", function() end)
@@ -1568,7 +1568,7 @@ do
     print("after cancel, type = " .. tostring(cq:getCurrentType()))
 end
 
---@api-stub: LCommandQueue:clear
+--@api: LCommandQueue:clear
 do
     local cq = lurek.ai.newCommandQueue()
     cq:enqueue("a", function() end)
@@ -1577,7 +1577,7 @@ do
     print("after clear, empty = " .. tostring(cq:isEmpty()))
 end
 
---@api-stub: LCommandQueue:getCount
+--@api: LCommandQueue:getCount
 do
     local cq = lurek.ai.newCommandQueue()
     cq:enqueue("x", function() end)
@@ -1586,7 +1586,7 @@ do
     print("count = " .. cq:getCount())
 end
 
---@api-stub: LCommandQueue:isEmpty
+--@api: LCommandQueue:isEmpty
 do
     local cq = lurek.ai.newCommandQueue()
     print("empty initially = " .. tostring(cq:isEmpty()))
@@ -1594,14 +1594,14 @@ do
     print("empty after enqueue = " .. tostring(cq:isEmpty()))
 end
 
---@api-stub: LCommandQueue:getCurrentType
+--@api: LCommandQueue:getCurrentType
 do
     local cq = lurek.ai.newCommandQueue()
     cq:enqueue("harvest", function() end)
     print("current type = " .. tostring(cq:getCurrentType()))
 end
 
---@api-stub: LCommandQueue:getCurrentTarget
+--@api: LCommandQueue:getCurrentTarget
 do
     local cq = lurek.ai.newCommandQueue()
     cq:enqueue("go", function() end, { targetX = 5, targetY = 10 })
@@ -1609,20 +1609,20 @@ do
     print("target = " .. tostring(tgt))
 end
 
---@api-stub: LCommandQueue:type
+--@api: LCommandQueue:type
 do
     local cq = lurek.ai.newCommandQueue()
     print("type = " .. cq:type())
   print("matches = " .. tostring(cq:typeOf("LCommandQueue")))
 end
 
---@api-stub: LCommandQueue:typeOf
+--@api: LCommandQueue:typeOf
 do
     local cq = lurek.ai.newCommandQueue()
     print("is LCommandQueue = " .. tostring(cq:typeOf("LCommandQueue")))
 end
 
---@api-stub: LTraitProfile:set
+--@api: LTraitProfile:set
 do
     local tp = lurek.ai.newTraitProfile()
     tp:set("courage", 0.7)
@@ -1630,7 +1630,7 @@ do
     print("courage = " .. tp:get("courage"))
 end
 
---@api-stub: LTraitProfile:get
+--@api: LTraitProfile:get
 do
     local tp = lurek.ai.newTraitProfile()
     tp:set("speed", 1.0)
@@ -1639,7 +1639,7 @@ do
     print("effective speed = " .. effective)
 end
 
---@api-stub: LTraitProfile:getBase
+--@api: LTraitProfile:getBase
 do
     local tp = lurek.ai.newTraitProfile()
     tp:set("strength", 0.8)
@@ -1647,7 +1647,7 @@ do
     print("base strength = " .. tp:getBase("strength"))
 end
 
---@api-stub: LTraitProfile:addModifier
+--@api: LTraitProfile:addModifier
 do
     local tp = lurek.ai.newTraitProfile()
     tp:set("defense", 0.5)
@@ -1655,7 +1655,7 @@ do
     print("defense with modifier = " .. tp:get("defense"))
 end
 
---@api-stub: LTraitProfile:removeModifiers
+--@api: LTraitProfile:removeModifiers
 do
   local tp = lurek.ai.newTraitProfile()
   tp:set("luck", 0.4)
@@ -1665,7 +1665,7 @@ do
     print("luck after remove = " .. tp:get("luck"))
 end
 
---@api-stub: LTraitProfile:update
+--@api: LTraitProfile:update
 do
     local tp = lurek.ai.newTraitProfile()
     tp:set("rage", 0.5)
@@ -1674,7 +1674,7 @@ do
     print("rage after 3s = " .. tp:get("rage"))
 end
 
---@api-stub: LTraitProfile:has
+--@api: LTraitProfile:has
 do
     local tp = lurek.ai.newTraitProfile()
     tp:set("wisdom", 0.6)
@@ -1682,7 +1682,7 @@ do
     print("has charm = " .. tostring(tp:has("charm")))
 end
 
---@api-stub: LTraitProfile:traitCount
+--@api: LTraitProfile:traitCount
 do
     local tp = lurek.ai.newTraitProfile()
     tp:set("a", 0.1)
@@ -1691,7 +1691,7 @@ do
     print("trait count = " .. tp:traitCount())
 end
 
---@api-stub: LTraitProfile:archetype
+--@api: LTraitProfile:archetype
 do
   local tp = lurek.ai.newTraitProfile()
   tp:set("aggression", 0.9)
@@ -1701,34 +1701,34 @@ do
     print("archetype = " .. arch)
 end
 
---@api-stub: LTraitProfile:type
+--@api: LTraitProfile:type
 do
     local tp = lurek.ai.newTraitProfile()
     print("type = " .. tp:type())
   print("matches = " .. tostring(tp:typeOf("LTraitProfile")))
 end
 
---@api-stub: LTraitProfile:typeOf
+--@api: LTraitProfile:typeOf
 do
     local tp = lurek.ai.newTraitProfile()
     print("is LTraitProfile = " .. tostring(tp:typeOf("LTraitProfile")))
 end
 
---@api-stub: LStimulusWorld:addVisual
+--@api: LStimulusWorld:addVisual
 do
     local sw = lurek.ai.newStimulusWorld()
     local id = sw:addVisual(100, 200, 0.8, 50.0, "enemy_spotted")
     print("visual stimulus id = " .. id)
 end
 
---@api-stub: LStimulusWorld:addAuditory
+--@api: LStimulusWorld:addAuditory
 do
     local sw = lurek.ai.newStimulusWorld()
     local id = sw:addAuditory(50, 80, 0.6, 30.0, 0.1, "footstep")
     print("auditory stimulus id = " .. id)
 end
 
---@api-stub: LStimulusWorld:remove
+--@api: LStimulusWorld:remove
 do
     local sw = lurek.ai.newStimulusWorld()
     local id = sw:addVisual(10, 10, 1.0, 20.0, "flash")
@@ -1736,7 +1736,7 @@ do
     print("removed stimulus, count = " .. sw:count())
 end
 
---@api-stub: LStimulusWorld:update
+--@api: LStimulusWorld:update
 do
     local sw = lurek.ai.newStimulusWorld()
     sw:addAuditory(0, 0, 1.0, 10.0, 0.5, "bang")
@@ -1744,7 +1744,7 @@ do
     print("after update, count = " .. sw:count())
 end
 
---@api-stub: LStimulusWorld:count
+--@api: LStimulusWorld:count
 do
     local sw = lurek.ai.newStimulusWorld()
     sw:addVisual(0, 0, 1.0, 10.0, "a")
@@ -1752,7 +1752,7 @@ do
     print("stimulus count = " .. sw:count())
 end
 
---@api-stub: LStimulusWorld:clear
+--@api: LStimulusWorld:clear
 do
     local sw = lurek.ai.newStimulusWorld()
     sw:addVisual(0, 0, 1.0, 10.0, "x")
@@ -1761,48 +1761,48 @@ do
     print("after clear, count = " .. sw:count())
 end
 
---@api-stub: LStimulusWorld:type
+--@api: LStimulusWorld:type
 do
     local sw = lurek.ai.newStimulusWorld()
     print("type = " .. sw:type())
   print("matches = " .. tostring(sw:typeOf("LStimulusWorld")))
 end
 
---@api-stub: LStimulusWorld:typeOf
+--@api: LStimulusWorld:typeOf
 do
     local sw = lurek.ai.newStimulusWorld()
     print("is LStimulusWorld = " .. tostring(sw:typeOf("LStimulusWorld")))
 end
 
---@api-stub: LContextSteering:addSeekTarget
+--@api: LContextSteering:addSeekTarget
 do
     local cs = lurek.ai.newContextSteering(8)
     cs:addSeekTarget(200, 150, 1.0)
     print("seek target added at (200, 150)")
 end
 
---@api-stub: LContextSteering:addWander
+--@api: LContextSteering:addWander
 do
     local cs = lurek.ai.newContextSteering(8)
     cs:addWander(0.3, 0.5)
     print("wander behavior added")
 end
 
---@api-stub: LContextSteering:addAvoidPoint
+--@api: LContextSteering:addAvoidPoint
 do
     local cs = lurek.ai.newContextSteering(8)
     cs:addAvoidPoint(50, 50, 20.0, 1.5)
     print("avoid point at (50, 50) radius 20")
 end
 
---@api-stub: LContextSteering:addAvoidBounds
+--@api: LContextSteering:addAvoidBounds
 do
     local cs = lurek.ai.newContextSteering(8)
     cs:addAvoidBounds(0, 0, 800, 600, 30.0, 1.0)
     print("avoid bounds set for 800x600 area")
 end
 
---@api-stub: LContextSteering:clearBehaviors
+--@api: LContextSteering:clearBehaviors
 do
     local cs = lurek.ai.newContextSteering(8)
     cs:addSeekTarget(100, 100, 1.0)
@@ -1811,7 +1811,7 @@ do
     print("behaviors cleared")
 end
 
---@api-stub: LContextSteering:evaluate
+--@api: LContextSteering:evaluate
 do
     local cs = lurek.ai.newContextSteering(8)
     cs:addSeekTarget(300, 200, 1.0)
@@ -1820,7 +1820,7 @@ do
     print("direction = " .. dx .. ", " .. dy)
 end
 
---@api-stub: LContextSteering:chosenMagnitude
+--@api: LContextSteering:chosenMagnitude
 do
     local cs = lurek.ai.newContextSteering(8)
     cs:addSeekTarget(200, 200, 1.0)
@@ -1829,26 +1829,26 @@ do
     print("magnitude = " .. mag)
 end
 
---@api-stub: LContextSteering:slotCount
+--@api: LContextSteering:slotCount
 do
     local cs = lurek.ai.newContextSteering(16)
     print("slots = " .. cs:slotCount())
 end
 
---@api-stub: LContextSteering:type
+--@api: LContextSteering:type
 do
     local cs = lurek.ai.newContextSteering(8)
     print("type = " .. cs:type())
   print("matches = " .. tostring(cs:typeOf("LContextSteering")))
 end
 
---@api-stub: LContextSteering:typeOf
+--@api: LContextSteering:typeOf
 do
     local cs = lurek.ai.newContextSteering(8)
     print("is LContextSteering = " .. tostring(cs:typeOf("LContextSteering")))
 end
 
---@api-stub: LNeedSystem:addNeed
+--@api: LNeedSystem:addNeed
 do
     local ns = lurek.ai.newNeedSystem()
     ns:addNeed("hunger", 0.1, 0.7, 2.0)
@@ -1856,7 +1856,7 @@ do
     print("needs registered")
 end
 
---@api-stub: LNeedSystem:update
+--@api: LNeedSystem:update
 do
     local ns = lurek.ai.newNeedSystem()
     ns:addNeed("fatigue", 0.05, 0.8, 1.0)
@@ -1865,7 +1865,7 @@ do
     print("most urgent after 2s = " .. tostring(urgent))
 end
 
---@api-stub: LNeedSystem:mostUrgent
+--@api: LNeedSystem:mostUrgent
 do
     local ns = lurek.ai.newNeedSystem()
     ns:addNeed("hunger", 0.5, 0.3, 2.0)
@@ -1874,7 +1874,7 @@ do
     print("most urgent = " .. tostring(name))
 end
 
---@api-stub: LNeedSystem:satisfy
+--@api: LNeedSystem:satisfy
 do
     local ns = lurek.ai.newNeedSystem()
     ns:addNeed("thirst", 0.2, 0.5, 1.5)
@@ -1885,7 +1885,7 @@ end
 
 --- AI Examples Part 5: Need System (cont.), AI Director, HTN, MCTS, Emotion, ORCA, Neural Net, Genetic Algorithm
 
---@api-stub: LNeedSystem:valueOf
+--@api: LNeedSystem:valueOf
 do
     local ns = lurek.ai.newNeedSystem()
     ns:addNeed("hunger", 0.1, 0.7, 2.0)
@@ -1894,20 +1894,20 @@ do
     print("hunger value = " .. val)
 end
 
---@api-stub: LNeedSystem:type
+--@api: LNeedSystem:type
 do
     local ns = lurek.ai.newNeedSystem()
     print("type = " .. ns:type())
   print("matches = " .. tostring(ns:typeOf("LNeedSystem")))
 end
 
---@api-stub: LNeedSystem:typeOf
+--@api: LNeedSystem:typeOf
 do
     local ns = lurek.ai.newNeedSystem()
     print("is LNeedSystem = " .. tostring(ns:typeOf("LNeedSystem")))
 end
 
---@api-stub: LAIDirector:pushEvent
+--@api: LAIDirector:pushEvent
 do
     local dir = lurek.ai.newAIDirector()
     dir:pushEvent(0.5)
@@ -1915,7 +1915,7 @@ do
     print("events pushed, tension = " .. dir:tension())
 end
 
---@api-stub: LAIDirector:update
+--@api: LAIDirector:update
 do
     local dir = lurek.ai.newAIDirector()
     dir:pushEvent(1.0)
@@ -1923,21 +1923,21 @@ do
     print("phase after update = " .. dir:phase())
 end
 
---@api-stub: LAIDirector:tension
+--@api: LAIDirector:tension
 do
     local dir = lurek.ai.newAIDirector()
     dir:setTension(0.6)
     print("tension = " .. dir:tension())
 end
 
---@api-stub: LAIDirector:phase
+--@api: LAIDirector:phase
 do
     local dir = lurek.ai.newAIDirector()
     local p = dir:phase()
     print("initial phase = " .. p)
 end
 
---@api-stub: LAIDirector:spawnRateFactor
+--@api: LAIDirector:spawnRateFactor
 do
     local dir = lurek.ai.newAIDirector()
     dir:setTension(0.9)
@@ -1945,7 +1945,7 @@ do
     print("spawn rate factor = " .. dir:spawnRateFactor())
 end
 
---@api-stub: LAIDirector:lootFactor
+--@api: LAIDirector:lootFactor
 do
     local dir = lurek.ai.newAIDirector()
     dir:setTension(0.2)
@@ -1953,7 +1953,7 @@ do
     print("loot factor = " .. dir:lootFactor())
 end
 
---@api-stub: LAIDirector:ambientIntensity
+--@api: LAIDirector:ambientIntensity
 do
     local dir = lurek.ai.newAIDirector()
     dir:setTension(0.7)
@@ -1961,14 +1961,14 @@ do
     print("ambient intensity = " .. dir:ambientIntensity())
 end
 
---@api-stub: LAIDirector:setTension
+--@api: LAIDirector:setTension
 do
     local dir = lurek.ai.newAIDirector()
     dir:setTension(0.5)
     print("tension set to " .. dir:tension())
 end
 
---@api-stub: LAIDirector:reset
+--@api: LAIDirector:reset
 do
     local dir = lurek.ai.newAIDirector()
     dir:setTension(0.9)
@@ -1976,20 +1976,20 @@ do
     print("after reset, tension = " .. dir:tension())
 end
 
---@api-stub: LAIDirector:type
+--@api: LAIDirector:type
 do
     local dir = lurek.ai.newAIDirector()
     print("type = " .. dir:type())
   print("matches = " .. tostring(dir:typeOf("LAIDirector")))
 end
 
---@api-stub: LAIDirector:typeOf
+--@api: LAIDirector:typeOf
 do
     local dir = lurek.ai.newAIDirector()
     print("is LAIDirector = " .. tostring(dir:typeOf("LAIDirector")))
 end
 
---@api-stub: LHTNDomain:addPrimitive
+--@api: LHTNDomain:addPrimitive
 do
     local htn = lurek.ai.newHTNDomain()
     htn:addPrimitive("chop", { "has_axe" }, { "has_wood" }, {})
@@ -1997,7 +1997,7 @@ do
     print("primitives = " .. htn:taskCount())
 end
 
---@api-stub: LHTNDomain:addCompound
+--@api: LHTNDomain:addCompound
 do
     local htn = lurek.ai.newHTNDomain()
     htn:addPrimitive("mine", {}, { "has_ore" }, {})
@@ -2006,7 +2006,7 @@ do
   print("compound added, tasks = " .. htn:taskCount())
 end
 
---@api-stub: LHTNDomain:plan
+--@api: LHTNDomain:plan
 do
     local htn = lurek.ai.newHTNDomain()
     htn:addPrimitive("gather", {}, { "has_food" }, {})
@@ -2019,7 +2019,7 @@ do
   end
 end
 
---@api-stub: LHTNDomain:taskCount
+--@api: LHTNDomain:taskCount
 do
     local htn = lurek.ai.newHTNDomain()
     htn:addPrimitive("a", {}, {}, {})
@@ -2027,20 +2027,20 @@ do
     print("task count = " .. htn:taskCount())
 end
 
---@api-stub: LHTNDomain:type
+--@api: LHTNDomain:type
 do
     local htn = lurek.ai.newHTNDomain()
     print("type = " .. htn:type())
   print("matches = " .. tostring(htn:typeOf("LHTNDomain")))
 end
 
---@api-stub: LHTNDomain:typeOf
+--@api: LHTNDomain:typeOf
 do
     local htn = lurek.ai.newHTNDomain()
     print("is LHTNDomain = " .. tostring(htn:typeOf("LHTNDomain")))
 end
 
---@api-stub: LMCTSEngine:search
+--@api: LMCTSEngine:search
 do
     local mcts = lurek.ai.newMCTSEngine(100, 1.4, 10, 42)
   local action = mcts:search(
@@ -2052,20 +2052,20 @@ do
   print("best action = " .. tostring(action))
 end
 
---@api-stub: LMCTSEngine:type
+--@api: LMCTSEngine:type
 do
     local mcts = lurek.ai.newMCTSEngine(50, 1.0, 5, 0)
     print("type = " .. mcts:type())
   print("matches = " .. tostring(mcts:typeOf("LMCTSEngine")))
 end
 
---@api-stub: LMCTSEngine:typeOf
+--@api: LMCTSEngine:typeOf
 do
     local mcts = lurek.ai.newMCTSEngine(50, 1.0, 5, 0)
     print("is LMCTSEngine = " .. tostring(mcts:typeOf("LMCTSEngine")))
 end
 
---@api-stub: LEmotionModel:add
+--@api: LEmotionModel:add
 do
     local em = lurek.ai.newEmotionModel()
     em:add("joy", 0.3, 0.1, 0.2)
@@ -2073,7 +2073,7 @@ do
     print("emotions registered")
 end
 
---@api-stub: LEmotionModel:trigger
+--@api: LEmotionModel:trigger
 do
     local em = lurek.ai.newEmotionModel()
     em:add("fear", 0.0, 0.1, 0.2)
@@ -2081,7 +2081,7 @@ do
     print("fear = " .. em:get("fear"))
 end
 
---@api-stub: LEmotionModel:get
+--@api: LEmotionModel:get
 do
     local em = lurek.ai.newEmotionModel()
     em:add("sadness", 0.2, 0.05, 0.1)
@@ -2090,7 +2090,7 @@ do
     print("sadness = " .. val)
 end
 
---@api-stub: LEmotionModel:dominant
+--@api: LEmotionModel:dominant
 do
   local em = lurek.ai.newEmotionModel()
   em:add("joy", 0.0, 0.1, 0.1)
@@ -2100,7 +2100,7 @@ do
     print("dominant = " .. tostring(em:dominant()))
 end
 
---@api-stub: LEmotionModel:isActive
+--@api: LEmotionModel:isActive
 do
   local em = lurek.ai.newEmotionModel()
   em:add("surprise", 0.0, 0.1, 0.5)
@@ -2110,7 +2110,7 @@ do
     print("surprise active = " .. tostring(em:isActive("surprise")))
 end
 
---@api-stub: LEmotionModel:update
+--@api: LEmotionModel:update
 do
     local em = lurek.ai.newEmotionModel()
     em:add("excitement", 0.0, 0.2, 0.1)
@@ -2119,7 +2119,7 @@ do
     print("excitement after 3s = " .. em:get("excitement"))
 end
 
---@api-stub: LEmotionModel:reset
+--@api: LEmotionModel:reset
 do
     local em = lurek.ai.newEmotionModel()
     em:add("rage", 0.0, 0.1, 0.2)
@@ -2128,27 +2128,27 @@ do
     print("rage after reset = " .. em:get("rage"))
 end
 
---@api-stub: LEmotionModel:type
+--@api: LEmotionModel:type
 do
     local em = lurek.ai.newEmotionModel()
     print("type = " .. em:type())
   print("matches = " .. tostring(em:typeOf("LEmotionModel")))
 end
 
---@api-stub: LEmotionModel:typeOf
+--@api: LEmotionModel:typeOf
 do
     local em = lurek.ai.newEmotionModel()
     print("is LEmotionModel = " .. tostring(em:typeOf("LEmotionModel")))
 end
 
---@api-stub: LORCASolver:addAgent
+--@api: LORCASolver:addAgent
 do
     local orca = lurek.ai.newORCASolver(2.0)
     local idx = orca:addAgent(10.0, 20.0, 0.5, 3.0)
     print("agent index = " .. idx)
 end
 
---@api-stub: LORCASolver:setPreferredVelocity
+--@api: LORCASolver:setPreferredVelocity
 do
     local orca = lurek.ai.newORCASolver(2.0)
     orca:addAgent(0, 0, 0.5, 5.0)
@@ -2156,7 +2156,7 @@ do
     print("preferred velocity set for agent 0")
 end
 
---@api-stub: LORCASolver:setPosition
+--@api: LORCASolver:setPosition
 do
     local orca = lurek.ai.newORCASolver(2.0)
     orca:addAgent(0, 0, 0.5, 5.0)
@@ -2164,7 +2164,7 @@ do
     print("position updated for agent 0")
 end
 
---@api-stub: LORCASolver:compute
+--@api: LORCASolver:compute
 do
   local orca = lurek.ai.newORCASolver(1.5)
   orca:addAgent(0, 0, 0.5, 3.0)
@@ -2175,7 +2175,7 @@ do
     print("collision avoidance computed")
 end
 
---@api-stub: LORCASolver:getSafeVelocity
+--@api: LORCASolver:getSafeVelocity
 do
   local orca = lurek.ai.newORCASolver(1.5)
   orca:addAgent(0, 0, 0.5, 3.0)
@@ -2185,7 +2185,7 @@ do
     print("safe velocity = " .. vx .. ", " .. vy)
 end
 
---@api-stub: LORCASolver:agentCount
+--@api: LORCASolver:agentCount
 do
     local orca = lurek.ai.newORCASolver(2.0)
     orca:addAgent(0, 0, 1.0, 2.0)
@@ -2193,20 +2193,20 @@ do
     print("agent count = " .. orca:agentCount())
 end
 
---@api-stub: LORCASolver:type
+--@api: LORCASolver:type
 do
     local orca = lurek.ai.newORCASolver(1.0)
     print("type = " .. orca:type())
   print("matches = " .. tostring(orca:typeOf("LORCASolver")))
 end
 
---@api-stub: LORCASolver:typeOf
+--@api: LORCASolver:typeOf
 do
     local orca = lurek.ai.newORCASolver(1.0)
     print("is LORCASolver = " .. tostring(orca:typeOf("LORCASolver")))
 end
 
---@api-stub: LStrategyAI:addGoal
+--@api: LStrategyAI:addGoal
 do
     local strat = lurek.ai.newStrategyAI(5.0)
     strat:addGoal("expand")
@@ -2215,7 +2215,7 @@ do
     print("goals registered")
 end
 
---@api-stub: LStrategyAI:addTag
+--@api: LStrategyAI:addTag
 do
     local strat = lurek.ai.newStrategyAI(3.0)
     strat:addTag("war_declared")
@@ -2223,7 +2223,7 @@ do
     print("tags added")
 end
 
---@api-stub: LStrategyAI:removeTag
+--@api: LStrategyAI:removeTag
 do
     local strat = lurek.ai.newStrategyAI(3.0)
     strat:addTag("peace")
@@ -2231,7 +2231,7 @@ do
     print("tag removed")
 end
 
---@api-stub: LStrategyAI:update
+--@api: LStrategyAI:update
 do
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("attack")
@@ -2240,7 +2240,7 @@ do
     print("active = " .. tostring(strat:activeGoal()))
 end
 
---@api-stub: LStrategyAI:forceEvaluate
+--@api: LStrategyAI:forceEvaluate
 do
     local strat = lurek.ai.newStrategyAI(10.0)
     strat:addGoal("build")
@@ -2249,7 +2249,7 @@ do
     print("forced active = " .. tostring(strat:activeGoal()))
 end
 
---@api-stub: LStrategyAI:activeGoal
+--@api: LStrategyAI:activeGoal
 do
     local strat = lurek.ai.newStrategyAI(1.0)
     strat:addGoal("idle")
@@ -2257,7 +2257,7 @@ do
     print("active goal = " .. tostring(active))
 end
 
---@api-stub: LStrategyAI:timeUntilNext
+--@api: LStrategyAI:timeUntilNext
 do
     local strat = lurek.ai.newStrategyAI(5.0)
     strat:addGoal("wait")
@@ -2265,54 +2265,54 @@ do
     print("time until next = " .. strat:timeUntilNext())
 end
 
---@api-stub: LStrategyAI:type
+--@api: LStrategyAI:type
 do
     local strat = lurek.ai.newStrategyAI(1.0)
     print("type = " .. strat:type())
   print("matches = " .. tostring(strat:typeOf("LStrategyAI")))
 end
 
---@api-stub: LStrategyAI:typeOf
+--@api: LStrategyAI:typeOf
 do
     local strat = lurek.ai.newStrategyAI(1.0)
     print("is LStrategyAI = " .. tostring(strat:typeOf("LStrategyAI")))
 end
 
---@api-stub: LAILod:tierFor
+--@api: LAILod:tierFor
 do
     local lod = lurek.ai.newAILod()
     local tier = lod:tierFor(100, 200, 0, 0)
     print("tier = " .. tier)
 end
 
---@api-stub: LAILod:shouldUpdate
+--@api: LAILod:shouldUpdate
 do
     local lod = lurek.ai.newAILod()
     local run = lod:shouldUpdate(0, 1)
     print("tier 0 should update on frame 1 = " .. tostring(run))
 end
 
---@api-stub: LAILod:tierCount
+--@api: LAILod:tierCount
 do
     local lod = lurek.ai.newAILod()
     print("tier count = " .. lod:tierCount())
 end
 
---@api-stub: LAILod:tierName
+--@api: LAILod:tierName
 do
     local lod = lurek.ai.newAILod()
     local name = lod:tierName(0)
     print("tier 0 name = " .. name)
 end
 
---@api-stub: LAILod:type
+--@api: LAILod:type
 do
     local lod = lurek.ai.newAILod()
     print("type = " .. lod:type())
   print("matches = " .. tostring(lod:typeOf("LAILod")))
 end
 
---@api-stub: LAILod:typeOf
+--@api: LAILod:typeOf
 do
     local lod = lurek.ai.newAILod()
     print("is LAILod = " .. tostring(lod:typeOf("LAILod")))

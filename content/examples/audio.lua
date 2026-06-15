@@ -4,7 +4,7 @@
 
 --- Audio Examples Part 1: Source creation, playback control, volume, pitch, pan, master, bus, filters, spatial
 
---@api-stub: lurek.audio.newSource
+--@api: lurek.audio.newSource
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -14,7 +14,7 @@ do
     print("source type = " .. tostring(source_type))
 end
 
---@api-stub: lurek.audio.play
+--@api: lurek.audio.play
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -23,7 +23,7 @@ do
     print("playing = " .. tostring(lurek.audio.isPlaying(src)))
 end
 
---@api-stub: lurek.audio.stop
+--@api: lurek.audio.stop
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -33,7 +33,7 @@ do
     print("stopped = " .. tostring(lurek.audio.isStopped(src)))
 end
 
---@api-stub: lurek.audio.setVolume
+--@api: lurek.audio.setVolume
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -42,7 +42,7 @@ do
     print("volume after = " .. tostring(lurek.audio.getVolume(src)))
 end
 
---@api-stub: lurek.audio.getVolume
+--@api: lurek.audio.getVolume
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -52,7 +52,7 @@ do
     print("volume = " .. tostring(vol))
 end
 
---@api-stub: lurek.audio.pause
+--@api: lurek.audio.pause
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -62,7 +62,7 @@ do
     print("paused = " .. tostring(lurek.audio.isPaused(src)))
 end
 
---@api-stub: lurek.audio.resume
+--@api: lurek.audio.resume
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -73,7 +73,7 @@ do
     print("playing after resume = " .. tostring(lurek.audio.isPlaying(src)))
 end
 
---@api-stub: lurek.audio.setPitch
+--@api: lurek.audio.setPitch
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -82,7 +82,7 @@ do
     print("pitch after = " .. tostring(lurek.audio.getPitch(src)))
 end
 
---@api-stub: lurek.audio.getPitch
+--@api: lurek.audio.getPitch
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -92,7 +92,7 @@ do
     print("pitch = " .. tostring(p))
 end
 
---@api-stub: lurek.audio.isPlaying
+--@api: lurek.audio.isPlaying
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -101,7 +101,7 @@ do
     print("after play = " .. tostring(lurek.audio.isPlaying(src)))
 end
 
---@api-stub: lurek.audio.isPaused
+--@api: lurek.audio.isPaused
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -111,7 +111,7 @@ do
     print("isPaused = " .. tostring(lurek.audio.isPaused(src)))
 end
 
---@api-stub: lurek.audio.isStopped
+--@api: lurek.audio.isStopped
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -119,7 +119,7 @@ do
     print("initially playing = " .. tostring(lurek.audio.isPlaying(src)))
 end
 
---@api-stub: lurek.audio.setLooping
+--@api: lurek.audio.setLooping
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -128,7 +128,7 @@ do
     print("looping after = " .. tostring(lurek.audio.isLooping(src)))
 end
 
---@api-stub: lurek.audio.isLooping
+--@api: lurek.audio.isLooping
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -137,7 +137,7 @@ do
     print("isLooping = " .. tostring(lurek.audio.isLooping(src)))
 end
 
---@api-stub: lurek.audio.playLooping
+--@api: lurek.audio.playLooping
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -146,7 +146,7 @@ do
     print("playing+looping = " .. tostring(lurek.audio.isPlaying(src) and lurek.audio.isLooping(src)))
 end
 
---@api-stub: lurek.audio.setPan
+--@api: lurek.audio.setPan
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -155,7 +155,7 @@ do
     print("pan after = " .. tostring(lurek.audio.getPan(src)))
 end
 
---@api-stub: lurek.audio.getPan
+--@api: lurek.audio.getPan
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -165,7 +165,7 @@ do
     print("pan = " .. tostring(pan))
 end
 
---@api-stub: lurek.audio.setMasterVolume
+--@api: lurek.audio.setMasterVolume
 do
     local before = lurek.audio.getMasterVolume()
     lurek.audio.setMasterVolume(0.75)
@@ -173,7 +173,7 @@ do
     print("master volume after = " .. tostring(lurek.audio.getMasterVolume()))
 end
 
---@api-stub: lurek.audio.getMasterVolume
+--@api: lurek.audio.getMasterVolume
 do
     lurek.audio.setMasterVolume(1.0)
     local mv = lurek.audio.getMasterVolume()
@@ -181,21 +181,21 @@ do
     print("master volume = " .. tostring(mv))
 end
 
---@api-stub: lurek.audio.getActiveSourceCount
+--@api: lurek.audio.getActiveSourceCount
 do
     local count = lurek.audio.getActiveSourceCount()
     print("active sources = " .. tostring(count))
     print("active source count queried")
 end
 
---@api-stub: lurek.audio.getSourceCount
+--@api: lurek.audio.getSourceCount
 do
     local total = lurek.audio.getSourceCount()
     print("total sources = " .. tostring(total))
     print("source registry count queried")
 end
 
---@api-stub: lurek.audio.getSourceType
+--@api: lurek.audio.getSourceType
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -204,7 +204,7 @@ do
     print("source type = " .. tostring(stype))
 end
 
---@api-stub: lurek.audio.clone
+--@api: lurek.audio.clone
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -214,7 +214,7 @@ do
     print("clone volume = " .. tostring(lurek.audio.getVolume(copy)))
 end
 
---@api-stub: lurek.audio.pauseAll
+--@api: lurek.audio.pauseAll
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -224,7 +224,7 @@ do
     print("sample source paused = " .. tostring(lurek.audio.isPaused(src)))
 end
 
---@api-stub: lurek.audio.stopAll
+--@api: lurek.audio.stopAll
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -234,7 +234,7 @@ do
     print("sample source stopped = " .. tostring(lurek.audio.isStopped(src)))
 end
 
---@api-stub: lurek.audio.resumeAll
+--@api: lurek.audio.resumeAll
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -245,7 +245,7 @@ do
     print("sample source playing = " .. tostring(lurek.audio.isPlaying(src)))
 end
 
---@api-stub: lurek.audio.manager.pauseAll
+--@api: lurek.audio.manager.pauseAll
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -255,7 +255,7 @@ do
     print("sample source paused = " .. tostring(lurek.audio.isPaused(src)))
 end
 
---@api-stub: lurek.audio.manager.resumeAll
+--@api: lurek.audio.manager.resumeAll
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -266,7 +266,7 @@ do
     print("sample source playing = " .. tostring(lurek.audio.isPlaying(src)))
 end
 
---@api-stub: lurek.audio.release
+--@api: lurek.audio.release
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -276,14 +276,14 @@ do
     print("source count before release = " .. tostring(before))
 end
 
---@api-stub: lurek.audio.newBus
+--@api: lurek.audio.newBus
 do
     local bus = lurek.audio.newBus("sfx")
     print("bus created: sfx")
     print("bus name = " .. bus:getName())
 end
 
---@api-stub: lurek.audio.setSourceBus
+--@api: lurek.audio.setSourceBus
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -294,7 +294,7 @@ do
     print("bus = " .. assigned:getName())
 end
 
---@api-stub: lurek.audio.getSourceBus
+--@api: lurek.audio.getSourceBus
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -305,14 +305,14 @@ do
     print("source bus = " .. assigned:getName())
 end
 
---@api-stub: lurek.audio.getMaxSources
+--@api: lurek.audio.getMaxSources
 do
     local max = lurek.audio.getMaxSources()
     print("max sources = " .. tostring(max))
     print("audio capacity queried")
 end
 
---@api-stub: lurek.audio.getDuration
+--@api: lurek.audio.getDuration
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -321,7 +321,7 @@ do
     print("duration = " .. tostring(dur) .. "s")
 end
 
---@api-stub: lurek.audio.tell
+--@api: lurek.audio.tell
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -331,7 +331,7 @@ do
     print("position = " .. tostring(pos))
 end
 
---@api-stub: lurek.audio.seek
+--@api: lurek.audio.seek
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -341,7 +341,7 @@ do
     print("position after seek = " .. tostring(lurek.audio.tell(src)))
 end
 
---@api-stub: lurek.audio.setLowpass
+--@api: lurek.audio.setLowpass
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -350,7 +350,7 @@ do
     print("lowpass = " .. tostring(lurek.audio.getLowpass(src)) .. " Hz")
 end
 
---@api-stub: lurek.audio.setHighpass
+--@api: lurek.audio.setHighpass
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -359,7 +359,7 @@ do
     print("highpass = " .. tostring(lurek.audio.getHighpass(src)) .. " Hz")
 end
 
---@api-stub: lurek.audio.getLowpass
+--@api: lurek.audio.getLowpass
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -369,7 +369,7 @@ do
     print("lowpass = " .. tostring(lp))
 end
 
---@api-stub: lurek.audio.getHighpass
+--@api: lurek.audio.getHighpass
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -379,7 +379,7 @@ do
     print("highpass = " .. tostring(hp))
 end
 
---@api-stub: lurek.audio.newBeatClock
+--@api: lurek.audio.newBeatClock
 do
     local clock = lurek.audio.newBeatClock(120.0, { subdivision = 8, swing = 0.2, latency_ms = 5 })
     clock:start()
@@ -388,7 +388,7 @@ do
     print("beat clock bar = " .. tostring(clock:getBar()))
 end
 
---@api-stub: lurek.audio.beatClockFromSource
+--@api: lurek.audio.beatClockFromSource
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -398,7 +398,7 @@ do
     print("synced clock running = " .. tostring(clock:isRunning()))
 end
 
---@api-stub: lurek.audio.judgeBeat
+--@api: lurek.audio.judgeBeat
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
     local verdict, err = lurek.audio.judgeBeat(clock, 4, 0.0)
@@ -406,28 +406,28 @@ do
     print("judgeBeat error = " .. tostring(err))
 end
 
---@api-stub: LBeatClock:every
+--@api: LBeatClock:every
 do
     local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
     local every_h = clock:every(4, function() end)
     print("every handle = " .. tostring(every_h))
 end
 
---@api-stub: LBeatClock:at
+--@api: LBeatClock:at
 do
     local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
     local at_h = clock:at(1.0, function() end)
     print("at handle = " .. tostring(at_h))
 end
 
---@api-stub: LBeatClock:pattern
+--@api: LBeatClock:pattern
 do
     local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
     local pattern_h = clock:pattern("x.x.", function() end)
     print("pattern handle = " .. tostring(pattern_h))
 end
 
---@api-stub: LBeatClock:cancel
+--@api: LBeatClock:cancel
 do
     local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
     local handle = clock:every(4, function() end)
@@ -435,7 +435,7 @@ do
     print("cancel returned = " .. tostring(cancelled))
 end
 
---@api-stub: LBeatClock:cancelAll
+--@api: LBeatClock:cancelAll
 do
     local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
     clock:every(4, function() end)
@@ -443,199 +443,256 @@ do
     print("cancelAll ok")
 end
 
---@api-stub: LBeatClock:beatTimeRemaining
+--@api: LBeatClock:beatTimeRemaining
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("beatTimeRemaining marker")
+    clock:start()
+    clock:tick(0.125)
+    print("beatTimeRemaining(8) = " .. tostring(clock:beatTimeRemaining(8)))
 end
 
---@api-stub: LBeatClock:beatsPerBar
+--@api: LBeatClock:beatsPerBar
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("beatsPerBar marker")
+    clock:setBeatsPerBar(3)
+    print("beatsPerBar = " .. tostring(clock:beatsPerBar()))
 end
 
---@api-stub: LBeatClock:bpm
+--@api: LBeatClock:bpm
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("bpm marker")
+    clock:setBpm(140.0)
+    print("bpm = " .. tostring(clock:bpm()))
 end
 
---@api-stub: LBeatClock:drainFired
+--@api: LBeatClock:drainFired
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("drainFired marker")
+    clock:scheduleAt(1.0)
+    clock:tick(0.6)
+    clock:tick(0.6)
+    local fired = clock:drainFired()
+    print("drainFired count = " .. tostring(#fired))
 end
 
---@api-stub: LBeatClock:dump
+--@api: LBeatClock:dump
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("dump marker")
+    clock:start()
+    local snap = clock:dump()
+    print("dump type = " .. type(snap))
 end
 
---@api-stub: LBeatClock:getBar
+--@api: LBeatClock:getBar
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("getBar marker")
+    clock:start()
+    clock:tick(1.1)
+    print("bar = " .. tostring(clock:getBar()))
 end
 
---@api-stub: LBeatClock:getBeat
+--@api: LBeatClock:getBeat
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("getBeat marker")
+    clock:start()
+    clock:tick(0.75)
+    print("beat = " .. tostring(clock:getBeat()))
 end
 
---@api-stub: LBeatClock:getBpm
+--@api: LBeatClock:getBpm
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("getBpm marker")
+    clock:setBpm(128.0)
+    print("getBpm = " .. tostring(clock:getBpm()))
 end
 
---@api-stub: LBeatClock:getPhase
+--@api: LBeatClock:getPhase
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("getPhase marker")
+    clock:start()
+    clock:tick(0.125)
+    print("phase = " .. tostring(clock:getPhase(8)))
 end
 
---@api-stub: LBeatClock:isOnBeat
+--@api: LBeatClock:isOnBeat
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("isOnBeat marker")
+    clock:start()
+    clock:tick(0.5)
+    print("isOnBeat = " .. tostring(clock:isOnBeat()))
 end
 
---@api-stub: LBeatClock:isRunning
+--@api: LBeatClock:isRunning
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("isRunning marker")
+    clock:start()
+    print("isRunning = " .. tostring(clock:isRunning()))
 end
 
---@api-stub: LBeatClock:nearestBeat
+--@api: LBeatClock:nearestBeat
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("nearestBeat marker")
+    clock:start()
+    clock:tick(0.2)
+    local beat, err = clock:nearestBeat(4)
+    print("nearestBeat = " .. tostring(beat) .. " err = " .. tostring(err))
 end
 
---@api-stub: LBeatClock:position
+--@api: LBeatClock:position
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("position marker")
+    clock:start()
+    clock:tick(0.5)
+    local pos = clock:position()
+    print("position beat = " .. tostring(pos.beat) .. " bar = " .. tostring(pos.bar))
 end
 
---@api-stub: LBeatClock:quantise
+--@api: LBeatClock:quantise
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("quantise marker")
+    local q = clock:quantise(1.3, 0.25)
+    print("quantise(1.3, 0.25) = " .. tostring(q))
 end
 
---@api-stub: LBeatClock:rampBpm
+--@api: LBeatClock:rampBpm
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("rampBpm marker")
+    clock:rampBpm(150.0, 0.5)
+    clock:update(0.5)
+    print("bpm after ramp = " .. tostring(clock:getBpm()))
 end
 
---@api-stub: LBeatClock:reset
+--@api: LBeatClock:reset
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("reset marker")
+    clock:start()
+    clock:tick(1.0)
+    clock:reset()
+    print("beat after reset = " .. tostring(clock:getBeat()))
 end
 
---@api-stub: LBeatClock:scheduleAt
+--@api: LBeatClock:scheduleAt
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("scheduleAt marker")
+    local ok = clock:scheduleAt(2.0)
+    print("scheduleAt ok = " .. tostring(ok))
 end
 
---@api-stub: LBeatClock:secondsPerBeat
+--@api: LBeatClock:secondsPerBeat
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("secondsPerBeat marker")
+    print("secondsPerBeat = " .. tostring(clock:secondsPerBeat()))
+    print("seconds for two beats = " .. tostring(clock:secondsPerBeat() * 2))
 end
 
---@api-stub: LBeatClock:secondsToNextBeat
+--@api: LBeatClock:secondsToNextBeat
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("secondsToNextBeat marker")
+    clock:start()
+    clock:tick(0.125)
+    print("secondsToNextBeat = " .. tostring(clock:secondsToNextBeat()))
 end
 
---@api-stub: LBeatClock:setBeatsPerBar
+--@api: LBeatClock:setBeatsPerBar
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("setBeatsPerBar marker")
+    clock:setBeatsPerBar(3)
+    print("beatsPerBar = " .. tostring(clock:beatsPerBar()))
 end
 
---@api-stub: LBeatClock:setBpm
+--@api: LBeatClock:setBpm
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("setBpm marker")
+    clock:setBpm(90.0)
+    print("getBpm = " .. tostring(clock:getBpm()))
 end
 
---@api-stub: LBeatClock:setSwing
+--@api: LBeatClock:setSwing
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("setSwing marker")
+    clock:setSwing(0.2)
+    clock:start()
+    clock:update(0.25)
+    print("phase after swing = " .. tostring(clock:getPhase(8)))
 end
 
---@api-stub: LBeatClock:start
+--@api: LBeatClock:start
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("start marker")
+    clock:start()
+    print("isRunning = " .. tostring(clock:isRunning()))
 end
 
---@api-stub: LBeatClock:stop
+--@api: LBeatClock:stop
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("stop marker")
+    clock:start()
+    clock:stop()
+    print("isRunning = " .. tostring(clock:isRunning()))
 end
 
---@api-stub: LBeatClock:syncToSource
+--@api: LBeatClock:syncToSource
+do
+    local path = "content/examples/assets/audio/sample_loop.wav"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    clock:syncToSource(src)
+    print("synced beat = " .. tostring(clock:getBeat()))
+end
+
+--@api: LBeatClock:tap
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("syncToSource marker")
+    clock:tap(0.0)
+    print("tap bpm = " .. tostring(clock:tap(0.5)))
 end
 
---@api-stub: LBeatClock:tap
+--@api: LBeatClock:tick
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("tap marker")
+    clock:start()
+    local crossings = clock:tick(0.5)
+    print("tick crossings = " .. tostring(#crossings))
 end
 
---@api-stub: LBeatClock:tick
+--@api: LBeatClock:type
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("tick marker")
+    print("type = " .. tostring(clock:type()))
+    print("is clock object = " .. tostring(clock:typeOf("LBeatClock")))
 end
 
---@api-stub: LBeatClock:type
+--@api: LBeatClock:typeOf
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("type marker")
+    print("typeOf LBeatClock = " .. tostring(clock:typeOf("LBeatClock")))
+    print("type = " .. tostring(clock:type()))
 end
 
---@api-stub: LBeatClock:typeOf
+--@api: LBeatClock:update
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("typeOf marker")
+    clock:start()
+    local events = clock:update(0.5)
+    print("update events = " .. tostring(#events))
 end
 
---@api-stub: LBeatClock:update
-do
-    local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("update marker")
-end
-
---@api-stub: lurek.audio.getJudgementWindows
+--@api: lurek.audio.getJudgementWindows
 do
     local windows = lurek.audio.getJudgementWindows()
     print("getJudgementWindows marker = " .. tostring(windows ~= nil))
+    print("lua type = " .. type(windows))
 end
 
---@api-stub: lurek.audio.setJudgementWindows
+--@api: lurek.audio.setJudgementWindows
 do
     lurek.audio.setJudgementWindows({ perfect = 0.03, good = 0.08, ok = 0.12 })
     print("setJudgementWindows marker")
+    print("judgement windows = " .. tostring(#lurek.audio.getJudgementWindows()))
 end
 
---@api-stub: lurek.audio.clearFilter
+--@api: lurek.audio.clearFilter
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -645,7 +702,7 @@ do
     print("filters cleared")
 end
 
---@api-stub: lurek.audio.fadeIn
+--@api: lurek.audio.fadeIn
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -654,7 +711,7 @@ do
     print("fade in = " .. tostring(lurek.audio.getFadeIn(src)) .. "s")
 end
 
---@api-stub: lurek.audio.getFadeIn
+--@api: lurek.audio.getFadeIn
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -664,7 +721,7 @@ do
     print("fade in duration = " .. tostring(fi))
 end
 
---@api-stub: lurek.audio.setListener2D
+--@api: lurek.audio.setListener2D
 do
     lurek.audio.setListener2D(400, 300)
     local x, y = lurek.audio.getListener2D()
@@ -672,7 +729,7 @@ do
     print("listener 2D = " .. x .. ", " .. y)
 end
 
---@api-stub: lurek.audio.getListener2D
+--@api: lurek.audio.getListener2D
 do
     lurek.audio.setListener2D(100, 200)
     local x, y = lurek.audio.getListener2D()
@@ -680,7 +737,7 @@ do
     print("listener at " .. x .. ", " .. y)
 end
 
---@api-stub: lurek.audio.setListener
+--@api: lurek.audio.setListener
 do
     lurek.audio.setListener(0, 0, 0)
     local x, y, z = lurek.audio.getListener()
@@ -688,7 +745,7 @@ do
     print("listener 3D = " .. x .. ", " .. y .. ", " .. z)
 end
 
---@api-stub: lurek.audio.getListener
+--@api: lurek.audio.getListener
 do
     lurek.audio.setListener(10, 5, 0)
     local x, y, z = lurek.audio.getListener()
@@ -696,7 +753,7 @@ do
     print("listener = " .. x .. ", " .. y .. ", " .. z)
 end
 
---@api-stub: lurek.audio.setPosition
+--@api: lurek.audio.setPosition
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -706,7 +763,7 @@ do
     print("source pos = " .. x .. ", " .. y .. ", " .. z)
 end
 
---@api-stub: lurek.audio.getPosition
+--@api: lurek.audio.getPosition
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -716,7 +773,7 @@ do
     print("pos = " .. x .. ", " .. y .. ", " .. z)
 end
 
---@api-stub: lurek.audio.setVelocity
+--@api: lurek.audio.setVelocity
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -726,7 +783,7 @@ do
     print("velocity = " .. vx .. ", " .. vy .. ", " .. vz)
 end
 
---@api-stub: lurek.audio.getVelocity
+--@api: lurek.audio.getVelocity
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -736,7 +793,7 @@ do
     print("vel = " .. vx .. ", " .. vy .. ", " .. vz)
 end
 
---@api-stub: lurek.audio.setOrientation
+--@api: lurek.audio.setOrientation
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -749,7 +806,7 @@ end
 
 --- Audio Examples Part 2: Orientation, distance models, MIDI, synthesis, DSP, bus effects, pool, offline
 
---@api-stub: lurek.audio.getOrientation
+--@api: lurek.audio.getOrientation
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -760,7 +817,7 @@ do
     print("up = " .. ux .. ", " .. uy .. ", " .. uz)
 end
 
---@api-stub: lurek.audio.setDopplerScale
+--@api: lurek.audio.setDopplerScale
 do
     local before = lurek.audio.getDopplerScale()
     lurek.audio.setDopplerScale(1.5)
@@ -769,7 +826,7 @@ do
     print("doppler scale after = " .. tostring(after))
 end
 
---@api-stub: lurek.audio.getDopplerScale
+--@api: lurek.audio.getDopplerScale
 do
     lurek.audio.setDopplerScale(2.0)
     local ds = lurek.audio.getDopplerScale()
@@ -777,7 +834,7 @@ do
     print("doppler scale = " .. tostring(ds))
 end
 
---@api-stub: lurek.audio.setDistanceModel
+--@api: lurek.audio.setDistanceModel
 do
     local before = lurek.audio.getDistanceModel()
     lurek.audio.setDistanceModel("inverse")
@@ -785,7 +842,7 @@ do
     print("distance model after = " .. tostring(lurek.audio.getDistanceModel()))
 end
 
---@api-stub: lurek.audio.getDistanceModel
+--@api: lurek.audio.getDistanceModel
 do
     lurek.audio.setDistanceModel("linear")
     local model = lurek.audio.getDistanceModel()
@@ -793,7 +850,7 @@ do
     print("distance model = " .. tostring(model))
 end
 
---@api-stub: lurek.audio.setMeter
+--@api: lurek.audio.setMeter
 do
     local before = lurek.audio.getMeter()
     lurek.audio.setMeter(0.8)
@@ -801,7 +858,7 @@ do
     print("meter after = " .. tostring(lurek.audio.getMeter()))
 end
 
---@api-stub: lurek.audio.getMeter
+--@api: lurek.audio.getMeter
 do
     lurek.audio.setMeter(0.6)
     local lvl = lurek.audio.getMeter()
@@ -809,14 +866,14 @@ do
     print("meter = " .. tostring(lvl))
 end
 
---@api-stub: lurek.audio.newMidiPlayer
+--@api: lurek.audio.newMidiPlayer
 do
     local player = lurek.audio.newMidiPlayer()
     print("midi player created = " .. tostring(player ~= nil))
     print("player type = " .. player:type())
 end
 
---@api-stub: lurek.audio.newSoundData
+--@api: lurek.audio.newSoundData
 do
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
     print("sound data created = " .. tostring(sd ~= nil))
@@ -824,7 +881,7 @@ do
     print("sample rate = " .. tostring(sd:getSampleRate()))
 end
 
---@api-stub: lurek.audio.setMidiSoundFont
+--@api: lurek.audio.setMidiSoundFont
 do
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
     local ok = pcall(function()
@@ -833,20 +890,21 @@ do
     print("soundfont set = " .. tostring(ok and lurek.audio.hasMidiSoundFont()))
 end
 
---@api-stub: lurek.audio.hasMidiSoundFont
+--@api: lurek.audio.hasMidiSoundFont
 do
     local has = lurek.audio.hasMidiSoundFont()
     print("has soundfont = " .. tostring(has))
     print("soundfont ready check completed")
 end
 
---@api-stub: lurek.audio.clearMidiSoundFont
+--@api: lurek.audio.clearMidiSoundFont
 do
     lurek.audio.clearMidiSoundFont()
     print("soundfont cleared = " .. tostring(not lurek.audio.hasMidiSoundFont()))
+    print("has sound font = " .. tostring(lurek.audio.hasMidiSoundFont()))
 end
 
---@api-stub: lurek.audio.newDecoder
+--@api: lurek.audio.newDecoder
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path, 4096)
@@ -855,7 +913,7 @@ do
     print("channels = " .. tostring(dec:getChannelCount()))
 end
 
---@api-stub: lurek.audio.newQueueableSource
+--@api: lurek.audio.newQueueableSource
 do
     local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
     local free = lurek.audio.getFreeBufferCount(qid)
@@ -863,7 +921,7 @@ do
     print("free buffers = " .. tostring(free))
 end
 
---@api-stub: lurek.audio.queueSource
+--@api: lurek.audio.queueSource
 do
     local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
     local sd = lurek.audio.newSoundData(1024, 44100, 1)
@@ -874,7 +932,7 @@ do
     print("free buffers after queue = " .. tostring(after))
 end
 
---@api-stub: lurek.audio.getFreeBufferCount
+--@api: lurek.audio.getFreeBufferCount
 do
     local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
     local free = lurek.audio.getFreeBufferCount(qid)
@@ -882,7 +940,7 @@ do
     print("free buffers = " .. tostring(free))
 end
 
---@api-stub: lurek.audio.playQueueable
+--@api: lurek.audio.playQueueable
 do
     local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
     local sd = lurek.audio.newSoundData(1024, 44100, 1)
@@ -892,7 +950,7 @@ do
     print("free buffers after play = " .. tostring(lurek.audio.getFreeBufferCount(qid)))
 end
 
---@api-stub: lurek.audio.stopQueueable
+--@api: lurek.audio.stopQueueable
 do
     local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
     lurek.audio.stopQueueable(qid)
@@ -900,21 +958,21 @@ do
     print("free buffers = " .. tostring(lurek.audio.getFreeBufferCount(qid)))
 end
 
---@api-stub: lurek.audio.getPlaybackDevices
+--@api: lurek.audio.getPlaybackDevices
 do
     local devices = lurek.audio.getPlaybackDevices()
     print("device count = " .. tostring(#devices))
     print("first device = " .. tostring(devices[1] or "none"))
 end
 
---@api-stub: lurek.audio.getPlaybackDevice
+--@api: lurek.audio.getPlaybackDevice
 do
     local dev = lurek.audio.getPlaybackDevice()
     print("current device = " .. tostring(dev))
     print("device query completed")
 end
 
---@api-stub: lurek.audio.setPlaybackDevice
+--@api: lurek.audio.setPlaybackDevice
 do
     local devices = lurek.audio.getPlaybackDevices()
     local name = devices[1] or lurek.audio.getPlaybackDevice()
@@ -923,14 +981,14 @@ do
     print("active device = " .. tostring(lurek.audio.getPlaybackDevice()))
 end
 
---@api-stub: lurek.audio.create_bus
+--@api: lurek.audio.create_bus
 do
     lurek.audio.create_bus("master_sfx", nil)
     print("bus created: master_sfx")
     print("bus peak = " .. tostring(lurek.audio.getBusPeak("master_sfx")))
 end
 
---@api-stub: lurek.audio.set_bus_volume
+--@api: lurek.audio.set_bus_volume
 do
     lurek.audio.create_bus("music_bus", nil)
     lurek.audio.set_bus_volume("music_bus", 0.7)
@@ -938,7 +996,7 @@ do
     print("music_bus peak = " .. tostring(lurek.audio.getBusPeak("music_bus")))
 end
 
---@api-stub: lurek.audio.add_effect
+--@api: lurek.audio.add_effect
 do
     lurek.audio.create_bus("fx_bus", nil)
     local ok, eid = pcall(function() return lurek.audio.add_effect("fx_bus", "reverb", { value = 0.5 }) end)
@@ -946,7 +1004,7 @@ do
     print("effect added to fx_bus")
 end
 
---@api-stub: lurek.audio.remove_effect
+--@api: lurek.audio.remove_effect
 do
     lurek.audio.create_bus("temp_bus", nil)
     local ok_add, eid = pcall(function()
@@ -958,7 +1016,7 @@ do
     print("removed = " .. tostring(ok_remove))
 end
 
---@api-stub: lurek.audio.set_effect_param
+--@api: lurek.audio.set_effect_param
 do
     lurek.audio.create_bus("eq_bus", nil)
     local ok_add, eid = pcall(function()
@@ -970,7 +1028,7 @@ do
     print("param set = " .. tostring(ok))
 end
 
---@api-stub: lurek.audio.newSineWave
+--@api: lurek.audio.newSineWave
 do
     local has_fn = type(lurek.audio.newSineWave) == "function"
     local sd = has_fn and lurek.audio.newSineWave(440, 1.0, 44100, 0.8) or nil
@@ -978,7 +1036,7 @@ do
     print("sine wave = " .. tostring(sd ~= nil))
 end
 
---@api-stub: lurek.audio.newSquareWave
+--@api: lurek.audio.newSquareWave
 do
     local has_fn = type(lurek.audio.newSquareWave) == "function"
     local sd = has_fn and lurek.audio.newSquareWave(220, 0.5, 44100, 0.6) or nil
@@ -986,7 +1044,7 @@ do
     print("square wave = " .. tostring(sd ~= nil))
 end
 
---@api-stub: lurek.audio.newSawtoothWave
+--@api: lurek.audio.newSawtoothWave
 do
     local has_fn = type(lurek.audio.newSawtoothWave) == "function"
     local sd = has_fn and lurek.audio.newSawtoothWave(330, 0.5, 44100, 0.7) or nil
@@ -994,7 +1052,7 @@ do
     print("sawtooth wave = " .. tostring(sd ~= nil))
 end
 
---@api-stub: lurek.audio.newTriangleWave
+--@api: lurek.audio.newTriangleWave
 do
     local has_fn = type(lurek.audio.newTriangleWave) == "function"
     local sd = has_fn and lurek.audio.newTriangleWave(550, 0.5, 44100, 0.5) or nil
@@ -1002,7 +1060,7 @@ do
     print("triangle wave = " .. tostring(sd ~= nil))
 end
 
---@api-stub: lurek.audio.newWhiteNoise
+--@api: lurek.audio.newWhiteNoise
 do
     local has_fn = type(lurek.audio.newWhiteNoise) == "function"
     local sd = has_fn and lurek.audio.newWhiteNoise(1.0, 44100, 0.4, 12345) or nil
@@ -1010,7 +1068,7 @@ do
     print("white noise = " .. tostring(sd ~= nil))
 end
 
---@api-stub: lurek.audio.applyLowpass
+--@api: lurek.audio.applyLowpass
 do
     local has_wave = type(lurek.audio.newSineWave) == "function"
     local has_fn = type(lurek.audio.applyLowpass) == "function"
@@ -1022,7 +1080,7 @@ do
     print("lowpass applied at 500 Hz")
 end
 
---@api-stub: lurek.audio.applyHighpass
+--@api: lurek.audio.applyHighpass
 do
     local has_noise = type(lurek.audio.newWhiteNoise) == "function"
     local has_fn = type(lurek.audio.applyHighpass) == "function"
@@ -1034,7 +1092,7 @@ do
     print("highpass applied at 2000 Hz")
 end
 
---@api-stub: lurek.audio.applyBandpass
+--@api: lurek.audio.applyBandpass
 do
     local has_noise = type(lurek.audio.newWhiteNoise) == "function"
     local has_fn = type(lurek.audio.applyBandpass) == "function"
@@ -1046,7 +1104,7 @@ do
     print("bandpass 300-3000 Hz applied")
 end
 
---@api-stub: lurek.audio.applyGain
+--@api: lurek.audio.applyGain
 do
     local has_wave = type(lurek.audio.newSineWave) == "function"
     local has_fn = type(lurek.audio.applyGain) == "function"
@@ -1058,7 +1116,7 @@ do
     print("gain x2 applied")
 end
 
---@api-stub: lurek.audio.mixInto
+--@api: lurek.audio.mixInto
 do
     local has_wave = type(lurek.audio.newSineWave) == "function"
     local has_fn = type(lurek.audio.mixInto) == "function"
@@ -1071,7 +1129,7 @@ do
     print("mixed 880 Hz into 440 Hz")
 end
 
---@api-stub: lurek.audio.saveWAV
+--@api: lurek.audio.saveWAV
 do
     local has_wave = type(lurek.audio.newSineWave) == "function"
     local has_fn = type(lurek.audio.saveWAV) == "function"
@@ -1083,7 +1141,7 @@ do
     print("saved WAV file")
 end
 
---@api-stub: lurek.audio.setStereoWidth
+--@api: lurek.audio.setStereoWidth
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1092,7 +1150,7 @@ do
     print("stereo width = " .. tostring(lurek.audio.getStereoWidth(src)))
 end
 
---@api-stub: lurek.audio.getStereoWidth
+--@api: lurek.audio.getStereoWidth
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1102,7 +1160,7 @@ do
     print("width = " .. tostring(w))
 end
 
---@api-stub: lurek.audio.setRandomPitch
+--@api: lurek.audio.setRandomPitch
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1111,7 +1169,7 @@ do
     print("source ready for varied playback")
 end
 
---@api-stub: lurek.audio.clearRandomPitch
+--@api: lurek.audio.clearRandomPitch
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1121,7 +1179,7 @@ do
     print("source pitch now follows explicit setPitch calls")
 end
 
---@api-stub: lurek.audio.crossfade
+--@api: lurek.audio.crossfade
 do
     local p1 = "content/examples/assets/audio/sample_loop.wav"
     local p2 = "content/examples/assets/audio/sample_tone.wav"
@@ -1134,28 +1192,28 @@ do
     print("crossfading over 3s")
 end
 
---@api-stub: lurek.audio.getBusPeak
+--@api: lurek.audio.getBusPeak
 do
     lurek.audio.create_bus("vu_bus", nil)
     local peak = lurek.audio.getBusPeak("vu_bus")
     print("bus peak = " .. peak)
 end
 
---@api-stub: lurek.audio.getBusRms
+--@api: lurek.audio.getBusRms
 do
     lurek.audio.create_bus("rms_bus", nil)
     local rms = lurek.audio.getBusRms("rms_bus")
     print("bus rms = " .. rms)
 end
 
---@api-stub: lurek.audio.newPool
+--@api: lurek.audio.newPool
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 8)
     print("pool voices = " .. pool:getVoiceCount())
 end
 
---@api-stub: lurek.audio.processOffline
+--@api: lurek.audio.processOffline
 do
     local effects = {{ type = "lowpass", p1 = 1000 }, { type = "compressor", p1 = 0.8, p2 = 2.5, p3 = 0.1 }}
     local path_in = "content/examples/assets/audio/sample_tone.wav"
@@ -1170,7 +1228,7 @@ do
     print("offline processing done")
 end
 
---@api-stub: lurek.audio.normalizeFile
+--@api: lurek.audio.normalizeFile
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "save/normalized.wav"
@@ -1184,7 +1242,7 @@ do
     print("normalized to 0.9 peak")
 end
 
---@api-stub: lurek.audio.waveformToPng
+--@api: lurek.audio.waveformToPng
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "save/waveform.png"
@@ -1198,7 +1256,7 @@ do
     print("waveform image saved")
 end
 
---@api-stub: lurek.audio.spectrogramToPng
+--@api: lurek.audio.spectrogramToPng
 do
     local path_in = "content/examples/assets/audio/sample_tone.wav"
     local path_out = "save/spectrogram.png"
@@ -1212,7 +1270,7 @@ do
     print("spectrogram image saved")
 end
 
---@api-stub: LSource:play
+--@api: LSource:play
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1222,7 +1280,7 @@ end
 
 --- Audio Examples Part 3: LSource methods, LBus methods, LMidiPlayer methods
 
---@api-stub: LSource:stop
+--@api: LSource:stop
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1231,7 +1289,7 @@ do
     print("stopped = " .. tostring(src:isStopped()))
 end
 
---@api-stub: LSource:pause
+--@api: LSource:pause
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1240,7 +1298,7 @@ do
     print("paused = " .. tostring(src:isPaused()))
 end
 
---@api-stub: LSource:resume
+--@api: LSource:resume
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1250,7 +1308,7 @@ do
     print("resumed = " .. tostring(src:isPlaying()))
 end
 
---@api-stub: LSource:setVolume
+--@api: LSource:setVolume
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1258,7 +1316,7 @@ do
     print("volume = " .. src:getVolume())
 end
 
---@api-stub: LSource:getVolume
+--@api: LSource:getVolume
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1267,7 +1325,7 @@ do
     print("volume = " .. v)
 end
 
---@api-stub: LSource:setPitch
+--@api: LSource:setPitch
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1275,7 +1333,7 @@ do
     print("pitch = " .. src:getPitch())
 end
 
---@api-stub: LSource:getPitch
+--@api: LSource:getPitch
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1284,7 +1342,7 @@ do
     print("pitch = " .. p)
 end
 
---@api-stub: LSource:setLooping
+--@api: LSource:setLooping
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1292,7 +1350,7 @@ do
     print("looping = " .. tostring(src:isLooping()))
 end
 
---@api-stub: LSource:isLooping
+--@api: LSource:isLooping
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1300,7 +1358,7 @@ do
     print("isLooping = " .. tostring(src:isLooping()))
 end
 
---@api-stub: LSource:isPlaying
+--@api: LSource:isPlaying
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1308,7 +1366,7 @@ do
     print("playing = " .. tostring(src:isPlaying()))
 end
 
---@api-stub: LSource:isPaused
+--@api: LSource:isPaused
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1317,14 +1375,14 @@ do
     print("paused = " .. tostring(src:isPaused()))
 end
 
---@api-stub: LSource:isStopped
+--@api: LSource:isStopped
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     print("stopped = " .. tostring(src:isStopped()))
 end
 
---@api-stub: LSource:setPan
+--@api: LSource:setPan
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1332,7 +1390,7 @@ do
     print("pan = " .. src:getPan())
 end
 
---@api-stub: LSource:getPan
+--@api: LSource:getPan
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1341,7 +1399,7 @@ do
     print("pan = " .. pan)
 end
 
---@api-stub: LSource:clone
+--@api: LSource:clone
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1350,14 +1408,14 @@ do
     print("clone volume = " .. copy:getVolume())
 end
 
---@api-stub: LSource:getType
+--@api: LSource:getType
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
     print("type = " .. src:getType())
 end
 
---@api-stub: LSource:getDuration
+--@api: LSource:getDuration
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1365,7 +1423,7 @@ do
     print("duration = " .. tostring(dur) .. "s")
 end
 
---@api-stub: LSource:tell
+--@api: LSource:tell
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1374,7 +1432,7 @@ do
     print("position = " .. pos)
 end
 
---@api-stub: LSource:seek
+--@api: LSource:seek
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1383,7 +1441,7 @@ do
     print("seeked to " .. src:tell())
 end
 
---@api-stub: LSource:setLowpass
+--@api: LSource:setLowpass
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1391,7 +1449,7 @@ do
     print("lowpass = " .. src:getLowpass())
 end
 
---@api-stub: LSource:setHighpass
+--@api: LSource:setHighpass
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1399,7 +1457,7 @@ do
     print("highpass = " .. src:getHighpass())
 end
 
---@api-stub: LSource:getLowpass
+--@api: LSource:getLowpass
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1408,7 +1466,7 @@ do
     print("lowpass = " .. lp)
 end
 
---@api-stub: LSource:getHighpass
+--@api: LSource:getHighpass
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1417,7 +1475,7 @@ do
     print("highpass = " .. hp)
 end
 
---@api-stub: LSource:clearFilter
+--@api: LSource:clearFilter
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
@@ -1426,7 +1484,7 @@ do
     print("filters cleared")
 end
 
---@api-stub: LSource:fadeIn
+--@api: LSource:fadeIn
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1434,7 +1492,7 @@ do
     print("fade in = " .. src:getFadeIn() .. "s")
 end
 
---@api-stub: LSource:getFadeIn
+--@api: LSource:getFadeIn
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local src = lurek.audio.newSource(path, "stream")
@@ -1443,34 +1501,35 @@ do
     print("fade in = " .. fi)
 end
 
---@api-stub: LSource:type
+--@api: LSource:type
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     print("type = " .. src:type())
 end
 
---@api-stub: LSource:typeOf
+--@api: LSource:typeOf
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local src = lurek.audio.newSource(path, "static")
     print("is LSource = " .. tostring(src:typeOf("LSource")))
 end
 
---@api-stub: LBus:getName
+--@api: LBus:getName
 do
     local bus = lurek.audio.newBus("gameplay")
     print("bus name = " .. bus:getName())
+    print("owner type = " .. tostring(bus:type()))
 end
 
---@api-stub: LBus:setVolume
+--@api: LBus:setVolume
 do
     local bus = lurek.audio.newBus("sfx")
     bus:setVolume(0.6)
     print("bus volume = " .. bus:getVolume())
 end
 
---@api-stub: LBus:getVolume
+--@api: LBus:getVolume
 do
     local bus = lurek.audio.newBus("music")
     bus:setVolume(0.8)
@@ -1478,14 +1537,14 @@ do
     print("volume = " .. v)
 end
 
---@api-stub: LBus:setPitch
+--@api: LBus:setPitch
 do
     local bus = lurek.audio.newBus("fx")
     bus:setPitch(1.2)
     print("bus pitch = " .. bus:getPitch())
 end
 
---@api-stub: LBus:getPitch
+--@api: LBus:getPitch
 do
     local bus = lurek.audio.newBus("ambient")
     bus:setPitch(0.9)
@@ -1493,14 +1552,14 @@ do
     print("pitch = " .. p)
 end
 
---@api-stub: LBus:pause
+--@api: LBus:pause
 do
     local bus = lurek.audio.newBus("dialog")
     bus:pause()
     print("bus paused = " .. tostring(bus:isPaused()))
 end
 
---@api-stub: LBus:resume
+--@api: LBus:resume
 do
     local bus = lurek.audio.newBus("world")
     bus:pause()
@@ -1508,26 +1567,28 @@ do
     print("bus resumed = " .. tostring(not bus:isPaused()))
 end
 
---@api-stub: LBus:isPaused
+--@api: LBus:isPaused
 do
     local bus = lurek.audio.newBus("ui")
     bus:pause()
     print("paused = " .. tostring(bus:isPaused()))
 end
 
---@api-stub: LBus:type
+--@api: LBus:type
 do
     local bus = lurek.audio.newBus("test")
     print("type = " .. bus:type())
+    print("typeOf LObject = " .. tostring(bus:typeOf("LObject")))
 end
 
---@api-stub: LBus:typeOf
+--@api: LBus:typeOf
 do
     local bus = lurek.audio.newBus("check")
     print("is LBus = " .. tostring(bus:typeOf("LBus")))
+    print("type = " .. tostring(bus:type()))
 end
 
---@api-stub: LBus:setDuckTarget
+--@api: LBus:setDuckTarget
 do
     local music = lurek.audio.newBus("bg_music")
     local voice = lurek.audio.newBus("voice_over")
@@ -1535,7 +1596,7 @@ do
     print("ducking bg_music to 0.3 when voice active")
 end
 
---@api-stub: LBus:clearDuck
+--@api: LBus:clearDuck
 do
     local bus = lurek.audio.newBus("narrator")
     bus:setDuckTarget("bg_music", 0.2)
@@ -1543,14 +1604,14 @@ do
     print("duck cleared")
 end
 
---@api-stub: LBus:getPeak
+--@api: LBus:getPeak
 do
     local bus = lurek.audio.newBus("meter_bus")
     local peak = bus:getPeak()
     print("peak = " .. peak)
 end
 
---@api-stub: LMidiPlayer:load
+--@api: LMidiPlayer:load
 do
     local player = lurek.audio.newMidiPlayer()
     local path = "content/examples/assets/audio/sample_midi.mid"
@@ -1558,7 +1619,7 @@ do
     print("loaded = " .. tostring(ok))
 end
 
---@api-stub: LMidiPlayer:loadData
+--@api: LMidiPlayer:loadData
 do
     local player = lurek.audio.newMidiPlayer()
     local data = string.char(77,84,104,100,0,0,0,6,0,0,0,1,0,96,77,84,114,107,0,0,0,4,0,255,47,0)
@@ -1566,20 +1627,21 @@ do
     print("loaded data = " .. tostring(ok))
 end
 
---@api-stub: LMidiPlayer:isLoaded
+--@api: LMidiPlayer:isLoaded
 do
     local player = lurek.audio.newMidiPlayer()
     print("loaded = " .. tostring(player:isLoaded()))
+    print("owner type = " .. tostring(player:type()))
 end
 
---@api-stub: LMidiPlayer:getFilePath
+--@api: LMidiPlayer:getFilePath
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
     print("file = " .. tostring(player:getFilePath()))
 end
 
---@api-stub: LMidiPlayer:setSoundFont
+--@api: LMidiPlayer:setSoundFont
 do
     local player = lurek.audio.newMidiPlayer()
     local sf_path = "content/examples/assets/audio/sample_soundfont.sf2"
@@ -1587,7 +1649,7 @@ do
     print("sf = " .. tostring(ok and player:getSoundFontPath()))
 end
 
---@api-stub: LMidiPlayer:getSoundFontPath
+--@api: LMidiPlayer:getSoundFontPath
 do
     local player = lurek.audio.newMidiPlayer()
     local sf_path = "content/examples/assets/audio/sample_soundfont.sf2"
@@ -1596,14 +1658,14 @@ do
     print("soundfont = " .. tostring(p))
 end
 
---@api-stub: LMidiPlayer:useDefaultSoundFont
+--@api: LMidiPlayer:useDefaultSoundFont
 do
     local player = lurek.audio.newMidiPlayer()
     player:useDefaultSoundFont()
     print("using default soundfont")
 end
 
---@api-stub: LMidiPlayer:play
+--@api: LMidiPlayer:play
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1611,7 +1673,7 @@ do
     print("midi playing = " .. tostring(player:isPlaying()))
 end
 
---@api-stub: LMidiPlayer:pause
+--@api: LMidiPlayer:pause
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1622,7 +1684,7 @@ end
 
 --- Audio Examples Part 4: LMidiPlayer (cont.), LSoundPool, LDecoder methods
 
---@api-stub: LMidiPlayer:stop
+--@api: LMidiPlayer:stop
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1631,7 +1693,7 @@ do
     print("midi stopped")
 end
 
---@api-stub: LMidiPlayer:isPlaying
+--@api: LMidiPlayer:isPlaying
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1639,7 +1701,7 @@ do
     print("playing = " .. tostring(player:isPlaying()))
 end
 
---@api-stub: LMidiPlayer:isPaused
+--@api: LMidiPlayer:isPaused
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1648,7 +1710,7 @@ do
     print("paused = " .. tostring(player:isPaused()))
 end
 
---@api-stub: LMidiPlayer:seek
+--@api: LMidiPlayer:seek
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1657,7 +1719,7 @@ do
     print("seeked to " .. player:tell())
 end
 
---@api-stub: LMidiPlayer:tell
+--@api: LMidiPlayer:tell
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1666,7 +1728,7 @@ do
     print("position = " .. pos)
 end
 
---@api-stub: LMidiPlayer:getDuration
+--@api: LMidiPlayer:getDuration
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1674,7 +1736,7 @@ do
     print("duration = " .. dur .. "s")
 end
 
---@api-stub: LMidiPlayer:setLooping
+--@api: LMidiPlayer:setLooping
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1682,7 +1744,7 @@ do
     print("looping = " .. tostring(player:isLooping()))
 end
 
---@api-stub: LMidiPlayer:isLooping
+--@api: LMidiPlayer:isLooping
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1690,14 +1752,14 @@ do
     print("isLooping = " .. tostring(player:isLooping()))
 end
 
---@api-stub: LMidiPlayer:setVolume
+--@api: LMidiPlayer:setVolume
 do
     local player = lurek.audio.newMidiPlayer()
     player:setVolume(0.7)
     print("volume = " .. player:getVolume())
 end
 
---@api-stub: LMidiPlayer:getVolume
+--@api: LMidiPlayer:getVolume
 do
     local player = lurek.audio.newMidiPlayer()
     player:setVolume(0.5)
@@ -1705,7 +1767,7 @@ do
     print("volume = " .. v)
 end
 
---@api-stub: LMidiPlayer:setBus
+--@api: LMidiPlayer:setBus
 do
     local player = lurek.audio.newMidiPlayer()
     local bus = lurek.audio.newBus("midi_bus")
@@ -1713,7 +1775,7 @@ do
     print("bus set")
 end
 
---@api-stub: LMidiPlayer:getBus
+--@api: LMidiPlayer:getBus
 do
     local player = lurek.audio.newMidiPlayer()
     local bus = lurek.audio.newBus("midi_out")
@@ -1722,14 +1784,14 @@ do
     print("bus = " .. b:getName())
 end
 
---@api-stub: LMidiPlayer:setTempo
+--@api: LMidiPlayer:setTempo
 do
     local player = lurek.audio.newMidiPlayer()
     player:setTempo(140)
     print("tempo = " .. player:getTempo())
 end
 
---@api-stub: LMidiPlayer:getTempo
+--@api: LMidiPlayer:getTempo
 do
     local player = lurek.audio.newMidiPlayer()
     player:setTempo(120)
@@ -1737,7 +1799,7 @@ do
     print("tempo = " .. t)
 end
 
---@api-stub: LMidiPlayer:getOriginalTempo
+--@api: LMidiPlayer:getOriginalTempo
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1745,14 +1807,14 @@ do
     print("original tempo = " .. orig)
 end
 
---@api-stub: LMidiPlayer:setTempoScale
+--@api: LMidiPlayer:setTempoScale
 do
     local player = lurek.audio.newMidiPlayer()
     player:setTempoScale(1.5)
     print("tempo scale = " .. player:getTempoScale())
 end
 
---@api-stub: LMidiPlayer:getTempoScale
+--@api: LMidiPlayer:getTempoScale
 do
     local player = lurek.audio.newMidiPlayer()
     player:setTempoScale(0.8)
@@ -1760,7 +1822,7 @@ do
     print("scale = " .. s)
 end
 
---@api-stub: LMidiPlayer:getTicksPerBeat
+--@api: LMidiPlayer:getTicksPerBeat
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1768,14 +1830,14 @@ do
     print("ticks/beat = " .. tpb)
 end
 
---@api-stub: LMidiPlayer:setChannelVolume
+--@api: LMidiPlayer:setChannelVolume
 do
     local player = lurek.audio.newMidiPlayer()
     player:setChannelVolume(1, 0.8)
     print("ch1 volume = " .. player:getChannelVolume(1))
 end
 
---@api-stub: LMidiPlayer:getChannelVolume
+--@api: LMidiPlayer:getChannelVolume
 do
     local player = lurek.audio.newMidiPlayer()
     player:setChannelVolume(2, 0.6)
@@ -1783,28 +1845,28 @@ do
     print("ch2 volume = " .. v)
 end
 
---@api-stub: LMidiPlayer:setChannelMuted
+--@api: LMidiPlayer:setChannelMuted
 do
     local player = lurek.audio.newMidiPlayer()
     player:setChannelMuted(10, true)
     print("ch10 muted = " .. tostring(player:isChannelMuted(10)))
 end
 
---@api-stub: LMidiPlayer:isChannelMuted
+--@api: LMidiPlayer:isChannelMuted
 do
     local player = lurek.audio.newMidiPlayer()
     player:setChannelMuted(3, true)
     print("ch3 muted = " .. tostring(player:isChannelMuted(3)))
 end
 
---@api-stub: LMidiPlayer:setChannelInstrument
+--@api: LMidiPlayer:setChannelInstrument
 do
     local player = lurek.audio.newMidiPlayer()
     player:setChannelInstrument(1, 25)
     print("ch1 instrument = " .. player:getChannelInstrument(1))
 end
 
---@api-stub: LMidiPlayer:getChannelInstrument
+--@api: LMidiPlayer:getChannelInstrument
 do
     local player = lurek.audio.newMidiPlayer()
     player:setChannelInstrument(2, 48)
@@ -1812,7 +1874,7 @@ do
     print("ch2 instrument = " .. inst)
 end
 
---@api-stub: LMidiPlayer:getChannelCount
+--@api: LMidiPlayer:getChannelCount
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1820,14 +1882,14 @@ do
     print("channels = " .. count)
 end
 
---@api-stub: LMidiPlayer:soloChannel
+--@api: LMidiPlayer:soloChannel
 do
     local player = lurek.audio.newMidiPlayer()
     player:soloChannel(1)
     print("ch1 soloed")
 end
 
---@api-stub: LMidiPlayer:unsoloAll
+--@api: LMidiPlayer:unsoloAll
 do
     local player = lurek.audio.newMidiPlayer()
     player:soloChannel(1)
@@ -1835,7 +1897,7 @@ do
     print("unsolo all done")
 end
 
---@api-stub: LMidiPlayer:getTrackCount
+--@api: LMidiPlayer:getTrackCount
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1843,7 +1905,7 @@ do
     print("tracks = " .. count)
 end
 
---@api-stub: LMidiPlayer:getTrackName
+--@api: LMidiPlayer:getTrackName
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1851,7 +1913,7 @@ do
     print("track 1 = " .. tostring(name))
 end
 
---@api-stub: LMidiPlayer:setTrackMuted
+--@api: LMidiPlayer:setTrackMuted
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1859,7 +1921,7 @@ do
     print("track 1 muted = " .. tostring(player:isTrackMuted(1)))
 end
 
---@api-stub: LMidiPlayer:isTrackMuted
+--@api: LMidiPlayer:isTrackMuted
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1867,7 +1929,7 @@ do
     print("track 2 muted = " .. tostring(player:isTrackMuted(2)))
 end
 
---@api-stub: LMidiPlayer:getNoteCount
+--@api: LMidiPlayer:getNoteCount
 do
     local path = "content/examples/assets/audio/sample_midi.mid"
     local player = lurek.audio.newMidiPlayer(path)
@@ -1875,7 +1937,7 @@ do
     print("notes = " .. notes)
 end
 
---@api-stub: LMidiPlayer:setOnNoteOn
+--@api: LMidiPlayer:setOnNoteOn
 do
     local player = lurek.audio.newMidiPlayer()
     player:setOnNoteOn(function(ch, note, vel)
@@ -1884,7 +1946,7 @@ do
     print("onNoteOn callback set")
 end
 
---@api-stub: LMidiPlayer:setOnNoteOff
+--@api: LMidiPlayer:setOnNoteOff
 do
     local player = lurek.audio.newMidiPlayer()
     player:setOnNoteOff(function(ch, note)
@@ -1893,7 +1955,7 @@ do
     print("onNoteOff callback set")
 end
 
---@api-stub: LMidiPlayer:setOnEnd
+--@api: LMidiPlayer:setOnEnd
 do
     local player = lurek.audio.newMidiPlayer()
     player:setOnEnd(function()
@@ -1902,47 +1964,49 @@ do
     print("onEnd callback set")
 end
 
---@api-stub: LMidiPlayer:getSampleRate
+--@api: LMidiPlayer:getSampleRate
 do
     local player = lurek.audio.newMidiPlayer()
     local rate = player:getSampleRate()
     print("sample rate = " .. rate)
 end
 
---@api-stub: LMidiPlayer:setSampleRate
+--@api: LMidiPlayer:setSampleRate
 do
     local player = lurek.audio.newMidiPlayer()
     player:setSampleRate(48000)
     print("sample rate = " .. player:getSampleRate())
 end
 
---@api-stub: LMidiPlayer:getChannels
+--@api: LMidiPlayer:getChannels
 do
     local player = lurek.audio.newMidiPlayer()
     local ch = player:getChannels()
     print("output channels = " .. ch)
 end
 
---@api-stub: LMidiPlayer:setChannels
+--@api: LMidiPlayer:setChannels
 do
     local player = lurek.audio.newMidiPlayer()
     player:setChannels(2)
     print("set stereo output")
 end
 
---@api-stub: LMidiPlayer:type
+--@api: LMidiPlayer:type
 do
     local player = lurek.audio.newMidiPlayer()
     print("type = " .. player:type())
+    print("typeOf LObject = " .. tostring(player:typeOf("LObject")))
 end
 
---@api-stub: LMidiPlayer:typeOf
+--@api: LMidiPlayer:typeOf
 do
     local player = lurek.audio.newMidiPlayer()
     print("is LMidiPlayer = " .. tostring(player:typeOf("LMidiPlayer")))
+    print("type = " .. tostring(player:type()))
 end
 
---@api-stub: LSoundPool:play
+--@api: LSoundPool:play
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
@@ -1950,7 +2014,7 @@ do
     print("playing voice id = " .. id)
 end
 
---@api-stub: LSoundPool:stopAll
+--@api: LSoundPool:stopAll
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
@@ -1959,7 +2023,7 @@ do
     print("all voices stopped")
 end
 
---@api-stub: LSoundPool:setVolume
+--@api: LSoundPool:setVolume
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
@@ -1967,7 +2031,7 @@ do
     print("pool volume = 0.5")
 end
 
---@api-stub: LSoundPool:setBus
+--@api: LSoundPool:setBus
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
@@ -1976,7 +2040,7 @@ do
     print("pool routed to pool_bus")
 end
 
---@api-stub: LSoundPool:release
+--@api: LSoundPool:release
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 4)
@@ -1984,28 +2048,28 @@ do
     print("pool released")
 end
 
---@api-stub: LSoundPool:getVoiceCount
+--@api: LSoundPool:getVoiceCount
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 8)
     print("voices = " .. pool:getVoiceCount())
 end
 
---@api-stub: LSoundPool:type
+--@api: LSoundPool:type
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 2)
     print("type = " .. pool:type())
 end
 
---@api-stub: LSoundPool:typeOf
+--@api: LSoundPool:typeOf
 do
     local path = "content/examples/assets/audio/sample_click.wav"
     local pool = lurek.audio.newPool(path, 2)
     print("is LSoundPool = " .. tostring(pool:typeOf("LSoundPool")))
 end
 
---@api-stub: LDecoder:decode
+--@api: LDecoder:decode
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path, 4096)
@@ -2015,7 +2079,7 @@ end
 
 --- Audio Examples Part 5: LDecoder methods, LSoundData methods
 
---@api-stub: LDecoder:getChannelCount
+--@api: LDecoder:getChannelCount
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
@@ -2023,7 +2087,7 @@ do
     print("channels = " .. ch)
 end
 
---@api-stub: LDecoder:getBitDepth
+--@api: LDecoder:getBitDepth
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
@@ -2031,7 +2095,7 @@ do
     print("bit depth = " .. bits)
 end
 
---@api-stub: LDecoder:getSampleRate
+--@api: LDecoder:getSampleRate
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
@@ -2039,7 +2103,7 @@ do
     print("sample rate = " .. rate)
 end
 
---@api-stub: LDecoder:getDuration
+--@api: LDecoder:getDuration
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
@@ -2047,7 +2111,7 @@ do
     print("duration = " .. dur .. "s")
 end
 
---@api-stub: LDecoder:seek
+--@api: LDecoder:seek
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
@@ -2055,7 +2119,7 @@ do
     print("seeked to " .. dec:tell())
 end
 
---@api-stub: LDecoder:rewind
+--@api: LDecoder:rewind
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
@@ -2064,7 +2128,7 @@ do
     print("rewound to " .. dec:tell())
 end
 
---@api-stub: LDecoder:tell
+--@api: LDecoder:tell
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
@@ -2073,14 +2137,14 @@ do
     print("position = " .. pos)
 end
 
---@api-stub: LDecoder:isSeekable
+--@api: LDecoder:isSeekable
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     print("seekable = " .. tostring(dec:isSeekable()))
 end
 
---@api-stub: LDecoder:release
+--@api: LDecoder:release
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
@@ -2088,56 +2152,56 @@ do
     print("decoder released")
 end
 
---@api-stub: LDecoder:type
+--@api: LDecoder:type
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     print("type = " .. dec:type())
 end
 
---@api-stub: LDecoder:typeOf
+--@api: LDecoder:typeOf
 do
     local path = "content/examples/assets/audio/sample_loop.wav"
     local dec = lurek.audio.newDecoder(path)
     print("is LDecoder = " .. tostring(dec:typeOf("LDecoder")))
 end
 
---@api-stub: LSoundData:getSampleCount
+--@api: LSoundData:getSampleCount
 do
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
     local count = sd:getSampleCount()
     print("samples = " .. count)
 end
 
---@api-stub: LSoundData:getSampleRate
+--@api: LSoundData:getSampleRate
 do
     local sd = lurek.audio.newSoundData(22050, 22050, 1)
     local rate = sd:getSampleRate()
     print("sample rate = " .. rate)
 end
 
---@api-stub: LSoundData:getChannelCount
+--@api: LSoundData:getChannelCount
 do
     local sd = lurek.audio.newSoundData(44100, 44100, 2)
     local ch = sd:getChannelCount()
     print("channels = " .. ch)
 end
 
---@api-stub: LSoundData:getDuration
+--@api: LSoundData:getDuration
 do
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
     local dur = sd:getDuration()
     print("duration = " .. dur .. "s")
 end
 
---@api-stub: LSoundData:getBitDepth
+--@api: LSoundData:getBitDepth
 do
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
     local bits = sd:getBitDepth()
     print("bit depth = " .. bits)
 end
 
---@api-stub: LSoundData:getSample
+--@api: LSoundData:getSample
 do
     local sd = lurek.audio.newSoundData(32, 44100, 1)
     sd:setSample(0, 1.0)
@@ -2145,7 +2209,7 @@ do
     print("sample[0] = " .. val)
 end
 
---@api-stub: LSoundData:drawWaveform
+--@api: LSoundData:drawWaveform
 do
     local sd = lurek.audio.newSoundData(128, 44100, 1)
     for i = 0, 127 do
@@ -2157,7 +2221,7 @@ do
     print("waveform drawn to image")
 end
 
---@api-stub: LSoundData:setSample
+--@api: LSoundData:setSample
 do
     local sd = lurek.audio.newSoundData(100, 44100, 1)
     sd:setSample(0, 0.5)
@@ -2165,19 +2229,21 @@ do
     print("sample[0] = " .. sd:getSample(0) .. " sample[50] = " .. sd:getSample(50))
 end
 
---@api-stub: LSoundData:type
+--@api: LSoundData:type
 do
     local sd = lurek.audio.newSoundData(100, 44100, 1)
     print("type = " .. sd:type())
+    print("typeOf LObject = " .. tostring(sd:typeOf("LObject")))
 end
 
---@api-stub: LSoundData:typeOf
+--@api: LSoundData:typeOf
 do
     local sd = lurek.audio.newSoundData(100, 44100, 1)
     print("is LSoundData = " .. tostring(sd:typeOf("LSoundData")))
+    print("type = " .. tostring(sd:type()))
 end
 
---@api-stub: lurek.audio.newSynthWave
+--@api: lurek.audio.newSynthWave
 do
     local has_fn = type(lurek.audio.newSynthWave) == "function"
     local sd = has_fn and lurek.audio.newSynthWave("sine", 440, 0.5, 44100, 0.8) or nil
@@ -2185,7 +2251,7 @@ do
     print("newSynthWave sampleCount = " .. tostring(sd and sd:getSampleCount() or 0))
 end
 
---@api-stub: lurek.audio.setMuted
+--@api: lurek.audio.setMuted
 do
     lurek.audio.setMuted(true)
     print("audio muted = " .. tostring(lurek.audio.isMuted()))
@@ -2193,7 +2259,7 @@ do
     print("audio unmuted = " .. tostring(not lurek.audio.isMuted()))
 end
 
---@api-stub: lurek.audio.isMuted
+--@api: lurek.audio.isMuted
 do
     local muted = lurek.audio.isMuted()
     print("audio is muted = " .. tostring(muted))
@@ -2203,7 +2269,7 @@ do
     end
 end
 
---@api-stub: lurek.audio.stopMusic
+--@api: lurek.audio.stopMusic
 do
     local src = lurek.audio.newSource("content/examples/assets/audio/sample_loop.wav", "stream")
     lurek.audio.play(src)
@@ -2212,7 +2278,7 @@ do
     print("music stopped with fade")
 end
 
---@api-stub: lurek.audio.playSfx
+--@api: lurek.audio.playSfx
 do
     local opts = { volume = 0.8, loop = false }
     local sfx = lurek.audio.playSfx("content/examples/assets/audio/sample_click.wav", opts)

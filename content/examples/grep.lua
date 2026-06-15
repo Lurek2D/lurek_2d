@@ -8,46 +8,46 @@
 -- ==========================================================================
 
 -- Quick search (simplest usage)
---@api-stub: lurek.grep.newEngine
+--@api: lurek.grep.newEngine
 do
     local eng = lurek.grep.newEngine()
     print("engine created = " .. tostring(eng ~= nil))
 end
 
---@api-stub: lurek.grep.newEngineOpts
+--@api: lurek.grep.newEngineOpts
 do
     local opts = { case_sensitive = false, threads = 2, whole_word = false }
     local eng = lurek.grep.newEngineOpts(opts)
     print("engine with opts created = " .. tostring(eng ~= nil))
 end
 
---@api-stub: lurek.grep.newFilter
+--@api: lurek.grep.newFilter
 do
     local fil = lurek.grep.newFilter()
     fil:addExtension("lua")
     print("filter created = " .. tostring(fil ~= nil))
 end
 
---@api-stub: lurek.grep.luaFilter
+--@api: lurek.grep.luaFilter
 do
     local fil = lurek.grep.luaFilter()
     print("lua filter created = " .. tostring(fil ~= nil))
 end
 
---@api-stub: lurek.grep.search
+--@api: lurek.grep.search
 do
-    local results = lurek.grep.search("content/examples", "api-stub")
+    local results = lurek.grep.search("content/examples", "lurek.math")
     print("files searched = " .. results.files_searched)
     print("total matches = " .. results.total_matches)
 end
 
---@api-stub: lurek.grep.jsonSearch
+--@api: lurek.grep.jsonSearch
 do
-    local results = lurek.grep.jsonSearch("content/examples", "api-stub")
+    local results = lurek.grep.jsonSearch("content/examples", "lurek.math")
     print("json results = " .. #results)
 end
 
---@api-stub: lurek.grep.logSearch
+--@api: lurek.grep.logSearch
 do
     local path = "save/grep_runtime.log"
     lurek.filesystem.write(path, "[INFO] boot\n[ERROR] panic: sample failure\n")
@@ -55,7 +55,7 @@ do
     print("log results = " .. #results)
 end
 
---@api-stub: LFileFilter:addExtension
+--@api: LFileFilter:addExtension
 do
     local fil = lurek.grep.newFilter()
     fil:addExtension("lua")
@@ -63,31 +63,31 @@ do
     print("LFileFilter:addExtension ok")
 end
 
---@api-stub: LFileFilter:excludeExtension
+--@api: LFileFilter:excludeExtension
 do
     local fil = lurek.grep.newFilter()
     fil:excludeExtension("min.lua")
     print("LFileFilter:excludeExtension ok")
 end
 
---@api-stub: LFileFilter:excludePattern
+--@api: LFileFilter:excludePattern
 do
     local fil = lurek.grep.newFilter()
     fil:excludePattern("test_")
     print("LFileFilter:excludePattern ok")
 end
 
---@api-stub: LFileFilter:setIncludeHidden
+--@api: LFileFilter:setIncludeHidden
 do
     local fil = lurek.grep.newFilter()
     fil:setIncludeHidden(false)
     print("LFileFilter:setIncludeHidden ok")
 end
 
---@api-stub: LGrepEngine:search
+--@api: LGrepEngine:search
 do
     local eng = lurek.grep.newEngine()
-    local ok, results = pcall(function() return eng:search("content/examples", "api-stub") end)
+    local ok, results = pcall(function() return eng:search("content/examples", "lurek.math") end)
     if ok then
         print("LGrepEngine:search files=" .. results.files_searched)
         print("LGrepEngine:search matches=" .. results.total_matches)
@@ -96,10 +96,10 @@ do
     end
 end
 
---@api-stub: LGrepEngine:searchExt
+--@api: LGrepEngine:searchExt
 do
     local eng = lurek.grep.newEngine()
-    local ok, results = pcall(function() return eng:searchExt("content/examples", "api-stub", { "lua" }) end)
+    local ok, results = pcall(function() return eng:searchExt("content/examples", "lurek.math", { "lua" }) end)
     if ok then
         print("LGrepEngine:searchExt files=" .. results.files_searched)
         print("LGrepEngine:searchExt matches=" .. results.total_matches)
@@ -108,25 +108,25 @@ do
     end
 end
 
---@api-stub: LGrepEngine:multiSearch
+--@api: LGrepEngine:multiSearch
 do
     local eng = lurek.grep.newEngine()
-    local results = eng:multiSearch("content/examples", { "api-stub", "lurek.math" })
+    local results = eng:multiSearch("content/examples", { "lurek.math", "lurek.color" })
     print("LGrepEngine:multiSearch files=" .. results.files_searched)
     print("LGrepEngine:multiSearch matches=" .. results.total_matches)
 end
 
---@api-stub: LGrepEngine:count
+--@api: LGrepEngine:count
 do
     local eng = lurek.grep.newEngine()
-    local n = eng:count("content/examples", "api-stub")
+    local n = eng:count("content/examples", "lurek.math")
     print("LGrepEngine:count=" .. n)
 end
 
---@api-stub: LGrepEngine:searchFiles
+--@api: LGrepEngine:searchFiles
 do
     local eng = lurek.grep.newEngine()
-    local results = eng:searchFiles({ "content/examples/grep.lua", "content/examples/font.lua" }, "api-stub")
+    local results = eng:searchFiles({ "content/examples/grep.lua", "content/examples/font.lua" }, "lurek.math")
     print("LGrepEngine:searchFiles files=" .. results.files_searched)
     print("LGrepEngine:searchFiles matches=" .. results.total_matches)
 end

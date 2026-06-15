@@ -1,6 +1,7 @@
 //! Agent orchestration logic extracted from Lua runtime glue.
 //! Owns batch-task data contracts, callback ID packing, and system-context assembly.
 //! This module is runtime-agnostic and intentionally free of `mlua` types.
+//! Module API documentation
 
 use crate::agent::{AISystemState, AgentState};
 use std::collections::HashMap;

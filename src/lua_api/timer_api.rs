@@ -1,4 +1,9 @@
 //! File: src/lua_api/timer_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
+//! TODO: add doc note 3
 
 use super::SharedState;
 use crate::timer::Scheduler;

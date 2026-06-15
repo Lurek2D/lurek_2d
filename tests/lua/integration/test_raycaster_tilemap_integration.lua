@@ -9,8 +9,8 @@ describe("integration: raycaster + tilemap", function()
     -- @integration LTileMap:setTile
     -- @integration lurek.raycaster.new
     -- @integration lurek.tilemap.newTileMap
-    -- @covers lurek.raycaster.new
-    -- @covers lurek.tilemap.newTileMap
+    -- @integration lurek.raycaster.new
+    -- @integration lurek.tilemap.newTileMap
     it("keeps wall occupancy in sync for matching cell coordinates", function()
         local rc = lurek.raycaster.new(10, 10)
         local tm = lurek.tilemap.newTileMap(10, 10, 1)

@@ -6,13 +6,17 @@ describe("effect + camera integration", function()
     -- @integration LCamera:getViewport
     -- @integration LCamera:setViewport
     -- @integration LOverlay:getDimensions
+    -- @integration LOverlay:getVignetteStrength
+    -- @integration LOverlay:isVignetteEnabled
     -- @integration LOverlay:resize
+    -- @integration LOverlay:setVignetteEnabled
+    -- @integration LOverlay:setVignetteStrength
     -- @integration lurek.camera.newCamera
-    -- @covers lurek.camera.newCamera
-    -- @covers lurek.effect.newOverlay
+    -- @integration lurek.camera.newCamera
+    -- @integration lurek.overlay.new
     it("vignette effect scales to camera viewport dimensions", function()
         local cam = lurek.camera.newCamera()
-        local overlay = lurek.effect.newOverlay(1, 1)
+        local overlay = lurek.overlay.new(1, 1)
 
         cam:setViewport(0, 0, 320, 180)
         local _, _, width, height = cam:getViewport()
@@ -30,12 +34,13 @@ describe("effect + camera integration", function()
     -- @integration LCamera:getPosition
     -- @integration LCamera:setPosition
     -- @integration LOverlay:getShakeOffset
+    -- @integration lurek.overlay.new
     -- @integration LOverlay:triggerShake
     -- @integration LOverlay:update
     -- @integration lurek.camera.newCamera
     it("screen-shake overlay follows camera position offset", function()
         local cam = lurek.camera.newCamera()
-        local overlay = lurek.effect.newOverlay(320, 180)
+        local overlay = lurek.overlay.new(320, 180)
 
         cam:setPosition(128, 96)
         overlay:triggerShake(8.0, 0.5)
@@ -53,11 +58,12 @@ describe("effect + camera integration", function()
     -- @integration LCamera:setViewport
     -- @integration LCamera:setZoom
     -- @integration LOverlay:getDimensions
+    -- @integration lurek.overlay.new
     -- @integration LOverlay:resize
     -- @integration lurek.camera.newCamera
     it("camera zoom does not distort full-screen overlay geometry", function()
         local cam = lurek.camera.newCamera()
-        local overlay = lurek.effect.newOverlay(640, 360)
+        local overlay = lurek.overlay.new(640, 360)
 
         cam:setViewport(0, 0, 640, 360)
         cam:setZoom(2.5)

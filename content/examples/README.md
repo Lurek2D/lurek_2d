@@ -11,7 +11,7 @@
 ## How To Use It
 
 1. Open the file that matches the API area you want to learn, for example `render.lua`, `audio.lua`, `input.lua`, `physics.lua`, or `ui.lua`.
-2. Search for `--@api-stub:` to jump to a specific callable.
+2. Search for `--@api:` to jump to a specific callable.
 3. Copy the relevant snippet into your own `main.lua` and adapt it to your project.
 
 ## Running Examples In Lurek

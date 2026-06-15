@@ -1,4 +1,8 @@
 //! File: src/lua_api/grep_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
 
 use super::SharedState;
 use crate::grep::{engine::GrepEngine, filter::FileFilter, json_search, log_search, GrepConfig};

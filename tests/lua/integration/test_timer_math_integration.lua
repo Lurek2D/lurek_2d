@@ -9,11 +9,11 @@ describe("timer + tween easing integration", function()
     -- @integration LTweenState:tick
     -- @integration LTweenState:lerp
     -- @integration lurek.math.inQuad
-    -- @covers lurek.math.distance
-    -- @covers lurek.math.inOutCubic
-    -- @covers lurek.math.inQuad
-    -- @covers lurek.math.outQuad
-    -- @covers lurek.tween.newState
+    -- @integration lurek.math.distance
+    -- @integration lurek.math.inOutCubic
+    -- @integration lurek.math.inQuad
+    -- @integration lurek.math.outQuad
+    -- @integration lurek.tween.newState
     it("tween inQuad output matches lurek.math.inQuad at t=0.5", function()
         local tw = lurek.tween.newState(1.0, "quadIn")
         tw:tick(0.5)

@@ -1,4 +1,13 @@
 //! File: src/lua_api/physics_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
+//! TODO: add doc note 3
+//! TODO: add doc note 4
+//! TODO: add doc note 5
+//! TODO: add doc note 6
+//! TODO: add doc note 7
 
 use super::SharedState;
 use crate::math::Vec2;

@@ -4,7 +4,7 @@
   "modules": [
     {
       "name": "agent",
-      "description": "File: src/lua_api/agent_api.rs",
+      "description": "File: src/lua_api/agent_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "new",
@@ -321,7 +321,7 @@
     },
     {
       "name": "ai",
-      "description": "File: src/lua_api/ai_api.rs",
+      "description": "File: src/lua_api/ai_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "newWorld",
@@ -919,7 +919,7 @@
     },
     {
       "name": "animation",
-      "description": "File: src/lua_api/animation_api.rs",
+      "description": "File: src/lua_api/animation_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "new",
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "asset",
-      "description": "File: src/lua_api/asset_api.rs",
+      "description": "File: src/lua_api/asset_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "load",
@@ -1485,7 +1485,7 @@
     },
     {
       "name": "audio",
-      "description": "File: src/lua_api/audio_api.rs",
+      "description": "File: src/lua_api/audio_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "newSource",
@@ -3344,7 +3344,7 @@
     },
     {
       "name": "automation",
-      "description": "File: src/lua_api/automation_api.rs",
+      "description": "File: src/lua_api/automation_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "load",
@@ -3851,7 +3851,7 @@
     },
     {
       "name": "binary",
-      "description": "File: src/lua_api/binary_api.rs",
+      "description": "File: src/lua_api/binary_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "pack",
@@ -4355,7 +4355,7 @@
     },
     {
       "name": "camera",
-      "description": "File: src/lua_api/camera_api.rs",
+      "description": "File: src/lua_api/camera_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "new",
@@ -4445,13 +4445,13 @@
     },
     {
       "name": "charts",
-      "description": "Registers the `lurek.charts` Lua API and keeps chart userdata wrappers thin.\nParses chart config/data inputs at the Lua boundary, delegates rendering to `src/charts`,\nand bridges CPU-generated chart images into the engine's texture-backed draw queue.",
+      "description": "Registers the `lurek.charts` Lua API and keeps chart userdata wrappers thin.\nParses chart config/data inputs at the Lua boundary, delegates rendering to `src/charts`,\nand bridges CPU-generated chart images into the engine's texture-backed draw queue.\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newLine",
           "fullPath": "lurek.charts.newLine",
           "signature": "([config])",
-          "description": "",
+          "description": "New line.",
           "parameters": [
             {
               "name": "config",
@@ -4469,7 +4469,7 @@
           "name": "newBar",
           "fullPath": "lurek.charts.newBar",
           "signature": "([config])",
-          "description": "",
+          "description": "New bar.",
           "parameters": [
             {
               "name": "config",
@@ -4487,7 +4487,7 @@
           "name": "newScatter",
           "fullPath": "lurek.charts.newScatter",
           "signature": "([config])",
-          "description": "",
+          "description": "New scatter.",
           "parameters": [
             {
               "name": "config",
@@ -4505,7 +4505,7 @@
           "name": "newPie",
           "fullPath": "lurek.charts.newPie",
           "signature": "([config])",
-          "description": "",
+          "description": "New pie.",
           "parameters": [
             {
               "name": "config",
@@ -4523,7 +4523,7 @@
           "name": "newArea",
           "fullPath": "lurek.charts.newArea",
           "signature": "([config])",
-          "description": "",
+          "description": "New area.",
           "parameters": [
             {
               "name": "config",
@@ -4541,7 +4541,7 @@
           "name": "newHistogram",
           "fullPath": "lurek.charts.newHistogram",
           "signature": "([config])",
-          "description": "",
+          "description": "New histogram.",
           "parameters": [
             {
               "name": "config",
@@ -4559,7 +4559,7 @@
           "name": "newHeatmap",
           "fullPath": "lurek.charts.newHeatmap",
           "signature": "([config])",
-          "description": "",
+          "description": "New heatmap.",
           "parameters": [
             {
               "name": "config",
@@ -4577,7 +4577,7 @@
           "name": "defaultPalette",
           "fullPath": "lurek.charts.defaultPalette",
           "signature": "()",
-          "description": "",
+          "description": "Default palette.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -4588,7 +4588,7 @@
           "name": "seriesColor",
           "fullPath": "lurek.charts.seriesColor",
           "signature": "(index)",
-          "description": "",
+          "description": "Series color.",
           "parameters": [
             {
               "name": "index",
@@ -4636,7 +4636,7 @@
     },
     {
       "name": "color",
-      "description": "File: src/lua_api/color_api.rs",
+      "description": "File: src/lua_api/color_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "new",
@@ -5171,7 +5171,7 @@
     },
     {
       "name": "compute",
-      "description": "File: src/lua_api/compute_api.rs",
+      "description": "File: src/lua_api/compute_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newArray",
@@ -5483,7 +5483,7 @@
     },
     {
       "name": "cursor",
-      "description": "File: src/lua_api/cursor_api.rs",
+      "description": "File: src/lua_api/cursor_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "newManager",
@@ -5566,7 +5566,7 @@
     },
     {
       "name": "dataframe",
-      "description": "File: src/lua_api/dataframe_api.rs",
+      "description": "File: src/lua_api/dataframe_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "newDataFrame",
@@ -5877,7 +5877,7 @@
     },
     {
       "name": "debugbridge",
-      "description": "File: src/lua_api/debugbridge_api.rs",
+      "description": "File: src/lua_api/debugbridge_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "start",
@@ -6120,7 +6120,7 @@
     },
     {
       "name": "devtools",
-      "description": "File: src/lua_api/devtools_api.rs",
+      "description": "File: src/lua_api/devtools_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "log",
@@ -6884,7 +6884,7 @@
     },
     {
       "name": "dialog",
-      "description": "File: src/lua_api/dialog_api.rs",
+      "description": "File: src/lua_api/dialog_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "newAI",
@@ -7097,7 +7097,7 @@
     },
     {
       "name": "docs",
-      "description": "File: src/lua_api/docs_api.rs",
+      "description": "File: src/lua_api/docs_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "scan",
@@ -7648,7 +7648,7 @@
     },
     {
       "name": "dsp",
-      "description": "File: src/lua_api/dsp_api.rs",
+      "description": "File: src/lua_api/dsp_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newEffectParams",
@@ -8476,7 +8476,7 @@
     },
     {
       "name": "ecs",
-      "description": "File: src/lua_api/ecs_api.rs",
+      "description": "File: src/lua_api/ecs_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newUniverse",
@@ -8494,7 +8494,7 @@
     },
     {
       "name": "effect",
-      "description": "File: src/lua_api/effect_api.rs",
+      "description": "File: src/lua_api/effect_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "newEffect",
@@ -8684,7 +8684,7 @@
     },
     {
       "name": "engine",
-      "description": "File: src/lua_api/engine_api.rs",
+      "description": "File: src/lua_api/engine_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2",
       "functions": [
         {
           "name": "getVersion",
@@ -8841,7 +8841,7 @@
     },
     {
       "name": "event",
-      "description": "File: src/lua_api/event_api.rs",
+      "description": "File: src/lua_api/event_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "exit",
@@ -9109,7 +9109,7 @@
     },
     {
       "name": "filesystem",
-      "description": "File: src/lua_api/filesystem_api.rs",
+      "description": "File: src/lua_api/filesystem_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "mountZip",
@@ -9932,7 +9932,7 @@
     },
     {
       "name": "flownet",
-      "description": "File: src/lua_api/flownet_api.rs",
+      "description": "File: src/lua_api/flownet_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newGraph",
@@ -9950,7 +9950,7 @@
     },
     {
       "name": "font",
-      "description": "File: src/lua_api/font_api.rs",
+      "description": "File: src/lua_api/font_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "getDefault",
@@ -10242,7 +10242,7 @@
     },
     {
       "name": "globe",
-      "description": "File: src/lua_api/globe_api.rs",
+      "description": "File: src/lua_api/globe_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newRegistry",
@@ -10596,7 +10596,7 @@
     },
     {
       "name": "grep",
-      "description": "File: src/lua_api/grep_api.rs",
+      "description": "File: src/lua_api/grep_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2",
       "functions": [
         {
           "name": "newEngine",
@@ -10732,7 +10732,7 @@
     },
     {
       "name": "html",
-      "description": "File: src/lua_api/html_api.rs",
+      "description": "File: src/lua_api/html_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "preventDefault",
@@ -10838,7 +10838,7 @@
     },
     {
       "name": "i18n",
-      "description": "File: src/lua_api/i18n_api.rs",
+      "description": "File: src/lua_api/i18n_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "loadTable",
@@ -11505,7 +11505,7 @@
     },
     {
       "name": "image",
-      "description": "File: src/lua_api/image_api.rs",
+      "description": "File: src/lua_api/image_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newImageData",
@@ -11780,7 +11780,7 @@
     },
     {
       "name": "input",
-      "description": "File: src/lua_api/input_api.rs",
+      "description": "File: src/lua_api/input_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "isDown",
@@ -13321,7 +13321,7 @@
     },
     {
       "name": "layout",
-      "description": "File: src/lua_api/layout_api.rs",
+      "description": "File: src/lua_api/layout_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2",
       "functions": [
         {
           "name": "tree",
@@ -13478,7 +13478,7 @@
     },
     {
       "name": "learning",
-      "description": "File: src/lua_api/learning_api.rs",
+      "description": "File: src/lua_api/learning_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newQLearner",
@@ -14029,7 +14029,7 @@
     },
     {
       "name": "light",
-      "description": "File: src/lua_api/light_api.rs",
+      "description": "File: src/lua_api/light_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newLight",
@@ -14417,7 +14417,7 @@
     },
     {
       "name": "log",
-      "description": "File: src/lua_api/log_api.rs",
+      "description": "File: src/lua_api/log_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "debug",
@@ -14805,7 +14805,7 @@
     },
     {
       "name": "mapblock",
-      "description": "File: src/lua_api/mapblock_api.rs",
+      "description": "File: src/lua_api/mapblock_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newConfig",
@@ -15018,7 +15018,7 @@
     },
     {
       "name": "math",
-      "description": "File: src/lua_api/math_api.rs",
+      "description": "File: src/lua_api/math_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "newRandomGenerator",
@@ -17525,7 +17525,7 @@
     },
     {
       "name": "midi",
-      "description": "File: src/lua_api/midi_api.rs",
+      "description": "File: src/lua_api/midi_api.rs\nModule API documentation",
       "functions": [
         {
           "name": "newPlayer",
@@ -17590,7 +17590,7 @@
     },
     {
       "name": "minimap",
-      "description": "File: src/lua_api/minimap_api.rs",
+      "description": "File: src/lua_api/minimap_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newMinimap",
@@ -17633,7 +17633,7 @@
     },
     {
       "name": "mods",
-      "description": "File: src/lua_api/mods_api.rs",
+      "description": "File: src/lua_api/mods_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "newMod",
@@ -17704,7 +17704,7 @@
     },
     {
       "name": "network",
-      "description": "File: src/lua_api/network_api.rs",
+      "description": "File: src/lua_api/network_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newHost",
@@ -18387,7 +18387,7 @@
     },
     {
       "name": "overlay",
-      "description": "File: src/lua_api/overlay_api.rs",
+      "description": "File: src/lua_api/overlay_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "new",
@@ -18448,7 +18448,7 @@
     },
     {
       "name": "parallax",
-      "description": "File: src/lua_api/parallax_api.rs",
+      "description": "File: src/lua_api/parallax_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newLayer",
@@ -18515,7 +18515,7 @@
     },
     {
       "name": "particle",
-      "description": "File: src/lua_api/particle_api.rs",
+      "description": "File: src/lua_api/particle_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "newSystem",
@@ -18636,7 +18636,7 @@
     },
     {
       "name": "pathfind",
-      "description": "File: src/lua_api/pathfind_api.rs",
+      "description": "File: src/lua_api/pathfind_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newNavGrid",
@@ -18917,7 +18917,7 @@
     },
     {
       "name": "patterns",
-      "description": "File: src/lua_api/patterns_api.rs",
+      "description": "File: src/lua_api/patterns_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "newEventBus",
@@ -19290,7 +19290,7 @@
     },
     {
       "name": "physics",
-      "description": "File: src/lua_api/physics_api.rs",
+      "description": "File: src/lua_api/physics_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "newWorld",
@@ -19963,7 +19963,7 @@
     },
     {
       "name": "pipeline",
-      "description": "File: src/lua_api/pipeline_api.rs",
+      "description": "File: src/lua_api/pipeline_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newStep",
@@ -20030,7 +20030,7 @@
     },
     {
       "name": "procgen",
-      "description": "File: src/lua_api/procgen_api.rs",
+      "description": "File: src/lua_api/procgen_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "cellularAutomata",
@@ -21009,7 +21009,7 @@
     },
     {
       "name": "province",
-      "description": "File: src/lua_api/province_api.rs",
+      "description": "File: src/lua_api/province_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newFromPng",
@@ -21381,7 +21381,7 @@
     },
     {
       "name": "raycaster",
-      "description": "File: src/lua_api/raycaster_api.rs",
+      "description": "File: src/lua_api/raycaster_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "new",
@@ -21858,7 +21858,7 @@
     },
     {
       "name": "render",
-      "description": "File: src/lua_api/render_api.rs",
+      "description": "File: src/lua_api/render_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "setColor",
@@ -24746,7 +24746,7 @@
     },
     {
       "name": "repl",
-      "description": "File: src/lua_api/repl_api.rs",
+      "description": "File: src/lua_api/repl_api.rs\nModule API documentation\n\nTODO: add doc note 1",
       "functions": [
         {
           "name": "new",
@@ -24771,7 +24771,7 @@
     },
     {
       "name": "save",
-      "description": "File: src/lua_api/save_api.rs",
+      "description": "File: src/lua_api/save_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "newSaveManager",
@@ -24789,7 +24789,7 @@
     },
     {
       "name": "scene",
-      "description": "File: src/lua_api/scene_api.rs",
+      "description": "File: src/lua_api/scene_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "push",
@@ -25890,7 +25890,7 @@
     },
     {
       "name": "serialize",
-      "description": "File: src/lua_api/serialize_api.rs",
+      "description": "File: src/lua_api/serialize_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2",
       "functions": [
         {
           "name": "fromJson",
@@ -26233,7 +26233,7 @@
     },
     {
       "name": "spine",
-      "description": "File: src/lua_api/spine_api.rs",
+      "description": "File: src/lua_api/spine_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "newSkeleton",
@@ -26318,7 +26318,7 @@
     },
     {
       "name": "sprite",
-      "description": "File: src/lua_api/sprite_api.rs",
+      "description": "File: src/lua_api/sprite_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newSprite",
@@ -26529,7 +26529,7 @@
     },
     {
       "name": "svg",
-      "description": "Lua bindings for the vector SVG graphics module.\nExposes the LSvgImage userdata and lurek.svg.load API.\nMethods mirror the image/sprite module patterns: factory, dimension queries,\nelement state reads/writes/resets, hierarchy navigation, bounds, and GPU canvas caching.",
+      "description": "Lua bindings for the vector SVG graphics module.\nExposes the LSvgImage userdata and lurek.svg.load API.\nMethods mirror the image/sprite module patterns: factory, dimension queries,\nelement state reads/writes/resets, hierarchy navigation, bounds, and GPU canvas caching.\nModule API documentation",
       "functions": [
         {
           "name": "load",
@@ -26554,7 +26554,7 @@
     },
     {
       "name": "system",
-      "description": "File: src/lua_api/system_api.rs",
+      "description": "File: src/lua_api/system_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "getOS",
@@ -26965,7 +26965,7 @@
     },
     {
       "name": "terminal",
-      "description": "File: src/lua_api/terminal_api.rs",
+      "description": "File: src/lua_api/terminal_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "newTerminal",
@@ -27652,7 +27652,7 @@
     },
     {
       "name": "thread",
-      "description": "File: src/lua_api/thread_api.rs",
+      "description": "File: src/lua_api/thread_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "newThread",
@@ -27783,7 +27783,7 @@
     },
     {
       "name": "tilemap",
-      "description": "File: src/lua_api/tilemap_api.rs",
+      "description": "File: src/lua_api/tilemap_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "newTileSet",
@@ -28659,7 +28659,7 @@
     },
     {
       "name": "timer",
-      "description": "File: src/lua_api/timer_api.rs",
+      "description": "File: src/lua_api/timer_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "getDelta",
@@ -28959,7 +28959,7 @@
     },
     {
       "name": "tween",
-      "description": "File: src/lua_api/tween_api.rs",
+      "description": "File: src/lua_api/tween_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "update",
@@ -29285,7 +29285,7 @@
     },
     {
       "name": "ui",
-      "description": "File: src/lua_api/ui_api.rs",
+      "description": "File: src/lua_api/ui_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
       "functions": [
         {
           "name": "setAutoInput",
@@ -30967,7 +30967,7 @@
     },
     {
       "name": "validator",
-      "description": "File: src/lua_api/validator_api.rs",
+      "description": "File: src/lua_api/validator_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2",
       "functions": [
         {
           "name": "newEngine",
@@ -31028,7 +31028,7 @@
     },
     {
       "name": "visibility",
-      "description": "File: src/lua_api/visibility_api.rs",
+      "description": "File: src/lua_api/visibility_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
       "functions": [
         {
           "name": "new",
@@ -31071,7 +31071,7 @@
     },
     {
       "name": "window",
-      "description": "File: src/lua_api/window_api.rs",
+      "description": "File: src/lua_api/window_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
       "functions": [
         {
           "name": "setTitle",
@@ -36749,13 +36749,13 @@
     },
     {
       "name": "LAreaChart",
-      "description": "Lua-exposed area chart for data visualization.",
+      "description": "Lua handle for an area chart with stacked layers or named series.",
       "methods": [
         {
           "name": "addSeries",
           "fullPath": "LAreaChart:addSeries",
           "signature": "(name, data, [color])",
-          "description": "",
+          "description": "Adds a named area series from an array-style Lua table of points.",
           "parameters": [
             {
               "name": "name",
@@ -36785,7 +36785,7 @@
           "name": "addLayer",
           "fullPath": "LAreaChart:addLayer",
           "signature": "(name, values, [color])",
-          "description": "",
+          "description": "Adds one filled area layer from a numeric value list.",
           "parameters": [
             {
               "name": "name",
@@ -36815,7 +36815,7 @@
           "name": "addLayerFromDataFrame",
           "fullPath": "LAreaChart:addLayerFromDataFrame",
           "signature": "LAreaChart:addLayerFromDataFrame()",
-          "description": "",
+          "description": "Builds one filled area layer from a dataframe value column.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -36826,7 +36826,7 @@
           "name": "appendPoint",
           "fullPath": "LAreaChart:appendPoint",
           "signature": "(name, x, y, [color])",
-          "description": "",
+          "description": "Appends one finite point to a named area series.",
           "parameters": [
             {
               "name": "name",
@@ -36862,7 +36862,7 @@
           "name": "setWindow",
           "fullPath": "LAreaChart:setWindow",
           "signature": "([max_points])",
-          "description": "",
+          "description": "Sets the window.",
           "parameters": [
             {
               "name": "max_points",
@@ -36880,7 +36880,7 @@
           "name": "clear",
           "fullPath": "LAreaChart:clear",
           "signature": "()",
-          "description": "",
+          "description": "Clears the state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -36891,7 +36891,7 @@
           "name": "setTitle",
           "fullPath": "LAreaChart:setTitle",
           "signature": "(title)",
-          "description": "",
+          "description": "Sets the title.",
           "parameters": [
             {
               "name": "title",
@@ -36909,7 +36909,7 @@
           "name": "setYMax",
           "fullPath": "LAreaChart:setYMax",
           "signature": "(value)",
-          "description": "",
+          "description": "Sets the y max.",
           "parameters": [
             {
               "name": "value",
@@ -36927,7 +36927,7 @@
           "name": "setXLabel",
           "fullPath": "LAreaChart:setXLabel",
           "signature": "(label)",
-          "description": "",
+          "description": "Sets the x label.",
           "parameters": [
             {
               "name": "label",
@@ -36945,7 +36945,7 @@
           "name": "setYLabel",
           "fullPath": "LAreaChart:setYLabel",
           "signature": "(label)",
-          "description": "",
+          "description": "Sets the y label.",
           "parameters": [
             {
               "name": "label",
@@ -36963,7 +36963,7 @@
           "name": "setXTickCount",
           "fullPath": "LAreaChart:setXTickCount",
           "signature": "(count)",
-          "description": "",
+          "description": "Sets the x tick count.",
           "parameters": [
             {
               "name": "count",
@@ -36981,7 +36981,7 @@
           "name": "setYTickCount",
           "fullPath": "LAreaChart:setYTickCount",
           "signature": "(count)",
-          "description": "",
+          "description": "Sets the y tick count.",
           "parameters": [
             {
               "name": "count",
@@ -36999,7 +36999,7 @@
           "name": "setShowLegend",
           "fullPath": "LAreaChart:setShowLegend",
           "signature": "(value)",
-          "description": "",
+          "description": "Sets the show legend.",
           "parameters": [
             {
               "name": "value",
@@ -37017,7 +37017,7 @@
           "name": "render",
           "fullPath": "LAreaChart:render",
           "signature": "()",
-          "description": "",
+          "description": "Render.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -37028,7 +37028,7 @@
           "name": "renderImage",
           "fullPath": "LAreaChart:renderImage",
           "signature": "()",
-          "description": "",
+          "description": "Render image.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -37039,7 +37039,7 @@
           "name": "drawToImage",
           "fullPath": "LAreaChart:drawToImage",
           "signature": "(target)",
-          "description": "",
+          "description": "Draw to image.",
           "parameters": [
             {
               "name": "target",
@@ -37057,7 +37057,7 @@
           "name": "draw",
           "fullPath": "LAreaChart:draw",
           "signature": "(x, y, [opts])",
-          "description": "",
+          "description": "Draws the area chart at world or screen coordinates using optional transform options.",
           "parameters": [
             {
               "name": "x",
@@ -37087,7 +37087,7 @@
           "name": "getWidth",
           "fullPath": "LAreaChart:getWidth",
           "signature": "()",
-          "description": "",
+          "description": "Returns the width.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -37098,7 +37098,7 @@
           "name": "getHeight",
           "fullPath": "LAreaChart:getHeight",
           "signature": "()",
-          "description": "",
+          "description": "Returns the height.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -37109,7 +37109,7 @@
           "name": "type",
           "fullPath": "LAreaChart:type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -37120,7 +37120,7 @@
           "name": "typeOf",
           "fullPath": "LAreaChart:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -40714,13 +40714,13 @@
     },
     {
       "name": "LBarChart",
-      "description": "Lua-exposed bar chart for data visualization.",
+      "description": "Lua handle for a grouped bar chart with named series and category labels.",
       "methods": [
         {
           "name": "addSeries",
           "fullPath": "LBarChart:addSeries",
           "signature": "(name, data, [color])",
-          "description": "",
+          "description": "Adds a named bar series from an array-style Lua table of values or points.",
           "parameters": [
             {
               "name": "name",
@@ -40750,7 +40750,7 @@
           "name": "addCategory",
           "fullPath": "LBarChart:addCategory",
           "signature": "(label, values)",
-          "description": "",
+          "description": "Adds one category label with a numeric value list for grouped bars.",
           "parameters": [
             {
               "name": "label",
@@ -40774,7 +40774,7 @@
           "name": "addCategoriesFromDataFrame",
           "fullPath": "LBarChart:addCategoriesFromDataFrame",
           "signature": "LBarChart:addCategoriesFromDataFrame()",
-          "description": "",
+          "description": "Adds grouped bar categories by reading one label column and one or more value columns from a dataframe.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -40785,7 +40785,7 @@
           "name": "clear",
           "fullPath": "LBarChart:clear",
           "signature": "()",
-          "description": "",
+          "description": "Clears the state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -40796,7 +40796,7 @@
           "name": "setBarWidth",
           "fullPath": "LBarChart:setBarWidth",
           "signature": "(width)",
-          "description": "",
+          "description": "Sets the bar width.",
           "parameters": [
             {
               "name": "width",
@@ -40814,7 +40814,7 @@
           "name": "setTitle",
           "fullPath": "LBarChart:setTitle",
           "signature": "(title)",
-          "description": "",
+          "description": "Sets the title.",
           "parameters": [
             {
               "name": "title",
@@ -40832,7 +40832,7 @@
           "name": "setXLabel",
           "fullPath": "LBarChart:setXLabel",
           "signature": "(label)",
-          "description": "",
+          "description": "Sets the x label.",
           "parameters": [
             {
               "name": "label",
@@ -40850,7 +40850,7 @@
           "name": "setYLabel",
           "fullPath": "LBarChart:setYLabel",
           "signature": "(label)",
-          "description": "",
+          "description": "Sets the y label.",
           "parameters": [
             {
               "name": "label",
@@ -40868,7 +40868,7 @@
           "name": "setXTickCount",
           "fullPath": "LBarChart:setXTickCount",
           "signature": "(count)",
-          "description": "",
+          "description": "Sets the x tick count.",
           "parameters": [
             {
               "name": "count",
@@ -40886,7 +40886,7 @@
           "name": "setYTickCount",
           "fullPath": "LBarChart:setYTickCount",
           "signature": "(count)",
-          "description": "",
+          "description": "Sets the y tick count.",
           "parameters": [
             {
               "name": "count",
@@ -40904,7 +40904,7 @@
           "name": "setShowLegend",
           "fullPath": "LBarChart:setShowLegend",
           "signature": "(value)",
-          "description": "",
+          "description": "Sets the show legend.",
           "parameters": [
             {
               "name": "value",
@@ -40922,7 +40922,7 @@
           "name": "render",
           "fullPath": "LBarChart:render",
           "signature": "()",
-          "description": "",
+          "description": "Render.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -40933,7 +40933,7 @@
           "name": "renderImage",
           "fullPath": "LBarChart:renderImage",
           "signature": "()",
-          "description": "",
+          "description": "Render image.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -40944,7 +40944,7 @@
           "name": "drawToImage",
           "fullPath": "LBarChart:drawToImage",
           "signature": "(target)",
-          "description": "",
+          "description": "Draw to image.",
           "parameters": [
             {
               "name": "target",
@@ -40962,7 +40962,7 @@
           "name": "draw",
           "fullPath": "LBarChart:draw",
           "signature": "(x, y, [opts])",
-          "description": "",
+          "description": "Draws the bar chart at world or screen coordinates using optional transform options.",
           "parameters": [
             {
               "name": "x",
@@ -40992,7 +40992,7 @@
           "name": "getWidth",
           "fullPath": "LBarChart:getWidth",
           "signature": "()",
-          "description": "",
+          "description": "Returns the width.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -41003,7 +41003,7 @@
           "name": "getHeight",
           "fullPath": "LBarChart:getHeight",
           "signature": "()",
-          "description": "",
+          "description": "Returns the height.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -41014,7 +41014,7 @@
           "name": "type",
           "fullPath": "LBarChart:type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -41025,7 +41025,7 @@
           "name": "typeOf",
           "fullPath": "LBarChart:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -73070,13 +73070,13 @@
     },
     {
       "name": "LHeatmapChart",
-      "description": "",
+      "description": "Lua handle for a heatmap chart backed by a numeric matrix.",
       "methods": [
         {
           "name": "setMatrix",
           "fullPath": "LHeatmapChart:setMatrix",
           "signature": "(matrix, [row_labels], [col_labels])",
-          "description": "",
+          "description": "Replaces the heatmap contents from a numeric matrix with optional row and column labels.",
           "parameters": [
             {
               "name": "matrix",
@@ -73106,7 +73106,7 @@
           "name": "setMatrixFromDataFrame",
           "fullPath": "LHeatmapChart:setMatrixFromDataFrame",
           "signature": "LHeatmapChart:setMatrixFromDataFrame()",
-          "description": "",
+          "description": "Builds the heatmap contents from dataframe row, column, and value fields.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73117,7 +73117,7 @@
           "name": "resize",
           "fullPath": "LHeatmapChart:resize",
           "signature": "(rows, cols)",
-          "description": "",
+          "description": "Resize.",
           "parameters": [
             {
               "name": "rows",
@@ -73141,7 +73141,7 @@
           "name": "setCell",
           "fullPath": "LHeatmapChart:setCell",
           "signature": "(row, col, value)",
-          "description": "",
+          "description": "Sets the cell.",
           "parameters": [
             {
               "name": "row",
@@ -73171,7 +73171,7 @@
           "name": "clear",
           "fullPath": "LHeatmapChart:clear",
           "signature": "()",
-          "description": "",
+          "description": "Clears the state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73182,7 +73182,7 @@
           "name": "setRowLabels",
           "fullPath": "LHeatmapChart:setRowLabels",
           "signature": "(labels)",
-          "description": "",
+          "description": "Sets the row labels.",
           "parameters": [
             {
               "name": "labels",
@@ -73200,7 +73200,7 @@
           "name": "setColumnLabels",
           "fullPath": "LHeatmapChart:setColumnLabels",
           "signature": "(labels)",
-          "description": "",
+          "description": "Sets the column labels.",
           "parameters": [
             {
               "name": "labels",
@@ -73218,7 +73218,7 @@
           "name": "setValueRange",
           "fullPath": "LHeatmapChart:setValueRange",
           "signature": "(min, max)",
-          "description": "",
+          "description": "Sets the value range.",
           "parameters": [
             {
               "name": "min",
@@ -73242,7 +73242,7 @@
           "name": "clearValueRange",
           "fullPath": "LHeatmapChart:clearValueRange",
           "signature": "()",
-          "description": "",
+          "description": "Clears value range.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73253,7 +73253,7 @@
           "name": "setColorRange",
           "fullPath": "LHeatmapChart:setColorRange",
           "signature": "(low, high)",
-          "description": "",
+          "description": "Sets the low and high RGBA colors used for the heatmap gradient.",
           "parameters": [
             {
               "name": "low",
@@ -73277,7 +73277,7 @@
           "name": "setShowValues",
           "fullPath": "LHeatmapChart:setShowValues",
           "signature": "(value)",
-          "description": "",
+          "description": "Sets the show values.",
           "parameters": [
             {
               "name": "value",
@@ -73295,7 +73295,7 @@
           "name": "setTitle",
           "fullPath": "LHeatmapChart:setTitle",
           "signature": "(title)",
-          "description": "",
+          "description": "Sets the title.",
           "parameters": [
             {
               "name": "title",
@@ -73313,7 +73313,7 @@
           "name": "setShowLegend",
           "fullPath": "LHeatmapChart:setShowLegend",
           "signature": "(value)",
-          "description": "",
+          "description": "Sets the show legend.",
           "parameters": [
             {
               "name": "value",
@@ -73331,7 +73331,7 @@
           "name": "render",
           "fullPath": "LHeatmapChart:render",
           "signature": "()",
-          "description": "",
+          "description": "Render.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73342,7 +73342,7 @@
           "name": "renderImage",
           "fullPath": "LHeatmapChart:renderImage",
           "signature": "()",
-          "description": "",
+          "description": "Render image.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73353,7 +73353,7 @@
           "name": "drawToImage",
           "fullPath": "LHeatmapChart:drawToImage",
           "signature": "(target)",
-          "description": "",
+          "description": "Draw to image.",
           "parameters": [
             {
               "name": "target",
@@ -73371,7 +73371,7 @@
           "name": "draw",
           "fullPath": "LHeatmapChart:draw",
           "signature": "(x, y, [opts])",
-          "description": "",
+          "description": "Draws the heatmap at world or screen coordinates using optional transform options.",
           "parameters": [
             {
               "name": "x",
@@ -73401,7 +73401,7 @@
           "name": "getWidth",
           "fullPath": "LHeatmapChart:getWidth",
           "signature": "()",
-          "description": "",
+          "description": "Returns the width.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73412,7 +73412,7 @@
           "name": "getHeight",
           "fullPath": "LHeatmapChart:getHeight",
           "signature": "()",
-          "description": "",
+          "description": "Returns the height.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73423,7 +73423,7 @@
           "name": "type",
           "fullPath": "LHeatmapChart:type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73434,7 +73434,7 @@
           "name": "typeOf",
           "fullPath": "LHeatmapChart:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -73935,13 +73935,13 @@
     },
     {
       "name": "LHistogramChart",
-      "description": "",
+      "description": "Lua handle for a histogram chart that bins named numeric samples.",
       "methods": [
         {
           "name": "addSeries",
           "fullPath": "LHistogramChart:addSeries",
           "signature": "(name, values, [color])",
-          "description": "",
+          "description": "Adds a named histogram sample series from a numeric value list.",
           "parameters": [
             {
               "name": "name",
@@ -73971,7 +73971,7 @@
           "name": "addSeriesFromDataFrame",
           "fullPath": "LHistogramChart:addSeriesFromDataFrame",
           "signature": "LHistogramChart:addSeriesFromDataFrame()",
-          "description": "",
+          "description": "Builds a named histogram sample series from one dataframe value column.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -73982,7 +73982,7 @@
           "name": "replaceSeries",
           "fullPath": "LHistogramChart:replaceSeries",
           "signature": "(name, values, [color])",
-          "description": "",
+          "description": "Replaces a named histogram sample series with a new numeric value list.",
           "parameters": [
             {
               "name": "name",
@@ -74012,7 +74012,7 @@
           "name": "appendValue",
           "fullPath": "LHistogramChart:appendValue",
           "signature": "(name, value, [color])",
-          "description": "",
+          "description": "Appends one finite numeric sample to a named histogram series.",
           "parameters": [
             {
               "name": "name",
@@ -74042,7 +74042,7 @@
           "name": "setWindow",
           "fullPath": "LHistogramChart:setWindow",
           "signature": "([max_points])",
-          "description": "",
+          "description": "Sets the window.",
           "parameters": [
             {
               "name": "max_points",
@@ -74060,7 +74060,7 @@
           "name": "clear",
           "fullPath": "LHistogramChart:clear",
           "signature": "()",
-          "description": "",
+          "description": "Clears the state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -74071,7 +74071,7 @@
           "name": "setBinCount",
           "fullPath": "LHistogramChart:setBinCount",
           "signature": "(bins)",
-          "description": "",
+          "description": "Sets the bin count.",
           "parameters": [
             {
               "name": "bins",
@@ -74089,7 +74089,7 @@
           "name": "setRange",
           "fullPath": "LHistogramChart:setRange",
           "signature": "(min, max)",
-          "description": "",
+          "description": "Sets the range.",
           "parameters": [
             {
               "name": "min",
@@ -74113,7 +74113,7 @@
           "name": "clearRange",
           "fullPath": "LHistogramChart:clearRange",
           "signature": "()",
-          "description": "",
+          "description": "Clears range.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -74124,7 +74124,7 @@
           "name": "setDensity",
           "fullPath": "LHistogramChart:setDensity",
           "signature": "(enabled)",
-          "description": "",
+          "description": "Sets the density.",
           "parameters": [
             {
               "name": "enabled",
@@ -74142,7 +74142,7 @@
           "name": "setTitle",
           "fullPath": "LHistogramChart:setTitle",
           "signature": "(title)",
-          "description": "",
+          "description": "Sets the title.",
           "parameters": [
             {
               "name": "title",
@@ -74160,7 +74160,7 @@
           "name": "setXLabel",
           "fullPath": "LHistogramChart:setXLabel",
           "signature": "(label)",
-          "description": "",
+          "description": "Sets the x label.",
           "parameters": [
             {
               "name": "label",
@@ -74178,7 +74178,7 @@
           "name": "setYLabel",
           "fullPath": "LHistogramChart:setYLabel",
           "signature": "(label)",
-          "description": "",
+          "description": "Sets the y label.",
           "parameters": [
             {
               "name": "label",
@@ -74196,7 +74196,7 @@
           "name": "setXTickCount",
           "fullPath": "LHistogramChart:setXTickCount",
           "signature": "(count)",
-          "description": "",
+          "description": "Sets the x tick count.",
           "parameters": [
             {
               "name": "count",
@@ -74214,7 +74214,7 @@
           "name": "setYTickCount",
           "fullPath": "LHistogramChart:setYTickCount",
           "signature": "(count)",
-          "description": "",
+          "description": "Sets the y tick count.",
           "parameters": [
             {
               "name": "count",
@@ -74232,7 +74232,7 @@
           "name": "setShowLegend",
           "fullPath": "LHistogramChart:setShowLegend",
           "signature": "(value)",
-          "description": "",
+          "description": "Sets the show legend.",
           "parameters": [
             {
               "name": "value",
@@ -74250,7 +74250,7 @@
           "name": "render",
           "fullPath": "LHistogramChart:render",
           "signature": "()",
-          "description": "",
+          "description": "Render.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -74261,7 +74261,7 @@
           "name": "renderImage",
           "fullPath": "LHistogramChart:renderImage",
           "signature": "()",
-          "description": "",
+          "description": "Render image.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -74272,7 +74272,7 @@
           "name": "drawToImage",
           "fullPath": "LHistogramChart:drawToImage",
           "signature": "(target)",
-          "description": "",
+          "description": "Draw to image.",
           "parameters": [
             {
               "name": "target",
@@ -74290,7 +74290,7 @@
           "name": "draw",
           "fullPath": "LHistogramChart:draw",
           "signature": "(x, y, [opts])",
-          "description": "",
+          "description": "Draws the histogram at world or screen coordinates using optional transform options.",
           "parameters": [
             {
               "name": "x",
@@ -74320,7 +74320,7 @@
           "name": "getWidth",
           "fullPath": "LHistogramChart:getWidth",
           "signature": "()",
-          "description": "",
+          "description": "Returns the width.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -74331,7 +74331,7 @@
           "name": "getHeight",
           "fullPath": "LHistogramChart:getHeight",
           "signature": "()",
-          "description": "",
+          "description": "Returns the height.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -74342,7 +74342,7 @@
           "name": "type",
           "fullPath": "LHistogramChart:type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -74353,7 +74353,7 @@
           "name": "typeOf",
           "fullPath": "LHistogramChart:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -85216,13 +85216,13 @@
     },
     {
       "name": "LLineChart",
-      "description": "Lua-exposed line chart for data visualization.",
+      "description": "Lua handle for a line chart with named x/y series and cached draw output.",
       "methods": [
         {
           "name": "addSeries",
           "fullPath": "LLineChart:addSeries",
           "signature": "(name, data, [color])",
-          "description": "",
+          "description": "Adds a named line series from an array-style Lua table of points.",
           "parameters": [
             {
               "name": "name",
@@ -85252,7 +85252,7 @@
           "name": "addSeriesFromDataFrame",
           "fullPath": "LLineChart:addSeriesFromDataFrame",
           "signature": "LLineChart:addSeriesFromDataFrame()",
-          "description": "",
+          "description": "Builds a named line series from x and y columns in a dataframe.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -85263,7 +85263,7 @@
           "name": "replaceSeries",
           "fullPath": "LLineChart:replaceSeries",
           "signature": "(name, data, [color])",
-          "description": "",
+          "description": "Replaces a named line series with a new array-style Lua table of points.",
           "parameters": [
             {
               "name": "name",
@@ -85293,7 +85293,7 @@
           "name": "appendPoint",
           "fullPath": "LLineChart:appendPoint",
           "signature": "(name, x, y, [color])",
-          "description": "",
+          "description": "Appends one finite point to a named line series.",
           "parameters": [
             {
               "name": "name",
@@ -85329,7 +85329,7 @@
           "name": "setWindow",
           "fullPath": "LLineChart:setWindow",
           "signature": "([max_points])",
-          "description": "",
+          "description": "Sets the window.",
           "parameters": [
             {
               "name": "max_points",
@@ -85347,7 +85347,7 @@
           "name": "clear",
           "fullPath": "LLineChart:clear",
           "signature": "()",
-          "description": "",
+          "description": "Clears the state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -85358,7 +85358,7 @@
           "name": "setTitle",
           "fullPath": "LLineChart:setTitle",
           "signature": "(title)",
-          "description": "",
+          "description": "Sets the title.",
           "parameters": [
             {
               "name": "title",
@@ -85376,7 +85376,7 @@
           "name": "setYMax",
           "fullPath": "LLineChart:setYMax",
           "signature": "(value)",
-          "description": "",
+          "description": "Sets the y max.",
           "parameters": [
             {
               "name": "value",
@@ -85394,7 +85394,7 @@
           "name": "setXMax",
           "fullPath": "LLineChart:setXMax",
           "signature": "(value)",
-          "description": "",
+          "description": "Sets the x max.",
           "parameters": [
             {
               "name": "value",
@@ -85412,7 +85412,7 @@
           "name": "setXLabel",
           "fullPath": "LLineChart:setXLabel",
           "signature": "(label)",
-          "description": "",
+          "description": "Sets the x label.",
           "parameters": [
             {
               "name": "label",
@@ -85430,7 +85430,7 @@
           "name": "setYLabel",
           "fullPath": "LLineChart:setYLabel",
           "signature": "(label)",
-          "description": "",
+          "description": "Sets the y label.",
           "parameters": [
             {
               "name": "label",
@@ -85448,7 +85448,7 @@
           "name": "setXTickCount",
           "fullPath": "LLineChart:setXTickCount",
           "signature": "(count)",
-          "description": "",
+          "description": "Sets the x tick count.",
           "parameters": [
             {
               "name": "count",
@@ -85466,7 +85466,7 @@
           "name": "setYTickCount",
           "fullPath": "LLineChart:setYTickCount",
           "signature": "(count)",
-          "description": "",
+          "description": "Sets the y tick count.",
           "parameters": [
             {
               "name": "count",
@@ -85484,7 +85484,7 @@
           "name": "setShowLegend",
           "fullPath": "LLineChart:setShowLegend",
           "signature": "(value)",
-          "description": "",
+          "description": "Sets the show legend.",
           "parameters": [
             {
               "name": "value",
@@ -85502,7 +85502,7 @@
           "name": "render",
           "fullPath": "LLineChart:render",
           "signature": "()",
-          "description": "",
+          "description": "Render.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -85513,7 +85513,7 @@
           "name": "renderImage",
           "fullPath": "LLineChart:renderImage",
           "signature": "()",
-          "description": "",
+          "description": "Render image.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -85524,7 +85524,7 @@
           "name": "drawToImage",
           "fullPath": "LLineChart:drawToImage",
           "signature": "(target)",
-          "description": "",
+          "description": "Draw to image.",
           "parameters": [
             {
               "name": "target",
@@ -85542,7 +85542,7 @@
           "name": "draw",
           "fullPath": "LLineChart:draw",
           "signature": "(x, y, [opts])",
-          "description": "",
+          "description": "Draws the line chart at world or screen coordinates using optional transform options.",
           "parameters": [
             {
               "name": "x",
@@ -85572,7 +85572,7 @@
           "name": "nearest",
           "fullPath": "LLineChart:nearest",
           "signature": "(x, y)",
-          "description": "",
+          "description": "Nearest.",
           "parameters": [
             {
               "name": "x",
@@ -85596,7 +85596,7 @@
           "name": "getWidth",
           "fullPath": "LLineChart:getWidth",
           "signature": "()",
-          "description": "",
+          "description": "Returns the width.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -85607,7 +85607,7 @@
           "name": "getHeight",
           "fullPath": "LLineChart:getHeight",
           "signature": "()",
-          "description": "",
+          "description": "Returns the height.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -85618,7 +85618,7 @@
           "name": "type",
           "fullPath": "LLineChart:type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -85629,7 +85629,7 @@
           "name": "typeOf",
           "fullPath": "LLineChart:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -107744,13 +107744,13 @@
     },
     {
       "name": "LPieChart",
-      "description": "Lua-exposed pie chart for data visualization.",
+      "description": "Lua handle for a pie chart with labeled slices and cached draw output.",
       "methods": [
         {
           "name": "addSlice",
           "fullPath": "LPieChart:addSlice",
           "signature": "(label, value, [color])",
-          "description": "",
+          "description": "Legacy alias that adds one pie slice with a non-negative value.",
           "parameters": [
             {
               "name": "label",
@@ -107780,7 +107780,7 @@
           "name": "addSegment",
           "fullPath": "LPieChart:addSegment",
           "signature": "(label, value, [color])",
-          "description": "",
+          "description": "Adds one pie segment with a non-negative value.",
           "parameters": [
             {
               "name": "label",
@@ -107810,7 +107810,7 @@
           "name": "addSegmentsFromDataFrame",
           "fullPath": "LPieChart:addSegmentsFromDataFrame",
           "signature": "LPieChart:addSegmentsFromDataFrame()",
-          "description": "",
+          "description": "Adds pie segments by reading label and value columns from a dataframe.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -107821,7 +107821,7 @@
           "name": "clear",
           "fullPath": "LPieChart:clear",
           "signature": "()",
-          "description": "",
+          "description": "Clears the state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -107832,7 +107832,7 @@
           "name": "setTitle",
           "fullPath": "LPieChart:setTitle",
           "signature": "(title)",
-          "description": "",
+          "description": "Sets the title.",
           "parameters": [
             {
               "name": "title",
@@ -107850,7 +107850,7 @@
           "name": "setShowLegend",
           "fullPath": "LPieChart:setShowLegend",
           "signature": "(value)",
-          "description": "",
+          "description": "Sets the show legend.",
           "parameters": [
             {
               "name": "value",
@@ -107868,7 +107868,7 @@
           "name": "render",
           "fullPath": "LPieChart:render",
           "signature": "()",
-          "description": "",
+          "description": "Render.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -107879,7 +107879,7 @@
           "name": "renderImage",
           "fullPath": "LPieChart:renderImage",
           "signature": "()",
-          "description": "",
+          "description": "Render image.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -107890,7 +107890,7 @@
           "name": "drawToImage",
           "fullPath": "LPieChart:drawToImage",
           "signature": "(target)",
-          "description": "",
+          "description": "Draw to image.",
           "parameters": [
             {
               "name": "target",
@@ -107908,7 +107908,7 @@
           "name": "draw",
           "fullPath": "LPieChart:draw",
           "signature": "(x, y, [opts])",
-          "description": "",
+          "description": "Draws the pie chart at world or screen coordinates using optional transform options.",
           "parameters": [
             {
               "name": "x",
@@ -107938,7 +107938,7 @@
           "name": "getWidth",
           "fullPath": "LPieChart:getWidth",
           "signature": "()",
-          "description": "",
+          "description": "Returns the width.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -107949,7 +107949,7 @@
           "name": "getHeight",
           "fullPath": "LPieChart:getHeight",
           "signature": "()",
-          "description": "",
+          "description": "Returns the height.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -107960,7 +107960,7 @@
           "name": "type",
           "fullPath": "LPieChart:type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -107971,7 +107971,7 @@
           "name": "typeOf",
           "fullPath": "LPieChart:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -118475,13 +118475,13 @@
     },
     {
       "name": "LScatterPlot",
-      "description": "Lua-exposed scatter plot for data visualization.",
+      "description": "Lua handle for a scatter plot with named point series and cached draw output.",
       "methods": [
         {
           "name": "addSeries",
           "fullPath": "LScatterPlot:addSeries",
           "signature": "(name, data, [color])",
-          "description": "",
+          "description": "Adds a named scatter series from an array-style Lua table of points.",
           "parameters": [
             {
               "name": "name",
@@ -118511,7 +118511,7 @@
           "name": "addSeriesFromDataFrame",
           "fullPath": "LScatterPlot:addSeriesFromDataFrame",
           "signature": "LScatterPlot:addSeriesFromDataFrame()",
-          "description": "",
+          "description": "Builds a named scatter series from x and y columns in a dataframe.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -118522,7 +118522,7 @@
           "name": "replaceSeries",
           "fullPath": "LScatterPlot:replaceSeries",
           "signature": "(name, data, [color])",
-          "description": "",
+          "description": "Replaces a named scatter series with a new array-style Lua table of points.",
           "parameters": [
             {
               "name": "name",
@@ -118552,7 +118552,7 @@
           "name": "appendPoint",
           "fullPath": "LScatterPlot:appendPoint",
           "signature": "(name, x, y, [color])",
-          "description": "",
+          "description": "Appends one finite point to a named scatter series.",
           "parameters": [
             {
               "name": "name",
@@ -118588,7 +118588,7 @@
           "name": "setWindow",
           "fullPath": "LScatterPlot:setWindow",
           "signature": "([max_points])",
-          "description": "",
+          "description": "Sets the window.",
           "parameters": [
             {
               "name": "max_points",
@@ -118606,7 +118606,7 @@
           "name": "clear",
           "fullPath": "LScatterPlot:clear",
           "signature": "()",
-          "description": "",
+          "description": "Clears the state.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -118617,7 +118617,7 @@
           "name": "setDotRadius",
           "fullPath": "LScatterPlot:setDotRadius",
           "signature": "(radius)",
-          "description": "",
+          "description": "Sets the dot radius.",
           "parameters": [
             {
               "name": "radius",
@@ -118635,7 +118635,7 @@
           "name": "setTitle",
           "fullPath": "LScatterPlot:setTitle",
           "signature": "(title)",
-          "description": "",
+          "description": "Sets the title.",
           "parameters": [
             {
               "name": "title",
@@ -118653,7 +118653,7 @@
           "name": "setXRange",
           "fullPath": "LScatterPlot:setXRange",
           "signature": "(min_x, max_x)",
-          "description": "",
+          "description": "Sets the x range.",
           "parameters": [
             {
               "name": "min_x",
@@ -118677,7 +118677,7 @@
           "name": "setYRange",
           "fullPath": "LScatterPlot:setYRange",
           "signature": "(min_y, max_y)",
-          "description": "",
+          "description": "Sets the y range.",
           "parameters": [
             {
               "name": "min_y",
@@ -118701,7 +118701,7 @@
           "name": "setXLabel",
           "fullPath": "LScatterPlot:setXLabel",
           "signature": "(label)",
-          "description": "",
+          "description": "Sets the x label.",
           "parameters": [
             {
               "name": "label",
@@ -118719,7 +118719,7 @@
           "name": "setYLabel",
           "fullPath": "LScatterPlot:setYLabel",
           "signature": "(label)",
-          "description": "",
+          "description": "Sets the y label.",
           "parameters": [
             {
               "name": "label",
@@ -118737,7 +118737,7 @@
           "name": "setXTickCount",
           "fullPath": "LScatterPlot:setXTickCount",
           "signature": "(count)",
-          "description": "",
+          "description": "Sets the x tick count.",
           "parameters": [
             {
               "name": "count",
@@ -118755,7 +118755,7 @@
           "name": "setYTickCount",
           "fullPath": "LScatterPlot:setYTickCount",
           "signature": "(count)",
-          "description": "",
+          "description": "Sets the y tick count.",
           "parameters": [
             {
               "name": "count",
@@ -118773,7 +118773,7 @@
           "name": "setShowLegend",
           "fullPath": "LScatterPlot:setShowLegend",
           "signature": "(value)",
-          "description": "",
+          "description": "Sets the show legend.",
           "parameters": [
             {
               "name": "value",
@@ -118791,7 +118791,7 @@
           "name": "render",
           "fullPath": "LScatterPlot:render",
           "signature": "()",
-          "description": "",
+          "description": "Render.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -118802,7 +118802,7 @@
           "name": "renderImage",
           "fullPath": "LScatterPlot:renderImage",
           "signature": "()",
-          "description": "",
+          "description": "Render image.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -118813,7 +118813,7 @@
           "name": "drawToImage",
           "fullPath": "LScatterPlot:drawToImage",
           "signature": "(target)",
-          "description": "",
+          "description": "Draw to image.",
           "parameters": [
             {
               "name": "target",
@@ -118831,7 +118831,7 @@
           "name": "draw",
           "fullPath": "LScatterPlot:draw",
           "signature": "(x, y, [opts])",
-          "description": "",
+          "description": "Draws the scatter plot at world or screen coordinates using optional transform options.",
           "parameters": [
             {
               "name": "x",
@@ -118861,7 +118861,7 @@
           "name": "nearest",
           "fullPath": "LScatterPlot:nearest",
           "signature": "(x, y)",
-          "description": "",
+          "description": "Nearest.",
           "parameters": [
             {
               "name": "x",
@@ -118885,7 +118885,7 @@
           "name": "getWidth",
           "fullPath": "LScatterPlot:getWidth",
           "signature": "()",
-          "description": "",
+          "description": "Returns the width.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -118896,7 +118896,7 @@
           "name": "getHeight",
           "fullPath": "LScatterPlot:getHeight",
           "signature": "()",
-          "description": "",
+          "description": "Returns the height.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -118907,7 +118907,7 @@
           "name": "type",
           "fullPath": "LScatterPlot:type",
           "signature": "()",
-          "description": "",
+          "description": "Type.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -118918,7 +118918,7 @@
           "name": "typeOf",
           "fullPath": "LScatterPlot:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Type of.",
           "parameters": [
             {
               "name": "name",
@@ -119573,7 +119573,7 @@
           "name": "clearModels",
           "fullPath": "LSceneAdapter:clearModels",
           "signature": "()",
-          "description": "",
+          "description": "Clears models.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",

@@ -8,70 +8,70 @@
 -- ==========================================================================
 
 -- Quick validation (simplest usage)
---@api-stub: lurek.validator.newEngine
+--@api: lurek.validator.newEngine
 do
     local eng = lurek.validator.newEngine("content/examples")
     print("lurek.validator.newEngine type=" .. type(eng))
     print("rule count=" .. eng:ruleCount())
 end
 
---@api-stub: lurek.validator.validate
+--@api: lurek.validator.validate
 do
     local report = lurek.validator.validate("content/examples")
     print("lurek.validator.validate files_checked=" .. report.files_checked)
     print("is_clean=" .. tostring(report.is_clean))
 end
 
---@api-stub: lurek.validator.validateFile
+--@api: lurek.validator.validateFile
 do
     local report = lurek.validator.validateFile("content/examples/math.lua")
     print("lurek.validator.validateFile files_checked=" .. report.files_checked)
     print("errors=" .. report.error_count)
 end
 
---@api-stub: LValidationEngine:addAssetRule
+--@api: LValidationEngine:addAssetRule
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addAssetRule("assets")
     print("LValidationEngine:addAssetRule rules=" .. eng:ruleCount())
 end
 
---@api-stub: LValidationEngine:addImportRule
+--@api: LValidationEngine:addImportRule
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addImportRule({ "content/examples", "library" })
     print("LValidationEngine:addImportRule rules=" .. eng:ruleCount())
 end
 
---@api-stub: LValidationEngine:addApiRule
+--@api: LValidationEngine:addApiRule
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addApiRule()
     print("LValidationEngine:addApiRule rules=" .. eng:ruleCount())
 end
 
---@api-stub: LValidationEngine:addPatternRule
+--@api: LValidationEngine:addPatternRule
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addPatternRule("no_print", "print\\(", "Use lurek.log instead of print()", "warning")
     print("LValidationEngine:addPatternRule rules=" .. eng:ruleCount())
 end
 
---@api-stub: LValidationEngine:addRequiredRule
+--@api: LValidationEngine:addRequiredRule
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addRequiredRule("must_use_lurek", "lurek\\.", "Expected at least one lurek.* call")
     print("LValidationEngine:addRequiredRule rules=" .. eng:ruleCount())
 end
 
---@api-stub: LValidationEngine:loadTomlRules
+--@api: LValidationEngine:loadTomlRules
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:loadTomlRules("docs/templates/validator_rules.toml")
     print("LValidationEngine:loadTomlRules rules=" .. eng:ruleCount())
 end
 
---@api-stub: LValidationEngine:run
+--@api: LValidationEngine:run
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addApiRule()
@@ -80,7 +80,7 @@ do
     print("violations=" .. #report.violations)
 end
 
---@api-stub: LValidationEngine:runFile
+--@api: LValidationEngine:runFile
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addApiRule()
@@ -89,7 +89,7 @@ do
     print("violations=" .. #report.violations)
 end
 
---@api-stub: LValidationEngine:ruleCount
+--@api: LValidationEngine:ruleCount
 do
     local eng = lurek.validator.newEngine("content/examples")
     eng:addApiRule()

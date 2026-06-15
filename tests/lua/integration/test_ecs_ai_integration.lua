@@ -13,8 +13,8 @@ describe("integration: entity with AI state machine", function()
     -- @integration LUniverse:spawn
     -- @integration lurek.ai.newStateMachine
     -- @integration lurek.ecs.newUniverse
-    -- @covers lurek.ai.newStateMachine
-    -- @covers lurek.ecs.newUniverse
+    -- @integration lurek.ai.newStateMachine
+    -- @integration lurek.ecs.newUniverse
     it("entities change state based on FSM", function()
         local universe = lurek.ecs.newUniverse()
 

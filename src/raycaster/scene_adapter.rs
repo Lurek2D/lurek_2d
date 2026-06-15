@@ -2,6 +2,7 @@
 //! into raycaster sprite, light, and optional model descriptors.
 //! It exists so gameplay code can treat physics bodies as the source of truth
 //! while still feeding the raycaster with pseudo-3D presentation inputs.
+//! Module API documentation
 
 use std::cell::RefCell;
 use std::rc::Rc;

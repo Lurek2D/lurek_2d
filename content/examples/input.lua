@@ -4,161 +4,182 @@
 
 --- Input Module Part 1: keyboard, mouse, gamepad, touch functions
 
---@api-stub: lurek.input.keyboard.isDown
+--@api: lurek.input.keyboard.isDown
 do
     local down = lurek.input.keyboard.isDown("space", "w", "up")
     print("any key down = " .. tostring(down))
+    print("lua type = " .. type(down))
 end
 
---@api-stub: lurek.input.keyboard.isScancodeDown
+--@api: lurek.input.keyboard.isScancodeDown
 do
     local down = lurek.input.keyboard.isScancodeDown("a")
     print("scancode a down = " .. tostring(down))
+    print("lua type = " .. type(down))
 end
 
---@api-stub: lurek.input.keyboard.isModifierActive
+--@api: lurek.input.keyboard.isModifierActive
 do
     local shift = lurek.input.keyboard.isModifierActive("shift")
     local ctrl = lurek.input.keyboard.isModifierActive("ctrl")
     print("shift=" .. tostring(shift) .. " ctrl=" .. tostring(ctrl))
 end
 
---@api-stub: lurek.input.keyboard.getKeyFromScancode
+--@api: lurek.input.keyboard.getKeyFromScancode
 do
     local key = lurek.input.keyboard.getKeyFromScancode("a")
     print("scancode 'a' → key '" .. key .. "'")
+    print("lua type = " .. type(key))
 end
 
---@api-stub: lurek.input.keyboard.getScancodeFromKey
+--@api: lurek.input.keyboard.getScancodeFromKey
 do
     local sc = lurek.input.keyboard.getScancodeFromKey("space")
     print("key 'space' → scancode '" .. sc .. "'")
+    print("lua type = " .. type(sc))
 end
 
---@api-stub: lurek.input.keyboard.hasKeyRepeat
+--@api: lurek.input.keyboard.hasKeyRepeat
 do
     local v = lurek.input.keyboard.hasKeyRepeat()
     print("key repeat = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 
---@api-stub: lurek.input.keyboard.setKeyRepeat
+--@api: lurek.input.keyboard.setKeyRepeat
 do
     lurek.input.keyboard.setKeyRepeat(true)
     print("key repeat enabled")
+    print("key repeat = " .. tostring(lurek.input.keyboard.hasKeyRepeat()))
 end
 
---@api-stub: lurek.input.keyboard.hasTextInput
+--@api: lurek.input.keyboard.hasTextInput
 do
     local v = lurek.input.keyboard.hasTextInput()
     print("text input = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 
---@api-stub: lurek.input.keyboard.setTextInput
+--@api: lurek.input.keyboard.setTextInput
 do
     lurek.input.keyboard.setTextInput(true)
     print("text input enabled")
+    print("text input = " .. tostring(lurek.input.keyboard.hasTextInput()))
 end
 
---@api-stub: lurek.input.mouse.getPosition
+--@api: lurek.input.mouse.getPosition
 do
     local x, y = lurek.input.mouse.getPosition()
     print("mouse at " .. x .. "," .. y)
+    print("value types = " .. type(x) .. "," .. type(y))
 end
 
---@api-stub: lurek.input.mouse.getX
+--@api: lurek.input.mouse.getX
 do
     local x = lurek.input.mouse.getX()
     print("mouse x=" .. x)
+    print("lua type = " .. type(x))
 end
 
---@api-stub: lurek.input.mouse.getY
+--@api: lurek.input.mouse.getY
 do
     local y = lurek.input.mouse.getY()
     print("mouse y=" .. y)
+    print("lua type = " .. type(y))
 end
 
---@api-stub: lurek.input.mouse.isDown
+--@api: lurek.input.mouse.isDown
 do
     local left = lurek.input.mouse.isDown(1)
     local right = lurek.input.mouse.isDown(2)
     print("left=" .. tostring(left) .. " right=" .. tostring(right))
 end
 
---@api-stub: lurek.input.mouse.getWheelDelta
+--@api: lurek.input.mouse.getWheelDelta
 do
     local dx, dy = lurek.input.mouse.getWheelDelta()
     print("wheel dx = " .. dx)
     print("wheel dy = " .. dy)
 end
 
---@api-stub: lurek.input.mouse.setPosition
+--@api: lurek.input.mouse.setPosition
 do
     lurek.input.mouse.setPosition(400, 300)
     print("mouse warped to 400,300")
+    print("mouse x after set = " .. tostring(lurek.input.mouse.getX()))
 end
 
---@api-stub: lurek.input.mouse.isVisible
+--@api: lurek.input.mouse.isVisible
 do
     local v = lurek.input.mouse.isVisible()
     print("cursor visible = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 
---@api-stub: lurek.input.mouse.setVisible
+--@api: lurek.input.mouse.setVisible
 do
     lurek.input.mouse.setVisible(true)
     print("cursor shown")
+    print("mouse visible = " .. tostring(lurek.input.mouse.isVisible()))
 end
 
---@api-stub: lurek.input.mouse.isGrabbed
+--@api: lurek.input.mouse.isGrabbed
 do
     local v = lurek.input.mouse.isGrabbed()
     print("grabbed = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 
---@api-stub: lurek.input.mouse.setGrabbed
+--@api: lurek.input.mouse.setGrabbed
 do
     lurek.input.mouse.setGrabbed(false)
     print("mouse released")
+    print("mouse grabbed = " .. tostring(lurek.input.mouse.isGrabbed()))
 end
 
---@api-stub: lurek.input.mouse.getRelativeMode
+--@api: lurek.input.mouse.getRelativeMode
 do
     local v = lurek.input.mouse.getRelativeMode()
     print("relative mode = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 
---@api-stub: lurek.input.mouse.setRelativeMode
+--@api: lurek.input.mouse.setRelativeMode
 do
     lurek.input.mouse.setRelativeMode(false)
     print("relative mode off")
+    print("relative mode = " .. tostring(lurek.input.mouse.getRelativeMode()))
 end
 
---@api-stub: lurek.input.mouse.isCursorSupported
+--@api: lurek.input.mouse.isCursorSupported
 do
     local v = lurek.input.mouse.isCursorSupported()
     print("cursor supported = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 
---@api-stub: lurek.input.mouse.getCursor
+--@api: lurek.input.mouse.getCursor
 do
     local name = lurek.input.mouse.getCursor()
     print("cursor name = " .. name)
+    print("lua type = " .. type(name))
 end
 
---@api-stub: lurek.input.mouse.getSystemCursor
+--@api: lurek.input.mouse.getSystemCursor
 do
     local cursor = lurek.input.mouse.getSystemCursor("arrow")
     print("got system cursor = " .. tostring(cursor ~= nil))
+    print("lua type = " .. type(cursor))
 end
 
---@api-stub: lurek.input.mouse.setCursor
+--@api: lurek.input.mouse.setCursor
 do
     local cursor = lurek.input.mouse.getSystemCursor("arrow")
     lurek.input.mouse.setCursor(cursor)
     print("cursor set to arrow")
 end
 
---@api-stub: lurek.input.mouse.newCursor
+--@api: lurek.input.mouse.newCursor
 do
     local pixels = {}
     for i = 1, 16 * 16 * 4 do
@@ -168,110 +189,126 @@ do
     print("custom cursor type = " .. cursor:getType())
 end
 
---@api-stub: lurek.input.gamepad.getCount
+--@api: lurek.input.gamepad.getCount
 do
     local count = lurek.input.gamepad.getCount()
     print("gamepad slots = " .. count)
+    print("lua type = " .. type(count))
 end
 
---@api-stub: lurek.input.gamepad.isConnected
+--@api: lurek.input.gamepad.isConnected
 do
     local connected = lurek.input.gamepad.isConnected(0)
     print("gamepad 0 connected = " .. tostring(connected))
+    print("lua type = " .. type(connected))
 end
 
---@api-stub: lurek.input.gamepad.isGamepad
+--@api: lurek.input.gamepad.isGamepad
 do
     local is_gp = lurek.input.gamepad.isGamepad(0)
     print("is gamepad = " .. tostring(is_gp))
+    print("lua type = " .. type(is_gp))
 end
 
---@api-stub: lurek.input.gamepad.getName
+--@api: lurek.input.gamepad.getName
 do
     local name = lurek.input.gamepad.getName(0)
     print("gamepad name = " .. name)
+    print("lua type = " .. type(name))
 end
 
---@api-stub: lurek.input.gamepad.getGUID
+--@api: lurek.input.gamepad.getGUID
 do
     local guid = lurek.input.gamepad.getGUID(0)
     print("guid = " .. guid)
+    print("lua type = " .. type(guid))
 end
 
---@api-stub: lurek.input.gamepad.getAxis
+--@api: lurek.input.gamepad.getAxis
 do
     local val = lurek.input.gamepad.getAxis(0, 0)
     print("axis 0 = " .. val)
+    print("lua type = " .. type(val))
 end
 
---@api-stub: lurek.input.gamepad.getAxisCount
+--@api: lurek.input.gamepad.getAxisCount
 do
     local count = lurek.input.gamepad.getAxisCount(0)
     print("axes = " .. count)
+    print("lua type = " .. type(count))
 end
 
---@api-stub: lurek.input.gamepad.getButtonCount
+--@api: lurek.input.gamepad.getButtonCount
 do
     local count = lurek.input.gamepad.getButtonCount(0)
     print("buttons = " .. count)
+    print("lua type = " .. type(count))
 end
 
---@api-stub: lurek.input.gamepad.isDown
+--@api: lurek.input.gamepad.isDown
 do
     local pressed = lurek.input.gamepad.isDown(0, 0)
     print("button 0 = " .. tostring(pressed))
+    print("lua type = " .. type(pressed))
 end
 
---@api-stub: lurek.input.gamepad.wasPressed
+--@api: lurek.input.gamepad.wasPressed
 do
     local pressed = lurek.input.gamepad.wasPressed(0, 0)
     print("pressed=" .. tostring(pressed))
+    print("lua type = " .. type(pressed))
 end
 
---@api-stub: lurek.input.gamepad.wasReleased
+--@api: lurek.input.gamepad.wasReleased
 do
     local released = lurek.input.gamepad.wasReleased(0, 0)
     print("released=" .. tostring(released))
+    print("lua type = " .. type(released))
 end
 
---@api-stub: lurek.input.gamepad.getHat
+--@api: lurek.input.gamepad.getHat
 do
     local hat = lurek.input.gamepad.getHat(0, 0)
     print("hat 0 = " .. hat)
+    print("lua type = " .. type(hat))
 end
 
---@api-stub: lurek.input.gamepad.vibrate
+--@api: lurek.input.gamepad.vibrate
 do
     local ok = lurek.input.gamepad.vibrate(0, 0.5, 0.5, 200)
     print("vibrate ok = " .. tostring(ok))
+    print("vibration needs a connected gamepad id, for example 0")
 end
 
---@api-stub: lurek.input.gamepad.isVibrationSupported
+--@api: lurek.input.gamepad.isVibrationSupported
 do
     local sup = lurek.input.gamepad.isVibrationSupported(0)
     print("vibration supported = " .. tostring(sup))
+    print("lua type = " .. type(sup))
 end
 
---@api-stub: lurek.input.gamepad.virtualDpad
+--@api: lurek.input.gamepad.virtualDpad
 do
     local dpad = lurek.input.gamepad.virtualDpad(0.8, 0.0, 0.3)
     print("direction = " .. dpad.direction)
     print("right = " .. tostring(dpad.right))
 end
 
---@api-stub: lurek.input.gamepad.wasConnected
+--@api: lurek.input.gamepad.wasConnected
 do
     local c = lurek.input.gamepad.wasConnected(0)
     print("connected=" .. tostring(c))
+    print("lua type = " .. type(c))
 end
 
---@api-stub: lurek.input.gamepad.wasDisconnected
+--@api: lurek.input.gamepad.wasDisconnected
 do
     local d = lurek.input.gamepad.wasDisconnected(0)
     print("disconnected=" .. tostring(d))
+    print("lua type = " .. type(d))
 end
 
---@api-stub: lurek.input.gamepad.loadGamepadMappings
+--@api: lurek.input.gamepad.loadGamepadMappings
 do
     local mappingPath = "save/gamecontrollerdb.txt"
     lurek.filesystem.write(mappingPath, "030000005e0400008e02000014010000,XInput,a:b0\n")
@@ -280,7 +317,7 @@ do
     print("mappings loaded and saved")
 end
 
---@api-stub: lurek.input.gamepad.saveGamepadMappings
+--@api: lurek.input.gamepad.saveGamepadMappings
 do
     local mappingPath = "save/gamecontrollerdb.txt"
     lurek.filesystem.write(mappingPath, "030000005e0400008e02000014010000,XInput,a:b0\n")
@@ -289,47 +326,49 @@ do
     print("mappings loaded and saved")
 end
 
---@api-stub: lurek.input.gamepad.getBackgroundEvents
+--@api: lurek.input.gamepad.getBackgroundEvents
 do
     local was = lurek.input.gamepad.getBackgroundEvents()
     lurek.input.gamepad.setBackgroundEvents(true)
     print("bg events was=" .. tostring(was) .. " now=true")
 end
 
---@api-stub: lurek.input.gamepad.setBackgroundEvents
+--@api: lurek.input.gamepad.setBackgroundEvents
 do
     local was = lurek.input.gamepad.getBackgroundEvents()
     lurek.input.gamepad.setBackgroundEvents(true)
     print("bg events was=" .. tostring(was) .. " now=true")
 end
 
---@api-stub: lurek.input.gamepad.getJoystickCount
+--@api: lurek.input.gamepad.getJoystickCount
 do
     local count = lurek.input.gamepad.getJoystickCount()
     local sticks = lurek.input.gamepad.getJoysticks()
     print("joystick count = " .. count .. ", list = " .. #sticks)
 end
 
---@api-stub: lurek.input.gamepad.getJoysticks
+--@api: lurek.input.gamepad.getJoysticks
 do
     local count = lurek.input.gamepad.getJoystickCount()
     local sticks = lurek.input.gamepad.getJoysticks()
     print("joystick count = " .. count .. ", list = " .. #sticks)
 end
 
---@api-stub: lurek.input.touch.getTouchCount
+--@api: lurek.input.touch.getTouchCount
 do
     local count = lurek.input.touch.getTouchCount()
     print("touches = " .. count)
+    print("lua type = " .. type(count))
 end
 
---@api-stub: lurek.input.touch.getTouches
+--@api: lurek.input.touch.getTouches
 do
     local touches = lurek.input.touch.getTouches()
     print("touch ids = " .. #touches)
+    print("lua type = " .. type(touches))
 end
 
---@api-stub: lurek.input.touch.getPosition
+--@api: lurek.input.touch.getPosition
 do
     local touches = lurek.input.touch.getTouches()
     local id = touches[1] and touches[1].id or 1
@@ -338,7 +377,7 @@ do
     print("touch at " .. x .. "," .. y)
 end
 
---@api-stub: lurek.input.touch.getPressure
+--@api: lurek.input.touch.getPressure
 do
     local touches = lurek.input.touch.getTouches()
     local id = touches[1] and touches[1].id or 1
@@ -347,7 +386,7 @@ do
     print("pressure = " .. p)
 end
 
---@api-stub: lurek.input.touch.wasPressed
+--@api: lurek.input.touch.wasPressed
 do
     local touches = lurek.input.touch.getTouches()
     local id = touches[1] and touches[1].id or 1
@@ -357,7 +396,7 @@ do
     print("pressed=" .. tostring(pressed) .. " released=" .. tostring(released))
 end
 
---@api-stub: lurek.input.touch.wasReleased
+--@api: lurek.input.touch.wasReleased
 do
     local touches = lurek.input.touch.getTouches()
     local id = touches[1] and touches[1].id or 1
@@ -369,21 +408,21 @@ end
 
 --- Input Module Part 2: action bindings, combos, recording/playback
 
---@api-stub: lurek.input.bind
+--@api: lurek.input.bind
 do
     lurek.input.bind("jump", "space")
     lurek.input.bind("move_left", {"a", "left"})
     print("actions bound")
 end
 
---@api-stub: lurek.input.unbind
+--@api: lurek.input.unbind
 do
     lurek.input.bind("temp", "t")
     local had = lurek.input.unbind("temp")
     print("unbind had bindings = " .. tostring(had))
 end
 
---@api-stub: lurek.input.clearBindings
+--@api: lurek.input.clearBindings
 do
     lurek.input.bind("a1", "q")
     lurek.input.bind("a2", "e")
@@ -391,7 +430,7 @@ do
     print("all bindings cleared")
 end
 
---@api-stub: lurek.input.getBindings
+--@api: lurek.input.getBindings
 do
     lurek.input.bind("shoot", "x")
     local bindings = lurek.input.getBindings()
@@ -400,35 +439,35 @@ do
     print("shoot bindings = " .. #shoot)
 end
 
---@api-stub: lurek.input.isActionDown
+--@api: lurek.input.isActionDown
 do
     lurek.input.bind("fire", "space")
     local down = lurek.input.isActionDown("fire")
     print("fire down = " .. tostring(down))
 end
 
---@api-stub: lurek.input.wasActionPressed
+--@api: lurek.input.wasActionPressed
 do
     lurek.input.bind("jump", "space")
     local pressed = lurek.input.wasActionPressed("jump")
     print("jump pressed = " .. tostring(pressed))
 end
 
---@api-stub: lurek.input.wasActionPressedWithin
+--@api: lurek.input.wasActionPressedWithin
 do
     lurek.input.bind("dodge", "shift")
     local recent = lurek.input.wasActionPressedWithin("dodge", 10)
     print("dodge recent = " .. tostring(recent))
 end
 
---@api-stub: lurek.input.wasActionReleased
+--@api: lurek.input.wasActionReleased
 do
     lurek.input.bind("run", "shift")
     local released = lurek.input.wasActionReleased("run")
     print("run released = " .. tostring(released))
 end
 
---@api-stub: lurek.input.isDown
+--@api: lurek.input.isDown
 do
     -- isDown() returns true while any key is held; check inside an input event callback
     local v = lurek.input.keyboard.isDown("a")
@@ -436,7 +475,7 @@ do
     print("result type = " .. type(v))
 end
 
---@api-stub: lurek.input.wasPressed
+--@api: lurek.input.wasPressed
 do
     local has_was_pressed = type(lurek.input.wasPressed) == "function"
     local v = has_was_pressed and lurek.input.wasPressed() or false
@@ -444,7 +483,7 @@ do
     print("result type = " .. type(v))
 end
 
---@api-stub: lurek.input.wasReleased
+--@api: lurek.input.wasReleased
 do
     local has_was_released = type(lurek.input.wasReleased) == "function"
     local v = has_was_released and lurek.input.wasReleased() or false
@@ -452,7 +491,7 @@ do
     print("space released = " .. tostring(v))
 end
 
---@api-stub: lurek.input.newMapping
+--@api: lurek.input.newMapping
 do
     local mapping = lurek.input.newMapping("attack", {"z", "button1"})
     local held = mapping.isDown()
@@ -461,7 +500,7 @@ do
     print("held=" .. tostring(held) .. " just=" .. tostring(just) .. " done=" .. tostring(done))
 end
 
---@api-stub: lurek.input.newCombo
+--@api: lurek.input.newCombo
 do
     local combo = lurek.input.newCombo({"down", "right", "z"}, {total_gap = 500})
     print("combo steps = " .. combo:totalSteps())
@@ -469,28 +508,28 @@ do
     print("progress = " .. combo:progress())
 end
 
---@api-stub: LCombo:feed
+--@api: LCombo:feed
 do
     local combo = lurek.input.newCombo({"a", "b", "c"})
     local result = combo:feed("a")
     print("feed a → " .. result)
 end
 
---@api-stub: LCombo:tick
+--@api: LCombo:tick
 do
     local combo = lurek.input.newCombo({"x", "y"}, {total_gap = 300})
     local result = combo:tick(0.016)
     print("tick → " .. result)
 end
 
---@api-stub: LCombo:getStep
+--@api: LCombo:getStep
 do
     local combo = lurek.input.newCombo({"a", "b"})
     local step = combo:getStep(1)
     print("step 1 key = " .. step.key .. " gap = " .. step.gap_ms)
 end
 
---@api-stub: LCombo:reset
+--@api: LCombo:reset
 do
     local combo = lurek.input.newCombo({"q", "w", "e"})
     combo:feed("q")
@@ -498,28 +537,28 @@ do
     print("progress after reset = " .. combo:progress())
 end
 
---@api-stub: LCombo:type
+--@api: LCombo:type
 do
     local combo = lurek.input.newCombo({"a"})
     print("type = " .. combo:type())
     print("is Combo = " .. tostring(combo:typeOf("LCombo")))
 end
 
---@api-stub: LCombo:typeOf
+--@api: LCombo:typeOf
 do
     local combo = lurek.input.newCombo({"a"})
     print("type = " .. combo:type())
     print("is Combo = " .. tostring(combo:typeOf("LCombo")))
 end
 
---@api-stub: lurek.input.startRecording
+--@api: lurek.input.startRecording
 do
     lurek.input.startRecording()
     local recording = lurek.input.stopRecording()
     print("captured = " .. tostring(recording ~= nil))
 end
 
---@api-stub: LInputRecording:toJson
+--@api: LInputRecording:toJson
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -527,7 +566,7 @@ do
     print("json length = " .. #json)
 end
 
---@api-stub: lurek.input.loadRecording
+--@api: lurek.input.loadRecording
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -535,7 +574,7 @@ do
     print("recording loaded = " .. tostring(rec ~= nil))
 end
 
---@api-stub: lurek.input.startPlayback
+--@api: lurek.input.startPlayback
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -547,7 +586,7 @@ do
     lurek.input.stopPlayback()
 end
 
---@api-stub: lurek.input.advancePlayback
+--@api: lurek.input.advancePlayback
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -560,19 +599,21 @@ do
     lurek.input.stopPlayback()
 end
 
---@api-stub: lurek.input.getPlaybackFrame
+--@api: lurek.input.getPlaybackFrame
 do
     local frame = lurek.input.getPlaybackFrame()
     print("playback frame = " .. frame)
+    print("lua type = " .. type(frame))
 end
 
---@api-stub: lurek.input.isRecording
+--@api: lurek.input.isRecording
 do
     print("recording = " .. tostring(lurek.input.isRecording()))
     print("playing = " .. tostring(lurek.input.isPlayingBack()))
+    print("lua type = " .. type(tostring(lurek.input.isPlayingBack())))
 end
 
---@api-stub: lurek.input.gamepad.getGamepadMappingString
+--@api: lurek.input.gamepad.getGamepadMappingString
 do
     local guid = "030000005e0400008e02000014010000"
     lurek.input.gamepad.setGamepadMapping(guid, guid .. ",XInput,a:b0")
@@ -580,22 +621,23 @@ do
     print("mapping = " .. tostring(mapping))
 end
 
---@api-stub: lurek.input.gamepad.setGamepadMapping
+--@api: lurek.input.gamepad.setGamepadMapping
 do
     local guid = lurek.input.gamepad.getGUID(1)
     lurek.input.gamepad.setGamepadMapping(guid, "custom_mapping_string")
     print("custom mapping set")
 end
 
---@api-stub: lurek.input.gamepad.setVibration
+--@api: lurek.input.gamepad.setVibration
 do
     lurek.input.gamepad.setVibration(1, 0.3, 0.7, 100)
     print("vibration set")
+    print("setVibration needs a connected gamepad id, for example 0")
 end
 
 --- Input Module Part 2: combo system, cursor, recording/playback, extra gamepad/touch/mouse
 
---@api-stub: LCombo:isInProgress
+--@api: LCombo:isInProgress
 do
     local combo = lurek.input.newCombo({ "a", "b", "c" })
     combo:feed("a")
@@ -603,7 +645,7 @@ do
     print("in_progress=" .. tostring(combo:isInProgress()))
 end
 
---@api-stub: LCombo:progress
+--@api: LCombo:progress
 do
     local combo = lurek.input.newCombo({ "a", "b", "c" })
     combo:feed("a")
@@ -612,7 +654,7 @@ do
     print("progress=" .. combo:progress())
 end
 
---@api-stub: LCombo:totalSteps
+--@api: LCombo:totalSteps
 do
     local combo = lurek.input.newCombo({ "a", "b", "c" })
     combo:feed("a")
@@ -620,7 +662,7 @@ do
     print("total=" .. combo:totalSteps())
 end
 
---@api-stub: LCursor:getType
+--@api: LCursor:getType
 do
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
     print("cursor type=" .. sys_cursor:type())
@@ -629,7 +671,7 @@ do
     sys_cursor:release()
 end
 
---@api-stub: LCursor:release
+--@api: LCursor:release
 do
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
     print("cursor type=" .. sys_cursor:type())
@@ -638,7 +680,7 @@ do
     sys_cursor:release()
 end
 
---@api-stub: LCursor:type
+--@api: LCursor:type
 do
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
     print("cursor type=" .. sys_cursor:type())
@@ -647,7 +689,7 @@ do
     sys_cursor:release()
 end
 
---@api-stub: LCursor:typeOf
+--@api: LCursor:typeOf
 do
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
     print("cursor type=" .. sys_cursor:type())
@@ -656,35 +698,35 @@ do
     sys_cursor:release()
 end
 
---@api-stub: LInputRecording:frameCount
+--@api: LInputRecording:frameCount
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
     print("frames=" .. tostring(rec and rec:frameCount() or 0))
 end
 
---@api-stub: LInputRecording:totalFrames
+--@api: LInputRecording:totalFrames
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
     print("total=" .. tostring(rec and rec:totalFrames() or 0))
 end
 
---@api-stub: LInputRecording:type
+--@api: LInputRecording:type
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
     print("type=" .. tostring(rec and rec:type() or nil))
 end
 
---@api-stub: LInputRecording:typeOf
+--@api: LInputRecording:typeOf
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
     print("typeOf=" .. tostring(rec and rec:typeOf("LInputRecording") or false))
 end
 
---@api-stub: lurek.input.isPlayingBack
+--@api: lurek.input.isPlayingBack
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -696,7 +738,7 @@ do
     lurek.input.stopPlayback()
 end
 
---@api-stub: lurek.input.stopPlayback
+--@api: lurek.input.stopPlayback
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -705,14 +747,14 @@ do
     print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
 end
 
---@api-stub: lurek.input.stopRecording
+--@api: lurek.input.stopRecording
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
     print("stopped recording=" .. tostring(rec ~= nil))
 end
 
---@api-stub: lurek.input.getTouchCount
+--@api: lurek.input.getTouchCount
 do
     -- getTouchCount returns active touch points; 0 on desktop without a touchscreen
     local n = lurek.input.touch.getTouchCount()
@@ -722,14 +764,14 @@ end
 
 --- Input Module Part 3: extended action binding (NM-04)
 
---@api-stub: lurek.input.define
+--@api: lurek.input.define
 do
     lurek.input.define("jump", {"space", "up"}, "movement")
     print("define ok")
     lurek.input.reset()
 end
 
---@api-stub: lurek.input.getAxis
+--@api: lurek.input.getAxis
 do
     lurek.input.bind("move_x", {"d", "a"})
     local v = lurek.input.getAxis("move_x")
@@ -737,7 +779,7 @@ do
     lurek.input.reset()
 end
 
---@api-stub: lurek.input.getVector
+--@api: lurek.input.getVector
 do
     lurek.input.bind("haxis", {"d", "a"})
     lurek.input.bind("vaxis", {"s", "w"})
@@ -746,7 +788,7 @@ do
     lurek.input.reset()
 end
 
---@api-stub: lurek.input.reset
+--@api: lurek.input.reset
 do
     lurek.input.bind("temp", "t")
     lurek.input.reset("temp")
@@ -755,7 +797,7 @@ do
     print("reset() ok")
 end
 
---@api-stub: lurek.input.getConflicts
+--@api: lurek.input.getConflicts
 do
     lurek.input.bind("act_a", "x")
     lurek.input.bind("act_b", "x")
@@ -764,7 +806,7 @@ do
     lurek.input.reset()
 end
 
---@api-stub: lurek.input.serializeBindings
+--@api: lurek.input.serializeBindings
 do
     lurek.input.bind("test_ser", "s")
     local json = lurek.input.serializeBindings()
@@ -772,7 +814,7 @@ do
     lurek.input.reset()
 end
 
---@api-stub: lurek.input.deserializeBindings
+--@api: lurek.input.deserializeBindings
 do
     lurek.input.bind("test_deser", "q")
     local json = lurek.input.serializeBindings()
@@ -782,7 +824,7 @@ do
     lurek.input.reset()
 end
 
---@api-stub: lurek.input.getByCategory
+--@api: lurek.input.getByCategory
 do
     lurek.input.define("run", "lshift", "movement")
     local cats = lurek.input.getByCategory("movement")
@@ -790,7 +832,7 @@ do
     lurek.input.reset()
 end
 
---@api-stub: lurek.input.onRebind
+--@api: lurek.input.onRebind
 do
     lurek.input.onRebind(function(action, keys)
         print("rebind: " .. action .. " keys=" .. #keys)

@@ -1,14 +1,14 @@
 --- @title Cinematic Timeline
 --- @desc Multi-track timeline system for orchestrating game sequences.
 
---@api-stub: lurek.cinematic.newTimeline
+--@api: lurek.cinematic.newTimeline
 do
     local tl = lurek.cinematic.newTimeline()
     print("lurek.cinematic.newTimeline type=" .. tl:type())
     print("state=" .. tl:getState())
 end
 
---@api-stub: LCinematicTimeline:addTrack
+--@api: LCinematicTimeline:addTrack
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addTrack("camera")
@@ -16,7 +16,7 @@ do
     print("LCinematicTimeline:addTrack ok")
 end
 
---@api-stub: LCinematicTimeline:addClip
+--@api: LCinematicTimeline:addClip
 do
     local tl = lurek.cinematic.newTimeline()
     local camera_clip = {
@@ -57,7 +57,7 @@ do
     print("LCinematicTimeline:addClip tween clip ok")
 end
 
---@api-stub: LCinematicTimeline:play
+--@api: LCinematicTimeline:play
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 5.0, { type = "signal", name = "test" })
@@ -65,7 +65,7 @@ do
     print("LCinematicTimeline:play state=" .. tl:getState())
 end
 
---@api-stub: LCinematicTimeline:pause
+--@api: LCinematicTimeline:pause
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 10.0, { type = "signal", name = "test" })
@@ -76,7 +76,7 @@ do
     print("time=" .. tl:getTime())
 end
 
---@api-stub: LCinematicTimeline:stop
+--@api: LCinematicTimeline:stop
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 10.0, { type = "signal", name = "test" })
@@ -87,7 +87,7 @@ do
     print("time reset=" .. tl:getTime())
 end
 
---@api-stub: LCinematicTimeline:seek
+--@api: LCinematicTimeline:seek
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 20.0, { type = "signal", name = "test" })
@@ -95,7 +95,7 @@ do
     print("LCinematicTimeline:seek time=" .. tl:getTime())
 end
 
---@api-stub: LCinematicTimeline:update
+--@api: LCinematicTimeline:update
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 10.0, { type = "signal", name = "test" })
@@ -104,7 +104,7 @@ do
     print("LCinematicTimeline:update time=" .. tl:getTime())
 end
 
---@api-stub: LCinematicTimeline:skipToEnd
+--@api: LCinematicTimeline:skipToEnd
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 15.0, { type = "signal", name = "test" })
@@ -112,7 +112,7 @@ do
     print("LCinematicTimeline:skipToEnd time=" .. tl:getTime())
 end
 
---@api-stub: LCinematicTimeline:getTime
+--@api: LCinematicTimeline:getTime
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 10.0, { type = "signal", name = "test" })
@@ -120,7 +120,7 @@ do
     print("LCinematicTimeline:getTime=" .. tl:getTime())
 end
 
---@api-stub: LCinematicTimeline:getDuration
+--@api: LCinematicTimeline:getDuration
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("track1", 0.0, 5.0, { type = "signal", name = "a" })
@@ -128,7 +128,7 @@ do
     print("LCinematicTimeline:getDuration=" .. tl:getDuration())
 end
 
---@api-stub: LCinematicTimeline:getState
+--@api: LCinematicTimeline:getState
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 5.0, { type = "signal", name = "test" })
@@ -137,7 +137,7 @@ do
     print("after play=" .. tl:getState())
 end
 
---@api-stub: LCinematicTimeline:isPlaying
+--@api: LCinematicTimeline:isPlaying
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 5.0, { type = "signal", name = "test" })
@@ -146,7 +146,7 @@ do
     print("after play=" .. tostring(tl:isPlaying()))
 end
 
---@api-stub: LCinematicTimeline:isComplete
+--@api: LCinematicTimeline:isComplete
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 5.0, { type = "signal", name = "test" })
@@ -155,7 +155,7 @@ do
     print("past end=" .. tostring(tl:isComplete()))
 end
 
---@api-stub: LCinematicTimeline:addLabel
+--@api: LCinematicTimeline:addLabel
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 20.0, { type = "signal", name = "test" })
@@ -165,7 +165,7 @@ do
     print("LCinematicTimeline:addLabel ok")
 end
 
---@api-stub: LCinematicTimeline:branch
+--@api: LCinematicTimeline:branch
 do
     local tl = lurek.cinematic.newTimeline()
     tl:addClip("test", 0.0, 20.0, { type = "signal", name = "test" })
@@ -175,26 +175,26 @@ do
     print("jumped to=" .. tl:getTime())
 end
 
---@api-stub: LCinematicTimeline:type
+--@api: LCinematicTimeline:type
 do
     local tl = lurek.cinematic.newTimeline()
     print("LCinematicTimeline:type=" .. tl:type())
 end
 
---@api-stub: LCinematicTimeline:typeOf
+--@api: LCinematicTimeline:typeOf
 do
     local tl = lurek.cinematic.newTimeline()
     print("typeOf LCinematicTimeline=" .. tostring(tl:typeOf("LCinematicTimeline")))
     print("typeOf Object=" .. tostring(tl:typeOf("Object")))
 end
 
---@api-stub: lurek.cinematic.new
+--@api: lurek.cinematic.new
 do
     local cinematic = lurek.cinematic.new()
     print("lurek.cinematic.new type=" .. cinematic:type())
 end
 
---@api-stub: LCinematic:addCut
+--@api: LCinematic:addCut
 do
     local cinematic = lurek.cinematic.new()
     cinematic:addCut(0.0, "Intro pan")
@@ -202,14 +202,14 @@ do
     print("cuts after add = " .. tostring(cinematic:cutCount()))
 end
 
---@api-stub: LCinematic:cutCount
+--@api: LCinematic:cutCount
 do
     local cinematic = lurek.cinematic.new()
     cinematic:addCut(0.0, "single cut")
     print("cut count = " .. tostring(cinematic:cutCount()))
 end
 
---@api-stub: LCinematic:play
+--@api: LCinematic:play
 do
     local cinematic = lurek.cinematic.new()
     cinematic:addCut(0.0, "start")
@@ -217,7 +217,7 @@ do
     print("cinematic play invoked")
 end
 
---@api-stub: LCinematic:clear
+--@api: LCinematic:clear
 do
     local cinematic = lurek.cinematic.new()
     cinematic:addCut(0.0, "to clear")
@@ -225,13 +225,13 @@ do
     print("cut count after clear = " .. tostring(cinematic:cutCount()))
 end
 
---@api-stub: LCinematic:type
+--@api: LCinematic:type
 do
     local cinematic = lurek.cinematic.new()
     print("LCinematic:type = " .. cinematic:type())
 end
 
---@api-stub: LCinematic:typeOf
+--@api: LCinematic:typeOf
 do
     local cinematic = lurek.cinematic.new()
     print("is LCinematic = " .. tostring(cinematic:typeOf("LCinematic")))

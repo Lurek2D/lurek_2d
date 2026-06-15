@@ -4,26 +4,26 @@
 
 --- Light Module Part 1: module functions and LLight class
 
---@api-stub: lurek.light.newLight
+--@api: lurek.light.newLight
 do
     local light = lurek.light.newLight(400, 300, 200)
     print("radius = " .. light:getRadius())
 end
 
---@api-stub: lurek.light.setEnabled
+--@api: lurek.light.setEnabled
 do
     lurek.light.setEnabled(true)
     print("light world enabled = " .. tostring(lurek.light.isEnabled()))
 end
 
---@api-stub: lurek.light.setAmbient
+--@api: lurek.light.setAmbient
 do
     lurek.light.setAmbient(0.1, 0.1, 0.15, 1)
     local r, g, b, a = lurek.light.getAmbient()
     print("ambient = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: lurek.light.getLightCount
+--@api: lurek.light.getLightCount
 do
     lurek.light.clear()
     lurek.light.newLight(0, 0, 100)
@@ -31,20 +31,20 @@ do
     print("lights = " .. lurek.light.getLightCount())
 end
 
---@api-stub: lurek.light.getMaxLights
+--@api: lurek.light.getMaxLights
 do
     lurek.light.setMaxLights(128)
     print("max lights = " .. lurek.light.getMaxLights())
 end
 
---@api-stub: lurek.light.clear
+--@api: lurek.light.clear
 do
     lurek.light.newLight(0, 0, 50)
     lurek.light.clear()
     print("after clear: lights = " .. lurek.light.getLightCount())
 end
 
---@api-stub: lurek.light.advanceFlickers
+--@api: lurek.light.advanceFlickers
 do
     local light = lurek.light.newLight(200, 200, 100)
     light:addFlicker(0.5, 1.0, 4.0)
@@ -53,7 +53,7 @@ do
     print("flickers advanced")
 end
 
---@api-stub: lurek.light.getGroupCount
+--@api: lurek.light.getGroupCount
 do
     local a = lurek.light.newLight(0, 0, 50)
     local b = lurek.light.newLight(10, 10, 50)
@@ -62,7 +62,7 @@ do
     print("group 1 count = " .. lurek.light.getGroupCount(1))
 end
 
---@api-stub: lurek.light.setGroupColor
+--@api: lurek.light.setGroupColor
 do
     lurek.light.clear()
     local first = lurek.light.newLight(10, 10, 60)
@@ -75,7 +75,7 @@ do
     print("group 1 color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: lurek.light.setGroupIntensity
+--@api: lurek.light.setGroupIntensity
 do
     lurek.light.clear()
     local first = lurek.light.newLight(20, 20, 70)
@@ -87,7 +87,7 @@ do
     print("group 1 intensity = " .. first:getIntensity())
 end
 
---@api-stub: lurek.light.setGroupEnabled
+--@api: lurek.light.setGroupEnabled
 do
     lurek.light.clear()
     local first = lurek.light.newLight(20, 20, 70)
@@ -99,7 +99,7 @@ do
     print("group 1 enabled = " .. tostring(first:isEnabled()))
 end
 
---@api-stub: lurek.light.getGodRayHints
+--@api: lurek.light.getGodRayHints
 do
     lurek.light.clear()
     local light = lurek.light.newLight(120, 90, 160)
@@ -110,7 +110,7 @@ do
     print("first hint angle = " .. hints[1].angle)
 end
 
---@api-stub: lurek.light.getNormalMapHints
+--@api: lurek.light.getNormalMapHints
 do
     lurek.light.clear()
     local light = lurek.light.newLight(80, 60, 120)
@@ -121,14 +121,14 @@ do
     print("first hint strength = " .. hints[1].strength)
 end
 
---@api-stub: lurek.light.syncAmbient
+--@api: lurek.light.syncAmbient
 do
     lurek.light.setAmbient(0.2, 0.25, 0.3, 1.0)
     local r, g, b, a = lurek.light.syncAmbient()
     print("sync ambient = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LLight:setPosition
+--@api: LLight:setPosition
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setPosition(200, 150)
@@ -136,7 +136,7 @@ do
     print("pos = " .. x .. "," .. y)
 end
 
---@api-stub: LLight:getPosition
+--@api: LLight:getPosition
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setPosition(200, 150)
@@ -144,21 +144,21 @@ do
     print("pos = " .. x .. "," .. y)
 end
 
---@api-stub: LLight:setRadius
+--@api: LLight:setRadius
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setRadius(250)
     print("radius = " .. light:getRadius())
 end
 
---@api-stub: LLight:getRadius
+--@api: LLight:getRadius
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setRadius(250)
     print("radius = " .. light:getRadius())
 end
 
---@api-stub: LLight:setColor
+--@api: LLight:setColor
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1, 0.5, 0, 0.9)
@@ -166,7 +166,7 @@ do
     print("color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LLight:getColor
+--@api: LLight:getColor
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1, 0.5, 0, 0.9)
@@ -174,49 +174,49 @@ do
     print("color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LLight:setIntensity
+--@api: LLight:setIntensity
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setIntensity(5)
     print("intensity = " .. light:getIntensity())
 end
 
---@api-stub: LLight:getIntensity
+--@api: LLight:getIntensity
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setIntensity(5)
     print("intensity = " .. light:getIntensity())
 end
 
---@api-stub: LLight:setEnergy
+--@api: LLight:setEnergy
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setEnergy(2.5)
     print("energy = " .. light:getEnergy())
 end
 
---@api-stub: LLight:getEnergy
+--@api: LLight:getEnergy
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setEnergy(2.5)
     print("energy = " .. light:getEnergy())
 end
 
---@api-stub: LLight:setLightType
+--@api: LLight:setLightType
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setLightType("spot")
     print("type = " .. light:getLightType())
 end
 
---@api-stub: LLight:getLightType
+--@api: LLight:getLightType
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setLightType("spot")
     print("type = " .. light:getLightType())
 end
 
---@api-stub: LLight:setDirection
+--@api: LLight:setDirection
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setLightType("directional")
@@ -224,7 +224,7 @@ do
     print("direction = " .. light:getDirection())
 end
 
---@api-stub: LLight:getDirection
+--@api: LLight:getDirection
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setLightType("directional")
@@ -232,35 +232,35 @@ do
     print("direction = " .. light:getDirection())
 end
 
---@api-stub: LLight:setFalloff
+--@api: LLight:setFalloff
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setFalloff("smooth")
     print("falloff = " .. light:getFalloff())
 end
 
---@api-stub: LLight:getFalloff
+--@api: LLight:getFalloff
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setFalloff("smooth")
     print("falloff = " .. light:getFalloff())
 end
 
---@api-stub: LLight:setBlendMode
+--@api: LLight:setBlendMode
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setBlendMode("add")
     print("blend = " .. light:getBlendMode())
 end
 
---@api-stub: LLight:getBlendMode
+--@api: LLight:getBlendMode
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setBlendMode("add")
     print("blend = " .. light:getBlendMode())
 end
 
---@api-stub: LLight:setAttenuation
+--@api: LLight:setAttenuation
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setAttenuation(1, 0.1, 0.01)
@@ -268,7 +268,7 @@ do
     print("attenuation c=" .. c .. " l=" .. l .. " q=" .. q)
 end
 
---@api-stub: LLight:getAttenuation
+--@api: LLight:getAttenuation
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setAttenuation(1, 0.1, 0.01)
@@ -276,7 +276,7 @@ do
     print("attenuation c=" .. c .. " l=" .. l .. " q=" .. q)
 end
 
---@api-stub: LLight:setInnerAngle
+--@api: LLight:setInnerAngle
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setLightType("spot")
@@ -285,7 +285,7 @@ do
     print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 
---@api-stub: LLight:getInnerAngle
+--@api: LLight:getInnerAngle
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setLightType("spot")
@@ -294,7 +294,7 @@ do
     print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 
---@api-stub: LLight:setOuterAngle
+--@api: LLight:setOuterAngle
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setLightType("spot")
@@ -303,7 +303,7 @@ do
     print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 
---@api-stub: LLight:getOuterAngle
+--@api: LLight:getOuterAngle
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setLightType("spot")
@@ -312,49 +312,49 @@ do
     print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 
---@api-stub: LLight:setEnabled
+--@api: LLight:setEnabled
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setEnabled(false)
     print("enabled = " .. tostring(light:isEnabled()))
 end
 
---@api-stub: LLight:isEnabled
+--@api: LLight:isEnabled
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setEnabled(false)
     print("enabled = " .. tostring(light:isEnabled()))
 end
 
---@api-stub: LLight:setGroupId
+--@api: LLight:setGroupId
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setGroupId(5)
     print("group = " .. light:getGroupId())
 end
 
---@api-stub: LLight:getGroupId
+--@api: LLight:getGroupId
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setGroupId(5)
     print("group = " .. light:getGroupId())
 end
 
---@api-stub: LLight:setLightMask
+--@api: LLight:setLightMask
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setLightMask(3)
     print("mask = " .. light:getLightMask())
 end
 
---@api-stub: LLight:getLightMask
+--@api: LLight:getLightMask
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setLightMask(3)
     print("mask = " .. light:getLightMask())
 end
 
---@api-stub: LLight:isValid
+--@api: LLight:isValid
 do
     local light = lurek.light.newLight(0, 0, 100)
     print("valid = " .. tostring(light:isValid()))
@@ -362,14 +362,14 @@ do
     print("valid after remove = " .. tostring(light:isValid()))
 end
 
---@api-stub: LLight:type
+--@api: LLight:type
 do
     local light = lurek.light.newLight(0, 0, 100)
     print("type = " .. light:type())
     print("is LLight = " .. tostring(light:typeOf("LLight")))
 end
 
---@api-stub: LLight:typeOf
+--@api: LLight:typeOf
 do
     local light = lurek.light.newLight(0, 0, 100)
     print("type = " .. light:type())
@@ -379,21 +379,21 @@ end
 
 --- Light Module Part 2: shadows, flicker, transitions, cookies, normals, LOccluder
 
---@api-stub: LLight:setShadowEnabled
+--@api: LLight:setShadowEnabled
 do
     local light = lurek.light.newLight(200, 200, 150)
     light:setShadowEnabled(true)
     print("shadows = " .. tostring(light:isShadowEnabled()))
 end
 
---@api-stub: LLight:isShadowEnabled
+--@api: LLight:isShadowEnabled
 do
     local light = lurek.light.newLight(200, 200, 150)
     light:setShadowEnabled(true)
     print("shadows = " .. tostring(light:isShadowEnabled()))
 end
 
---@api-stub: LLight:setShadowColor
+--@api: LLight:setShadowColor
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setShadowEnabled(true)
@@ -402,7 +402,7 @@ do
     print("shadow color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LLight:getShadowColor
+--@api: LLight:getShadowColor
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setShadowEnabled(true)
@@ -411,7 +411,7 @@ do
     print("shadow color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LLight:setShadowFilter
+--@api: LLight:setShadowFilter
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setShadowEnabled(true)
@@ -419,7 +419,7 @@ do
     print("shadow filter = " .. light:getShadowFilter())
 end
 
---@api-stub: LLight:getShadowFilter
+--@api: LLight:getShadowFilter
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setShadowEnabled(true)
@@ -427,7 +427,7 @@ do
     print("shadow filter = " .. light:getShadowFilter())
 end
 
---@api-stub: LLight:setShadowSmooth
+--@api: LLight:setShadowSmooth
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setShadowEnabled(true)
@@ -435,7 +435,7 @@ do
     print("shadow smooth = " .. light:getShadowSmooth())
 end
 
---@api-stub: LLight:getShadowSmooth
+--@api: LLight:getShadowSmooth
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setShadowEnabled(true)
@@ -443,7 +443,7 @@ do
     print("shadow smooth = " .. light:getShadowSmooth())
 end
 
---@api-stub: LLight:setShadowSoftness
+--@api: LLight:setShadowSoftness
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setShadowEnabled(true)
@@ -451,7 +451,7 @@ do
     print("shadow softness = " .. light:getShadowSoftness())
 end
 
---@api-stub: LLight:getShadowSoftness
+--@api: LLight:getShadowSoftness
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setShadowEnabled(true)
@@ -459,21 +459,21 @@ do
     print("shadow softness = " .. light:getShadowSoftness())
 end
 
---@api-stub: LLight:setShadowMask
+--@api: LLight:setShadowMask
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setShadowMask(7)
     print("shadow mask = " .. light:getShadowMask())
 end
 
---@api-stub: LLight:getShadowMask
+--@api: LLight:getShadowMask
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setShadowMask(7)
     print("shadow mask = " .. light:getShadowMask())
 end
 
---@api-stub: LLight:addFlicker
+--@api: LLight:addFlicker
 do
     local light = lurek.light.newLight(100, 100, 80)
     light:addFlicker(0.5, 1.0, 8.0)
@@ -482,7 +482,7 @@ do
     print("flicker strength = " .. strength)
 end
 
---@api-stub: LLight:setFlicker
+--@api: LLight:setFlicker
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setFlicker(3.0, 0.4)
@@ -490,7 +490,7 @@ do
     print("flicker speed=" .. speed .. " strength=" .. strength)
 end
 
---@api-stub: LLight:getFlicker
+--@api: LLight:getFlicker
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setFlicker(3.0, 0.4)
@@ -498,7 +498,7 @@ do
     print("flicker speed=" .. speed .. " strength=" .. strength)
 end
 
---@api-stub: LLight:setFlickerEnabled
+--@api: LLight:setFlickerEnabled
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setFlicker(2.0, 0.3)
@@ -506,7 +506,7 @@ do
     print("flicker on = " .. tostring(light:isFlickerEnabled()))
 end
 
---@api-stub: LLight:isFlickerEnabled
+--@api: LLight:isFlickerEnabled
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setFlicker(2.0, 0.3)
@@ -514,21 +514,21 @@ do
     print("flicker on = " .. tostring(light:isFlickerEnabled()))
 end
 
---@api-stub: LLight:setCookie
+--@api: LLight:setCookie
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setCookie("content/examples/assets/images/sample_texture.png")
     print("cookie = " .. light:getCookie())
 end
 
---@api-stub: LLight:getCookie
+--@api: LLight:getCookie
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setCookie("content/examples/assets/images/sample_texture.png")
     print("cookie = " .. light:getCookie())
 end
 
---@api-stub: LLight:clearCookie
+--@api: LLight:clearCookie
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setCookie("content/examples/assets/images/sample_texture.png")
@@ -536,21 +536,21 @@ do
     print("cookie = " .. tostring(light:getCookie()))
 end
 
---@api-stub: LLight:setNormalMap
+--@api: LLight:setNormalMap
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setNormalMap("content/examples/assets/images/sample_normal.dds")
     print("normal map = " .. light:getNormalMap())
 end
 
---@api-stub: LLight:getNormalMap
+--@api: LLight:getNormalMap
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setNormalMap("content/examples/assets/images/sample_normal.dds")
     print("normal map = " .. light:getNormalMap())
 end
 
---@api-stub: LLight:clearNormalMap
+--@api: LLight:clearNormalMap
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setNormalMap("content/examples/assets/images/sample_normal.dds")
@@ -558,35 +558,35 @@ do
     print("normal map = " .. tostring(light:getNormalMap()))
 end
 
---@api-stub: LLight:setNormalStrength
+--@api: LLight:setNormalStrength
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setNormalStrength(1.5)
     print("normal strength = " .. light:getNormalStrength())
 end
 
---@api-stub: LLight:getNormalStrength
+--@api: LLight:getNormalStrength
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setNormalStrength(1.5)
     print("normal strength = " .. light:getNormalStrength())
 end
 
---@api-stub: LLight:setVolumetric
+--@api: LLight:setVolumetric
 do
     local light = lurek.light.newLight(0, 0, 200)
     light:setVolumetric(true)
     print("volumetric = " .. tostring(light:isVolumetric()))
 end
 
---@api-stub: LLight:isVolumetric
+--@api: LLight:isVolumetric
 do
     local light = lurek.light.newLight(0, 0, 200)
     light:setVolumetric(true)
     print("volumetric = " .. tostring(light:isVolumetric()))
 end
 
---@api-stub: LLight:transitionTo
+--@api: LLight:transitionTo
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:setColor(1, 0, 0, 1)
@@ -595,7 +595,7 @@ do
     print("progress = " .. light:transitionProgress())
 end
 
---@api-stub: LLight:updateTransition
+--@api: LLight:updateTransition
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
@@ -603,7 +603,7 @@ do
     print("applied = " .. tostring(applied))
 end
 
---@api-stub: LLight:transitionProgress
+--@api: LLight:transitionProgress
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
@@ -611,7 +611,7 @@ do
     print("progress = " .. light:transitionProgress())
 end
 
---@api-stub: LLight:stopTransition
+--@api: LLight:stopTransition
 do
     local light = lurek.light.newLight(0, 0, 100)
     light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
@@ -619,14 +619,14 @@ do
     print("stopped, progress = " .. light:transitionProgress())
 end
 
---@api-stub: lurek.light.newOccluder
+--@api: lurek.light.newOccluder
 do
     local verts = {0, 0, 100, 0, 100, 50, 0, 50}
     local occ = lurek.light.newOccluder(verts)
     print("occluder valid = " .. tostring(occ:isValid()))
 end
 
---@api-stub: LOccluder:setPosition
+--@api: LOccluder:setPosition
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(50, 75)
@@ -634,7 +634,7 @@ do
     print("occ pos = " .. x .. "," .. y)
 end
 
---@api-stub: LOccluder:getPosition
+--@api: LOccluder:getPosition
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setPosition(50, 75)
@@ -642,7 +642,7 @@ do
     print("occ pos = " .. x .. "," .. y)
 end
 
---@api-stub: LOccluder:setVertices
+--@api: LOccluder:setVertices
 do
     local occ = lurek.light.newOccluder({0, 0, 20, 0, 20, 20, 0, 20})
     occ:setVertices({0, 0, 30, 0, 30, 30, 0, 30})
@@ -650,7 +650,7 @@ do
     print("vertex count = " .. #v / 2)
 end
 
---@api-stub: LOccluder:getVertices
+--@api: LOccluder:getVertices
 do
     local occ = lurek.light.newOccluder({0, 0, 20, 0, 20, 20, 0, 20})
     occ:setVertices({0, 0, 30, 0, 30, 30, 0, 30})
@@ -658,49 +658,49 @@ do
     print("vertex count = " .. #v / 2)
 end
 
---@api-stub: LOccluder:setOpacity
+--@api: LOccluder:setOpacity
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setOpacity(0.6)
     print("opacity = " .. occ:getOpacity())
 end
 
---@api-stub: LOccluder:getOpacity
+--@api: LOccluder:getOpacity
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setOpacity(0.6)
     print("opacity = " .. occ:getOpacity())
 end
 
---@api-stub: LOccluder:setEnabled
+--@api: LOccluder:setEnabled
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setEnabled(false)
     print("enabled = " .. tostring(occ:isEnabled()))
 end
 
---@api-stub: LOccluder:isEnabled
+--@api: LOccluder:isEnabled
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setEnabled(false)
     print("enabled = " .. tostring(occ:isEnabled()))
 end
 
---@api-stub: LOccluder:setLightMask
+--@api: LOccluder:setLightMask
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setLightMask(5)
     print("occ mask = " .. occ:getLightMask())
 end
 
---@api-stub: LOccluder:getLightMask
+--@api: LOccluder:getLightMask
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     occ:setLightMask(5)
     print("occ mask = " .. occ:getLightMask())
 end
 
---@api-stub: LOccluder:isValid
+--@api: LOccluder:isValid
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     print("valid = " .. tostring(occ:isValid()))
@@ -708,14 +708,14 @@ do
     print("valid after remove = " .. tostring(occ:isValid()))
 end
 
---@api-stub: LOccluder:type
+--@api: LOccluder:type
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     print("type = " .. occ:type())
     print("is LOccluder = " .. tostring(occ:typeOf("LOccluder")))
 end
 
---@api-stub: LOccluder:typeOf
+--@api: LOccluder:typeOf
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
     print("type = " .. occ:type())
@@ -723,7 +723,7 @@ do
     print("is Object = " .. tostring(occ:typeOf("LObject")))
 end
 
---@api-stub: lurek.light.getOccluderCount
+--@api: lurek.light.getOccluderCount
 do
     lurek.light.clear()
     lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
@@ -733,7 +733,7 @@ end
 
 --- Light Module: LLight:remove, LOccluder:remove, lurek.light functions
 
---@api-stub: LLight:remove
+--@api: LLight:remove
 do
     local lt = lurek.light.newLight(200, 300, 150)
     print("lights = " .. lurek.light.getLightCount())
@@ -741,7 +741,7 @@ do
     print("after remove = " .. lurek.light.getLightCount())
 end
 
---@api-stub: LOccluder:remove
+--@api: LOccluder:remove
 do
     local vtbl = { 0, 0, 100, 0, 100, 100, 0, 100 }
     local occ = lurek.light.newOccluder(vtbl)
@@ -750,25 +750,25 @@ do
     print("after remove = " .. lurek.light.getOccluderCount())
 end
 
---@api-stub: lurek.light.getAmbient
+--@api: lurek.light.getAmbient
 do
     local r, g, b, a = lurek.light.getAmbient()
     print("ambient", r, g, b, a)
 end
 
---@api-stub: lurek.light.isEnabled
+--@api: lurek.light.isEnabled
 do
     local enabled = lurek.light.isEnabled()
     print("enabled = " .. tostring(enabled))
 end
 
---@api-stub: lurek.light.setMaxLights
+--@api: lurek.light.setMaxLights
 do
     lurek.light.setMaxLights(64)
     print("max lights = " .. lurek.light.getMaxLights())
 end
 
---@api-stub: lurek.light.drawToImage
+--@api: lurek.light.drawToImage
 do
     lurek.light.clear()
     local light = lurek.light.newLight(200, 150, 120)

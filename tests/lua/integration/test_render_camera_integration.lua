@@ -8,11 +8,11 @@ describe("graphics + camera integration", function()
     -- @integration lurek.camera.newCamera
     -- @integration lurek.render.rectangle
     -- @integration lurek.render.setColor
-    -- @covers lurek.camera.newCamera
-    -- @covers lurek.render.circle
-    -- @covers lurek.render.line
-    -- @covers lurek.render.rectangle
-    -- @covers lurek.render.setColor
+    -- @integration lurek.camera.newCamera
+    -- @integration lurek.render.circle
+    -- @integration lurek.render.line
+    -- @integration lurek.render.rectangle
+    -- @integration lurek.render.setColor
     it("camera transforms affect draw command coordinates", function()
         local cam = lurek.camera.newCamera()
         cam:setPosition(100, 200)

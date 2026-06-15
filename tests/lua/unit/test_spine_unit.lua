@@ -46,16 +46,12 @@ end)
 -- @describe addChildBone(name, parent_idx, opts)
 describe("addChildBone(name, parent_idx, opts)", function()
     -- @covers LSkeleton:addChildBone
-    it("increments boneCount", function()
+    it("increments boneCount and rejects invalid parent indices", function()
         local sk = lurek.spine.newSkeleton("test")
         local root = sk:addBone("root")
         sk:addChildBone("arm", root)
         expect_equal(2, sk:boneCount())
-    end)
 
-    -- @covers LSkeleton:addChildBone
-    it("rejects invalid parent indices", function()
-        local sk = lurek.spine.newSkeleton("test")
         expect_error(function()
             sk:addChildBone("arm", 9)
         end)
@@ -78,18 +74,14 @@ end)
 -- @describe addSlot(name, bone_idx, attachment)
 describe("addSlot(name, bone_idx, attachment)", function()
     -- @covers LSkeleton:addSlot
-    it("increments slotCount and accepts optional attachment names", function()
+    it("increments slotCount and rejects invalid bone indices", function()
         local sk = lurek.spine.newSkeleton("test")
         local b = sk:addBone("root")
         sk:addSlot("slot0", b)
         expect_equal(1, sk:slotCount())
         sk:addSlot("slot1", b, "torso_skin")
         expect_equal(2, sk:slotCount())
-    end)
 
-    -- @covers LSkeleton:addSlot
-    it("rejects invalid bone indices", function()
-        local sk = lurek.spine.newSkeleton("test")
         expect_error(function()
             sk:addSlot("slot0", 4)
         end)
@@ -145,12 +137,8 @@ end)
 -- @describe new API factories
 describe("new API factories", function()
     -- @covers lurek.spine.newSkeletonAnimation
-    it("exposes newSkeletonAnimation factory", function()
+    it("exposes the factory and rejects negative animation duration", function()
         expect_type("function", lurek.spine.newSkeletonAnimation)
-    end)
-
-    -- @covers lurek.spine.newSkeletonAnimation
-    it("rejects negative animation duration", function()
         expect_error(function()
             lurek.spine.newSkeletonAnimation("walk", -1.0)
         end)
@@ -162,7 +150,7 @@ end)
 -- @describe skeleton animation playback
 describe("skeleton animation playback", function()
     -- @covers LSkeleton:updateAnimation
-    it("animation time advances and stays stable across repeated updates", function()
+    it("animation time advances, stays stable, and rejects negative delta time", function()
         local sk = lurek.spine.newSkeleton("test")
         sk:addBone("root")
         local anim = lurek.spine.newSkeletonAnimation("walk", 1.0)
@@ -183,15 +171,7 @@ describe("skeleton animation playback", function()
         t = sk:getAnimationTime()
         expect_type("number", t)
         expect_true(t >= 0.0 and t < 1.0)
-    end)
 
-    -- @covers LSkeleton:updateAnimation
-    it("rejects negative delta time", function()
-        local sk = lurek.spine.newSkeleton("test")
-        sk:addBone("root")
-        local anim = lurek.spine.newSkeletonAnimation("walk", 1.0)
-        sk:addAnimation(anim)
-        sk:playAnimation("walk", true)
         expect_error(function()
             sk:updateAnimation(-0.1)
         end)
@@ -246,18 +226,14 @@ describe("SkeletonAnimation", function()
     end)
 
     -- @covers LSkeletonAnimation:addKeyframe
-    it("addKeyframe increments timeline count and accepts optional easing", function()
+    it("addKeyframe increments timeline count and rejects negative time", function()
         local sa = lurek.spine.newSkeletonAnimation("run", 1.0)
         sa:addKeyframe(0, "x", 0.0, 0.0)
         expect_equal(1, sa:getTimelineCount())
         sa:addKeyframe(0, "x", 0.0, 10.0, "linear")
         sa:addKeyframe(0, "x", 1.0, 20.0, "ease_in_out")
-        expect_equal(1, sa:getTimelineCount()) -- same bone-property = same timeline
-    end)
+        expect_equal(1, sa:getTimelineCount())
 
-    -- @covers LSkeletonAnimation:addKeyframe
-    it("addKeyframe rejects negative time", function()
-        local sa = lurek.spine.newSkeletonAnimation("run", 1.0)
         expect_error(function()
             sa:addKeyframe(0, "x", -0.1, 0.0)
         end)
@@ -445,17 +421,13 @@ end)
 -- @describe SkeletonAnimation:addEventKey
 describe("SkeletonAnimation:addEventKey ", function()
     -- @covers LSkeletonAnimation:addEventKey
-    it("addEventKey does not crash", function()
+    it("addEventKey accepts valid keys and rejects negative time", function()
         local anim = lurek.spine.newSkeletonAnimation("cov_anim", 1.0)
         local ok, _ = pcall(function()
             anim:addEventKey(0.5, "footstep", 0)
         end)
         expect_type("boolean", ok)
-    end)
 
-    -- @covers LSkeletonAnimation:addEventKey
-    it("addEventKey rejects negative time", function()
-        local anim = lurek.spine.newSkeletonAnimation("cov_anim", 1.0)
         expect_error(function()
             anim:addEventKey(-0.5, "footstep", 0)
         end)

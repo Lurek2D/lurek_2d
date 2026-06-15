@@ -4,7 +4,7 @@
 
 --- Sprite Module: sheets, atlases, frames, groups, rows/columns, RPGMaker, Aseprite
 
---@api-stub: lurek.sprite.newSheet
+--@api: lurek.sprite.newSheet
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(512, 512, 64, 64)
@@ -12,7 +12,7 @@ do
     print("frame count = " .. sheet:getFrameCount())
 end
 
---@api-stub: LSpriteSheet:getFrame
+--@api: LSpriteSheet:getFrame
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(256, 128, 32, 32)
@@ -20,7 +20,7 @@ do
     print("frame 1: x=" .. frame1.x .. " y=" .. frame1.y .. " w=" .. frame1.w .. " h=" .. frame1.h)
 end
 
---@api-stub: LSpriteSheet:getRow
+--@api: LSpriteSheet:getRow
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
@@ -29,7 +29,7 @@ do
     print("row 0 first frame = " .. row0[1].x .. "," .. row0[1].y)
 end
 
---@api-stub: LSpriteSheet:getColumn
+--@api: LSpriteSheet:getColumn
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
@@ -38,7 +38,7 @@ do
     print("col 0 second frame = " .. col0[2].x .. "," .. col0[2].y)
 end
 
---@api-stub: LSpriteSheet:nameGroup
+--@api: LSpriteSheet:nameGroup
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
@@ -46,7 +46,7 @@ do
     print("group named = idle")
 end
 
---@api-stub: LSpriteSheet:getGroupFrames
+--@api: LSpriteSheet:getGroupFrames
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
@@ -55,7 +55,7 @@ do
     print("walk frames = " .. #walkFrames)
 end
 
---@api-stub: LSpriteSheet:getGroupNames
+--@api: LSpriteSheet:getGroupNames
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
@@ -65,7 +65,7 @@ do
     print("first group = " .. tostring(names[1]))
 end
 
---@api-stub: LSpriteSheet:drawToImage
+--@api: LSpriteSheet:drawToImage
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(256, 256, 32, 32)
@@ -74,7 +74,7 @@ do
     print("preview image height = " .. img:getHeight())
 end
 
---@api-stub: lurek.sprite.newRPGMakerSheet
+--@api: lurek.sprite.newRPGMakerSheet
 do
     local rpg = lurek.sprite.newRPGMakerSheet(384, 256)
     print("frame count = " .. rpg:getFrameCount())
@@ -83,7 +83,7 @@ do
     print("frame size = " .. fw .. "x" .. fh .. " grid = " .. cols .. "x" .. rows)
 end
 
---@api-stub: lurek.sprite.parseAtlas
+--@api: lurek.sprite.parseAtlas
 do
     ---@type LSpriteAtlas
     local atlas = lurek.sprite.parseAtlas(lurek.serial.toJson({ frames = { { filename = "player_idle_0", frame = { x = 0, y = 0, w = 64, h = 64 }, rotated = false } }, meta = { size = { w = 64, h = 64 } } }))
@@ -92,7 +92,7 @@ do
     print("player_idle_0 = " .. entry.w .. "x" .. entry.h)
 end
 
---@api-stub: LSpriteAtlas:getEntry
+--@api: LSpriteAtlas:getEntry
 do
     ---@type LSpriteAtlas
     local atlas = lurek.sprite.parseAtlas(lurek.serial.toJson({ frames = { { filename = "coin_0", frame = { x = 0, y = 0, w = 16, h = 16 }, rotated = false } }, meta = { size = { w = 16, h = 16 } } }))
@@ -101,7 +101,7 @@ do
     print("rotated = " .. tostring(coin.rotated))
 end
 
---@api-stub: LSpriteAtlas:getByIndex
+--@api: LSpriteAtlas:getByIndex
 do
     ---@type LSpriteAtlas
     local atlas = lurek.sprite.parseAtlas(lurek.serial.toJson({ frames = { { filename = "coin_0", frame = { x = 0, y = 0, w = 16, h = 16 }, rotated = false } }, meta = { size = { w = 16, h = 16 } } }))
@@ -109,7 +109,7 @@ do
     print("index 1 name = " .. byIdx.name)
 end
 
---@api-stub: LSpriteAtlas:getFlipped
+--@api: LSpriteAtlas:getFlipped
 do
     ---@type LSpriteAtlas
     local atlas = lurek.sprite.parseAtlas(lurek.serial.toJson({ frames = { { filename = "arrow_right", frame = { x = 0, y = 0, w = 32, h = 16 }, rotated = false } }, meta = { size = { w = 32, h = 16 } } }))
@@ -118,7 +118,7 @@ do
     print("still same coords: x=" .. flippedH.x .. " w=" .. flippedH.w)
 end
 
---@api-stub: lurek.sprite.parseAsepriteAtlas
+--@api: lurek.sprite.parseAsepriteAtlas
 do
     ---@type LSpriteAtlas
     local atlas = lurek.sprite.parseAsepriteAtlas(lurek.serial.toJson({ frames = { ["hero_idle_0.png"] = { frame = { x = 0, y = 0, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } } }, meta = { image = "hero.png", size = { w = 48, h = 48 }, scale = "1" } }))
@@ -127,7 +127,7 @@ do
     print("hero_idle_0.png = " .. entry.w .. "x" .. entry.h)
 end
 
---@api-stub: lurek.sprite.newAtlasSheet
+--@api: lurek.sprite.newAtlasSheet
 do
     local atlas = lurek.sprite.parseAtlas(lurek.serial.toJson({ frames = { { filename = "f0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false } }, meta = { size = { w = 32, h = 32 } } }))
     local sheet = lurek.sprite.newAtlasSheet(atlas, 128, 32)
@@ -135,20 +135,20 @@ do
     print("atlas sheet type = " .. sheet:type())
 end
 
---@api-stub: lurek.sprite.newAtlasPacker
+--@api: lurek.sprite.newAtlasPacker
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     print("atlas packer type = " .. packer:type())
 end
 
---@api-stub: LAtlasPacker:pack
+--@api: LAtlasPacker:pack
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     local ok = packer:pack("hero", 24, 24)
     print("packed hero = " .. tostring(ok))
 end
 
---@api-stub: LAtlasPacker:getRegion
+--@api: LAtlasPacker:getRegion
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     packer:pack("hero", 24, 24)
@@ -156,21 +156,21 @@ do
     print("region x = " .. (region and region.x or -1))
 end
 
---@api-stub: LAtlasPacker:regionCount
+--@api: LAtlasPacker:regionCount
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     packer:pack("hero", 24, 24)
     print("region count = " .. packer:regionCount())
 end
 
---@api-stub: LAtlasPacker:getDimensions
+--@api: LAtlasPacker:getDimensions
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     local w, h = packer:getDimensions()
     print("dimensions = " .. w .. "x" .. h)
 end
 
---@api-stub: LAtlasPacker:setNineSlice
+--@api: LAtlasPacker:setNineSlice
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     packer:pack("hero", 24, 24)
@@ -178,7 +178,7 @@ do
     print("set nine-slice = " .. tostring(ok))
 end
 
---@api-stub: LAtlasPacker:clear
+--@api: LAtlasPacker:clear
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     packer:pack("hero", 24, 24)
@@ -189,13 +189,13 @@ do
     print("after clear count = " .. packer:regionCount())
 end
 
---@api-stub: LAtlasPacker:type
+--@api: LAtlasPacker:type
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     print("type = " .. packer:type())
 end
 
---@api-stub: LAtlasPacker:typeOf
+--@api: LAtlasPacker:typeOf
 do
     local packer = lurek.sprite.newAtlasPacker(128, 64, 1)
     print("typeOf LAtlasPacker = " .. tostring(packer:typeOf("LAtlasPacker")))
@@ -203,46 +203,46 @@ end
 
 --- Sprite Module Part 1: LSpriteSheet advanced, newAtlasSheet, newRPGMakerSheet, parseAsepriteAtlas, parseAtlas
 
---@api-stub: LSpriteSheet:getFrameCount
+--@api: LSpriteSheet:getFrameCount
 do
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     print("frame_count = " .. sheet:getFrameCount())
 end
 
---@api-stub: LSpriteSheet:getFrameSize
+--@api: LSpriteSheet:getFrameSize
 do
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     local fw, fh = sheet:getFrameSize()
     print("frame_size = " .. fw .. "x" .. fh)
 end
 
---@api-stub: LSpriteSheet:getGridSize
+--@api: LSpriteSheet:getGridSize
 do
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     local gw, gh = sheet:getGridSize()
     print("grid = " .. gw .. "x" .. gh)
 end
 
---@api-stub: LSpriteSheet:type
+--@api: LSpriteSheet:type
 do
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     print("type = " .. sheet:type())
 end
 
---@api-stub: LSpriteSheet:typeOf
+--@api: LSpriteSheet:typeOf
 do
     local sheet = lurek.sprite.newSheet(128, 64, 32, 32)
     print("typeOf = " .. tostring(sheet:typeOf("LSpriteSheet")))
 end
 
---@api-stub: LSpriteAtlas:entryCount
+--@api: LSpriteAtlas:entryCount
 do
     local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
     local atlas = lurek.sprite.parseAsepriteAtlas(json)
     print("aseprite_count = " .. atlas:entryCount())
 end
 
---@api-stub: LSpriteAtlas:entryNames
+--@api: LSpriteAtlas:entryNames
 do
     local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
     local atlas = lurek.sprite.parseAsepriteAtlas(json)
@@ -251,41 +251,41 @@ do
     print("first name = " .. tostring(names[1]))
 end
 
---@api-stub: LSpriteAtlas:type
+--@api: LSpriteAtlas:type
 do
     local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
     local atlas = lurek.sprite.parseAsepriteAtlas(json)
     print("type = " .. atlas:type())
 end
 
---@api-stub: LSpriteAtlas:typeOf
+--@api: LSpriteAtlas:typeOf
 do
     local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
     local atlas = lurek.sprite.parseAsepriteAtlas(json)
     print("typeOf = " .. tostring(atlas:typeOf("LSpriteAtlas")))
 end
 
---@api-stub: lurek.sprite.newSprite
+--@api: lurek.sprite.newSprite
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     print("sprite created = " .. tostring(sprite ~= nil))
 end
 
---@api-stub: LSprite:setNormalMap
+--@api: LSprite:setNormalMap
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalMap(11)
     print("normal map set = " .. tostring(sprite:getNormalMap() == 11))
 end
 
---@api-stub: LSprite:getNormalMap
+--@api: LSprite:getNormalMap
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalMap(11)
     print("normal map = " .. tostring(sprite:getNormalMap()))
 end
 
---@api-stub: LSprite:hasNormalMap
+--@api: LSprite:hasNormalMap
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     print("has normal before = " .. tostring(sprite:hasNormalMap()))
@@ -293,7 +293,7 @@ do
     print("has normal after = " .. tostring(sprite:hasNormalMap()))
 end
 
---@api-stub: LSprite:clearNormalMap
+--@api: LSprite:clearNormalMap
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalMap(3)
@@ -301,21 +301,21 @@ do
     print("has normal after clear = " .. tostring(sprite:hasNormalMap()))
 end
 
---@api-stub: LSprite:setNormalIntensity
+--@api: LSprite:setNormalIntensity
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalIntensity(2.5)
     print("normal intensity set")
 end
 
---@api-stub: LSprite:getNormalIntensity
+--@api: LSprite:getNormalIntensity
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setNormalIntensity(2.5)
     print("normal intensity = " .. tostring(sprite:getNormalIntensity()))
 end
 
---@api-stub: LSprite:setPosition
+--@api: LSprite:setPosition
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     sprite:setPosition(32, 48)
@@ -323,26 +323,26 @@ do
     print("position = " .. x .. "," .. y)
 end
 
---@api-stub: LSprite:getPosition
+--@api: LSprite:getPosition
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     local x, y = sprite:getPosition()
     print("position = " .. x .. "," .. y)
 end
 
---@api-stub: LSprite:type
+--@api: LSprite:type
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     print("type = " .. sprite:type())
 end
 
---@api-stub: LSprite:typeOf
+--@api: LSprite:typeOf
 do
     local sprite = lurek.sprite.newSprite(7, 10, 20)
     print("typeOf LSprite = " .. tostring(sprite:typeOf("LSprite")))
 end
 
---@api-stub: lurek.sprite.newAnimator
+--@api: lurek.sprite.newAnimator
 do
     local anim = lurek.sprite.newAnimator({
         idle = { row = 1, from = 1, to = 3, fps = 10, loop = true }
@@ -350,14 +350,14 @@ do
     print("animator type = " .. anim:type())
 end
 
---@api-stub: LSpriteAnimator:play
+--@api: LSpriteAnimator:play
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
     anim:play("idle")
     print("clip after play = " .. tostring(anim:currentClip()))
 end
 
---@api-stub: LSpriteAnimator:pause
+--@api: LSpriteAnimator:pause
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
     anim:play("idle")
@@ -365,7 +365,7 @@ do
     print("is playing after pause = " .. tostring(anim:isPlaying()))
 end
 
---@api-stub: LSpriteAnimator:resume
+--@api: LSpriteAnimator:resume
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
     anim:play("idle")
@@ -374,7 +374,7 @@ do
     print("is playing after resume = " .. tostring(anim:isPlaying()))
 end
 
---@api-stub: LSpriteAnimator:stop
+--@api: LSpriteAnimator:stop
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
     anim:play("idle")
@@ -384,21 +384,21 @@ do
     print("frame after stop = " .. tostring(col))
 end
 
---@api-stub: LSpriteAnimator:isPlaying
+--@api: LSpriteAnimator:isPlaying
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
     anim:play("idle")
     print("is playing = " .. tostring(anim:isPlaying()))
 end
 
---@api-stub: LSpriteAnimator:currentClip
+--@api: LSpriteAnimator:currentClip
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
     anim:play("idle")
     print("current clip = " .. tostring(anim:currentClip()))
 end
 
---@api-stub: LSpriteAnimator:currentFrame
+--@api: LSpriteAnimator:currentFrame
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 2, from = 3, to = 4, fps = 10, loop = true } })
     anim:play("idle")
@@ -406,7 +406,7 @@ do
     print("frame = " .. row .. "," .. col)
 end
 
---@api-stub: LSpriteAnimator:update
+--@api: LSpriteAnimator:update
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
     anim:play("idle")
@@ -415,7 +415,7 @@ do
     print("frame after update = " .. tostring(col))
 end
 
---@api-stub: LSpriteAnimator:onFrame
+--@api: LSpriteAnimator:onFrame
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 10, loop = true } })
     anim:onFrame(function(row, col, clip)
@@ -425,7 +425,7 @@ do
     anim:update(0.11)
 end
 
---@api-stub: LSpriteAnimator:onLoop
+--@api: LSpriteAnimator:onLoop
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 2, fps = 10, loop = true } })
     anim:onLoop(function(clip)
@@ -435,7 +435,7 @@ do
     anim:update(0.25)
 end
 
---@api-stub: LSpriteAnimator:onEnd
+--@api: LSpriteAnimator:onEnd
 do
     local anim = lurek.sprite.newAnimator({ jump = { row = 1, from = 1, to = 2, fps = 10, loop = false } })
     anim:onEnd(function(clip)
@@ -445,7 +445,7 @@ do
     anim:update(0.5)
 end
 
---@api-stub: LSpriteAnimator:addClip
+--@api: LSpriteAnimator:addClip
 do
     local anim = lurek.sprite.newAnimator()
     anim:addClip("run", { row = 3, from = 1, to = 4, fps = 12, loop = true })
@@ -453,27 +453,27 @@ do
     print("current clip after add = " .. tostring(anim:currentClip()))
 end
 
---@api-stub: LSpriteAnimator:frameDuration
+--@api: LSpriteAnimator:frameDuration
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 20, loop = true } })
     anim:play("idle")
     print("frame duration = " .. tostring(anim:frameDuration()))
 end
 
---@api-stub: LSpriteAnimator:clipDuration
+--@api: LSpriteAnimator:clipDuration
 do
     local anim = lurek.sprite.newAnimator({ idle = { row = 1, from = 1, to = 3, fps = 6, loop = true } })
     anim:play("idle")
     print("clip duration = " .. tostring(anim:clipDuration()))
 end
 
---@api-stub: LSpriteAnimator:type
+--@api: LSpriteAnimator:type
 do
     local anim = lurek.sprite.newAnimator()
     print("type = " .. anim:type())
 end
 
---@api-stub: LSpriteAnimator:typeOf
+--@api: LSpriteAnimator:typeOf
 do
     local anim = lurek.sprite.newAnimator()
     print("typeOf LSpriteAnimator = " .. tostring(anim:typeOf("LSpriteAnimator")))

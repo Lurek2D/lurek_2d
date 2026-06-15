@@ -4,7 +4,7 @@
 
 --- Graph Module Part 1: factory, LGraph core (nodes, edges, items, pathfinding, stats)
 
---@api-stub: lurek.graph.newGraph
+--@api: lurek.graph.newGraph
 do
     local g = lurek.graph.newGraph()
     print("graph type = " .. g:type())
@@ -12,14 +12,14 @@ do
     print("edges = " .. g:getEdgeCount())
 end
 
---@api-stub: LGraph:addNode
+--@api: LGraph:addNode
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("warehouse", 100)
     print("node type = " .. n:type())
 end
 
---@api-stub: LGraph:addEdge
+--@api: LGraph:addEdge
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode("src")
@@ -28,14 +28,14 @@ do
     print("edge type = " .. e:type())
 end
 
---@api-stub: LGraph:createItem
+--@api: LGraph:createItem
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem("ore", 10.0)
     print("item type = " .. item:type())
 end
 
---@api-stub: LGraph:addItem
+--@api: LGraph:addItem
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("storage")
@@ -44,7 +44,7 @@ do
     print("item placed on node")
 end
 
---@api-stub: LGraph:removeNode
+--@api: LGraph:removeNode
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -52,7 +52,7 @@ do
     print("removed node = " .. tostring(ok))
 end
 
---@api-stub: LGraph:removeEdge
+--@api: LGraph:removeEdge
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -61,7 +61,7 @@ do
     print("removed edge = " .. tostring(ok))
 end
 
---@api-stub: LGraph:removeItem
+--@api: LGraph:removeItem
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem("scrap")
@@ -69,14 +69,14 @@ do
     print("removed item = " .. tostring(ok))
 end
 
---@api-stub: LGraph:hasNode
+--@api: LGraph:hasNode
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("has node = " .. tostring(g:hasNode(n)))
 end
 
---@api-stub: LGraph:hasEdge
+--@api: LGraph:hasEdge
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -85,14 +85,14 @@ do
     print("has edge = " .. tostring(g:hasEdge(e)))
 end
 
---@api-stub: LGraph:hasItem
+--@api: LGraph:hasItem
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem()
     print("has item = " .. tostring(g:hasItem(item)))
 end
 
---@api-stub: LGraph:getNodeCount
+--@api: LGraph:getNodeCount
 do
     local g = lurek.graph.newGraph()
     g:addNode()
@@ -100,7 +100,7 @@ do
     print("nodes = " .. g:getNodeCount())
 end
 
---@api-stub: LGraph:getEdgeCount
+--@api: LGraph:getEdgeCount
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -109,7 +109,7 @@ do
     print("edges = " .. g:getEdgeCount())
 end
 
---@api-stub: LGraph:getItemCount
+--@api: LGraph:getItemCount
 do
     local g = lurek.graph.newGraph()
     g:createItem("a")
@@ -117,7 +117,7 @@ do
     print("items = " .. g:getItemCount())
 end
 
---@api-stub: LGraph:getNodes
+--@api: LGraph:getNodes
 do
     local g = lurek.graph.newGraph()
     g:addNode("x")
@@ -126,7 +126,7 @@ do
     print("node list = " .. #nodes)
 end
 
---@api-stub: LGraph:getEdges
+--@api: LGraph:getEdges
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -135,7 +135,7 @@ do
     print("edge list = " .. #edges)
 end
 
---@api-stub: LGraph:getItems
+--@api: LGraph:getItems
 do
     local g = lurek.graph.newGraph()
     g:createItem("iron")
@@ -143,7 +143,7 @@ do
     print("item list = " .. #items)
 end
 
---@api-stub: LGraph:getNeighbors
+--@api: LGraph:getNeighbors
 do
     local g = lurek.graph.newGraph()
     local a, b, c = g:addNode(), g:addNode(), g:addNode()
@@ -153,7 +153,7 @@ do
     print("neighbors of a = " .. #neighbors)
 end
 
---@api-stub: LGraph:getEdgeBetween
+--@api: LGraph:getEdgeBetween
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -162,7 +162,7 @@ do
     print("edge between a-b exists = " .. tostring(e ~= nil))
 end
 
---@api-stub: LGraph:findPath
+--@api: LGraph:findPath
 do
     local g = lurek.graph.newGraph()
     local a, b, c = g:addNode(), g:addNode(), g:addNode()
@@ -172,7 +172,7 @@ do
     print("path found = " .. tostring(result ~= nil))
 end
 
---@api-stub: LGraph:findPathForItem
+--@api: LGraph:findPathForItem
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -182,7 +182,7 @@ do
     print("item path found = " .. tostring(result ~= nil))
 end
 
---@api-stub: LGraph:astar
+--@api: LGraph:astar
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -191,7 +191,7 @@ do
     print("astar path = " .. tostring(path ~= nil))
 end
 
---@api-stub: LGraph:getDistance
+--@api: LGraph:getDistance
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -200,7 +200,7 @@ do
     print("distance = " .. tostring(d))
 end
 
---@api-stub: LGraph:getReachable
+--@api: LGraph:getReachable
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -209,7 +209,7 @@ do
     print("reachable = " .. #reachable)
 end
 
---@api-stub: LGraph:getStats
+--@api: LGraph:getStats
 do
     local g = lurek.graph.newGraph()
     g:addNode()
@@ -218,7 +218,7 @@ do
     print("nodes=" .. stats.nodes .. " edges=" .. stats.edges .. " items=" .. stats.items)
 end
 
---@api-stub: LGraph:hasCycle
+--@api: LGraph:hasCycle
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -227,7 +227,7 @@ do
     print("has cycle = " .. tostring(g:hasCycle()))
 end
 
---@api-stub: LGraph:isBipartite
+--@api: LGraph:isBipartite
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -236,7 +236,7 @@ do
     print("bipartite = " .. tostring(g:isBipartite()))
 end
 
---@api-stub: LGraph:topologicalSort
+--@api: LGraph:topologicalSort
 do
     local g = lurek.graph.newGraph()
     local a, b, c = g:addNode(), g:addNode(), g:addNode()
@@ -246,7 +246,7 @@ do
     print("topo sort = " .. tostring(sorted ~= nil))
 end
 
---@api-stub: LGraph:mst
+--@api: LGraph:mst
 do
     local g = lurek.graph.newGraph()
     local a, b, c = g:addNode(), g:addNode(), g:addNode()
@@ -257,7 +257,7 @@ do
     print("MST edges = " .. #tree)
 end
 
---@api-stub: LGraph:colorGraph
+--@api: LGraph:colorGraph
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -266,7 +266,7 @@ do
     print("coloring type = " .. type(colors))
 end
 
---@api-stub: LGraph:getComponents
+--@api: LGraph:getComponents
 do
     local g = lurek.graph.newGraph()
     g:addNode()
@@ -275,7 +275,7 @@ do
     print("components = " .. #comps)
 end
 
---@api-stub: LGraph:subgraph
+--@api: LGraph:subgraph
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -284,7 +284,7 @@ do
     print("subgraph nodes = " .. sub:getNodeCount())
 end
 
---@api-stub: LGraph:sendItem
+--@api: LGraph:sendItem
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -294,7 +294,7 @@ do
     print("item sent along edge")
 end
 
---@api-stub: LGraph:on
+--@api: LGraph:on
 do
     local g = lurek.graph.newGraph()
     g:on("itemEnter", function(item, node)
@@ -303,41 +303,41 @@ do
     print("callback registered")
 end
 
---@api-stub: LGraph:step
+--@api: LGraph:step
 do
     local g = lurek.graph.newGraph()
     g:step()
     print("stepped")
 end
 
---@api-stub: LGraph:update
+--@api: LGraph:update
 do
     local g = lurek.graph.newGraph()
     g:update(0.016)
     print("updated")
 end
 
---@api-stub: LGraph:tickParallel
+--@api: LGraph:tickParallel
 do
     local g = lurek.graph.newGraph()
     g:tickParallel(0.016)
     print("tick parallel done")
 end
 
---@api-stub: LGraph:processDemand
+--@api: LGraph:processDemand
 do
     local g = lurek.graph.newGraph()
     g:processDemand()
     print("demand processed")
 end
 
---@api-stub: LGraph:type
+--@api: LGraph:type
 do
     local g = lurek.graph.newGraph()
     print("type = " .. g:type())
 end
 
---@api-stub: LGraph:typeOf
+--@api: LGraph:typeOf
 do
     local g = lurek.graph.newGraph()
     print("is Graph = " .. tostring(g:typeOf("LGraph")))
@@ -345,14 +345,14 @@ end
 
 --- Graph Module Part 2: LGraphNode methods
 
---@api-stub: LGraphNode:getType
+--@api: LGraphNode:getType
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("factory")
     print("node type = " .. n:getType())
 end
 
---@api-stub: LGraphNode:setType
+--@api: LGraphNode:setType
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -360,14 +360,14 @@ do
     print("set type = " .. n:getType())
 end
 
---@api-stub: LGraphNode:getCapacity
+--@api: LGraphNode:getCapacity
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("store", 50)
     print("capacity = " .. n:getCapacity())
 end
 
---@api-stub: LGraphNode:setCapacity
+--@api: LGraphNode:setCapacity
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -375,14 +375,14 @@ do
     print("capacity = " .. n:getCapacity())
 end
 
---@api-stub: LGraphNode:isActive
+--@api: LGraphNode:isActive
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("active = " .. tostring(n:isActive()))
 end
 
---@api-stub: LGraphNode:setActive
+--@api: LGraphNode:setActive
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -390,21 +390,21 @@ do
     print("active = " .. tostring(n:isActive()))
 end
 
---@api-stub: LGraphNode:isFull
+--@api: LGraphNode:isFull
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("bin", 1)
     print("full before = " .. tostring(n:isFull()))
 end
 
---@api-stub: LGraphNode:getItemCount
+--@api: LGraphNode:getItemCount
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("items = " .. n:getItemCount())
 end
 
---@api-stub: LGraphNode:getItems
+--@api: LGraphNode:getItems
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -413,7 +413,7 @@ do
     print("node items = " .. #items)
 end
 
---@api-stub: LGraphNode:getEdges
+--@api: LGraphNode:getEdges
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -422,7 +422,7 @@ do
     print("edges = " .. #edges)
 end
 
---@api-stub: LGraphNode:addSupply
+--@api: LGraphNode:addSupply
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("mine")
@@ -430,7 +430,7 @@ do
     print("supply added")
 end
 
---@api-stub: LGraphNode:removeSupply
+--@api: LGraphNode:removeSupply
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -439,7 +439,7 @@ do
     print("removed supply = " .. tostring(ok))
 end
 
---@api-stub: LGraphNode:clearSupplies
+--@api: LGraphNode:clearSupplies
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -449,7 +449,7 @@ do
     print("supplies cleared")
 end
 
---@api-stub: LGraphNode:addDemand
+--@api: LGraphNode:addDemand
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("factory")
@@ -457,7 +457,7 @@ do
     print("demand added")
 end
 
---@api-stub: LGraphNode:removeDemand
+--@api: LGraphNode:removeDemand
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -466,7 +466,7 @@ do
     print("removed demand = " .. tostring(ok))
 end
 
---@api-stub: LGraphNode:clearDemands
+--@api: LGraphNode:clearDemands
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -475,7 +475,7 @@ do
     print("demands cleared")
 end
 
---@api-stub: LGraphNode:setConversion
+--@api: LGraphNode:setConversion
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("smelter")
@@ -483,7 +483,7 @@ do
     print("conversion set: 2 ore -> 1 bar")
 end
 
---@api-stub: LGraphNode:clearConversion
+--@api: LGraphNode:clearConversion
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -492,7 +492,7 @@ do
     print("cleared conversion = " .. tostring(ok))
 end
 
---@api-stub: LGraphNode:clearAllConversions
+--@api: LGraphNode:clearAllConversions
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -502,14 +502,14 @@ do
     print("all conversions cleared")
 end
 
---@api-stub: LGraphNode:getProcessTime
+--@api: LGraphNode:getProcessTime
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("process time = " .. n:getProcessTime())
 end
 
---@api-stub: LGraphNode:setProcessTime
+--@api: LGraphNode:setProcessTime
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -517,14 +517,14 @@ do
     print("process time = " .. n:getProcessTime())
 end
 
---@api-stub: LGraphNode:getFlowMode
+--@api: LGraphNode:getFlowMode
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("flow mode = " .. n:getFlowMode())
 end
 
---@api-stub: LGraphNode:setFlowMode
+--@api: LGraphNode:setFlowMode
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -532,14 +532,14 @@ do
     print("flow mode = " .. n:getFlowMode())
 end
 
---@api-stub: LGraphNode:getPushRate
+--@api: LGraphNode:getPushRate
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("push rate = " .. n:getPushRate())
 end
 
---@api-stub: LGraphNode:setPushRate
+--@api: LGraphNode:setPushRate
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -547,14 +547,14 @@ do
     print("push rate = " .. n:getPushRate())
 end
 
---@api-stub: LGraphNode:getPullRate
+--@api: LGraphNode:getPullRate
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("pull rate = " .. n:getPullRate())
 end
 
---@api-stub: LGraphNode:setPullRate
+--@api: LGraphNode:setPullRate
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -562,7 +562,7 @@ do
     print("pull rate = " .. n:getPullRate())
 end
 
---@api-stub: LGraphNode:getPushFilter
+--@api: LGraphNode:getPushFilter
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -570,7 +570,7 @@ do
     print("push filter = " .. tostring(f))
 end
 
---@api-stub: LGraphNode:setPushFilter
+--@api: LGraphNode:setPushFilter
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -578,7 +578,7 @@ do
     print("push filter = " .. tostring(n:getPushFilter()))
 end
 
---@api-stub: LGraphNode:getPullFilter
+--@api: LGraphNode:getPullFilter
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -586,7 +586,7 @@ do
     print("pull filter = " .. tostring(f))
 end
 
---@api-stub: LGraphNode:setPullFilter
+--@api: LGraphNode:setPullFilter
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -594,14 +594,14 @@ do
     print("pull filter = " .. tostring(n:getPullFilter()))
 end
 
---@api-stub: LGraphNode:getOverflowPolicy
+--@api: LGraphNode:getOverflowPolicy
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("overflow = " .. tostring(n:getOverflowPolicy() or "reject"))
 end
 
---@api-stub: LGraphNode:setOverflowPolicy
+--@api: LGraphNode:setOverflowPolicy
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -609,14 +609,14 @@ do
     print("overflow = " .. tostring(n:getOverflowPolicy() or "destroy"))
 end
 
---@api-stub: LGraphNode:isQueueEnabled
+--@api: LGraphNode:isQueueEnabled
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("queue enabled = " .. tostring(n:isQueueEnabled()))
 end
 
---@api-stub: LGraphNode:setQueueEnabled
+--@api: LGraphNode:setQueueEnabled
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -624,14 +624,14 @@ do
     print("queue enabled = " .. tostring(n:isQueueEnabled()))
 end
 
---@api-stub: LGraphNode:getQueueCapacity
+--@api: LGraphNode:getQueueCapacity
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("queue cap = " .. n:getQueueCapacity())
 end
 
---@api-stub: LGraphNode:setQueueCapacity
+--@api: LGraphNode:setQueueCapacity
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -639,14 +639,14 @@ do
     print("queue cap = " .. n:getQueueCapacity())
 end
 
---@api-stub: LGraphNode:getQueueSize
+--@api: LGraphNode:getQueueSize
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("queue size = " .. n:getQueueSize())
 end
 
---@api-stub: LGraphNode:enqueue
+--@api: LGraphNode:enqueue
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("buffer")
@@ -659,7 +659,7 @@ do
     print("enqueued = " .. tostring(queued))
 end
 
---@api-stub: LGraphNode:dequeue
+--@api: LGraphNode:dequeue
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("buffer")
@@ -673,7 +673,7 @@ do
     print("dequeued = " .. tostring(out ~= nil))
 end
 
---@api-stub: LGraphNode:addTag
+--@api: LGraphNode:addTag
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -681,7 +681,7 @@ do
     print("tag added")
 end
 
---@api-stub: LGraphNode:hasTag
+--@api: LGraphNode:hasTag
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -689,7 +689,7 @@ do
     print("has vip = " .. tostring(n:hasTag("vip")))
 end
 
---@api-stub: LGraphNode:getTags
+--@api: LGraphNode:getTags
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -699,7 +699,7 @@ do
     print("tags = " .. #tags)
 end
 
---@api-stub: LGraphNode:removeTag
+--@api: LGraphNode:removeTag
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -708,7 +708,7 @@ do
     print("removed = " .. tostring(ok))
 end
 
---@api-stub: LGraphNode:clearTags
+--@api: LGraphNode:clearTags
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -718,14 +718,14 @@ do
     print("tags cleared")
 end
 
---@api-stub: LGraphNode:type
+--@api: LGraphNode:type
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     print("type = " .. n:type())
 end
 
---@api-stub: LGraphNode:typeOf
+--@api: LGraphNode:typeOf
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -734,7 +734,7 @@ end
 
 --- Graph Module Part 3: LGraphEdge and LGraphItem methods
 
---@api-stub: LGraphEdge:getFrom
+--@api: LGraphEdge:getFrom
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode("src"), g:addNode("dst")
@@ -743,7 +743,7 @@ do
     print("from type = " .. from:getType())
 end
 
---@api-stub: LGraphEdge:getTo
+--@api: LGraphEdge:getTo
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode("target")
@@ -752,7 +752,7 @@ do
     print("to type = " .. to:getType())
 end
 
---@api-stub: LGraphEdge:getType
+--@api: LGraphEdge:getType
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -761,7 +761,7 @@ do
     print("edge type = " .. e:getType())
 end
 
---@api-stub: LGraphEdge:setType
+--@api: LGraphEdge:setType
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -770,7 +770,7 @@ do
     print("edge type = " .. e:getType())
 end
 
---@api-stub: LGraphEdge:getWeight
+--@api: LGraphEdge:getWeight
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -779,7 +779,7 @@ do
     print("weight = " .. e:getWeight())
 end
 
---@api-stub: LGraphEdge:setWeight
+--@api: LGraphEdge:setWeight
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -788,7 +788,7 @@ do
     print("weight = " .. e:getWeight())
 end
 
---@api-stub: LGraphEdge:getTravelTime
+--@api: LGraphEdge:getTravelTime
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -797,7 +797,7 @@ do
     print("travel time = " .. e:getTravelTime())
 end
 
---@api-stub: LGraphEdge:setTravelTime
+--@api: LGraphEdge:setTravelTime
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -806,7 +806,7 @@ do
     print("travel time = " .. e:getTravelTime())
 end
 
---@api-stub: LGraphEdge:getCapacity
+--@api: LGraphEdge:getCapacity
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -815,7 +815,7 @@ do
     print("capacity = " .. e:getCapacity())
 end
 
---@api-stub: LGraphEdge:setCapacity
+--@api: LGraphEdge:setCapacity
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -824,7 +824,7 @@ do
     print("capacity = " .. e:getCapacity())
 end
 
---@api-stub: LGraphEdge:getSpeedModifier
+--@api: LGraphEdge:getSpeedModifier
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -833,7 +833,7 @@ do
     print("speed mod = " .. e:getSpeedModifier())
 end
 
---@api-stub: LGraphEdge:setSpeedModifier
+--@api: LGraphEdge:setSpeedModifier
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -842,7 +842,7 @@ do
     print("speed mod = " .. e:getSpeedModifier())
 end
 
---@api-stub: LGraphEdge:getThroughput
+--@api: LGraphEdge:getThroughput
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -851,7 +851,7 @@ do
     print("throughput = " .. e:getThroughput())
 end
 
---@api-stub: LGraphEdge:setThroughput
+--@api: LGraphEdge:setThroughput
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -860,7 +860,7 @@ do
     print("throughput = " .. e:getThroughput())
 end
 
---@api-stub: LGraphEdge:getCooldown
+--@api: LGraphEdge:getCooldown
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -869,7 +869,7 @@ do
     print("cooldown = " .. e:getCooldown())
 end
 
---@api-stub: LGraphEdge:setCooldown
+--@api: LGraphEdge:setCooldown
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -878,7 +878,7 @@ do
     print("cooldown = " .. e:getCooldown())
 end
 
---@api-stub: LGraphEdge:isOnCooldown
+--@api: LGraphEdge:isOnCooldown
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -887,7 +887,7 @@ do
     print("on cooldown = " .. tostring(e:isOnCooldown()))
 end
 
---@api-stub: LGraphEdge:isActive
+--@api: LGraphEdge:isActive
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -896,7 +896,7 @@ do
     print("active = " .. tostring(e:isActive()))
 end
 
---@api-stub: LGraphEdge:setActive
+--@api: LGraphEdge:setActive
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -905,7 +905,7 @@ do
     print("active = " .. tostring(e:isActive()))
 end
 
---@api-stub: LGraphEdge:isBidirectional
+--@api: LGraphEdge:isBidirectional
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -914,7 +914,7 @@ do
     print("bidi = " .. tostring(e:isBidirectional()))
 end
 
---@api-stub: LGraphEdge:setBidirectional
+--@api: LGraphEdge:setBidirectional
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -923,7 +923,7 @@ do
     print("bidi = " .. tostring(e:isBidirectional()))
 end
 
---@api-stub: LGraphEdge:addAllowedType
+--@api: LGraphEdge:addAllowedType
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -932,7 +932,7 @@ do
     print("iron allowed")
 end
 
---@api-stub: LGraphEdge:isItemTypeAllowed
+--@api: LGraphEdge:isItemTypeAllowed
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -941,7 +941,7 @@ do
     print("gold allowed = " .. tostring(e:isItemTypeAllowed("gold")))
 end
 
---@api-stub: LGraphEdge:removeAllowedType
+--@api: LGraphEdge:removeAllowedType
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -951,7 +951,7 @@ do
     print("removed = " .. tostring(ok))
 end
 
---@api-stub: LGraphEdge:clearAllowedTypes
+--@api: LGraphEdge:clearAllowedTypes
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -961,7 +961,7 @@ do
     print("allow list cleared")
 end
 
---@api-stub: LGraphEdge:getItemsInTransit
+--@api: LGraphEdge:getItemsInTransit
 do
     local g = lurek.graph.newGraph()
     local a, b = g:addNode(), g:addNode()
@@ -970,7 +970,7 @@ do
     print("in transit = " .. #items)
 end
 
---@api-stub: LGraphEdge:type
+--@api: LGraphEdge:type
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -979,7 +979,7 @@ do
     print("type = " .. e:type())
 end
 
---@api-stub: LGraphEdge:typeOf
+--@api: LGraphEdge:typeOf
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode()
@@ -988,14 +988,14 @@ do
     print("is GraphEdge = " .. tostring(e:typeOf("LGraphEdge")))
 end
 
---@api-stub: LGraphItem:getType
+--@api: LGraphItem:getType
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem("ore")
     print("item type = " .. item:getType())
 end
 
---@api-stub: LGraphItem:setType
+--@api: LGraphItem:setType
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem("raw")
@@ -1003,14 +1003,14 @@ do
     print("item type = " .. item:getType())
 end
 
---@api-stub: LGraphItem:getPriority
+--@api: LGraphItem:getPriority
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem()
     print("priority = " .. item:getPriority())
 end
 
---@api-stub: LGraphItem:setPriority
+--@api: LGraphItem:setPriority
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem()
@@ -1018,14 +1018,14 @@ do
     print("priority = " .. item:getPriority())
 end
 
---@api-stub: LGraphItem:getDecayTime
+--@api: LGraphItem:getDecayTime
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem("food", 30.0)
     print("decay time = " .. item:getDecayTime())
 end
 
---@api-stub: LGraphItem:setDecayTime
+--@api: LGraphItem:setDecayTime
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem("fruit")
@@ -1033,21 +1033,21 @@ do
     print("decay time = " .. item:getDecayTime())
 end
 
---@api-stub: LGraphItem:getRemainingLife
+--@api: LGraphItem:getRemainingLife
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem("milk", 10.0)
     print("remaining = " .. item:getRemainingLife())
 end
 
---@api-stub: LGraphItem:isAlive
+--@api: LGraphItem:isAlive
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem()
     print("alive = " .. tostring(item:isAlive()))
 end
 
---@api-stub: LGraphItem:kill
+--@api: LGraphItem:kill
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem()
@@ -1055,7 +1055,7 @@ do
     print("alive after kill = " .. tostring(item:isAlive()))
 end
 
---@api-stub: LGraphItem:getPosition
+--@api: LGraphItem:getPosition
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
@@ -1064,21 +1064,21 @@ do
     print("item is on a node = " .. tostring(item:getPosition() ~= nil))
 end
 
---@api-stub: LGraphItem:type
+--@api: LGraphItem:type
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem()
     print("type = " .. item:type())
 end
 
---@api-stub: LGraphItem:typeOf
+--@api: LGraphItem:typeOf
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem()
     print("is GraphItem = " .. tostring(item:typeOf("LGraphItem")))
 end
 
---@api-stub: LGraph:addEdgeUnchecked
+--@api: LGraph:addEdgeUnchecked
 do
     local g = lurek.graph.newGraph()
     local a = g:addNode("hub")
@@ -1088,7 +1088,7 @@ do
     print("edge count = " .. g:getEdgeCount())
 end
 
---@api-stub: LGraph:batchAddNodes
+--@api: LGraph:batchAddNodes
 do
     local g = lurek.graph.newGraph()
     local ids = g:batchAddNodes(3, { node_type = "router", capacity = 4 })
@@ -1098,7 +1098,7 @@ do
     print("first node type = " .. nodes[1]:getType())
 end
 
---@api-stub: LGraph:batchAddEdges
+--@api: LGraph:batchAddEdges
 do
     local g = lurek.graph.newGraph()
     local ids = g:batchAddNodes(3, { node_type = "router" })
@@ -1110,7 +1110,7 @@ do
     print("edge count = " .. g:getEdgeCount())
 end
 
---@api-stub: LGraph:batchStep
+--@api: LGraph:batchStep
 do
     local g = lurek.graph.newGraph()
     local ids = g:batchAddNodes(2, { node_type = "router" })

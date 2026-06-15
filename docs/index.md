@@ -1,9 +1,9 @@
-# Start page
+﻿# Start page
 
 <script>
   window.location.replace("callbacks.html");
 </script>
 
-Jeśli przekierowanie nie zadziałało, kliknij:
+If redirect does not work, click:
 
-[Lua API (start)](callbacks.md)
+[Go to Lua API](callbacks.md)

@@ -1,4 +1,11 @@
 //! File: src/lua_api/animation_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
+//! TODO: add doc note 3
+//! TODO: add doc note 4
+//! TODO: add doc note 5
 
 use super::render_api::LuaImage;
 use super::SharedState;

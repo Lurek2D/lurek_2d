@@ -706,6 +706,21 @@ LOverlay:getStats()
 |------|-------------|
 | table | Overlay telemetry fields. |
 
+**Example**
+
+```lua
+do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherEnabled(true)
+    ov:setWeather("rain")
+    ov:setWeatherIntensity(0.6)
+    ov:triggerFlash(1.0, 1.0, 1.0, 0.7, 0.2)
+    local stats = ov:getStats()
+    print("overlay stats size=" .. stats.width .. "x" .. stats.height)
+    print("overlay stats effects=" .. stats.active_effects .. " weather=" .. tostring(stats.weather_enabled))
+end
+```
+
 ---
 
 #### `LOverlay:getTimeOfDay`

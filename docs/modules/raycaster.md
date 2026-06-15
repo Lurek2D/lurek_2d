@@ -4155,6 +4155,8 @@ do
     map:setWindowCell(7, 7, 0.25, 0.78, 0.35)
     map:setCell(7, 9, 1)
     map:setDoorCell(7, 9, "vertical", 1.0)
+    local feature = map:getWallFeatureCell(7, 7)
+    print("feature kind = " .. tostring(feature and feature.kind))
 
     local params = {
         px = 2.5,
@@ -5423,6 +5425,8 @@ end
 ---
 
 #### `LSceneAdapter:clearModels`
+
+Clears models.
 
 ```lua
 LSceneAdapter:clearModels()

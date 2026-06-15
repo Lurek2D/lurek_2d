@@ -30,6 +30,7 @@
 - Keep scope narrow and never revert unrelated user changes.
 - Ask if instructions are unclear.
 - Write simple English and short bullets.
+- NEVER write any temp files outside of `work/` folder. NEVER !!
 
 ## Workflow
 - Keep public API changes synced with specs, examples, and coverage.

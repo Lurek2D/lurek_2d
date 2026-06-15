@@ -4,21 +4,21 @@
 
 --- Binary Module Part 1: Pack/Unpack, Compression, Encoding, Hashing, TOML, MsgPack, RingBuffer, DataView, Writer
 
---@api-stub: lurek.binary.pack
+--@api: lurek.binary.pack
 do
     local packed = lurek.binary.pack("BHI", 255, 1000, 123456)
     print("packed len = " .. #packed)
     print("first byte = " .. string.byte(packed, 1))
 end
 
---@api-stub: lurek.binary.unpack
+--@api: lurek.binary.unpack
 do
     local packed = lurek.binary.pack("BHI", 255, 1000, 123456)
     local b, h, i = lurek.binary.unpack("BHI", packed)
     print("unpacked: " .. b .. ", " .. h .. ", " .. i)
 end
 
---@api-stub: lurek.binary.getPackedSize
+--@api: lurek.binary.getPackedSize
 do
     local sz = lurek.binary.getPackedSize("BHI", 0, 0, 0)
     local packed = lurek.binary.pack("BHI", 0, 0, 0)
@@ -26,7 +26,7 @@ do
     print("matches packed len = " .. tostring(sz == #packed))
 end
 
---@api-stub: lurek.binary.compress
+--@api: lurek.binary.compress
 do
     local raw = string.rep("hello", 100)
     local compressed = lurek.binary.compress("deflate", raw)
@@ -34,7 +34,7 @@ do
     print("compressed len = " .. #compressed)
 end
 
---@api-stub: lurek.binary.decompress
+--@api: lurek.binary.decompress
 do
     local raw = string.rep("world", 100)
     local compressed = lurek.binary.compress("deflate", raw)
@@ -43,7 +43,7 @@ do
     print("restored matches = " .. tostring(restored == raw))
 end
 
---@api-stub: lurek.binary.compressChunks
+--@api: lurek.binary.compressChunks
 do
     local chunks = {"chunk1", "chunk2", "chunk3"}
     local compressed = lurek.binary.compressChunks("deflate", chunks)
@@ -51,7 +51,7 @@ do
     print("chunks compressed len = " .. #compressed)
 end
 
---@api-stub: lurek.binary.decompressChunks
+--@api: lurek.binary.decompressChunks
 do
     local chunks = {"aaaa", "bbbb", "cccc"}
     local compressed = lurek.binary.compressChunks("deflate", chunks)
@@ -60,41 +60,41 @@ do
     print("restored preview = " .. restored:sub(1, 8))
 end
 
---@api-stub: lurek.binary.encode
+--@api: lurek.binary.encode
 do
     local encoded = lurek.binary.encode("base64", "Hello, World!")
     print("base64 = " .. encoded)
 end
 
---@api-stub: lurek.binary.decode
+--@api: lurek.binary.decode
 do
     local encoded = lurek.binary.encode("base64", "Hello")
     local decoded = lurek.binary.decode("base64", encoded)
     print("decoded = " .. decoded)
 end
 
---@api-stub: lurek.binary.hash
+--@api: lurek.binary.hash
 do
     local digest = lurek.binary.hash("sha256", "secret data")
     print("sha256 = " .. digest)
     print("digest length = " .. #digest)
 end
 
---@api-stub: lurek.binary.crc32
+--@api: lurek.binary.crc32
 do
     local crc = lurek.binary.crc32("test data")
     print("crc32 = " .. crc)
     print("crc32 type = " .. type(crc))
 end
 
---@api-stub: lurek.binary.newByteData
+--@api: lurek.binary.newByteData
 do
     local bd = lurek.binary.newByteData(16)
     print("bytedata size = " .. bd:getSize())
     print("first byte = " .. bd:getByte(0))
 end
 
---@api-stub: lurek.binary.newDataView
+--@api: lurek.binary.newDataView
 do
     local raw = lurek.binary.pack("<II", 42, 99)
     local view = lurek.binary.newDataView(raw)
@@ -102,21 +102,21 @@ do
     print("first value = " .. view:getUInt32(0))
 end
 
---@api-stub: lurek.binary.write
+--@api: lurek.binary.write
 do
     local bytes = lurek.binary.write("u32", 42)
     print("write len = " .. #bytes)
     print("read back = " .. lurek.binary.read("u32", bytes))
 end
 
---@api-stub: lurek.binary.read
+--@api: lurek.binary.read
 do
     local bytes = lurek.binary.write("u32", 42)
     local val = lurek.binary.read("u32", bytes)
     print("read val = " .. val)
 end
 
---@api-stub: lurek.binary.size
+--@api: lurek.binary.size
 do
     local sz = lurek.binary.size("u32")
     local bytes = lurek.binary.write("u32", 7)
@@ -124,7 +124,7 @@ do
     print("matches write len = " .. tostring(sz == #bytes))
 end
 
---@api-stub: lurek.binary.parseToml
+--@api: lurek.binary.parseToml
 do
     local toml_text = "[player]\nname = \"Hero\"\nlevel = 5"
     local t = lurek.binary.parseToml(toml_text)
@@ -132,7 +132,7 @@ do
     print("player level = " .. tostring(t.player.level))
 end
 
---@api-stub: lurek.binary.encodeToml
+--@api: lurek.binary.encodeToml
 do
     local t = {title = "My Game", version = "1.0"}
     local text = lurek.binary.encodeToml(t)
@@ -140,14 +140,14 @@ do
     print("toml preview = " .. text:sub(1, 20))
 end
 
---@api-stub: lurek.binary.newRingBuffer
+--@api: lurek.binary.newRingBuffer
 do
     local rb = lurek.binary.newRingBuffer(8)
     print("ring capacity = " .. rb:capacity())
     print("ring empty = " .. tostring(rb:isEmpty()))
 end
 
---@api-stub: lurek.binary.toMsgPack
+--@api: lurek.binary.toMsgPack
 do
     local payload = {score = 100, name = "test"}
     local bytes = lurek.binary.toMsgPack(payload)
@@ -155,7 +155,7 @@ do
     print("first byte = " .. string.byte(bytes, 1))
 end
 
---@api-stub: lurek.binary.fromMsgPack
+--@api: lurek.binary.fromMsgPack
 do
     local payload = {score = 100, name = "test"}
     local bytes = lurek.binary.toMsgPack(payload)
@@ -164,14 +164,14 @@ do
     print("decoded name = " .. decoded.name)
 end
 
---@api-stub: lurek.binary.newWriter
+--@api: lurek.binary.newWriter
 do
     local w = lurek.binary.newWriter()
     print("writer created = " .. tostring(w ~= nil))
     print("writer type = " .. w:type())
 end
 
---@api-stub: LRingBuffer:push
+--@api: LRingBuffer:push
 do
     local rb = lurek.binary.newRingBuffer(3)
     rb:push("a")
@@ -181,7 +181,7 @@ do
     print("newest = " .. tostring(rb:peekNewest()))
 end
 
---@api-stub: LRingBuffer:pop
+--@api: LRingBuffer:pop
 do
     local rb = lurek.binary.newRingBuffer(4)
     rb:push(10)
@@ -190,7 +190,7 @@ do
     print("popped = " .. oldest)
 end
 
---@api-stub: LRingBuffer:peek
+--@api: LRingBuffer:peek
 do
     local rb = lurek.binary.newRingBuffer(4)
     rb:push("first")
@@ -198,7 +198,7 @@ do
     print("peek = " .. rb:peek())
 end
 
---@api-stub: LRingBuffer:peekNewest
+--@api: LRingBuffer:peekNewest
 do
     local rb = lurek.binary.newRingBuffer(4)
     rb:push("old")
@@ -206,7 +206,7 @@ do
     print("newest = " .. rb:peekNewest())
 end
 
---@api-stub: LRingBuffer:len
+--@api: LRingBuffer:len
 do
     local rb = lurek.binary.newRingBuffer(10)
     rb:push(1)
@@ -215,13 +215,13 @@ do
     print("capacity = " .. rb:capacity())
 end
 
---@api-stub: LRingBuffer:capacity
+--@api: LRingBuffer:capacity
 do
     local rb = lurek.binary.newRingBuffer(5)
     print("capacity = " .. rb:capacity())
 end
 
---@api-stub: LRingBuffer:isEmpty
+--@api: LRingBuffer:isEmpty
 do
     local rb = lurek.binary.newRingBuffer(4)
     print("empty = " .. tostring(rb:isEmpty()))
@@ -229,7 +229,7 @@ do
     print("empty after push = " .. tostring(rb:isEmpty()))
 end
 
---@api-stub: LRingBuffer:isFull
+--@api: LRingBuffer:isFull
 do
     local rb = lurek.binary.newRingBuffer(2)
     rb:push("a")
@@ -238,7 +238,7 @@ do
     print("len = " .. tostring(rb:len()))
 end
 
---@api-stub: LRingBuffer:clear
+--@api: LRingBuffer:clear
 do
     local rb = lurek.binary.newRingBuffer(4)
     rb:push(1)
@@ -247,7 +247,7 @@ do
     print("after clear len = " .. rb:len())
 end
 
---@api-stub: LRingBuffer:toTable
+--@api: LRingBuffer:toTable
 do
     local rb = lurek.binary.newRingBuffer(4)
     rb:push(10)
@@ -257,19 +257,19 @@ do
     print("first item = " .. tostring(t[1]))
 end
 
---@api-stub: LRingBuffer:type
+--@api: LRingBuffer:type
 do
     local rb = lurek.binary.newRingBuffer(4)
     print("type = " .. rb:type())
 end
 
---@api-stub: LRingBuffer:typeOf
+--@api: LRingBuffer:typeOf
 do
     local rb = lurek.binary.newRingBuffer(4)
     print("is LRingBuffer = " .. tostring(rb:typeOf("LRingBuffer")))
 end
 
---@api-stub: LDataView:getUInt8
+--@api: LDataView:getUInt8
 do
     local raw = lurek.binary.pack("BBBB", 10, 20, 30, 40)
     local view = lurek.binary.newDataView(raw)
@@ -277,42 +277,42 @@ do
     print("u8[1] = " .. view:getUInt8(1))
 end
 
---@api-stub: LDataView:getInt8
+--@api: LDataView:getInt8
 do
     local raw = lurek.binary.pack("b", -42)
     local view = lurek.binary.newDataView(raw)
     print("i8[0] = " .. view:getInt8(0))
 end
 
---@api-stub: LDataView:getInt16
+--@api: LDataView:getInt16
 do
     local raw = lurek.binary.pack("h", -1000)
     local view = lurek.binary.newDataView(raw)
     print("i16[0] = " .. view:getInt16(0))
 end
 
---@api-stub: LDataView:getUInt16
+--@api: LDataView:getUInt16
 do
     local raw = lurek.binary.pack("H", 65000)
     local view = lurek.binary.newDataView(raw)
     print("u16[0] = " .. view:getUInt16(0))
 end
 
---@api-stub: LDataView:getInt32
+--@api: LDataView:getInt32
 do
     local raw = lurek.binary.pack("<i", -100000)
     local view = lurek.binary.newDataView(raw)
     print("i32[0] = " .. view:getInt32(0))
 end
 
---@api-stub: LDataView:getUInt32
+--@api: LDataView:getUInt32
 do
     local raw = lurek.binary.pack("<I", 3000000)
     local view = lurek.binary.newDataView(raw)
     print("u32[0] = " .. view:getUInt32(0))
 end
 
---@api-stub: LDataView:getFloat
+--@api: LDataView:getFloat
 do
     local raw = lurek.binary.pack("f", 3.14)
     local view = lurek.binary.newDataView(raw)
@@ -320,14 +320,14 @@ do
     print("view size = " .. view:getSize())
 end
 
---@api-stub: LDataView:getDouble
+--@api: LDataView:getDouble
 do
     local raw = lurek.binary.pack("d", 2.718281828)
     local view = lurek.binary.newDataView(raw)
     print("f64[0] = " .. view:getDouble(0))
 end
 
---@api-stub: LDataView:getSize
+--@api: LDataView:getSize
 do
     local raw = lurek.binary.pack("<III", 1, 2, 3)
     local view = lurek.binary.newDataView(raw)
@@ -335,19 +335,19 @@ do
     print("last value = " .. view:getUInt32(8))
 end
 
---@api-stub: LDataView:type
+--@api: LDataView:type
 do
     local view = lurek.binary.newDataView("abc")
     print("type = " .. view:type())
 end
 
---@api-stub: LDataView:typeOf
+--@api: LDataView:typeOf
 do
     local view = lurek.binary.newDataView("abc")
     print("is LDataView = " .. tostring(view:typeOf("LDataView")))
 end
 
---@api-stub: LDataWriter:writeU8
+--@api: LDataWriter:writeU8
 do
     local w = lurek.binary.newWriter()
     w:writeU8(255)
@@ -355,28 +355,28 @@ do
     print("first byte = " .. string.byte(w:toBytes(), 1))
 end
 
---@api-stub: LDataWriter:writeI8
+--@api: LDataWriter:writeI8
 do
     local w = lurek.binary.newWriter()
     w:writeI8(-128)
     print("after writeI8 len = " .. w:len())
 end
 
---@api-stub: LDataWriter:writeU16LE
+--@api: LDataWriter:writeU16LE
 do
     local w = lurek.binary.newWriter()
     w:writeU16LE(1000)
     print("after writeU16LE len = " .. w:len())
 end
 
---@api-stub: LDataWriter:writeU16BE
+--@api: LDataWriter:writeU16BE
 do
     local w = lurek.binary.newWriter()
     w:writeU16BE(1000)
     print("after writeU16BE len = " .. w:len())
 end
 
---@api-stub: LDataWriter:writeI16LE
+--@api: LDataWriter:writeI16LE
 do
     local w = lurek.binary.newWriter()
     w:writeI16LE(-500)
@@ -385,49 +385,49 @@ end
 
 --- Binary Module Part 2: DataWriter (continued), ByteData
 
---@api-stub: LDataWriter:writeU32LE
+--@api: LDataWriter:writeU32LE
 do
     local w = lurek.binary.newWriter()
     w:writeU32LE(123456)
     print("after writeU32LE len = " .. w:len())
 end
 
---@api-stub: LDataWriter:writeI32LE
+--@api: LDataWriter:writeI32LE
 do
     local w = lurek.binary.newWriter()
     w:writeI32LE(-99999)
     print("after writeI32LE len = " .. w:len())
 end
 
---@api-stub: LDataWriter:writeF32LE
+--@api: LDataWriter:writeF32LE
 do
     local w = lurek.binary.newWriter()
     w:writeF32LE(3.14)
     print("after writeF32LE len = " .. w:len())
 end
 
---@api-stub: LDataWriter:writeF64LE
+--@api: LDataWriter:writeF64LE
 do
     local w = lurek.binary.newWriter()
     w:writeF64LE(2.718281828)
     print("after writeF64LE len = " .. w:len())
 end
 
---@api-stub: LDataWriter:writeString
+--@api: LDataWriter:writeString
 do
     local w = lurek.binary.newWriter()
     w:writeString("Hello!")
     print("after writeString len = " .. w:len())
 end
 
---@api-stub: LDataWriter:writeBytes
+--@api: LDataWriter:writeBytes
 do
     local w = lurek.binary.newWriter()
     w:writeBytes("\x00\x01\x02\x03")
     print("after writeBytes len = " .. w:len())
 end
 
---@api-stub: LDataWriter:seek
+--@api: LDataWriter:seek
 do
     local w = lurek.binary.newWriter()
     w:writeU32LE(0)
@@ -437,7 +437,7 @@ do
     print("cursor = " .. w:tell())
 end
 
---@api-stub: LDataWriter:tell
+--@api: LDataWriter:tell
 do
     local w = lurek.binary.newWriter()
     w:writeU8(1)
@@ -445,7 +445,7 @@ do
     print("cursor at = " .. w:tell())
 end
 
---@api-stub: LDataWriter:len
+--@api: LDataWriter:len
 do
     local w = lurek.binary.newWriter()
     w:writeU16LE(100)
@@ -453,7 +453,7 @@ do
     print("writer len = " .. w:len())
 end
 
---@api-stub: LDataWriter:toBytes
+--@api: LDataWriter:toBytes
 do
     local w = lurek.binary.newWriter()
     w:writeU8(65)
@@ -463,45 +463,45 @@ do
     print("bytes text = " .. bytes)
 end
 
---@api-stub: LDataWriter:type
+--@api: LDataWriter:type
 do
     local w = lurek.binary.newWriter()
     print("type = " .. w:type())
 end
 
---@api-stub: LDataWriter:typeOf
+--@api: LDataWriter:typeOf
 do
     local w = lurek.binary.newWriter()
     print("is LDataWriter = " .. tostring(w:typeOf("LDataWriter")))
 end
 
---@api-stub: LByteData:getSize
+--@api: LByteData:getSize
 do
     local bd = lurek.binary.newByteData(32)
     print("size = " .. bd:getSize())
 end
 
---@api-stub: LByteData:getString
+--@api: LByteData:getString
 do
     local bd = lurek.binary.newByteData("Hello")
     print("str = " .. bd:getString())
     print("size = " .. bd:getSize())
 end
 
---@api-stub: LByteData:getByte
+--@api: LByteData:getByte
 do
     local bd = lurek.binary.newByteData("ABC")
     print("byte[0] = " .. bd:getByte(0))
 end
 
---@api-stub: LByteData:setByte
+--@api: LByteData:setByte
 do
     local bd = lurek.binary.newByteData(4)
     bd:setByte(0, 255)
     print("byte[0] = " .. bd:getByte(0))
 end
 
---@api-stub: LByteData:clone
+--@api: LByteData:clone
 do
     local bd = lurek.binary.newByteData("test")
     local copy = bd:clone()
@@ -509,7 +509,7 @@ do
     print("original[0] = " .. bd:getByte(0) .. " copy[0] = " .. copy:getByte(0))
 end
 
---@api-stub: LByteData:setBit
+--@api: LByteData:setBit
 do
     local bd = lurek.binary.newByteData(1)
     bd:setBit(0, 0, true)
@@ -518,7 +518,7 @@ do
     print("bit 7 = " .. tostring(bd:getBit(0, 7)))
 end
 
---@api-stub: LByteData:getBit
+--@api: LByteData:getBit
 do
     local bd = lurek.binary.newByteData(1)
     bd:setByte(0, 0x80)
@@ -526,7 +526,7 @@ do
     print("bit0 = " .. tostring(bd:getBit(0, 0)))
 end
 
---@api-stub: LByteData:readBits
+--@api: LByteData:readBits
 do
     local bd = lurek.binary.newByteData(2)
     bd:setByte(0, 0xFF)
@@ -535,13 +535,13 @@ do
     print("12 bits = " .. val)
 end
 
---@api-stub: LByteData:type
+--@api: LByteData:type
 do
     local bd = lurek.binary.newByteData(1)
     print("type = " .. bd:type())
 end
 
---@api-stub: LByteData:typeOf
+--@api: LByteData:typeOf
 do
     local bd = lurek.binary.newByteData(1)
     print("is LByteData = " .. tostring(bd:typeOf("LByteData")))

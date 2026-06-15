@@ -1,5 +1,6 @@
 //! Shared text helpers used across the terminal subsystem.
 //! These helpers centralize UTF-8-safe character counting, truncation, and indexing logic.
+//! Module API documentation
 
 /// Return the number of Unicode scalar values in `text`.
 pub(crate) fn char_count(text: &str) -> usize {

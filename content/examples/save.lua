@@ -4,7 +4,7 @@
 
 --- Save Module: persistent game state management
 
---@api-stub: lurek.save.newSaveManager
+--@api: lurek.save.newSaveManager
 do
     ---@type LSaveManager
     local mgr = lurek.save.newSaveManager()
@@ -12,7 +12,7 @@ do
     print("is LSaveManager = " .. tostring(mgr:typeOf("LSaveManager")))
 end
 
---@api-stub: LSaveManager:register
+--@api: LSaveManager:register
 do
     local mgr = lurek.save.newSaveManager()
     local hp = 100
@@ -20,7 +20,7 @@ do
     print("collected player hp = " .. mgr:collect().player.hp)
 end
 
---@api-stub: LSaveManager:collect
+--@api: LSaveManager:collect
 do
     local mgr = lurek.save.newSaveManager()
     local hp = 100
@@ -28,7 +28,7 @@ do
     print("collected player hp = " .. mgr:collect().player.hp)
 end
 
---@api-stub: LSaveManager:restore
+--@api: LSaveManager:restore
 do
     local mgr = lurek.save.newSaveManager()
     local hp = 100
@@ -38,7 +38,7 @@ do
     print("restored hp = " .. hp)
 end
 
---@api-stub: LSaveManager:save
+--@api: LSaveManager:save
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("score", function() return { value = 9999 } end, function(_) end)
@@ -49,7 +49,7 @@ do
     mgr:delete(slot)
 end
 
---@api-stub: LSaveManager:load
+--@api: LSaveManager:load
 do
     local mgr = lurek.save.newSaveManager()
     local score = 9999
@@ -64,7 +64,7 @@ do
     mgr:delete(slot)
 end
 
---@api-stub: LSaveManager:exists
+--@api: LSaveManager:exists
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("score", function() return { value = 9999 } end, function(_) end)
@@ -74,7 +74,7 @@ do
     mgr:delete(slot)
 end
 
---@api-stub: LSaveManager:delete
+--@api: LSaveManager:delete
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("score", function() return { value = 9999 } end, function(_) end)
@@ -84,7 +84,7 @@ do
     print("after delete exists = " .. tostring(mgr:exists(slot)))
 end
 
---@api-stub: LSaveManager:getSlots
+--@api: LSaveManager:getSlots
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("data", function() return { level = 5 } end, function(_) end)
@@ -97,7 +97,7 @@ do
     mgr:delete(slot)
 end
 
---@api-stub: LSaveManager:getSlotInfo
+--@api: LSaveManager:getSlotInfo
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("data", function() return { level = 5 } end, function(_) end)
@@ -110,7 +110,7 @@ do
     mgr:delete(slot)
 end
 
---@api-stub: LSaveManager:enableAutoSave
+--@api: LSaveManager:enableAutoSave
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
@@ -122,7 +122,7 @@ do
     pcall(function() mgr:delete("autosave") end)
 end
 
---@api-stub: LSaveManager:disableAutoSave
+--@api: LSaveManager:disableAutoSave
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
@@ -132,7 +132,7 @@ do
     print("after disable triggered = " .. tostring(mgr:update(6.0)))
 end
 
---@api-stub: LSaveManager:update
+--@api: LSaveManager:update
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
@@ -146,7 +146,7 @@ do
     end
 end
 
---@api-stub: LSaveManager:markDirty
+--@api: LSaveManager:markDirty
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
@@ -155,7 +155,7 @@ do
     print("after markDirty = " .. tostring(mgr:isDirty()))
 end
 
---@api-stub: LSaveManager:isDirty
+--@api: LSaveManager:isDirty
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
@@ -164,7 +164,7 @@ do
     print("after markDirty = " .. tostring(mgr:isDirty()))
 end
 
---@api-stub: LSaveManager:setSchemaVersion
+--@api: LSaveManager:setSchemaVersion
 do
     local mgr = lurek.save.newSaveManager()
     mgr:setSchemaVersion(3)
@@ -181,7 +181,7 @@ do
     print("schema version = " .. mgr:getSchemaVersion())
 end
 
---@api-stub: LSaveManager:getSchemaVersion
+--@api: LSaveManager:getSchemaVersion
 do
     local mgr = lurek.save.newSaveManager()
     mgr:setSchemaVersion(3)
@@ -198,7 +198,7 @@ do
     print("schema version = " .. mgr:getSchemaVersion())
 end
 
---@api-stub: LSaveManager:addMigration
+--@api: LSaveManager:addMigration
 do
     local mgr = lurek.save.newSaveManager()
     mgr:setSchemaVersion(3)
@@ -218,35 +218,35 @@ do
     print("schema version = " .. mgr:getSchemaVersion())
 end
 
---@api-stub: LSaveManager:setSummary
+--@api: LSaveManager:setSummary
 do
     local mgr = lurek.save.newSaveManager()
     mgr:setSummary("Chapter 3 — The Dark Forest")
     print("summary = " .. mgr:getSummary())
 end
 
---@api-stub: LSaveManager:getSummary
+--@api: LSaveManager:getSummary
 do
     local mgr = lurek.save.newSaveManager()
     mgr:setSummary("Chapter 3 — The Dark Forest")
     print("summary = " .. mgr:getSummary())
 end
 
---@api-stub: LSaveManager:setCompress
+--@api: LSaveManager:setCompress
 do
     local mgr = lurek.save.newSaveManager()
     mgr:setCompress(true)
     print("after enable = " .. tostring(mgr:isCompressed()))
 end
 
---@api-stub: LSaveManager:isCompressed
+--@api: LSaveManager:isCompressed
 do
     local mgr = lurek.save.newSaveManager()
     mgr:setCompress(true)
     print("after enable = " .. tostring(mgr:isCompressed()))
 end
 
---@api-stub: LSaveManager:onBeforeSave
+--@api: LSaveManager:onBeforeSave
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("state", function() return { x = 10, y = 20 } end, function(_) end)
@@ -256,7 +256,7 @@ do
     mgr:delete("hook_test")
 end
 
---@api-stub: LSaveManager:onAfterLoad
+--@api: LSaveManager:onAfterLoad
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("state", function() return { x = 10, y = 20 } end, function(_) end)
@@ -267,7 +267,7 @@ do
     mgr:delete("hook_test")
 end
 
---@api-stub: LSaveManager:unregister
+--@api: LSaveManager:unregister
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("section_a", function() return {} end, function(_) end)
@@ -278,7 +278,7 @@ do
     print("has section_b = " .. tostring(data.section_b ~= nil))
 end
 
---@api-stub: LSaveManager:reset
+--@api: LSaveManager:reset
 do
     local mgr = lurek.save.newSaveManager()
     mgr:register("section_a", function() return {} end, function(_) end)
@@ -290,14 +290,14 @@ do
     print("compressed after reset = " .. tostring(mgr:isCompressed()))
 end
 
---@api-stub: LSaveManager:type
+--@api: LSaveManager:type
 do
     ---@type LSaveManager
     local sm = lurek.save.newSaveManager()
     print("type = " .. sm:type())
 end
 
---@api-stub: LSaveManager:typeOf
+--@api: LSaveManager:typeOf
 do
     ---@type LSaveManager
     local sm = lurek.save.newSaveManager()

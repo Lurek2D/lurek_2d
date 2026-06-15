@@ -378,6 +378,17 @@ LMapBlock:getDimensions()
 | number | Width. |
 | number | Height. |
 
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(6, 4, 1, cfg)
+    local width, height = block:getDimensions()
+    print("getDimensions=" .. tostring(width) .. "x" .. tostring(height))
+end
+```
+
 ---
 
 #### `LMapBlock:getFootprintCellCount`
@@ -448,6 +459,17 @@ LMapBlock:getHeightInSegments()
 |------|-------------|
 | number | Height in segments. |
 
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(2)
+    local block = lurek.mapblock.newBlock(6, 4, 1, cfg)
+    print("getHeightInSegments=" .. tostring(block:getHeightInSegments()))
+end
+```
+
 ---
 
 #### `LMapBlock:getLayerCount`
@@ -517,6 +539,17 @@ LMapBlock:getSegmentSize()
 |------|-------------|
 | number | Segment size in tiles. |
 
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(2)
+    local block = lurek.mapblock.newBlock(6, 4, 1, cfg)
+    print("getSegmentSize=" .. tostring(block:getSegmentSize()))
+end
+```
+
 ---
 
 #### `LMapBlock:getSide`
@@ -539,6 +572,17 @@ LMapBlock:getSide(edge, segment)
 | Type | Description |
 |------|-------------|
 | number | Side identifier. |
+
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
+    block:setSide("east", 1, 11)
+    print("getSide east1=" .. tostring(block:getSide("east", 1)))
+end
+```
 
 ---
 
@@ -683,6 +727,17 @@ LMapBlock:getWidthInSegments()
 | Type | Description |
 |------|-------------|
 | number | Width in segments. |
+
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    cfg:setDefaultSegmentSize(2)
+    local block = lurek.mapblock.newBlock(6, 4, 1, cfg)
+    print("getWidthInSegments=" .. tostring(block:getWidthInSegments()))
+end
+```
 
 ---
 
@@ -903,6 +958,17 @@ LMapBlock:setSide(edge, segment, sideId)
 | `segment` | number | Segment index along the edge (1-based). |
 | `sideId` | number | Side identifier for matching. |
 
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
+    block:setSide("north", 1, 7)
+    print("setSide north1=" .. tostring(block:getSide("north", 1)))
+end
+```
+
 ---
 
 #### `LMapBlock:setSocket`
@@ -1011,6 +1077,16 @@ LMapBlock:type()
 |------|-------------|
 | string | Always `"[LMapBlock](#lmapblock)"`. |
 
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    print("LMapBlock:type=" .. tostring(block:type()))
+end
+```
+
 ---
 
 #### `LMapBlock:typeOf`
@@ -1032,6 +1108,16 @@ LMapBlock:typeOf(name)
 | Type | Description |
 |------|-------------|
 | boolean | True if `name` is `"[LMapBlock](#lmapblock)"` or `"Object"`. |
+
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    print("LMapBlock:typeOf=" .. tostring(block:typeOf("LMapBlock")))
+end
+```
 
 ---
 
@@ -1913,6 +1999,18 @@ LMapGroup:getScriptCount()
 |------|-------------|
 | number | Script count. |
 
+**Example**
+
+```lua
+do
+    local script = lurek.mapblock.newScript("rooms_pass")
+    script:addStep("fill_rect", { x = 0, y = 0, width = 1, height = 1, tile_id = 1, slot = 0, layer = 0 })
+    local group = lurek.mapblock.newGroup("rooms")
+    group:addScript(script)
+    print("getScriptCount=" .. tostring(group:getScriptCount()))
+end
+```
+
 ---
 
 #### `LMapGroup:removeBlock`
@@ -1929,6 +2027,21 @@ LMapGroup:removeBlock(idx)
 |------|------|-------------|
 | `idx` | number | Block index (1-based). |
 
+**Example**
+
+```lua
+do
+    local cfg = lurek.mapblock.newConfig()
+    local block_a = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    local block_b = lurek.mapblock.newBlock(3, 3, 1, cfg)
+    local group = lurek.mapblock.newGroup("rooms")
+    group:addBlock(block_a)
+    group:addBlock(block_b)
+    group:removeBlock(1)
+    print("removeBlock count=" .. tostring(group:getBlockCount()))
+end
+```
+
 ---
 
 #### `LMapGroup:type`
@@ -1944,6 +2057,15 @@ LMapGroup:type()
 | Type | Description |
 |------|-------------|
 | string | Always `"[LMapGroup](#lmapgroup)"`. |
+
+**Example**
+
+```lua
+do
+    local group = lurek.mapblock.newGroup("rooms")
+    print("LMapGroup:type=" .. tostring(group:type()))
+end
+```
 
 ---
 
@@ -1966,6 +2088,15 @@ LMapGroup:typeOf(name)
 | Type | Description |
 |------|-------------|
 | boolean | True if `name` is `"[LMapGroup](#lmapgroup)"` or `"Object"`. |
+
+**Example**
+
+```lua
+do
+    local group = lurek.mapblock.newGroup("rooms")
+    print("LMapGroup:typeOf=" .. tostring(group:typeOf("LMapGroup")))
+end
+```
 
 ---
 
@@ -2092,6 +2223,15 @@ LMapScript:type()
 |------|-------------|
 | string | Always `"[LMapScript](#lmapscript)"`. |
 
+**Example**
+
+```lua
+do
+    local script = lurek.mapblock.newScript("multi_step")
+    print("LMapScript:type=" .. tostring(script:type()))
+end
+```
+
 ---
 
 #### `LMapScript:typeOf`
@@ -2113,6 +2253,15 @@ LMapScript:typeOf(name)
 | Type | Description |
 |------|-------------|
 | boolean | True if `name` is `"[LMapScript](#lmapscript)"` or `"Object"`. |
+
+**Example**
+
+```lua
+do
+    local script = lurek.mapblock.newScript("multi_step")
+    print("LMapScript:typeOf=" .. tostring(script:typeOf("LMapScript")))
+end
+```
 
 ---
 

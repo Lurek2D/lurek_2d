@@ -2,6 +2,7 @@
 //! Supports linear dead-reckoning prediction between ticks.
 //! Handles server-authoritative reconciliation with a configurable blend factor.
 //! Gives the multiplayer stack a compact sync model for replicated actors.
+//! Module API documentation
 
 use crate::network::message::NetValue;
 /// Point-in-time position and velocity snapshot for one networked entity.

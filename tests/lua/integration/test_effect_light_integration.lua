@@ -7,12 +7,12 @@ describe("effect + light ambient bridge", function()
     -- @integration LOverlay:getAmbientColor
     -- @integration LOverlay:pullAmbientFromLight
     -- @integration lurek.light.setAmbient
-    -- @covers lurek.effect.newOverlay
-    -- @covers lurek.light.getAmbient
-    -- @covers lurek.light.setAmbient
+    -- @integration lurek.overlay.new
+    -- @integration lurek.light.getAmbient
+    -- @integration lurek.light.setAmbient
     it("pullAmbientFromLight copies light ambient into overlay", function()
         lurek.light.setAmbient(0.12, 0.34, 0.56, 0.78)
-        local ov = lurek.effect.newOverlay()
+        local ov = lurek.overlay.new()
         ov:pullAmbientFromLight()
         local r, g, b, a = ov:getAmbientColor()
         expect_near(r, 0.12, 0.001)
@@ -23,9 +23,10 @@ describe("effect + light ambient bridge", function()
 
     -- @integration LOverlay:pushAmbientToLight
     -- @integration LOverlay:setAmbientColor
+    -- @integration lurek.overlay.new
     -- @integration lurek.light.getAmbient
     it("pushAmbientToLight copies overlay ambient into light world", function()
-        local ov = lurek.effect.newOverlay()
+        local ov = lurek.overlay.new()
         ov:setAmbientColor(0.21, 0.22, 0.23, 0.24)
         ov:pushAmbientToLight()
         local r, g, b, a = lurek.light.getAmbient()
@@ -38,10 +39,11 @@ describe("effect + light ambient bridge", function()
     -- @integration LOverlay:getAmbientColor
     -- @integration LOverlay:setAmbientColor
     -- @integration LOverlay:syncAmbientWithLight
+    -- @integration lurek.overlay.new
     -- @integration lurek.light.getAmbient
     -- @integration lurek.light.setAmbient
     it("syncAmbientWithLight avg resolves and writes both sides", function()
-        local ov = lurek.effect.newOverlay()
+        local ov = lurek.overlay.new()
         ov:setAmbientColor(0.2, 0.2, 0.2, 0.2)
         lurek.light.setAmbient(0.8, 0.6, 0.4, 1.0)
         ov:syncAmbientWithLight("avg")

@@ -103,15 +103,12 @@ describe("lurek.image module functions", function()
     end)
 
     -- @covers lurek.image.newImageData
-    it("newImageData creates a blank image with requested dimensions", function()
+    it("newImageData creates blank images and rejects negative dimensions", function()
         local img = lurek.image.newImageData(5, 3)
         expect_equal(5, img:getWidth())
         expect_equal(3, img:getHeight())
         expect_pixel(img, 0, 0, 0, 0, 0, 0)
-    end)
 
-    -- @covers lurek.image.newImageData
-    it("newImageData rejects negative dimensions", function()
         expect_error(function()
             lurek.image.newImageData(-1, 3)
         end)
@@ -130,15 +127,12 @@ describe("lurek.image module functions", function()
     end)
 
     -- @covers lurek.image.newLayeredImage
-    it("newLayeredImage creates an empty stack with fixed canvas size", function()
+    it("newLayeredImage creates empty stacks and rejects negative dimensions", function()
         local stack = lurek.image.newLayeredImage(7, 9)
         expect_equal(7, stack:getWidth())
         expect_equal(9, stack:getHeight())
         expect_equal(0, stack:layerCount())
-    end)
 
-    -- @covers lurek.image.newLayeredImage
-    it("newLayeredImage rejects negative dimensions", function()
         expect_error(function()
             lurek.image.newLayeredImage(-2, 9)
         end)
@@ -526,17 +520,13 @@ describe("LImageData methods", function()
     end)
 
     -- @covers LImageData:resize
-    it("resize returns an image with requested dimensions", function()
+    it("resize returns requested dimensions and rejects negatives", function()
         local img = solid_image(4, 4, 255, 0, 0, 255)
         local out = img:resize(3, 5, "lanczos3")
         local w, h = out:getDimensions()
         expect_equal(3, w)
         expect_equal(5, h)
-    end)
 
-    -- @covers LImageData:resize
-    it("resize rejects negative output dimensions", function()
-        local img = solid_image(4, 4, 255, 0, 0, 255)
         expect_error(function()
             img:resize(-1, 5, "lanczos3")
         end)

@@ -8,9 +8,9 @@ describe("audio + event integration", function()
     -- @integration lurek.audio.getMasterVolume
     -- @integration lurek.audio.setMasterVolume
     -- @integration lurek.event.newSignal
-    -- @covers lurek.audio.getMasterVolume
-    -- @covers lurek.audio.setMasterVolume
-    -- @covers lurek.event.newSignal
+    -- @integration lurek.audio.getMasterVolume
+    -- @integration lurek.audio.setMasterVolume
+    -- @integration lurek.event.newSignal
     it("event triggers volume change", function()
         local mute_sig  = lurek.event.newSignal()
         local volume_set = false

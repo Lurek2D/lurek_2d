@@ -10,8 +10,8 @@ describe("procgen worldGraph + JPS grid integration", function()
     -- @integration LJpsGrid:setBlocked
     -- @integration lurek.pathfind.newJpsGrid
     -- @integration lurek.procgen.roomsDungeon
-    -- @covers lurek.pathfind.newJpsGrid
-    -- @covers lurek.procgen.roomsDungeon
+    -- @integration lurek.pathfind.newJpsGrid
+    -- @integration lurek.procgen.roomsDungeon
     it("room floors are navigable via JPS grid", function()
         local d = lurek.procgen.roomsDungeon({ width = 20, height = 16, max_rooms = 4, seed = 7 })
         -- Build a JPS grid from the dungeon's floor plan

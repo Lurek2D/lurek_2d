@@ -3112,16 +3112,6 @@ LMapBlock:getDimensions()
 | number | Width. |
 | number | Height. |
 
-**Example**
-
-```lua
-do
-    local mb = lurek.tilemap.newMapBlock(10, 8, 2, 4)
-    local w, h = mb:getDimensions()
-    print("getDimensions:", w, h)
-end
-```
-
 ---
 
 #### `LMapBlock:getFootprintCellCount`
@@ -3169,16 +3159,6 @@ LMapBlock:getHeightInSegments()
 | Type | Description |
 |------|-------------|
 | number | Height in segments. |
-
-**Example**
-
-```lua
-do
-    local mb = lurek.tilemap.newMapBlock(12, 8, 3, 4)
-    local hs = mb:getHeightInSegments()
-    print("heightInSegments:", hs)
-end
-```
 
 ---
 
@@ -3228,16 +3208,6 @@ LMapBlock:getSegmentSize()
 |------|-------------|
 | number | Segment size in tiles. |
 
-**Example**
-
-```lua
-do
-    local mb = lurek.tilemap.newMapBlock(12, 8, 3, 4)
-    local ss = mb:getSegmentSize()
-    print("segmentSize:", ss)
-end
-```
-
 ---
 
 #### `LMapBlock:getSide`
@@ -3260,18 +3230,6 @@ LMapBlock:getSide(edge, segment)
 | Type | Description |
 |------|-------------|
 | number | Side identifier. |
-
-**Example**
-
-```lua
-do
-    local block = lurek.tilemap.newMapBlock(4, 4, 1, 2) ; block:setSide("north", 1, 10)
-    block:setSide("north", 2, 20) ; block:setSide("south", 1, 10)
-    block:setSide("east", 1, 30) ; print("north seg 1 = " .. block:getSide("north", 1))
-    print("north seg 2 = " .. block:getSide("north", 2))
-    print("east seg 1 = " .. block:getSide("east", 1))
-end
-```
 
 ---
 
@@ -3338,16 +3296,6 @@ LMapBlock:getWeight()
 |------|-------------|
 | number | Weight value. |
 
-**Example**
-
-```lua
-do
-    local block = lurek.tilemap.newMapBlock(2, 2)
-    block:setWeight(2.5)
-    print("getWeight = " .. tostring(block:getWeight()))
-end
-```
-
 ---
 
 #### `LMapBlock:getWidth`
@@ -3379,16 +3327,6 @@ LMapBlock:getWidthInSegments()
 | Type | Description |
 |------|-------------|
 | number | Width in segments. |
-
-**Example**
-
-```lua
-do
-    local mb = lurek.tilemap.newMapBlock(16, 12, 1, 4)
-    local ws = mb:getWidthInSegments()
-    print("widthInSegments:", ws)
-end
-```
 
 ---
 
@@ -3529,18 +3467,6 @@ LMapBlock:setSide(edge, segment, sideId)
 | `segment` | number | Segment index along the edge (1-based). |
 | `sideId` | number | Side identifier for matching. |
 
-**Example**
-
-```lua
-do
-    local block = lurek.tilemap.newMapBlock(4, 4, 1, 2) ; block:setSide("north", 1, 10)
-    block:setSide("north", 2, 20) ; block:setSide("south", 1, 10)
-    block:setSide("east", 1, 30) ; print("north seg 1 = " .. block:getSide("north", 1))
-    print("north seg 2 = " .. block:getSide("north", 2))
-    print("east seg 1 = " .. block:getSide("east", 1))
-end
-```
-
 ---
 
 #### `LMapBlock:setSocket`
@@ -3613,16 +3539,6 @@ LMapBlock:type()
 |------|-------------|
 | string | Always `"[LMapBlock](#lmapblock)"`. |
 
-**Example**
-
-```lua
-do
-    local mb = lurek.tilemap.newMapBlock(16, 12, 1, 4)
-    local t = mb:type()
-    print("type:", t)
-end
-```
-
 ---
 
 #### `LMapBlock:typeOf`
@@ -3644,17 +3560,6 @@ LMapBlock:typeOf(name)
 | Type | Description |
 |------|-------------|
 | boolean | True if `name` is `"[LMapBlock](#lmapblock)"` or `"Object"`. |
-
-**Example**
-
-```lua
-do
-    local mb = lurek.tilemap.newMapBlock(8, 8, 1, 2)
-    local ok = mb:typeOf("LMapBlock")
-    local notOk = mb:typeOf("LIsoMap")
-    print("typeOf LMapBlock:", ok, "typeOf LIsoMap:", notOk)
-end
-```
 
 ---
 
@@ -3850,18 +3755,6 @@ LMapGroup:getScriptCount()
 |------|-------------|
 | number | Script count. |
 
-**Example**
-
-```lua
-do
-    local group = lurek.tilemap.newMapGroup("forest") ; local script1 = lurek.tilemap.newMapScript()
-    local script2 = lurek.tilemap.newMapScript()
-    group:addScript(script1)
-    group:addScript(script2)
-    print("scriptCount:", group:getScriptCount())
-end
-```
-
 ---
 
 #### `LMapGroup:removeBlock`
@@ -3878,18 +3771,6 @@ LMapGroup:removeBlock(idx)
 |------|------|-------------|
 | `idx` | number | Block index (1-based). |
 
-**Example**
-
-```lua
-do
-    local group = lurek.tilemap.newMapGroup("plains") ; local mb1 = lurek.tilemap.newMapBlock(4, 4, 1, 2)
-    local mb2 = lurek.tilemap.newMapBlock(4, 4, 1, 2) ; group:addBlock(mb1)
-    group:addBlock(mb2)
-    group:removeBlock(1)
-    print("removeBlock ok, blockCount:", group:getBlockCount())
-end
-```
-
 ---
 
 #### `LMapGroup:type`
@@ -3905,18 +3786,6 @@ LMapGroup:type()
 | Type | Description |
 |------|-------------|
 | string | Always `"[LMapGroup](#lmapgroup)"`. |
-
-**Example**
-
-```lua
-do
-    local group = lurek.tilemap.newMapGroup("plains") ; local mb1 = lurek.tilemap.newMapBlock(4, 4, 1, 2)
-    local mb2 = lurek.tilemap.newMapBlock(4, 4, 1, 2) ; group:addBlock(mb1)
-    group:addBlock(mb2)
-    local t = group:type()
-    print("type:", t)
-end
-```
 
 ---
 
@@ -3939,16 +3808,6 @@ LMapGroup:typeOf(name)
 | Type | Description |
 |------|-------------|
 | boolean | True if `name` is `"[LMapGroup](#lmapgroup)"` or `"Object"`. |
-
-**Example**
-
-```lua
-do
-    local group = lurek.tilemap.newMapGroup("cave")
-    local ok = group:typeOf("LMapGroup")
-    print("LMapGroup typeOf:", ok)
-end
-```
 
 ---
 
@@ -4033,16 +3892,6 @@ LMapScript:type()
 |------|-------------|
 | string | Always `"[LMapScript](#lmapscript)"`. |
 
-**Example**
-
-```lua
-do
-    local script = lurek.tilemap.newMapScript()
-    local t = script:type()
-    print("LMapScript type:", t)
-end
-```
-
 ---
 
 #### `LMapScript:typeOf`
@@ -4064,16 +3913,6 @@ LMapScript:typeOf(name)
 | Type | Description |
 |------|-------------|
 | boolean | True if `name` is `"[LMapScript](#lmapscript)"` or `"Object"`. |
-
-**Example**
-
-```lua
-do
-    local script = lurek.tilemap.newMapScript()
-    local ok = script:typeOf("LMapScript")
-    print("LMapScript typeOf:", ok)
-end
-```
 
 ---
 

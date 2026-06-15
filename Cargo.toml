@@ -267,6 +267,10 @@ name = "lua_tests"
 path = "tests/lua_tests.rs"
 
 [[test]]
+name = "mods_tests"
+path = "tests/rust/unit/mods_tests.rs"
+
+[[test]]
 name = "patterns_tests"
 path = "tests/rust/unit/patterns_tests.rs"
 

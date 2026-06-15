@@ -223,11 +223,16 @@ describe("lurek.parallax", function()
     end)
 
     -- @covers LParallaxLayer:setClamp
-    it("accepts clamp bounds", function()
+    it("accepts clamp bounds and normalizes reversed clamp bounds before rendering", function()
         local layer = make_layer()
         expect_no_error(function()
             layer:setClamp(-200, -100, 200, 100)
         end)
+        layer:setClamp(120, 80, -20, -10)
+        expect_no_error(function()
+            layer:render(500, 400)
+        end)
+        expect_true(layer:getStats().visible_tile_count > 0)
     end)
 
     -- @covers LParallaxLayer:getStats
@@ -242,16 +247,6 @@ describe("lurek.parallax", function()
         expect_true(stats.tile_height > 0)
         expect_equal(1, stats.effect_pass_count)
         expect_true(stats.autoscroll_speed > 0.0)
-    end)
-
-    -- @covers LParallaxLayer:setClamp
-    it("normalizes reversed clamp bounds before rendering", function()
-        local layer = make_layer()
-        layer:setClamp(120, 80, -20, -10)
-        expect_no_error(function()
-            layer:render(500, 400)
-        end)
-        expect_true(layer:getStats().visible_tile_count > 0)
     end)
 
     -- @covers LParallaxLayer:clearClamp

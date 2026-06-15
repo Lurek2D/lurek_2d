@@ -1,6 +1,7 @@
 //! Encodes frame sequences of `ImageData` into animated GIF files for evidence and export flows.
 //! Validates frame dimensions and timing up front so Lua-facing callers get deterministic failures.
 //! Uses per-frame quantization from RGBA buffers to keep the API simple for software-rendered captures.
+//! Module API documentation
 
 use crate::image::ImageData;
 use ::gif::{Encoder, Frame, Repeat};

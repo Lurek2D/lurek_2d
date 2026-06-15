@@ -11,12 +11,12 @@ describe("integration: AI steering with physics bodies", function()
     -- @integration lurek.physics.newWorld
     -- @integration lurek.physics.setBodyVelocity
     -- @integration lurek.physics.step
-    -- @covers lurek.ai.newSteeringManager
-    -- @covers lurek.physics.getBody
-    -- @covers lurek.physics.newBody
-    -- @covers lurek.physics.newWorld
-    -- @covers lurek.physics.setBodyVelocity
-    -- @covers lurek.physics.step
+    -- @integration lurek.ai.newSteeringManager
+    -- @integration lurek.physics.getBody
+    -- @integration lurek.physics.newBody
+    -- @integration lurek.physics.newWorld
+    -- @integration lurek.physics.setBodyVelocity
+    -- @integration lurek.physics.step
     it("agent seeks target in physics world", function()
         -- Top-down world: no gravity
         local world_id = lurek.physics.newWorld(0, 0)

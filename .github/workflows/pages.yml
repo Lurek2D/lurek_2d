@@ -38,9 +38,6 @@ jobs:
       - name: Build MkDocs site
         run: mkdocs build
 
-      - name: Generate Lua API docs-general wrapper
-        run: python tools/docs/gen_lua_api_html_wrapper.py
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

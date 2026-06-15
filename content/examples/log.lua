@@ -4,71 +4,71 @@
 
 --- Log Module: structured logging, sinks, and memory drain
 
---@api-stub: lurek.log.debug
+--@api: lurek.log.debug
 do
     lurek.log.debug("tick completed")
     print("debug logged")
 end
 
---@api-stub: lurek.log.info
+--@api: lurek.log.info
 do
     lurek.log.info("game started")
     lurek.log.info("asset loaded", "assets")
     print("info logged")
 end
 
---@api-stub: lurek.log.warn
+--@api: lurek.log.warn
 do
     lurek.log.warn("low memory")
     lurek.log.warn("texture missing", "render")
     print("warn logged")
 end
 
---@api-stub: lurek.log.error
+--@api: lurek.log.error
 do
     lurek.log.error("failed to save")
     lurek.log.error("shader compile failed", "gpu")
     print("error logged")
 end
 
---@api-stub: lurek.log.print
+--@api: lurek.log.print
 do
     lurek.log.print("info", "general purpose log")
     lurek.log.print("warn", "something suspicious", "system")
     print("print logged")
 end
 
---@api-stub: lurek.log.debug_fields
+--@api: lurek.log.debug_fields
 do
     lurek.log.debug_fields("frame stats", {fps = 60, dt = 0.016})
     print("debug_fields logged")
 end
 
---@api-stub: lurek.log.info_fields
+--@api: lurek.log.info_fields
 do
     lurek.log.info_fields("player join", {name = "Alice", id = 42})
     print("info_fields logged")
 end
 
---@api-stub: lurek.log.warn_fields
+--@api: lurek.log.warn_fields
 do
     lurek.log.warn_fields("memory usage", {used_mb = 512, limit_mb = 1024})
     print("warn_fields logged")
 end
 
---@api-stub: lurek.log.error_fields
+--@api: lurek.log.error_fields
 do
     lurek.log.error_fields("save failed", {path = "slot1.sav", reason = "disk full"})
     print("error_fields logged")
 end
 
---@api-stub: lurek.log.struct
+--@api: lurek.log.struct
 do
     lurek.log.struct("info", "combat hit", {attacker = "goblin", target = "player", damage = 15})
     print("struct logged")
 end
 
---@api-stub: lurek.log.getLevel
+--@api: lurek.log.getLevel
 do
     local prev = lurek.log.getLevel()
     lurek.log.setLevel("warn")
@@ -76,14 +76,14 @@ do
     lurek.log.setLevel(prev)
 end
 
---@api-stub: lurek.log.addSink
+--@api: lurek.log.addSink
 do
     local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 10})
     print("memory sink id = " .. id)
     print("sink count = " .. #lurek.log.listSinks())
 end
 
---@api-stub: lurek.log.removeSink
+--@api: lurek.log.removeSink
 do
     local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 10})
     local ok = lurek.log.removeSink(id)
@@ -91,7 +91,7 @@ do
     print("sink count = " .. #lurek.log.listSinks())
 end
 
---@api-stub: lurek.log.listSinks
+--@api: lurek.log.listSinks
 do
     lurek.log.clearSinks()
     lurek.log.addSink({type = "memory", level = "info", capacity = 8})
@@ -101,7 +101,7 @@ do
     print("first sink type = " .. sinks[1].type)
 end
 
---@api-stub: lurek.log.clearSinks
+--@api: lurek.log.clearSinks
 do
     lurek.log.addSink({type = "memory", level = "info", capacity = 8})
     lurek.log.addSink({type = "memory", level = "warn", capacity = 8})
@@ -110,7 +110,7 @@ do
     print("sinks after clear = " .. #sinks)
 end
 
---@api-stub: lurek.log.readMemory
+--@api: lurek.log.readMemory
 do
     local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 50})
     lurek.log.info("test message")
@@ -119,7 +119,7 @@ do
     print("first entry message = " .. entries[1].message)
 end
 
---@api-stub: lurek.log.flushFile
+--@api: lurek.log.flushFile
 do
     local id = lurek.log.addSink({type = "file", level = "info", path = "logs/flush_test.log"})
     lurek.log.info("flush me")
@@ -128,7 +128,7 @@ do
     print("file flushed")
 end
 
---@api-stub: lurek.log.setLevel
+--@api: lurek.log.setLevel
 do
     local previous = lurek.log.getLevel()
     lurek.log.setLevel("debug")

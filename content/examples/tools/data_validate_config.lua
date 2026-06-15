@@ -3,7 +3,7 @@
 
 --- Data schema validation vs static project/file validation.
 
---@api-stub: lurek.serial.validate
+--@api: lurek.serial.validate
 do
     local config = {
         title = "Household Finance Lab",
@@ -25,7 +25,7 @@ do
     print("config schema err=" .. tostring(err))
 end
 
---@api-stub: lurek.validator.validateFile
+--@api: lurek.validator.validateFile
 do
     local ok, report_or_err = pcall(lurek.validator.validateFile, "main.lua")
 

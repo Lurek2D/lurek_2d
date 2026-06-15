@@ -5,6 +5,7 @@
 //! Spawns, polls, and shuts down the runtime while preserving request ordering.
 //! Routes completed results back with correlation ids for outstanding work.
 //! Keeps the blocking transport surface off the main loop.
+//! Module API documentation
 
 use super::http;
 use super::tcp::TcpConnectionManager;

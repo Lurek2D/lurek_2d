@@ -2,7 +2,7 @@
 -- Demonstrates the lurek.learning module: neural networks, genetic algorithms,
 -- Q-learning, multi-armed bandits, and neuroevolution.
 
---@api-stub: lurek.learning.newNeuralNet
+--@api: lurek.learning.newNeuralNet
 do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(3, 4, "relu")
@@ -13,55 +13,56 @@ do
     print("lurek.learning.newNeuralNet firstOutput", output[1])
 end
 
---@api-stub: lurek.learning.newEngine
+--@api: lurek.learning.newEngine
 do
     local engine = lurek.learning.newEngine()
     print("lurek.learning.newEngine blocks", engine:blockCount())
+    print("lua type = " .. type(engine))
 end
 
---@api-stub: LNeuralEngine:addDense
+--@api: LNeuralEngine:addDense
 do
     local engine = lurek.learning.newEngine()
     engine:addDense(3, 4, "relu")
     print("LNeuralEngine:addDense params", engine:paramCount())
 end
 
---@api-stub: LNeuralEngine:addConv2D
+--@api: LNeuralEngine:addConv2D
 do
     local engine = lurek.learning.newEngine()
     engine:addConv2D(1, 2, 3, 3, 1, 1, 1, 1)
     print("LNeuralEngine:addConv2D blocks", engine:blockCount())
 end
 
---@api-stub: LNeuralEngine:addMaxPool2D
+--@api: LNeuralEngine:addMaxPool2D
 do
     local engine = lurek.learning.newEngine()
     engine:addMaxPool2D(2, 2)
     print("LNeuralEngine:addMaxPool2D params", engine:paramCount())
 end
 
---@api-stub: LNeuralEngine:addTransformerEncoder
+--@api: LNeuralEngine:addTransformerEncoder
 do
     local engine = lurek.learning.newEngine()
     engine:addTransformerEncoder(4, 2, 8)
     print("LNeuralEngine:addTransformerEncoder blocks", engine:blockCount())
 end
 
---@api-stub: LNeuralEngine:blockCount
+--@api: LNeuralEngine:blockCount
 do
     local engine = lurek.learning.newEngine()
     engine:addDense(2, 2, "linear")
     print("LNeuralEngine:blockCount", engine:blockCount())
 end
 
---@api-stub: LNeuralEngine:paramCount
+--@api: LNeuralEngine:paramCount
 do
     local engine = lurek.learning.newEngine()
     engine:addDense(2, 2, "linear")
     print("LNeuralEngine:paramCount", engine:paramCount())
 end
 
---@api-stub: LNeuralEngine:setWeights
+--@api: LNeuralEngine:setWeights
 do
     local engine = lurek.learning.newEngine()
     engine:addDense(2, 2, "linear")
@@ -72,7 +73,7 @@ do
     print("LNeuralEngine:setWeights", engine:setWeights(weights))
 end
 
---@api-stub: LNeuralEngine:getWeights
+--@api: LNeuralEngine:getWeights
 do
     local engine = lurek.learning.newEngine()
     engine:addDense(2, 2, "linear")
@@ -80,19 +81,21 @@ do
     print("LNeuralEngine:getWeights count", #engine:getWeights())
 end
 
---@api-stub: LNeuralEngine:type
+--@api: LNeuralEngine:type
 do
     local engine = lurek.learning.newEngine()
     print("LNeuralEngine:type", engine:type())
+    print("typeOf LObject = " .. tostring(engine:typeOf("LObject")))
 end
 
---@api-stub: LNeuralEngine:typeOf
+--@api: LNeuralEngine:typeOf
 do
     local engine = lurek.learning.newEngine()
     print("LNeuralEngine:typeOf", engine:typeOf("LNeuralEngine"))
+    print("type = " .. tostring(engine:type()))
 end
 
---@api-stub: lurek.learning.newGeneticAlgorithm
+--@api: lurek.learning.newGeneticAlgorithm
 do
     local ga = lurek.learning.newGeneticAlgorithm(6, 4, 42)
 
@@ -105,7 +108,7 @@ do
     print("lurek.learning.newGeneticAlgorithm popSize", ga:popSize())
 end
 
---@api-stub: lurek.learning.newQLearner
+--@api: lurek.learning.newQLearner
 do
     local learner = lurek.learning.newQLearner(4, 3)
     learner:setLearningRate(0.2)
@@ -116,7 +119,7 @@ do
     print("lurek.learning.newQLearner q12", learner:getQValue(1, 2))
 end
 
---@api-stub: lurek.learning.newBandit
+--@api: lurek.learning.newBandit
 do
     local bandit = lurek.learning.newBandit(4, "ucb1", 0.1, 99)
     local chosen_arm = bandit:select()
@@ -126,7 +129,7 @@ do
     print("lurek.learning.newBandit totalPulls", bandit:totalPulls())
 end
 
---@api-stub: lurek.learning.newNeuroevolution
+--@api: lurek.learning.newNeuroevolution
 do
     local layer_spec = {
         { inputs = 3, outputs = 5, activation = "relu" },
@@ -143,7 +146,7 @@ do
     print("lurek.learning.newNeuroevolution bestFitness", evo:bestFitness())
 end
 
---@api-stub: LBandit:armCount
+--@api: LBandit:armCount
 do
     local bandit = lurek.learning.newBandit(4, "ucb1", 0.1, 1)
     local arm_count = bandit:armCount()
@@ -151,7 +154,7 @@ do
     print("LBandit:armCount", arm_count)
 end
 
---@api-stub: LBandit:bestArm
+--@api: LBandit:bestArm
 do
     local bandit = lurek.learning.newBandit(3, "ucb1", 0.1, 2)
     bandit:update(0, 0.25)
@@ -161,7 +164,7 @@ do
     print("LBandit:bestArm", bandit:bestArm())
 end
 
---@api-stub: LBandit:reset
+--@api: LBandit:reset
 do
     local bandit = lurek.learning.newBandit(3, "thompson", 0.1, 3)
     local selected_arm = bandit:select()
@@ -172,7 +175,7 @@ do
     print("LBandit:reset bestArm", bandit:bestArm())
 end
 
---@api-stub: LBandit:select
+--@api: LBandit:select
 do
     local bandit = lurek.learning.newBandit(5, "thompson", 0.1, 4)
     local first_arm = bandit:select()
@@ -182,7 +185,7 @@ do
     print("LBandit:select second", second_arm)
 end
 
---@api-stub: LBandit:totalPulls
+--@api: LBandit:totalPulls
 do
     local bandit = lurek.learning.newBandit(3, "ucb1", 0.1, 5)
     bandit:select()
@@ -192,7 +195,7 @@ do
     print("LBandit:totalPulls", total_pulls)
 end
 
---@api-stub: LBandit:type
+--@api: LBandit:type
 do
     local bandit = lurek.learning.newBandit(3, "ucb1", 0.1, 6)
     local type_name = bandit:type()
@@ -200,7 +203,7 @@ do
     print("LBandit:type", type_name)
 end
 
---@api-stub: LBandit:typeOf
+--@api: LBandit:typeOf
 do
     local bandit = lurek.learning.newBandit(3, "ucb1", 0.1, 7)
     local is_bandit = bandit:typeOf("LBandit")
@@ -210,7 +213,7 @@ do
     print("LBandit:typeOf LObject", tostring(is_object))
 end
 
---@api-stub: LBandit:update
+--@api: LBandit:update
 do
     local bandit = lurek.learning.newBandit(4, "ucb1", 0.1, 8)
     local arm_index = bandit:select()
@@ -220,7 +223,7 @@ do
     print("LBandit:update bestArm", bandit:bestArm())
 end
 
---@api-stub: LGeneticAlgorithm:bestGenes
+--@api: LGeneticAlgorithm:bestGenes
 do
     local ga = lurek.learning.newGeneticAlgorithm(5, 3, 10)
 
@@ -233,7 +236,7 @@ do
     print("LGeneticAlgorithm:bestGenes first", genes[1])
 end
 
---@api-stub: LGeneticAlgorithm:evolve
+--@api: LGeneticAlgorithm:evolve
 do
     local ga = lurek.learning.newGeneticAlgorithm(5, 4, 11)
 
@@ -245,7 +248,7 @@ do
     print("LGeneticAlgorithm:evolve generation", ga:generation())
 end
 
---@api-stub: LGeneticAlgorithm:generation
+--@api: LGeneticAlgorithm:generation
 do
     local ga = lurek.learning.newGeneticAlgorithm(4, 3, 12)
     ga:evolve()
@@ -254,7 +257,7 @@ do
     print("LGeneticAlgorithm:generation", ga:generation())
 end
 
---@api-stub: LGeneticAlgorithm:getGenes
+--@api: LGeneticAlgorithm:getGenes
 do
     local ga = lurek.learning.newGeneticAlgorithm(4, 5, 13)
     local genes = ga:getGenes(0)
@@ -263,7 +266,7 @@ do
     print("LGeneticAlgorithm:getGenes first", genes[1])
 end
 
---@api-stub: LGeneticAlgorithm:popSize
+--@api: LGeneticAlgorithm:popSize
 do
     local ga = lurek.learning.newGeneticAlgorithm(15, 8, 14)
     local pop_size = ga:popSize()
@@ -271,7 +274,7 @@ do
     print("LGeneticAlgorithm:popSize", pop_size)
 end
 
---@api-stub: LGeneticAlgorithm:setFitness
+--@api: LGeneticAlgorithm:setFitness
 do
     local ga = lurek.learning.newGeneticAlgorithm(6, 3, 15)
     ga:setFitness(0, 1.25)
@@ -282,7 +285,7 @@ do
     print("LGeneticAlgorithm:setFitness bestGenes", #ga:bestGenes())
 end
 
---@api-stub: LGeneticAlgorithm:type
+--@api: LGeneticAlgorithm:type
 do
     local ga = lurek.learning.newGeneticAlgorithm(4, 2, 16)
     local type_name = ga:type()
@@ -290,7 +293,7 @@ do
     print("LGeneticAlgorithm:type", type_name)
 end
 
---@api-stub: LGeneticAlgorithm:typeOf
+--@api: LGeneticAlgorithm:typeOf
 do
     local ga = lurek.learning.newGeneticAlgorithm(4, 2, 17)
     local is_ga = ga:typeOf("LGeneticAlgorithm")
@@ -300,7 +303,7 @@ do
     print("LGeneticAlgorithm:typeOf LObject", tostring(is_object))
 end
 
---@api-stub: LNeuralNet:addLayer
+--@api: LNeuralNet:addLayer
 do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(4, 6, "relu")
@@ -310,7 +313,7 @@ do
     print("LNeuralNet:addLayer paramCount", net:paramCount())
 end
 
---@api-stub: LNeuralNet:forward
+--@api: LNeuralNet:forward
 do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(3, 4, "relu")
@@ -320,7 +323,7 @@ do
     print("LNeuralNet:forward out", output[1])
 end
 
---@api-stub: LNeuralNet:getWeights
+--@api: LNeuralNet:getWeights
 do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(2, 3, "relu")
@@ -330,7 +333,7 @@ do
     print("LNeuralNet:getWeights first", weights[1])
 end
 
---@api-stub: LNeuralNet:layerCount
+--@api: LNeuralNet:layerCount
 do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(4, 8, "relu")
@@ -340,7 +343,7 @@ do
     print("LNeuralNet:layerCount", net:layerCount())
 end
 
---@api-stub: LNeuralNet:paramCount
+--@api: LNeuralNet:paramCount
 do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(2, 4, "relu")
@@ -349,7 +352,7 @@ do
     print("LNeuralNet:paramCount", net:paramCount())
 end
 
---@api-stub: LNeuralNet:setWeights
+--@api: LNeuralNet:setWeights
 do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(2, 2, "linear")
@@ -360,7 +363,7 @@ do
     print("LNeuralNet:setWeights paramCount", net:paramCount())
 end
 
---@api-stub: LNeuralNet:type
+--@api: LNeuralNet:type
 do
     local net = lurek.learning.newNeuralNet()
     local type_name = net:type()
@@ -368,7 +371,7 @@ do
     print("LNeuralNet:type", type_name)
 end
 
---@api-stub: LNeuralNet:typeOf
+--@api: LNeuralNet:typeOf
 do
     local net = lurek.learning.newNeuralNet()
     local is_net = net:typeOf("LNeuralNet")
@@ -378,7 +381,7 @@ do
     print("LNeuralNet:typeOf LObject", tostring(is_object))
 end
 
---@api-stub: LNeuroevolution:bestFitness
+--@api: LNeuroevolution:bestFitness
 do
     local layer_spec = {
         { inputs = 2, outputs = 4, activation = "relu" },
@@ -393,7 +396,7 @@ do
     print("LNeuroevolution:bestFitness", evo:bestFitness())
 end
 
---@api-stub: LNeuroevolution:bestNetwork
+--@api: LNeuroevolution:bestNetwork
 do
     local layer_spec = {
         { inputs = 2, outputs = 3, activation = "relu" },
@@ -410,7 +413,7 @@ do
     print("LNeuroevolution:bestNetwork layers", best_net:layerCount())
 end
 
---@api-stub: LNeuroevolution:chromosomeToNet
+--@api: LNeuroevolution:chromosomeToNet
 do
     local layer_spec = {
         { inputs = 2, outputs = 3, activation = "relu" },
@@ -424,7 +427,7 @@ do
     print("LNeuroevolution:chromosomeToNet out", output[1])
 end
 
---@api-stub: LNeuroevolution:evolve
+--@api: LNeuroevolution:evolve
 do
     local layer_spec = {
         { inputs = 3, outputs = 4, activation = "relu" },
@@ -440,7 +443,7 @@ do
     print("LNeuroevolution:evolve generation", evo:generation())
 end
 
---@api-stub: LNeuroevolution:generation
+--@api: LNeuroevolution:generation
 do
     local layer_spec = {
         { inputs = 2, outputs = 2, activation = "relu" },
@@ -452,7 +455,7 @@ do
     print("LNeuroevolution:generation", evo:generation())
 end
 
---@api-stub: LNeuroevolution:popSize
+--@api: LNeuroevolution:popSize
 do
     local layer_spec = {
         { inputs = 2, outputs = 3, activation = "relu" },
@@ -464,7 +467,7 @@ do
     print("LNeuroevolution:popSize", pop_size)
 end
 
---@api-stub: LNeuroevolution:setFitness
+--@api: LNeuroevolution:setFitness
 do
     local layer_spec = {
         { inputs = 2, outputs = 4, activation = "relu" },
@@ -479,7 +482,7 @@ do
     print("LNeuroevolution:setFitness bestFitness", evo:bestFitness())
 end
 
---@api-stub: LNeuroevolution:type
+--@api: LNeuroevolution:type
 do
     local layer_spec = {
         { inputs = 2, outputs = 3, activation = "relu" },
@@ -491,7 +494,7 @@ do
     print("LNeuroevolution:type", type_name)
 end
 
---@api-stub: LNeuroevolution:typeOf
+--@api: LNeuroevolution:typeOf
 do
     local layer_spec = {
         { inputs = 2, outputs = 3, activation = "relu" },
@@ -505,39 +508,42 @@ do
     print("LNeuroevolution:typeOf LObject", tostring(is_object))
 end
 
---@api-stub: lurek.learning.newLstm
+--@api: lurek.learning.newLstm
 do
     local lstm = lurek.learning.newLstm(2, 3)
     print("lurek.learning.newLstm type", lstm:type())
+    print("typeOf LObject = " .. tostring(lstm:typeOf("LObject")))
 end
 
---@api-stub: LLSTM:forward
+--@api: LLSTM:forward
 do
     local lstm = lurek.learning.newLstm(2, 3)
     local out = lstm:forward({ 0.1, -0.2 })
     print("LLSTM:forward outLen", #out)
 end
 
---@api-stub: lurek.learning.newGru
+--@api: lurek.learning.newGru
 do
     local gru = lurek.learning.newGru(2, 3)
     print("lurek.learning.newGru type", gru:type())
+    print("typeOf LObject = " .. tostring(gru:typeOf("LObject")))
 end
 
---@api-stub: LGRU:forward
+--@api: LGRU:forward
 do
     local gru = lurek.learning.newGru(2, 3)
     local out = gru:forward({ 0.1, -0.2 })
     print("LGRU:forward outLen", #out)
 end
 
---@api-stub: lurek.learning.newConv2D
+--@api: lurek.learning.newConv2D
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
     print("lurek.learning.newConv2D type", conv:type())
+    print("typeOf LObject = " .. tostring(conv:typeOf("LObject")))
 end
 
---@api-stub: LConv2D:forward
+--@api: LConv2D:forward
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
     local input = lurek.learning.newTensor({1, 2, 2}, {1, 2, 3, 4})
@@ -545,13 +551,14 @@ do
     print("LConv2D:forward outW", out:shape()[3])
 end
 
---@api-stub: lurek.learning.newMaxPool2D
+--@api: lurek.learning.newMaxPool2D
 do
     local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
     print("lurek.learning.newMaxPool2D type", pool:type())
+    print("typeOf LObject = " .. tostring(pool:typeOf("LObject")))
 end
 
---@api-stub: LMaxPool2D:forward
+--@api: LMaxPool2D:forward
 do
     local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
     local input = lurek.learning.newTensor({1, 4, 4}, {
@@ -564,13 +571,14 @@ do
     print("LMaxPool2D:forward outH", out:shape()[2])
 end
 
---@api-stub: lurek.learning.newPositionalEncoding
+--@api: lurek.learning.newPositionalEncoding
 do
     local pe = lurek.learning.newPositionalEncoding(4, 8)
     print("lurek.learning.newPositionalEncoding type", pe:type())
+    print("typeOf LObject = " .. tostring(pe:typeOf("LObject")))
 end
 
---@api-stub: LPositionalEncoding:apply
+--@api: LPositionalEncoding:apply
 do
     local pe = lurek.learning.newPositionalEncoding(4, 8)
     local x = lurek.learning.newTensor({2, 4}, {0, 0, 0, 0, 0, 0, 0, 0})
@@ -578,13 +586,14 @@ do
     print("LPositionalEncoding:apply d1", out:data()[1])
 end
 
---@api-stub: lurek.learning.newMultiHeadAttention
+--@api: lurek.learning.newMultiHeadAttention
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     print("lurek.learning.newMultiHeadAttention type", mha:type())
+    print("typeOf LObject = " .. tostring(mha:typeOf("LObject")))
 end
 
---@api-stub: LMultiHeadAttention:forward
+--@api: LMultiHeadAttention:forward
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     local x = lurek.learning.newTensor({2, 4}, {1, 0, 0, 1, 0, 1, 1, 0})
@@ -592,13 +601,14 @@ do
     print("LMultiHeadAttention:forward outShape", out:shape()[2])
 end
 
---@api-stub: lurek.learning.newTransformerEncoder
+--@api: lurek.learning.newTransformerEncoder
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
     print("lurek.learning.newTransformerEncoder type", enc:type())
+    print("typeOf LObject = " .. tostring(enc:typeOf("LObject")))
 end
 
---@api-stub: LTransformerEncoder:forward
+--@api: LTransformerEncoder:forward
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
     local x = lurek.learning.newTensor({2, 4}, {1, 2, 3, 4, 4, 3, 2, 1})
@@ -606,13 +616,14 @@ do
     print("LTransformerEncoder:forward outRows", out:shape()[1])
 end
 
---@api-stub: lurek.learning.newTransformerDecoder
+--@api: lurek.learning.newTransformerDecoder
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
     print("lurek.learning.newTransformerDecoder type", dec:type())
+    print("typeOf LObject = " .. tostring(dec:typeOf("LObject")))
 end
 
---@api-stub: LTransformerDecoder:forward
+--@api: LTransformerDecoder:forward
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
     local x = lurek.learning.newTensor({2, 4}, {1, 2, 3, 4, 4, 3, 2, 1})
@@ -621,14 +632,14 @@ do
     print("LTransformerDecoder:forward outRows", out:shape()[1])
 end
 
---@api-stub: LLSTM:reset
+--@api: LLSTM:reset
 do
     local lstm = lurek.learning.newLstm(2, 2)
     lstm:reset()
     print("LLSTM:reset ok")
 end
 
---@api-stub: LLSTM:setWeights
+--@api: LLSTM:setWeights
 do
     local lstm = lurek.learning.newLstm(2, 2)
     local count = lstm:paramCount()
@@ -640,39 +651,42 @@ do
     print("LLSTM:setWeights count", count)
 end
 
---@api-stub: LLSTM:getWeights
+--@api: LLSTM:getWeights
 do
     local lstm = lurek.learning.newLstm(2, 2)
     local got = lstm:getWeights()
     print("LLSTM:getWeights", #got)
 end
 
---@api-stub: LLSTM:paramCount
+--@api: LLSTM:paramCount
 do
     local lstm = lurek.learning.newLstm(2, 2)
     print("LLSTM:paramCount", lstm:paramCount())
+    print("owner type = " .. tostring(lstm:type()))
 end
 
---@api-stub: LLSTM:type
+--@api: LLSTM:type
 do
     local lstm = lurek.learning.newLstm(2, 2)
     print("LLSTM:type", lstm:type())
+    print("typeOf LObject = " .. tostring(lstm:typeOf("LObject")))
 end
 
---@api-stub: LLSTM:typeOf
+--@api: LLSTM:typeOf
 do
     local lstm = lurek.learning.newLstm(2, 2)
     print("LLSTM:typeOf", tostring(lstm:typeOf("LObject")))
+    print("type = " .. tostring(lstm:type()))
 end
 
---@api-stub: LGRU:reset
+--@api: LGRU:reset
 do
     local gru = lurek.learning.newGru(2, 2)
     gru:reset()
     print("LGRU:reset ok")
 end
 
---@api-stub: LGRU:setWeights
+--@api: LGRU:setWeights
 do
     local gru = lurek.learning.newGru(2, 2)
     local count = gru:paramCount()
@@ -684,32 +698,35 @@ do
     print("LGRU:setWeights count", count)
 end
 
---@api-stub: LGRU:getWeights
+--@api: LGRU:getWeights
 do
     local gru = lurek.learning.newGru(2, 2)
     local got = gru:getWeights()
     print("LGRU:getWeights", #got)
 end
 
---@api-stub: LGRU:paramCount
+--@api: LGRU:paramCount
 do
     local gru = lurek.learning.newGru(2, 2)
     print("LGRU:paramCount", gru:paramCount())
+    print("owner type = " .. tostring(gru:type()))
 end
 
---@api-stub: LGRU:type
+--@api: LGRU:type
 do
     local gru = lurek.learning.newGru(2, 2)
     print("LGRU:type", gru:type())
+    print("typeOf LObject = " .. tostring(gru:typeOf("LObject")))
 end
 
---@api-stub: LGRU:typeOf
+--@api: LGRU:typeOf
 do
     local gru = lurek.learning.newGru(2, 2)
     print("LGRU:typeOf", tostring(gru:typeOf("LObject")))
+    print("type = " .. tostring(gru:type()))
 end
 
---@api-stub: LConv2D:setWeights
+--@api: LConv2D:setWeights
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
     local count = conv:paramCount()
@@ -721,56 +738,63 @@ do
     print("LConv2D:setWeights count", count)
 end
 
---@api-stub: LConv2D:getWeights
+--@api: LConv2D:getWeights
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
     local got = conv:getWeights()
     print("LConv2D:getWeights", #got)
 end
 
---@api-stub: LConv2D:paramCount
+--@api: LConv2D:paramCount
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
     print("LConv2D:paramCount", conv:paramCount())
+    print("owner type = " .. tostring(conv:type()))
 end
 
---@api-stub: LConv2D:type
+--@api: LConv2D:type
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
     print("LConv2D:type", conv:type())
+    print("typeOf LObject = " .. tostring(conv:typeOf("LObject")))
 end
 
---@api-stub: LConv2D:typeOf
+--@api: LConv2D:typeOf
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
     print("LConv2D:typeOf", tostring(conv:typeOf("LObject")))
+    print("type = " .. tostring(conv:type()))
 end
 
---@api-stub: LMaxPool2D:type
+--@api: LMaxPool2D:type
 do
     local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
     print("LMaxPool2D:type", pool:type())
+    print("typeOf LObject = " .. tostring(pool:typeOf("LObject")))
 end
 
---@api-stub: LMaxPool2D:typeOf
+--@api: LMaxPool2D:typeOf
 do
     local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
     print("LMaxPool2D:typeOf", tostring(pool:typeOf("LObject")))
+    print("type = " .. tostring(pool:type()))
 end
 
---@api-stub: LPositionalEncoding:type
+--@api: LPositionalEncoding:type
 do
     local pe = lurek.learning.newPositionalEncoding(4, 8)
     print("LPositionalEncoding:type", pe:type())
+    print("typeOf LObject = " .. tostring(pe:typeOf("LObject")))
 end
 
---@api-stub: LPositionalEncoding:typeOf
+--@api: LPositionalEncoding:typeOf
 do
     local pe = lurek.learning.newPositionalEncoding(4, 8)
     print("LPositionalEncoding:typeOf", tostring(pe:typeOf("LObject")))
+    print("type = " .. tostring(pe:type()))
 end
 
---@api-stub: LMultiHeadAttention:setWeights
+--@api: LMultiHeadAttention:setWeights
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     local count = mha:paramCount()
@@ -782,32 +806,35 @@ do
     print("LMultiHeadAttention:setWeights count", count)
 end
 
---@api-stub: LMultiHeadAttention:getWeights
+--@api: LMultiHeadAttention:getWeights
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     local got = mha:getWeights()
     print("LMultiHeadAttention:getWeights", #got)
 end
 
---@api-stub: LMultiHeadAttention:paramCount
+--@api: LMultiHeadAttention:paramCount
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     print("LMultiHeadAttention:paramCount", mha:paramCount())
+    print("owner type = " .. tostring(mha:type()))
 end
 
---@api-stub: LMultiHeadAttention:type
+--@api: LMultiHeadAttention:type
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     print("LMultiHeadAttention:type", mha:type())
+    print("typeOf LObject = " .. tostring(mha:typeOf("LObject")))
 end
 
---@api-stub: LMultiHeadAttention:typeOf
+--@api: LMultiHeadAttention:typeOf
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     print("LMultiHeadAttention:typeOf", tostring(mha:typeOf("LObject")))
+    print("type = " .. tostring(mha:type()))
 end
 
---@api-stub: LTransformerEncoder:setWeights
+--@api: LTransformerEncoder:setWeights
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
     local count = enc:paramCount()
@@ -819,32 +846,35 @@ do
     print("LTransformerEncoder:setWeights count", count)
 end
 
---@api-stub: LTransformerEncoder:getWeights
+--@api: LTransformerEncoder:getWeights
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
     local got = enc:getWeights()
     print("LTransformerEncoder:getWeights", #got)
 end
 
---@api-stub: LTransformerEncoder:paramCount
+--@api: LTransformerEncoder:paramCount
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
     print("LTransformerEncoder:paramCount", enc:paramCount())
+    print("owner type = " .. tostring(enc:type()))
 end
 
---@api-stub: LTransformerEncoder:type
+--@api: LTransformerEncoder:type
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
     print("LTransformerEncoder:type", enc:type())
+    print("typeOf LObject = " .. tostring(enc:typeOf("LObject")))
 end
 
---@api-stub: LTransformerEncoder:typeOf
+--@api: LTransformerEncoder:typeOf
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
     print("LTransformerEncoder:typeOf", tostring(enc:typeOf("LObject")))
+    print("type = " .. tostring(enc:type()))
 end
 
---@api-stub: LTransformerDecoder:setWeights
+--@api: LTransformerDecoder:setWeights
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
     local count = dec:paramCount()
@@ -856,32 +886,35 @@ do
     print("LTransformerDecoder:setWeights count", count)
 end
 
---@api-stub: LTransformerDecoder:getWeights
+--@api: LTransformerDecoder:getWeights
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
     local got = dec:getWeights()
     print("LTransformerDecoder:getWeights", #got)
 end
 
---@api-stub: LTransformerDecoder:paramCount
+--@api: LTransformerDecoder:paramCount
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
     print("LTransformerDecoder:paramCount", dec:paramCount())
+    print("owner type = " .. tostring(dec:type()))
 end
 
---@api-stub: LTransformerDecoder:type
+--@api: LTransformerDecoder:type
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
     print("LTransformerDecoder:type", dec:type())
+    print("typeOf LObject = " .. tostring(dec:typeOf("LObject")))
 end
 
---@api-stub: LTransformerDecoder:typeOf
+--@api: LTransformerDecoder:typeOf
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
     print("LTransformerDecoder:typeOf", tostring(dec:typeOf("LObject")))
+    print("type = " .. tostring(dec:type()))
 end
 
---@api-stub: LQLearner:bestAction
+--@api: LQLearner:bestAction
 do
     local learner = lurek.learning.newQLearner(5, 3)
     learner:setQValue(1, 1, 0.5)
@@ -891,7 +924,7 @@ do
     print("LQLearner:bestAction", learner:bestAction(1))
 end
 
---@api-stub: LQLearner:chooseAction
+--@api: LQLearner:chooseAction
 do
     local learner = lurek.learning.newQLearner(5, 3)
     learner:setExplorationRate(0.0)
@@ -901,7 +934,7 @@ do
     print("LQLearner:chooseAction", chosen_action)
 end
 
---@api-stub: LQLearner:deserialize
+--@api: LQLearner:deserialize
 do
     local source = lurek.learning.newQLearner(5, 3)
     source:setQValue(2, 3, 3.14)
@@ -912,7 +945,7 @@ do
     print("LQLearner:deserialize q23", restored:getQValue(2, 3))
 end
 
---@api-stub: LQLearner:endEpisode
+--@api: LQLearner:endEpisode
 do
     local learner = lurek.learning.newQLearner(8, 4)
     learner:setExplorationRate(0.8)
@@ -922,7 +955,7 @@ do
     print("LQLearner:endEpisode explorationRate", learner:getExplorationRate())
 end
 
---@api-stub: LQLearner:getActionCount
+--@api: LQLearner:getActionCount
 do
     local learner = lurek.learning.newQLearner(10, 4)
     local action_count = learner:getActionCount()
@@ -930,7 +963,7 @@ do
     print("LQLearner:getActionCount", action_count)
 end
 
---@api-stub: LQLearner:getDiscountFactor
+--@api: LQLearner:getDiscountFactor
 do
     local learner = lurek.learning.newQLearner(10, 4)
     learner:setDiscountFactor(0.95)
@@ -938,7 +971,7 @@ do
     print("LQLearner:getDiscountFactor", learner:getDiscountFactor())
 end
 
---@api-stub: LQLearner:getExplorationDecay
+--@api: LQLearner:getExplorationDecay
 do
     local learner = lurek.learning.newQLearner(10, 4)
     learner:setExplorationDecay(0.97)
@@ -946,7 +979,7 @@ do
     print("LQLearner:getExplorationDecay", learner:getExplorationDecay())
 end
 
---@api-stub: LQLearner:getExplorationRate
+--@api: LQLearner:getExplorationRate
 do
     local learner = lurek.learning.newQLearner(10, 4)
     learner:setExplorationRate(0.35)
@@ -954,7 +987,7 @@ do
     print("LQLearner:getExplorationRate", learner:getExplorationRate())
 end
 
---@api-stub: LQLearner:getLearningRate
+--@api: LQLearner:getLearningRate
 do
     local learner = lurek.learning.newQLearner(10, 4)
     learner:setLearningRate(0.05)
@@ -962,7 +995,7 @@ do
     print("LQLearner:getLearningRate", learner:getLearningRate())
 end
 
---@api-stub: LQLearner:getQValue
+--@api: LQLearner:getQValue
 do
     local learner = lurek.learning.newQLearner(10, 4)
     learner:setQValue(2, 3, 7.5)
@@ -971,7 +1004,7 @@ do
     print("LQLearner:getQValue", value)
 end
 
---@api-stub: LQLearner:getStateCount
+--@api: LQLearner:getStateCount
 do
     local learner = lurek.learning.newQLearner(10, 4)
     local state_count = learner:getStateCount()
@@ -979,7 +1012,7 @@ do
     print("LQLearner:getStateCount", state_count)
 end
 
---@api-stub: LQLearner:learn
+--@api: LQLearner:learn
 do
     local learner = lurek.learning.newQLearner(6, 3)
     learner:setLearningRate(0.5)
@@ -989,7 +1022,7 @@ do
     print("LQLearner:learn q12", learner:getQValue(1, 2))
 end
 
---@api-stub: LQLearner:serialize
+--@api: LQLearner:serialize
 do
     local learner = lurek.learning.newQLearner(5, 3)
     learner:setQValue(1, 1, 1.5)
@@ -998,7 +1031,7 @@ do
     print("LQLearner:serialize length", #json)
 end
 
---@api-stub: LQLearner:setDiscountFactor
+--@api: LQLearner:setDiscountFactor
 do
     local learner = lurek.learning.newQLearner(10, 4)
     learner:setDiscountFactor(0.95)
@@ -1006,7 +1039,7 @@ do
     print("LQLearner:setDiscountFactor", learner:getDiscountFactor())
 end
 
---@api-stub: LQLearner:setExplorationDecay
+--@api: LQLearner:setExplorationDecay
 do
     local learner = lurek.learning.newQLearner(10, 4)
     learner:setExplorationDecay(0.99)
@@ -1014,7 +1047,7 @@ do
     print("LQLearner:setExplorationDecay", learner:getExplorationDecay())
 end
 
---@api-stub: LQLearner:setExplorationRate
+--@api: LQLearner:setExplorationRate
 do
     local learner = lurek.learning.newQLearner(10, 4)
     learner:setExplorationRate(0.5)
@@ -1022,7 +1055,7 @@ do
     print("LQLearner:setExplorationRate", learner:getExplorationRate())
 end
 
---@api-stub: LQLearner:setLearningRate
+--@api: LQLearner:setLearningRate
 do
     local learner = lurek.learning.newQLearner(10, 4)
     learner:setLearningRate(0.05)
@@ -1030,7 +1063,7 @@ do
     print("LQLearner:setLearningRate", learner:getLearningRate())
 end
 
---@api-stub: LQLearner:setQValue
+--@api: LQLearner:setQValue
 do
     local learner = lurek.learning.newQLearner(8, 4)
     learner:setQValue(3, 2, 4.2)
@@ -1038,7 +1071,7 @@ do
     print("LQLearner:setQValue", learner:getQValue(3, 2))
 end
 
---@api-stub: LQLearner:type
+--@api: LQLearner:type
 do
     local learner = lurek.learning.newQLearner(10, 4)
     local type_name = learner:type()
@@ -1046,7 +1079,7 @@ do
     print("LQLearner:type", type_name)
 end
 
---@api-stub: LQLearner:typeOf
+--@api: LQLearner:typeOf
 do
     local learner = lurek.learning.newQLearner(10, 4)
     local is_learner = learner:typeOf("LQLearner")
@@ -1056,7 +1089,7 @@ do
     print("LQLearner:typeOf LObject", tostring(is_object))
 end
 
---@api-stub: LQLearner:getEpisodeCount
+--@api: LQLearner:getEpisodeCount
 do
     local learner = lurek.learning.newQLearner(10, 4)
     learner:endEpisode()
@@ -1064,7 +1097,7 @@ do
     print("LQLearner:getEpisodeCount", learner:getEpisodeCount())
 end
 
---@api-stub: lurek.learning.defineEnv
+--@api: lurek.learning.defineEnv
 do
     local env = lurek.learning.defineEnv({
         reset = function() return {0.0, 0.0} end,
@@ -1077,7 +1110,7 @@ do
     print("lurek.learning.defineEnv obs[1]", obs[1])
 end
 
---@api-stub: lurek.learning.frameStack
+--@api: lurek.learning.frameStack
 do
     local fs = lurek.learning.frameStack(3)
     fs:push({1.0, 2.0})
@@ -1087,7 +1120,7 @@ do
     print("lurek.learning.frameStack flat len", #flat)
 end
 
---@api-stub: lurek.learning.normalizeEnv
+--@api: lurek.learning.normalizeEnv
 do
     local base = lurek.learning.defineEnv({
         reset = function() return {2.0, 4.0} end,
@@ -1101,7 +1134,7 @@ do
     print("lurek.learning.normalizeEnv obs[2]", obs[2])
 end
 
---@api-stub: lurek.learning.timeLimit
+--@api: lurek.learning.timeLimit
 do
     local base = lurek.learning.defineEnv({
         reset = function() return {0.0} end,
@@ -1114,7 +1147,7 @@ do
     print("lurek.learning.timeLimit type", limited:type())
 end
 
---@api-stub: LEnv:reset
+--@api: LEnv:reset
 do
     local env = lurek.learning.defineEnv({
         reset = function() return {1.0, 2.0} end,
@@ -1127,7 +1160,7 @@ do
     print("LEnv:reset obs[1]", obs[1])
 end
 
---@api-stub: LEnv:step
+--@api: LEnv:step
 do
     local env = lurek.learning.defineEnv({
         reset = function() return {0.0} end,
@@ -1141,7 +1174,7 @@ do
     print("LEnv:step done", tostring(done))
 end
 
---@api-stub: LEnv:obsSpace
+--@api: LEnv:obsSpace
 do
     local env = lurek.learning.defineEnv({
         reset = function() return {0.0, 0.0} end,
@@ -1153,7 +1186,7 @@ do
     print("LEnv:obsSpace shape[1]", space.shape[1])
 end
 
---@api-stub: LEnv:actionSpace
+--@api: LEnv:actionSpace
 do
     local env = lurek.learning.defineEnv({
         reset = function() return {0.0} end,
@@ -1165,7 +1198,7 @@ do
     print("LEnv:actionSpace n", space.n)
 end
 
---@api-stub: LEnv:type
+--@api: LEnv:type
 do
     local env = lurek.learning.defineEnv({
         reset = function() return {0.0} end,
@@ -1176,7 +1209,7 @@ do
     print("LEnv:type", env:type())
 end
 
---@api-stub: LEnv:typeOf
+--@api: LEnv:typeOf
 do
     local env = lurek.learning.defineEnv({
         reset = function() return {0.0} end,
@@ -1188,7 +1221,7 @@ do
     print("LEnv:typeOf LObject", tostring(env:typeOf("LObject")))
 end
 
---@api-stub: LFrameStack:push
+--@api: LFrameStack:push
 do
     local fs = lurek.learning.frameStack(4)
     fs:push({0.1, 0.2})
@@ -1196,7 +1229,7 @@ do
     print("LFrameStack:push capacity", fs:capacity())
 end
 
---@api-stub: LFrameStack:get
+--@api: LFrameStack:get
 do
     local fs = lurek.learning.frameStack(2)
     fs:push({1.0, 2.0})
@@ -1206,7 +1239,7 @@ do
     print("LFrameStack:get first", flat[1])
 end
 
---@api-stub: LFrameStack:reset
+--@api: LFrameStack:reset
 do
     local fs = lurek.learning.frameStack(3)
     fs:push({1.0})
@@ -1215,33 +1248,35 @@ do
     print("LFrameStack:reset capacity", fs:capacity())
 end
 
---@api-stub: LFrameStack:capacity
+--@api: LFrameStack:capacity
 do
     local fs = lurek.learning.frameStack(5)
     print("LFrameStack:capacity", fs:capacity())
+    print("owner type = " .. tostring(fs:type()))
 end
 
---@api-stub: LFrameStack:type
+--@api: LFrameStack:type
 do
     local fs = lurek.learning.frameStack(3)
     print("LFrameStack:type", fs:type())
+    print("typeOf LObject = " .. tostring(fs:typeOf("LObject")))
 end
 
---@api-stub: LFrameStack:typeOf
+--@api: LFrameStack:typeOf
 do
     local fs = lurek.learning.frameStack(3)
     print("LFrameStack:typeOf LFrameStack", tostring(fs:typeOf("LFrameStack")))
     print("LFrameStack:typeOf LObject", tostring(fs:typeOf("LObject")))
 end
 
---@api-stub: lurek.learning.newTensor
+--@api: lurek.learning.newTensor
 do
     local t = lurek.learning.newTensor({2, 3}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
     print("lurek.learning.newTensor type", t:type())
     print("lurek.learning.newTensor len", t:len())
 end
 
---@api-stub: lurek.learning.loadOnnx
+--@api: lurek.learning.loadOnnx
 do
     local ok, err = pcall(function()
         return lurek.learning.loadOnnx("nonexistent.onnx")
@@ -1249,44 +1284,44 @@ do
     print("lurek.learning.loadOnnx missing file errors", tostring(not ok))
 end
 
---@api-stub: LOnnxModel:run
+--@api: LOnnxModel:run
 do
-    -- Requires a real .onnx file; stub demonstrates the call shape only.
-    -- local model = lurek.learning.loadOnnx("model.onnx")
-    -- local input = lurek.learning.newTensor({1, 4}, {0.1, 0.2, 0.3, 0.4})
-    -- local outputs = model:run({input})
-    print("LOnnxModel:run stub ok", true)
+    local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
+    local input = lurek.learning.newTensor({1}, {42.0})
+    local outputs = model:run({ input })
+    print("LOnnxModel:run outputs", #outputs)
+    print("LOnnxModel:run first value", outputs[1]:data()[1])
 end
 
---@api-stub: LOnnxModel:inputCount
+--@api: LOnnxModel:inputCount
 do
-    -- local model = lurek.learning.loadOnnx("model.onnx")
-    -- print("LOnnxModel:inputCount", model:inputCount())
-    print("LOnnxModel:inputCount stub ok", true)
+    local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
+    print("LOnnxModel:inputCount", model:inputCount())
+    print("model type = " .. model:type())
 end
 
---@api-stub: LOnnxModel:outputCount
+--@api: LOnnxModel:outputCount
 do
-    -- local model = lurek.learning.loadOnnx("model.onnx")
-    -- print("LOnnxModel:outputCount", model:outputCount())
-    print("LOnnxModel:outputCount stub ok", true)
+    local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
+    print("LOnnxModel:outputCount", model:outputCount())
+    print("model type = " .. model:type())
 end
 
---@api-stub: LOnnxModel:type
+--@api: LOnnxModel:type
 do
-    -- local model = lurek.learning.loadOnnx("model.onnx")
-    -- print("LOnnxModel:type", model:type())
-    print("LOnnxModel:type stub ok", true)
+    local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
+    print("LOnnxModel:type", model:type())
+    print("typeOf LOnnxModel = " .. tostring(model:typeOf("LOnnxModel")))
 end
 
---@api-stub: LOnnxModel:typeOf
+--@api: LOnnxModel:typeOf
 do
-    -- local model = lurek.learning.loadOnnx("model.onnx")
-    -- print("LOnnxModel:typeOf LOnnxModel", tostring(model:typeOf("LOnnxModel")))
-    print("LOnnxModel:typeOf stub ok", true)
+    local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
+    print("LOnnxModel:typeOf LOnnxModel", tostring(model:typeOf("LOnnxModel")))
+    print("LOnnxModel:type", model:type())
 end
 
---@api-stub: LTensor:shape
+--@api: LTensor:shape
 do
     local t = lurek.learning.newTensor({2, 3}, {1, 2, 3, 4, 5, 6})
     local s = t:shape()
@@ -1294,7 +1329,7 @@ do
     print("LTensor:shape dim0", s[1])
 end
 
---@api-stub: LTensor:data
+--@api: LTensor:data
 do
     local t = lurek.learning.newTensor({3}, {10.0, 20.0, 30.0})
     local d = t:data()
@@ -1302,47 +1337,49 @@ do
     print("LTensor:data first", d[1])
 end
 
---@api-stub: LTensor:get
+--@api: LTensor:get
 do
     local t = lurek.learning.newTensor({3}, {7.0, 8.0, 9.0})
     print("LTensor:get index1", t:get(1))
     print("LTensor:get index3", t:get(3))
 end
 
---@api-stub: LTensor:len
+--@api: LTensor:len
 do
     local t = lurek.learning.newTensor({4}, {1.0, 2.0, 3.0, 4.0})
     print("LTensor:len", t:len())
+    print("owner type = " .. tostring(t:type()))
 end
 
---@api-stub: LTensor:type
+--@api: LTensor:type
 do
     local t = lurek.learning.newTensor({1}, {0.0})
     print("LTensor:type", t:type())
+    print("typeOf LObject = " .. tostring(t:typeOf("LObject")))
 end
 
---@api-stub: LTensor:typeOf
+--@api: LTensor:typeOf
 do
     local t = lurek.learning.newTensor({1}, {0.0})
     print("LTensor:typeOf LTensor", tostring(t:typeOf("LTensor")))
     print("LTensor:typeOf LObject", tostring(t:typeOf("LObject")))
 end
 
---@api-stub: lurek.learning.wrap
+--@api: lurek.learning.wrap
 do
     local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
     print("wrapped model type = " .. model:type())
 end
 
---@api-stub: LBandit:predict
+--@api: LBandit:predict
 do
     local b = lurek.learning.newBandit(3, "ucb1", 0.1, 12345)
     local action = b:predict()
     print("bandit predict = " .. action)
 end
 
---@api-stub: LModel:predict
+--@api: LModel:predict
 do
     local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
@@ -1350,28 +1387,28 @@ do
     print("model predict = " .. action)
 end
 
---@api-stub: LModel:type
+--@api: LModel:type
 do
     local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
     print("model type = " .. model:type())
 end
 
---@api-stub: LModel:typeOf
+--@api: LModel:typeOf
 do
     local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
     print("model typeOf LModel = " .. tostring(model:typeOf("LModel")))
 end
 
---@api-stub: LNeuralNet:predict
+--@api: LNeuralNet:predict
 do
     local nn = lurek.learning.newNeuralNet()
     local action = nn:predict({0.5, 0.3})
     print("nn predict = " .. tostring(action))
 end
 
---@api-stub: LQLearner:predict
+--@api: LQLearner:predict
 do
     local q = lurek.learning.newQLearner(4, 2)
     local action = q:predict(0)

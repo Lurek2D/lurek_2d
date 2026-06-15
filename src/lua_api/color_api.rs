@@ -1,4 +1,9 @@
 //! File: src/lua_api/color_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
+//! TODO: add doc note 3
 
 use super::SharedState;
 use crate::color::{blend, gamma_to_linear, hsl_to_rgb, hsv_to_rgb, linear_to_gamma, retro, Color};

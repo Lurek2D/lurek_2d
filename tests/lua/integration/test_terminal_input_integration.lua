@@ -12,10 +12,10 @@ describe("terminal + input integration", function()
     -- @integration LWidget:getText
     -- @integration lurek.terminal.newTerminal
     -- @integration lurek.terminal.newTextBox
-    -- @covers lurek.input.keyboard
-    -- @covers lurek.terminal.newButton
-    -- @covers lurek.terminal.newTerminal
-    -- @covers lurek.terminal.newTextBox
+    -- @integration lurek.input.keyboard.isDown
+    -- @integration lurek.terminal.newButton
+    -- @integration lurek.terminal.newTerminal
+    -- @integration lurek.terminal.newTextBox
     it("focused terminal text box accepts text while keyboard text input mode is enabled", function()
         local term = lurek.terminal.newTerminal(40, 12)
         local input = lurek.terminal.newTextBox(2, 2, 18)

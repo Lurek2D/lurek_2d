@@ -4,20 +4,20 @@
 
 --- ECS Module Part 1: Universe creation, entities, components, systems, queries
 
---@api-stub: lurek.ecs.newUniverse
+--@api: lurek.ecs.newUniverse
 do
     local uni = lurek.ecs.newUniverse()
     print("universe created, entities = " .. uni:getEntityCount())
 end
 
---@api-stub: LUniverse:spawn
+--@api: LUniverse:spawn
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     print("spawned entity id = " .. id)
 end
 
---@api-stub: LUniverse:kill
+--@api: LUniverse:kill
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -25,14 +25,14 @@ do
     print("killed, alive = " .. tostring(uni:isAlive(id)))
 end
 
---@api-stub: LUniverse:isAlive
+--@api: LUniverse:isAlive
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     print("alive = " .. tostring(uni:isAlive(id)))
 end
 
---@api-stub: LUniverse:set
+--@api: LUniverse:set
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -40,7 +40,7 @@ do
     print("position set")
 end
 
---@api-stub: LUniverse:get
+--@api: LUniverse:get
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -49,7 +49,7 @@ do
     print("hp.value = " .. tostring(hp.value))
 end
 
---@api-stub: LUniverse:has
+--@api: LUniverse:has
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -57,7 +57,7 @@ do
     print("has speed = " .. tostring(uni:has(id, "speed")))
 end
 
---@api-stub: LUniverse:remove
+--@api: LUniverse:remove
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -66,7 +66,7 @@ do
     print("after remove has = " .. tostring(uni:has(id, "temp")))
 end
 
---@api-stub: LUniverse:getComponents
+--@api: LUniverse:getComponents
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -76,7 +76,7 @@ do
     print("components = " .. #names)
 end
 
---@api-stub: LUniverse:query
+--@api: LUniverse:query
 do
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
@@ -87,7 +87,7 @@ do
     print("with pos+vel = " .. #uni:query("pos", "vel"))
 end
 
---@api-stub: LUniverse:each
+--@api: LUniverse:each
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -101,7 +101,7 @@ do
     print("each count = " .. count)
 end
 
---@api-stub: LUniverse:getEntities
+--@api: LUniverse:getEntities
 do
     local uni = lurek.ecs.newUniverse()
     uni:spawn()
@@ -110,7 +110,7 @@ do
     print("entities = " .. #all)
 end
 
---@api-stub: LUniverse:getEntityCount
+--@api: LUniverse:getEntityCount
 do
     local uni = lurek.ecs.newUniverse()
     uni:spawn()
@@ -119,7 +119,7 @@ do
     print("count = " .. uni:getEntityCount())
 end
 
---@api-stub: LUniverse:addSystem
+--@api: LUniverse:addSystem
 do
     local uni = lurek.ecs.newUniverse()
     local sys = { update = function(self, universe, dt) end }
@@ -127,7 +127,7 @@ do
     print("systems = " .. uni:getSystemCount())
 end
 
---@api-stub: LUniverse:removeSystem
+--@api: LUniverse:removeSystem
 do
     local uni = lurek.ecs.newUniverse()
     local sys = {update = function() end}
@@ -136,7 +136,7 @@ do
     print("after remove systems = " .. uni:getSystemCount())
 end
 
---@api-stub: LUniverse:update
+--@api: LUniverse:update
 do
     local uni = lurek.ecs.newUniverse()
     local called = false
@@ -145,7 +145,7 @@ do
     print("update called = " .. tostring(called))
 end
 
---@api-stub: LUniverse:render
+--@api: LUniverse:render
 do
     local uni = lurek.ecs.newUniverse()
     local drawn = false
@@ -154,7 +154,7 @@ do
     print("render called = " .. tostring(drawn))
 end
 
---@api-stub: LUniverse:emit
+--@api: LUniverse:emit
 do
     local uni = lurek.ecs.newUniverse()
     local got = false
@@ -163,7 +163,7 @@ do
     print("emit received = " .. tostring(got))
 end
 
---@api-stub: LUniverse:getSystemCount
+--@api: LUniverse:getSystemCount
 do
     local uni = lurek.ecs.newUniverse()
     uni:addSystem({update = function() end})
@@ -171,7 +171,7 @@ do
     print("system count = " .. uni:getSystemCount())
 end
 
---@api-stub: LUniverse:updatePhase
+--@api: LUniverse:updatePhase
 do
     local uni = lurek.ecs.newUniverse()
     local ran = false
@@ -180,7 +180,7 @@ do
     print("phase ran = " .. tostring(ran))
 end
 
---@api-stub: LUniverse:getDirtyEntities
+--@api: LUniverse:getDirtyEntities
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -189,7 +189,7 @@ do
     print("dirty = " .. #dirty)
 end
 
---@api-stub: LUniverse:queryMulti
+--@api: LUniverse:queryMulti
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -204,7 +204,7 @@ do
     print("queryMulti = " .. count)
 end
 
---@api-stub: LUniverse:snapshot
+--@api: LUniverse:snapshot
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -216,14 +216,14 @@ end
 
 --- ECS Module Part 2: Blueprints, hierarchy, relations, serialization, observers, advanced queries
 
---@api-stub: LUniverse:defineBlueprint
+--@api: LUniverse:defineBlueprint
 do
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("enemy", {pos = {x = 0, y = 0}, hp = {value = 50}, tag = {value = "hostile"}})
     print("blueprint defined")
 end
 
---@api-stub: LUniverse:getBlueprintComponents
+--@api: LUniverse:getBlueprintComponents
 do
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("item", {name = {value = "sword"}, damage = {value = 10}})
@@ -232,7 +232,7 @@ do
     print("damage = " .. tostring(comps.damage.value))
 end
 
---@api-stub: LUniverse:spawnBlueprint
+--@api: LUniverse:spawnBlueprint
 do
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("npc", {pos = {x = 0, y = 0}})
@@ -240,7 +240,7 @@ do
     print("spawned from blueprint id = " .. id)
 end
 
---@api-stub: LUniverse:setParent
+--@api: LUniverse:setParent
 do
     local uni = lurek.ecs.newUniverse()
     local parent = uni:spawn()
@@ -249,7 +249,7 @@ do
     print("parent set")
 end
 
---@api-stub: LUniverse:getParent
+--@api: LUniverse:getParent
 do
     local uni = lurek.ecs.newUniverse()
     local parent = uni:spawn()
@@ -259,7 +259,7 @@ do
     print("parent = " .. p)
 end
 
---@api-stub: LUniverse:getChildren
+--@api: LUniverse:getChildren
 do
     local uni = lurek.ecs.newUniverse()
     local parent = uni:spawn()
@@ -271,7 +271,7 @@ do
     print("children = " .. #children)
 end
 
---@api-stub: LUniverse:killRecursive
+--@api: LUniverse:killRecursive
 do
     local uni = lurek.ecs.newUniverse()
     local root = uni:spawn()
@@ -281,7 +281,7 @@ do
     print("child alive = " .. tostring(uni:isAlive(child)))
 end
 
---@api-stub: LUniverse:queryNot
+--@api: LUniverse:queryNot
 do
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
@@ -292,7 +292,7 @@ do
     print("moving entities = " .. #uni:queryNot({"pos"}, {"static"}))
 end
 
---@api-stub: LUniverse:serialize
+--@api: LUniverse:serialize
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -301,7 +301,7 @@ do
     print("entities in snapshot = " .. #snap.entities)
 end
 
---@api-stub: LUniverse:deserialize
+--@api: LUniverse:deserialize
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
@@ -310,7 +310,7 @@ do
     print("deserialized, count = " .. uni:getEntityCount())
 end
 
---@api-stub: LUniverse:onComponentAdded
+--@api: LUniverse:onComponentAdded
 do
     local uni = lurek.ecs.newUniverse()
     local added = false
@@ -321,7 +321,7 @@ do
     print("added callback fired = " .. tostring(added))
 end
 
---@api-stub: LUniverse:onComponentRemoved
+--@api: LUniverse:onComponentRemoved
 do
     local uni = lurek.ecs.newUniverse()
     local removed = false
@@ -333,14 +333,14 @@ do
     print("removed callback fired = " .. tostring(removed))
 end
 
---@api-stub: LUniverse:flushObservers
+--@api: LUniverse:flushObservers
 do
     local uni = lurek.ecs.newUniverse()
     uni:flushObservers()
     print("observers flushed")
 end
 
---@api-stub: LUniverse:spawnBulk
+--@api: LUniverse:spawnBulk
 do
     local uni = lurek.ecs.newUniverse()
     uni:defineBlueprint("bullet", {pos = {x = 0, y = 0}})
@@ -348,7 +348,7 @@ do
     print("bulk spawned = " .. #ids)
 end
 
---@api-stub: LUniverse:addRelation
+--@api: LUniverse:addRelation
 do
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
@@ -357,7 +357,7 @@ do
     print("relation added")
 end
 
---@api-stub: LUniverse:getRelated
+--@api: LUniverse:getRelated
 do
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
@@ -369,7 +369,7 @@ do
     print("friends = " .. #friends)
 end
 
---@api-stub: LUniverse:removeRelation
+--@api: LUniverse:removeRelation
 do
     local uni = lurek.ecs.newUniverse()
     local a, b = uni:spawn(), uni:spawn()
@@ -378,7 +378,7 @@ do
     print("relation removed")
 end
 
---@api-stub: LUniverse:clearRelations
+--@api: LUniverse:clearRelations
 do
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
@@ -389,7 +389,7 @@ do
     print("after clear = " .. #targets)
 end
 
---@api-stub: LUniverse:hasRelation
+--@api: LUniverse:hasRelation
 do
     local uni = lurek.ecs.newUniverse()
     local a = uni:spawn()
@@ -398,13 +398,13 @@ do
     print("has relation = " .. tostring(uni:hasRelation(a, "attacks", b)))
 end
 
---@api-stub: LUniverse:type
+--@api: LUniverse:type
 do
     local uni = lurek.ecs.newUniverse()
     print("type = " .. uni:type())
 end
 
---@api-stub: LUniverse:typeOf
+--@api: LUniverse:typeOf
 do
     local uni = lurek.ecs.newUniverse()
     print("is LUniverse = " .. tostring(uni:typeOf("LUniverse")))
@@ -412,7 +412,7 @@ end
 
 --- ECS Module: tag system, blueprints, layers, snapshots
 
---@api-stub: LUniverse:defineTag
+--@api: LUniverse:defineTag
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
@@ -421,7 +421,7 @@ do
     print(u:hasTag(e, "enemy"))
 end
 
---@api-stub: LUniverse:addTag
+--@api: LUniverse:addTag
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
@@ -430,7 +430,7 @@ do
     print(u:hasTag(e, "enemy"))
 end
 
---@api-stub: LUniverse:removeTag
+--@api: LUniverse:removeTag
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
@@ -440,7 +440,7 @@ do
     print(u:hasTag(e, "enemy"))
 end
 
---@api-stub: LUniverse:hasTag
+--@api: LUniverse:hasTag
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
@@ -449,7 +449,7 @@ do
     print(u:hasTag(e, "enemy"))
 end
 
---@api-stub: LUniverse:getTags
+--@api: LUniverse:getTags
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
@@ -458,7 +458,7 @@ do
     print(#u:getTags(e))
 end
 
---@api-stub: LUniverse:bitmapTag
+--@api: LUniverse:bitmapTag
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
@@ -467,7 +467,7 @@ do
     print(u:hasBitmapTag(e, "enemy"))
 end
 
---@api-stub: LUniverse:bitmapUntag
+--@api: LUniverse:bitmapUntag
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
@@ -477,14 +477,14 @@ do
     print(u:hasBitmapTag(e, "enemy"))
 end
 
---@api-stub: LUniverse:getBitmapTagBit
+--@api: LUniverse:getBitmapTagBit
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
     print("bit = " .. tostring(u:getBitmapTagBit("enemy")))
 end
 
---@api-stub: LUniverse:hasBitmapTag
+--@api: LUniverse:hasBitmapTag
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
@@ -493,7 +493,7 @@ do
     print(u:hasBitmapTag(e, "enemy"))
 end
 
---@api-stub: LUniverse:queryBitmapAll
+--@api: LUniverse:queryBitmapAll
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
@@ -502,7 +502,7 @@ do
     print(#u:queryBitmapAll({"enemy"}))
 end
 
---@api-stub: LUniverse:queryBitmapAny
+--@api: LUniverse:queryBitmapAny
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
@@ -511,7 +511,7 @@ do
     print(#u:queryBitmapAny({"enemy"}))
 end
 
---@api-stub: LUniverse:queryBitmapTag
+--@api: LUniverse:queryBitmapTag
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("enemy")
@@ -520,7 +520,7 @@ do
     print(#u:queryBitmapTag("enemy"))
 end
 
---@api-stub: LUniverse:extendBlueprint
+--@api: LUniverse:extendBlueprint
 do
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
@@ -528,7 +528,7 @@ do
     print(u:hasBlueprint("enemy"))
 end
 
---@api-stub: LUniverse:hasBlueprint
+--@api: LUniverse:hasBlueprint
 do
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
@@ -536,7 +536,7 @@ do
     print(u:hasBlueprint("enemy"))
 end
 
---@api-stub: LUniverse:listBlueprints
+--@api: LUniverse:listBlueprints
 do
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
@@ -544,7 +544,7 @@ do
     print(#u:listBlueprints())
 end
 
---@api-stub: LUniverse:removeBlueprint
+--@api: LUniverse:removeBlueprint
 do
     local u = lurek.ecs.newUniverse()
     u:defineBlueprint("base", { hp = 100 })
@@ -553,7 +553,7 @@ do
     print(u:hasBlueprint("enemy"))
 end
 
---@api-stub: LUniverse:getEntitiesByLayer
+--@api: LUniverse:getEntitiesByLayer
 do
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
@@ -561,7 +561,7 @@ do
     print(#u:getEntitiesByLayer(2))
 end
 
---@api-stub: LUniverse:getEntitiesByTag
+--@api: LUniverse:getEntitiesByTag
 do
     local u = lurek.ecs.newUniverse()
     u:defineTag("unit")
@@ -570,7 +570,7 @@ do
     print(#u:getEntitiesByTag("unit"))
 end
 
---@api-stub: LUniverse:getEntitiesSorted
+--@api: LUniverse:getEntitiesSorted
 do
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
@@ -578,7 +578,7 @@ do
     print("sorted count = " .. #u:getEntitiesSorted())
 end
 
---@api-stub: LUniverse:getLayer
+--@api: LUniverse:getLayer
 do
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
@@ -586,7 +586,7 @@ do
     print("layer = " .. tostring(u:getLayer(e)))
 end
 
---@api-stub: LUniverse:setLayer
+--@api: LUniverse:setLayer
 do
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
@@ -594,7 +594,7 @@ do
     print("layer = " .. tostring(u:getLayer(e)))
 end
 
---@api-stub: LUniverse:applySnapshot
+--@api: LUniverse:applySnapshot
 do
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
@@ -605,7 +605,7 @@ do
     print("entities after apply = " .. u:getEntityCount())
 end
 
---@api-stub: LUniverse:takeSnapshotDiff
+--@api: LUniverse:takeSnapshotDiff
 do
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
@@ -614,7 +614,7 @@ do
     print("dirty entities = " .. tostring(#diff.dirty_entities))
 end
 
---@api-stub: LUniverse:clear
+--@api: LUniverse:clear
 do
     local u = lurek.ecs.newUniverse()
     u:spawn()
@@ -622,7 +622,7 @@ do
     print("entities after clear = " .. u:getEntityCount())
 end
 
---@api-stub: LUniverse:release
+--@api: LUniverse:release
 do
     local u = lurek.ecs.newUniverse()
     u:release()

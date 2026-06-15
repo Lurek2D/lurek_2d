@@ -263,9 +263,9 @@ def load_examples(module: str) -> dict[str, str]:
         return {}
     text = lua_file.read_text(encoding="utf-8")
     result = {}
-    # Match --@api-stub: Symbol followed by do...end block
+    # Match --@api: / --@api-stub: Symbol followed by do...end block
     pattern = re.compile(
-        r'--@api-stub:\s*([\w.:]+)\s*\n(do\b.*?^end)',
+        r'--@api(?:-stub)?:\s*([\w.:]+)\s*\n(do\b.*?^end)',
         re.DOTALL | re.MULTILINE
     )
     for m in pattern.finditer(text):

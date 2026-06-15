@@ -1,4 +1,11 @@
 //! File: src/lua_api/procgen_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
+//! TODO: add doc note 3
+//! TODO: add doc note 4
+//! TODO: add doc note 5
 
 use super::SharedState;
 use crate::agent::chat::{ollama_generate_json, read_global_config};

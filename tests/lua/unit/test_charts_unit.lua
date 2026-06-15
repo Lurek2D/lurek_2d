@@ -119,6 +119,25 @@ describe("LuaLineChart methods", function()
         expect_type("string", data)
     end)
 
+    -- @covers LLineChart:replaceSeries
+    it("replaceSeries swaps line data and keeps render working", function()
+        local chart = lurek.charts.newLine({ width = 96, height = 72 })
+        chart:addSeries("test", {{1, 2}, {2, 4}})
+        chart:replaceSeries("test", {{10, 1}, {20, 3}, {30, 2}})
+        expect_chart_draws(chart, 96, 72)
+    end)
+
+    -- @covers LLineChart:renderImage
+    it("renderImage returns a drawn image for line charts", function()
+        local chart = lurek.charts.newLine({ width = 96, height = 72 })
+        chart:addSeries("test", {{1, 2}, {2, 4}, {3, 3}})
+        local img = chart:renderImage()
+        expect_type("userdata", img)
+        expect_equal(96, img:getWidth())
+        expect_equal(72, img:getHeight())
+        expect_true(image_has_drawn_pixels(img))
+    end)
+
     -- @covers LLineChart:clear
     it("clear removes series and render still succeeds", function()
         local chart = lurek.charts.newLine()
@@ -138,9 +157,28 @@ describe("LuaLineChart methods", function()
     end)
 
     -- @covers LLineChart:appendPoint
+    it("appendPoint keeps recent line samples within the configured history", function()
+        local chart = lurek.charts.newLine({ width = 96, height = 72, maxPoints = 3 })
+        chart:appendPoint("loss", 1, 0.9)
+        chart:appendPoint("loss", 2, 0.7)
+        chart:appendPoint("loss", 3, 0.5)
+        chart:appendPoint("loss", 4, 0.4)
+        expect_chart_draws(chart, 96, 72)
+    end)
+
     -- @covers LLineChart:setWindow
+    it("setWindow keeps streaming line charts renderable", function()
+        local chart = lurek.charts.newLine({ width = 96, height = 72, maxPoints = 3 })
+        chart:appendPoint("loss", 1, 0.9)
+        chart:appendPoint("loss", 2, 0.7)
+        chart:appendPoint("loss", 3, 0.5)
+        chart:appendPoint("loss", 4, 0.4)
+        chart:setWindow(2)
+        expect_chart_draws(chart, 96, 72)
+    end)
+
     -- @covers LLineChart:nearest
-    it("streaming line helpers keep recent points and expose nearest point metadata", function()
+    it("nearest exposes nearest point metadata for streaming line charts", function()
         local chart = lurek.charts.newLine({ width = 96, height = 72, maxPoints = 3 })
         chart:appendPoint("loss", 1, 0.9)
         chart:appendPoint("loss", 2, 0.7)
@@ -151,7 +189,6 @@ describe("LuaLineChart methods", function()
         expect_type("table", nearest)
         expect_equal("loss", nearest.series)
         expect_true(nearest.index >= 1)
-        expect_chart_draws(chart, 96, 72)
     end)
 end)
 
@@ -175,6 +212,17 @@ describe("LuaBarChart methods", function()
         expect_true(w > 0)
         expect_true(h > 0)
         expect_true(#data > 0)
+    end)
+
+    -- @covers LBarChart:renderImage
+    it("renderImage returns a drawn image for bar charts", function()
+        local chart = lurek.charts.newBar({ width = 96, height = 72 })
+        chart:addSeries("sales", {{1, 10}, {2, 14}})
+        local img = chart:renderImage()
+        expect_type("userdata", img)
+        expect_equal(96, img:getWidth())
+        expect_equal(72, img:getHeight())
+        expect_true(image_has_drawn_pixels(img))
     end)
 
     -- @covers LBarChart:setBarWidth
@@ -217,8 +265,16 @@ describe("LuaBarChart methods", function()
     end)
 
     -- @covers LBarChart:addCategory
+    it("addCategory appends one category row to a bar chart", function()
+        local chart = lurek.charts.newBar({ width = 96, height = 72 })
+        chart:addSeries("Revenue", {})
+        chart:addSeries("Cost", {})
+        chart:addCategory("Seed", { 100, 60 })
+        expect_chart_draws(chart, 96, 72)
+    end)
+
     -- @covers LBarChart:addCategoriesFromDataFrame
-    it("category-based bar charts support dataframe ingestion", function()
+    it("addCategoriesFromDataFrame ingests category rows from a dataframe", function()
         local df = lurek.dataframe.fromRows({ "month", "revenue", "cost" }, {
             { "Jan", 120, 80 },
             { "Feb", 150, 95 },
@@ -226,7 +282,6 @@ describe("LuaBarChart methods", function()
         local chart = lurek.charts.newBar({ width = 96, height = 72 })
         chart:addSeries("Revenue", {})
         chart:addSeries("Cost", {})
-        chart:addCategory("Seed", { 100, 60 })
         expect_equal(2, chart:addCategoriesFromDataFrame(df, "month", { "revenue", "cost" }))
         expect_chart_draws(chart, 96, 72)
     end)
@@ -252,6 +307,25 @@ describe("LuaScatterPlot methods", function()
         expect_true(w > 0)
         expect_true(h > 0)
         expect_true(#data > 0)
+    end)
+
+    -- @covers LScatterPlot:replaceSeries
+    it("replaceSeries swaps scatter data and keeps render working", function()
+        local chart = lurek.charts.newScatter({ width = 96, height = 72 })
+        chart:addSeries("points", {{1, 1}, {2, 4}})
+        chart:replaceSeries("points", {{10, 2}, {20, 6}, {30, 5}})
+        expect_chart_draws(chart, 96, 72)
+    end)
+
+    -- @covers LScatterPlot:renderImage
+    it("renderImage returns a drawn image for scatter charts", function()
+        local chart = lurek.charts.newScatter({ width = 96, height = 72 })
+        chart:addSeries("points", {{1, 1}, {2, 4}, {3, 9}})
+        local img = chart:renderImage()
+        expect_type("userdata", img)
+        expect_equal(96, img:getWidth())
+        expect_equal(72, img:getHeight())
+        expect_true(image_has_drawn_pixels(img))
     end)
 
     -- @covers LScatterPlot:setDotRadius
@@ -303,21 +377,31 @@ describe("LuaHistogramChart methods", function()
     end)
 
     -- @covers LHistogramChart:addSeries
-    -- @covers LHistogramChart:setBinCount
-    -- @covers LHistogramChart:setDensity
-    it("histogram charts render grouped distributions", function()
+    it("addSeries renders grouped histogram distributions", function()
         local chart = lurek.charts.newHistogram({ width = 96, height = 72, showLegend = true })
-        chart:setBinCount(6)
-        chart:setDensity(true)
         chart:addSeries("train", { 0.1, 0.2, 0.2, 0.4, 0.6, 0.9 })
         chart:addSeries("valid", { 0.15, 0.18, 0.5, 0.55, 0.8 })
         expect_chart_draws(chart, 96, 72)
     end)
 
+    -- @covers LHistogramChart:setBinCount
+    it("setBinCount keeps grouped histograms renderable", function()
+        local chart = lurek.charts.newHistogram({ width = 96, height = 72, showLegend = true })
+        chart:setBinCount(6)
+        chart:addSeries("train", { 0.1, 0.2, 0.2, 0.4, 0.6, 0.9 })
+        expect_chart_draws(chart, 96, 72)
+    end)
+
+    -- @covers LHistogramChart:setDensity
+    it("setDensity toggles density rendering without breaking grouped histograms", function()
+        local chart = lurek.charts.newHistogram({ width = 96, height = 72, showLegend = true })
+        chart:setDensity(true)
+        chart:addSeries("train", { 0.1, 0.2, 0.2, 0.4, 0.6, 0.9 })
+        expect_chart_draws(chart, 96, 72)
+    end)
+
     -- @covers LHistogramChart:addSeriesFromDataFrame
-    -- @covers LHistogramChart:appendValue
-    -- @covers LHistogramChart:setWindow
-    it("histogram charts support dataframe ingestion and streaming samples", function()
+    it("addSeriesFromDataFrame copies numeric histogram samples from a dataframe", function()
         local df = lurek.dataframe.fromRows({ "latency_ms" }, {
             { 12 },
             { 18 },
@@ -326,12 +410,61 @@ describe("LuaHistogramChart methods", function()
         })
         local chart = lurek.charts.newHistogram({ width = 96, height = 72, maxPoints = 4 })
         expect_equal(3, chart:addSeriesFromDataFrame("latency", df, "latency_ms"))
+        local w, h, bytes = chart:render()
+        expect_equal(96, w)
+        expect_equal(72, h)
+        expect_true(#bytes > 0)
+    end)
+
+    -- @covers LHistogramChart:appendValue
+    it("appendValue extends a histogram sample stream", function()
+        local chart = lurek.charts.newHistogram({ width = 96, height = 72, maxPoints = 4 })
+        chart:addSeries("latency", { 12, 18, 30 })
+        chart:appendValue("latency", 45)
+        local w, h, bytes = chart:render()
+        expect_equal(96, w)
+        expect_equal(72, h)
+        expect_true(#bytes > 0)
+    end)
+
+    -- @covers LHistogramChart:setWindow
+    it("setWindow keeps streaming histograms renderable", function()
+        local chart = lurek.charts.newHistogram({ width = 96, height = 72, maxPoints = 4 })
+        chart:addSeries("latency", { 12, 18, 30 })
         chart:appendValue("latency", 45)
         chart:setWindow(2)
         local w, h, bytes = chart:render()
         expect_equal(96, w)
         expect_equal(72, h)
         expect_true(#bytes > 0)
+    end)
+
+    -- @covers LHistogramChart:replaceSeries
+    it("replaceSeries swaps histogram sample sets", function()
+        local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+        chart:addSeries("latency", { 1, 2, 3 })
+        chart:replaceSeries("latency", { 10, 12, 18, 20 })
+        expect_chart_draws(chart, 96, 72)
+    end)
+
+    -- @covers LHistogramChart:clearRange
+    it("clearRange removes an explicit histogram range without breaking render", function()
+        local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+        chart:addSeries("latency", { 1, 2, 3, 4, 5 })
+        chart:setRange(0, 5)
+        chart:clearRange()
+        expect_chart_draws(chart, 96, 72)
+    end)
+
+    -- @covers LHistogramChart:renderImage
+    it("renderImage returns a drawn image for histograms", function()
+        local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+        chart:addSeries("latency", { 5, 7, 9, 12, 14 })
+        local img = chart:renderImage()
+        expect_type("userdata", img)
+        expect_equal(96, img:getWidth())
+        expect_equal(72, img:getHeight())
+        expect_true(image_has_drawn_pixels(img))
     end)
 end)
 
@@ -344,9 +477,18 @@ describe("LuaHeatmapChart methods", function()
     end)
 
     -- @covers LHeatmapChart:setMatrix
+    it("setMatrix loads labeled heatmap matrix data", function()
+        local chart = lurek.charts.newHeatmap({ width = 120, height = 90, showLegend = true, title = "Confusion" })
+        chart:setMatrix({
+            { 22, 3, 1 },
+            { 4, 18, 2 },
+            { 0, 2, 26 },
+        }, { "cat", "dog", "fox" }, { "cat", "dog", "fox" })
+        expect_chart_draws(chart, 120, 90)
+    end)
+
     -- @covers LHeatmapChart:setColorRange
-    -- @covers LHeatmapChart:setShowValues
-    it("heatmap charts render matrix data with labels", function()
+    it("setColorRange keeps heatmap matrix charts renderable", function()
         local chart = lurek.charts.newHeatmap({ width = 120, height = 90, showLegend = true, title = "Confusion" })
         chart:setMatrix({
             { 22, 3, 1 },
@@ -354,14 +496,23 @@ describe("LuaHeatmapChart methods", function()
             { 0, 2, 26 },
         }, { "cat", "dog", "fox" }, { "cat", "dog", "fox" })
         chart:setColorRange({ 0.1, 0.3, 0.9, 1.0 }, { 0.9, 0.2, 0.2, 1.0 })
+        expect_chart_draws(chart, 120, 90)
+    end)
+
+    -- @covers LHeatmapChart:setShowValues
+    it("setShowValues overlays numeric labels on heatmap cells", function()
+        local chart = lurek.charts.newHeatmap({ width = 120, height = 90, showLegend = true, title = "Confusion" })
+        chart:setMatrix({
+            { 22, 3, 1 },
+            { 4, 18, 2 },
+            { 0, 2, 26 },
+        }, { "cat", "dog", "fox" }, { "cat", "dog", "fox" })
         chart:setShowValues(true)
         expect_chart_draws(chart, 120, 90)
     end)
 
     -- @covers LHeatmapChart:setCell
-    -- @covers LHeatmapChart:setMatrixFromDataFrame
-    -- @covers LHeatmapChart:setValueRange
-    it("heatmap charts support dataframe pivots and per-cell updates", function()
+    it("setCell updates one heatmap cell after dataframe ingestion", function()
         local df = lurek.dataframe.fromRows({ "actual", "predicted", "count" }, {
             { "spam", "spam", 17 },
             { "spam", "ham", 3 },
@@ -372,11 +523,81 @@ describe("LuaHeatmapChart methods", function()
         local copied = chart:setMatrixFromDataFrame(df, "actual", "predicted", "count")
         expect_equal(4, copied)
         chart:setCell(1, 2, 5)
+        local w, h, bytes = chart:render()
+        expect_equal(120, w)
+        expect_equal(90, h)
+        expect_true(#bytes > 0)
+    end)
+
+    -- @covers LHeatmapChart:setMatrixFromDataFrame
+    it("setMatrixFromDataFrame pivots dataframe rows into heatmap cells", function()
+        local df = lurek.dataframe.fromRows({ "actual", "predicted", "count" }, {
+            { "spam", "spam", 17 },
+            { "spam", "ham", 3 },
+            { "ham", "spam", 2 },
+            { "ham", "ham", 21 },
+        })
+        local chart = lurek.charts.newHeatmap({ width = 120, height = 90 })
+        local copied = chart:setMatrixFromDataFrame(df, "actual", "predicted", "count")
+        expect_equal(4, copied)
+        local w, h, bytes = chart:render()
+        expect_equal(120, w)
+        expect_equal(90, h)
+        expect_true(#bytes > 0)
+    end)
+
+    -- @covers LHeatmapChart:setValueRange
+    it("setValueRange pins the numeric domain for dataframe-backed heatmaps", function()
+        local df = lurek.dataframe.fromRows({ "actual", "predicted", "count" }, {
+            { "spam", "spam", 17 },
+            { "spam", "ham", 3 },
+            { "ham", "spam", 2 },
+            { "ham", "ham", 21 },
+        })
+        local chart = lurek.charts.newHeatmap({ width = 120, height = 90 })
+        local copied = chart:setMatrixFromDataFrame(df, "actual", "predicted", "count")
+        expect_equal(4, copied)
         chart:setValueRange(0, 25)
         local w, h, bytes = chart:render()
         expect_equal(120, w)
         expect_equal(90, h)
         expect_true(#bytes > 0)
+    end)
+
+    -- @covers LHeatmapChart:setRowLabels
+    it("setRowLabels replaces heatmap row labels without breaking render", function()
+        local chart = lurek.charts.newHeatmap({ width = 96, height = 72 })
+        chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "r1", "r2" }, { "c1", "c2" })
+        chart:setRowLabels({ "train", "valid" })
+        expect_chart_draws(chart, 96, 72)
+    end)
+
+    -- @covers LHeatmapChart:setColumnLabels
+    it("setColumnLabels replaces heatmap column labels without breaking render", function()
+        local chart = lurek.charts.newHeatmap({ width = 96, height = 72 })
+        chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "r1", "r2" }, { "c1", "c2" })
+        chart:setColumnLabels({ "low", "high" })
+        expect_chart_draws(chart, 96, 72)
+    end)
+
+    -- @covers LHeatmapChart:clearValueRange
+    it("clearValueRange removes explicit heatmap scaling without breaking render", function()
+        local chart = lurek.charts.newHeatmap({ width = 96, height = 72 })
+        chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+        chart:setValueRange(0, 5)
+        chart:clearValueRange()
+        expect_chart_draws(chart, 96, 72)
+    end)
+
+    -- @covers LHeatmapChart:renderImage
+    it("renderImage returns a drawn image for heatmaps", function()
+        local chart = lurek.charts.newHeatmap({ width = 96, height = 72 })
+        chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "r1", "r2" }, { "c1", "c2" })
+        local img = chart:renderImage()
+        expect_type("userdata", img)
+        expect_equal(96, img:getWidth())
+        expect_equal(72, img:getHeight())
+        expect_true(image_has_drawn_pixels(img))
     end)
 end)
 
@@ -402,6 +623,18 @@ describe("LuaPieChart methods", function()
         expect_true(w > 0)
         expect_true(h > 0)
         expect_true(#data > 0)
+    end)
+
+    -- @covers LPieChart:renderImage
+    it("renderImage returns a drawn image for pie charts", function()
+        local chart = lurek.charts.newPie({ width = 96, height = 72 })
+        chart:addSlice("A", 70)
+        chart:addSlice("B", 30)
+        local img = chart:renderImage()
+        expect_type("userdata", img)
+        expect_equal(96, img:getWidth())
+        expect_equal(72, img:getHeight())
+        expect_true(image_has_drawn_pixels(img))
     end)
 
     -- @covers LPieChart:clear
@@ -457,6 +690,17 @@ describe("LuaAreaChart methods", function()
         expect_true(#data > 0)
     end)
 
+    -- @covers LAreaChart:renderImage
+    it("renderImage returns a drawn image for area charts", function()
+        local chart = lurek.charts.newArea({ width = 96, height = 72 })
+        chart:addSeries("temp", {{1, 10}, {2, 20}, {3, 15}})
+        local img = chart:renderImage()
+        expect_type("userdata", img)
+        expect_equal(96, img:getWidth())
+        expect_equal(72, img:getHeight())
+        expect_true(image_has_drawn_pixels(img))
+    end)
+
     -- @covers LAreaChart:clear
     it("clear removes all area series", function()
         local chart = lurek.charts.newArea()
@@ -485,6 +729,317 @@ describe("LuaAreaChart methods", function()
         chart:addSeries("s", {{1, 1}})
         local w = chart:render()
         expect_true(w > 0)
+    end)
+
+    -- @describe explicit strict-owner coverage additions
+    describe("explicit strict-owner coverage additions", function()
+        -- @covers LLineChart:draw
+        it("draw queues a line chart with a transform tuple", function()
+            local chart = lurek.charts.newLine({ width = 96, height = 72 })
+            chart:addSeries("loss", {{1, 0.9}, {2, 0.7}, {3, 0.4}})
+            expect_no_error(function()
+                chart:draw(10, 20)
+            end)
+        end)
+
+        -- @covers LBarChart:draw
+        it("draw queues a bar chart with a transform tuple", function()
+            local chart = lurek.charts.newBar({ width = 96, height = 72 })
+            chart:addSeries("sales", {{1, 10}, {2, 14}})
+            expect_no_error(function()
+                chart:draw(12, 18)
+            end)
+        end)
+
+        -- @covers LScatterPlot:appendPoint
+        it("appendPoint streams scatter samples into a named series", function()
+            local chart = lurek.charts.newScatter({ width = 96, height = 72, maxPoints = 3 })
+            chart:appendPoint("points", 1, 1)
+            chart:appendPoint("points", 2, 4)
+            chart:appendPoint("points", 3, 9)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LScatterPlot:setWindow
+        it("setWindow keeps streaming scatter plots renderable", function()
+            local chart = lurek.charts.newScatter({ width = 96, height = 72, maxPoints = 3 })
+            chart:appendPoint("points", 1, 1)
+            chart:appendPoint("points", 2, 4)
+            chart:appendPoint("points", 3, 9)
+            chart:setWindow(2)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LScatterPlot:draw
+        it("draw queues a scatter plot with a transform tuple", function()
+            local chart = lurek.charts.newScatter({ width = 96, height = 72 })
+            chart:addSeries("points", {{1, 1}, {2, 4}, {3, 9}})
+            expect_no_error(function()
+                chart:draw(8, 14)
+            end)
+        end)
+
+        -- @covers LScatterPlot:nearest
+        it("nearest returns point metadata for scatter plots", function()
+            local chart = lurek.charts.newScatter({ width = 96, height = 72, maxPoints = 3 })
+            chart:appendPoint("points", 1, 1)
+            chart:appendPoint("points", 2, 4)
+            chart:appendPoint("points", 3, 9)
+            local nearest = chart:nearest(70, 32)
+            expect_type("table", nearest)
+            expect_equal("points", nearest.series)
+            expect_true(nearest.index >= 1)
+        end)
+
+        -- @covers LPieChart:draw
+        it("draw queues a pie chart with a transform tuple", function()
+            local chart = lurek.charts.newPie({ width = 96, height = 72 })
+            chart:addSlice("A", 30)
+            chart:addSlice("B", 70)
+            expect_no_error(function()
+                chart:draw(5, 9)
+            end)
+        end)
+
+        -- @covers LAreaChart:appendPoint
+        it("appendPoint streams area samples into a named series", function()
+            local chart = lurek.charts.newArea({ width = 96, height = 72, maxPoints = 3 })
+            chart:appendPoint("traffic", 1, 2)
+            chart:appendPoint("traffic", 2, 5)
+            chart:appendPoint("traffic", 3, 4)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LAreaChart:setWindow
+        it("setWindow keeps streaming area charts renderable", function()
+            local chart = lurek.charts.newArea({ width = 96, height = 72, maxPoints = 3 })
+            chart:appendPoint("traffic", 1, 2)
+            chart:appendPoint("traffic", 2, 5)
+            chart:appendPoint("traffic", 3, 4)
+            chart:setWindow(2)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LAreaChart:draw
+        it("draw queues an area chart with a transform tuple", function()
+            local chart = lurek.charts.newArea({ width = 96, height = 72 })
+            chart:addSeries("traffic", {{1, 2}, {2, 5}, {3, 4}})
+            expect_no_error(function()
+                chart:draw(6, 11)
+            end)
+        end)
+
+        -- @covers LHistogramChart:clear
+        it("clear removes histogram samples and keeps rendering valid", function()
+            local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+            chart:addSeries("latency", {1, 2, 3, 4})
+            chart:clear()
+            local w, h, bytes = chart:render()
+            expect_equal(96, w)
+            expect_equal(72, h)
+            expect_true(#bytes > 0)
+        end)
+
+        -- @covers LHistogramChart:setRange
+        it("setRange pins histogram axis bounds", function()
+            local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+            chart:addSeries("latency", {1, 2, 3, 4})
+            chart:setRange(0, 5)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LHistogramChart:setTitle
+        it("setTitle keeps histogram charts renderable", function()
+            local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+            chart:setTitle("Latency")
+            chart:addSeries("latency", {1, 2, 3, 4})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LHistogramChart:setXLabel
+        it("setXLabel annotates histogram x axis", function()
+            local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+            chart:setXLabel("Latency")
+            chart:addSeries("latency", {1, 2, 3, 4})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LHistogramChart:setYLabel
+        it("setYLabel annotates histogram y axis", function()
+            local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+            chart:setYLabel("Count")
+            chart:addSeries("latency", {1, 2, 3, 4})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LHistogramChart:setXTickCount
+        it("setXTickCount updates histogram tick density on x axis", function()
+            local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+            chart:setXTickCount(5)
+            chart:addSeries("latency", {1, 2, 3, 4})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LHistogramChart:setYTickCount
+        it("setYTickCount updates histogram tick density on y axis", function()
+            local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+            chart:setYTickCount(6)
+            chart:addSeries("latency", {1, 2, 3, 4})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LHistogramChart:setShowLegend
+        it("setShowLegend toggles histogram legend rendering", function()
+            local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+            chart:setShowLegend(true)
+            chart:addSeries("latency", {1, 2, 3, 4})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LHistogramChart:render
+        it("render returns histogram raster data", function()
+            local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+            chart:addSeries("latency", {1, 2, 3, 4})
+            local w, h, bytes = chart:render()
+            expect_equal(96, w)
+            expect_equal(72, h)
+            expect_true(#bytes > 0)
+        end)
+
+        -- @covers LHistogramChart:drawToImage
+        it("drawToImage paints histogram output into existing image data", function()
+            local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+            local img = lurek.image.newImageData(96, 72)
+            chart:addSeries("latency", {1, 2, 3, 4})
+            chart:drawToImage(img)
+            expect_equal(96, img:getWidth())
+            expect_equal(72, img:getHeight())
+        end)
+
+        -- @covers LHistogramChart:draw
+        it("draw queues a histogram chart with a transform tuple", function()
+            local chart = lurek.charts.newHistogram({ width = 96, height = 72 })
+            chart:addSeries("latency", {1, 2, 3, 4})
+            expect_no_error(function()
+                chart:draw(7, 13)
+            end)
+        end)
+
+        -- @covers LHistogramChart:getWidth
+        it("getWidth returns configured histogram width", function()
+            local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+            expect_equal(320, chart:getWidth())
+        end)
+
+        -- @covers LHistogramChart:getHeight
+        it("getHeight returns configured histogram height", function()
+            local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+            expect_equal(180, chart:getHeight())
+        end)
+
+        -- @covers LHistogramChart:type
+        it("type returns the histogram userdata name", function()
+            local chart = lurek.charts.newHistogram()
+            expect_equal("LHistogramChart", chart:type())
+        end)
+
+        -- @covers LHistogramChart:typeOf
+        it("typeOf recognizes histogram userdata inheritance", function()
+            local chart = lurek.charts.newHistogram()
+            expect_true(chart:typeOf("LHistogramChart"))
+            expect_true(chart:typeOf("LObject"))
+        end)
+
+        -- @covers LHeatmapChart:resize
+        it("resize changes the heatmap grid dimensions", function()
+            local chart = lurek.charts.newHeatmap({ width = 96, height = 72 })
+            chart:setMatrix({ { 1 } }, { "r1" }, { "c1" })
+            chart:resize(2, 3)
+            chart:setCell(1, 1, 5)
+            chart:setCell(2, 3, 7)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LHeatmapChart:clear
+        it("clear removes heatmap state and keeps rendering valid", function()
+            local chart = lurek.charts.newHeatmap({ width = 96, height = 72 })
+            chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "r1", "r2" }, { "c1", "c2" })
+            chart:clear()
+            local w, h, bytes = chart:render()
+            expect_equal(96, w)
+            expect_equal(72, h)
+            expect_true(#bytes > 0)
+        end)
+
+        -- @covers LHeatmapChart:setTitle
+        it("setTitle keeps heatmap charts renderable", function()
+            local chart = lurek.charts.newHeatmap({ width = 96, height = 72 })
+            chart:setTitle("Confusion")
+            chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "r1", "r2" }, { "c1", "c2" })
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LHeatmapChart:setShowLegend
+        it("setShowLegend toggles heatmap legend rendering", function()
+            local chart = lurek.charts.newHeatmap({ width = 96, height = 72 })
+            chart:setShowLegend(true)
+            chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "r1", "r2" }, { "c1", "c2" })
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LHeatmapChart:render
+        it("render returns heatmap raster data", function()
+            local chart = lurek.charts.newHeatmap({ width = 96, height = 72 })
+            chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "r1", "r2" }, { "c1", "c2" })
+            local w, h, bytes = chart:render()
+            expect_equal(96, w)
+            expect_equal(72, h)
+            expect_true(#bytes > 0)
+        end)
+
+        -- @covers LHeatmapChart:drawToImage
+        it("drawToImage paints heatmap output into existing image data", function()
+            local chart = lurek.charts.newHeatmap({ width = 96, height = 72 })
+            local img = lurek.image.newImageData(96, 72)
+            chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "r1", "r2" }, { "c1", "c2" })
+            chart:drawToImage(img)
+            expect_equal(96, img:getWidth())
+            expect_equal(72, img:getHeight())
+        end)
+
+        -- @covers LHeatmapChart:draw
+        it("draw queues a heatmap chart with a transform tuple", function()
+            local chart = lurek.charts.newHeatmap({ width = 96, height = 72 })
+            chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "r1", "r2" }, { "c1", "c2" })
+            expect_no_error(function()
+                chart:draw(9, 15)
+            end)
+        end)
+
+        -- @covers LHeatmapChart:getWidth
+        it("getWidth returns configured heatmap width", function()
+            local chart = lurek.charts.newHeatmap({ width = 256, height = 144 })
+            expect_equal(256, chart:getWidth())
+        end)
+
+        -- @covers LHeatmapChart:getHeight
+        it("getHeight returns configured heatmap height", function()
+            local chart = lurek.charts.newHeatmap({ width = 256, height = 144 })
+            expect_equal(144, chart:getHeight())
+        end)
+
+        -- @covers LHeatmapChart:type
+        it("type returns the heatmap userdata name", function()
+            local chart = lurek.charts.newHeatmap()
+            expect_equal("LHeatmapChart", chart:type())
+        end)
+
+        -- @covers LHeatmapChart:typeOf
+        it("typeOf recognizes heatmap userdata inheritance", function()
+            local chart = lurek.charts.newHeatmap()
+            expect_true(chart:typeOf("LHeatmapChart"))
+            expect_true(chart:typeOf("LObject"))
+        end)
     end)
 end)
 end

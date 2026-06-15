@@ -8,14 +8,14 @@
 -- ==========================================================================
 
 -- Create a cursor manager
---@api-stub: lurek.cursor.newManager
+--@api: lurek.cursor.newManager
 do
     local cm = lurek.cursor.newManager()
     print("manager visible = " .. tostring(cm:isVisible()))
     print("manager context = " .. cm:getContext())
 end
 
---@api-stub: lurek.cursor.newCustom
+--@api: lurek.cursor.newCustom
 do
     local c = lurek.cursor.newCustom(16, 16, 0, 0)
     local w, h = c:getSize()
@@ -23,20 +23,20 @@ do
     print("hotspot = 0,0")
 end
 
---@api-stub: lurek.cursor.newAnimated
+--@api: lurek.cursor.newAnimated
 do
     local c = lurek.cursor.newAnimated(true)
     print("animated frame count = " .. c:frameCount())
     print("animated scale = " .. c:currentScale())
 end
 
---@api-stub: lurek.cursor.systemCursors
+--@api: lurek.cursor.systemCursors
 do
     local list = lurek.cursor.systemCursors()
     print("lurek.cursor.systemCursors count=" .. #list)
 end
 
---@api-stub: LAnimatedCursor:addFrame
+--@api: LAnimatedCursor:addFrame
 do
     local c = lurek.cursor.newAnimated(true)
     local frame = lurek.cursor.newCustom(16, 16, 0, 0)
@@ -44,7 +44,7 @@ do
     print("LAnimatedCursor:addFrame count=" .. c:frameCount())
 end
 
---@api-stub: LAnimatedCursor:update
+--@api: LAnimatedCursor:update
 do
     local c = lurek.cursor.newAnimated(true)
     local frame = lurek.cursor.newCustom(16, 16, 0, 0)
@@ -53,13 +53,13 @@ do
     print("LAnimatedCursor:update idx=" .. c:currentIndex())
 end
 
---@api-stub: LAnimatedCursor:currentIndex
+--@api: LAnimatedCursor:currentIndex
 do
     local c = lurek.cursor.newAnimated(true)
     print("LAnimatedCursor:currentIndex=" .. c:currentIndex())
 end
 
---@api-stub: LAnimatedCursor:frameCount
+--@api: LAnimatedCursor:frameCount
 do
     local c = lurek.cursor.newAnimated(true)
     c:addFrame(lurek.cursor.newCustom(16, 16, 0, 0), 100)
@@ -67,20 +67,20 @@ do
     print("LAnimatedCursor:frameCount=" .. c:frameCount())
 end
 
---@api-stub: LAnimatedCursor:currentScale
+--@api: LAnimatedCursor:currentScale
 do
     local c = lurek.cursor.newAnimated(true)
     print("LAnimatedCursor:currentScale=" .. c:currentScale())
 end
 
---@api-stub: LAnimatedCursor:setPulse
+--@api: LAnimatedCursor:setPulse
 do
     local c = lurek.cursor.newAnimated(true)
     c:setPulse(0.8, 1.2, 1.5)
     print("LAnimatedCursor:setPulse scale=" .. c:currentScale())
 end
 
---@api-stub: LAnimatedCursor:clearPulse
+--@api: LAnimatedCursor:clearPulse
 do
     local c = lurek.cursor.newAnimated(true)
     c:setPulse(0.8, 1.2, 1.5)
@@ -88,7 +88,7 @@ do
     print("LAnimatedCursor:clearPulse scale=" .. c:currentScale())
 end
 
---@api-stub: LAnimatedCursor:reset
+--@api: LAnimatedCursor:reset
 do
     local c = lurek.cursor.newAnimated(true)
     c:addFrame(lurek.cursor.newCustom(16, 16, 0, 0), 100)
@@ -97,14 +97,14 @@ do
     print("LAnimatedCursor:reset idx=" .. c:currentIndex())
 end
 
---@api-stub: LCursorManager:setSystem
+--@api: LCursorManager:setSystem
 do
     local cm = lurek.cursor.newManager()
     cm:setSystem("arrow")
     print("LCursorManager:setSystem ok")
 end
 
---@api-stub: LCursorManager:setCustom
+--@api: LCursorManager:setCustom
 do
     local cm = lurek.cursor.newManager()
     local c = lurek.cursor.newCustom(16, 16, 0, 0)
@@ -112,7 +112,7 @@ do
     print("LCursorManager:setCustom ok")
 end
 
---@api-stub: LCursorManager:setAnimated
+--@api: LCursorManager:setAnimated
 do
     local cm = lurek.cursor.newManager()
     local c = lurek.cursor.newAnimated(true)
@@ -120,14 +120,14 @@ do
     print("LCursorManager:setAnimated ok")
 end
 
---@api-stub: LCursorManager:setContext
+--@api: LCursorManager:setContext
 do
     local cm = lurek.cursor.newManager()
     cm:setContext("gameplay")
     print("LCursorManager:setContext=" .. cm:getContext())
 end
 
---@api-stub: LCursorManager:addRule
+--@api: LCursorManager:addRule
 do
     local cm = lurek.cursor.newManager()
     cm:addRule("gameplay", "crosshair")
@@ -136,7 +136,7 @@ do
     print("context = " .. cm:getContext())
 end
 
---@api-stub: LCursorManager:removeRule
+--@api: LCursorManager:removeRule
 do
     local cm = lurek.cursor.newManager()
     cm:addRule("ui", "hand")
@@ -144,7 +144,7 @@ do
     print("LCursorManager:removeRule ok")
 end
 
---@api-stub: LCursorManager:update
+--@api: LCursorManager:update
 do
     local cm = lurek.cursor.newManager()
     cm:update(320, 180, 0.016)
@@ -153,49 +153,49 @@ do
     print("position = " .. x .. ", " .. y)
 end
 
---@api-stub: LCursorManager:setVisible
+--@api: LCursorManager:setVisible
 do
     local cm = lurek.cursor.newManager()
     cm:setVisible(true)
     print("LCursorManager:setVisible=" .. tostring(cm:isVisible()))
 end
 
---@api-stub: LCursorManager:isVisible
+--@api: LCursorManager:isVisible
 do
     local cm = lurek.cursor.newManager()
     cm:setVisible(false)
     print("LCursorManager:isVisible=" .. tostring(cm:isVisible()))
 end
 
---@api-stub: LCursorManager:setLocked
+--@api: LCursorManager:setLocked
 do
     local cm = lurek.cursor.newManager()
     cm:setLocked(true)
     print("LCursorManager:setLocked=" .. tostring(cm:isLocked()))
 end
 
---@api-stub: LCursorManager:isLocked
+--@api: LCursorManager:isLocked
 do
     local cm = lurek.cursor.newManager()
     cm:setLocked(false)
     print("LCursorManager:isLocked=" .. tostring(cm:isLocked()))
 end
 
---@api-stub: LCursorManager:getPosition
+--@api: LCursorManager:getPosition
 do
     local cm = lurek.cursor.newManager()
     local x, y = cm:getPosition()
     print("LCursorManager:getPosition x=" .. x .. " y=" .. y)
 end
 
---@api-stub: LCursorManager:getContext
+--@api: LCursorManager:getContext
 do
     local cm = lurek.cursor.newManager()
     cm:setContext("menu")
     print("LCursorManager:getContext=" .. cm:getContext())
 end
 
---@api-stub: LCursorManager:enableTrail
+--@api: LCursorManager:enableTrail
 do
     local cm = lurek.cursor.newManager()
     cm:enableTrail(1.0, 0.5, 0.0, 0.8)
@@ -203,7 +203,7 @@ do
     print("visible = " .. tostring(cm:isVisible()))
 end
 
---@api-stub: LCursorManager:enableLineTrail
+--@api: LCursorManager:enableLineTrail
 do
     local cm = lurek.cursor.newManager()
     cm:enableLineTrail(0.0, 1.0, 1.0, 2.0)
@@ -211,7 +211,7 @@ do
     print("locked = " .. tostring(cm:isLocked()))
 end
 
---@api-stub: LCursorManager:disableTrail
+--@api: LCursorManager:disableTrail
 do
     local cm = lurek.cursor.newManager()
     cm:enableTrail(1.0, 1.0, 1.0, 0.5)
@@ -219,7 +219,7 @@ do
     print("LCursorManager:disableTrail ok")
 end
 
---@api-stub: LCursorManager:enableZoom
+--@api: LCursorManager:enableZoom
 do
     local cm = lurek.cursor.newManager()
     cm:enableZoom(2.0, 80)
@@ -227,7 +227,7 @@ do
     print("context = " .. cm:getContext())
 end
 
---@api-stub: LCursorManager:disableZoom
+--@api: LCursorManager:disableZoom
 do
     local cm = lurek.cursor.newManager()
     cm:enableZoom(1.5, 60)
@@ -235,14 +235,14 @@ do
     print("LCursorManager:disableZoom ok")
 end
 
---@api-stub: LCustomCursor:setPixel
+--@api: LCustomCursor:setPixel
 do
     local c = lurek.cursor.newCustom(16, 16, 0, 0)
     c:setPixel(8, 8, 255, 255, 255, 255)
     print("LCustomCursor:setPixel ok")
 end
 
---@api-stub: LCustomCursor:getPixel
+--@api: LCustomCursor:getPixel
 do
     local c = lurek.cursor.newCustom(16, 16, 0, 0)
     c:setPixel(4, 4, 255, 0, 0, 255)
@@ -251,14 +251,14 @@ do
     print("pixel rgba = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LCustomCursor:getSize
+--@api: LCustomCursor:getSize
 do
     local c = lurek.cursor.newCustom(24, 24, 12, 12)
     local w, h = c:getSize()
     print("LCustomCursor:getSize=" .. w .. "x" .. h)
 end
 
---@api-stub: LCustomCursor:getHotspot
+--@api: LCustomCursor:getHotspot
 do
     local c = lurek.cursor.newCustom(32, 32, 16, 16)
     local hx, hy = c:getHotspot()

@@ -10,11 +10,11 @@ describe("mods + filesystem integration", function()
     -- @integration lurek.filesystem.removeDir
     -- @integration lurek.filesystem.write
     -- @integration lurek.mods.newModManager
-    -- @covers lurek.filesystem.createDirectory
-    -- @covers lurek.filesystem.exists
-    -- @covers lurek.filesystem.removeDir
-    -- @covers lurek.filesystem.write
-    -- @covers lurek.mods.newModManager
+    -- @integration lurek.filesystem.createDirectory
+    -- @integration lurek.filesystem.exists
+    -- @integration lurek.filesystem.removeDir
+    -- @integration lurek.filesystem.write
+    -- @integration lurek.mods.newModManager
     it("ModManager:scanFolder registers mods discovered on disk", function()
         local root = "save/_mods_scan_case/"
         local mod_dir = root .. "my-mod/"

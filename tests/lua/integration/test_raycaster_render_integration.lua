@@ -10,8 +10,8 @@ describe("raycaster + render integration", function()
     -- @integration LRaycaster:setCeilingTextureCell
     -- @integration lurek.raycaster.new
     -- @integration lurek.render.newImage
-    -- @covers lurek.raycaster.new
-    -- @covers lurek.render.newImage
+    -- @integration lurek.raycaster.new
+    -- @integration lurek.render.newImage
     it("accepts LImage userdata in per-cell overrides", function()
         local rc = lurek.raycaster.new(8, 8)
         local floor_img = lurek.render.newImage("assets/icon.png")

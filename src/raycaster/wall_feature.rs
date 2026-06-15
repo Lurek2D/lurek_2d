@@ -1,6 +1,7 @@
 //! This file defines per-cell wall feature descriptors that refine how a blocking tile should render and behave.
 //! Features let one tile become a half-height barrier, a window with a visible opening, or a sliding door without changing the base 2D map format.
 //! The data stays compact and cell-local so scene building, collision, and editor-facing APIs can all consult the same description.
+//! Module API documentation
 
 use super::doors::DoorDirection;
 

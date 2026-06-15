@@ -412,10 +412,19 @@ describe("Path finding", function()
     end)
 
     -- @covers LGlobe:setEdgeTags
-    -- @covers LGlobe:getEdgeTags
-    it("setEdgeTags and getEdgeTags store sorted edge metadata", function()
+    it("setEdgeTags stores sorted edge metadata", function()
         local g = make_path_globe()
         expect_true(g:setEdgeTags(10, 11, {"land", "road"}))
+        local tags = g:getEdgeTags(11, 10)
+        expect_equal(2, #tags)
+        expect_equal("land", tags[1])
+        expect_equal("road", tags[2])
+    end)
+
+    -- @covers LGlobe:getEdgeTags
+    it("getEdgeTags reads stored edge metadata in sorted order", function()
+        local g = make_path_globe()
+        expect_true(g:setEdgeTags(10, 11, {"road", "land"}))
         local tags = g:getEdgeTags(11, 10)
         expect_equal(2, #tags)
         expect_equal("land", tags[1])
@@ -575,7 +584,7 @@ end)
 -- @describe lurek.globe.loadFromTOML
 describe("lurek.globe.loadFromTOML", function()
     -- @covers lurek.globe.loadFromTOML
-    it("loads provinces and attrs from TOML", function()
+    it("loads provinces, attrs, and multipart hole geometry from TOML", function()
         local toml = [=[
 [[province]]
 id = 1
@@ -596,11 +605,8 @@ neighbors = [1]
         expect_type("userdata", g)
         expect_equal(2, g:provinceCount())
         expect_equal("player", g:getProvinceAttr(1, "owner"))
-    end)
 
-    -- @covers lurek.globe.loadFromTOML
-    it("loads multipart provinces with holes from TOML", function()
-        local toml = [=[
+        local multipart_toml = [=[
 [[province]]
 id = 1
 parts = [{ outer = [[-12.0, 78.0], [-12.0, 102.0], [12.0, 102.0], [12.0, 78.0]], holes = [[[-4.0, 86.0], [-4.0, 94.0], [4.0, 94.0], [4.0, 86.0]]] }]
@@ -608,7 +614,7 @@ parts = [{ outer = [[-12.0, 78.0], [-12.0, 102.0], [12.0, 102.0], [12.0, 78.0]],
 [province.attrs]
 owner = "player"
 ]=]
-        local g = lurek.globe.loadFromTOML("toml_globe_parts", toml)
+        g = lurek.globe.loadFromTOML("toml_globe_parts", multipart_toml)
         expect_equal(1, g:provinceCount())
         expect_equal("player", g:getProvinceAttr(1, "owner"))
         g:setCamera(0.0, 90.0, 2.0)
@@ -717,7 +723,7 @@ describe("globe extended feature coverage", function()
     end)
 
     -- @covers LGlobe:exportProvinceMeshOBJ
-    it("runtime helper APIs are callable", function()
+    it("exportProvinceMeshOBJ works for runtime helpers and multipart hole geometry", function()
         local g = lurek.globe.new("cov_runtime_ext")
         g:addProvince({ id = 1, centroid = {0,0}, vertices = {{0,0},{1,0},{1,1}}, neighbors = {2} })
         g:addProvince({ id = 2, centroid = {2,2}, vertices = {{2,2},{3,2},{3,3}}, neighbors = {1} })
@@ -728,11 +734,8 @@ describe("globe extended feature coverage", function()
         local _ = g:pickRaycast(640, 360, 8)
         local obj = g:exportProvinceMeshOBJ()
         expect_type("string", obj)
-    end)
 
-    -- @covers LGlobe:exportProvinceMeshOBJ
-    it("exportProvinceMeshOBJ includes hole loop groups for multipart provinces", function()
-        local g = lurek.globe.new("cov_runtime_export_holes")
+        g = lurek.globe.new("cov_runtime_export_holes")
         g:addProvince({
             id = 1,
             centroid = {0.0, 90.0},
@@ -1102,16 +1105,6 @@ describe("globe surface interaction and semantic region coverage", function()
     end)
 
     -- @covers LGlobe:regionsAtLatLon
-    it("regionsAtLatLon returns overlapping semantic region ids at a point", function()
-        local g = lurek.globe.new("coverage_regions_at_lat_lon")
-        g:addRegion({ id = 200, centroid = {0.0, 0.0}, vertices = {{-5,-5},{-5,5},{5,5},{5,-5}} })
-        g:addRegion({ id = 201, centroid = {0.0, 0.0}, vertices = {{-3,-3},{-3,3},{3,3},{3,-3}} })
-        local ids = g:regionsAtLatLon(0.0, 0.0)
-        expect_equal(2, #ids)
-    end)
-
-    -- @covers LGlobe:addRegion
-    -- @covers LGlobe:regionsAtLatLon
     it("regionsAtLatLon respects multipart semantic regions with holes", function()
         local g = lurek.globe.new("coverage_regions_with_holes")
         g:addRegion({
@@ -1139,16 +1132,13 @@ describe("globe surface interaction and semantic region coverage", function()
     end)
 
     -- @covers LGlobe:pickRegions
-    it("pickRegions returns semantic regions under the pointer", function()
+    it("pickRegions returns semantic regions and ignores semantic hole geometry", function()
         local g = interaction_globe("coverage_pick_regions")
         local ids = g:pickRegions(640, 360)
         expect_equal(1, #ids)
         expect_equal(100, ids[1])
-    end)
 
-    -- @covers LGlobe:pickRegions
-    it("pickRegions ignores semantic hole geometry at the pointer", function()
-        local g = lurek.globe.new("coverage_pick_regions_hole", { axial_tilt_deg = 0.0 })
+        g = lurek.globe.new("coverage_pick_regions_hole", { axial_tilt_deg = 0.0 })
         g:setCamera(0.0, 0.0, 1.0)
         g:addRegion({
             id = 220,

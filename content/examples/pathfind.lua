@@ -4,7 +4,7 @@
 
 --- Pathfinding Module Part 1: grid pathfinding basics (LPathGrid, LNavGrid)
 
---@api-stub: lurek.pathfind.newPathGrid
+--@api: lurek.pathfind.newPathGrid
 do
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
 
@@ -12,7 +12,7 @@ do
     print("cell_size = " .. grid:getCellSize())
 end
 
---@api-stub: LPathGrid:setWalkable
+--@api: LPathGrid:setWalkable
 do
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
 
@@ -22,7 +22,7 @@ do
     print("walkable_5_6 = " .. tostring(grid:isWalkable(5, 6)))
 end
 
---@api-stub: LPathGrid:isWalkable
+--@api: LPathGrid:isWalkable
 do
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
 
@@ -32,7 +32,7 @@ do
     print("walkable_4_5 = " .. tostring(grid:isWalkable(4, 5)))
 end
 
---@api-stub: LPathGrid:setCost
+--@api: LPathGrid:setCost
 do
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
 
@@ -42,7 +42,7 @@ do
     print("cost_3_4 = " .. grid:getCost(3, 4))
 end
 
---@api-stub: LPathGrid:getCost
+--@api: LPathGrid:getCost
 do
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
 
@@ -52,7 +52,7 @@ do
     print("cost_1_1 = " .. grid:getCost(1, 1))
 end
 
---@api-stub: LPathGrid:findPath
+--@api: LPathGrid:findPath
 do
     local grid = lurek.pathfind.newPathGrid(10, 10, 32)
 
@@ -71,7 +71,7 @@ do
     end
 end
 
---@api-stub: LPathGrid:findPathSmoothed
+--@api: LPathGrid:findPathSmoothed
 do
     local grid = lurek.pathfind.newPathGrid(20, 20, 16)
 
@@ -89,14 +89,14 @@ do
     end
 end
 
---@api-stub: LPathGrid:type
+--@api: LPathGrid:type
 do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
 
     print("type = " .. grid:type())
 end
 
---@api-stub: LPathGrid:typeOf
+--@api: LPathGrid:typeOf
 do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
 
@@ -104,7 +104,7 @@ do
     print("is_object = " .. tostring(grid:typeOf("LObject")))
 end
 
---@api-stub: lurek.pathfind.newNavGrid
+--@api: lurek.pathfind.newNavGrid
 do
     local nav = lurek.pathfind.newNavGrid(50, 50)
     local w, h = nav:getDimensions()
@@ -113,7 +113,7 @@ do
     print("chunk = " .. nav:getChunkSize())
 end
 
---@api-stub: LNavGrid:setBlocked
+--@api: LNavGrid:setBlocked
 do
     local nav = lurek.pathfind.newNavGrid(30, 30)
 
@@ -123,7 +123,7 @@ do
     print("cost_10_10 = " .. nav:getCost(10, 10))
 end
 
---@api-stub: LNavGrid:isBlocked
+--@api: LNavGrid:isBlocked
 do
     local nav = lurek.pathfind.newNavGrid(30, 30)
 
@@ -133,7 +133,7 @@ do
     print("blocked_12_13 = " .. tostring(nav:isBlocked(12, 13)))
 end
 
---@api-stub: LNavGrid:setCost
+--@api: LNavGrid:setCost
 do
     local nav = lurek.pathfind.newNavGrid(30, 30)
 
@@ -143,7 +143,7 @@ do
     print("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
 end
 
---@api-stub: LNavGrid:getCost
+--@api: LNavGrid:getCost
 do
     local nav = lurek.pathfind.newNavGrid(30, 30)
 
@@ -153,7 +153,7 @@ do
     print("cost_1_1 = " .. nav:getCost(1, 1))
 end
 
---@api-stub: LNavGrid:isWalkable
+--@api: LNavGrid:isWalkable
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -165,7 +165,7 @@ do
     print("walkable_2x2 = " .. tostring(nav:isWalkable(5, 5, 2)))
 end
 
---@api-stub: LNavGrid:fill
+--@api: LNavGrid:fill
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -175,7 +175,7 @@ do
     print("cost_20_20 = " .. nav:getCost(20, 20))
 end
 
---@api-stub: LNavGrid:fillRect
+--@api: LNavGrid:fillRect
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -186,7 +186,7 @@ do
     print("blocked_11_11 = " .. tostring(nav:isBlocked(11, 11)))
 end
 
---@api-stub: LNavGrid:setDiagonalMode
+--@api: LNavGrid:setDiagonalMode
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -195,7 +195,7 @@ do
     print("mode = " .. nav:getDiagonalMode())
 end
 
---@api-stub: LNavGrid:getDiagonalMode
+--@api: LNavGrid:getDiagonalMode
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -204,7 +204,7 @@ do
     print("mode = " .. nav:getDiagonalMode())
 end
 
---@api-stub: LNavGrid:setChunkSize
+--@api: LNavGrid:setChunkSize
 do
     local nav = lurek.pathfind.newNavGrid(100, 100)
 
@@ -214,7 +214,7 @@ do
     print("chunk = " .. nav:getChunkSize())
 end
 
---@api-stub: LNavGrid:getChunkSize
+--@api: LNavGrid:getChunkSize
 do
     local nav = lurek.pathfind.newNavGrid(100, 100)
 
@@ -223,7 +223,7 @@ do
     print("chunk = " .. nav:getChunkSize())
 end
 
---@api-stub: LNavGrid:rebuildAbstract
+--@api: LNavGrid:rebuildAbstract
 do
     local nav = lurek.pathfind.newNavGrid(64, 64)
 
@@ -234,7 +234,7 @@ do
     print("blocked_1_1 = " .. tostring(nav:isBlocked(1, 1)))
 end
 
---@api-stub: LNavGrid:findHpaPath
+--@api: LNavGrid:findHpaPath
 do
     local nav = lurek.pathfind.newNavGrid(16, 16)
     nav:setChunkSize(4)
@@ -244,7 +244,7 @@ do
     print("hpa path len = " .. tostring(path and #path or 0))
 end
 
---@api-stub: LNavGrid:setDirty
+--@api: LNavGrid:setDirty
 do
     local nav = lurek.pathfind.newNavGrid(50, 50)
 
@@ -258,7 +258,7 @@ do
     print("chunk = " .. nav:getChunkSize())
 end
 
---@api-stub: LNavGrid:clearDirty
+--@api: LNavGrid:clearDirty
 do
     local nav = lurek.pathfind.newNavGrid(50, 50)
 
@@ -270,7 +270,7 @@ do
     print("chunk = " .. nav:getChunkSize())
 end
 
---@api-stub: LNavGrid:saveToString
+--@api: LNavGrid:saveToString
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -283,7 +283,7 @@ do
     print("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
 end
 
---@api-stub: LNavGrid:loadFromString
+--@api: LNavGrid:loadFromString
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -298,14 +298,14 @@ do
     print("cost_3_3 = " .. nav2:getCost(3, 3))
 end
 
---@api-stub: LNavGrid:type
+--@api: LNavGrid:type
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
 
     print("type = " .. nav:type())
 end
 
---@api-stub: LNavGrid:typeOf
+--@api: LNavGrid:typeOf
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
 
@@ -315,7 +315,7 @@ end
 
 --- Pathfinding Module Part 2: navmesh, hex grid, JPS grid
 
---@api-stub: lurek.pathfind.newNavMesh
+--@api: lurek.pathfind.newNavMesh
 do
     local mesh = lurek.pathfind.newNavMesh()
     local id1 = mesh:addPolygon({
@@ -333,7 +333,7 @@ do
     print("ids = " .. id1 .. "," .. id2)
 end
 
---@api-stub: LNavMesh:addPolygon
+--@api: LNavMesh:addPolygon
 do
     local mesh = lurek.pathfind.newNavMesh()
     local id = mesh:addPolygon({
@@ -346,7 +346,7 @@ do
     print("polygon_count = " .. mesh:getPolygonCount())
 end
 
---@api-stub: LNavMesh:connectPolygons
+--@api: LNavMesh:connectPolygons
 do
     local mesh = lurek.pathfind.newNavMesh()
     local a = mesh:addPolygon({
@@ -372,7 +372,7 @@ do
     print("polygon_count = " .. mesh:getPolygonCount())
 end
 
---@api-stub: LNavMesh:findPath
+--@api: LNavMesh:findPath
 do
     local mesh = lurek.pathfind.newNavMesh()
     local p1 = mesh:addPolygon({
@@ -407,14 +407,14 @@ do
     end
 end
 
---@api-stub: LNavMesh:type
+--@api: LNavMesh:type
 do
     local mesh = lurek.pathfind.newNavMesh()
 
     print("type = " .. mesh:type())
 end
 
---@api-stub: LNavMesh:typeOf
+--@api: LNavMesh:typeOf
 do
     local mesh = lurek.pathfind.newNavMesh()
 
@@ -422,7 +422,7 @@ do
     print("is_object = " .. tostring(mesh:typeOf("LObject")))
 end
 
---@api-stub: lurek.pathfind.newHexGrid
+--@api: lurek.pathfind.newHexGrid
 do
     local hex = lurek.pathfind.newHexGrid(12, 10, "flat")
 
@@ -433,7 +433,7 @@ do
     print("blocked_1_1 = " .. tostring(hex:isBlocked(1, 1)))
 end
 
---@api-stub: LHexGrid:setBlocked
+--@api: LHexGrid:setBlocked
 do
     local hex = lurek.pathfind.newHexGrid(12, 10, "flat")
 
@@ -444,7 +444,7 @@ do
     print("blocked_6_5 = " .. tostring(hex:isBlocked(6, 5)))
 end
 
---@api-stub: LHexGrid:isBlocked
+--@api: LHexGrid:isBlocked
 do
     local hex = lurek.pathfind.newHexGrid(12, 10, "flat")
 
@@ -454,7 +454,7 @@ do
     print("blocked_4_5 = " .. tostring(hex:isBlocked(4, 5)))
 end
 
---@api-stub: LHexGrid:setCost
+--@api: LHexGrid:setCost
 do
     local hex = lurek.pathfind.newHexGrid(8, 8)
 
@@ -468,7 +468,7 @@ do
     end
 end
 
---@api-stub: LHexGrid:findPath
+--@api: LHexGrid:findPath
 do
     local hex = lurek.pathfind.newHexGrid(10, 10)
 
@@ -486,7 +486,7 @@ do
     end
 end
 
---@api-stub: LHexGrid:distance
+--@api: LHexGrid:distance
 do
     local hex = lurek.pathfind.newHexGrid(10, 10)
 
@@ -494,7 +494,7 @@ do
     print("dist_1_1_to_1_1 = " .. hex:distance(1, 1, 1, 1))
 end
 
---@api-stub: LHexGrid:lineOfSight
+--@api: LHexGrid:lineOfSight
 do
     local hex = lurek.pathfind.newHexGrid(10, 10)
 
@@ -506,7 +506,7 @@ do
     print("blocked = " .. tostring(blocked))
 end
 
---@api-stub: LHexGrid:fieldOfView
+--@api: LHexGrid:fieldOfView
 do
     local hex = lurek.pathfind.newHexGrid(15, 15)
 
@@ -519,7 +519,7 @@ do
     end
 end
 
---@api-stub: LHexGrid:rangeOfMovement
+--@api: LHexGrid:rangeOfMovement
 do
     local hex = lurek.pathfind.newHexGrid(12, 12)
 
@@ -532,14 +532,14 @@ do
     end
 end
 
---@api-stub: LHexGrid:type
+--@api: LHexGrid:type
 do
     local hex = lurek.pathfind.newHexGrid(5, 5, "pointy")
 
     print("type = " .. hex:type())
 end
 
---@api-stub: LHexGrid:typeOf
+--@api: LHexGrid:typeOf
 do
     local hex = lurek.pathfind.newHexGrid(5, 5, "pointy")
 
@@ -547,7 +547,7 @@ do
     print("is_object = " .. tostring(hex:typeOf("LObject")))
 end
 
---@api-stub: lurek.pathfind.newJpsGrid
+--@api: lurek.pathfind.newJpsGrid
 do
     local jps = lurek.pathfind.newJpsGrid(30, 30)
 
@@ -559,7 +559,7 @@ do
     print("blocked_1_1 = " .. tostring(jps:isBlocked(1, 1)))
 end
 
---@api-stub: LJpsGrid:setBlocked
+--@api: LJpsGrid:setBlocked
 do
     local jps = lurek.pathfind.newJpsGrid(30, 30)
 
@@ -571,7 +571,7 @@ do
     print("blocked_15_12 = " .. tostring(jps:isBlocked(15, 12)))
 end
 
---@api-stub: LJpsGrid:isBlocked
+--@api: LJpsGrid:isBlocked
 do
     local jps = lurek.pathfind.newJpsGrid(30, 30)
 
@@ -581,7 +581,7 @@ do
     print("blocked_9_10 = " .. tostring(jps:isBlocked(9, 10)))
 end
 
---@api-stub: LJpsGrid:findPath
+--@api: LJpsGrid:findPath
 do
     local jps = lurek.pathfind.newJpsGrid(50, 50)
 
@@ -600,14 +600,14 @@ do
     end
 end
 
---@api-stub: LJpsGrid:type
+--@api: LJpsGrid:type
 do
     local jps = lurek.pathfind.newJpsGrid(5, 5)
 
     print("type = " .. jps:type())
 end
 
---@api-stub: LJpsGrid:typeOf
+--@api: LJpsGrid:typeOf
 do
     local jps = lurek.pathfind.newJpsGrid(5, 5)
 
@@ -617,7 +617,7 @@ end
 
 --- Pathfinding Module Part 3: flow fields, AI flow fields, unit pathfinder
 
---@api-stub: lurek.pathfind.newFlowField
+--@api: lurek.pathfind.newFlowField
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -633,7 +633,7 @@ do
     print("targets = " .. #ff:getTargets())
 end
 
---@api-stub: LFlowField:calculate
+--@api: LFlowField:calculate
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -646,7 +646,7 @@ do
     print("targets = " .. #ff:getTargets())
 end
 
---@api-stub: LFlowField:getDirection
+--@api: LFlowField:getDirection
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -661,7 +661,7 @@ do
     print("cost = " .. ff:getCostToTarget(1, 1))
 end
 
---@api-stub: LFlowField:getDirectionAngle
+--@api: LFlowField:getDirectionAngle
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -674,7 +674,7 @@ do
     print("cost = " .. ff:getCostToTarget(1, 1))
 end
 
---@api-stub: LFlowField:getCostToTarget
+--@api: LFlowField:getCostToTarget
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -688,7 +688,7 @@ do
     print("cost = " .. ff:getCostToTarget(1, 1))
 end
 
---@api-stub: LFlowField:calculateMulti
+--@api: LFlowField:calculateMulti
 do
     local nav = lurek.pathfind.newNavGrid(15, 15)
 
@@ -706,7 +706,7 @@ do
     print("last = " .. targets[#targets].x .. "," .. targets[#targets].y)
 end
 
---@api-stub: LFlowField:getTargets
+--@api: LFlowField:getTargets
 do
     local nav = lurek.pathfind.newNavGrid(15, 15)
 
@@ -723,7 +723,7 @@ do
     print("first = " .. targets[1].x .. "," .. targets[1].y)
 end
 
---@api-stub: LFlowField:steer
+--@api: LFlowField:steer
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -736,7 +736,7 @@ do
     print("velocity = " .. vx .. "," .. vy)
 end
 
---@api-stub: LFlowField:type
+--@api: LFlowField:type
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local ff = lurek.pathfind.newFlowField(nav)
@@ -744,7 +744,7 @@ do
     print("type = " .. ff:type())
 end
 
---@api-stub: LFlowField:typeOf
+--@api: LFlowField:typeOf
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local ff = lurek.pathfind.newFlowField(nav)
@@ -753,7 +753,7 @@ do
     print("is_object = " .. tostring(ff:typeOf("LObject")))
 end
 
---@api-stub: lurek.pathfind.newPathFlowField
+--@api: lurek.pathfind.newPathFlowField
 do
     local grid = lurek.pathfind.newPathGrid(15, 15, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -766,7 +766,7 @@ do
     print("goal = " .. gx .. "," .. gy)
 end
 
---@api-stub: LAIFlowField:setGoal
+--@api: LAIFlowField:setGoal
 do
     local grid = lurek.pathfind.newPathGrid(15, 15, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -778,7 +778,7 @@ do
     print("goal = " .. gx .. "," .. gy)
 end
 
---@api-stub: LAIFlowField:getGoal
+--@api: LAIFlowField:getGoal
 do
     local grid = lurek.pathfind.newPathGrid(15, 15, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -790,7 +790,7 @@ do
     print("has_goal = " .. tostring(aiff:hasGoal()))
 end
 
---@api-stub: LAIFlowField:getDirection
+--@api: LAIFlowField:getDirection
 do
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -802,7 +802,7 @@ do
     print("distance = " .. aiff:getDistance(1, 1))
 end
 
---@api-stub: LAIFlowField:getDistance
+--@api: LAIFlowField:getDistance
 do
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -814,7 +814,7 @@ do
     print("distance = " .. aiff:getDistance(1, 1))
 end
 
---@api-stub: LAIFlowField:type
+--@api: LAIFlowField:type
 do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -822,7 +822,7 @@ do
     print("type = " .. aiff:type())
 end
 
---@api-stub: LAIFlowField:typeOf
+--@api: LAIFlowField:typeOf
 do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
@@ -831,7 +831,7 @@ do
     print("is_object = " .. tostring(aiff:typeOf("LObject")))
 end
 
---@api-stub: lurek.pathfind.newPathfinder
+--@api: lurek.pathfind.newPathfinder
 do
     local nav = lurek.pathfind.newNavGrid(30, 30)
 
@@ -852,7 +852,7 @@ do
     end
 end
 
---@api-stub: LUnitPathfinder:findPath
+--@api: LUnitPathfinder:findPath
 do
     local nav = lurek.pathfind.newNavGrid(30, 30)
 
@@ -873,7 +873,7 @@ do
     end
 end
 
---@api-stub: LUnitPathfinder:findPathSmooth
+--@api: LUnitPathfinder:findPathSmooth
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -890,7 +890,7 @@ do
     end
 end
 
---@api-stub: LUnitPathfinder:findPathBidirectional
+--@api: LUnitPathfinder:findPathBidirectional
 do
     local nav = lurek.pathfind.newNavGrid(40, 40)
 
@@ -907,7 +907,7 @@ do
     end
 end
 
---@api-stub: LUnitPathfinder:findPartialPath
+--@api: LUnitPathfinder:findPartialPath
 do
     local nav = lurek.pathfind.newNavGrid(100, 100)
 
@@ -923,7 +923,7 @@ do
     print("last = " .. path[#path].x .. "," .. path[#path].y)
 end
 
---@api-stub: LUnitPathfinder:isReachable
+--@api: LUnitPathfinder:isReachable
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -936,7 +936,7 @@ do
     print("reachable_right = " .. tostring(pf:isReachable(1, 1, 20, 20)))
 end
 
---@api-stub: LUnitPathfinder:lineOfSight
+--@api: LUnitPathfinder:lineOfSight
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -951,7 +951,7 @@ do
     print("blocked = " .. tostring(blocked))
 end
 
---@api-stub: LUnitPathfinder:heuristicDistance
+--@api: LUnitPathfinder:heuristicDistance
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
     local pf = lurek.pathfind.newPathfinder(nav)
@@ -960,7 +960,7 @@ do
     print("dist_5_5_to_5_5 = " .. pf:heuristicDistance(5, 5, 5, 5))
 end
 
---@api-stub: LUnitPathfinder:findNearestWalkable
+--@api: LUnitPathfinder:findNearestWalkable
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -976,7 +976,7 @@ do
     print("nearest = " .. nx .. "," .. ny)
 end
 
---@api-stub: LUnitPathfinder:getPathCost
+--@api: LUnitPathfinder:getPathCost
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -993,7 +993,7 @@ do
     end
 end
 
---@api-stub: LUnitPathfinder:getPathLength
+--@api: LUnitPathfinder:getPathLength
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
@@ -1009,7 +1009,7 @@ do
     end
 end
 
---@api-stub: LUnitPathfinder:setCacheEnabled
+--@api: LUnitPathfinder:setCacheEnabled
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -1027,7 +1027,7 @@ do
     print("cache_after_clear = " .. pf:getCacheSize())
 end
 
---@api-stub: LUnitPathfinder:isCacheEnabled
+--@api: LUnitPathfinder:isCacheEnabled
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -1042,7 +1042,7 @@ do
     print("enabled_after_disable = " .. tostring(pf:isCacheEnabled()))
 end
 
---@api-stub: LUnitPathfinder:setCacheMaxSize
+--@api: LUnitPathfinder:setCacheMaxSize
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -1058,7 +1058,7 @@ do
     print("cache_size = " .. pf:getCacheSize())
 end
 
---@api-stub: LUnitPathfinder:getCacheSize
+--@api: LUnitPathfinder:getCacheSize
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -1072,7 +1072,7 @@ do
     print("cache_size = " .. pf:getCacheSize())
 end
 
---@api-stub: LUnitPathfinder:clearCache
+--@api: LUnitPathfinder:clearCache
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
@@ -1087,7 +1087,7 @@ do
     print("cache_after_clear = " .. pf:getCacheSize())
 end
 
---@api-stub: LUnitPathfinder:type
+--@api: LUnitPathfinder:type
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local pf = lurek.pathfind.newPathfinder(nav)
@@ -1095,7 +1095,7 @@ do
     print("type = " .. pf:type())
 end
 
---@api-stub: LUnitPathfinder:typeOf
+--@api: LUnitPathfinder:typeOf
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local pf = lurek.pathfind.newPathfinder(nav)
@@ -1104,7 +1104,7 @@ do
     print("is_object = " .. tostring(pf:typeOf("LObject")))
 end
 
---@api-stub: lurek.pathfind.rangeMap
+--@api: lurek.pathfind.rangeMap
 do
     local result = lurek.pathfind.rangeMap({
         width = 10,
@@ -1122,7 +1122,7 @@ do
     end
 end
 
---@api-stub: lurek.pathfind.getThreadCount
+--@api: lurek.pathfind.getThreadCount
 do
     local tc = lurek.pathfind.getThreadCount()
 
@@ -1131,7 +1131,7 @@ end
 
 --- Pathfind Module Part 4: AI flow field state, nav dimensions, tilemap nav grids, thread count
 
---@api-stub: LAIFlowField:getHeight
+--@api: LAIFlowField:getHeight
 do
     local pg = lurek.pathfind.newPathGrid(32, 32, 1)
     local ff = lurek.pathfind.newPathFlowField(pg)
@@ -1142,7 +1142,7 @@ do
     print("has_goal = " .. tostring(ff:hasGoal()))
 end
 
---@api-stub: LAIFlowField:getWidth
+--@api: LAIFlowField:getWidth
 do
     local pg = lurek.pathfind.newPathGrid(32, 32, 1)
     local ff = lurek.pathfind.newPathFlowField(pg)
@@ -1153,7 +1153,7 @@ do
     print("has_goal = " .. tostring(ff:hasGoal()))
 end
 
---@api-stub: LAIFlowField:hasGoal
+--@api: LAIFlowField:hasGoal
 do
     local pg = lurek.pathfind.newPathGrid(32, 32, 1)
     local ff = lurek.pathfind.newPathFlowField(pg)
@@ -1163,7 +1163,7 @@ do
     print("has_goal_after = " .. tostring(ff:hasGoal()))
 end
 
---@api-stub: LFlowField:isCalculated
+--@api: LFlowField:isCalculated
 do
     local grid = lurek.pathfind.newNavGrid(16, 16)
     local ff = lurek.pathfind.newFlowField(grid)
@@ -1173,7 +1173,7 @@ do
     print("calculated_after = " .. tostring(ff:isCalculated()))
 end
 
---@api-stub: LNavGrid:getDimensions
+--@api: LNavGrid:getDimensions
 do
     local ng = lurek.pathfind.newNavGrid(20, 15)
     local w, h = ng:getDimensions()
@@ -1182,25 +1182,27 @@ do
     print("width = " .. ng:getWidth())
 end
 
---@api-stub: LNavGrid:getHeight
+--@api: LNavGrid:getHeight
 do
     local ng = lurek.pathfind.newNavGrid(20, 15)
     local w, h = ng:getDimensions()
+    local height = ng:getHeight()
 
     print("dims = " .. w .. "x" .. h)
-    print("height = " .. h)
+    print("height = " .. height)
 end
 
---@api-stub: LNavGrid:getWidth
+--@api: LNavGrid:getWidth
 do
     local ng = lurek.pathfind.newNavGrid(20, 15)
     local w, h = ng:getDimensions()
+    local width = ng:getWidth()
 
     print("dims = " .. w .. "x" .. h)
-    print("width = " .. w)
+    print("width = " .. width)
 end
 
---@api-stub: LNavMesh:getPolygonCount
+--@api: LNavMesh:getPolygonCount
 do
     local mesh = lurek.pathfind.newNavMesh()
     local id = mesh:addPolygon({
@@ -1213,7 +1215,7 @@ do
     print("first_id = " .. id)
 end
 
---@api-stub: LPathGrid:getCellSize
+--@api: LPathGrid:getCellSize
 do
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
 
@@ -1221,7 +1223,7 @@ do
     print("dims = " .. pg:getWidth() .. "x" .. pg:getHeight())
 end
 
---@api-stub: LPathGrid:getHeight
+--@api: LPathGrid:getHeight
 do
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
 
@@ -1229,7 +1231,7 @@ do
     print("cell_size = " .. pg:getCellSize())
 end
 
---@api-stub: LPathGrid:getWidth
+--@api: LPathGrid:getWidth
 do
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
 
@@ -1237,7 +1239,7 @@ do
     print("cell_size = " .. pg:getCellSize())
 end
 
---@api-stub: lurek.pathfind.newNavGridFromTileMap
+--@api: lurek.pathfind.newNavGridFromTileMap
 do
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
     local layer_index = tm:addLayer("ground", 8, 8)
@@ -1252,20 +1254,20 @@ do
     print("blocked_4_3 = " .. tostring(ng:isBlocked(4, 3)))
 end
 
---@api-stub: lurek.pathfind.setThreadCount
+--@api: lurek.pathfind.setThreadCount
 do
     lurek.pathfind.setThreadCount(2)
 
     print("thread_count = " .. lurek.pathfind.getThreadCount())
 end
 
---@api-stub: lurek.pathfind.newGoalMap
+--@api: lurek.pathfind.newGoalMap
 do
     local gm = lurek.pathfind.newGoalMap(16, 16)
     print("goal_map_type = " .. gm:type())
 end
 
---@api-stub: LGoalMap:addSource
+--@api: LGoalMap:addSource
 do
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:addSource(8, 8, 1)
@@ -1273,7 +1275,7 @@ do
     print("distance_1_1 = " .. gm:distanceAt(1, 1))
 end
 
---@api-stub: LGoalMap:setSources
+--@api: LGoalMap:setSources
 do
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:setSources({
@@ -1284,7 +1286,7 @@ do
     print("ready = " .. tostring(gm:isReady()))
 end
 
---@api-stub: LGoalMap:clearSources
+--@api: LGoalMap:clearSources
 do
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:addSource(8, 8, 1)
@@ -1293,7 +1295,7 @@ do
     print("ready_after_clear = " .. tostring(gm:isReady()))
 end
 
---@api-stub: LGoalMap:setBlocker
+--@api: LGoalMap:setBlocker
 do
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:addSource(8, 8, 1)
@@ -1304,7 +1306,7 @@ do
     print("distance_12_8 = " .. gm:distanceAt(12, 8))
 end
 
---@api-stub: LGoalMap:bake
+--@api: LGoalMap:bake
 do
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:addSource(8, 8, 1)
@@ -1312,7 +1314,7 @@ do
     print("ready_after_bake = " .. tostring(gm:isReady()))
 end
 
---@api-stub: LGoalMap:isReady
+--@api: LGoalMap:isReady
 do
     local gm = lurek.pathfind.newGoalMap(8, 8)
     gm:addSource(4, 4, 1)
@@ -1321,7 +1323,7 @@ do
     print("ready_after = " .. tostring(gm:isReady()))
 end
 
---@api-stub: LGoalMap:distanceAt
+--@api: LGoalMap:distanceAt
 do
     local gm = lurek.pathfind.newGoalMap(10, 10)
     gm:addSource(5, 5, 1)
@@ -1330,7 +1332,7 @@ do
     print("distance_1_1 = " .. gm:distanceAt(1, 1))
 end
 
---@api-stub: LGoalMap:gradientAt
+--@api: LGoalMap:gradientAt
 do
     local gm = lurek.pathfind.newGoalMap(10, 10)
     gm:addSource(10, 10, 1)
@@ -1339,7 +1341,7 @@ do
     print("gradient = " .. dx .. "," .. dy)
 end
 
---@api-stub: LGoalMap:flee
+--@api: LGoalMap:flee
 do
     local gm = lurek.pathfind.newGoalMap(10, 10)
     gm:addSource(5, 5, 1)
@@ -1348,7 +1350,7 @@ do
     print("flee = " .. dx .. "," .. dy)
 end
 
---@api-stub: LGoalMap:floodFill
+--@api: LGoalMap:floodFill
 do
     local gm = lurek.pathfind.newGoalMap(12, 12)
     gm:addSource(6, 6, 1)
@@ -1357,7 +1359,7 @@ do
     print("flood_cells = " .. #cells)
 end
 
---@api-stub: LGoalMap:save
+--@api: LGoalMap:save
 do
     local gm = lurek.pathfind.newGoalMap(12, 12)
     gm:addSource(6, 6, 1)
@@ -1366,7 +1368,7 @@ do
     print("blob_bytes = " .. #blob)
 end
 
---@api-stub: LGoalMap:restore
+--@api: LGoalMap:restore
 do
     local gm = lurek.pathfind.newGoalMap(12, 12)
     gm:addSource(6, 6, 1)
@@ -1378,13 +1380,13 @@ do
     print("distance_restored = " .. gm2:distanceAt(6, 6))
 end
 
---@api-stub: LGoalMap:type
+--@api: LGoalMap:type
 do
     local gm = lurek.pathfind.newGoalMap(8, 8)
     print("type = " .. gm:type())
 end
 
---@api-stub: LGoalMap:typeOf
+--@api: LGoalMap:typeOf
 do
     local gm = lurek.pathfind.newGoalMap(8, 8)
     print("is_goal_map = " .. tostring(gm:typeOf("LGoalMap")))

@@ -2,7 +2,7 @@
 --- @desc Tree, DAG, and force-directed layouts for node positioning.
 
 -- Define nodes
---@api-stub: lurek.layout.tree
+--@api: lurek.layout.tree
 do
     local nodes = {
         { id = 1, width = 60, height = 30, label = "Root" },
@@ -22,7 +22,7 @@ do
     print("root x = " .. result.nodes[1].x)
 end
 
---@api-stub: lurek.layout.dag
+--@api: lurek.layout.dag
 do
     local nodes = {
         { id = 1, width = 60, height = 30, label = "Start" },
@@ -43,7 +43,7 @@ do
     print("node 2 y = " .. result.nodes[2].y)
 end
 
---@api-stub: lurek.layout.force
+--@api: lurek.layout.force
 do
     local nodes = {
         { id = 1, width = 40, height = 24, label = "A" },
@@ -67,7 +67,7 @@ do
     print("node 1 pos = " .. result.nodes[1].x .. "," .. result.nodes[1].y)
 end
 
---@api-stub: lurek.layout.snapToGrid
+--@api: lurek.layout.snapToGrid
 do
     local result = {
         nodes = {
@@ -81,7 +81,7 @@ do
     print("node 2 = " .. snapped.nodes[2].x .. "," .. snapped.nodes[2].y)
 end
 
---@api-stub: lurek.layout.centerInArea
+--@api: lurek.layout.centerInArea
 do
     local result = {
         nodes = {

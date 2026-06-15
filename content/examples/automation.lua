@@ -4,14 +4,14 @@
 
 --- Automation Examples: Script loading, playback control, macros, conditions
 
---@api-stub: lurek.automation.load
+--@api: lurek.automation.load
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("login_flow", { steps = steps })
     print("loaded = " .. tostring(lurek.automation.hasScript("login_flow")))
 end
 
---@api-stub: lurek.automation.unload
+--@api: lurek.automation.unload
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("temp_script", { steps = steps })
@@ -19,7 +19,7 @@ do
     print("unloaded = " .. tostring(not lurek.automation.hasScript("temp_script")))
 end
 
---@api-stub: lurek.automation.hasScript
+--@api: lurek.automation.hasScript
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("status_check", { steps = steps })
@@ -29,7 +29,7 @@ do
     print("has status_check = " .. tostring(loaded))
 end
 
---@api-stub: lurek.automation.getScripts
+--@api: lurek.automation.getScripts
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("list_one", { steps = steps })
@@ -39,7 +39,7 @@ do
     print("first script = " .. tostring(scripts[1]))
 end
 
---@api-stub: lurek.automation.start
+--@api: lurek.automation.start
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("run_test", { steps = steps })
@@ -47,7 +47,7 @@ do
     print("running = " .. tostring(lurek.automation.isRunning()))
 end
 
---@api-stub: lurek.automation.stop
+--@api: lurek.automation.stop
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("stop_test", { steps = steps })
@@ -57,7 +57,7 @@ do
     print("current script = " .. tostring(lurek.automation.getCurrentScript()))
 end
 
---@api-stub: lurek.automation.pause
+--@api: lurek.automation.pause
 do
     local steps = {
         { action = "wait", time = 0.0 },
@@ -70,7 +70,7 @@ do
     print("running = " .. tostring(lurek.automation.isRunning()))
 end
 
---@api-stub: lurek.automation.resume
+--@api: lurek.automation.resume
 do
     local steps = {
         { action = "wait", time = 0.0 },
@@ -84,7 +84,7 @@ do
     print("running after resume = " .. tostring(lurek.automation.isRunning()))
 end
 
---@api-stub: lurek.automation.update
+--@api: lurek.automation.update
 do
     local steps = {
         { action = "wait", time = 0.0 },
@@ -97,7 +97,7 @@ do
     print("elapsed = " .. tostring(lurek.automation.getElapsedTime()))
 end
 
---@api-stub: lurek.automation.isRunning
+--@api: lurek.automation.isRunning
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("running_test", { steps = steps })
@@ -108,7 +108,7 @@ do
     print("isRunning after stop = " .. tostring(lurek.automation.isRunning()))
 end
 
---@api-stub: lurek.automation.isPaused
+--@api: lurek.automation.isPaused
 do
     local steps = {
         { action = "wait", time = 0.0 },
@@ -123,7 +123,7 @@ do
     print("isPaused after resume = " .. tostring(lurek.automation.isPaused()))
 end
 
---@api-stub: lurek.automation.isComplete
+--@api: lurek.automation.isComplete
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("complete_test", { steps = steps })
@@ -134,13 +134,13 @@ do
     print("current step = " .. tostring(lurek.automation.getCurrentStep()))
 end
 
---@api-stub: lurek.automation.isFailed
+--@api: lurek.automation.isFailed
 do
     local failed = lurek.automation.isFailed()
     print("isFailed = " .. tostring(failed))
 end
 
---@api-stub: lurek.automation.getLastError
+--@api: lurek.automation.getLastError
 do
     lurek.automation.stop()
     local err = lurek.automation.getLastError()
@@ -148,21 +148,21 @@ do
     print("failed = " .. tostring(lurek.automation.isFailed()))
 end
 
---@api-stub: lurek.automation.setCondition
+--@api: lurek.automation.setCondition
 do
     lurek.automation.setCondition("logged_in", true)
     print("condition set")
     print("logged_in = " .. tostring(lurek.automation.getCondition("logged_in")))
 end
 
---@api-stub: lurek.automation.getCondition
+--@api: lurek.automation.getCondition
 do
     lurek.automation.setCondition("ready", true)
     local val = lurek.automation.getCondition("ready")
     print("ready = " .. tostring(val))
 end
 
---@api-stub: lurek.automation.getCurrentStep
+--@api: lurek.automation.getCurrentStep
 do
     local steps = {
         { action = "wait", time = 0.0 },
@@ -175,7 +175,7 @@ do
     print("step count = " .. tostring(lurek.automation.getStepCount()))
 end
 
---@api-stub: lurek.automation.getStepCount
+--@api: lurek.automation.getStepCount
 do
     local steps = {
         { action = "wait", time = 0.0 },
@@ -189,7 +189,7 @@ do
     print("current step = " .. tostring(lurek.automation.getCurrentStep()))
 end
 
---@api-stub: lurek.automation.getCurrentScript
+--@api: lurek.automation.getCurrentScript
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("current_test", { steps = steps })
@@ -199,7 +199,7 @@ do
     print("running = " .. tostring(lurek.automation.isRunning()))
 end
 
---@api-stub: lurek.automation.getElapsedTime
+--@api: lurek.automation.getElapsedTime
 do
     local steps = {
         { action = "wait", time = 0.0 },
@@ -213,14 +213,14 @@ do
     print("current script = " .. tostring(lurek.automation.getCurrentScript()))
 end
 
---@api-stub: lurek.automation.loadFromToml
+--@api: lurek.automation.loadFromToml
 do
     local toml = "[[steps]]\naction = \"wait\"\ntime = 0.0\n"
     lurek.automation.loadFromToml("toml_script", toml)
     print("loaded from TOML = " .. tostring(lurek.automation.hasScript("toml_script")))
 end
 
---@api-stub: lurek.automation.getStepLimit
+--@api: lurek.automation.getStepLimit
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("limit_query", { steps = steps })
@@ -230,7 +230,7 @@ do
     print("step limit for limit_query = " .. tostring(loaded_limit))
 end
 
---@api-stub: lurek.automation.setStepLimit
+--@api: lurek.automation.setStepLimit
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("limit_set", { steps = steps })
@@ -239,7 +239,7 @@ do
     print("step limit = " .. tostring(lurek.automation.getStepLimit("limit_set")))
 end
 
---@api-stub: lurek.automation.saveMacro
+--@api: lurek.automation.saveMacro
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("macro_source", { steps = steps })
@@ -248,7 +248,7 @@ do
     print("macro count = " .. tostring(#lurek.automation.listMacros()))
 end
 
---@api-stub: lurek.automation.playMacro
+--@api: lurek.automation.playMacro
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("macro_play_source", { steps = steps })
@@ -258,13 +258,13 @@ do
     print("current script = " .. tostring(lurek.automation.getCurrentScript()))
 end
 
---@api-stub: lurek.automation.hasMacro
+--@api: lurek.automation.hasMacro
 do
     local has = lurek.automation.hasMacro("fast_login")
     print("has macro = " .. tostring(has))
 end
 
---@api-stub: lurek.automation.listMacros
+--@api: lurek.automation.listMacros
 do
     local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("macro_list_source", { steps = steps })
@@ -274,21 +274,21 @@ do
     print("first macro = " .. tostring(macros[1]))
 end
 
---@api-stub: lurek.automation.setPlaybackSpeed
+--@api: lurek.automation.setPlaybackSpeed
 do
     lurek.automation.setPlaybackSpeed(2.0)
     print("configured speed = 2.0")
     print("speed = " .. tostring(lurek.automation.getPlaybackSpeed()))
 end
 
---@api-stub: lurek.automation.getPlaybackSpeed
+--@api: lurek.automation.getPlaybackSpeed
 do
     local speed = lurek.automation.getPlaybackSpeed()
     print("playback speed = " .. tostring(speed))
     print("speed query completed")
 end
 
---@api-stub: lurek.automation.setHighlightMode
+--@api: lurek.automation.setHighlightMode
 do
     lurek.automation.setHighlightMode(true)
     print("highlight = " .. tostring(lurek.automation.isHighlightMode()))
@@ -296,7 +296,7 @@ do
     print("highlight after reset = " .. tostring(lurek.automation.isHighlightMode()))
 end
 
---@api-stub: lurek.automation.isHighlightMode
+--@api: lurek.automation.isHighlightMode
 do
     lurek.automation.setHighlightMode(true)
     local hl = lurek.automation.isHighlightMode()
@@ -305,7 +305,7 @@ do
     print("highlight mode after reset = " .. tostring(lurek.automation.isHighlightMode()))
 end
 
---@api-stub: lurek.automation.waitUntil
+--@api: lurek.automation.waitUntil
 do
     lurek.automation.waitUntil(function()
         return lurek.automation.getCondition("ready")

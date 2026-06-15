@@ -10,8 +10,8 @@ describe("integration: scene camera viewport operations", function()
     -- @integration LUniverse:spawn
     -- @integration lurek.camera.newCamera
     -- @integration lurek.ecs.newUniverse
-    -- @covers lurek.camera.newCamera
-    -- @covers lurek.ecs.newUniverse
+    -- @integration lurek.camera.newCamera
+    -- @integration lurek.ecs.newUniverse
     it("camera follows tracked entity position", function()
         local universe = lurek.ecs.newUniverse()
         local cam = lurek.camera.newCamera()

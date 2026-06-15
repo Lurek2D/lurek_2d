@@ -1,4 +1,11 @@
 //! File: src/lua_api/globe_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
+//! TODO: add doc note 3
+//! TODO: add doc note 4
+//! TODO: add doc note 5
 
 use super::SharedState;
 use crate::globe::export::export_regions_to_obj;

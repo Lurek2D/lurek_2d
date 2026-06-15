@@ -4,7 +4,7 @@
 
 --- Particle Module Part 1: system creation, presets, basic config
 
---@api-stub: lurek.particle.newSystem
+--@api: lurek.particle.newSystem
 do
     local ps = lurek.particle.newSystem({
         seed = 42,
@@ -18,7 +18,7 @@ do
     print("buffer = " .. ps:getBufferSize())
 end
 
---@api-stub: lurek.particle.newPreset
+--@api: lurek.particle.newPreset
 do
     local fire = lurek.particle.newPreset("fire")
     fire:setPosition(160, 220)
@@ -27,7 +27,7 @@ do
     print("fire rate = " .. fire:getEmissionRate())
 end
 
---@api-stub: lurek.particle.fromTOML
+--@api: lurek.particle.fromTOML
 do
     local path = "save/particle_example.toml"
     lurek.filesystem.write(path, "seed = 42\nmax_particles = 96\nemission_rate = 18.0\nlifetime_min = 0.2\nlifetime_max = 0.8\n")
@@ -37,7 +37,7 @@ do
     print("buffer = " .. ps:getBufferSize())
 end
 
---@api-stub: LParticleSystem:setBufferSize
+--@api: LParticleSystem:setBufferSize
 do
     local ps = lurek.particle.newSystem()
     ps:setBufferSize(1024)
@@ -45,7 +45,7 @@ do
     print("buffer = " .. ps:getBufferSize())
 end
 
---@api-stub: LParticleSystem:getBufferSize
+--@api: LParticleSystem:getBufferSize
 do
     local ps = lurek.particle.newSystem()
     ps:setBufferSize(1024)
@@ -53,7 +53,7 @@ do
     print("buffer = " .. ps:getBufferSize())
 end
 
---@api-stub: LParticleSystem:setPosition
+--@api: LParticleSystem:setPosition
 do
     local ps = lurek.particle.newSystem()
     ps:setPosition(100, 200)
@@ -62,7 +62,7 @@ do
     print("pos = " .. x .. "," .. y)
 end
 
---@api-stub: LParticleSystem:getPosition
+--@api: LParticleSystem:getPosition
 do
     local ps = lurek.particle.newSystem()
     ps:setPosition(100, 200)
@@ -71,7 +71,7 @@ do
     print("pos = " .. x .. "," .. y)
 end
 
---@api-stub: LParticleSystem:moveTo
+--@api: LParticleSystem:moveTo
 do
     local ps = lurek.particle.newSystem()
     ps:setPosition(40, 60)
@@ -81,7 +81,7 @@ do
     print("moved = " .. x .. "," .. y)
 end
 
---@api-stub: LParticleSystem:setEmissionRate
+--@api: LParticleSystem:setEmissionRate
 do
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(100)
@@ -89,7 +89,7 @@ do
     print("rate = " .. ps:getEmissionRate())
 end
 
---@api-stub: LParticleSystem:getEmissionRate
+--@api: LParticleSystem:getEmissionRate
 do
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(100)
@@ -97,7 +97,7 @@ do
     print("rate = " .. ps:getEmissionRate())
 end
 
---@api-stub: LParticleSystem:setParticleLifetime
+--@api: LParticleSystem:setParticleLifetime
 do
     local ps = lurek.particle.newSystem()
     ps:setParticleLifetime(0.5, 3.0)
@@ -106,7 +106,7 @@ do
     print("lifetime = " .. min_life .. ".." .. max_life)
 end
 
---@api-stub: LParticleSystem:getParticleLifetime
+--@api: LParticleSystem:getParticleLifetime
 do
     local ps = lurek.particle.newSystem()
     ps:setParticleLifetime(0.5, 3.0)
@@ -115,7 +115,7 @@ do
     print("lifetime = " .. min_life .. ".." .. max_life)
 end
 
---@api-stub: LParticleSystem:setEmitterLifetime
+--@api: LParticleSystem:setEmitterLifetime
 do
     local ps = lurek.particle.newSystem()
     ps:setEmitterLifetime(5.0)
@@ -123,7 +123,7 @@ do
     print("emitter lifetime = " .. ps:getEmitterLifetime())
 end
 
---@api-stub: LParticleSystem:getEmitterLifetime
+--@api: LParticleSystem:getEmitterLifetime
 do
     local ps = lurek.particle.newSystem()
     ps:setEmitterLifetime(5.0)
@@ -131,7 +131,7 @@ do
     print("emitter lifetime = " .. ps:getEmitterLifetime())
 end
 
---@api-stub: LParticleSystem:setSpeed
+--@api: LParticleSystem:setSpeed
 do
     local ps = lurek.particle.newSystem()
     ps:setSpeed(50, 200)
@@ -140,7 +140,7 @@ do
     print("speed = " .. min_speed .. ".." .. max_speed)
 end
 
---@api-stub: LParticleSystem:getSpeed
+--@api: LParticleSystem:getSpeed
 do
     local ps = lurek.particle.newSystem()
     ps:setSpeed(50, 200)
@@ -149,7 +149,7 @@ do
     print("speed = " .. min_speed .. ".." .. max_speed)
 end
 
---@api-stub: LParticleSystem:setDirection
+--@api: LParticleSystem:setDirection
 do
     local ps = lurek.particle.newSystem()
     ps:setDirection(math.pi / 2)
@@ -157,7 +157,7 @@ do
     print("dir = " .. ps:getDirection())
 end
 
---@api-stub: LParticleSystem:getDirection
+--@api: LParticleSystem:getDirection
 do
     local ps = lurek.particle.newSystem()
     ps:setDirection(math.pi / 2)
@@ -165,7 +165,7 @@ do
     print("dir = " .. ps:getDirection())
 end
 
---@api-stub: LParticleSystem:setSpread
+--@api: LParticleSystem:setSpread
 do
     local ps = lurek.particle.newSystem()
     ps:setSpread(math.pi / 6)
@@ -173,7 +173,7 @@ do
     print("spread = " .. ps:getSpread())
 end
 
---@api-stub: LParticleSystem:getSpread
+--@api: LParticleSystem:getSpread
 do
     local ps = lurek.particle.newSystem()
     ps:setSpread(math.pi / 6)
@@ -181,7 +181,7 @@ do
     print("spread = " .. ps:getSpread())
 end
 
---@api-stub: LParticleSystem:setGravity
+--@api: LParticleSystem:setGravity
 do
     local ps = lurek.particle.newSystem()
     ps:setGravity(0, 200)
@@ -190,7 +190,7 @@ do
     print("gravity = " .. gx .. "," .. gy)
 end
 
---@api-stub: LParticleSystem:getGravity
+--@api: LParticleSystem:getGravity
 do
     local ps = lurek.particle.newSystem()
     ps:setGravity(0, 200)
@@ -199,7 +199,7 @@ do
     print("gravity = " .. gx .. "," .. gy)
 end
 
---@api-stub: LParticleSystem:setSizes
+--@api: LParticleSystem:setSizes
 do
     local ps = lurek.particle.newSystem()
     ps:setSizes(4, 2, 1)
@@ -209,7 +209,7 @@ do
     print("first size = " .. sizes[1])
 end
 
---@api-stub: LParticleSystem:getSizes
+--@api: LParticleSystem:getSizes
 do
     local ps = lurek.particle.newSystem()
     ps:setSizes(4, 2, 1)
@@ -219,7 +219,7 @@ do
     print("last size = " .. sizes[#sizes])
 end
 
---@api-stub: LParticleSystem:setSizeVariation
+--@api: LParticleSystem:setSizeVariation
 do
     local ps = lurek.particle.newSystem()
     ps:setSizes(4, 2, 1)
@@ -228,7 +228,7 @@ do
     print("size variation = " .. ps:getSizeVariation())
 end
 
---@api-stub: LParticleSystem:getSizeVariation
+--@api: LParticleSystem:getSizeVariation
 do
     local ps = lurek.particle.newSystem()
     ps:setSizes(4, 2, 1)
@@ -237,7 +237,7 @@ do
     print("size variation = " .. ps:getSizeVariation())
 end
 
---@api-stub: LParticleSystem:setColors
+--@api: LParticleSystem:setColors
 do
     local ps = lurek.particle.newSystem()
     ps:setColors({1, 0.5, 0, 1}, {1, 0, 0, 0})
@@ -247,7 +247,7 @@ do
     print("first alpha = " .. colors[1][4])
 end
 
---@api-stub: LParticleSystem:getColors
+--@api: LParticleSystem:getColors
 do
     local ps = lurek.particle.newSystem()
     ps:setColors({1, 0.5, 0, 1}, {1, 0, 0, 0})
@@ -259,7 +259,7 @@ end
 
 --- Particle Module Part 2: lifecycle, emission, rendering, cloning
 
---@api-stub: LParticleSystem:start
+--@api: LParticleSystem:start
 do
     local ps = lurek.particle.newSystem({
         emissionRate = 100,
@@ -272,7 +272,7 @@ do
     print("stopped = " .. tostring(ps:isStopped()))
 end
 
---@api-stub: LParticleSystem:stop
+--@api: LParticleSystem:stop
 do
     local ps = lurek.particle.newSystem({
         emissionRate = 100,
@@ -286,7 +286,7 @@ do
     print("stopped = " .. tostring(ps:isStopped()))
 end
 
---@api-stub: LParticleSystem:isActive
+--@api: LParticleSystem:isActive
 do
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(80)
@@ -295,7 +295,7 @@ do
     print("active = " .. tostring(ps:isActive()))
 end
 
---@api-stub: LParticleSystem:isStopped
+--@api: LParticleSystem:isStopped
 do
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(80)
@@ -305,7 +305,7 @@ do
     print("stopped = " .. tostring(ps:isStopped()))
 end
 
---@api-stub: LParticleSystem:pause
+--@api: LParticleSystem:pause
 do
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(50)
@@ -315,7 +315,7 @@ do
     print("paused = " .. tostring(ps:isPaused()))
 end
 
---@api-stub: LParticleSystem:resume
+--@api: LParticleSystem:resume
 do
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(50)
@@ -327,7 +327,7 @@ do
     print("active = " .. tostring(ps:isActive()))
 end
 
---@api-stub: LParticleSystem:isPaused
+--@api: LParticleSystem:isPaused
 do
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(50)
@@ -337,7 +337,7 @@ do
     print("paused = " .. tostring(ps:isPaused()))
 end
 
---@api-stub: LParticleSystem:emit
+--@api: LParticleSystem:emit
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 512,
@@ -350,7 +350,7 @@ do
     print("after emit = " .. ps:count())
 end
 
---@api-stub: LParticleSystem:warmUp
+--@api: LParticleSystem:warmUp
 do
     local ps = lurek.particle.newPreset("rain")
     ps:start()
@@ -359,7 +359,7 @@ do
     print("warmed count = " .. ps:count())
 end
 
---@api-stub: LParticleSystem:update
+--@api: LParticleSystem:update
 do
     local ps = lurek.particle.newSystem({
         emissionRate = 200,
@@ -379,7 +379,7 @@ do
     print("count after update = " .. ps:count())
 end
 
---@api-stub: LParticleSystem:render
+--@api: LParticleSystem:render
 do
     local ps = lurek.particle.newSystem({
         emissionRate = 200,
@@ -401,7 +401,7 @@ do
     print("count before render = " .. ps:count())
 end
 
---@api-stub: LParticleSystem:reset
+--@api: LParticleSystem:reset
 do
     local ps = lurek.particle.newSystem()
     ps:setEmissionRate(100)
@@ -413,7 +413,7 @@ do
     print("after reset = " .. ps:count())
 end
 
---@api-stub: LParticleSystem:clone
+--@api: LParticleSystem:clone
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 256,
@@ -427,7 +427,7 @@ do
     print("clone rate = " .. copy:getEmissionRate())
 end
 
---@api-stub: LParticleSystem:isEmpty
+--@api: LParticleSystem:isEmpty
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 10,
@@ -436,7 +436,7 @@ do
     print("empty = " .. tostring(ps:isEmpty()))
 end
 
---@api-stub: LParticleSystem:isFull
+--@api: LParticleSystem:isFull
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 10,
@@ -446,7 +446,7 @@ do
     print("full = " .. tostring(ps:isFull()))
 end
 
---@api-stub: LParticleSystem:count
+--@api: LParticleSystem:count
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 10,
@@ -456,7 +456,7 @@ do
     print("count = " .. ps:count())
 end
 
---@api-stub: LParticleSystem:getCount
+--@api: LParticleSystem:getCount
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 10,
@@ -466,7 +466,7 @@ do
     print("getCount = " .. ps:getCount())
 end
 
---@api-stub: LParticleSystem:release
+--@api: LParticleSystem:release
 do
     local ps = lurek.particle.newSystem()
     ps:emit(5)
@@ -475,7 +475,7 @@ do
     print("released = " .. tostring(ok))
 end
 
---@api-stub: LParticleSystem:type
+--@api: LParticleSystem:type
 do
     local ps = lurek.particle.newSystem()
 
@@ -484,7 +484,7 @@ do
     print("is drawable = " .. tostring(ps:typeOf("LDrawable")))
 end
 
---@api-stub: LParticleSystem:typeOf
+--@api: LParticleSystem:typeOf
 do
     local ps = lurek.particle.newSystem()
 
@@ -493,7 +493,7 @@ do
     print("object = " .. tostring(ps:typeOf("LObject")))
 end
 
---@api-stub: LParticleSystem:setLinearAcceleration
+--@api: LParticleSystem:setLinearAcceleration
 do
     local ps = lurek.particle.newSystem()
     ps:setLinearAcceleration(-10, 50, 10, 100)
@@ -502,7 +502,7 @@ do
     print("accel = " .. xmin .. "," .. ymin .. ".." .. xmax .. "," .. ymax)
 end
 
---@api-stub: LParticleSystem:getLinearAcceleration
+--@api: LParticleSystem:getLinearAcceleration
 do
     local ps = lurek.particle.newSystem()
     ps:setLinearAcceleration(-10, 50, 10, 100)
@@ -511,7 +511,7 @@ do
     print("accel = " .. xmin .. "," .. ymin .. ".." .. xmax .. "," .. ymax)
 end
 
---@api-stub: LParticleSystem:setLinearDamping
+--@api: LParticleSystem:setLinearDamping
 do
     local ps = lurek.particle.newSystem()
     ps:setLinearDamping(0.1, 0.5)
@@ -520,7 +520,7 @@ do
     print("damping = " .. min_damping .. ".." .. max_damping)
 end
 
---@api-stub: LParticleSystem:getLinearDamping
+--@api: LParticleSystem:getLinearDamping
 do
     local ps = lurek.particle.newSystem()
     ps:setLinearDamping(0.1, 0.5)
@@ -529,7 +529,7 @@ do
     print("damping = " .. min_damping .. ".." .. max_damping)
 end
 
---@api-stub: LParticleSystem:setRadialAcceleration
+--@api: LParticleSystem:setRadialAcceleration
 do
     local ps = lurek.particle.newSystem()
     ps:setRadialAcceleration(-50, 50)
@@ -538,7 +538,7 @@ do
     print("radial = " .. min_radial .. ".." .. max_radial)
 end
 
---@api-stub: LParticleSystem:getRadialAcceleration
+--@api: LParticleSystem:getRadialAcceleration
 do
     local ps = lurek.particle.newSystem()
     ps:setRadialAcceleration(-50, 50)
@@ -547,7 +547,7 @@ do
     print("radial = " .. min_radial .. ".." .. max_radial)
 end
 
---@api-stub: LParticleSystem:setTangentialAcceleration
+--@api: LParticleSystem:setTangentialAcceleration
 do
     local ps = lurek.particle.newSystem()
     ps:setTangentialAcceleration(-20, 20)
@@ -556,7 +556,7 @@ do
     print("tangential = " .. min_tangent .. ".." .. max_tangent)
 end
 
---@api-stub: LParticleSystem:getTangentialAcceleration
+--@api: LParticleSystem:getTangentialAcceleration
 do
     local ps = lurek.particle.newSystem()
     ps:setTangentialAcceleration(-20, 20)
@@ -567,7 +567,7 @@ end
 
 --- Particle Module Part 3: advanced — attractors, sub-emitters, trails, physics, custom shapes
 
---@api-stub: LParticleSystem:addAttractor
+--@api: LParticleSystem:addAttractor
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 512,
@@ -582,7 +582,7 @@ do
     print("attractors = " .. ps:getAttractorCount())
 end
 
---@api-stub: LParticleSystem:getAttractorCount
+--@api: LParticleSystem:getAttractorCount
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 512,
@@ -594,7 +594,7 @@ do
     print("attractors = " .. ps:getAttractorCount())
 end
 
---@api-stub: LParticleSystem:clearAttractors
+--@api: LParticleSystem:clearAttractors
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 512,
@@ -608,7 +608,7 @@ do
     print("after clear = " .. ps:getAttractorCount())
 end
 
---@api-stub: LParticleSystem:addSubEmitter
+--@api: LParticleSystem:addSubEmitter
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 256,
@@ -624,7 +624,7 @@ do
     print("sub-systems = " .. ps:subSystemCount())
 end
 
---@api-stub: LParticleSystem:addSubSystem
+--@api: LParticleSystem:addSubSystem
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 256,
@@ -641,7 +641,7 @@ do
     print("sub-system count = " .. ps:subSystemCount())
 end
 
---@api-stub: LParticleSystem:subSystemCount
+--@api: LParticleSystem:subSystemCount
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 256,
@@ -657,7 +657,7 @@ do
     print("sub-system count = " .. ps:subSystemCount())
 end
 
---@api-stub: LParticleSystem:setEmissionArea
+--@api: LParticleSystem:setEmissionArea
 do
     local ps = lurek.particle.newSystem()
     ps:setEmissionArea("uniform", 100, 50)
@@ -670,7 +670,7 @@ do
     print("area = " .. next_dist .. " " .. next_width .. "x" .. next_height)
 end
 
---@api-stub: LParticleSystem:getEmissionArea
+--@api: LParticleSystem:getEmissionArea
 do
     local ps = lurek.particle.newSystem()
     ps:setEmissionArea("uniform", 100, 50)
@@ -679,7 +679,7 @@ do
     print("area = " .. dist .. " " .. width .. "x" .. height)
 end
 
---@api-stub: LParticleSystem:setRotation
+--@api: LParticleSystem:setRotation
 do
     local ps = lurek.particle.newSystem()
     ps:setRotation(0, math.pi * 2)
@@ -688,7 +688,7 @@ do
     print("rotation = " .. min_rotation .. ".." .. max_rotation)
 end
 
---@api-stub: LParticleSystem:getRotation
+--@api: LParticleSystem:getRotation
 do
     local ps = lurek.particle.newSystem()
     ps:setRotation(0, math.pi * 2)
@@ -697,7 +697,7 @@ do
     print("rotation = " .. min_rotation .. ".." .. max_rotation)
 end
 
---@api-stub: LParticleSystem:setSpin
+--@api: LParticleSystem:setSpin
 do
     local ps = lurek.particle.newSystem()
     ps:setSpin(-3, 3)
@@ -706,7 +706,7 @@ do
     print("spin = " .. min_spin .. ".." .. max_spin)
 end
 
---@api-stub: LParticleSystem:getSpin
+--@api: LParticleSystem:getSpin
 do
     local ps = lurek.particle.newSystem()
     ps:setSpin(-3, 3)
@@ -715,7 +715,7 @@ do
     print("spin = " .. min_spin .. ".." .. max_spin)
 end
 
---@api-stub: LParticleSystem:setSpinVariation
+--@api: LParticleSystem:setSpinVariation
 do
     local ps = lurek.particle.newSystem()
     ps:setSpinVariation(0.5)
@@ -723,7 +723,7 @@ do
     print("spin variation = " .. ps:getSpinVariation())
 end
 
---@api-stub: LParticleSystem:getSpinVariation
+--@api: LParticleSystem:getSpinVariation
 do
     local ps = lurek.particle.newSystem()
     ps:setSpinVariation(0.5)
@@ -731,7 +731,7 @@ do
     print("spin variation = " .. ps:getSpinVariation())
 end
 
---@api-stub: LParticleSystem:setRelativeRotation
+--@api: LParticleSystem:setRelativeRotation
 do
     local ps = lurek.particle.newSystem()
     ps:setRelativeRotation(true)
@@ -739,7 +739,7 @@ do
     print("relative rotation = " .. tostring(ps:hasRelativeRotation()))
 end
 
---@api-stub: LParticleSystem:hasRelativeRotation
+--@api: LParticleSystem:hasRelativeRotation
 do
     local ps = lurek.particle.newSystem()
     ps:setRelativeRotation(true)
@@ -747,7 +747,7 @@ do
     print("relative rotation = " .. tostring(ps:hasRelativeRotation()))
 end
 
---@api-stub: LParticleSystem:setInsertMode
+--@api: LParticleSystem:setInsertMode
 do
     local ps = lurek.particle.newSystem()
     ps:setInsertMode("top")
@@ -757,7 +757,7 @@ do
     print("mode = " .. ps:getInsertMode())
 end
 
---@api-stub: LParticleSystem:getInsertMode
+--@api: LParticleSystem:getInsertMode
 do
     local ps = lurek.particle.newSystem()
     ps:setInsertMode("bottom")
@@ -765,7 +765,7 @@ do
     print("mode = " .. ps:getInsertMode())
 end
 
---@api-stub: LParticleSystem:setOffset
+--@api: LParticleSystem:setOffset
 do
     local ps = lurek.particle.newSystem()
     ps:setOffset(16, 16)
@@ -774,7 +774,7 @@ do
     print("offset = " .. ox .. "," .. oy)
 end
 
---@api-stub: LParticleSystem:getOffset
+--@api: LParticleSystem:getOffset
 do
     local ps = lurek.particle.newSystem()
     ps:setOffset(16, 16)
@@ -783,7 +783,7 @@ do
     print("offset = " .. ox .. "," .. oy)
 end
 
---@api-stub: LParticleSystem:setShape
+--@api: LParticleSystem:setShape
 do
     local ps = lurek.particle.newSystem()
     ps:setShape("circle")
@@ -791,7 +791,7 @@ do
     print("shape = " .. ps:getShape())
 end
 
---@api-stub: LParticleSystem:getShape
+--@api: LParticleSystem:getShape
 do
     local ps = lurek.particle.newSystem()
     ps:setShape("circle")
@@ -799,7 +799,7 @@ do
     print("shape = " .. ps:getShape())
 end
 
---@api-stub: LParticleSystem:setFlipbook
+--@api: LParticleSystem:setFlipbook
 do
     local ps = lurek.particle.newSystem()
     ps:setFlipbook(4, 4, 12)
@@ -808,7 +808,7 @@ do
     print("flipbook = " .. cols .. "x" .. rows .. " @" .. fps .. "fps")
 end
 
---@api-stub: LParticleSystem:getFlipbook
+--@api: LParticleSystem:getFlipbook
 do
     local ps = lurek.particle.newSystem()
     ps:setFlipbook(4, 4, 12)
@@ -817,7 +817,7 @@ do
     print("flipbook = " .. cols .. "x" .. rows .. " @" .. fps .. "fps")
 end
 
---@api-stub: LParticleSystem:setBounds
+--@api: LParticleSystem:setBounds
 do
     local ps = lurek.particle.newSystem()
     ps:setBounds(0, 800, 0, 600, 0.5)
@@ -827,7 +827,7 @@ do
     print("bounds cleared")
 end
 
---@api-stub: LParticleSystem:clearBounds
+--@api: LParticleSystem:clearBounds
 do
     local ps = lurek.particle.newSystem()
     ps:setBounds(0, 800, 0, 600, 0.5)
@@ -837,7 +837,7 @@ do
     print("bounds cleared")
 end
 
---@api-stub: LParticleSystem:setCustomEmissionShape
+--@api: LParticleSystem:setCustomEmissionShape
 do
     local ps = lurek.particle.newSystem()
     local step = 0
@@ -854,7 +854,7 @@ do
     print("custom shape emitted = " .. ps:count())
 end
 
---@api-stub: LParticleSystem:setOnDeathBatch
+--@api: LParticleSystem:setOnDeathBatch
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 64,
@@ -873,7 +873,7 @@ do
     print("deaths = " .. death_count)
 end
 
---@api-stub: LParticleSystem:drawToImage
+--@api: LParticleSystem:drawToImage
 do
     local ps = lurek.particle.newPreset("sparks")
     ps:setPosition(64, 64)
@@ -884,7 +884,7 @@ do
     print("drawToImage type = " .. image:type())
 end
 
---@api-stub: LParticleSystem:toImage
+--@api: LParticleSystem:toImage
 do
     local ps = lurek.particle.newPreset("sparks")
     ps:setPosition(64, 64)
@@ -895,7 +895,7 @@ do
     print("toImage type = " .. image:type())
 end
 
---@api-stub: LParticleSystem:drawExplosionToImage
+--@api: LParticleSystem:drawExplosionToImage
 do
     local ps = lurek.particle.newPreset("fire")
     ps:setPosition(64, 64)
@@ -907,7 +907,7 @@ do
     print("explosion width = " .. image:getWidth())
 end
 
---@api-stub: LParticleSystem:drawRainToImage
+--@api: LParticleSystem:drawRainToImage
 do
     local ps = lurek.particle.newPreset("rain")
     ps:setPosition(64, 64)
@@ -919,7 +919,7 @@ do
     print("rain height = " .. image:getHeight())
 end
 
---@api-stub: LParticleSystem:drawSparkTrailToImage
+--@api: LParticleSystem:drawSparkTrailToImage
 do
     local ps = lurek.particle.newPreset("sparks")
     ps:setPosition(64, 64)
@@ -931,7 +931,7 @@ do
     print("spark width = " .. image:getWidth())
 end
 
---@api-stub: LParticleSystem:drawOverImage
+--@api: LParticleSystem:drawOverImage
 do
     local ps = lurek.particle.newPreset("sparks")
     ps:setPosition(64, 64)
@@ -945,7 +945,7 @@ do
     print("overlay width = " .. over:getWidth())
 end
 
---@api-stub: LParticleSystem:paintOnto
+--@api: LParticleSystem:paintOnto
 do
     local ps = lurek.particle.newPreset("fire")
     ps:setPosition(32, 32)
@@ -958,7 +958,7 @@ do
     print("paint target height = " .. image:getHeight())
 end
 
---@api-stub: lurek.particle.drawLifecycleToImage
+--@api: lurek.particle.drawLifecycleToImage
 do
     local snapshots = {
         { 0, 0 },
@@ -970,7 +970,7 @@ do
     print("lifecycle width = " .. image:getWidth())
 end
 
---@api-stub: lurek.particle.newTrail
+--@api: lurek.particle.newTrail
 do
     local trail = lurek.particle.newTrail(2.0, 8)
 
@@ -978,7 +978,7 @@ do
     print("lifetime = " .. trail:getLifetime())
 end
 
---@api-stub: LTrail:pushPoint
+--@api: LTrail:pushPoint
 do
     local trail = lurek.particle.newTrail(3.0, 5)
     trail:pushPoint(0, 0)
@@ -989,7 +989,7 @@ do
     print("points = " .. trail:getPointCount())
 end
 
---@api-stub: LTrail:getPointCount
+--@api: LTrail:getPointCount
 do
     local trail = lurek.particle.newTrail(3.0, 5)
     trail:pushPoint(0, 0)
@@ -1000,7 +1000,7 @@ do
     print("points = " .. trail:getPointCount())
 end
 
---@api-stub: LTrail:clear
+--@api: LTrail:clear
 do
     local trail = lurek.particle.newTrail(3.0, 5)
     trail:pushPoint(0, 0)
@@ -1012,7 +1012,7 @@ do
     print("after clear = " .. trail:getPointCount())
 end
 
---@api-stub: LTrail:update
+--@api: LTrail:update
 do
     local trail = lurek.particle.newTrail(3.0, 5)
     trail:pushPoint(0, 0)
@@ -1023,7 +1023,7 @@ do
     print("after update = " .. trail:getPointCount())
 end
 
---@api-stub: LTrail:setWidth
+--@api: LTrail:setWidth
 do
     local trail = lurek.particle.newTrail(1.0, 4)
     trail:setWidth(10, 2)
@@ -1032,7 +1032,7 @@ do
     print("width = " .. start_width .. " -> " .. end_width)
 end
 
---@api-stub: LTrail:getWidth
+--@api: LTrail:getWidth
 do
     local trail = lurek.particle.newTrail(1.0, 4)
     trail:setWidth(10, 2)
@@ -1041,7 +1041,7 @@ do
     print("width = " .. start_width .. " -> " .. end_width)
 end
 
---@api-stub: LTrail:setLifetime
+--@api: LTrail:setLifetime
 do
     local trail = lurek.particle.newTrail(1.0, 4)
     trail:setLifetime(5.0)
@@ -1049,7 +1049,7 @@ do
     print("lifetime = " .. trail:getLifetime())
 end
 
---@api-stub: LTrail:getLifetime
+--@api: LTrail:getLifetime
 do
     local trail = lurek.particle.newTrail(1.0, 4)
     trail:setLifetime(5.0)
@@ -1057,7 +1057,7 @@ do
     print("lifetime = " .. trail:getLifetime())
 end
 
---@api-stub: LTrail:setHeadColor
+--@api: LTrail:setHeadColor
 do
     local trail = lurek.particle.newTrail(2.0, 6)
     trail:setHeadColor(1, 1, 0, 1)
@@ -1067,7 +1067,7 @@ do
     print("points = " .. trail:getPointCount())
 end
 
---@api-stub: LTrail:setTailColor
+--@api: LTrail:setTailColor
 do
     local trail = lurek.particle.newTrail(2.0, 6)
     trail:setTailColor(1, 0, 0, 0)
@@ -1077,7 +1077,7 @@ do
     print("points = " .. trail:getPointCount())
 end
 
---@api-stub: LTrail:setMinDistance
+--@api: LTrail:setMinDistance
 do
     local trail = lurek.particle.newTrail(2.0, 6)
     trail:setMinDistance(3)
@@ -1088,7 +1088,7 @@ do
     print("points = " .. trail:getPointCount())
 end
 
---@api-stub: LTrail:drawToImage
+--@api: LTrail:drawToImage
 do
     local trail = lurek.particle.newTrail(1.0, 4)
     trail:pushPoint(0, 0)
@@ -1098,7 +1098,7 @@ do
     print("trail image type = " .. image:type())
 end
 
---@api-stub: LTrail:typeOf
+--@api: LTrail:typeOf
 do
     local trail = lurek.particle.newTrail(1.0, 4)
 
@@ -1108,7 +1108,7 @@ end
 
 --- Particle Module Part 3: physics collision, trail type
 
---@api-stub: LParticleSystem:clearCollidesWithPhysics
+--@api: LParticleSystem:clearCollidesWithPhysics
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 200,
@@ -1122,7 +1122,7 @@ do
     print("has collisions = " .. tostring(ps:hasCollidesWithPhysics()))
 end
 
---@api-stub: LParticleSystem:hasCollidesWithPhysics
+--@api: LParticleSystem:hasCollidesWithPhysics
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 200,
@@ -1134,7 +1134,7 @@ do
     print("has collisions = " .. tostring(ps:hasCollidesWithPhysics()))
 end
 
---@api-stub: LParticleSystem:setCollidesWithPhysics
+--@api: LParticleSystem:setCollidesWithPhysics
 do
     local ps = lurek.particle.newSystem({
         maxParticles = 200,
@@ -1146,14 +1146,23 @@ do
     print("has collisions = " .. tostring(ps:hasCollidesWithPhysics()))
 end
 
---@api-stub: LTrail:type
+--@api: LTrail:type
 do
     local trail = lurek.particle.newTrail(1.5, 8.0)
 
     print("type = " .. trail:type())
 end
 
---@api-stub: LParticleSystem:getStats
+--@api: LParticleSystem:getStats
 do
+    local ps = lurek.particle.newSystem({ emissionRate = 40, maxParticles = 32, lifetimeMin = 2.0, lifetimeMax = 2.0 })
+    ps:addAttractor(32, 32, 80, 64)
+    ps:setBounds(64, -64, 48, -48, 0.5)
+    ps:emit(6)
+    ps:update(0.1)
+    local stats = ps:getStats()
+
+    print("live_particles = " .. tostring(stats.live_particles))
+    print("state = " .. tostring(stats.state))
 end
 

@@ -4,66 +4,66 @@
 
 --- Compute Module Part 1: Array Creation, Element Access, Shape, Arithmetic, Comparisons
 
---@api-stub: lurek.compute.newArray
+--@api: lurek.compute.newArray
 do
     local a = lurek.compute.newArray({4, 4}, "float32")
     print("new 4x4 array, size = " .. a:getSize())
     print("dimensions = " .. a:getDimensions())
 end
 
---@api-stub: lurek.compute.zeros
+--@api: lurek.compute.zeros
 do
     local z = lurek.compute.zeros({3, 3})
     print("zeros 3x3, val[1,1] = " .. z:get(1, 1))
 end
 
---@api-stub: lurek.compute.ones
+--@api: lurek.compute.ones
 do
     local o = lurek.compute.ones({2, 5}, "float32")
     print("ones 2x5, val[1,3] = " .. o:get(1, 3))
 end
 
---@api-stub: lurek.compute.range
+--@api: lurek.compute.range
 do
     local r = lurek.compute.range(0, 10, 2, "float32")
     print("range 0..10 step 2, size = " .. r:getSize())
     print("last value = " .. r:get(5))
 end
 
---@api-stub: lurek.compute.fromTable
+--@api: lurek.compute.fromTable
 do
     local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {2, 3})
     print("fromTable 2x3, val[2,1] = " .. a:get(2, 1))
 end
 
---@api-stub: lurek.compute.gaussianKernel
+--@api: lurek.compute.gaussianKernel
 do
     local k = lurek.compute.gaussianKernel(5, 1.0)
     print("gaussian 5x5, center = " .. k:get(3, 3))
     print("kernel size = " .. k:getSize())
 end
 
---@api-stub: lurek.compute.rotate2dMatrix
+--@api: lurek.compute.rotate2dMatrix
 do
     local m = lurek.compute.rotate2dMatrix(math.pi / 4)
     print("rotation 45 deg, [1,1] = " .. m:get(1, 1))
     print("rotation 45 deg, [1,2] = " .. m:get(1, 2))
 end
 
---@api-stub: lurek.compute.affine2d
+--@api: lurek.compute.affine2d
 do
     local m = lurek.compute.affine2d(10, 20, 0, 1, 1)
     print("affine tx=10 ty=20, [1,3] = " .. m:get(1, 3))
 end
 
---@api-stub: lurek.compute.fft
+--@api: lurek.compute.fft
 do
     local freqs = lurek.compute.fft({1, 0, -1, 0})
     print("fft result count = " .. #freqs)
     print("first bin re = " .. tostring(freqs[1].re) .. " im = " .. tostring(freqs[1].im))
 end
 
---@api-stub: lurek.compute.ifft
+--@api: lurek.compute.ifft
 do
     local freqs = lurek.compute.fft({1, 0, -1, 0})
     local samples = lurek.compute.ifft(freqs)
@@ -71,79 +71,79 @@ do
     print("sample[1] = " .. tostring(samples[1]))
 end
 
---@api-stub: lurek.compute.fftMagnitude
+--@api: lurek.compute.fftMagnitude
 do
     local mags = lurek.compute.fftMagnitude({1, 0, -1, 0})
     print("magnitudes count = " .. #mags)
     print("magnitude[1] = " .. tostring(mags[1]))
 end
 
---@api-stub: lurek.compute.getParThreshold
+--@api: lurek.compute.getParThreshold
 do
     local t = lurek.compute.getParThreshold()
     print("par threshold = " .. t)
 end
 
---@api-stub: lurek.compute.setParThreshold
+--@api: lurek.compute.setParThreshold
 do
     local prev = lurek.compute.setParThreshold(1024)
     print("prev threshold = " .. prev)
     print("current threshold = " .. lurek.compute.getParThreshold())
 end
 
---@api-stub: LArray:getShape
+--@api: LArray:getShape
 do
     local a = lurek.compute.newArray({3, 4})
     local shape = a:getShape()
     print("shape = " .. shape[1] .. "x" .. shape[2])
 end
 
---@api-stub: LArray:getDimensions
+--@api: LArray:getDimensions
 do
     local a = lurek.compute.newArray({2, 3, 4})
     print("dims = " .. a:getDimensions())
     print("size = " .. a:getSize())
 end
 
---@api-stub: LArray:getSize
+--@api: LArray:getSize
 do
     local a = lurek.compute.newArray({5, 5})
     print("size = " .. a:getSize())
 end
 
---@api-stub: LArray:getDataType
+--@api: LArray:getDataType
 do
     local a = lurek.compute.newArray({2, 2}, "float32")
     print("dtype = " .. a:getDataType())
 end
 
---@api-stub: LArray:isOnGPU
+--@api: LArray:isOnGPU
 do
     local a = lurek.compute.ones({4, 4})
     print("on GPU = " .. tostring(a:isOnGPU()))
 end
 
---@api-stub: LArray:get
+--@api: LArray:get
 do
     local a = lurek.compute.fromTable({10, 20, 30, 40}, {2, 2})
     print("a[1,2] = " .. a:get(1, 2))
 end
 
---@api-stub: LArray:set
+--@api: LArray:set
 do
     local a = lurek.compute.zeros({3, 3})
     a:set(2, 2, 99)
     print("a[2,2] = " .. a:get(2, 2))
 end
 
---@api-stub: LArray:toTable
+--@api: LArray:toTable
 do
     local a = lurek.compute.fromTable({1, 2, 3}, {3})
     local t = a:toTable()
     print("table = " .. t[1] .. "," .. t[2] .. "," .. t[3])
 end
 
---@api-stub: LArray:reshape
+--@api: LArray:reshape
 do
     local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {6})
     local b = a:reshape({2, 3})
@@ -151,7 +151,7 @@ do
     print("reshaped[2,3] = " .. b:get(2, 3))
 end
 
---@api-stub: LArray:clone
+--@api: LArray:clone
 do
     local a = lurek.compute.ones({3, 3})
     local b = a:clone()
@@ -159,7 +159,7 @@ do
     print("original[1,1] = " .. a:get(1, 1) .. " clone[1,1] = " .. b:get(1, 1))
 end
 
---@api-stub: LArray:transpose
+--@api: LArray:transpose
 do
     local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {2, 3})
     local t = a:transpose()
@@ -167,14 +167,14 @@ do
     print("transposed shape = " .. shape[1] .. "x" .. shape[2])
 end
 
---@api-stub: LArray:fill
+--@api: LArray:fill
 do
     local a = lurek.compute.newArray({3, 3})
     a:fill(7)
     print("filled[2,2] = " .. a:get(2, 2))
 end
 
---@api-stub: LArray:addInplace
+--@api: LArray:addInplace
 do
     local a = lurek.compute.ones({3, 3})
     local b = lurek.compute.ones({3, 3})
@@ -183,7 +183,7 @@ do
     print("after addInplace[3,3] = " .. a:get(3, 3))
 end
 
---@api-stub: LArray:subInplace
+--@api: LArray:subInplace
 do
     local a = lurek.compute.fromTable({5, 5, 5, 5}, {2, 2})
     local b = lurek.compute.ones({2, 2})
@@ -191,7 +191,7 @@ do
     print("after subInplace[1,1] = " .. a:get(1, 1))
 end
 
---@api-stub: LArray:mulInplace
+--@api: LArray:mulInplace
 do
     local a = lurek.compute.fromTable({2, 3, 4, 5}, {2, 2})
     local b = lurek.compute.fromTable({10, 10, 10, 10}, {2, 2})
@@ -199,7 +199,7 @@ do
     print("after mulInplace[1,1] = " .. a:get(1, 1))
 end
 
---@api-stub: LArray:divInplace
+--@api: LArray:divInplace
 do
     local a = lurek.compute.fromTable({10, 20, 30, 40}, {2, 2})
     local b = lurek.compute.fromTable({2, 4, 5, 8}, {2, 2})
@@ -207,119 +207,119 @@ do
     print("after divInplace[1,1] = " .. a:get(1, 1))
 end
 
---@api-stub: LArray:add
+--@api: LArray:add
 do
     local a = lurek.compute.fromTable({1, 2, 3}, {3})
     local b = a:add(10)
     print("a + 10 → [1] = " .. b:get(1))
 end
 
---@api-stub: LArray:sub
+--@api: LArray:sub
 do
     local a = lurek.compute.fromTable({10, 20, 30}, {3})
     local b = a:sub(5)
     print("a - 5 → [2] = " .. b:get(2))
 end
 
---@api-stub: LArray:mul
+--@api: LArray:mul
 do
     local a = lurek.compute.fromTable({2, 3, 4}, {3})
     local b = a:mul(3)
     print("a * 3 → [3] = " .. b:get(3))
 end
 
---@api-stub: LArray:div
+--@api: LArray:div
 do
     local a = lurek.compute.fromTable({10, 20, 30}, {3})
     local b = a:div(10)
     print("a / 10 → [1] = " .. b:get(1))
 end
 
---@api-stub: LArray:pow
+--@api: LArray:pow
 do
     local a = lurek.compute.fromTable({2, 3, 4}, {3})
     local b = a:pow(2)
     print("a^2 → [2] = " .. b:get(2))
 end
 
---@api-stub: LArray:sqrt
+--@api: LArray:sqrt
 do
     local a = lurek.compute.fromTable({4, 9, 16}, {3})
     local b = a:sqrt()
     print("sqrt → [1] = " .. b:get(1))
 end
 
---@api-stub: LArray:abs
+--@api: LArray:abs
 do
     local a = lurek.compute.fromTable({-3, -1, 2}, {3})
     local b = a:abs()
     print("abs → [1] = " .. b:get(1))
 end
 
---@api-stub: LArray:neg
+--@api: LArray:neg
 do
     local a = lurek.compute.fromTable({5, -3, 0}, {3})
     local b = a:neg()
     print("neg → [1] = " .. b:get(1))
 end
 
---@api-stub: LArray:clamp
+--@api: LArray:clamp
 do
     local a = lurek.compute.fromTable({-5, 0, 3, 10, 15}, {5})
     local b = a:clamp(0, 10)
     print("clamp(0,10) → [1]=" .. b:get(1) .. " [5]=" .. b:get(5))
 end
 
---@api-stub: LArray:eq
+--@api: LArray:eq
 do
     local a = lurek.compute.fromTable({1, 2, 3, 2, 1}, {5})
     local mask = a:eq(2)
     print("eq(2) → [2] = " .. mask:get(2))
 end
 
---@api-stub: LArray:neq
+--@api: LArray:neq
 do
     local a = lurek.compute.fromTable({1, 2, 3}, {3})
     local mask = a:neq(2)
     print("neq(2) → [1] = " .. mask:get(1))
 end
 
---@api-stub: LArray:gt
+--@api: LArray:gt
 do
     local a = lurek.compute.fromTable({1, 5, 10}, {3})
     local mask = a:gt(4)
     print("gt(4) → [2] = " .. mask:get(2))
 end
 
---@api-stub: LArray:lt
+--@api: LArray:lt
 do
     local a = lurek.compute.fromTable({1, 5, 10}, {3})
     local mask = a:lt(6)
     print("lt(6) → [3] = " .. mask:get(3))
 end
 
---@api-stub: LArray:gte
+--@api: LArray:gte
 do
     local a = lurek.compute.fromTable({1, 5, 10}, {3})
     local mask = a:gte(5)
     print("gte(5) → [2] = " .. mask:get(2))
 end
 
---@api-stub: LArray:lte
+--@api: LArray:lte
 do
     local a = lurek.compute.fromTable({1, 5, 10}, {3})
     local mask = a:lte(5)
     print("lte(5) → [2] = " .. mask:get(2))
 end
 
---@api-stub: LArray:threshold
+--@api: LArray:threshold
 do
     local a = lurek.compute.fromTable({0.1, 0.5, 0.9}, {3})
     local mask = a:threshold(0.4)
     print("threshold(0.4) → [1]=" .. mask:get(1) .. " [3]=" .. mask:get(3))
 end
 
---@api-stub: LArray:where
+--@api: LArray:where
 do
     local a = lurek.compute.fromTable({10, 20, 30}, {3})
     local b = lurek.compute.fromTable({-1, -2, -3}, {3})
@@ -329,25 +329,25 @@ do
     print("where → [3]=" .. result:get(3))
 end
 
---@api-stub: LArray:countNonZero
+--@api: LArray:countNonZero
 do
     local a = lurek.compute.fromTable({0, 1, 0, 2, 3}, {5})
     print("nonzero count = " .. a:countNonZero())
 end
 
---@api-stub: LArray:argmin
+--@api: LArray:argmin
 do
     local a = lurek.compute.fromTable({5, 1, 8, 3}, {4})
     print("argmin = " .. a:argmin())
 end
 
---@api-stub: LArray:argmax
+--@api: LArray:argmax
 do
     local a = lurek.compute.fromTable({5, 1, 8, 3}, {4})
     print("argmax = " .. a:argmax())
 end
 
---@api-stub: LArray:any
+--@api: LArray:any
 do
     local a = lurek.compute.fromTable({0, 0, 1}, {3})
     print("any = " .. tostring(a:any()))
@@ -356,38 +356,38 @@ end
 
 --- Compute Module Part 2: Reduction, Linear Algebra, Morphology, Statistics, Functional
 
---@api-stub: LArray:all
+--@api: LArray:all
 do
     local a = lurek.compute.fromTable({1, 2, 3}, {3})
     print("all nonzero = " .. tostring(a:all()))
 end
 
---@api-stub: LArray:sum
+--@api: LArray:sum
 do
     local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
     print("sum = " .. a:sum())
     print("mean = " .. a:mean())
 end
 
---@api-stub: LArray:mean
+--@api: LArray:mean
 do
     local a = lurek.compute.fromTable({2, 4, 6, 8}, {4})
     print("mean = " .. a:mean())
 end
 
---@api-stub: LArray:min
+--@api: LArray:min
 do
     local a = lurek.compute.fromTable({7, 2, 9, 1}, {4})
     print("min = " .. a:min())
 end
 
---@api-stub: LArray:max
+--@api: LArray:max
 do
     local a = lurek.compute.fromTable({7, 2, 9, 1}, {4})
     print("max = " .. a:max())
 end
 
---@api-stub: LArray:matmul
+--@api: LArray:matmul
 do
     local a = lurek.compute.fromTable({1, 2, 3, 4}, {2, 2})
     local b = lurek.compute.fromTable({5, 6, 7, 8}, {2, 2})
@@ -396,14 +396,14 @@ do
     print("matmul[2,2] = " .. c:get(2, 2))
 end
 
---@api-stub: LArray:dot
+--@api: LArray:dot
 do
     local a = lurek.compute.fromTable({1, 2, 3}, {3})
     local b = lurek.compute.fromTable({4, 5, 6}, {3})
     print("dot = " .. a:dot(b))
 end
 
---@api-stub: LArray:bitwiseAnd
+--@api: LArray:bitwiseAnd
 do
     local a = lurek.compute.fromTable({0xFF, 0x0F, 0xAA}, {3}, "int32")
     local b = lurek.compute.fromTable({0x0F, 0x0F, 0x55}, {3}, "int32")
@@ -411,7 +411,7 @@ do
     print("AND[1] = " .. c:get(1))
 end
 
---@api-stub: LArray:bitwiseOr
+--@api: LArray:bitwiseOr
 do
     local a = lurek.compute.fromTable({0xF0, 0x0F}, {2}, "int32")
     local b = lurek.compute.fromTable({0x0F, 0xF0}, {2}, "int32")
@@ -419,7 +419,7 @@ do
     print("OR[1] = " .. c:get(1))
 end
 
---@api-stub: LArray:bitwiseXor
+--@api: LArray:bitwiseXor
 do
     local a = lurek.compute.fromTable({0xFF, 0x00}, {2}, "int32")
     local b = lurek.compute.fromTable({0x0F, 0x0F}, {2}, "int32")
@@ -427,28 +427,28 @@ do
     print("XOR[1] = " .. c:get(1))
 end
 
---@api-stub: LArray:bitwiseNot
+--@api: LArray:bitwiseNot
 do
     local a = lurek.compute.fromTable({0, 255}, {2}, "int32")
     local c = a:bitwiseNot()
     print("NOT[1] = " .. c:get(1))
 end
 
---@api-stub: LArray:bitwiseLShift
+--@api: LArray:bitwiseLShift
 do
     local a = lurek.compute.fromTable({1, 2, 4}, {3}, "int32")
     local c = a:bitwiseLShift(2)
     print("lshift(2)[1] = " .. c:get(1))
 end
 
---@api-stub: LArray:bitwiseRShift
+--@api: LArray:bitwiseRShift
 do
     local a = lurek.compute.fromTable({8, 16, 32}, {3}, "int32")
     local c = a:bitwiseRShift(2)
     print("rshift(2)[1] = " .. c:get(1))
 end
 
---@api-stub: LArray:convolve2D
+--@api: LArray:convolve2D
 do
     local img = lurek.compute.zeros({5, 5})
     img:set(3, 3, 1)
@@ -458,7 +458,7 @@ do
     print("conv neighbor = " .. result:get(3, 2))
 end
 
---@api-stub: LArray:dilate
+--@api: LArray:dilate
 do
     local a = lurek.compute.zeros({5, 5})
     a:set(3, 3, 1)
@@ -466,7 +466,7 @@ do
     print("dilated[2,3] = " .. d:get(2, 3))
 end
 
---@api-stub: LArray:erode
+--@api: LArray:erode
 do
     local a = lurek.compute.ones({5, 5})
     a:set(1, 1, 0)
@@ -474,7 +474,7 @@ do
     print("eroded[2,2] = " .. e:get(2, 2))
 end
 
---@api-stub: LArray:floodFill
+--@api: LArray:floodFill
 do
     local a = lurek.compute.zeros({5, 5})
     a:set(1, 1, 1)
@@ -483,7 +483,7 @@ do
     print("flood[1,2] = " .. filled:get(1, 2))
 end
 
---@api-stub: LArray:getRegion
+--@api: LArray:getRegion
 do
     local a = lurek.compute.range(1, 17, 1)
     local m = a:reshape({4, 4})
@@ -491,7 +491,7 @@ do
     print("region[1,1] = " .. region:get(1, 1))
 end
 
---@api-stub: LArray:setRegion
+--@api: LArray:setRegion
 do
     local a = lurek.compute.zeros({4, 4})
     local patch = lurek.compute.ones({2, 2})
@@ -499,21 +499,21 @@ do
     print("after setRegion[2,2] = " .. a:get(2, 2))
 end
 
---@api-stub: LArray:cumsum
+--@api: LArray:cumsum
 do
     local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
     local cs = a:cumsum()
     print("cumsum[4] = " .. cs:get(4))
 end
 
---@api-stub: LArray:diff
+--@api: LArray:diff
 do
     local a = lurek.compute.fromTable({1, 3, 6, 10}, {4})
     local d = a:diff()
     print("diff[1] = " .. d:get(1))
 end
 
---@api-stub: LArray:histogram
+--@api: LArray:histogram
 do
     local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6, 7, 8}, {8})
     local bins = a:histogram(4)
@@ -521,42 +521,42 @@ do
     print("first bin count = " .. tostring(bins[1].count))
 end
 
---@api-stub: LArray:percentile
+--@api: LArray:percentile
 do
     local a = lurek.compute.range(1, 100, 1)
     local p50 = a:percentile(50)
     print("p50 = " .. p50)
 end
 
---@api-stub: LArray:covariance
+--@api: LArray:covariance
 do
     local a = lurek.compute.fromTable({1, 2, 3, 4, 5}, {5})
     local b = lurek.compute.fromTable({2, 4, 6, 8, 10}, {5})
     print("covariance = " .. a:covariance(b))
 end
 
---@api-stub: LArray:pearsonCorr
+--@api: LArray:pearsonCorr
 do
     local a = lurek.compute.fromTable({1, 2, 3, 4, 5}, {5})
     local b = lurek.compute.fromTable({2, 4, 6, 8, 10}, {5})
     print("pearson = " .. a:pearsonCorr(b))
 end
 
---@api-stub: LArray:normalizeRange
+--@api: LArray:normalizeRange
 do
     local a = lurek.compute.fromTable({0, 50, 100}, {3})
     local n = a:normalizeRange(0, 1)
     print("normalized[2] = " .. n:get(2))
 end
 
---@api-stub: LArray:zscore
+--@api: LArray:zscore
 do
     local a = lurek.compute.fromTable({2, 4, 4, 4, 5, 5, 7, 9}, {8})
     local z = a:zscore()
     print("zscore[1] = " .. z:get(1))
 end
 
---@api-stub: LArray:convolve1d
+--@api: LArray:convolve1d
 do
     local signal = lurek.compute.fromTable({0, 1, 2, 3, 4}, {5})
     local kernel = lurek.compute.fromTable({1, 0, -1}, {3})
@@ -564,7 +564,7 @@ do
     print("conv1d size = " .. c:getSize())
 end
 
---@api-stub: LArray:correlate1d
+--@api: LArray:correlate1d
 do
     local signal = lurek.compute.fromTable({0, 0, 1, 0, 0}, {5})
     local templ = lurek.compute.fromTable({1}, {1})
@@ -572,7 +572,7 @@ do
     print("corr peak at [3] = " .. c:get(3))
 end
 
---@api-stub: LArray:normalizeVec
+--@api: LArray:normalizeVec
 do
     local v = lurek.compute.fromTable({3, 4}, {2})
     local n = v:normalizeVec()
@@ -580,7 +580,7 @@ do
     print("normalized[2] = " .. n:get(2))
 end
 
---@api-stub: LArray:outer
+--@api: LArray:outer
 do
     local a = lurek.compute.fromTable({1, 2, 3}, {3})
     local b = lurek.compute.fromTable({4, 5}, {2})
@@ -588,14 +588,14 @@ do
     print("outer[1,2] = " .. o:get(1, 2))
 end
 
---@api-stub: LArray:cross2d
+--@api: LArray:cross2d
 do
     local a = lurek.compute.fromTable({1, 0}, {2})
     local b = lurek.compute.fromTable({0, 1}, {2})
     print("cross2d = " .. a:cross2d(b))
 end
 
---@api-stub: LArray:transformPoints
+--@api: LArray:transformPoints
 do
     local m = lurek.compute.affine2d(10, 20, 0, 1, 1)
     local pts = lurek.compute.fromTable({0, 0, 5, 5}, {2, 2})
@@ -603,7 +603,7 @@ do
     print("transformed[1,1] = " .. result:get(1, 1))
 end
 
---@api-stub: LArray:sobel
+--@api: LArray:sobel
 do
     local img = lurek.compute.zeros({5, 5})
     img:set(3, 3, 1)
@@ -612,7 +612,7 @@ do
     print("gy size = " .. grad.gy:getSize())
 end
 
---@api-stub: LArray:linsolve
+--@api: LArray:linsolve
 do
     local a = lurek.compute.fromTable({2, 1, 5, 7}, {2, 2})
     local b = lurek.compute.fromTable({11, 13}, {2})
@@ -620,7 +620,7 @@ do
     print("x[1] = " .. x:get(1))
 end
 
---@api-stub: LArray:luDecompose
+--@api: LArray:luDecompose
 do
     local a = lurek.compute.fromTable({4, 3, 6, 3}, {2, 2})
     local lu = a:luDecompose()
@@ -628,7 +628,7 @@ do
     print("perm[1] = " .. tostring(lu.perm[1]))
 end
 
---@api-stub: LArray:eigenPower
+--@api: LArray:eigenPower
 do
     local a = lurek.compute.fromTable({2, 1, 1, 2}, {2, 2})
     local result = a:eigenPower(100, 1e-6)
@@ -636,28 +636,28 @@ do
     print("eigenvector[1] = " .. tostring(result.vector[1]))
 end
 
---@api-stub: LArray:map
+--@api: LArray:map
 do
     local a = lurek.compute.fromTable({1, 4, 9}, {3})
     local b = a:map(function(x) return x * 2 end)
     print("mapped[2] = " .. b:get(2))
 end
 
---@api-stub: LArray:eval
+--@api: LArray:eval
 do
     local a = lurek.compute.fromTable({1, 2, 3}, {3})
     local b = a:eval("x * x + 1")
     print("eval[2] = " .. b:get(2))
 end
 
---@api-stub: LArray:reduce
+--@api: LArray:reduce
 do
     local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
     local total = a:reduce(function(acc, v) return acc + v end, 0)
     print("reduce sum = " .. total)
 end
 
---@api-stub: LArray:scan
+--@api: LArray:scan
 do
     local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
     local s = a:scan(function(acc, v) return acc + v end, 0)
@@ -665,13 +665,13 @@ do
     print("scan[2] = " .. s:get(2))
 end
 
---@api-stub: LArray:type
+--@api: LArray:type
 do
     local a = lurek.compute.ones({2, 2})
     print("type = " .. a:type())
 end
 
---@api-stub: LArray:typeOf
+--@api: LArray:typeOf
 do
     local a = lurek.compute.ones({2, 2})
     print("is LArray = " .. tostring(a:typeOf("LArray")))

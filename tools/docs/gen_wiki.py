@@ -474,12 +474,12 @@ def extract_lua_block(lines: list[str], start: int, max_lines: int = 48) -> str:
 
 def snippet_around(lines: list[str], index: int, max_lines: int = 18) -> str:
     start = max(0, index - 4)
-    while start > 0 and lines[start].strip() and not lines[start].strip().startswith("--@api-stub"):
+    while start > 0 and lines[start].strip() and not re.match(r"--@api(?:-stub)?", lines[start].strip()):
         if index - start >= 6:
             break
         start -= 1
     selected = lines[start:min(len(lines), start + max_lines)]
-    while selected and selected[0].strip().startswith("--@api-stub"):
+    while selected and re.match(r"--@api(?:-stub)?", selected[0].strip()):
         selected.pop(0)
     while selected and not selected[0].strip():
         selected.pop(0)
@@ -553,7 +553,7 @@ def build_example_indexes(examples: list[ExampleInfo]) -> tuple[dict[str, Exampl
 
         pending_targets: list[str] = []
         for index, line in enumerate(lines):
-            stub_match = re.search(r"--@api-stub:\s*([^\s]+)", line)
+            stub_match = re.search(r"--@api(?:-stub)?:\s*([^\s]+)", line)
             if stub_match:
                 pending_targets = [stub_match.group(1)]
                 continue

@@ -1,4 +1,9 @@
 //! File: src/lua_api/i18n_api.rs
+//! Module API documentation
+//!
+//! TODO: add doc note 1
+//! TODO: add doc note 2
+//! TODO: add doc note 3
 
 use crate::i18n::format::{format_date, format_number, locale_separators};
 use crate::i18n::{

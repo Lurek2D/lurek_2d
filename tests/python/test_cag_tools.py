@@ -188,9 +188,9 @@ class _CagFixture:
         (self.gh / "agents").mkdir(parents=True)
         (self.gh / "skills").mkdir(parents=True)
         (self.gh / "prompts").mkdir(parents=True)
-        # stub a fake tools/ tree so loads_tools resolves.
+        # create a fake tools/ tree so loads_tools resolves.
         (self.root / "tools" / "validate").mkdir(parents=True)
-        (self.root / "tools" / "validate" / "cag_validate.py").write_text("# stub\n",
+        (self.root / "tools" / "validate" / "cag_validate.py").write_text("# fake\n",
                                                                           encoding="utf-8")
 
     def add_skill(self, name: str, body: str = VALID_SKILL) -> Path:

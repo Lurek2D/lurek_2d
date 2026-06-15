@@ -161,6 +161,7 @@ Ta lista jest generowana ręcznie przez agenta i grupuje wszystkie gry według k
 | deckbuilder | Slay-the-Spire-style turn-based card battler. Build your deck as you climb three floors. | [Otworz folder](./strategy/deckbuilder) | ![](./strategy/deckbuilder/screen.png) |
 | eu2 | Playable grand-strategy province slice with semi-historical countries, campaign time, economy, armies, map modes, and AI movement. | [Otworz folder](./strategy/eu2) | ![](./strategy/eu2/screen.png) |
 | eu2_province_map | Render dema mapy prowincji (PNG 2000x900) w stylu EU2. | [Otworz folder](./strategy/eu2_province_map) | ![](./strategy/eu2_province_map/screen.png) |
+| hex_logistics | Real-time hex logistics prototype with ship-based construction, local building storage, and physical resource drones. | [Otworz folder](./strategy/hex_logistics) | ![](./strategy/hex_logistics/screen.png) |
 | hex_strategy | Turn-based hex-grid expansion game — claim territory, build cities, and accumulate resources over successive turns. | [Otworz folder](./strategy/hex_strategy) | ![](./strategy/hex_strategy/screen.png) |
 | logic_game | Robot programming puzzle — write a program of movement commands to guide your robot to the goal in limited steps. | [Otworz folder](./strategy/logic_game) | ![](./strategy/logic_game/screen.png) |
 | match3 | **Category:** strategy | [Otworz folder](./strategy/match3) | ![](./strategy/match3/screen.png) |

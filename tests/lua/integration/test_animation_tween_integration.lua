@@ -12,9 +12,9 @@ describe("animation + tween integration", function()
     -- @integration lurek.animation.new
     -- @integration lurek.tween.tween
     -- @integration lurek.tween.update
-    -- @covers lurek.animation.new
-    -- @covers lurek.tween.tween
-    -- @covers lurek.tween.update
+    -- @integration lurek.animation.new
+    -- @integration lurek.tween.tween
+    -- @integration lurek.tween.update
     it("animation plays frames while tween advances a value", function()
         local anim = lurek.animation.new()
         -- addFramesFromGrid(tex_w, tex_h, frame_w, frame_h, start, count)

@@ -5,7 +5,7 @@
 
 --- Pipeline Module Part 1: creating pipelines, steps, dependencies, running, results
 
---@api-stub: lurek.pipeline.newPipeline
+--@api: lurek.pipeline.newPipeline
 do
     local pipe = lurek.pipeline.newPipeline("build")
 
@@ -13,7 +13,7 @@ do
     print("step count = " .. pipe:getStepCount())
 end
 
---@api-stub: LPipeline:getName
+--@api: LPipeline:getName
 do
     local pipe = lurek.pipeline.newPipeline("build")
 
@@ -22,7 +22,7 @@ do
     print("name = " .. pipe:getName())
 end
 
---@api-stub: LPipeline:setName
+--@api: LPipeline:setName
 do
     local pipe = lurek.pipeline.newPipeline("build")
 
@@ -31,7 +31,7 @@ do
     print("renamed = " .. pipe:getName())
 end
 
---@api-stub: lurek.pipeline.newStep
+--@api: lurek.pipeline.newStep
 do
     local step = lurek.pipeline.newStep("compile", function(ctx)
         ctx.compiled = true
@@ -41,7 +41,7 @@ do
     print("type = " .. step:type())
 end
 
---@api-stub: LPipelineStep:getName
+--@api: LPipelineStep:getName
 do
     local step = lurek.pipeline.newStep("compile", function(ctx)
         ctx.compiled = true
@@ -50,7 +50,7 @@ do
     print("step name = " .. step:getName())
 end
 
---@api-stub: LPipeline:addStep
+--@api: LPipeline:addStep
 do
     local pipe = lurek.pipeline.newPipeline("hello")
     local greet = lurek.pipeline.newStep("greet", function(ctx)
@@ -70,7 +70,7 @@ do
     print("completed = " .. #result.completed)
 end
 
---@api-stub: LPipelineStep:dependsOn
+--@api: LPipelineStep:dependsOn
 do
     local fetch = lurek.pipeline.newStep("fetch", function(ctx)
         ctx.data = { 1, 2, 3 }
@@ -86,7 +86,7 @@ do
     print("first dep = " .. parse:getDependencies()[1])
 end
 
---@api-stub: LPipelineStep:getDependencies
+--@api: LPipelineStep:getDependencies
 do
     local report = lurek.pipeline.newStep("report", function(ctx)
         ctx.reported = ctx.total
@@ -100,7 +100,7 @@ do
     print("depends on = " .. deps[1])
 end
 
---@api-stub: LPipelineStep:getDependencyCount
+--@api: LPipelineStep:getDependencyCount
 do
     local parse = lurek.pipeline.newStep("parse", function(ctx)
         ctx.total = 6
@@ -111,7 +111,7 @@ do
     print("parse deps = " .. parse:getDependencyCount())
 end
 
---@api-stub: LPipeline:getResult
+--@api: LPipeline:getResult
 do
     local pipe = lurek.pipeline.newPipeline("results")
 
@@ -127,7 +127,7 @@ do
     print("completed = " .. table.concat(result.completed, ", "))
 end
 
---@api-stub: LPipeline:getStepCount
+--@api: LPipeline:getStepCount
 do
     local pipe = lurek.pipeline.newPipeline("query")
 
@@ -138,7 +138,7 @@ do
     print("step count = " .. pipe:getStepCount())
 end
 
---@api-stub: LPipeline:getSteps
+--@api: LPipeline:getSteps
 do
     local pipe = lurek.pipeline.newPipeline("query")
 
@@ -158,7 +158,7 @@ do
     print("has beta = " .. tostring(seen.beta == true))
 end
 
---@api-stub: LPipeline:getStep
+--@api: LPipeline:getStep
 do
     local pipe = lurek.pipeline.newPipeline("query")
 
@@ -170,7 +170,7 @@ do
     print("found = " .. (found and found:getName() or "nil"))
 end
 
---@api-stub: LPipeline:removeStep
+--@api: LPipeline:removeStep
 do
     local pipe = lurek.pipeline.newPipeline("remove")
 
@@ -184,7 +184,7 @@ do
     print("has b = " .. tostring(pipe:getStep("b") ~= nil))
 end
 
---@api-stub: LPipeline:clear
+--@api: LPipeline:clear
 do
     local pipe = lurek.pipeline.newPipeline("remove")
 
@@ -197,7 +197,7 @@ do
     print("after clear = " .. pipe:getStepCount())
 end
 
---@api-stub: LPipeline:getExecutionOrder
+--@api: LPipeline:getExecutionOrder
 do
     local pipe = lurek.pipeline.newPipeline("order")
     local load = lurek.pipeline.newStep("load", function() end)
@@ -216,7 +216,7 @@ do
     print(order and ("order = " .. table.concat(order, " -> ")) or ("error = " .. tostring(err)))
 end
 
---@api-stub: LPipeline:getParallelGroups
+--@api: LPipeline:getParallelGroups
 do
     local pipe = lurek.pipeline.newPipeline("parallel")
     local fetchUsers = lurek.pipeline.newStep("fetch_users", function() end)
@@ -237,7 +237,7 @@ do
     print("first tier size = " .. firstGroupSize)
 end
 
---@api-stub: LPipeline:validate
+--@api: LPipeline:validate
 do
     local pipe = lurek.pipeline.newPipeline("validate")
     local a = lurek.pipeline.newStep("a", function() end)
@@ -254,7 +254,7 @@ do
     print("error count = " .. #errors)
 end
 
---@api-stub: LPipeline:setErrorMode
+--@api: LPipeline:setErrorMode
 do
     local pipe = lurek.pipeline.newPipeline("error-mode")
 
@@ -273,7 +273,7 @@ do
     print("completed = " .. #result.completed)
 end
 
---@api-stub: LPipeline:getErrorMode
+--@api: LPipeline:getErrorMode
 do
     local pipe = lurek.pipeline.newPipeline("error-mode")
 
@@ -282,7 +282,7 @@ do
     print("mode = " .. pipe:getErrorMode())
 end
 
---@api-stub: LPipeline:toAscii
+--@api: LPipeline:toAscii
 do
     local pipe = lurek.pipeline.newPipeline("graph")
     local init = lurek.pipeline.newStep("init", function() end)
@@ -299,7 +299,7 @@ do
     print(pipe:toAscii())
 end
 
---@api-stub: LPipeline:toTable
+--@api: LPipeline:toTable
 do
     local pipe = lurek.pipeline.newPipeline("serialize")
 
@@ -313,7 +313,7 @@ do
     print("step count = " .. #tbl.steps)
 end
 
---@api-stub: lurek.pipeline.fromTable
+--@api: lurek.pipeline.fromTable
 do
     local pipe = lurek.pipeline.fromTable({
         name = "from-table",
@@ -341,7 +341,7 @@ do
     print("success = " .. tostring(result.success))
 end
 
---@api-stub: LPipeline:reset
+--@api: LPipeline:reset
 do
     local pipe = lurek.pipeline.newPipeline("rerun")
 
@@ -360,14 +360,14 @@ do
     print("second = " .. tostring(secondContext.n))
 end
 
---@api-stub: LPipeline:type
+--@api: LPipeline:type
 do
     local pipe = lurek.pipeline.newPipeline("typed")
 
     print("type = " .. pipe:type())
 end
 
---@api-stub: LPipeline:typeOf
+--@api: LPipeline:typeOf
 do
     local pipe = lurek.pipeline.newPipeline("typed")
 
@@ -377,7 +377,7 @@ end
 
 --- Pipeline Module Part 2: step config, async execution, callbacks, sub-pipelines, branching, tags
 
---@api-stub: LPipelineStep:setCallback
+--@api: LPipelineStep:setCallback
 do
     local step = lurek.pipeline.newStep("conditional")
 
@@ -399,7 +399,7 @@ do
     print("ran = " .. tostring(context.ran == true))
 end
 
---@api-stub: LPipelineStep:setCondition
+--@api: LPipelineStep:setCondition
 do
     local step = lurek.pipeline.newStep("conditional")
 
@@ -421,7 +421,7 @@ do
     print("ran = " .. tostring(context.ran == true))
 end
 
---@api-stub: LPipelineStep:setRetryCount
+--@api: LPipelineStep:setRetryCount
 do
     local attempts = 0
     local step = lurek.pipeline.newStep("flaky", function()
@@ -441,7 +441,7 @@ do
     print("attempt = " .. step:getAttempt())
 end
 
---@api-stub: LPipelineStep:getRetryCount
+--@api: LPipelineStep:getRetryCount
 do
     local attempts = 0
     local step = lurek.pipeline.newStep("flaky", function()
@@ -460,7 +460,7 @@ do
     print("retry count = " .. step:getRetryCount())
 end
 
---@api-stub: LPipelineStep:setRetryDelay
+--@api: LPipelineStep:setRetryDelay
 do
     local attempts = 0
     local step = lurek.pipeline.newStep("flaky", function()
@@ -480,7 +480,7 @@ do
     print("retry count = " .. step:getRetryCount())
 end
 
---@api-stub: LPipelineStep:getAttempt
+--@api: LPipelineStep:getAttempt
 do
     local attempts = 0
     local step = lurek.pipeline.newStep("flaky", function()
@@ -499,7 +499,7 @@ do
     print("attempt = " .. step:getAttempt())
 end
 
---@api-stub: LPipelineStep:setDelay
+--@api: LPipelineStep:setDelay
 do
     local step = lurek.pipeline.newStep("delayed", function(ctx)
         ctx.time = "after delay"
@@ -510,7 +510,7 @@ do
     print("delay = " .. step:getDelay())
 end
 
---@api-stub: LPipelineStep:getDelay
+--@api: LPipelineStep:getDelay
 do
     local step = lurek.pipeline.newStep("delayed", function(ctx)
         ctx.time = "after delay"
@@ -521,7 +521,7 @@ do
     print("delay = " .. step:getDelay())
 end
 
---@api-stub: LPipelineStep:setTimeout
+--@api: LPipelineStep:setTimeout
 do
     local step = lurek.pipeline.newStep("slow", function()
         return "done"
@@ -532,7 +532,7 @@ do
     print("timeout = " .. step:getTimeout())
 end
 
---@api-stub: LPipelineStep:getTimeout
+--@api: LPipelineStep:getTimeout
 do
     local step = lurek.pipeline.newStep("slow", function()
         return "done"
@@ -543,7 +543,7 @@ do
     print("timeout = " .. step:getTimeout())
 end
 
---@api-stub: LPipelineStep:setOptional
+--@api: LPipelineStep:setOptional
 do
     local pipe = lurek.pipeline.newPipeline("optional")
     local optionalStep = lurek.pipeline.newStep("optional-step", function()
@@ -567,7 +567,7 @@ do
     print("completed = " .. #result.completed)
 end
 
---@api-stub: LPipelineStep:isOptional
+--@api: LPipelineStep:isOptional
 do
     local step = lurek.pipeline.newStep("optional-step", function()
         error("this is fine")
@@ -578,7 +578,7 @@ do
     print("optional = " .. tostring(step:isOptional()))
 end
 
---@api-stub: LPipelineStep:setTag
+--@api: LPipelineStep:setTag
 do
     local pipe = lurek.pipeline.newPipeline("tags")
     local loadA = lurek.pipeline.newStep("load_a", function() end)
@@ -597,7 +597,7 @@ do
     print("io steps = " .. #pipe:getStepsByTag("io"))
 end
 
---@api-stub: LPipelineStep:getTag
+--@api: LPipelineStep:getTag
 do
     local step = lurek.pipeline.newStep("load_a", function() end)
 
@@ -606,7 +606,7 @@ do
     print("tag = " .. step:getTag())
 end
 
---@api-stub: LPipeline:getStepsByTag
+--@api: LPipeline:getStepsByTag
 do
     local pipe = lurek.pipeline.newPipeline("tags")
     local loadA = lurek.pipeline.newStep("load_a", function() end)
@@ -625,7 +625,7 @@ do
     print("cpu steps = " .. #pipe:getStepsByTag("cpu"))
 end
 
---@api-stub: LPipelineStep:setData
+--@api: LPipelineStep:setData
 do
     local step = lurek.pipeline.newStep("meta", function() end)
 
@@ -636,7 +636,7 @@ do
     print("author = " .. step:getData("author"))
 end
 
---@api-stub: LPipelineStep:getData
+--@api: LPipelineStep:getData
 do
     local step = lurek.pipeline.newStep("meta", function() end)
 
@@ -646,7 +646,7 @@ do
     print("author = " .. step:getData("author"))
 end
 
---@api-stub: LPipelineStep:setAsync
+--@api: LPipelineStep:setAsync
 do
     local step = lurek.pipeline.newStep("async-step", function(ctx)
         ctx.progress = 1
@@ -657,7 +657,7 @@ do
     print("is async = " .. tostring(step:isAsync()))
 end
 
---@api-stub: LPipelineStep:isAsync
+--@api: LPipelineStep:isAsync
 do
     local step = lurek.pipeline.newStep("async-step", function(ctx)
         ctx.progress = 1
@@ -668,7 +668,7 @@ do
     print("is async = " .. tostring(step:isAsync()))
 end
 
---@api-stub: LPipelineStep:setOnError
+--@api: LPipelineStep:setOnError
 do
     local errorMsg = ""
     local step = lurek.pipeline.newStep("risky", function()
@@ -687,7 +687,7 @@ do
     print("callback = " .. errorMsg)
 end
 
---@api-stub: LPipelineStep:getError
+--@api: LPipelineStep:getError
 do
     local step = lurek.pipeline.newStep("risky", function()
         error("something broke")
@@ -702,7 +702,7 @@ do
     print("step error = " .. tostring(step:getError()))
 end
 
---@api-stub: LPipelineStep:getStatus
+--@api: LPipelineStep:getStatus
 do
     local pipe = lurek.pipeline.newPipeline("status")
     local step = lurek.pipeline.newStep("work", function(ctx)
@@ -716,7 +716,7 @@ do
     print("after run = " .. step:getStatus())
 end
 
---@api-stub: LPipelineStep:getDuration
+--@api: LPipelineStep:getDuration
 do
     local pipe = lurek.pipeline.newPipeline("status")
     local step = lurek.pipeline.newStep("work", function(ctx)
@@ -729,7 +729,7 @@ do
     print("duration = " .. tostring(step:getDuration()))
 end
 
---@api-stub: LPipeline:runAsync
+--@api: LPipeline:runAsync
 do
     local pipe = lurek.pipeline.newPipeline("async-pipe")
     local phase1 = lurek.pipeline.newStep("phase1", function(ctx)
@@ -757,7 +757,7 @@ do
     print("complete = " .. tostring(pipe:isComplete()))
 end
 
---@api-stub: LPipeline:update
+--@api: LPipeline:update
 do
     local pipe = lurek.pipeline.newPipeline("async-pipe")
     local step = lurek.pipeline.newStep("phase1", function()
@@ -774,7 +774,7 @@ do
     print("status = " .. step:getStatus())
 end
 
---@api-stub: LPipeline:isRunning
+--@api: LPipeline:isRunning
 do
     local pipe = lurek.pipeline.newPipeline("async-pipe")
     local step = lurek.pipeline.newStep("phase1", function()
@@ -789,7 +789,7 @@ do
     print("running = " .. tostring(pipe:isRunning()))
 end
 
---@api-stub: LPipeline:isComplete
+--@api: LPipeline:isComplete
 do
     local pipe = lurek.pipeline.newPipeline("async-pipe")
     local step = lurek.pipeline.newStep("phase1", function(ctx)
@@ -805,7 +805,7 @@ do
     print("complete = " .. tostring(pipe:isComplete()))
 end
 
---@api-stub: LPipeline:cancel
+--@api: LPipeline:cancel
 do
     local pipe = lurek.pipeline.newPipeline("cancel")
     local hold = lurek.pipeline.newStep("hold", function()
@@ -829,7 +829,7 @@ do
     print("hold status = " .. hold:getStatus())
 end
 
---@api-stub: LPipeline:onProgress
+--@api: LPipeline:onProgress
 do
     local pipe = lurek.pipeline.newPipeline("callbacks")
     local progressLog = {}
@@ -849,7 +849,7 @@ do
     print("progress = " .. table.concat(progressLog, ", "))
 end
 
---@api-stub: LPipeline:onEvent
+--@api: LPipeline:onEvent
 do
     local pipe = lurek.pipeline.newPipeline("callbacks")
     local eventCount = 0
@@ -866,7 +866,7 @@ do
     print("last event = " .. lastEvent)
 end
 
---@api-stub: LPipeline:setOnComplete
+--@api: LPipeline:setOnComplete
 do
     local pipe = lurek.pipeline.newPipeline("lifecycle")
     local summary = ""
@@ -880,7 +880,7 @@ do
     print("complete = " .. summary)
 end
 
---@api-stub: LPipeline:setOnStepComplete
+--@api: LPipeline:setOnStepComplete
 do
     local pipe = lurek.pipeline.newPipeline("lifecycle")
     local completedSteps = {}
@@ -895,7 +895,7 @@ do
     print("completed = " .. table.concat(completedSteps, ", "))
 end
 
---@api-stub: LPipeline:setOnStepError
+--@api: LPipeline:setOnStepError
 do
     local pipe = lurek.pipeline.newPipeline("lifecycle")
     local failedSteps = {}
@@ -913,7 +913,7 @@ do
     print("failed = " .. table.concat(failedSteps, ", "))
 end
 
---@api-stub: LPipeline:addSubPipeline
+--@api: LPipeline:addSubPipeline
 do
     local sub = lurek.pipeline.newPipeline("sub")
 
@@ -937,7 +937,7 @@ do
     print(order and ("order = " .. table.concat(order, " -> ")) or ("error = " .. tostring(err)))
 end
 
---@api-stub: LPipeline:addConditional
+--@api: LPipeline:addConditional
 do
     local pipe = lurek.pipeline.newPipeline("conditional")
 
@@ -962,7 +962,7 @@ do
     print("upgraded = " .. tostring(context.upgraded == true))
 end
 
---@api-stub: LPipeline:addBranch
+--@api: LPipeline:addBranch
 do
     local pipe = lurek.pipeline.newPipeline("branch")
 
@@ -990,14 +990,14 @@ do
     print("parser = " .. tostring(context.parser))
 end
 
---@api-stub: LPipelineStep:type
+--@api: LPipelineStep:type
 do
     local step = lurek.pipeline.newStep("typed", function() end)
 
     print("type = " .. step:type())
 end
 
---@api-stub: LPipelineStep:typeOf
+--@api: LPipelineStep:typeOf
 do
     local step = lurek.pipeline.newStep("typed", function() end)
 
@@ -1007,7 +1007,7 @@ end
 
 --- Pipeline Module Part 2: pipeline run, getContext, fromTable
 
---@api-stub: LPipeline:getContext
+--@api: LPipeline:getContext
 do
     local pl = lurek.pipeline.newPipeline("my_pipeline")
     local context = { debug = false }
@@ -1029,7 +1029,7 @@ do
     print("result = " .. tostring(stored.result))
 end
 
---@api-stub: LPipeline:run
+--@api: LPipeline:run
 do
     local pl = lurek.pipeline.newPipeline("my_pipeline")
     local context = { debug = false }

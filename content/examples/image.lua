@@ -4,20 +4,20 @@
 
 --- Image Module Part 1: factory functions and LImageData basics
 
---@api-stub: lurek.image.newImageData
+--@api: lurek.image.newImageData
 do
     local img = lurek.image.newImageData(128, 64)
     print("image " .. img:getWidth() .. "x" .. img:getHeight())
 end
 
---@api-stub: lurek.image.newImageDataFromBytes
+--@api: lurek.image.newImageDataFromBytes
 do
     local bytes = string.rep("\255\0\0\255", 4)
     local img = lurek.image.newImageDataFromBytes(2, 2, bytes)
     print("from bytes " .. img:getWidth() .. "x" .. img:getHeight())
 end
 
---@api-stub: lurek.image.loadImage
+--@api: lurek.image.loadImage
 do
     local src = lurek.image.newImageData(8, 8)
     src:fill(255, 0, 0, 255)
@@ -26,7 +26,7 @@ do
     print("loaded image " .. img:getWidth() .. "x" .. img:getHeight())
 end
 
---@api-stub: lurek.image.saveImage
+--@api: lurek.image.saveImage
 do
     local img = lurek.image.newImageData(32, 32)
     img:fill(255, 0, 0, 255)
@@ -34,7 +34,7 @@ do
     print("saved image")
 end
 
---@api-stub: lurek.image.savePNG
+--@api: lurek.image.savePNG
 do
     local img = lurek.image.newImageData(16, 16)
     img:fill(0, 255, 0, 255)
@@ -42,7 +42,7 @@ do
     print("saved PNG")
 end
 
---@api-stub: lurek.image.saveGIF
+--@api: lurek.image.saveGIF
 do
     local frames = {}
 
@@ -60,20 +60,20 @@ do
     print("saved GIF")
 end
 
---@api-stub: lurek.image.fromScreen
+--@api: lurek.image.fromScreen
 do
     local capture = lurek.image.fromScreen()
     local status = capture and (capture:getWidth() .. "x" .. capture:getHeight()) or "not ready yet"
     print("screen capture " .. status)
 end
 
---@api-stub: lurek.image.isCompressed
+--@api: lurek.image.isCompressed
 do
     local dds = lurek.image.isCompressed("content/examples/assets/images/sample_normal.dds")
     print("is compressed = " .. tostring(dds))
 end
 
---@api-stub: lurek.image.newCompressedData
+--@api: lurek.image.newCompressedData
 do
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("compressed " .. cdata:getWidth() .. "x" .. cdata:getHeight())
@@ -81,56 +81,54 @@ do
     print("mipmaps = " .. cdata:getMipmapCount())
 end
 
---@api-stub: lurek.image.newLayeredImage
+--@api: lurek.image.newLayeredImage
 do
     local li = lurek.image.newLayeredImage(256, 256)
     print("layered " .. li:getWidth() .. "x" .. li:getHeight())
     print("layers = " .. li:layerCount())
 end
 
---@api-stub: lurek.image.loadLayered
+--@api: lurek.image.loadLayered
 do
-    local layered = lurek.image.newLayeredImage(8, 8)
-    layered:addLayer("base")
-    layered:save("save/sample_layered.limg")
-    local loaded = lurek.image.loadLayered("save/sample_layered.limg")
+    local path = "content/examples/assets/sample_layered.limg"
+    local loaded = lurek.image.loadLayered(path)
     print("loaded layered = " .. tostring(loaded ~= nil))
     print("loaded layers = " .. loaded:layerCount())
 end
 
---@api-stub: lurek.image.newPaletteLut
+--@api: lurek.image.newPaletteLut
 do
     local lut = lurek.image.newPaletteLut()
     print("palette LUT colors = " .. lut:getColorCount())
 end
 
---@api-stub: lurek.image.newProvinceGrid
+--@api: lurek.image.newProvinceGrid
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     print("grid " .. grid:getWidth() .. "x" .. grid:getHeight())
     print("provinces = " .. grid:provinceCount())
 end
 
---@api-stub: LImageData:getDimensions
+--@api: LImageData:getDimensions
 do
     local img = lurek.image.newImageData(100, 50)
     local w, h = img:getDimensions()
     print("dimensions = " .. w .. "x" .. h)
 end
 
---@api-stub: LImageData:getWidth
+--@api: LImageData:getWidth
 do
     local img = lurek.image.newImageData(80, 40)
     print("width = " .. img:getWidth())
 end
 
---@api-stub: LImageData:getHeight
+--@api: LImageData:getHeight
 do
     local img = lurek.image.newImageData(80, 40)
     print("height = " .. img:getHeight())
 end
 
---@api-stub: LImageData:getPixel
+--@api: LImageData:getPixel
 do
     local img = lurek.image.newImageData(10, 10)
     img:fill(255, 128, 0, 255)
@@ -138,7 +136,7 @@ do
     print("pixel = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LImageData:setPixel
+--@api: LImageData:setPixel
 do
     local img = lurek.image.newImageData(10, 10)
     img:setPixel(0, 0, 255, 255, 255, 255)
@@ -146,35 +144,35 @@ do
     print("set pixel = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LImageData:fill
+--@api: LImageData:fill
 do
     local img = lurek.image.newImageData(8, 8)
     img:fill(0, 0, 255, 255)
     print("filled blue")
 end
 
---@api-stub: LImageData:drawLine
+--@api: LImageData:drawLine
 do
     local img = lurek.image.newImageData(32, 32)
     img:drawLine(0, 0, 31, 31, 255, 255, 0, 255)
     print("line drawn")
 end
 
---@api-stub: LImageData:drawRect
+--@api: LImageData:drawRect
 do
     local img = lurek.image.newImageData(32, 32)
     img:drawRect(4, 4, 24, 24, 0, 255, 0, 255)
     print("rect drawn")
 end
 
---@api-stub: LImageData:drawCircle
+--@api: LImageData:drawCircle
 do
     local img = lurek.image.newImageData(64, 64)
     img:drawCircle(32, 32, 16, 255, 0, 0, 255)
     print("circle drawn")
 end
 
---@api-stub: LImageData:blit
+--@api: LImageData:blit
 do
     local dst = lurek.image.newImageData(64, 64)
     local src = lurek.image.newImageData(16, 16)
@@ -183,7 +181,7 @@ do
     print("blitted")
 end
 
---@api-stub: LImageData:paste
+--@api: LImageData:paste
 do
     local dst = lurek.image.newImageData(64, 64)
     local src = lurek.image.newImageData(8, 8)
@@ -192,14 +190,14 @@ do
     print("pasted")
 end
 
---@api-stub: LImageData:crop
+--@api: LImageData:crop
 do
     local img = lurek.image.newImageData(100, 100)
     local cropped = img:crop(10, 10, 50, 50)
     print("cropped " .. cropped:getWidth() .. "x" .. cropped:getHeight())
 end
 
---@api-stub: LImageData:getRegion
+--@api: LImageData:getRegion
 do
     local img = lurek.image.newImageData(64, 64)
     local region = img:getRegion(0, 0, 32, 32)
@@ -208,7 +206,7 @@ do
     end
 end
 
---@api-stub: LImageData:encode
+--@api: LImageData:encode
 do
     local img = lurek.image.newImageData(4, 4)
     img:fill(255, 0, 0, 255)
@@ -216,21 +214,21 @@ do
     print("encoded " .. #bytes .. " bytes")
 end
 
---@api-stub: LImageData:getRawBytes
+--@api: LImageData:getRawBytes
 do
     local img = lurek.image.newImageData(2, 2)
     local raw = img:getRawBytes()
     print("raw bytes = " .. #raw)
 end
 
---@api-stub: LImageData:getString
+--@api: LImageData:getString
 do
     local img = lurek.image.newImageData(2, 2)
     local str = img:getString()
     print("string bytes = " .. #str)
 end
 
---@api-stub: LImageData:setRawData
+--@api: LImageData:setRawData
 do
     local img = lurek.image.newImageData(2, 2)
     local bytes = string.rep("\0\255\0\255", 4)
@@ -238,13 +236,13 @@ do
     print("raw data set")
 end
 
---@api-stub: LImageData:type
+--@api: LImageData:type
 do
     local img = lurek.image.newImageData(1, 1)
     print("type = " .. img:type())
 end
 
---@api-stub: LImageData:typeOf
+--@api: LImageData:typeOf
 do
     local img = lurek.image.newImageData(1, 1)
     print("is ImageData = " .. tostring(img:typeOf("LImageData")))
@@ -252,28 +250,28 @@ end
 
 --- Image Module Part 2: LImageData transforms and filters
 
---@api-stub: LImageData:resize
+--@api: LImageData:resize
 do
     local img = lurek.image.newImageData(64, 64)
     local resized = img:resize(128, 128, "bilinear")
     print("resized = " .. resized:getWidth() .. "x" .. resized:getHeight())
 end
 
---@api-stub: LImageData:resizeNearest
+--@api: LImageData:resizeNearest
 do
     local img = lurek.image.newImageData(32, 32)
     local resized = img:resizeNearest(64, 64)
     print("nearest = " .. resized:getWidth() .. "x" .. resized:getHeight())
 end
 
---@api-stub: LImageData:rotate90cw
+--@api: LImageData:rotate90cw
 do
     local img = lurek.image.newImageData(20, 40)
     local rotated = img:rotate90cw()
     print("rotated = " .. rotated:getWidth() .. "x" .. rotated:getHeight())
 end
 
---@api-stub: LImageData:blur
+--@api: LImageData:blur
 do
     local img = lurek.image.newImageData(64, 64)
     img:fill(255, 0, 0, 255)
@@ -281,7 +279,7 @@ do
     print("blurred " .. blurred:getWidth() .. "x" .. blurred:getHeight())
 end
 
---@api-stub: LImageData:sharpen
+--@api: LImageData:sharpen
 do
     local img = lurek.image.newImageData(64, 64)
     img:fill(128, 128, 128, 255)
@@ -289,7 +287,7 @@ do
     print("sharpened " .. sharp:getWidth() .. "x" .. sharp:getHeight())
 end
 
---@api-stub: LImageData:convolve
+--@api: LImageData:convolve
 do
     local img = lurek.image.newImageData(32, 32)
     local kernel = {0, -1, 0, -1, 5, -1, 0, -1, 0}
@@ -297,7 +295,7 @@ do
     print("convolved " .. result:getWidth() .. "x" .. result:getHeight())
 end
 
---@api-stub: LImageData:grayscale
+--@api: LImageData:grayscale
 do
     local img = lurek.image.newImageData(32, 32)
     img:fill(255, 0, 0, 255)
@@ -306,7 +304,7 @@ do
     print("gray r=" .. r .. " g=" .. g .. " b=" .. b)
 end
 
---@api-stub: LImageData:invert
+--@api: LImageData:invert
 do
     local img = lurek.image.newImageData(8, 8)
     img:fill(255, 0, 0, 255)
@@ -315,7 +313,7 @@ do
     print("inverted r=" .. r .. " g=" .. g .. " b=" .. b)
 end
 
---@api-stub: LImageData:sepia
+--@api: LImageData:sepia
 do
     local img = lurek.image.newImageData(16, 16)
     img:fill(128, 128, 128, 255)
@@ -323,7 +321,7 @@ do
     print("sepia applied")
 end
 
---@api-stub: LImageData:noise
+--@api: LImageData:noise
 do
     local img = lurek.image.newImageData(32, 32)
     img:fill(128, 128, 128, 255)
@@ -331,7 +329,7 @@ do
     print("noise added")
 end
 
---@api-stub: LImageData:posterize
+--@api: LImageData:posterize
 do
     local img = lurek.image.newImageData(16, 16)
     img:fill(179, 77, 128, 255)
@@ -339,7 +337,7 @@ do
     print("posterized to 4 levels")
 end
 
---@api-stub: LImageData:threshold
+--@api: LImageData:threshold
 do
     local img = lurek.image.newImageData(16, 16)
     img:fill(153, 153, 153, 255)
@@ -347,7 +345,7 @@ do
     print("thresholded at 128")
 end
 
---@api-stub: LImageData:brightness
+--@api: LImageData:brightness
 do
     local img = lurek.image.newImageData(16, 16)
     img:fill(128, 128, 128, 255)
@@ -355,7 +353,7 @@ do
     print("brightness increased by 1.5x")
 end
 
---@api-stub: LImageData:contrast
+--@api: LImageData:contrast
 do
     local img = lurek.image.newImageData(16, 16)
     img:fill(102, 153, 128, 255)
@@ -363,7 +361,7 @@ do
     print("contrast doubled")
 end
 
---@api-stub: LImageData:saturation
+--@api: LImageData:saturation
 do
     local img = lurek.image.newImageData(16, 16)
     img:fill(255, 0, 0, 255)
@@ -371,7 +369,7 @@ do
     print("saturation halved")
 end
 
---@api-stub: LImageData:gamma
+--@api: LImageData:gamma
 do
     local img = lurek.image.newImageData(16, 16)
     img:fill(128, 128, 128, 255)
@@ -379,7 +377,7 @@ do
     print("gamma 2.2 applied")
 end
 
---@api-stub: LImageData:tint
+--@api: LImageData:tint
 do
     local img = lurek.image.newImageData(16, 16)
     img:fill(255, 255, 255, 255)
@@ -387,7 +385,7 @@ do
     print("red tint applied at 50%")
 end
 
---@api-stub: LImageData:alphaMask
+--@api: LImageData:alphaMask
 do
     local img = lurek.image.newImageData(16, 16)
     img:fill(255, 0, 0, 255)
@@ -396,7 +394,7 @@ do
     print("alpha = " .. a)
 end
 
---@api-stub: LImageData:flipHorizontal
+--@api: LImageData:flipHorizontal
 do
     local img = lurek.image.newImageData(16, 16)
     img:setPixel(0, 0, 255, 0, 0, 255)
@@ -405,7 +403,7 @@ do
     print("flipped h, corner r = " .. r)
 end
 
---@api-stub: LImageData:flipVertical
+--@api: LImageData:flipVertical
 do
     local img = lurek.image.newImageData(16, 16)
     img:setPixel(0, 0, 0, 255, 0, 255)
@@ -414,7 +412,7 @@ do
     print("flipped v, corner g = " .. g)
 end
 
---@api-stub: LImageData:mapPixel
+--@api: LImageData:mapPixel
 do
     local img = lurek.image.newImageData(8, 8)
     img:fill(255, 255, 255, 255)
@@ -424,7 +422,7 @@ do
     print("mapped pixels to half brightness")
 end
 
---@api-stub: LImageData:mapPixels
+--@api: LImageData:mapPixels
 do
     local img = lurek.image.newImageData(8, 8)
     img:mapPixels(function(x, y)
@@ -433,7 +431,7 @@ do
     print("gradient mapped")
 end
 
---@api-stub: LImageData:drawNineSlice
+--@api: LImageData:drawNineSlice
 do
     local dst = lurek.image.newImageData(64, 64)
     local src = lurek.image.newImageData(32, 32)
@@ -442,7 +440,7 @@ do
     print("nine-slice drawn")
 end
 
---@api-stub: LImageData:applyPaletteLut
+--@api: LImageData:applyPaletteLut
 do
     local img = lurek.image.newImageData(16, 16)
     local lut = lurek.image.newPaletteLut()
@@ -452,7 +450,7 @@ do
     print("palette LUT applied")
 end
 
---@api-stub: LImageData:diff
+--@api: LImageData:diff
 do
     local a = lurek.image.newImageData(8, 8)
     local b = lurek.image.newImageData(8, 8)
@@ -463,7 +461,7 @@ end
 
 --- Image Module Part 3: LLayeredImage, LPaletteLUT, LCompressedImageData, LProvinceGrid
 
---@api-stub: LLayeredImage:addLayer
+--@api: LLayeredImage:addLayer
 do
     local li = lurek.image.newLayeredImage(64, 64)
     local idx = li:addLayer("background")
@@ -471,7 +469,7 @@ do
     print("layers = " .. li:layerCount())
 end
 
---@api-stub: LLayeredImage:removeLayer
+--@api: LLayeredImage:removeLayer
 do
     local li = lurek.image.newLayeredImage(32, 32)
     li:addLayer("temp")
@@ -479,7 +477,7 @@ do
     print("layers after remove = " .. li:layerCount())
 end
 
---@api-stub: LLayeredImage:getLayer
+--@api: LLayeredImage:getLayer
 do
     local li = lurek.image.newLayeredImage(16, 16)
     li:addLayer("green")
@@ -487,7 +485,7 @@ do
     print("layer 1: " .. data:getWidth() .. "x" .. data:getHeight())
 end
 
---@api-stub: LLayeredImage:setLayer
+--@api: LLayeredImage:setLayer
 do
     local li = lurek.image.newLayeredImage(16, 16)
     li:addLayer("slot")
@@ -495,7 +493,7 @@ do
     print("layer replaced")
 end
 
---@api-stub: LLayeredImage:getName
+--@api: LLayeredImage:getName
 do
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("background")
@@ -503,7 +501,7 @@ do
     print("layer name = " .. name)
 end
 
---@api-stub: LLayeredImage:setName
+--@api: LLayeredImage:setName
 do
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("old")
@@ -511,14 +509,14 @@ do
     print("new name = " .. li:getName(1))
 end
 
---@api-stub: LLayeredImage:getOpacity
+--@api: LLayeredImage:getOpacity
 do
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("layer")
     print("opacity = " .. li:getOpacity(1))
 end
 
---@api-stub: LLayeredImage:setOpacity
+--@api: LLayeredImage:setOpacity
 do
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("layer")
@@ -526,14 +524,14 @@ do
     print("opacity = " .. li:getOpacity(1))
 end
 
---@api-stub: LLayeredImage:isVisible
+--@api: LLayeredImage:isVisible
 do
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("vis")
     print("visible = " .. tostring(li:isVisible(1)))
 end
 
---@api-stub: LLayeredImage:setVisible
+--@api: LLayeredImage:setVisible
 do
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("toggle")
@@ -541,7 +539,7 @@ do
     print("visible = " .. tostring(li:isVisible(1)))
 end
 
---@api-stub: LLayeredImage:moveLayer
+--@api: LLayeredImage:moveLayer
 do
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("first")
@@ -550,7 +548,7 @@ do
     print("moved: first is now " .. li:getName(1))
 end
 
---@api-stub: LLayeredImage:swapLayers
+--@api: LLayeredImage:swapLayers
 do
     local li = lurek.image.newLayeredImage(8, 8)
     li:addLayer("alpha")
@@ -559,7 +557,7 @@ do
     print("after swap: 1=" .. li:getName(1) .. " 2=" .. li:getName(2))
 end
 
---@api-stub: LLayeredImage:merge
+--@api: LLayeredImage:merge
 do
     local li = lurek.image.newLayeredImage(32, 32)
     li:addLayer("base")
@@ -567,7 +565,7 @@ do
     print("merged " .. merged:getWidth() .. "x" .. merged:getHeight())
 end
 
---@api-stub: LLayeredImage:save
+--@api: LLayeredImage:save
 do
     local li = lurek.image.newLayeredImage(16, 16)
     li:addLayer("only")
@@ -575,46 +573,46 @@ do
     print("layered image saved")
 end
 
---@api-stub: LLayeredImage:layerCount
+--@api: LLayeredImage:layerCount
 do
     local li = lurek.image.newLayeredImage(8, 8)
     print("empty layers = " .. li:layerCount())
 end
 
---@api-stub: LLayeredImage:getWidth
+--@api: LLayeredImage:getWidth
 do
     local li = lurek.image.newLayeredImage(100, 50)
     print("layered size = " .. li:getWidth() .. "x" .. li:getHeight())
 end
 
---@api-stub: LLayeredImage:getHeight
+--@api: LLayeredImage:getHeight
 do
     local li = lurek.image.newLayeredImage(100, 50)
     print("layered size = " .. li:getWidth() .. "x" .. li:getHeight())
 end
 
---@api-stub: LLayeredImage:type
+--@api: LLayeredImage:type
 do
     local li = lurek.image.newLayeredImage(8, 8)
     print("type = " .. li:type())
     print("is LayeredImage = " .. tostring(li:typeOf("LLayeredImage")))
 end
 
---@api-stub: LLayeredImage:typeOf
+--@api: LLayeredImage:typeOf
 do
     local li = lurek.image.newLayeredImage(8, 8)
     print("type = " .. li:type())
     print("is LayeredImage = " .. tostring(li:typeOf("LLayeredImage")))
 end
 
---@api-stub: LPaletteLUT:setColor
+--@api: LPaletteLUT:setColor
 do
     local lut = lurek.image.newPaletteLut()
     lut:setColor(255, 0, 0, 255, 0, 255, 0, 255)
     print("red → green mapping set")
 end
 
---@api-stub: LPaletteLUT:clear
+--@api: LPaletteLUT:clear
 do
     local lut = lurek.image.newPaletteLut()
     lut:setColor(255, 0, 0, 255, 0, 0, 255, 255)
@@ -622,7 +620,7 @@ do
     print("LUT cleared, colors = " .. lut:getColorCount())
 end
 
---@api-stub: LPaletteLUT:cycle
+--@api: LPaletteLUT:cycle
 do
     local lut = lurek.image.newPaletteLut()
     lut:setColor(255, 0, 0, 255, 0, 255, 0, 255)
@@ -631,162 +629,162 @@ do
     print("palette cycled")
 end
 
---@api-stub: LPaletteLUT:getColorCount
+--@api: LPaletteLUT:getColorCount
 do
     local lut = lurek.image.newPaletteLut()
     lut:setColor(255, 0, 0, 255, 128, 0, 0, 255)
     print("color count = " .. lut:getColorCount())
 end
 
---@api-stub: LPaletteLUT:type
+--@api: LPaletteLUT:type
 do
     local lut = lurek.image.newPaletteLut()
     print("type = " .. lut:type())
     print("is PaletteLUT = " .. tostring(lut:typeOf("LPaletteLUT")))
 end
 
---@api-stub: LPaletteLUT:typeOf
+--@api: LPaletteLUT:typeOf
 do
     local lut = lurek.image.newPaletteLut()
     print("type = " .. lut:type())
     print("is PaletteLUT = " .. tostring(lut:typeOf("LPaletteLUT")))
 end
 
---@api-stub: LCompressedImageData:getDimensions
+--@api: LCompressedImageData:getDimensions
 do
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local w, h = cdata:getDimensions()
     print("compressed = " .. w .. "x" .. h)
 end
 
---@api-stub: LCompressedImageData:getFormat
+--@api: LCompressedImageData:getFormat
 do
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("format = " .. cdata:getFormat())
 end
 
---@api-stub: LCompressedImageData:getMipmapCount
+--@api: LCompressedImageData:getMipmapCount
 do
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("mipmaps = " .. cdata:getMipmapCount())
 end
 
---@api-stub: LCompressedImageData:type
+--@api: LCompressedImageData:type
 do
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("type = " .. cdata:type())
     print("is CompressedImageData = " .. tostring(cdata:typeOf("LCompressedImageData")))
 end
 
---@api-stub: LCompressedImageData:typeOf
+--@api: LCompressedImageData:typeOf
 do
     local cdata = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     print("type = " .. cdata:type())
     print("is CompressedImageData = " .. tostring(cdata:typeOf("LCompressedImageData")))
 end
 
---@api-stub: LProvinceGrid:getAt
+--@api: LProvinceGrid:getAt
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local id = grid:getAt(10, 10)
     print("province at (10,10) = " .. id)
 end
 
---@api-stub: LProvinceGrid:provinceCount
+--@api: LProvinceGrid:provinceCount
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     print("provinces = " .. grid:provinceCount())
 end
 
---@api-stub: LProvinceGrid:provinceSpans
+--@api: LProvinceGrid:provinceSpans
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local spans = grid:provinceSpans()
     print("total spans = " .. #spans)
 end
 
---@api-stub: LProvinceGrid:adjacencies
+--@api: LProvinceGrid:adjacencies
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local adj = grid:adjacencies()
     print("adjacency records = " .. #adj)
 end
 
---@api-stub: LProvinceGrid:borderSegments
+--@api: LProvinceGrid:borderSegments
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local segs = grid:borderSegments()
     print("border segments = " .. #segs)
 end
 
---@api-stub: LProvinceGrid:getPolygons
+--@api: LProvinceGrid:getPolygons
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local polys = grid:getPolygons()
     print("polygon records = " .. #polys)
 end
 
---@api-stub: LProvinceGrid:getPolygonsSimplified
+--@api: LProvinceGrid:getPolygonsSimplified
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local polys = grid:getPolygonsSimplified()
     print("simplified records = " .. #polys)
 end
 
---@api-stub: LProvinceGrid:drawShapes
+--@api: LProvinceGrid:drawShapes
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local count = grid:drawShapes(0, 0, 800, 600)
     print("drew " .. count .. " polygons")
 end
 
---@api-stub: LProvinceGrid:serializeShapeData
+--@api: LProvinceGrid:serializeShapeData
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local data = grid:serializeShapeData()
     print("serialized " .. #data .. " bytes")
     grid:deserializeShapeData(data)
     print("deserialized")
 end
 
---@api-stub: LProvinceGrid:deserializeShapeData
+--@api: LProvinceGrid:deserializeShapeData
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     local data = grid:serializeShapeData()
     print("serialized " .. #data .. " bytes")
     grid:deserializeShapeData(data)
     print("deserialized")
 end
 
---@api-stub: LProvinceGrid:getWidth
+--@api: LProvinceGrid:getWidth
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     print("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
 end
 
---@api-stub: LProvinceGrid:getHeight
+--@api: LProvinceGrid:getHeight
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     print("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
 end
 
---@api-stub: LProvinceGrid:type
+--@api: LProvinceGrid:type
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     print("type = " .. grid:type())
     print("is ProvinceGrid = " .. tostring(grid:typeOf("LProvinceGrid")))
 end
 
---@api-stub: LProvinceGrid:typeOf
+--@api: LProvinceGrid:typeOf
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/textures/province_map.png")
     print("type = " .. grid:type())
     print("is ProvinceGrid = " .. tostring(grid:typeOf("LProvinceGrid")))
 end
 
 --- Image Module: LCompressedImageData and additional newImageData
 
---@api-stub: LCompressedImageData:getHeight
+--@api: LCompressedImageData:getHeight
 do
     local cd = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local w = cd:getWidth()
@@ -795,7 +793,7 @@ do
     print("compressed w=" .. w .. " h=" .. h .. " mips=" .. mips)
 end
 
---@api-stub: LCompressedImageData:getWidth
+--@api: LCompressedImageData:getWidth
 do
     local cd = lurek.image.newCompressedData("content/examples/assets/images/sample_normal.dds")
     local w = cd:getWidth()

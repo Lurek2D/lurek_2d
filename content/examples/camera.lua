@@ -4,28 +4,28 @@
 
 --- Camera Examples Part 1: Creation, position, zoom, rotation, viewport, bounds, target, follow, deadzone, lookahead, shake, update, coordinate transforms, visible area, path, parallax
 
---@api-stub: lurek.camera.new
+--@api: lurek.camera.new
 do
     local cam = lurek.camera.new(800, 600)
     print("camera created = " .. tostring(cam ~= nil))
     print("camera type = " .. cam:type())
 end
 
---@api-stub: lurek.camera.newCamera
+--@api: lurek.camera.newCamera
 do
     local cam = lurek.camera.newCamera(1280, 720)
     print("camera created = " .. tostring(cam ~= nil))
     print("viewport width = " .. select(3, cam:getViewport()))
 end
 
---@api-stub: lurek.camera.newRig
+--@api: lurek.camera.newRig
 do
     local rig = lurek.camera.newRig()
     print("rig created = " .. tostring(rig ~= nil))
     print("rig type = " .. rig:type())
 end
 
---@api-stub: LCamera:setPosition
+--@api: LCamera:setPosition
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(200, 150)
@@ -33,7 +33,7 @@ do
     print("pos = " .. x .. ", " .. y)
 end
 
---@api-stub: LCamera:getPosition
+--@api: LCamera:getPosition
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 50)
@@ -41,14 +41,14 @@ do
     print("x=" .. x .. " y=" .. y)
 end
 
---@api-stub: LCamera:setZoom
+--@api: LCamera:setZoom
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(2.0)
     print("zoom = " .. cam:getZoom())
 end
 
---@api-stub: LCamera:getZoom
+--@api: LCamera:getZoom
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(0.5)
@@ -56,14 +56,14 @@ do
     print("zoom = " .. z)
 end
 
---@api-stub: LCamera:setRotation
+--@api: LCamera:setRotation
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotation(math.pi / 4)
     print("rotation = " .. cam:getRotation())
 end
 
---@api-stub: LCamera:getRotation
+--@api: LCamera:getRotation
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotation(1.5)
@@ -71,7 +71,7 @@ do
     print("rotation = " .. r)
 end
 
---@api-stub: LCamera:setViewport
+--@api: LCamera:setViewport
 do
     local cam = lurek.camera.new(800, 600)
     cam:setViewport(0, 0, 400, 300)
@@ -80,7 +80,7 @@ do
     print("viewport size = " .. w .. "x" .. h)
 end
 
---@api-stub: LCamera:getViewport
+--@api: LCamera:getViewport
 do
     local cam = lurek.camera.new(800, 600)
     cam:setViewport(10, 10, 780, 580)
@@ -88,7 +88,7 @@ do
     print("viewport = " .. x .. "," .. y .. "," .. w .. "," .. h)
 end
 
---@api-stub: LCamera:getBounds
+--@api: LCamera:getBounds
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 2000, 1500)
@@ -96,14 +96,14 @@ do
     print("bounds = " .. tostring(ok) .. "," .. tostring(bx) .. "," .. tostring(by) .. "," .. tostring(bw) .. "," .. tostring(bh))
 end
 
---@api-stub: LCamera:hasBounds
+--@api: LCamera:hasBounds
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 1000, 1000)
     print("has bounds = " .. tostring(cam:hasBounds()))
 end
 
---@api-stub: LCamera:setBounds
+--@api: LCamera:setBounds
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 3200, 2400)
@@ -111,7 +111,7 @@ do
     print("bounds set to 3200x2400")
 end
 
---@api-stub: LCamera:removeBounds
+--@api: LCamera:removeBounds
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 1000, 1000)
@@ -119,7 +119,7 @@ do
     print("bounds removed = " .. tostring(not cam:hasBounds()))
 end
 
---@api-stub: LCamera:setTarget
+--@api: LCamera:setTarget
 do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(500, 300)
@@ -127,7 +127,7 @@ do
     print("target = " .. tostring(ok) .. ", " .. tostring(tx) .. ", " .. tostring(ty))
 end
 
---@api-stub: LCamera:getTarget
+--@api: LCamera:getTarget
 do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(250, 125)
@@ -135,7 +135,7 @@ do
     print("target = " .. tostring(ok) .. ", " .. tostring(tx) .. ", " .. tostring(ty))
 end
 
---@api-stub: LCamera:clearTarget
+--@api: LCamera:clearTarget
 do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(100, 100)
@@ -145,14 +145,14 @@ do
     print("has target = " .. tostring(ok))
 end
 
---@api-stub: LCamera:setFollowSmooth
+--@api: LCamera:setFollowSmooth
 do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowSmooth(5.0)
     print("smooth = " .. cam:getFollowSmooth())
 end
 
---@api-stub: LCamera:getFollowSmooth
+--@api: LCamera:getFollowSmooth
 do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowSmooth(3.0)
@@ -160,14 +160,14 @@ do
     print("follow smooth = " .. s)
 end
 
---@api-stub: LCamera:setFollowEasing
+--@api: LCamera:setFollowEasing
 do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowEasing("quadOut")
     print("easing = " .. cam:getFollowEasing())
 end
 
---@api-stub: LCamera:getFollowEasing
+--@api: LCamera:getFollowEasing
 do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowEasing("linear")
@@ -175,7 +175,7 @@ do
     print("easing = " .. e)
 end
 
---@api-stub: LCamera:setDeadZone
+--@api: LCamera:setDeadZone
 do
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(50, 30)
@@ -184,7 +184,7 @@ do
     print("dead zone = " .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LCamera:getDeadZone
+--@api: LCamera:getDeadZone
 do
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(40, 20)
@@ -192,14 +192,14 @@ do
     print("dead zone = " .. tostring(ok) .. "," .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LCamera:setLookAhead
+--@api: LCamera:setLookAhead
 do
     local cam = lurek.camera.new(800, 600)
     cam:setLookAhead(1.5)
     print("look ahead = " .. cam:getLookAhead())
 end
 
---@api-stub: LCamera:getLookAhead
+--@api: LCamera:getLookAhead
 do
     local cam = lurek.camera.new(800, 600)
     cam:setLookAhead(2.0)
@@ -207,7 +207,7 @@ do
     print("look ahead = " .. la)
 end
 
---@api-stub: LCamera:onWindowResize
+--@api: LCamera:onWindowResize
 do
     local cam = lurek.camera.new(800, 600)
     cam:onWindowResize(1920, 1080)
@@ -216,7 +216,7 @@ do
     print("viewport size = " .. w .. "x" .. h)
 end
 
---@api-stub: LCamera:onWindowResizeScaled
+--@api: LCamera:onWindowResizeScaled
 do
     local cam = lurek.camera.new(800, 600)
     cam:onWindowResizeScaled(800, 600, 1920, 1080, "letterbox")
@@ -225,14 +225,14 @@ do
     print("viewport = " .. x .. "," .. y .. "," .. w .. "," .. h)
 end
 
---@api-stub: LCamera:shake
+--@api: LCamera:shake
 do
     local cam = lurek.camera.new(800, 600)
     cam:shake(10.0, 0.5)
     print("shaking for 0.5s at intensity 10")
 end
 
---@api-stub: LCamera:update
+--@api: LCamera:update
 do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(200, 100)
@@ -243,7 +243,7 @@ do
     print("position = " .. x .. ", " .. y)
 end
 
---@api-stub: LCamera:toWorld
+--@api: LCamera:toWorld
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
@@ -251,7 +251,7 @@ do
     print("world = " .. wx .. ", " .. wy)
 end
 
---@api-stub: LCamera:toScreen
+--@api: LCamera:toScreen
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
@@ -259,7 +259,7 @@ do
     print("screen = " .. sx .. ", " .. sy)
 end
 
---@api-stub: LCamera:getVisibleArea
+--@api: LCamera:getVisibleArea
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(400, 300)
@@ -267,7 +267,7 @@ do
     print("visible = " .. x .. "," .. y .. " " .. w .. "x" .. h)
 end
 
---@api-stub: LCamera:lookAt
+--@api: LCamera:lookAt
 do
     local cam = lurek.camera.new(800, 600)
     cam:lookAt(500, 250)
@@ -275,7 +275,7 @@ do
     print("looking at " .. x .. ", " .. y)
 end
 
---@api-stub: LCamera:move
+--@api: LCamera:move
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
@@ -284,7 +284,7 @@ do
     print("moved to " .. x .. ", " .. y)
 end
 
---@api-stub: LCamera:followPath
+--@api: LCamera:followPath
 do
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 400, 200 }, { 800, 0 } }
@@ -293,7 +293,7 @@ do
     print("path progress = " .. tostring(cam:pathProgress()))
 end
 
---@api-stub: LCamera:stopPath
+--@api: LCamera:stopPath
 do
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 100, 100 } }
@@ -303,7 +303,7 @@ do
     print("path progress = " .. tostring(cam:pathProgress()))
 end
 
---@api-stub: LCamera:updatePath
+--@api: LCamera:updatePath
 do
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 200, 200 } }
@@ -314,7 +314,7 @@ do
     print("position = " .. x .. ", " .. y)
 end
 
---@api-stub: LCamera:pathProgress
+--@api: LCamera:pathProgress
 do
     local cam = lurek.camera.new(800, 600)
     local points = { { 0, 0 }, { 100, 100 } }
@@ -325,14 +325,14 @@ do
     print("progress halfway = " .. tostring(p > 0 and p < 1))
 end
 
---@api-stub: LCamera:zoomTo
+--@api: LCamera:zoomTo
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(2.0, 1.0, "quadOut")
     print("zooming to 2x over 1s")
 end
 
---@api-stub: LCamera:stopZoom
+--@api: LCamera:stopZoom
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(3.0, 2.0, "linear")
@@ -340,7 +340,7 @@ do
     print("zoom stopped")
 end
 
---@api-stub: LCamera:updateZoom
+--@api: LCamera:updateZoom
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(2.0, 1.0, "linear")
@@ -348,14 +348,14 @@ do
     print("zoom after 0.5s = " .. cam:getZoom())
 end
 
---@api-stub: LCamera:setParallaxFactor
+--@api: LCamera:setParallaxFactor
 do
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("background", 0.5)
     print("parallax bg = " .. cam:getParallaxFactor("background"))
 end
 
---@api-stub: LCamera:getParallaxFactor
+--@api: LCamera:getParallaxFactor
 do
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("clouds", 0.3)
@@ -363,7 +363,7 @@ do
     print("clouds parallax = " .. f)
 end
 
---@api-stub: LCamera:clearParallaxFactors
+--@api: LCamera:clearParallaxFactors
 do
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("fg", 1.2)
@@ -372,7 +372,7 @@ do
     print("fg parallax = " .. tostring(cam:getParallaxFactor("fg")))
 end
 
---@api-stub: LCamera:apply
+--@api: LCamera:apply
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(400, 300)
@@ -382,7 +382,7 @@ do
     print("position = " .. x .. ", " .. y)
 end
 
---@api-stub: LCamera:reset
+--@api: LCamera:reset
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(500, 500)
@@ -392,14 +392,14 @@ do
     print("zoom still readable = " .. tostring(cam:getZoom()))
 end
 
---@api-stub: LCamera:attach
+--@api: LCamera:attach
 do
     local cam = lurek.camera.new(800, 600)
     cam:attach()
     print("camera attached")
 end
 
---@api-stub: LCamera:detach
+--@api: LCamera:detach
 do
     local cam = lurek.camera.new(800, 600)
     cam:attach()
@@ -407,7 +407,7 @@ do
     print("camera detached")
 end
 
---@api-stub: LCamera:zoomPulse
+--@api: LCamera:zoomPulse
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomPulse(0.2, 0.3)
@@ -417,7 +417,7 @@ end
 
 --- Camera Examples Part 2: Sway, breathing, effects, constraints, presets, CameraRig
 
---@api-stub: LCamera:startSway
+--@api: LCamera:startSway
 do
     local cam = lurek.camera.new(800, 600)
     cam:startSway(3.0, 2.0, 1.5, 0.5)
@@ -425,7 +425,7 @@ do
     print("is sway = " .. tostring(cam:isSway()))
 end
 
---@api-stub: LCamera:stopSway
+--@api: LCamera:stopSway
 do
     local cam = lurek.camera.new(800, 600)
     cam:startSway(2.0, 1.0, 1.0, 0.3)
@@ -433,14 +433,14 @@ do
     print("sway stopped")
 end
 
---@api-stub: LCamera:isSway
+--@api: LCamera:isSway
 do
     local cam = lurek.camera.new(800, 600)
     cam:startSway(1.0, 1.0, 1.0, 0.5)
     print("is sway = " .. tostring(cam:isSway()))
 end
 
---@api-stub: LCamera:startBreathing
+--@api: LCamera:startBreathing
 do
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.02, 0.5)
@@ -448,7 +448,7 @@ do
     print("is breathing = " .. tostring(cam:isBreathing()))
 end
 
---@api-stub: LCamera:stopBreathing
+--@api: LCamera:stopBreathing
 do
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.01, 0.3)
@@ -456,14 +456,14 @@ do
     print("breathing stopped")
 end
 
---@api-stub: LCamera:isBreathing
+--@api: LCamera:isBreathing
 do
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.02, 0.5)
     print("breathing = " .. tostring(cam:isBreathing()))
 end
 
---@api-stub: LCamera:getEffectiveZoom
+--@api: LCamera:getEffectiveZoom
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(2.0)
@@ -472,14 +472,14 @@ do
     print("base zoom = " .. tostring(cam:getZoom()))
 end
 
---@api-stub: LCamera:getEffectOffset
+--@api: LCamera:getEffectOffset
 do
     local cam = lurek.camera.new(800, 600)
     local ox, oy = cam:getEffectOffset()
     print("effect offset = " .. ox .. ", " .. oy)
 end
 
---@api-stub: LCamera:getShakeOffset
+--@api: LCamera:getShakeOffset
 do
     local cam = lurek.camera.new(800, 600)
     cam:shake(5.0, 0.5)
@@ -488,14 +488,14 @@ do
     print("shake = " .. sx .. ", " .. sy)
 end
 
---@api-stub: LCamera:getRenderOffset
+--@api: LCamera:getRenderOffset
 do
     local cam = lurek.camera.new(800, 600)
     local rx, ry = cam:getRenderOffset()
     print("render offset = " .. rx .. ", " .. ry)
 end
 
---@api-stub: LCamera:setZoomConstraints
+--@api: LCamera:setZoomConstraints
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.5, 4.0)
@@ -504,7 +504,7 @@ do
     print("zoom constrained to [" .. min_z .. ", " .. max_z .. "]")
 end
 
---@api-stub: LCamera:getZoomConstraints
+--@api: LCamera:getZoomConstraints
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.25, 3.0)
@@ -512,14 +512,14 @@ do
     print("zoom range = " .. mn .. " to " .. mx)
 end
 
---@api-stub: LCamera:setZoomDamping
+--@api: LCamera:setZoomDamping
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomDamping(0.9)
     print("zoom damping = " .. cam:getZoomDamping())
 end
 
---@api-stub: LCamera:getZoomDamping
+--@api: LCamera:getZoomDamping
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomDamping(0.8)
@@ -527,7 +527,7 @@ do
     print("damping = " .. d)
 end
 
---@api-stub: LCamera:setRotationConstraints
+--@api: LCamera:setRotationConstraints
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-0.5, 0.5)
@@ -536,7 +536,7 @@ do
     print("rotation constrained to [" .. min_r .. ", " .. max_r .. "]")
 end
 
---@api-stub: LCamera:getRotationConstraints
+--@api: LCamera:getRotationConstraints
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-1.0, 1.0)
@@ -545,14 +545,14 @@ do
     print("rotation max enabled = " .. tostring(has_max) .. " value = " .. mx)
 end
 
---@api-stub: LCamera:setRotationDamping
+--@api: LCamera:setRotationDamping
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationDamping(0.85)
     print("rotation damping = " .. cam:getRotationDamping())
 end
 
---@api-stub: LCamera:getRotationDamping
+--@api: LCamera:getRotationDamping
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationDamping(0.7)
@@ -560,47 +560,47 @@ do
     print("rot damping = " .. d)
 end
 
---@api-stub: LCamera:presetTightFollow
+--@api: LCamera:presetTightFollow
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetTightFollow()
     print("tight follow preset applied")
 end
 
---@api-stub: LCamera:presetCinematicFollow
+--@api: LCamera:presetCinematicFollow
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetCinematicFollow()
     print("cinematic follow preset applied")
 end
 
---@api-stub: LCamera:presetBalancedFollow
+--@api: LCamera:presetBalancedFollow
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetBalancedFollow()
     print("balanced follow preset applied")
 end
 
---@api-stub: LCamera:presetAggressiveFollow
+--@api: LCamera:presetAggressiveFollow
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetAggressiveFollow()
     print("aggressive follow preset applied")
 end
 
---@api-stub: LCamera:type
+--@api: LCamera:type
 do
     local cam = lurek.camera.new(800, 600)
     print("type = " .. cam:type())
 end
 
---@api-stub: LCamera:typeOf
+--@api: LCamera:typeOf
 do
     local cam = lurek.camera.new(800, 600)
     print("is LCamera = " .. tostring(cam:typeOf("LCamera")))
 end
 
---@api-stub: LCameraRig:splitScreen
+--@api: LCameraRig:splitScreen
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("player1", 100, 100)
@@ -609,7 +609,7 @@ do
     print("split screen layout applied")
 end
 
---@api-stub: LCameraRig:minimap
+--@api: LCameraRig:minimap
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 400, 300)
@@ -617,7 +617,7 @@ do
     print("minimap layout applied")
 end
 
---@api-stub: LCameraRig:pictureInPicture
+--@api: LCameraRig:pictureInPicture
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 200, 200)
@@ -625,7 +625,7 @@ do
     print("PiP layout applied")
 end
 
---@api-stub: lurek.camera.newWalker
+--@api: lurek.camera.newWalker
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, {
@@ -642,7 +642,7 @@ do
     print("walker type = " .. walker:type())
 end
 
---@api-stub: LCameraWalker:setPosition
+--@api: LCameraWalker:setPosition
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
@@ -651,7 +651,7 @@ do
     print("walker pos = " .. x .. ", " .. y)
 end
 
---@api-stub: LCameraWalker:getTilePosition
+--@api: LCameraWalker:getTilePosition
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
@@ -660,7 +660,7 @@ do
     print("walker tile = " .. tx .. ", " .. ty)
 end
 
---@api-stub: LCameraWalker:moveUp
+--@api: LCameraWalker:moveUp
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
@@ -669,7 +669,7 @@ do
     print("moved up, new y = " .. y)
 end
 
---@api-stub: LCameraWalker:moveDown
+--@api: LCameraWalker:moveDown
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
@@ -678,7 +678,7 @@ do
     print("moved down, new y = " .. y)
 end
 
---@api-stub: LCameraWalker:moveLeft
+--@api: LCameraWalker:moveLeft
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
@@ -687,7 +687,7 @@ do
     print("moved left, new x = " .. x)
 end
 
---@api-stub: LCameraWalker:moveRight
+--@api: LCameraWalker:moveRight
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { speed = 50, x = 100, y = 100 })
@@ -696,7 +696,7 @@ do
     print("moved right, new x = " .. x)
 end
 
---@api-stub: LCameraWalker:update
+--@api: LCameraWalker:update
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
@@ -706,7 +706,7 @@ do
     print("walker updated, pos = " .. x .. ", " .. y)
 end
 
---@api-stub: LCameraWalker:getCamera
+--@api: LCameraWalker:getCamera
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
@@ -714,7 +714,7 @@ do
     print("camera type = " .. cam:type())
 end
 
---@api-stub: LCameraWalker:getPosition
+--@api: LCameraWalker:getPosition
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
@@ -723,7 +723,7 @@ do
     print("walker pos = " .. x .. ", " .. y)
 end
 
---@api-stub: LCameraWalker:setTilePosition
+--@api: LCameraWalker:setTilePosition
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map, { tile_w = 32, tile_h = 32 })
@@ -732,21 +732,21 @@ do
     print("walker tile = " .. tx .. ", " .. ty)
 end
 
---@api-stub: LCameraWalker:type
+--@api: LCameraWalker:type
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     print("walker type = " .. walker:type())
 end
 
---@api-stub: LCameraWalker:typeOf
+--@api: LCameraWalker:typeOf
 do
     local map = lurek.tilemap.newTileMap(16, 16)
     local walker = lurek.camera.newWalker(map)
     print("is LCameraWalker = " .. tostring(walker:typeOf("LCameraWalker")))
 end
 
---@api-stub: LCameraRig:setPosition
+--@api: LCameraRig:setPosition
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("left", 100, 200)
@@ -754,7 +754,7 @@ do
     print("rig has left = " .. tostring(rig:has("left")))
 end
 
---@api-stub: LCameraRig:setZoom
+--@api: LCameraRig:setZoom
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("a", 0, 0)
@@ -764,7 +764,7 @@ do
     print("camera count = " .. tostring(#list))
 end
 
---@api-stub: LCameraRig:setTarget
+--@api: LCameraRig:setTarget
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("cam1", 0, 0)
@@ -773,7 +773,7 @@ do
     print("rig has cam1 = " .. tostring(rig:has("cam1")))
 end
 
---@api-stub: LCameraRig:updateAll
+--@api: LCameraRig:updateAll
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("a", 0, 0)
@@ -783,7 +783,7 @@ do
     print("camera count = " .. tostring(#rig:names()))
 end
 
---@api-stub: LCameraRig:apply
+--@api: LCameraRig:apply
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 400, 300)
@@ -791,7 +791,7 @@ do
     print("applied main = " .. tostring(ok))
 end
 
---@api-stub: LCameraRig:getViewport
+--@api: LCameraRig:getViewport
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("left", 0, 0)
@@ -800,7 +800,7 @@ do
     print("has=" .. tostring(has) .. " vp=" .. x .. "," .. y .. "," .. w .. "," .. h)
 end
 
---@api-stub: LCameraRig:names
+--@api: LCameraRig:names
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("p1", 0, 0)
@@ -809,7 +809,7 @@ do
     print("first name = " .. tostring(list[1]))
 end
 
---@api-stub: LCameraRig:remove
+--@api: LCameraRig:remove
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("temp", 0, 0)
@@ -817,20 +817,20 @@ do
     print("removed = " .. tostring(ok))
 end
 
---@api-stub: LCameraRig:has
+--@api: LCameraRig:has
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("x", 0, 0)
     print("has x = " .. tostring(rig:has("x")))
 end
 
---@api-stub: LCameraRig:type
+--@api: LCameraRig:type
 do
     local rig = lurek.camera.newRig()
     print("type = " .. rig:type())
 end
 
---@api-stub: LCameraRig:typeOf
+--@api: LCameraRig:typeOf
 do
     local rig = lurek.camera.newRig()
     print("is LCameraRig = " .. tostring(rig:typeOf("LCameraRig")))

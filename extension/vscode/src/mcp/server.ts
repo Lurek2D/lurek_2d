@@ -234,7 +234,7 @@ function buildToolRegistry(
  */
 function getToolDefinitions(workspaceRoot: string): ToolDefinition[] {
   const { getToolDefinitions: getDefs } = require("./tools");
-  return getDefs();
+  return getDefs(workspaceRoot);
 }
 
 // Allow running as standalone process

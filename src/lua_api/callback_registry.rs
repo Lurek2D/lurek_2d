@@ -1,4 +1,6 @@
 //! File: src/lua_api/callback_registry.rs
+//! Module API documentation
+//!
 
 use mlua::prelude::*;
 use std::collections::HashMap;

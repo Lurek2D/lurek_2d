@@ -4,35 +4,35 @@
 
 --- Event Module: queue, signals, polling, deferred events
 
---@api-stub: lurek.event.push
+--@api: lurek.event.push
 do
     lurek.event.push("player_hit", 25)
     print("pushed 'player_hit' event")
     print("push function type = " .. type(lurek.event.push))
 end
 
---@api-stub: lurek.event.pushPriority
+--@api: lurek.event.pushPriority
 do
     lurek.event.pushPriority("critical_error", "high", "out of memory")
     print("pushed high-priority event")
     print("priority helper ready = " .. tostring(type(lurek.event.pushPriority) == "function"))
 end
 
---@api-stub: lurek.event.pushDeferred
+--@api: lurek.event.pushDeferred
 do
     lurek.event.pushDeferred("scene_ready", "main_menu")
     print("deferred 'scene_ready'")
     print("deferred helper type = " .. type(lurek.event.pushDeferred))
 end
 
---@api-stub: lurek.event.pushDeferredPriority
+--@api: lurek.event.pushDeferredPriority
 do
     lurek.event.pushDeferredPriority("system_alert", "high", "low battery")
     print("deferred high-priority 'system_alert'")
     print("deferred priority helper type = " .. type(lurek.event.pushDeferredPriority))
 end
 
---@api-stub: lurek.event.flushDeferred
+--@api: lurek.event.flushDeferred
 do
     lurek.event.pushDeferred("a", 1)
     lurek.event.pushDeferred("b", 2)
@@ -40,7 +40,7 @@ do
     print("flushed " .. count .. " deferred events")
 end
 
---@api-stub: lurek.event.poll
+--@api: lurek.event.poll
 do
     lurek.event.push("test_event", 42)
     local next_event = lurek.event.poll()
@@ -49,7 +49,7 @@ do
     end
 end
 
---@api-stub: lurek.event.wait
+--@api: lurek.event.wait
 do
     lurek.event.push("wake_up", "now")
     local ok, name, args = lurek.event.wait(0.1)
@@ -60,26 +60,26 @@ do
     end
 end
 
---@api-stub: lurek.event.clear
+--@api: lurek.event.clear
 do
     lurek.event.push("discard_me", 1)
     lurek.event.clear()
     print("queue cleared")
 end
 
---@api-stub: lurek.event.pump
+--@api: lurek.event.pump
 do
     lurek.event.pump()
     print("pumped")
 end
 
---@api-stub: lurek.event.enableHistory
+--@api: lurek.event.enableHistory
 do
     lurek.event.enableHistory(100)
     print("history enabled, capacity = 100")
 end
 
---@api-stub: lurek.event.getHistory
+--@api: lurek.event.getHistory
 do
     lurek.event.enableHistory(50)
     lurek.event.push("score", 999)
@@ -90,37 +90,37 @@ do
     end
 end
 
---@api-stub: lurek.event.clearHistory
+--@api: lurek.event.clearHistory
 do
     lurek.event.clearHistory()
     print("history cleared")
 end
 
---@api-stub: lurek.event.exit
+--@api: lurek.event.exit
 do
     print("exit function available = " .. tostring(type(lurek.event.exit) == "function"))
     print("exit(code) requests shutdown, so this example does not call it")
 end
 
---@api-stub: lurek.event.quit
+--@api: lurek.event.quit
 do
     print("quit function available = " .. tostring(type(lurek.event.quit) == "function"))
     print("quit() requests shutdown, so this example does not call it")
 end
 
---@api-stub: lurek.event.restart
+--@api: lurek.event.restart
 do
     print("restart function available = " .. tostring(type(lurek.event.restart) == "function"))
     print("restart() requests a runtime restart, so this example does not call it")
 end
 
---@api-stub: lurek.event.newSignal
+--@api: lurek.event.newSignal
 do
     local sig = lurek.event.newSignal()
     print("signal type = " .. sig:type())
 end
 
---@api-stub: LSignal:connect
+--@api: LSignal:connect
 do
     local sig = lurek.event.newSignal()
     local handle = sig:connect("damage", function(amount)
@@ -129,7 +129,7 @@ do
     print("connected, handle = " .. handle)
 end
 
---@api-stub: LSignal:register
+--@api: LSignal:register
 do
     local sig = lurek.event.newSignal()
     local handle = sig:register("heal", function(amount)
@@ -138,7 +138,7 @@ do
     print("registered, handle = " .. handle)
 end
 
---@api-stub: LSignal:registerWithFilter
+--@api: LSignal:registerWithFilter
 do
     local sig = lurek.event.newSignal()
     local handle = sig:registerWithFilter("hit", function(dmg)
@@ -149,7 +149,7 @@ do
     print("registered with filter, handle = " .. handle)
 end
 
---@api-stub: LSignal:once
+--@api: LSignal:once
 do
     local sig = lurek.event.newSignal()
     local handle = sig:once("init", function()
@@ -158,7 +158,7 @@ do
     print("once handle = " .. handle)
 end
 
---@api-stub: LSignal:emit
+--@api: LSignal:emit
 do
     local sig = lurek.event.newSignal()
     sig:connect("greet", function(name)
@@ -167,7 +167,7 @@ do
     sig:emit("greet", "world")
 end
 
---@api-stub: LSignal:remove
+--@api: LSignal:remove
 do
     local sig = lurek.event.newSignal()
     local h = sig:connect("tick", function() end)
@@ -175,7 +175,7 @@ do
     print("removed = " .. tostring(removed))
 end
 
---@api-stub: LSignal:clear
+--@api: LSignal:clear
 do
     local sig = lurek.event.newSignal()
     sig:connect("update", function() end)
@@ -184,7 +184,7 @@ do
     print("cleared " .. count .. " callbacks")
 end
 
---@api-stub: LSignal:clearAll
+--@api: LSignal:clearAll
 do
     local sig = lurek.event.newSignal()
     sig:connect("a", function() end)
@@ -193,7 +193,7 @@ do
     print("cleared all: " .. count)
 end
 
---@api-stub: LSignal:getCount
+--@api: LSignal:getCount
 do
     local sig = lurek.event.newSignal()
     sig:connect("tick", function() end)
@@ -201,7 +201,7 @@ do
     print("tick count = " .. sig:getCount("tick"))
 end
 
---@api-stub: LSignal:getTotalCount
+--@api: LSignal:getTotalCount
 do
     local sig = lurek.event.newSignal()
     sig:connect("a", function() end)
@@ -210,13 +210,13 @@ do
     print("total = " .. sig:getTotalCount())
 end
 
---@api-stub: LSignal:type
+--@api: LSignal:type
 do
     local sig = lurek.event.newSignal()
     print("type = " .. sig:type())
 end
 
---@api-stub: LSignal:typeOf
+--@api: LSignal:typeOf
 do
     local sig = lurek.event.newSignal()
     print("is Signal = " .. tostring(sig:typeOf("LSignal")))

@@ -4,7 +4,7 @@
 
 --- Serial Module: JSON, TOML, CSV, INI, MsgPack, XML, format detection, schema validation
 
---@api-stub: lurek.serial.fromJson
+--@api: lurek.serial.fromJson
 do
     local jsonStr = '{"name":"warrior","level":12,"alive":true,"items":["sword","shield"]}'
     local data = lurek.serial.fromJson(jsonStr)
@@ -12,14 +12,14 @@ do
     print("items count = " .. #data.items)
 end
 
---@api-stub: lurek.serial.toJson
+--@api: lurek.serial.toJson
 do
     local json = lurek.serial.toJson({ player = { name = "Alice", level = 2 } }, true)
     print("encoded length = " .. #json)
     print("has player = " .. tostring(json:find('"player"') ~= nil))
 end
 
---@api-stub: lurek.serial.fromToml
+--@api: lurek.serial.fromToml
 do
     local tomlStr = '[game]\ntitle = "Dungeon Quest"\n[window]\nwidth = 1920\nheight = 1080'
     local config = lurek.serial.fromToml(tomlStr)
@@ -27,7 +27,7 @@ do
     print("window = " .. config.window.width .. "x" .. config.window.height)
 end
 
---@api-stub: lurek.serial.fromCsv
+--@api: lurek.serial.fromCsv
 do
     local csvWithHeaders = "name,age,city\nAlice,30,Warsaw\nBob,25,Krakow\nCarol,35,Gdansk"
     local rows = lurek.serial.fromCsv(csvWithHeaders, ",", true)
@@ -36,7 +36,7 @@ do
     print("second row city = " .. rows[2].city)
 end
 
---@api-stub: lurek.serial.fromIni
+--@api: lurek.serial.fromIni
 do
     local iniStr = '[player]\nname = Hero\nclass = warrior\n[controls]\njump = space'
     local ini = lurek.serial.fromIni(iniStr)
@@ -44,7 +44,7 @@ do
     print("jump key = " .. ini.controls.jump)
 end
 
---@api-stub: lurek.serial.encodeMsgPack
+--@api: lurek.serial.encodeMsgPack
 do
     local packed = lurek.serial.encodeMsgPack({ version = 2, entities = { { id = 1, hp = 100 } } })
     local unpacked = lurek.serial.decodeMsgPack(packed)
@@ -52,27 +52,27 @@ do
     print("entities = " .. #unpacked.entities)
 end
 
---@api-stub: lurek.serial.decodeXml
+--@api: lurek.serial.decodeXml
 do
     local doc = lurek.serial.decodeXml('<tilemap><layer name="ground" visible="true"/></tilemap>')
     print("root tag = " .. (doc.tag or doc.name or "unknown"))
     print("decoded xml type = " .. type(doc))
 end
 
---@api-stub: lurek.serial.encode
+--@api: lurek.serial.encode
 do
     local jsonOut = lurek.serial.encode({ greeting = "hello", count = 42 }, "json", { pretty = true })
     print("json encode = " .. jsonOut)
     print("count = " .. lurek.serial.decode(jsonOut, "json").count)
 end
 
---@api-stub: lurek.serial.detectFormat
+--@api: lurek.serial.detectFormat
 do
     local format = lurek.serial.detectFormat('{"key": "value"}')
     print("json detected = " .. tostring(format))
 end
 
---@api-stub: lurek.serial.validate
+--@api: lurek.serial.validate
 do
     local schema = { type = "object", required = { "name", "level" } }
     local ok, err = lurek.serial.validate({ name = "Knight", level = 50 }, schema)
@@ -80,7 +80,7 @@ do
     print("valid err = " .. tostring(err))
 end
 
---@api-stub: lurek.serial.applyDefaults
+--@api: lurek.serial.applyDefaults
 do
     local schema = { fields = { width = { default = 800 }, height = { default = 600 }, title = { default = "Untitled" } } }
     local filled = lurek.serial.applyDefaults({ width = 1280 }, schema)
@@ -89,7 +89,7 @@ do
     print("title = " .. filled.title)
 end
 
---@api-stub: lurek.serial.decode
+--@api: lurek.serial.decode
 do
     local jsonPayload = '{"auto": true, "score": 99}'
     local result = lurek.serial.decode(jsonPayload)
@@ -99,7 +99,7 @@ end
 
 --- Serial Module: decode, decodeMsgPack, toCsv, toJson, toToml
 
---@api-stub: lurek.serial.decodeMsgPack
+--@api: lurek.serial.decodeMsgPack
 do
     local bytes = lurek.serial.encodeMsgPack({ x = 1, y = 2 })
     local decoded = lurek.serial.decodeMsgPack(bytes)
@@ -107,14 +107,14 @@ do
     print("y = " .. tostring(decoded.y))
 end
 
---@api-stub: lurek.serial.toCsv
+--@api: lurek.serial.toCsv
 do
     local csv = lurek.serial.toCsv({ { name = "Alice", score = 100 }, { name = "Bob", score = 90 } }, ",", true)
     print("csv length = " .. #csv)
     print("contains header = " .. tostring(csv:find("name") ~= nil))
 end
 
---@api-stub: lurek.serial.toToml
+--@api: lurek.serial.toToml
 do
     local toml = lurek.serial.toToml({ version = "1.0", debug = false })
     print("toml length = " .. #toml)

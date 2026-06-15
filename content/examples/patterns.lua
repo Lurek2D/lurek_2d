@@ -4,7 +4,7 @@
 
 --- Patterns Module Part 1: service locator, object pool, factory, strategy
 
---@api-stub: lurek.patterns.newServiceLocator
+--@api: lurek.patterns.newServiceLocator
 do
     local services = lurek.patterns.newServiceLocator()
     services:provide("audio", {volume = 0.8})
@@ -12,7 +12,7 @@ do
     print("services = " .. #services:getServices())
 end
 
---@api-stub: LServiceLocator:provide
+--@api: LServiceLocator:provide
 do
     local services = lurek.patterns.newServiceLocator()
     services:provide("renderer", {backend = "wgpu"})
@@ -20,7 +20,7 @@ do
     print("services = " .. #services:getServices())
 end
 
---@api-stub: LServiceLocator:locate
+--@api: LServiceLocator:locate
 do
     local services = lurek.patterns.newServiceLocator()
     services:provide("audio", {volume = 0.8, muted = false})
@@ -29,7 +29,7 @@ do
     print("has audio = " .. tostring(services:has("audio")))
 end
 
---@api-stub: LServiceLocator:has
+--@api: LServiceLocator:has
 do
     local services = lurek.patterns.newServiceLocator()
     services:provide("input", {keyboard = true})
@@ -37,7 +37,7 @@ do
     print("has physics = " .. tostring(services:has("physics")))
 end
 
---@api-stub: LServiceLocator:getServices
+--@api: LServiceLocator:getServices
 do
     local services = lurek.patterns.newServiceLocator()
     services:provide("renderer", {backend = "wgpu"})
@@ -47,7 +47,7 @@ do
     print("first = " .. tostring(names[1]))
 end
 
---@api-stub: LServiceLocator:remove
+--@api: LServiceLocator:remove
 do
     local services = lurek.patterns.newServiceLocator()
     services:provide("save", {slot = 1})
@@ -56,7 +56,7 @@ do
     print("services = " .. #services:getServices())
 end
 
---@api-stub: LServiceLocator:clearAll
+--@api: LServiceLocator:clearAll
 do
     local services = lurek.patterns.newServiceLocator()
     services:provide("renderer", {backend = "wgpu"})
@@ -66,7 +66,7 @@ do
     print("after = " .. #services:getServices())
 end
 
---@api-stub: lurek.patterns.newObjectPool
+--@api: lurek.patterns.newObjectPool
 do
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1, active = false})
@@ -74,7 +74,7 @@ do
     print("available = " .. pool:getAvailableCount())
 end
 
---@api-stub: LObjectPool:add
+--@api: LObjectPool:add
 do
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1, active = false})
@@ -83,7 +83,7 @@ do
     print("available = " .. pool:getAvailableCount())
 end
 
---@api-stub: LObjectPool:acquire
+--@api: LObjectPool:acquire
 do
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1, active = false})
@@ -93,7 +93,7 @@ do
     print("active = " .. pool:getActiveCount())
 end
 
---@api-stub: LObjectPool:release
+--@api: LObjectPool:release
 do
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1, active = false})
@@ -104,7 +104,7 @@ do
     print("available = " .. pool:getAvailableCount())
 end
 
---@api-stub: LObjectPool:clearAll
+--@api: LObjectPool:clearAll
 do
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1})
@@ -114,7 +114,7 @@ do
     print("after = " .. pool:getTotalCount())
 end
 
---@api-stub: lurek.patterns.newFactory
+--@api: lurek.patterns.newFactory
 do
     local factory = lurek.patterns.newFactory()
     factory:register("enemy", function(hp)
@@ -125,7 +125,7 @@ do
     print("types = " .. #factory:getTypes())
 end
 
---@api-stub: LFactory:register
+--@api: LFactory:register
 do
     local factory = lurek.patterns.newFactory()
     factory:register("enemy", function(hp)
@@ -135,7 +135,7 @@ do
     print("types = " .. #factory:getTypes())
 end
 
---@api-stub: LFactory:has
+--@api: LFactory:has
 do
     local factory = lurek.patterns.newFactory()
     factory:register("bullet", function(speed)
@@ -145,7 +145,7 @@ do
     print("has enemy = " .. tostring(factory:has("enemy")))
 end
 
---@api-stub: LFactory:create
+--@api: LFactory:create
 do
     local factory = lurek.patterns.newFactory()
     factory:register("bullet", function(speed)
@@ -156,7 +156,7 @@ do
     print("types = " .. #factory:getTypes())
 end
 
---@api-stub: LFactory:getTypes
+--@api: LFactory:getTypes
 do
     local factory = lurek.patterns.newFactory()
     factory:register("enemy", function()
@@ -170,7 +170,7 @@ do
     print("has enemy = " .. tostring(factory:has("enemy")))
 end
 
---@api-stub: LFactory:alias
+--@api: LFactory:alias
 do
     local factory = lurek.patterns.newFactory()
     factory:register("goblin", function()
@@ -182,7 +182,7 @@ do
     print("has alias target = " .. tostring(factory:has("small_enemy")))
 end
 
---@api-stub: LFactory:remove
+--@api: LFactory:remove
 do
     local factory = lurek.patterns.newFactory()
     factory:register("goblin", function()
@@ -193,7 +193,7 @@ do
     print("types = " .. #factory:getTypes())
 end
 
---@api-stub: LFactory:clearAll
+--@api: LFactory:clearAll
 do
     local factory = lurek.patterns.newFactory()
     factory:register("enemy", function()
@@ -207,7 +207,7 @@ do
     print("after = " .. #factory:getTypes())
 end
 
---@api-stub: lurek.patterns.newStrategy
+--@api: lurek.patterns.newStrategy
 do
     local strat = lurek.patterns.newStrategy()
     strat:register("attack", function(target)
@@ -221,7 +221,7 @@ do
     print("result = " .. tostring(strat:execute("orc")))
 end
 
---@api-stub: LStrategy:register
+--@api: LStrategy:register
 do
     local strat = lurek.patterns.newStrategy()
     strat:register("attack", function(target)
@@ -234,7 +234,7 @@ do
     print("names = " .. #strat:names())
 end
 
---@api-stub: LStrategy:set
+--@api: LStrategy:set
 do
     local strat = lurek.patterns.newStrategy()
     strat:register("attack", function(target)
@@ -248,7 +248,7 @@ do
     print("result = " .. tostring(strat:execute("dragon")))
 end
 
---@api-stub: LStrategy:execute
+--@api: LStrategy:execute
 do
     local strat = lurek.patterns.newStrategy()
     strat:register("attack", function(target)
@@ -262,7 +262,7 @@ do
     print("result = " .. tostring(strat:execute("slime")))
 end
 
---@api-stub: LStrategy:has
+--@api: LStrategy:has
 do
     local strat = lurek.patterns.newStrategy()
     strat:register("fast", function()
@@ -275,7 +275,7 @@ do
     print("has medium = " .. tostring(strat:has("medium")))
 end
 
---@api-stub: LStrategy:names
+--@api: LStrategy:names
 do
     local strat = lurek.patterns.newStrategy()
     strat:register("fast", function()
@@ -289,7 +289,7 @@ do
     print("first = " .. tostring(names[1]))
 end
 
---@api-stub: LStrategy:remove
+--@api: LStrategy:remove
 do
     local strat = lurek.patterns.newStrategy()
     strat:register("fast", function()
@@ -303,7 +303,7 @@ do
     print("names = " .. #strat:names())
 end
 
---@api-stub: LStrategy:clear
+--@api: LStrategy:clear
 do
     local strat = lurek.patterns.newStrategy()
     strat:register("fast", function()
@@ -319,7 +319,7 @@ end
 
 --- Patterns Module Part 2: FSM, command stack, behavior tree, blackboard
 
---@api-stub: lurek.patterns.newSimpleState
+--@api: lurek.patterns.newSimpleState
 do
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("idle", {
@@ -335,7 +335,7 @@ do
     print("current = " .. tostring(fsm:getCurrent()))
 end
 
---@api-stub: LSimpleState:addState
+--@api: LSimpleState:addState
 do
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("idle", {
@@ -352,7 +352,7 @@ do
     print("states = " .. #fsm:getStates())
 end
 
---@api-stub: LSimpleState:transitionTo
+--@api: LSimpleState:transitionTo
 do
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("idle", {
@@ -370,7 +370,7 @@ do
     print("has idle = " .. tostring(fsm:hasState("idle")))
 end
 
---@api-stub: LSimpleState:getCurrent
+--@api: LSimpleState:getCurrent
 do
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("idle", {
@@ -383,7 +383,7 @@ do
     print("states = " .. #fsm:getStates())
 end
 
---@api-stub: LSimpleState:hasState
+--@api: LSimpleState:hasState
 do
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("menu")
@@ -392,7 +392,7 @@ do
     print("has pause = " .. tostring(fsm:hasState("pause")))
 end
 
---@api-stub: LSimpleState:getStates
+--@api: LSimpleState:getStates
 do
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("menu")
@@ -402,7 +402,7 @@ do
     print("has pause = " .. tostring(fsm:hasState("pause")))
 end
 
---@api-stub: LSimpleState:clearAll
+--@api: LSimpleState:clearAll
 do
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("menu")
@@ -412,7 +412,7 @@ do
     print("after = " .. #fsm:getStates())
 end
 
---@api-stub: lurek.patterns.newCommandStack
+--@api: lurek.patterns.newCommandStack
 do
     local cmds = lurek.patterns.newCommandStack(10)
     local value = 1
@@ -430,7 +430,7 @@ do
     print("history = " .. cmds:getHistorySize())
 end
 
---@api-stub: LCommandStack:execute
+--@api: LCommandStack:execute
 do
     local cmds = lurek.patterns.newCommandStack(10)
     local value = 1
@@ -448,7 +448,7 @@ do
     print("current = " .. tostring(cmds:getCurrentName()))
 end
 
---@api-stub: LCommandStack:undo
+--@api: LCommandStack:undo
 do
     local cmds = lurek.patterns.newCommandStack(10)
     local value = 1
@@ -467,7 +467,7 @@ do
     print("can redo = " .. tostring(cmds:canRedo()))
 end
 
---@api-stub: LCommandStack:redo
+--@api: LCommandStack:redo
 do
     local cmds = lurek.patterns.newCommandStack(10)
     local value = 1
@@ -487,7 +487,7 @@ do
     print("current = " .. tostring(cmds:getCurrentName()))
 end
 
---@api-stub: LCommandStack:canUndo
+--@api: LCommandStack:canUndo
 do
     local cmds = lurek.patterns.newCommandStack()
     cmds:execute("step1", function()
@@ -500,7 +500,7 @@ do
     print("history = " .. cmds:getHistorySize())
 end
 
---@api-stub: LCommandStack:canRedo
+--@api: LCommandStack:canRedo
 do
     local cmds = lurek.patterns.newCommandStack()
     cmds:execute("step1", function()
@@ -514,7 +514,7 @@ do
     print("current = " .. tostring(cmds:getCurrentName()))
 end
 
---@api-stub: LCommandStack:getCurrentName
+--@api: LCommandStack:getCurrentName
 do
     local cmds = lurek.patterns.newCommandStack()
     cmds:execute("step1", function()
@@ -527,7 +527,7 @@ do
     print("history = " .. cmds:getHistorySize())
 end
 
---@api-stub: LCommandStack:getHistorySize
+--@api: LCommandStack:getHistorySize
 do
     local cmds = lurek.patterns.newCommandStack()
     cmds:execute("step1", function()
@@ -540,7 +540,7 @@ do
     print("can undo = " .. tostring(cmds:canUndo()))
 end
 
---@api-stub: LCommandStack:clearAll
+--@api: LCommandStack:clearAll
 do
     local cmds = lurek.patterns.newCommandStack()
     cmds:execute("step1", function()
@@ -554,7 +554,7 @@ do
     print("after = " .. cmds:getHistorySize())
 end
 
---@api-stub: lurek.patterns.newBehaviorTree
+--@api: lurek.patterns.newBehaviorTree
 do
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
@@ -573,7 +573,7 @@ do
     print("nodes = " .. bt:nodeCount())
 end
 
---@api-stub: LBehaviorTree:addSequence
+--@api: LBehaviorTree:addSequence
 do
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
@@ -587,7 +587,7 @@ do
     print("nodes = " .. bt:nodeCount())
 end
 
---@api-stub: LBehaviorTree:addSelector
+--@api: LBehaviorTree:addSelector
 do
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSelector("root")
@@ -606,7 +606,7 @@ do
     print("nodes = " .. bt:nodeCount())
 end
 
---@api-stub: LBehaviorTree:addLeaf
+--@api: LBehaviorTree:addLeaf
 do
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
@@ -620,7 +620,7 @@ do
     print("nodes = " .. bt:nodeCount())
 end
 
---@api-stub: LBehaviorTree:setLeaf
+--@api: LBehaviorTree:setLeaf
 do
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
@@ -635,7 +635,7 @@ do
     print("nodes = " .. bt:nodeCount())
 end
 
---@api-stub: LBehaviorTree:tick
+--@api: LBehaviorTree:tick
 do
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
@@ -649,7 +649,7 @@ do
     print("nodes = " .. bt:nodeCount())
 end
 
---@api-stub: LBehaviorTree:resetState
+--@api: LBehaviorTree:resetState
 do
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSequence("root")
@@ -664,7 +664,7 @@ do
     print("after reset = " .. bt:tick())
 end
 
---@api-stub: LBehaviorTree:addParallel
+--@api: LBehaviorTree:addParallel
 do
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addParallel(2, "root")
@@ -683,7 +683,7 @@ do
     print("nodes = " .. bt:nodeCount())
 end
 
---@api-stub: LBehaviorTree:addInverter
+--@api: LBehaviorTree:addInverter
 do
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addInverter("invert")
@@ -697,7 +697,7 @@ do
     print("nodes = " .. bt:nodeCount())
 end
 
---@api-stub: LBehaviorTree:addRepeat
+--@api: LBehaviorTree:addRepeat
 do
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addRepeat(2, "repeat")
@@ -713,7 +713,7 @@ do
     print("calls = " .. calls)
 end
 
---@api-stub: LBehaviorTree:clearAll
+--@api: LBehaviorTree:clearAll
 do
     local bt = lurek.patterns.newBehaviorTree()
     local root = bt:addSelector("root")
@@ -725,7 +725,7 @@ do
     print("after = " .. bt:nodeCount())
 end
 
---@api-stub: lurek.patterns.newBlackboard
+--@api: lurek.patterns.newBlackboard
 do
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("health", 100)
@@ -734,7 +734,7 @@ do
     print("keys = " .. #bb:keys())
 end
 
---@api-stub: LBlackboard:set
+--@api: LBlackboard:set
 do
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("score", 10)
@@ -743,7 +743,7 @@ do
     print("revision = " .. bb:getRevision())
 end
 
---@api-stub: LBlackboard:get
+--@api: LBlackboard:get
 do
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("weapon", "sword")
@@ -751,7 +751,7 @@ do
     print("has weapon = " .. tostring(bb:has("weapon")))
 end
 
---@api-stub: LBlackboard:has
+--@api: LBlackboard:has
 do
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("alive", true)
@@ -759,7 +759,7 @@ do
     print("has mana = " .. tostring(bb:has("mana")))
 end
 
---@api-stub: LBlackboard:keys
+--@api: LBlackboard:keys
 do
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("health", 100)
@@ -769,7 +769,7 @@ do
     print("first = " .. tostring(keys[1]))
 end
 
---@api-stub: LBlackboard:watch
+--@api: LBlackboard:watch
 do
     local bb = lurek.patterns.newBlackboard("game_state")
     local watch_id = bb:watch("score", function(key, value)
@@ -781,7 +781,7 @@ do
     bb:unwatch(watch_id)
 end
 
---@api-stub: LBlackboard:unwatch
+--@api: LBlackboard:unwatch
 do
     local bb = lurek.patterns.newBlackboard("game_state")
     local watch_id = bb:watch("score", function(key, value)
@@ -793,7 +793,7 @@ do
     print("revision = " .. bb:getRevision())
 end
 
---@api-stub: LBlackboard:getRevision
+--@api: LBlackboard:getRevision
 do
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("score", 10)
@@ -802,7 +802,7 @@ do
     print("score = " .. tostring(bb:get("score")))
 end
 
---@api-stub: LBlackboard:snapshot
+--@api: LBlackboard:snapshot
 do
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("score", 42)
@@ -812,7 +812,7 @@ do
     print("weapon = " .. tostring(snap.weapon))
 end
 
---@api-stub: LBlackboard:clear
+--@api: LBlackboard:clear
 do
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("score", 42)
@@ -821,7 +821,7 @@ do
     print("after = " .. tostring(bb:has("score")))
 end
 
---@api-stub: LBlackboard:clearAll
+--@api: LBlackboard:clearAll
 do
     local bb = lurek.patterns.newBlackboard("game_state")
     bb:set("score", 42)
@@ -833,7 +833,7 @@ end
 
 --- Patterns Module Part 3: observer, event bus, mediator, debounce, throttle, funnel
 
---@api-stub: lurek.patterns.newObserver
+--@api: lurek.patterns.newObserver
 do
     local obs = lurek.patterns.newObserver("player_stats")
     local id = obs:subscribe("hp", function(key, value)
@@ -844,7 +844,7 @@ do
     obs:unsubscribe(id)
 end
 
---@api-stub: LObserver:set
+--@api: LObserver:set
 do
     local obs = lurek.patterns.newObserver("player_stats")
     local id = obs:subscribe("hp", function(key, value)
@@ -856,7 +856,7 @@ do
     obs:unsubscribe(id)
 end
 
---@api-stub: LObserver:get
+--@api: LObserver:get
 do
     local obs = lurek.patterns.newObserver("player_stats")
     obs:set("hp", 90)
@@ -864,7 +864,7 @@ do
     print("subs = " .. obs:getCount())
 end
 
---@api-stub: LObserver:subscribe
+--@api: LObserver:subscribe
 do
     local obs = lurek.patterns.newObserver("player_stats")
     local id = obs:subscribe("hp", function(key, value)
@@ -875,7 +875,7 @@ do
     obs:unsubscribe(id)
 end
 
---@api-stub: LObserver:unsubscribe
+--@api: LObserver:unsubscribe
 do
     local obs = lurek.patterns.newObserver("player_stats")
     local id = obs:subscribe("hp", function(key, value)
@@ -886,7 +886,7 @@ do
     print("subs = " .. obs:getCount())
 end
 
---@api-stub: LObserver:getCount
+--@api: LObserver:getCount
 do
     local obs = lurek.patterns.newObserver("player_stats")
     obs:subscribe("score", function(key, value)
@@ -897,7 +897,7 @@ do
     print("after = " .. obs:getCount())
 end
 
---@api-stub: lurek.patterns.newEventBus
+--@api: lurek.patterns.newEventBus
 do
     local bus = lurek.patterns.newEventBus("game_events")
     local id = bus:on("damage", function(amount, source)
@@ -908,7 +908,7 @@ do
     bus:off(id)
 end
 
---@api-stub: LEventBus:on
+--@api: LEventBus:on
 do
     local bus = lurek.patterns.newEventBus("game_events")
     local id = bus:on("damage", function(amount, source)
@@ -919,7 +919,7 @@ do
     bus:off(id)
 end
 
---@api-stub: LEventBus:emit
+--@api: LEventBus:emit
 do
     local bus = lurek.patterns.newEventBus("game_events")
     local id = bus:on("damage", function(amount, source)
@@ -930,7 +930,7 @@ do
     bus:off(id)
 end
 
---@api-stub: LEventBus:off
+--@api: LEventBus:off
 do
     local bus = lurek.patterns.newEventBus("game_events")
     local id = bus:on("damage", function(amount)
@@ -941,7 +941,7 @@ do
     print("listeners = " .. bus:getListenerCount("damage"))
 end
 
---@api-stub: LEventBus:getListenerCount
+--@api: LEventBus:getListenerCount
 do
     local bus = lurek.patterns.newEventBus("game_events")
     bus:on("spawn", function(id)
@@ -954,7 +954,7 @@ do
     print("events = " .. #bus:getEvents())
 end
 
---@api-stub: LEventBus:getEvents
+--@api: LEventBus:getEvents
 do
     local bus = lurek.patterns.newEventBus("game_events")
     bus:on("spawn", function(id)
@@ -968,7 +968,7 @@ do
     print("first = " .. tostring(events[1]))
 end
 
---@api-stub: LEventBus:clear
+--@api: LEventBus:clear
 do
     local bus = lurek.patterns.newEventBus("game_events")
     bus:on("spawn", function(id)
@@ -979,7 +979,7 @@ do
     print("after = " .. bus:getListenerCount("spawn"))
 end
 
---@api-stub: LEventBus:clearAll
+--@api: LEventBus:clearAll
 do
     local bus = lurek.patterns.newEventBus("game_events")
     bus:on("spawn", function(id)
@@ -993,7 +993,7 @@ do
     print("after = " .. #bus:getEvents())
 end
 
---@api-stub: lurek.patterns.newMediator
+--@api: lurek.patterns.newMediator
 do
     local med = lurek.patterns.newMediator()
     local id = med:on("ui", function(msg, data)
@@ -1004,7 +1004,7 @@ do
     med:off("ui", id)
 end
 
---@api-stub: LMediator:on
+--@api: LMediator:on
 do
     local med = lurek.patterns.newMediator()
     local id = med:on("ui", function(msg, data)
@@ -1015,7 +1015,7 @@ do
     med:off("ui", id)
 end
 
---@api-stub: LMediator:send
+--@api: LMediator:send
 do
     local med = lurek.patterns.newMediator()
     local id = med:on("ui", function(msg, data)
@@ -1026,7 +1026,7 @@ do
     med:off("ui", id)
 end
 
---@api-stub: LMediator:off
+--@api: LMediator:off
 do
     local med = lurek.patterns.newMediator()
     local id = med:on("ui", function(msg, data)
@@ -1037,7 +1037,7 @@ do
     print("handlers = " .. med:handlerCount("ui"))
 end
 
---@api-stub: LMediator:broadcast
+--@api: LMediator:broadcast
 do
     local med = lurek.patterns.newMediator()
     med:on("audio", function(msg)
@@ -1051,7 +1051,7 @@ do
     print("audio handlers = " .. med:handlerCount("audio"))
 end
 
---@api-stub: LMediator:channels
+--@api: LMediator:channels
 do
     local med = lurek.patterns.newMediator()
     med:on("audio", function(msg)
@@ -1065,7 +1065,7 @@ do
     print("first = " .. tostring(channels[1]))
 end
 
---@api-stub: LMediator:handlerCount
+--@api: LMediator:handlerCount
 do
     local med = lurek.patterns.newMediator()
     med:on("audio", function(msg)
@@ -1078,7 +1078,7 @@ do
     print("channels = " .. #med:channels())
 end
 
---@api-stub: LMediator:removeChannel
+--@api: LMediator:removeChannel
 do
     local med = lurek.patterns.newMediator()
     med:on("audio", function(msg)
@@ -1089,7 +1089,7 @@ do
     print("after = " .. #med:channels())
 end
 
---@api-stub: LMediator:clear
+--@api: LMediator:clear
 do
     local med = lurek.patterns.newMediator()
     med:on("audio", function(msg)
@@ -1103,7 +1103,7 @@ do
     print("after = " .. #med:channels())
 end
 
---@api-stub: lurek.patterns.newDebounce
+--@api: lurek.patterns.newDebounce
 do
     local db = lurek.patterns.newDebounce(0.5)
     db:onFire(function()
@@ -1115,7 +1115,7 @@ do
     print("fires = " .. db:getFireCount())
 end
 
---@api-stub: LDebounce:trigger
+--@api: LDebounce:trigger
 do
     local db = lurek.patterns.newDebounce(0.5)
     db:onFire(function()
@@ -1127,7 +1127,7 @@ do
     print("fires = " .. db:getFireCount())
 end
 
---@api-stub: LDebounce:update
+--@api: LDebounce:update
 do
     local db = lurek.patterns.newDebounce(0.5)
     db:onFire(function()
@@ -1139,7 +1139,7 @@ do
     print("fires = " .. db:getFireCount())
 end
 
---@api-stub: LDebounce:onFire
+--@api: LDebounce:onFire
 do
     local db = lurek.patterns.newDebounce(0.5)
     db:onFire(function()
@@ -1151,7 +1151,7 @@ do
     print("pending = " .. tostring(db:isPending()))
 end
 
---@api-stub: LDebounce:cancel
+--@api: LDebounce:cancel
 do
     local db = lurek.patterns.newDebounce(1.0)
     db:onFire(function()
@@ -1164,7 +1164,7 @@ do
     print("fires = " .. db:getFireCount())
 end
 
---@api-stub: LDebounce:isPending
+--@api: LDebounce:isPending
 do
     local db = lurek.patterns.newDebounce(1.0)
     db:onFire(function()
@@ -1176,7 +1176,7 @@ do
     print("fires = " .. db:getFireCount())
 end
 
---@api-stub: LDebounce:getFireCount
+--@api: LDebounce:getFireCount
 do
     local db = lurek.patterns.newDebounce(0.3)
     db:onFire(function()
@@ -1188,7 +1188,7 @@ do
     print("pending = " .. tostring(db:isPending()))
 end
 
---@api-stub: lurek.patterns.newThrottle
+--@api: lurek.patterns.newThrottle
 do
     local th = lurek.patterns.newThrottle(0.2)
     local fires = 0
@@ -1202,7 +1202,7 @@ do
     print("fires = " .. th:getFireCount())
 end
 
---@api-stub: LThrottle:onFire
+--@api: LThrottle:onFire
 do
     local th = lurek.patterns.newThrottle(0.2)
     local fires = 0
@@ -1215,7 +1215,7 @@ do
     print("fires = " .. th:getFireCount())
 end
 
---@api-stub: LThrottle:update
+--@api: LThrottle:update
 do
     local th = lurek.patterns.newThrottle(0.2)
     local fires = 0
@@ -1228,7 +1228,7 @@ do
     print("fires = " .. th:getFireCount())
 end
 
---@api-stub: LThrottle:getFireCount
+--@api: LThrottle:getFireCount
 do
     local th = lurek.patterns.newThrottle(0.2)
     th:onFire(function()
@@ -1240,7 +1240,7 @@ do
     print("progress = " .. th:getProgress())
 end
 
---@api-stub: LThrottle:reset
+--@api: LThrottle:reset
 do
     local th = lurek.patterns.newThrottle(1.0)
     th:onFire(function()
@@ -1252,7 +1252,7 @@ do
     print("after reset = " .. th:getProgress())
 end
 
---@api-stub: LThrottle:setEnabled
+--@api: LThrottle:setEnabled
 do
     local th = lurek.patterns.newThrottle(1.0)
     th:onFire(function()
@@ -1264,7 +1264,7 @@ do
     print("progress = " .. th:getProgress())
 end
 
---@api-stub: LThrottle:getProgress
+--@api: LThrottle:getProgress
 do
     local th = lurek.patterns.newThrottle(1.0)
     th:onFire(function()
@@ -1276,7 +1276,7 @@ do
     print("fires = " .. th:getFireCount())
 end
 
---@api-stub: lurek.patterns.newFunnel
+--@api: lurek.patterns.newFunnel
 do
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
     funnel:onFlush(function(entries)
@@ -1289,7 +1289,7 @@ do
     print("flush count = " .. funnel:getFlushCount())
 end
 
---@api-stub: LFunnel:push
+--@api: LFunnel:push
 do
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
     funnel:onFlush(function(entries)
@@ -1302,7 +1302,7 @@ do
     print("flush count = " .. funnel:getFlushCount())
 end
 
---@api-stub: LFunnel:update
+--@api: LFunnel:update
 do
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
     funnel:onFlush(function(entries)
@@ -1315,7 +1315,7 @@ do
     print("flush count = " .. funnel:getFlushCount())
 end
 
---@api-stub: LFunnel:onFlush
+--@api: LFunnel:onFlush
 do
     local funnel = lurek.patterns.newFunnel(1.0, 5, "damage_log")
     funnel:onFlush(function(entries)
@@ -1328,7 +1328,7 @@ do
     print("flush count = " .. funnel:getFlushCount())
 end
 
---@api-stub: LFunnel:flush
+--@api: LFunnel:flush
 do
     local funnel = lurek.patterns.newFunnel(5.0, 0, "damage_log")
     funnel:onFlush(function(entries)
@@ -1341,7 +1341,7 @@ do
     print("flush count = " .. funnel:getFlushCount())
 end
 
---@api-stub: LFunnel:discard
+--@api: LFunnel:discard
 do
     local funnel = lurek.patterns.newFunnel(5.0, 0, "damage_log")
     funnel:onFlush(function(entries)
@@ -1354,7 +1354,7 @@ do
     print("flush count = " .. funnel:getFlushCount())
 end
 
---@api-stub: LFunnel:pendingCount
+--@api: LFunnel:pendingCount
 do
     local funnel = lurek.patterns.newFunnel(5.0, 0, "damage_log")
     funnel:onFlush(function(entries)
@@ -1366,7 +1366,7 @@ do
     print("flush count = " .. funnel:getFlushCount())
 end
 
---@api-stub: LFunnel:getFlushCount
+--@api: LFunnel:getFlushCount
 do
     local funnel = lurek.patterns.newFunnel(5.0, 0, "damage_log")
     funnel:onFlush(function(entries)
@@ -1381,7 +1381,7 @@ end
 
 --- Patterns Module Part 4: graph, collections (list, map, set, stack, queue, ring, priority queue, weighted random, relationships)
 
---@api-stub: lurek.patterns.newGraph
+--@api: lurek.patterns.newGraph
 do
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("A", {cost = 10})
@@ -1391,7 +1391,7 @@ do
     print("edges = " .. g:edgeCount())
 end
 
---@api-stub: LPatternGraph:addNode
+--@api: LPatternGraph:addNode
 do
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("A", {cost = 10})
@@ -1401,7 +1401,7 @@ do
     print("has a = " .. tostring(g:hasNode(a)))
 end
 
---@api-stub: LPatternGraph:addEdge
+--@api: LPatternGraph:addEdge
 do
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("A")
@@ -1411,7 +1411,7 @@ do
     print("edges = " .. g:edgeCount())
 end
 
---@api-stub: LPatternGraph:nodeCount
+--@api: LPatternGraph:nodeCount
 do
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("A")
@@ -1421,7 +1421,7 @@ do
     print("edges = " .. g:edgeCount())
 end
 
---@api-stub: LPatternGraph:edgeCount
+--@api: LPatternGraph:edgeCount
 do
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("A")
@@ -1431,7 +1431,7 @@ do
     print("edges = " .. g:edgeCount())
 end
 
---@api-stub: LPatternGraph:bfs
+--@api: LPatternGraph:bfs
 do
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("start")
@@ -1444,7 +1444,7 @@ do
     print("connected = " .. tostring(g:isConnected(a, c)))
 end
 
---@api-stub: LPatternGraph:dfs
+--@api: LPatternGraph:dfs
 do
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("start")
@@ -1457,7 +1457,7 @@ do
     print("connected = " .. tostring(g:isConnected(a, c)))
 end
 
---@api-stub: LPatternGraph:isConnected
+--@api: LPatternGraph:isConnected
 do
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("start")
@@ -1469,7 +1469,7 @@ do
     print("start to start = " .. tostring(g:isConnected(a, a)))
 end
 
---@api-stub: LPatternGraph:neighbors
+--@api: LPatternGraph:neighbors
 do
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("start")
@@ -1482,7 +1482,7 @@ do
     print("has b = " .. tostring(g:hasNode(b)))
 end
 
---@api-stub: LPatternGraph:hasNode
+--@api: LPatternGraph:hasNode
 do
     local g = lurek.patterns.newGraph(true)
     local a = g:addNode("start")
@@ -1492,7 +1492,7 @@ do
     print("has 99 = " .. tostring(g:hasNode(99)))
 end
 
---@api-stub: LPatternGraph:getNodeValue
+--@api: LPatternGraph:getNodeValue
 do
     local g = lurek.patterns.newGraph()
     local a = g:addNode("room", {size = 10})
@@ -1503,7 +1503,7 @@ do
     print("edges = " .. g:edgeCount())
 end
 
---@api-stub: LPatternGraph:removeNode
+--@api: LPatternGraph:removeNode
 do
     local g = lurek.patterns.newGraph()
     local a = g:addNode("room", {size = 10})
@@ -1514,7 +1514,7 @@ do
     print("has hall = " .. tostring(g:hasNode(b)))
 end
 
---@api-stub: LPatternGraph:removeEdge
+--@api: LPatternGraph:removeEdge
 do
     local g = lurek.patterns.newGraph()
     local a = g:addNode("room")
@@ -1525,7 +1525,7 @@ do
     print("nodes = " .. g:nodeCount())
 end
 
---@api-stub: LPatternGraph:clearAll
+--@api: LPatternGraph:clearAll
 do
     local g = lurek.patterns.newGraph()
     local a = g:addNode("room")
@@ -1536,7 +1536,7 @@ do
     print("after = " .. g:nodeCount())
 end
 
---@api-stub: lurek.patterns.newList
+--@api: lurek.patterns.newList
 do
     local list = lurek.patterns.newList()
     list:add("alpha")
@@ -1546,7 +1546,7 @@ do
     print("second = " .. tostring(list:get(2)))
 end
 
---@api-stub: LList:add
+--@api: LList:add
 do
     local list = lurek.patterns.newList()
     list:add("alpha")
@@ -1556,7 +1556,7 @@ do
     print("second = " .. tostring(list:get(2)))
 end
 
---@api-stub: LList:get
+--@api: LList:get
 do
     local list = lurek.patterns.newList()
     list:add("alpha")
@@ -1566,7 +1566,7 @@ do
     print("len = " .. list:len())
 end
 
---@api-stub: LList:len
+--@api: LList:len
 do
     local list = lurek.patterns.newList()
     list:add("alpha")
@@ -1576,7 +1576,7 @@ do
     print("beta = " .. tostring(list:indexOf("beta")))
 end
 
---@api-stub: LList:remove
+--@api: LList:remove
 do
     local list = lurek.patterns.newList()
     list:add("alpha")
@@ -1587,7 +1587,7 @@ do
     print("len = " .. list:len())
 end
 
---@api-stub: LList:indexOf
+--@api: LList:indexOf
 do
     local list = lurek.patterns.newList()
     list:add("alpha")
@@ -1597,7 +1597,7 @@ do
     print("delta = " .. tostring(list:indexOf("delta")))
 end
 
---@api-stub: LList:push
+--@api: LList:push
 do
     local list = lurek.patterns.newList()
     list:push("a")
@@ -1607,7 +1607,7 @@ do
     print("last = " .. tostring(list:get(3)))
 end
 
---@api-stub: LList:pop
+--@api: LList:pop
 do
     local list = lurek.patterns.newList()
     list:push("a")
@@ -1618,7 +1618,7 @@ do
     print("len = " .. list:len())
 end
 
---@api-stub: LList:insert
+--@api: LList:insert
 do
     local list = lurek.patterns.newList()
     list:push("a")
@@ -1628,7 +1628,7 @@ do
     print("len = " .. list:len())
 end
 
---@api-stub: LList:set
+--@api: LList:set
 do
     local list = lurek.patterns.newList()
     list:push("a")
@@ -1638,7 +1638,7 @@ do
     print("len = " .. list:len())
 end
 
---@api-stub: LList:shift
+--@api: LList:shift
 do
     local list = lurek.patterns.newList()
     list:push("a")
@@ -1649,7 +1649,7 @@ do
     print("len = " .. list:len())
 end
 
---@api-stub: LList:unshift
+--@api: LList:unshift
 do
     local list = lurek.patterns.newList()
     list:push("b")
@@ -1659,7 +1659,7 @@ do
     print("len = " .. list:len())
 end
 
---@api-stub: LList:contains
+--@api: LList:contains
 do
     local list = lurek.patterns.newList()
     list:push("a")
@@ -1669,7 +1669,7 @@ do
     print("contains z = " .. tostring(list:contains("z")))
 end
 
---@api-stub: LList:reverse
+--@api: LList:reverse
 do
     local list = lurek.patterns.newList()
     list:push("a")
@@ -1680,7 +1680,7 @@ do
     print("last = " .. tostring(list:get(3)))
 end
 
---@api-stub: LList:toArray
+--@api: LList:toArray
 do
     local list = lurek.patterns.newList()
     list:push("a")
@@ -1691,7 +1691,7 @@ do
     print("first = " .. tostring(arr[1]))
 end
 
---@api-stub: LList:isEmpty
+--@api: LList:isEmpty
 do
     local list = lurek.patterns.newList()
     print("empty = " .. tostring(list:isEmpty()))
@@ -1699,7 +1699,7 @@ do
     print("after push = " .. tostring(list:isEmpty()))
 end
 
---@api-stub: lurek.patterns.newMap
+--@api: lurek.patterns.newMap
 do
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
@@ -1708,7 +1708,7 @@ do
     print("len = " .. map:len())
 end
 
---@api-stub: LMap:set
+--@api: LMap:set
 do
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
@@ -1717,7 +1717,7 @@ do
     print("len = " .. map:len())
 end
 
---@api-stub: LMap:get
+--@api: LMap:get
 do
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
@@ -1726,7 +1726,7 @@ do
     print("has level = " .. tostring(map:has("level")))
 end
 
---@api-stub: LMap:has
+--@api: LMap:has
 do
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
@@ -1735,7 +1735,7 @@ do
     print("has class = " .. tostring(map:has("class")))
 end
 
---@api-stub: LMap:remove
+--@api: LMap:remove
 do
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
@@ -1745,7 +1745,7 @@ do
     print("len = " .. map:len())
 end
 
---@api-stub: LMap:keys
+--@api: LMap:keys
 do
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
@@ -1755,7 +1755,7 @@ do
     print("first = " .. tostring(keys[1]))
 end
 
---@api-stub: LMap:values
+--@api: LMap:values
 do
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
@@ -1765,7 +1765,7 @@ do
     print("first = " .. tostring(values[1]))
 end
 
---@api-stub: LMap:len
+--@api: LMap:len
 do
     local map = lurek.patterns.newMap()
     map:set("name", "hero")
@@ -1774,7 +1774,7 @@ do
     print("has name = " .. tostring(map:has("name")))
 end
 
---@api-stub: LMap:entries
+--@api: LMap:entries
 do
     local map = lurek.patterns.newMap()
     map:set("a", 1)
@@ -1784,7 +1784,7 @@ do
     print("len = " .. map:len())
 end
 
---@api-stub: LMap:merge
+--@api: LMap:merge
 do
     local m1 = lurek.patterns.newMap()
     local m2 = lurek.patterns.newMap()
@@ -1795,7 +1795,7 @@ do
     print("b = " .. tostring(m1:get("b")))
 end
 
---@api-stub: LMap:isEmpty
+--@api: LMap:isEmpty
 do
     local map = lurek.patterns.newMap()
     print("empty = " .. tostring(map:isEmpty()))
@@ -1803,7 +1803,7 @@ do
     print("after set = " .. tostring(map:isEmpty()))
 end
 
---@api-stub: LMap:clear
+--@api: LMap:clear
 do
     local map = lurek.patterns.newMap()
     map:set("a", 1)
@@ -1813,7 +1813,7 @@ do
     print("after = " .. map:len())
 end
 
---@api-stub: lurek.patterns.newSet
+--@api: lurek.patterns.newSet
 do
     local set = lurek.patterns.newSet()
     set:add("fire")
@@ -1822,7 +1822,7 @@ do
     print("has fire = " .. tostring(set:has("fire")))
 end
 
---@api-stub: LSet:add
+--@api: LSet:add
 do
     local set = lurek.patterns.newSet()
     set:add("fire")
@@ -1831,7 +1831,7 @@ do
     print("has fire = " .. tostring(set:has("fire")))
 end
 
---@api-stub: LSet:has
+--@api: LSet:has
 do
     local set = lurek.patterns.newSet()
     set:add("fire")
@@ -1840,7 +1840,7 @@ do
     print("has wind = " .. tostring(set:has("wind")))
 end
 
---@api-stub: LSet:remove
+--@api: LSet:remove
 do
     local set = lurek.patterns.newSet()
     set:add("fire")
@@ -1850,7 +1850,7 @@ do
     print("len = " .. set:len())
 end
 
---@api-stub: LSet:len
+--@api: LSet:len
 do
     local set = lurek.patterns.newSet()
     set:add("fire")
@@ -1860,7 +1860,7 @@ do
     print("has fire = " .. tostring(set:has("fire")))
 end
 
---@api-stub: LSet:toArray
+--@api: LSet:toArray
 do
     local set = lurek.patterns.newSet()
     set:add("fire")
@@ -1870,7 +1870,7 @@ do
     print("len = " .. set:len())
 end
 
---@api-stub: LSet:union
+--@api: LSet:union
 do
     local a = lurek.patterns.newSet()
     local b = lurek.patterns.newSet()
@@ -1883,7 +1883,7 @@ do
     print("intersection = " .. a:intersection(b):len())
 end
 
---@api-stub: LSet:intersection
+--@api: LSet:intersection
 do
     local a = lurek.patterns.newSet()
     local b = lurek.patterns.newSet()
@@ -1896,7 +1896,7 @@ do
     print("union = " .. a:union(b):len())
 end
 
---@api-stub: LSet:isEmpty
+--@api: LSet:isEmpty
 do
     local set = lurek.patterns.newSet()
     print("empty = " .. tostring(set:isEmpty()))
@@ -1904,7 +1904,7 @@ do
     print("after add = " .. tostring(set:isEmpty()))
 end
 
---@api-stub: LSet:clear
+--@api: LSet:clear
 do
     local set = lurek.patterns.newSet()
     set:add("x")
@@ -1914,7 +1914,7 @@ do
     print("after = " .. set:len())
 end
 
---@api-stub: lurek.patterns.newStack
+--@api: lurek.patterns.newStack
 do
     local st = lurek.patterns.newStack(100)
     st:push("first")
@@ -1923,7 +1923,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:push
+--@api: LStack:push
 do
     local st = lurek.patterns.newStack(100)
     st:push("first")
@@ -1932,7 +1932,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:pop
+--@api: LStack:pop
 do
     local st = lurek.patterns.newStack(100)
     st:push("first")
@@ -1942,7 +1942,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:peek
+--@api: LStack:peek
 do
     local st = lurek.patterns.newStack(100)
     st:push("first")
@@ -1951,7 +1951,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:len
+--@api: LStack:len
 do
     local st = lurek.patterns.newStack(100)
     st:push("first")
@@ -1960,7 +1960,7 @@ do
     print("empty = " .. tostring(st:isEmpty()))
 end
 
---@api-stub: LStack:isEmpty
+--@api: LStack:isEmpty
 do
     local st = lurek.patterns.newStack(100)
     print("empty = " .. tostring(st:isEmpty()))
@@ -1968,7 +1968,7 @@ do
     print("after push = " .. tostring(st:isEmpty()))
 end
 
---@api-stub: LStack:pushBottom
+--@api: LStack:pushBottom
 do
     local st = lurek.patterns.newStack(5)
     st:push("a")
@@ -1978,7 +1978,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:popBottom
+--@api: LStack:popBottom
 do
     local st = lurek.patterns.newStack(5)
     st:push("a")
@@ -1989,7 +1989,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:peekBottom
+--@api: LStack:peekBottom
 do
     local st = lurek.patterns.newStack(5)
     st:push("a")
@@ -1999,7 +1999,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:peekAt
+--@api: LStack:peekAt
 do
     local st = lurek.patterns.newStack(5)
     st:push("a")
@@ -2009,7 +2009,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:insertAt
+--@api: LStack:insertAt
 do
     local st = lurek.patterns.newStack(5)
     st:push("a")
@@ -2019,7 +2019,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:removeAt
+--@api: LStack:removeAt
 do
     local st = lurek.patterns.newStack(5)
     st:push("a")
@@ -2030,7 +2030,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:popMany
+--@api: LStack:popMany
 do
     local st = lurek.patterns.newStack(5)
     st:push("a")
@@ -2041,7 +2041,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:moveWithin
+--@api: LStack:moveWithin
 do
     local st = lurek.patterns.newStack(5)
     st:push("a")
@@ -2053,7 +2053,7 @@ do
     print("last = " .. tostring(arr[#arr]))
 end
 
---@api-stub: LStack:isFull
+--@api: LStack:isFull
 do
     local st = lurek.patterns.newStack(2)
     st:push("a")
@@ -2062,7 +2062,7 @@ do
     print("len = " .. st:len())
 end
 
---@api-stub: LStack:clear
+--@api: LStack:clear
 do
     local st = lurek.patterns.newStack(5)
     st:push("a")
@@ -2072,7 +2072,7 @@ do
     print("after = " .. st:len())
 end
 
---@api-stub: LStack:toArray
+--@api: LStack:toArray
 do
     local st = lurek.patterns.newStack(5)
     st:push("a")
@@ -2083,7 +2083,7 @@ do
     print("first = " .. tostring(arr[1]))
 end
 
---@api-stub: lurek.patterns.newQueue
+--@api: lurek.patterns.newQueue
 do
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
@@ -2092,7 +2092,7 @@ do
     print("len = " .. q:len())
 end
 
---@api-stub: LQueue:enqueue
+--@api: LQueue:enqueue
 do
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
@@ -2101,7 +2101,7 @@ do
     print("len = " .. q:len())
 end
 
---@api-stub: LQueue:dequeue
+--@api: LQueue:dequeue
 do
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
@@ -2111,7 +2111,7 @@ do
     print("len = " .. q:len())
 end
 
---@api-stub: LQueue:front
+--@api: LQueue:front
 do
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
@@ -2120,7 +2120,7 @@ do
     print("back = " .. tostring(q:back()))
 end
 
---@api-stub: LQueue:back
+--@api: LQueue:back
 do
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
@@ -2129,7 +2129,7 @@ do
     print("len = " .. q:len())
 end
 
---@api-stub: LQueue:len
+--@api: LQueue:len
 do
     local q = lurek.patterns.newQueue(10)
     q:enqueue("msg1")
@@ -2138,7 +2138,7 @@ do
     print("empty = " .. tostring(q:isEmpty()))
 end
 
---@api-stub: LQueue:isEmpty
+--@api: LQueue:isEmpty
 do
     local q = lurek.patterns.newQueue(10)
     print("empty = " .. tostring(q:isEmpty()))
@@ -2146,7 +2146,7 @@ do
     print("after enqueue = " .. tostring(q:isEmpty()))
 end
 
---@api-stub: LQueue:enqueueFront
+--@api: LQueue:enqueueFront
 do
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
@@ -2156,7 +2156,7 @@ do
     print("len = " .. q:len())
 end
 
---@api-stub: LQueue:dequeueBack
+--@api: LQueue:dequeueBack
 do
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
@@ -2167,7 +2167,7 @@ do
     print("len = " .. q:len())
 end
 
---@api-stub: LQueue:insertAt
+--@api: LQueue:insertAt
 do
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
@@ -2177,7 +2177,7 @@ do
     print("len = " .. q:len())
 end
 
---@api-stub: LQueue:removeAt
+--@api: LQueue:removeAt
 do
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
@@ -2188,7 +2188,7 @@ do
     print("len = " .. q:len())
 end
 
---@api-stub: LQueue:peekAt
+--@api: LQueue:peekAt
 do
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
@@ -2198,7 +2198,7 @@ do
     print("len = " .. q:len())
 end
 
---@api-stub: LQueue:isFull
+--@api: LQueue:isFull
 do
     local q = lurek.patterns.newQueue(2)
     q:enqueue("a")
@@ -2207,7 +2207,7 @@ do
     print("len = " .. q:len())
 end
 
---@api-stub: LQueue:clear
+--@api: LQueue:clear
 do
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
@@ -2217,7 +2217,7 @@ do
     print("after = " .. q:len())
 end
 
---@api-stub: LQueue:toArray
+--@api: LQueue:toArray
 do
     local q = lurek.patterns.newQueue(5)
     q:enqueue("a")
@@ -2228,7 +2228,7 @@ do
     print("first = " .. tostring(arr[1]))
 end
 
---@api-stub: lurek.patterns.newPriorityQueue
+--@api: lurek.patterns.newPriorityQueue
 do
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
@@ -2237,7 +2237,7 @@ do
     print("len = " .. pq:len())
 end
 
---@api-stub: LPriorityQueue:push
+--@api: LPriorityQueue:push
 do
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
@@ -2246,7 +2246,7 @@ do
     print("len = " .. pq:len())
 end
 
---@api-stub: LPriorityQueue:pop
+--@api: LPriorityQueue:pop
 do
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
@@ -2256,7 +2256,7 @@ do
     print("len = " .. pq:len())
 end
 
---@api-stub: LPriorityQueue:peek
+--@api: LPriorityQueue:peek
 do
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
@@ -2265,7 +2265,7 @@ do
     print("len = " .. pq:len())
 end
 
---@api-stub: LPriorityQueue:len
+--@api: LPriorityQueue:len
 do
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
@@ -2274,7 +2274,7 @@ do
     print("empty = " .. tostring(pq:isEmpty()))
 end
 
---@api-stub: LPriorityQueue:isEmpty
+--@api: LPriorityQueue:isEmpty
 do
     local pq = lurek.patterns.newPriorityQueue("tasks")
     print("empty = " .. tostring(pq:isEmpty()))
@@ -2282,7 +2282,7 @@ do
     print("after push = " .. tostring(pq:isEmpty()))
 end
 
---@api-stub: LPriorityQueue:clearAll
+--@api: LPriorityQueue:clearAll
 do
     local pq = lurek.patterns.newPriorityQueue("tasks")
     pq:push(1, "low_task", "low")
@@ -2292,7 +2292,7 @@ do
     print("after = " .. pq:len())
 end
 
---@api-stub: lurek.patterns.newRing
+--@api: lurek.patterns.newRing
 do
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
@@ -2302,7 +2302,7 @@ do
     print("average = " .. ring:average())
 end
 
---@api-stub: LRing:push
+--@api: LRing:push
 do
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
@@ -2312,7 +2312,7 @@ do
     print("sum = " .. ring:sum())
 end
 
---@api-stub: LRing:len
+--@api: LRing:len
 do
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
@@ -2322,7 +2322,7 @@ do
     print("full = " .. tostring(ring:isFull()))
 end
 
---@api-stub: LRing:latest
+--@api: LRing:latest
 do
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
@@ -2333,7 +2333,7 @@ do
     print("len = " .. ring:len())
 end
 
---@api-stub: LRing:isFull
+--@api: LRing:isFull
 do
     local ring = lurek.patterns.newRing(3, "fps_samples")
     ring:push(60)
@@ -2343,7 +2343,7 @@ do
     print("len = " .. ring:len())
 end
 
---@api-stub: LRing:sum
+--@api: LRing:sum
 do
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
@@ -2353,7 +2353,7 @@ do
     print("len = " .. ring:len())
 end
 
---@api-stub: LRing:average
+--@api: LRing:average
 do
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
@@ -2363,7 +2363,7 @@ do
     print("len = " .. ring:len())
 end
 
---@api-stub: LRing:toArray
+--@api: LRing:toArray
 do
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
@@ -2374,7 +2374,7 @@ do
     print("latest = " .. tostring(ring:latest() and ring:latest().value))
 end
 
---@api-stub: LRing:clear
+--@api: LRing:clear
 do
     local ring = lurek.patterns.newRing(5, "fps_samples")
     ring:push(60)
@@ -2384,7 +2384,7 @@ do
     print("after = " .. ring:len())
 end
 
---@api-stub: lurek.patterns.newWeightedRandom
+--@api: lurek.patterns.newWeightedRandom
 do
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
@@ -2393,7 +2393,7 @@ do
     print("picked = " .. tostring(wr:pick(0.5)))
 end
 
---@api-stub: LWeightedRandom:add
+--@api: LWeightedRandom:add
 do
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
@@ -2402,7 +2402,7 @@ do
     print("total = " .. wr:totalWeight())
 end
 
---@api-stub: LWeightedRandom:pick
+--@api: LWeightedRandom:pick
 do
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
@@ -2411,7 +2411,7 @@ do
     print("items = " .. wr:len())
 end
 
---@api-stub: LWeightedRandom:pickN
+--@api: LWeightedRandom:pickN
 do
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
@@ -2422,7 +2422,7 @@ do
     print("items = " .. wr:len())
 end
 
---@api-stub: LWeightedRandom:len
+--@api: LWeightedRandom:len
 do
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
@@ -2431,7 +2431,7 @@ do
     print("total = " .. wr:totalWeight())
 end
 
---@api-stub: LWeightedRandom:totalWeight
+--@api: LWeightedRandom:totalWeight
 do
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(10, "common", "common_loot")
@@ -2440,7 +2440,7 @@ do
     print("items = " .. wr:len())
 end
 
---@api-stub: LWeightedRandom:remove
+--@api: LWeightedRandom:remove
 do
     local wr = lurek.patterns.newWeightedRandom()
     local id = wr:add(5, "item_a")
@@ -2450,7 +2450,7 @@ do
     print("revision = " .. wr:getRevision())
 end
 
---@api-stub: LWeightedRandom:setWeight
+--@api: LWeightedRandom:setWeight
 do
     local wr = lurek.patterns.newWeightedRandom()
     local id = wr:add(5, "item_a")
@@ -2460,7 +2460,7 @@ do
     print("revision = " .. wr:getRevision())
 end
 
---@api-stub: LWeightedRandom:getRevision
+--@api: LWeightedRandom:getRevision
 do
     local wr = lurek.patterns.newWeightedRandom()
     local id = wr:add(5, "item_a")
@@ -2469,7 +2469,7 @@ do
     print("items = " .. wr:len())
 end
 
---@api-stub: LWeightedRandom:isEmpty
+--@api: LWeightedRandom:isEmpty
 do
     local wr = lurek.patterns.newWeightedRandom()
     print("empty = " .. tostring(wr:isEmpty()))
@@ -2477,7 +2477,7 @@ do
     print("after add = " .. tostring(wr:isEmpty()))
 end
 
---@api-stub: LWeightedRandom:clearAll
+--@api: LWeightedRandom:clearAll
 do
     local wr = lurek.patterns.newWeightedRandom()
     wr:add(5, "item_a")
@@ -2487,7 +2487,7 @@ do
     print("after = " .. wr:len())
 end
 
---@api-stub: lurek.patterns.newRelationshipManager
+--@api: lurek.patterns.newRelationshipManager
 do
     local rm = lurek.patterns.newRelationshipManager()
     rm:setValue(1, 2, 50)
@@ -2496,7 +2496,7 @@ do
     print("1->3 = " .. rm:getValue(1, 3))
 end
 
---@api-stub: LRelationshipManager:setValue
+--@api: LRelationshipManager:setValue
 do
     local rm = lurek.patterns.newRelationshipManager()
     rm:setValue(1, 2, 50)
@@ -2505,7 +2505,7 @@ do
     print("1->3 = " .. rm:getValue(1, 3))
 end
 
---@api-stub: LRelationshipManager:getValue
+--@api: LRelationshipManager:getValue
 do
     local rm = lurek.patterns.newRelationshipManager()
     rm:setValue(1, 2, 50)
@@ -2514,7 +2514,7 @@ do
     print("1->3 = " .. rm:getValue(1, 3))
 end
 
---@api-stub: LRelationshipManager:adjustValue
+--@api: LRelationshipManager:adjustValue
 do
     local rm = lurek.patterns.newRelationshipManager()
     rm:setValue(1, 2, 50)
@@ -2523,7 +2523,7 @@ do
     print("pairs = " .. rm:pairCount())
 end
 
---@api-stub: LRelationshipManager:defineType
+--@api: LRelationshipManager:defineType
 do
     local rm = lurek.patterns.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
@@ -2532,7 +2532,7 @@ do
     print("types = " .. #rm:typeNames())
 end
 
---@api-stub: LRelationshipManager:setLevel
+--@api: LRelationshipManager:setLevel
 do
     local rm = lurek.patterns.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
@@ -2541,7 +2541,7 @@ do
     print("pairs = " .. rm:pairCount())
 end
 
---@api-stub: LRelationshipManager:getLevel
+--@api: LRelationshipManager:getLevel
 do
     local rm = lurek.patterns.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
@@ -2550,7 +2550,7 @@ do
     print("types = " .. #rm:typeNames())
 end
 
---@api-stub: LRelationshipManager:typeNames
+--@api: LRelationshipManager:typeNames
 do
     local rm = lurek.patterns.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
@@ -2560,7 +2560,7 @@ do
     print("first = " .. tostring(types[1]))
 end
 
---@api-stub: LRelationshipManager:pairCount
+--@api: LRelationshipManager:pairCount
 do
     local rm = lurek.patterns.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
@@ -2570,7 +2570,7 @@ do
     print("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
 end
 
---@api-stub: LRelationshipManager:removePair
+--@api: LRelationshipManager:removePair
 do
     local rm = lurek.patterns.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
@@ -2581,7 +2581,7 @@ do
     print("after = " .. rm:pairCount())
 end
 
---@api-stub: LRelationshipManager:removeType
+--@api: LRelationshipManager:removeType
 do
     local rm = lurek.patterns.newRelationshipManager()
     rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
@@ -2595,7 +2595,7 @@ end
 
 --- Patterns Module Part 5: BehaviorTree (addChild/nodeCount/setRoot), LList:clear, LObjectPool counts, LSimpleState:update, LStrategy:getCurrent
 
---@api-stub: LBehaviorTree:addChild
+--@api: LBehaviorTree:addChild
 do
     local bt = lurek.patterns.newBehaviorTree()
     local seq = bt:addSequence("root_seq")
@@ -2614,7 +2614,7 @@ do
     print("node_count = " .. bt:nodeCount())
 end
 
---@api-stub: LBehaviorTree:nodeCount
+--@api: LBehaviorTree:nodeCount
 do
     local bt = lurek.patterns.newBehaviorTree()
     local seq = bt:addSequence("root_seq")
@@ -2633,7 +2633,7 @@ do
     print("result = " .. bt:tick())
 end
 
---@api-stub: LBehaviorTree:setRoot
+--@api: LBehaviorTree:setRoot
 do
     local bt = lurek.patterns.newBehaviorTree()
     local seq = bt:addSequence("root_seq")
@@ -2652,7 +2652,7 @@ do
     print("result = " .. bt:tick())
 end
 
---@api-stub: LList:clear
+--@api: LList:clear
 do
     local list = lurek.patterns.newList()
     list:add(1)
@@ -2663,7 +2663,7 @@ do
     print("after = " .. list:len())
 end
 
---@api-stub: LObjectPool:getActiveCount
+--@api: LObjectPool:getActiveCount
 do
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1})
@@ -2673,7 +2673,7 @@ do
     print("got = " .. tostring(obj and obj.id))
 end
 
---@api-stub: LObjectPool:getAvailableCount
+--@api: LObjectPool:getAvailableCount
 do
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1})
@@ -2683,7 +2683,7 @@ do
     print("total = " .. pool:getTotalCount())
 end
 
---@api-stub: LObjectPool:getTotalCount
+--@api: LObjectPool:getTotalCount
 do
     local pool = lurek.patterns.newObjectPool()
     pool:add({id = 1})
@@ -2692,7 +2692,7 @@ do
     print("available = " .. pool:getAvailableCount())
 end
 
---@api-stub: LSimpleState:update
+--@api: LSimpleState:update
 do
     local fsm = lurek.patterns.newSimpleState()
     fsm:addState("idle", {
@@ -2705,7 +2705,7 @@ do
     print("current = " .. tostring(fsm:getCurrent()))
 end
 
---@api-stub: LStrategy:getCurrent
+--@api: LStrategy:getCurrent
 do
     local strat = lurek.patterns.newStrategy()
     strat:register("attack", function()

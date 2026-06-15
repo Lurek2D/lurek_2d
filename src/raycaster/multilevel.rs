@@ -3,6 +3,7 @@
 //! The representation stays close to the base raycaster model, which keeps level transitions understandable for rendering and gameplay code.
 //! Special transitions can move the viewer between slices without inventing a separate world format or renderer.
 //! The design is meant to add vertical richness while preserving the core assumptions of the column-based pipeline.
+//! Module API documentation
 
 use super::build_scene::LoweredFloorCell;
 use super::dda::Raycaster2D;

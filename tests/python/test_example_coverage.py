@@ -40,7 +40,7 @@ class ExampleCoverageLintTests(unittest.TestCase):
         codes = self.lint_codes(
             "ok.lua",
             """
-            --@api-stub: lurek.render.print
+            --@api: lurek.render.print
             do
                 lurek.render.print("hello", 0, 0)
                 lurek.render.print("world", 0, 8)
@@ -65,8 +65,8 @@ class ExampleCoverageLintTests(unittest.TestCase):
         codes = self.lint_codes(
             "stacked.lua",
             """
-            --@api-stub: lurek.render.print
-            --@api-stub: lurek.render.printf
+            --@api: lurek.render.print
+            --@api: lurek.render.printf
             do
                 lurek.render.printf("x", 0, 0, 10, "left")
                 lurek.render.print("y", 0, 8)
@@ -79,7 +79,7 @@ class ExampleCoverageLintTests(unittest.TestCase):
         codes = self.lint_codes(
             "double.lua",
             """
-            --@api-stub: lurek.render.print
+            --@api: lurek.render.print
             do
                 lurek.render.print("first", 0, 0)
                 lurek.render.print("block", 0, 8)

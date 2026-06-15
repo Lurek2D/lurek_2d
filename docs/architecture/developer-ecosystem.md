@@ -847,9 +847,9 @@ The RAG system implements semantic profiles to prevent noisy search results. Whe
 ## VS Code Integration
 
 The Lurek2D VS Code extension acts as the primary interface for the RAG system.
-* **Auto-Indexing**: A file watcher listens for changes to `.lua`, `.rs`, and `.md` files. On save, it invokes a background update, ensuring the SQLite index is always perfectly in sync without requiring a full rebuild.
+* **Auto-Indexing**: A file watcher listens for changes to files selected by `tools/rag/rag_contract.json` (extensions, prefixes). On save, it invokes a background index update, keeping the SQLite index close to in sync without requiring a full rebuild.
 * **Human Webview**: The `Lurek2D: Search Knowledge Base (RAG)` command opens a dedicated UI panel. Developers can query the index, select a profile, and click directly into source files.
-* **Agent MCP**: The extension hosts an MCP server that exposes two core tools to AI agents: `lurek2d.ragSearch` and `lurek2d.ragBuildIndex`.
+* **Agent MCP**: The extension hosts an MCP server that currently exposes two core tools to AI agents: `lurek2d.ragSearch` and `lurek2d.ragBuildIndex`. The Python MCP server also exposes `rag_read`, `rag_context_bundle`, and `rag_eval` for additional workflows.
 
 ## Rationale: Why FTS5?
 

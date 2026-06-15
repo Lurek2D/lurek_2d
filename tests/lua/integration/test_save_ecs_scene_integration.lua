@@ -11,8 +11,8 @@ describe("savegame + entity + scene integration", function()
     -- @integration LUniverse:spawn
     -- @integration lurek.ecs.newUniverse
     -- @integration lurek.save.newSaveManager
-    -- @covers lurek.ecs.newUniverse
-    -- @covers lurek.save.newSaveManager
+    -- @integration lurek.ecs.newUniverse
+    -- @integration lurek.save.newSaveManager
     it("save manager collects entity state", function()
         local universe = lurek.ecs.newUniverse()
         local sm = lurek.save.newSaveManager()

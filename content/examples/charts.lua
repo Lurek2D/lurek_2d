@@ -3,42 +3,42 @@
 
 --- Charts Examples: line, bar, scatter, pie, area charts with configuration and rendering
 
---@api-stub: lurek.charts.newLine
+--@api: lurek.charts.newLine
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300, title = "Monthly Sales" })
     print("line chart created = " .. tostring(chart ~= nil))
     print("line chart width = " .. tostring(chart:getWidth()))
 end
 
---@api-stub: lurek.charts.newBar
+--@api: lurek.charts.newBar
 do
     local chart = lurek.charts.newBar({ width = 400, height = 300, title = "Revenue by Category" })
     print("bar chart created = " .. tostring(chart ~= nil))
     print("bar chart height = " .. tostring(chart:getHeight()))
 end
 
---@api-stub: lurek.charts.newScatter
+--@api: lurek.charts.newScatter
 do
     local chart = lurek.charts.newScatter({ width = 400, height = 300, title = "Test Scores" })
     print("scatter plot created = " .. tostring(chart ~= nil))
     print("scatter width = " .. tostring(chart:getWidth()))
 end
 
---@api-stub: lurek.charts.newPie
+--@api: lurek.charts.newPie
 do
     local chart = lurek.charts.newPie({ width = 300, height = 300, title = "Market Share" })
     print("pie chart created = " .. tostring(chart ~= nil))
     print("pie height = " .. tostring(chart:getHeight()))
 end
 
---@api-stub: lurek.charts.newArea
+--@api: lurek.charts.newArea
 do
     local chart = lurek.charts.newArea({ width = 400, height = 300, title = "Cumulative Users" })
     print("area chart created = " .. tostring(chart ~= nil))
     print("area chart width = " .. tostring(chart:getWidth()))
 end
 
---@api-stub: lurek.charts.defaultPalette
+--@api: lurek.charts.defaultPalette
 do
     local pal = lurek.charts.defaultPalette()
     print("palette colors = " .. #pal)
@@ -47,14 +47,14 @@ do
     end
 end
 
---@api-stub: lurek.charts.seriesColor
+--@api: lurek.charts.seriesColor
 do
     local c = lurek.charts.seriesColor(1)
     print("series 1 color r=" .. string.format("%.2f", c[1]) .. " g=" .. string.format("%.2f", c[2]) .. " b=" .. string.format("%.2f", c[3]))
     print("series 1 alpha=" .. string.format("%.2f", c[4]))
 end
 
---@api-stub: LuaLineChart:addSeries
+--@api: LuaLineChart:addSeries
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300 })
     local sales = {{1, 100}, {2, 150}, {3, 130}, {4, 200}, {5, 180}, {6, 220}}
@@ -63,7 +63,7 @@ do
     print("point count = " .. tostring(#sales))
 end
 
---@api-stub: LuaLineChart:clear
+--@api: LuaLineChart:clear
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300 })
     chart:addSeries("temp", {{1, 10}, {2, 20}})
@@ -71,7 +71,7 @@ do
     print("line chart cleared")
 end
 
---@api-stub: LuaLineChart:setTitle
+--@api: LuaLineChart:setTitle
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300 })
     chart:setTitle("Updated Title")
@@ -79,7 +79,7 @@ do
     print("chart width = " .. tostring(chart:getWidth()))
 end
 
---@api-stub: LuaLineChart:render
+--@api: LuaLineChart:render
 do
     local chart = lurek.charts.newLine({ width = 200, height = 150 })
     chart:addSeries("data", {{1, 50}, {2, 80}, {3, 60}, {4, 90}})
@@ -87,19 +87,19 @@ do
     print("line render w=" .. w .. " h=" .. h .. " pixels=" .. #pixels .. " bytes")
 end
 
---@api-stub: LuaLineChart:getWidth
+--@api: LuaLineChart:getWidth
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300 })
     print("line width = " .. chart:getWidth())
 end
 
---@api-stub: LuaLineChart:getHeight
+--@api: LuaLineChart:getHeight
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300 })
     print("line height = " .. chart:getHeight())
 end
 
---@api-stub: LuaBarChart:addSeries
+--@api: LuaBarChart:addSeries
 do
     local chart = lurek.charts.newBar({ width = 400, height = 300, title = "Sales by Region" })
     local data = {{1, 50}, {2, 80}, {3, 30}, {4, 65}, {5, 45}}
@@ -108,7 +108,7 @@ do
     print("bars = " .. tostring(#data))
 end
 
---@api-stub: LuaBarChart:setBarWidth
+--@api: LuaBarChart:setBarWidth
 do
     local chart = lurek.charts.newBar({ width = 400, height = 300 })
     chart:setBarWidth(24)
@@ -116,7 +116,7 @@ do
     print("chart width = " .. tostring(chart:getWidth()))
 end
 
---@api-stub: LuaBarChart:render
+--@api: LuaBarChart:render
 do
     local chart = lurek.charts.newBar({ width = 200, height = 150 })
     chart:addSeries("items", {{1, 40}, {2, 70}, {3, 55}})
@@ -124,7 +124,7 @@ do
     print("bar render w=" .. w .. " h=" .. h .. " pixels=" .. #pixels .. " bytes")
 end
 
---@api-stub: LuaPieChart:addSlice
+--@api: LuaPieChart:addSlice
 do
     local chart = lurek.charts.newPie({ width = 300, height = 300, title = "Browser Market Share" })
     chart:addSlice("Chrome", 65)
@@ -135,7 +135,7 @@ do
     print("chart size = " .. tostring(chart:getWidth()) .. "x" .. tostring(chart:getHeight()))
 end
 
---@api-stub: LuaPieChart:render
+--@api: LuaPieChart:render
 do
     local chart = lurek.charts.newPie({ width = 200, height = 200 })
     chart:addSlice("A", 40)
@@ -145,7 +145,7 @@ do
     print("pie render w=" .. w .. " h=" .. h .. " pixels=" .. #pixels .. " bytes")
 end
 
---@api-stub: LuaScatterPlot:addSeries
+--@api: LuaScatterPlot:addSeries
 do
     local chart = lurek.charts.newScatter({ width = 400, height = 300, title = "Height vs Weight" })
     local points = {{160, 55}, {170, 68}, {175, 72}, {180, 80}, {165, 60}, {185, 88}, {172, 65}}
@@ -153,7 +153,7 @@ do
     print("scatter series added with " .. #points .. " points")
 end
 
---@api-stub: LuaScatterPlot:setDotRadius
+--@api: LuaScatterPlot:setDotRadius
 do
     local chart = lurek.charts.newScatter({ width = 400, height = 300 })
     chart:setDotRadius(4)
@@ -161,7 +161,7 @@ do
     print("chart height = " .. tostring(chart:getHeight()))
 end
 
---@api-stub: LuaAreaChart:addSeries
+--@api: LuaAreaChart:addSeries
 do
     local chart = lurek.charts.newArea({ width = 400, height = 300, title = "Monthly Active Users" })
     local mobile = {{1, 200}, {2, 280}, {3, 350}, {4, 420}, {5, 500}, {6, 580}}
@@ -172,7 +172,7 @@ do
     print("mobile points = " .. tostring(#mobile))
 end
 
---@api-stub: LuaAreaChart:render
+--@api: LuaAreaChart:render
 do
     local chart = lurek.charts.newArea({ width = 200, height = 150 })
     chart:addSeries("growth", {{1, 10}, {2, 30}, {3, 60}, {4, 100}})
@@ -180,7 +180,7 @@ do
     print("area render w=" .. w .. " h=" .. h .. " pixels=" .. #pixels .. " bytes")
 end
 
---@api-stub: LAreaChart:addSeries
+--@api: LAreaChart:addSeries
 do
     local chart = lurek.charts.newArea({ width = 400, height = 300 })
     chart:addSeries("series1", { {1, 1}, {2, 3}, {3, 2}, {4, 5}, {5, 4} })
@@ -188,7 +188,7 @@ do
     print("width = " .. tostring(chart:getWidth()))
 end
 
---@api-stub: LAreaChart:clear
+--@api: LAreaChart:clear
 do
     local chart = lurek.charts.newArea({ width = 400, height = 300 })
     chart:addSeries("data", { {1, 1}, {2, 2}, {3, 3} })
@@ -198,7 +198,7 @@ do
     print("render bytes = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LAreaChart:setTitle
+--@api: LAreaChart:setTitle
 do
     local chart = lurek.charts.newArea({ width = 400, height = 300 })
     chart:setTitle("Monthly Sales")
@@ -206,7 +206,7 @@ do
     print("height = " .. tostring(chart:getHeight()))
 end
 
---@api-stub: LAreaChart:render
+--@api: LAreaChart:render
 do
     local chart = lurek.charts.newArea({ width = 400, height = 300 })
     chart:addSeries("data", { {1, 5}, {2, 3}, {3, 8}, {4, 2}, {5, 6} })
@@ -215,21 +215,21 @@ do
     print("pixels = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LAreaChart:getWidth
+--@api: LAreaChart:getWidth
 do
     local chart = lurek.charts.newArea({ width = 400, height = 300 })
     print("LAreaChart:getWidth=" .. chart:getWidth())
     print("LAreaChart:getHeight=" .. chart:getHeight())
 end
 
---@api-stub: LAreaChart:getHeight
+--@api: LAreaChart:getHeight
 do
     local chart = lurek.charts.newArea({ width = 400, height = 300 })
     print("LAreaChart:getHeight=" .. chart:getHeight())
     print("LAreaChart:getWidth=" .. chart:getWidth())
 end
 
---@api-stub: LBarChart:addSeries
+--@api: LBarChart:addSeries
 do
     local chart = lurek.charts.newBar({ width = 400, height = 300 })
     chart:addSeries("series1", { {1, 1}, {2, 3}, {3, 2}, {4, 5}, {5, 4} })
@@ -237,7 +237,7 @@ do
     print("height = " .. tostring(chart:getHeight()))
 end
 
---@api-stub: LBarChart:clear
+--@api: LBarChart:clear
 do
     local chart = lurek.charts.newBar({ width = 400, height = 300 })
     chart:addSeries("data", { {1, 1}, {2, 2}, {3, 3} })
@@ -247,7 +247,7 @@ do
     print("render bytes = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LBarChart:setBarWidth
+--@api: LBarChart:setBarWidth
 do
     local chart = lurek.charts.newBar({ width = 400, height = 300 })
     chart:setBarWidth(20.0)
@@ -255,7 +255,7 @@ do
     print("chart width = " .. tostring(chart:getWidth()))
 end
 
---@api-stub: LBarChart:setTitle
+--@api: LBarChart:setTitle
 do
     local chart = lurek.charts.newBar({ width = 400, height = 300 })
     chart:setTitle("Monthly Sales")
@@ -263,7 +263,7 @@ do
     print("chart height = " .. tostring(chart:getHeight()))
 end
 
---@api-stub: LBarChart:render
+--@api: LBarChart:render
 do
     local chart = lurek.charts.newBar({ width = 400, height = 300 })
     chart:addSeries("data", { {1, 5}, {2, 3}, {3, 8}, {4, 2}, {5, 6} })
@@ -272,21 +272,21 @@ do
     print("pixels = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LBarChart:getWidth
+--@api: LBarChart:getWidth
 do
     local chart = lurek.charts.newBar({ width = 400, height = 300 })
     print("LBarChart:getWidth=" .. chart:getWidth())
     print("LBarChart:getHeight=" .. chart:getHeight())
 end
 
---@api-stub: LBarChart:getHeight
+--@api: LBarChart:getHeight
 do
     local chart = lurek.charts.newBar({ width = 400, height = 300 })
     print("LBarChart:getHeight=" .. chart:getHeight())
     print("LBarChart:getWidth=" .. chart:getWidth())
 end
 
---@api-stub: LLineChart:addSeries
+--@api: LLineChart:addSeries
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300 })
     chart:addSeries("series1", { {1, 1}, {2, 3}, {3, 2}, {4, 5}, {5, 4} })
@@ -294,7 +294,7 @@ do
     print("width = " .. tostring(chart:getWidth()))
 end
 
---@api-stub: LLineChart:clear
+--@api: LLineChart:clear
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300 })
     chart:addSeries("data", { {1, 1}, {2, 2}, {3, 3} })
@@ -304,7 +304,7 @@ do
     print("render bytes = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LLineChart:setTitle
+--@api: LLineChart:setTitle
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300 })
     chart:setTitle("Monthly Sales")
@@ -312,7 +312,7 @@ do
     print("height = " .. tostring(chart:getHeight()))
 end
 
---@api-stub: LLineChart:render
+--@api: LLineChart:render
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300 })
     chart:addSeries("data", { {1, 5}, {2, 3}, {3, 8}, {4, 2}, {5, 6} })
@@ -321,21 +321,21 @@ do
     print("pixels = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LLineChart:getWidth
+--@api: LLineChart:getWidth
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300 })
     print("LLineChart:getWidth=" .. chart:getWidth())
     print("LLineChart:getHeight=" .. chart:getHeight())
 end
 
---@api-stub: LLineChart:getHeight
+--@api: LLineChart:getHeight
 do
     local chart = lurek.charts.newLine({ width = 400, height = 300 })
     print("LLineChart:getHeight=" .. chart:getHeight())
     print("LLineChart:getWidth=" .. chart:getWidth())
 end
 
---@api-stub: LPieChart:addSlice
+--@api: LPieChart:addSlice
 do
     local chart = lurek.charts.newPie({ width = 400, height = 300 })
     chart:addSlice("Food", 45.0, { 0.9, 0.3, 0.1, 1.0 })
@@ -344,7 +344,7 @@ do
     print("width = " .. tostring(chart:getWidth()))
 end
 
---@api-stub: LPieChart:clear
+--@api: LPieChart:clear
 do
     local chart = lurek.charts.newPie({ width = 400, height = 300 })
     chart:addSlice("A", 1)
@@ -355,7 +355,7 @@ do
     print("render bytes = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LPieChart:setTitle
+--@api: LPieChart:setTitle
 do
     local chart = lurek.charts.newPie({ width = 400, height = 300 })
     chart:setTitle("Monthly Sales")
@@ -363,7 +363,7 @@ do
     print("height = " .. tostring(chart:getHeight()))
 end
 
---@api-stub: LPieChart:render
+--@api: LPieChart:render
 do
     local chart = lurek.charts.newPie({ width = 400, height = 300 })
     chart:addSlice("A", 5)
@@ -374,21 +374,21 @@ do
     print("pixels = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LPieChart:getWidth
+--@api: LPieChart:getWidth
 do
     local chart = lurek.charts.newPie({ width = 400, height = 300 })
     print("LPieChart:getWidth=" .. chart:getWidth())
     print("LPieChart:getHeight=" .. chart:getHeight())
 end
 
---@api-stub: LPieChart:getHeight
+--@api: LPieChart:getHeight
 do
     local chart = lurek.charts.newPie({ width = 400, height = 300 })
     print("LPieChart:getHeight=" .. chart:getHeight())
     print("LPieChart:getWidth=" .. chart:getWidth())
 end
 
---@api-stub: LScatterPlot:addSeries
+--@api: LScatterPlot:addSeries
 do
     local chart = lurek.charts.newScatter({ width = 400, height = 300 })
     chart:addSeries("series1", { {1, 1}, {2, 3}, {3, 2}, {4, 5}, {5, 4} })
@@ -396,7 +396,7 @@ do
     print("width = " .. tostring(chart:getWidth()))
 end
 
---@api-stub: LScatterPlot:clear
+--@api: LScatterPlot:clear
 do
     local chart = lurek.charts.newScatter({ width = 400, height = 300 })
     chart:addSeries("data", { {1, 1}, {2, 2}, {3, 3} })
@@ -406,7 +406,7 @@ do
     print("render bytes = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LScatterPlot:setDotRadius
+--@api: LScatterPlot:setDotRadius
 do
     local chart = lurek.charts.newScatter({ width = 400, height = 300 })
     chart:setDotRadius(5.0)
@@ -414,7 +414,7 @@ do
     print("height = " .. tostring(chart:getHeight()))
 end
 
---@api-stub: LScatterPlot:setTitle
+--@api: LScatterPlot:setTitle
 do
     local chart = lurek.charts.newScatter({ width = 400, height = 300 })
     chart:setTitle("Monthly Sales")
@@ -422,7 +422,7 @@ do
     print("width = " .. tostring(chart:getWidth()))
 end
 
---@api-stub: LScatterPlot:render
+--@api: LScatterPlot:render
 do
     local chart = lurek.charts.newScatter({ width = 400, height = 300 })
     chart:addSeries("data", { {1, 5}, {2, 3}, {3, 8}, {4, 2}, {5, 6} })
@@ -431,828 +431,1051 @@ do
     print("pixels = " .. tostring(#pixels) .. " for " .. tostring(w) .. "x" .. tostring(h))
 end
 
---@api-stub: LScatterPlot:getWidth
+--@api: LScatterPlot:getWidth
 do
     local chart = lurek.charts.newScatter({ width = 400, height = 300 })
     print("LScatterPlot:getWidth=" .. chart:getWidth())
     print("LScatterPlot:getHeight=" .. chart:getHeight())
 end
 
---@api-stub: LScatterPlot:getHeight
+--@api: LScatterPlot:getHeight
 do
     local chart = lurek.charts.newScatter({ width = 400, height = 300 })
     print("LScatterPlot:getHeight=" .. chart:getHeight())
     print("LScatterPlot:getWidth=" .. chart:getWidth())
 end
 
---@api-stub: lurek.charts.newHistogram
-do
-    -- TODO: example for lurek.charts.newHistogram
-    -- keep this block until a real scenario is added
+local function charts_df()
+    return lurek.dataframe.fromTable({
+        { month = 1, label = "Jan", north = 12, south = 8, east = 5, value = 12, x = 1, y = 12, row = "North", col = "Q1" },
+        { month = 2, label = "Feb", north = 18, south = 11, east = 7, value = 18, x = 2, y = 18, row = "North", col = "Q2" },
+        { month = 3, label = "Mar", north = 15, south = 14, east = 9, value = 15, x = 3, y = 15, row = "South", col = "Q1" },
+        { month = 4, label = "Apr", north = 24, south = 16, east = 12, value = 24, x = 4, y = 24, row = "South", col = "Q2" },
+    })
 end
 
+local function chart_target_image(w, h)
+    return lurek.image.newImageData(w, h)
+end
 
---@api-stub: lurek.charts.newHeatmap
+--@api: lurek.charts.newHistogram
 do
-    -- TODO: example for lurek.charts.newHeatmap
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180, title = "Response Times" })
+    chart:addSeries("ms", { 14, 18, 22, 18, 15, 21, 29, 18 })
+    print("histogram type = " .. chart:type())
+    print("histogram width = " .. chart:getWidth())
 end
-
 
---@api-stub: LAreaChart:addLayer
+--@api: lurek.charts.newHeatmap
 do
-    -- TODO: example for LAreaChart:addLayer
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180, title = "Region Load" })
+    chart:setMatrix({ { 2, 4 }, { 6, 8 } }, { "North", "South" }, { "Q1", "Q2" })
+    print("heatmap type = " .. chart:type())
+    print("heatmap height = " .. chart:getHeight())
 end
 
-
---@api-stub: LAreaChart:addLayerFromDataFrame
+--@api: LAreaChart:addLayer
 do
-    -- TODO: example for LAreaChart:addLayerFromDataFrame
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 320, height = 180, title = "Area Layers" })
+    chart:addLayer("north", { 10, 14, 18, 20 })
+    print("added layer north")
+    print("width = " .. chart:getWidth())
 end
-
 
---@api-stub: LAreaChart:appendPoint
+--@api: LAreaChart:addLayerFromDataFrame
 do
-    -- TODO: example for LAreaChart:appendPoint
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 320, height = 180 })
+    local df = charts_df()
+    local added = chart:addLayerFromDataFrame("north", df, "north")
+    print("rows added = " .. tostring(added))
+    print("height = " .. chart:getHeight())
 end
 
-
---@api-stub: LAreaChart:setWindow
+--@api: LAreaChart:appendPoint
 do
-    -- TODO: example for LAreaChart:setWindow
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 320, height = 180 })
+    chart:addSeries("trend", { { 1, 12 }, { 2, 16 } })
+    chart:appendPoint("trend", 3, 21)
+    local _, _, pixels = chart:render()
+    print("append point pixels = " .. #pixels)
 end
-
 
---@api-stub: LAreaChart:setYMax
+--@api: LAreaChart:setWindow
 do
-    -- TODO: example for LAreaChart:setYMax
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 320, height = 180 })
+    chart:addSeries("trend", { { 1, 8 }, { 2, 12 }, { 3, 15 }, { 4, 19 } })
+    chart:setWindow(2)
+    local _, _, pixels = chart:render()
+    print("windowed render bytes = " .. #pixels)
 end
 
-
---@api-stub: LAreaChart:setXLabel
+--@api: LAreaChart:setYMax
 do
-    -- TODO: example for LAreaChart:setXLabel
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 320, height = 180 })
+    chart:addSeries("trend", { { 1, 8 }, { 2, 12 }, { 3, 15 } })
+    chart:setYMax(20)
+    print("manual y max applied")
+    print("type = " .. chart:type())
 end
 
-
---@api-stub: LAreaChart:setYLabel
+--@api: LAreaChart:setXLabel
 do
-    -- TODO: example for LAreaChart:setYLabel
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 320, height = 180 })
+    chart:setXLabel("Month")
+    chart:setYLabel("Users")
+    local _, _, pixels = chart:render()
+    print("labeled area bytes = " .. #pixels)
 end
-
 
---@api-stub: LAreaChart:setXTickCount
+--@api: LAreaChart:setYLabel
 do
-    -- TODO: example for LAreaChart:setXTickCount
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 320, height = 180 })
+    chart:setYLabel("Requests")
+    chart:addLayer("api", { 3, 5, 8, 13 })
+    local _, _, pixels = chart:render()
+    print("area label bytes = " .. #pixels)
 end
 
-
---@api-stub: LAreaChart:setYTickCount
+--@api: LAreaChart:setXTickCount
 do
-    -- TODO: example for LAreaChart:setYTickCount
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 320, height = 180 })
+    chart:setXTickCount(5)
+    chart:addLayer("api", { 3, 5, 8, 13 })
+    local _, _, pixels = chart:render()
+    print("x ticks bytes = " .. #pixels)
 end
-
 
---@api-stub: LAreaChart:setShowLegend
+--@api: LAreaChart:setYTickCount
 do
-    -- TODO: example for LAreaChart:setShowLegend
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 320, height = 180 })
+    chart:setYTickCount(6)
+    chart:addLayer("api", { 3, 5, 8, 13 })
+    local _, _, pixels = chart:render()
+    print("y ticks bytes = " .. #pixels)
 end
 
-
---@api-stub: LAreaChart:renderImage
+--@api: LAreaChart:setShowLegend
 do
-    -- TODO: example for LAreaChart:renderImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 320, height = 180 })
+    chart:addLayer("north", { 5, 6, 7, 8 })
+    chart:addLayer("south", { 4, 5, 5, 6 })
+    chart:setShowLegend(true)
+    local _, _, pixels = chart:render()
+    print("legend bytes = " .. #pixels)
 end
-
 
---@api-stub: LAreaChart:drawToImage
+--@api: LAreaChart:renderImage
 do
-    -- TODO: example for LAreaChart:drawToImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 256, height = 128 })
+    chart:addLayer("north", { 5, 6, 9, 12 })
+    local img = chart:renderImage()
+    print("render image type = " .. img:type())
+    print("render image size = " .. img:getWidth() .. "x" .. img:getHeight())
 end
 
-
---@api-stub: LAreaChart:draw
+--@api: LAreaChart:drawToImage
 do
-    -- TODO: example for LAreaChart:draw
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 256, height = 128 })
+    local target = chart_target_image(256, 128)
+    chart:addLayer("north", { 5, 6, 9, 12 })
+    chart:drawToImage(target)
+    print("target size = " .. target:getWidth() .. "x" .. target:getHeight())
 end
 
-
---@api-stub: LAreaChart:type
+--@api: LAreaChart:draw
 do
-    -- TODO: example for LAreaChart:type
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 256, height = 128 })
+    chart:addLayer("north", { 5, 6, 9, 12 })
+    chart:draw(24, 16, {})
+    print("draw call issued")
+    print("area type = " .. chart:type())
 end
-
 
---@api-stub: LAreaChart:typeOf
+--@api: LAreaChart:type
 do
-    -- TODO: example for LAreaChart:typeOf
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 256, height = 128 })
+    print("type = " .. chart:type())
+    print("is object = " .. tostring(chart:typeOf("LObject")))
 end
 
-
---@api-stub: LBarChart:addCategory
+--@api: LAreaChart:typeOf
 do
-    -- TODO: example for LBarChart:addCategory
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newArea({ width = 256, height = 128 })
+    print("typeOf LAreaChart = " .. tostring(chart:typeOf("LAreaChart")))
+    print("typeOf LBarChart = " .. tostring(chart:typeOf("LBarChart")))
 end
-
 
---@api-stub: LBarChart:addCategoriesFromDataFrame
+--@api: LBarChart:addCategory
 do
-    -- TODO: example for LBarChart:addCategoriesFromDataFrame
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 320, height = 180 })
+    chart:addCategory("Q1", { 12, 8, 5 })
+    chart:addCategory("Q2", { 18, 11, 7 })
+    local _, _, pixels = chart:render()
+    print("categories bytes = " .. #pixels)
 end
 
-
---@api-stub: LBarChart:setXLabel
+--@api: LBarChart:addCategoriesFromDataFrame
 do
-    -- TODO: example for LBarChart:setXLabel
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 320, height = 180 })
+    local df = charts_df()
+    local added = chart:addCategoriesFromDataFrame(df, "label", { "north", "south", "east" })
+    print("categories added = " .. tostring(added))
+    print("height = " .. chart:getHeight())
 end
-
 
---@api-stub: LBarChart:setYLabel
+--@api: LBarChart:setXLabel
 do
-    -- TODO: example for LBarChart:setYLabel
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 320, height = 180 })
+    chart:setXLabel("Quarter")
+    chart:addCategory("Q1", { 12, 8, 5 })
+    local _, _, pixels = chart:render()
+    print("bar x label bytes = " .. #pixels)
 end
 
-
---@api-stub: LBarChart:setXTickCount
+--@api: LBarChart:setYLabel
 do
-    -- TODO: example for LBarChart:setXTickCount
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 320, height = 180 })
+    chart:setYLabel("Sales")
+    chart:addCategory("Q1", { 12, 8, 5 })
+    local _, _, pixels = chart:render()
+    print("bar y label bytes = " .. #pixels)
 end
-
 
---@api-stub: LBarChart:setYTickCount
+--@api: LBarChart:setXTickCount
 do
-    -- TODO: example for LBarChart:setYTickCount
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 320, height = 180 })
+    chart:setXTickCount(4)
+    chart:addCategory("Q1", { 12, 8, 5 })
+    chart:addCategory("Q2", { 18, 11, 7 })
+    local _, _, pixels = chart:render()
+    print("bar x ticks bytes = " .. #pixels)
 end
 
-
---@api-stub: LBarChart:setShowLegend
+--@api: LBarChart:setYTickCount
 do
-    -- TODO: example for LBarChart:setShowLegend
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 320, height = 180 })
+    chart:setYTickCount(6)
+    chart:addCategory("Q1", { 12, 8, 5 })
+    chart:addCategory("Q2", { 18, 11, 7 })
+    local _, _, pixels = chart:render()
+    print("bar y ticks bytes = " .. #pixels)
 end
-
 
---@api-stub: LBarChart:renderImage
+--@api: LBarChart:setShowLegend
 do
-    -- TODO: example for LBarChart:renderImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 320, height = 180 })
+    chart:addCategory("Q1", { 12, 8, 5 })
+    chart:addCategory("Q2", { 18, 11, 7 })
+    chart:setShowLegend(true)
+    local _, _, pixels = chart:render()
+    print("bar legend bytes = " .. #pixels)
 end
 
-
---@api-stub: LBarChart:drawToImage
+--@api: LBarChart:renderImage
 do
-    -- TODO: example for LBarChart:drawToImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 256, height = 128 })
+    chart:addCategory("Q1", { 12, 8, 5 })
+    local img = chart:renderImage()
+    print("bar image type = " .. img:type())
+    print("bar image size = " .. img:getWidth() .. "x" .. img:getHeight())
 end
-
 
---@api-stub: LBarChart:draw
+--@api: LBarChart:drawToImage
 do
-    -- TODO: example for LBarChart:draw
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 256, height = 128 })
+    local target = chart_target_image(256, 128)
+    chart:addCategory("Q1", { 12, 8, 5 })
+    chart:drawToImage(target)
+    print("bar target bytes = " .. target:getWidth() .. "x" .. target:getHeight())
 end
 
-
---@api-stub: LBarChart:type
+--@api: LBarChart:draw
 do
-    -- TODO: example for LBarChart:type
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 256, height = 128 })
+    chart:addCategory("Q1", { 12, 8, 5 })
+    chart:draw(12, 8, {})
+    print("bar draw issued")
+    print("bar type = " .. chart:type())
 end
-
 
---@api-stub: LBarChart:typeOf
+--@api: LBarChart:type
 do
-    -- TODO: example for LBarChart:typeOf
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 256, height = 128 })
+    print("type = " .. chart:type())
+    print("object = " .. tostring(chart:typeOf("LObject")))
 end
 
-
---@api-stub: LHeatmapChart:setMatrix
+--@api: LBarChart:typeOf
 do
-    -- TODO: example for LHeatmapChart:setMatrix
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newBar({ width = 256, height = 128 })
+    print("typeOf LBarChart = " .. tostring(chart:typeOf("LBarChart")))
+    print("typeOf LAreaChart = " .. tostring(chart:typeOf("LAreaChart")))
 end
 
-
---@api-stub: LHeatmapChart:setMatrixFromDataFrame
+--@api: LHeatmapChart:setMatrix
 do
-    -- TODO: example for LHeatmapChart:setMatrixFromDataFrame
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    local _, _, pixels = chart:render()
+    print("heatmap matrix bytes = " .. #pixels)
 end
-
 
---@api-stub: LHeatmapChart:resize
+--@api: LHeatmapChart:setMatrixFromDataFrame
 do
-    -- TODO: example for LHeatmapChart:resize
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    local df = charts_df()
+    local cells = chart:setMatrixFromDataFrame(df, "row", "col", "value")
+    print("matrix cells = " .. tostring(cells))
+    print("width = " .. chart:getWidth())
 end
 
-
---@api-stub: LHeatmapChart:setCell
+--@api: LHeatmapChart:resize
 do
-    -- TODO: example for LHeatmapChart:setCell
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:resize(3, 2)
+    chart:setCell(1, 1, 1.5)
+    chart:setCell(3, 2, 4.5)
+    local _, _, pixels = chart:render()
+    print("resized heatmap bytes = " .. #pixels)
 end
-
 
---@api-stub: LHeatmapChart:clear
+--@api: LHeatmapChart:setCell
 do
-    -- TODO: example for LHeatmapChart:clear
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:resize(2, 2)
+    chart:setCell(1, 1, 2.5)
+    chart:setCell(2, 2, 7.5)
+    local _, _, pixels = chart:render()
+    print("heatmap cell bytes = " .. #pixels)
 end
 
-
---@api-stub: LHeatmapChart:setRowLabels
+--@api: LHeatmapChart:clear
 do
-    -- TODO: example for LHeatmapChart:setRowLabels
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } }, { "North", "South" }, { "Q1", "Q2" })
+    chart:clear()
+    local _, _, pixels = chart:render()
+    print("cleared heatmap bytes = " .. #pixels)
 end
-
 
---@api-stub: LHeatmapChart:setColumnLabels
+--@api: LHeatmapChart:setRowLabels
 do
-    -- TODO: example for LHeatmapChart:setColumnLabels
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    chart:setRowLabels({ "North", "South" })
+    local _, _, pixels = chart:render()
+    print("row labels bytes = " .. #pixels)
 end
 
-
---@api-stub: LHeatmapChart:setValueRange
+--@api: LHeatmapChart:setColumnLabels
 do
-    -- TODO: example for LHeatmapChart:setValueRange
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    chart:setColumnLabels({ "Q1", "Q2" })
+    local _, _, pixels = chart:render()
+    print("column labels bytes = " .. #pixels)
 end
-
 
---@api-stub: LHeatmapChart:clearValueRange
+--@api: LHeatmapChart:setValueRange
 do
-    -- TODO: example for LHeatmapChart:clearValueRange
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    chart:setValueRange(0, 10)
+    local _, _, pixels = chart:render()
+    print("value range bytes = " .. #pixels)
 end
 
-
---@api-stub: LHeatmapChart:setColorRange
+--@api: LHeatmapChart:clearValueRange
 do
-    -- TODO: example for LHeatmapChart:setColorRange
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    chart:setValueRange(0, 10)
+    chart:clearValueRange()
+    local _, _, pixels = chart:render()
+    print("cleared range bytes = " .. #pixels)
 end
-
 
---@api-stub: LHeatmapChart:setShowValues
+--@api: LHeatmapChart:setColorRange
 do
-    -- TODO: example for LHeatmapChart:setShowValues
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    chart:setColorRange({ 0.10, 0.20, 0.60, 1.0 }, { 0.90, 0.20, 0.10, 1.0 })
+    local _, _, pixels = chart:render()
+    print("color range bytes = " .. #pixels)
 end
 
-
---@api-stub: LHeatmapChart:setTitle
+--@api: LHeatmapChart:setShowValues
 do
-    -- TODO: example for LHeatmapChart:setTitle
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    chart:setShowValues(true)
+    local _, _, pixels = chart:render()
+    print("show values bytes = " .. #pixels)
 end
-
 
---@api-stub: LHeatmapChart:setShowLegend
+--@api: LHeatmapChart:setTitle
 do
-    -- TODO: example for LHeatmapChart:setShowLegend
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:setTitle("Throughput Grid")
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local _, _, pixels = chart:render()
+    print("heatmap title bytes = " .. #pixels)
 end
 
-
---@api-stub: LHeatmapChart:render
+--@api: LHeatmapChart:setShowLegend
 do
-    -- TODO: example for LHeatmapChart:render
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    chart:setShowLegend(true)
+    local _, _, pixels = chart:render()
+    print("heatmap legend bytes = " .. #pixels)
 end
-
 
---@api-stub: LHeatmapChart:renderImage
+--@api: LHeatmapChart:render
 do
-    -- TODO: example for LHeatmapChart:renderImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local w, h, pixels = chart:render()
+    print("render size = " .. w .. "x" .. h)
+    print("render bytes = " .. #pixels)
 end
 
-
---@api-stub: LHeatmapChart:drawToImage
+--@api: LHeatmapChart:renderImage
 do
-    -- TODO: example for LHeatmapChart:drawToImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 256, height = 128 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    local img = chart:renderImage()
+    print("heatmap image type = " .. img:type())
+    print("heatmap image width = " .. img:getWidth())
 end
 
-
---@api-stub: LHeatmapChart:draw
+--@api: LHeatmapChart:drawToImage
 do
-    -- TODO: example for LHeatmapChart:draw
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 256, height = 128 })
+    local target = chart_target_image(256, 128)
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    chart:drawToImage(target)
+    print("heatmap target width = " .. target:getWidth())
 end
-
 
---@api-stub: LHeatmapChart:getWidth
+--@api: LHeatmapChart:draw
 do
-    -- TODO: example for LHeatmapChart:getWidth
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 256, height = 128 })
+    chart:setMatrix({ { 1, 2 }, { 3, 4 } })
+    chart:draw(18, 10, {})
+    print("heatmap draw issued")
+    print("heatmap type = " .. chart:type())
 end
 
-
---@api-stub: LHeatmapChart:getHeight
+--@api: LHeatmapChart:getWidth
 do
-    -- TODO: example for LHeatmapChart:getHeight
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 333, height = 144 })
+    print("width = " .. chart:getWidth())
+    print("height = " .. chart:getHeight())
 end
-
 
---@api-stub: LHeatmapChart:type
+--@api: LHeatmapChart:getHeight
 do
-    -- TODO: example for LHeatmapChart:type
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 333, height = 144 })
+    print("height = " .. chart:getHeight())
+    print("width = " .. chart:getWidth())
 end
 
-
---@api-stub: LHeatmapChart:typeOf
+--@api: LHeatmapChart:type
 do
-    -- TODO: example for LHeatmapChart:typeOf
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    print("type = " .. chart:type())
+    print("object = " .. tostring(chart:typeOf("LObject")))
 end
-
 
---@api-stub: LHistogramChart:addSeries
+--@api: LHeatmapChart:typeOf
 do
-    -- TODO: example for LHistogramChart:addSeries
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHeatmap({ width = 320, height = 180 })
+    print("typeOf LHeatmapChart = " .. tostring(chart:typeOf("LHeatmapChart")))
+    print("typeOf LPieChart = " .. tostring(chart:typeOf("LPieChart")))
 end
 
-
---@api-stub: LHistogramChart:addSeriesFromDataFrame
+--@api: LHistogramChart:addSeries
 do
-    -- TODO: example for LHistogramChart:addSeriesFromDataFrame
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:addSeries("response", { 12, 14, 18, 18, 22, 25, 18 })
+    local _, _, pixels = chart:render()
+    print("histogram bytes = " .. #pixels)
 end
-
 
---@api-stub: LHistogramChart:replaceSeries
+--@api: LHistogramChart:addSeriesFromDataFrame
 do
-    -- TODO: example for LHistogramChart:replaceSeries
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    local df = charts_df()
+    local added = chart:addSeriesFromDataFrame("north", df, "north")
+    print("histogram rows added = " .. tostring(added))
+    print("width = " .. chart:getWidth())
 end
 
-
---@api-stub: LHistogramChart:appendValue
+--@api: LHistogramChart:replaceSeries
 do
-    -- TODO: example for LHistogramChart:appendValue
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:addSeries("response", { 12, 14, 18 })
+    chart:replaceSeries("response", { 30, 28, 26, 24 })
+    local _, _, pixels = chart:render()
+    print("replaced histogram bytes = " .. #pixels)
 end
-
 
---@api-stub: LHistogramChart:setWindow
+--@api: LHistogramChart:appendValue
 do
-    -- TODO: example for LHistogramChart:setWindow
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:addSeries("response", { 12, 14, 18 })
+    chart:appendValue("response", 21)
+    local _, _, pixels = chart:render()
+    print("append histogram bytes = " .. #pixels)
 end
 
-
---@api-stub: LHistogramChart:clear
+--@api: LHistogramChart:setWindow
 do
-    -- TODO: example for LHistogramChart:clear
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    chart:setWindow(4)
+    local _, _, pixels = chart:render()
+    print("window histogram bytes = " .. #pixels)
 end
-
 
---@api-stub: LHistogramChart:setBinCount
+--@api: LHistogramChart:clear
 do
-    -- TODO: example for LHistogramChart:setBinCount
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:addSeries("response", { 12, 14, 18 })
+    chart:clear()
+    local _, _, pixels = chart:render()
+    print("cleared histogram bytes = " .. #pixels)
 end
 
-
---@api-stub: LHistogramChart:setRange
+--@api: LHistogramChart:setBinCount
 do
-    -- TODO: example for LHistogramChart:setRange
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    chart:setBinCount(5)
+    local _, _, pixels = chart:render()
+    print("bins histogram bytes = " .. #pixels)
 end
-
 
---@api-stub: LHistogramChart:clearRange
+--@api: LHistogramChart:setRange
 do
-    -- TODO: example for LHistogramChart:clearRange
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    chart:setRange(10, 30)
+    local _, _, pixels = chart:render()
+    print("range histogram bytes = " .. #pixels)
 end
 
-
---@api-stub: LHistogramChart:setDensity
+--@api: LHistogramChart:clearRange
 do
-    -- TODO: example for LHistogramChart:setDensity
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    chart:setRange(10, 30)
+    chart:clearRange()
+    local _, _, pixels = chart:render()
+    print("clear range histogram bytes = " .. #pixels)
 end
 
-
---@api-stub: LHistogramChart:setTitle
+--@api: LHistogramChart:setDensity
 do
-    -- TODO: example for LHistogramChart:setTitle
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    chart:setDensity(true)
+    local _, _, pixels = chart:render()
+    print("density histogram bytes = " .. #pixels)
 end
-
 
---@api-stub: LHistogramChart:setXLabel
+--@api: LHistogramChart:setTitle
 do
-    -- TODO: example for LHistogramChart:setXLabel
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:setTitle("Response Times")
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local _, _, pixels = chart:render()
+    print("histogram title bytes = " .. #pixels)
 end
 
-
---@api-stub: LHistogramChart:setYLabel
+--@api: LHistogramChart:setXLabel
 do
-    -- TODO: example for LHistogramChart:setYLabel
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:setXLabel("Latency")
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local _, _, pixels = chart:render()
+    print("histogram x label bytes = " .. #pixels)
 end
-
 
---@api-stub: LHistogramChart:setXTickCount
+--@api: LHistogramChart:setYLabel
 do
-    -- TODO: example for LHistogramChart:setXTickCount
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:setYLabel("Frequency")
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local _, _, pixels = chart:render()
+    print("histogram y label bytes = " .. #pixels)
 end
 
-
---@api-stub: LHistogramChart:setYTickCount
+--@api: LHistogramChart:setXTickCount
 do
-    -- TODO: example for LHistogramChart:setYTickCount
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:setXTickCount(5)
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local _, _, pixels = chart:render()
+    print("histogram x ticks bytes = " .. #pixels)
 end
-
 
---@api-stub: LHistogramChart:setShowLegend
+--@api: LHistogramChart:setYTickCount
 do
-    -- TODO: example for LHistogramChart:setShowLegend
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:setYTickCount(6)
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local _, _, pixels = chart:render()
+    print("histogram y ticks bytes = " .. #pixels)
 end
 
-
---@api-stub: LHistogramChart:render
+--@api: LHistogramChart:setShowLegend
 do
-    -- TODO: example for LHistogramChart:render
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:addSeries("north", { 12, 14, 18, 21 })
+    chart:addSeries("south", { 9, 10, 11, 15 })
+    chart:setShowLegend(true)
+    local _, _, pixels = chart:render()
+    print("histogram legend bytes = " .. #pixels)
 end
 
-
---@api-stub: LHistogramChart:renderImage
+--@api: LHistogramChart:render
 do
-    -- TODO: example for LHistogramChart:renderImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local w, h, pixels = chart:render()
+    print("histogram size = " .. w .. "x" .. h)
+    print("histogram bytes = " .. #pixels)
 end
-
 
---@api-stub: LHistogramChart:drawToImage
+--@api: LHistogramChart:renderImage
 do
-    -- TODO: example for LHistogramChart:drawToImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 256, height = 128 })
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    local img = chart:renderImage()
+    print("histogram image type = " .. img:type())
+    print("histogram image width = " .. img:getWidth())
 end
 
-
---@api-stub: LHistogramChart:draw
+--@api: LHistogramChart:drawToImage
 do
-    -- TODO: example for LHistogramChart:draw
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 256, height = 128 })
+    local target = chart_target_image(256, 128)
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    chart:drawToImage(target)
+    print("histogram target width = " .. target:getWidth())
 end
-
 
---@api-stub: LHistogramChart:getWidth
+--@api: LHistogramChart:draw
 do
-    -- TODO: example for LHistogramChart:getWidth
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 256, height = 128 })
+    chart:addSeries("response", { 12, 14, 18, 21, 25, 19 })
+    chart:draw(16, 8, {})
+    print("histogram draw issued")
+    print("histogram type = " .. chart:type())
 end
 
-
---@api-stub: LHistogramChart:getHeight
+--@api: LHistogramChart:getWidth
 do
-    -- TODO: example for LHistogramChart:getHeight
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 345, height = 176 })
+    print("width = " .. chart:getWidth())
+    print("height = " .. chart:getHeight())
 end
-
 
---@api-stub: LHistogramChart:type
+--@api: LHistogramChart:getHeight
 do
-    -- TODO: example for LHistogramChart:type
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 345, height = 176 })
+    print("height = " .. chart:getHeight())
+    print("width = " .. chart:getWidth())
 end
 
-
---@api-stub: LHistogramChart:typeOf
+--@api: LHistogramChart:type
 do
-    -- TODO: example for LHistogramChart:typeOf
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    print("type = " .. chart:type())
+    print("object = " .. tostring(chart:typeOf("LObject")))
 end
 
-
---@api-stub: LLineChart:addSeriesFromDataFrame
+--@api: LHistogramChart:typeOf
 do
-    -- TODO: example for LLineChart:addSeriesFromDataFrame
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newHistogram({ width = 320, height = 180 })
+    print("typeOf LHistogramChart = " .. tostring(chart:typeOf("LHistogramChart")))
+    print("typeOf LLineChart = " .. tostring(chart:typeOf("LLineChart")))
 end
-
 
---@api-stub: LLineChart:replaceSeries
+--@api: LLineChart:addSeriesFromDataFrame
 do
-    -- TODO: example for LLineChart:replaceSeries
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    local df = charts_df()
+    local added = chart:addSeriesFromDataFrame("north", df, "month", "north")
+    print("line rows added = " .. tostring(added))
+    print("width = " .. chart:getWidth())
 end
 
-
---@api-stub: LLineChart:appendPoint
+--@api: LLineChart:replaceSeries
 do
-    -- TODO: example for LLineChart:appendPoint
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 } })
+    chart:replaceSeries("north", { { 1, 9 }, { 2, 11 }, { 3, 15 } })
+    local _, _, pixels = chart:render()
+    print("line replace bytes = " .. #pixels)
 end
-
 
---@api-stub: LLineChart:setWindow
+--@api: LLineChart:appendPoint
 do
-    -- TODO: example for LLineChart:setWindow
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 } })
+    chart:appendPoint("north", 3, 15)
+    local _, _, pixels = chart:render()
+    print("line append bytes = " .. #pixels)
 end
 
-
---@api-stub: LLineChart:setYMax
+--@api: LLineChart:setWindow
 do
-    -- TODO: example for LLineChart:setYMax
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 }, { 4, 24 } })
+    chart:setWindow(2)
+    local _, _, pixels = chart:render()
+    print("line window bytes = " .. #pixels)
 end
-
 
---@api-stub: LLineChart:setXMax
+--@api: LLineChart:setYMax
 do
-    -- TODO: example for LLineChart:setXMax
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setYMax(30)
+    local _, _, pixels = chart:render()
+    print("line y max bytes = " .. #pixels)
 end
 
-
---@api-stub: LLineChart:setXLabel
+--@api: LLineChart:setXMax
 do
-    -- TODO: example for LLineChart:setXLabel
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setXMax(6)
+    local _, _, pixels = chart:render()
+    print("line x max bytes = " .. #pixels)
 end
-
 
---@api-stub: LLineChart:setYLabel
+--@api: LLineChart:setXLabel
 do
-    -- TODO: example for LLineChart:setYLabel
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    chart:setXLabel("Month")
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local _, _, pixels = chart:render()
+    print("line x label bytes = " .. #pixels)
 end
 
-
---@api-stub: LLineChart:setXTickCount
+--@api: LLineChart:setYLabel
 do
-    -- TODO: example for LLineChart:setXTickCount
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    chart:setYLabel("Users")
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local _, _, pixels = chart:render()
+    print("line y label bytes = " .. #pixels)
 end
-
 
---@api-stub: LLineChart:setYTickCount
+--@api: LLineChart:setXTickCount
 do
-    -- TODO: example for LLineChart:setYTickCount
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    chart:setXTickCount(5)
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local _, _, pixels = chart:render()
+    print("line x ticks bytes = " .. #pixels)
 end
 
-
---@api-stub: LLineChart:setShowLegend
+--@api: LLineChart:setYTickCount
 do
-    -- TODO: example for LLineChart:setShowLegend
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    chart:setYTickCount(6)
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local _, _, pixels = chart:render()
+    print("line y ticks bytes = " .. #pixels)
 end
-
 
---@api-stub: LLineChart:renderImage
+--@api: LLineChart:setShowLegend
 do
-    -- TODO: example for LLineChart:renderImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:addSeries("south", { { 1, 8 }, { 2, 11 }, { 3, 16 } })
+    chart:setShowLegend(true)
+    local _, _, pixels = chart:render()
+    print("line legend bytes = " .. #pixels)
 end
 
-
---@api-stub: LLineChart:drawToImage
+--@api: LLineChart:renderImage
 do
-    -- TODO: example for LLineChart:drawToImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 256, height = 128 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local img = chart:renderImage()
+    print("line image type = " .. img:type())
+    print("line image width = " .. img:getWidth())
 end
-
 
---@api-stub: LLineChart:draw
+--@api: LLineChart:drawToImage
 do
-    -- TODO: example for LLineChart:draw
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 256, height = 128 })
+    local target = chart_target_image(256, 128)
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:drawToImage(target)
+    print("line target width = " .. target:getWidth())
 end
 
-
---@api-stub: LLineChart:nearest
+--@api: LLineChart:draw
 do
-    -- TODO: example for LLineChart:nearest
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 256, height = 128 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:draw(20, 12, {})
+    print("line draw issued")
+    print("line type = " .. chart:type())
 end
 
-
---@api-stub: LLineChart:type
+--@api: LLineChart:nearest
 do
-    -- TODO: example for LLineChart:type
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local hit = chart:nearest(120, 80)
+    print("line nearest found = " .. tostring(hit ~= nil))
+    print("line nearest series = " .. tostring(hit and hit.series))
 end
-
 
---@api-stub: LLineChart:typeOf
+--@api: LLineChart:type
 do
-    -- TODO: example for LLineChart:typeOf
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 256, height = 128 })
+    print("type = " .. chart:type())
+    print("object = " .. tostring(chart:typeOf("LObject")))
 end
 
-
---@api-stub: LPieChart:addSegment
+--@api: LLineChart:typeOf
 do
-    -- TODO: example for LPieChart:addSegment
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newLine({ width = 256, height = 128 })
+    print("typeOf LLineChart = " .. tostring(chart:typeOf("LLineChart")))
+    print("typeOf LAreaChart = " .. tostring(chart:typeOf("LAreaChart")))
 end
-
 
---@api-stub: LPieChart:addSegmentsFromDataFrame
+--@api: LPieChart:addSegment
 do
-    -- TODO: example for LPieChart:addSegmentsFromDataFrame
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newPie({ width = 320, height = 180 })
+    chart:addSegment("North", 42, { 0.9, 0.3, 0.2, 1.0 })
+    chart:addSegment("South", 33, { 0.2, 0.6, 0.9, 1.0 })
+    local _, _, pixels = chart:render()
+    print("pie segment bytes = " .. #pixels)
 end
 
-
---@api-stub: LPieChart:setShowLegend
+--@api: LPieChart:addSegmentsFromDataFrame
 do
-    -- TODO: example for LPieChart:setShowLegend
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newPie({ width = 320, height = 180 })
+    local df = lurek.dataframe.fromTable({
+        { label = "North", value = 42 },
+        { label = "South", value = 33 },
+        { label = "East", value = 25 },
+    })
+    local added = chart:addSegmentsFromDataFrame(df, "label", "value")
+    print("pie segments added = " .. tostring(added))
+    print("pie height = " .. chart:getHeight())
 end
-
 
---@api-stub: LPieChart:renderImage
+--@api: LPieChart:setShowLegend
 do
-    -- TODO: example for LPieChart:renderImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newPie({ width = 320, height = 180 })
+    chart:addSegment("North", 42)
+    chart:addSegment("South", 33)
+    chart:setShowLegend(true)
+    local _, _, pixels = chart:render()
+    print("pie legend bytes = " .. #pixels)
 end
 
-
---@api-stub: LPieChart:drawToImage
+--@api: LPieChart:renderImage
 do
-    -- TODO: example for LPieChart:drawToImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newPie({ width = 256, height = 128 })
+    chart:addSegment("North", 42)
+    chart:addSegment("South", 33)
+    local img = chart:renderImage()
+    print("pie image type = " .. img:type())
+    print("pie image width = " .. img:getWidth())
 end
-
 
---@api-stub: LPieChart:draw
+--@api: LPieChart:drawToImage
 do
-    -- TODO: example for LPieChart:draw
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newPie({ width = 256, height = 128 })
+    local target = chart_target_image(256, 128)
+    chart:addSegment("North", 42)
+    chart:addSegment("South", 33)
+    chart:drawToImage(target)
+    print("pie target width = " .. target:getWidth())
 end
 
-
---@api-stub: LPieChart:type
+--@api: LPieChart:draw
 do
-    -- TODO: example for LPieChart:type
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newPie({ width = 256, height = 128 })
+    chart:addSegment("North", 42)
+    chart:addSegment("South", 33)
+    chart:draw(20, 10, {})
+    print("pie draw issued")
+    print("pie type = " .. chart:type())
 end
-
 
---@api-stub: LPieChart:typeOf
+--@api: LPieChart:type
 do
-    -- TODO: example for LPieChart:typeOf
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newPie({ width = 256, height = 128 })
+    print("type = " .. chart:type())
+    print("object = " .. tostring(chart:typeOf("LObject")))
 end
 
-
---@api-stub: LScatterPlot:addSeriesFromDataFrame
+--@api: LPieChart:typeOf
 do
-    -- TODO: example for LScatterPlot:addSeriesFromDataFrame
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newPie({ width = 256, height = 128 })
+    print("typeOf LPieChart = " .. tostring(chart:typeOf("LPieChart")))
+    print("typeOf LBarChart = " .. tostring(chart:typeOf("LBarChart")))
 end
-
 
---@api-stub: LScatterPlot:replaceSeries
+--@api: LScatterPlot:addSeriesFromDataFrame
 do
-    -- TODO: example for LScatterPlot:replaceSeries
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    local df = charts_df()
+    local added = chart:addSeriesFromDataFrame("north", df, "x", "y")
+    print("scatter rows added = " .. tostring(added))
+    print("scatter width = " .. chart:getWidth())
 end
 
-
---@api-stub: LScatterPlot:appendPoint
+--@api: LScatterPlot:replaceSeries
 do
-    -- TODO: example for LScatterPlot:appendPoint
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 } })
+    chart:replaceSeries("north", { { 1, 9 }, { 2, 11 }, { 3, 15 } })
+    local _, _, pixels = chart:render()
+    print("scatter replace bytes = " .. #pixels)
 end
-
 
---@api-stub: LScatterPlot:setWindow
+--@api: LScatterPlot:appendPoint
 do
-    -- TODO: example for LScatterPlot:setWindow
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 } })
+    chart:appendPoint("north", 3, 15)
+    local _, _, pixels = chart:render()
+    print("scatter append bytes = " .. #pixels)
 end
 
-
---@api-stub: LScatterPlot:setXRange
+--@api: LScatterPlot:setWindow
 do
-    -- TODO: example for LScatterPlot:setXRange
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 }, { 4, 24 } })
+    chart:setWindow(3)
+    local _, _, pixels = chart:render()
+    print("scatter window bytes = " .. #pixels)
 end
 
-
---@api-stub: LScatterPlot:setYRange
+--@api: LScatterPlot:setXRange
 do
-    -- TODO: example for LScatterPlot:setYRange
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setXRange(0, 6)
+    local _, _, pixels = chart:render()
+    print("scatter x range bytes = " .. #pixels)
 end
-
 
---@api-stub: LScatterPlot:setXLabel
+--@api: LScatterPlot:setYRange
 do
-    -- TODO: example for LScatterPlot:setXLabel
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:setYRange(0, 30)
+    local _, _, pixels = chart:render()
+    print("scatter y range bytes = " .. #pixels)
 end
 
-
---@api-stub: LScatterPlot:setYLabel
+--@api: LScatterPlot:setXLabel
 do
-    -- TODO: example for LScatterPlot:setYLabel
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    chart:setXLabel("Hours")
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local _, _, pixels = chart:render()
+    print("scatter x label bytes = " .. #pixels)
 end
-
 
---@api-stub: LScatterPlot:setXTickCount
+--@api: LScatterPlot:setYLabel
 do
-    -- TODO: example for LScatterPlot:setXTickCount
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    chart:setYLabel("Score")
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local _, _, pixels = chart:render()
+    print("scatter y label bytes = " .. #pixels)
 end
 
-
---@api-stub: LScatterPlot:setYTickCount
+--@api: LScatterPlot:setXTickCount
 do
-    -- TODO: example for LScatterPlot:setYTickCount
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    chart:setXTickCount(5)
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local _, _, pixels = chart:render()
+    print("scatter x ticks bytes = " .. #pixels)
 end
-
 
---@api-stub: LScatterPlot:setShowLegend
+--@api: LScatterPlot:setYTickCount
 do
-    -- TODO: example for LScatterPlot:setShowLegend
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    chart:setYTickCount(6)
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local _, _, pixels = chart:render()
+    print("scatter y ticks bytes = " .. #pixels)
 end
 
-
---@api-stub: LScatterPlot:renderImage
+--@api: LScatterPlot:setShowLegend
 do
-    -- TODO: example for LScatterPlot:renderImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:addSeries("south", { { 1, 8 }, { 2, 11 }, { 3, 16 } })
+    chart:setShowLegend(true)
+    local _, _, pixels = chart:render()
+    print("scatter legend bytes = " .. #pixels)
 end
-
 
---@api-stub: LScatterPlot:drawToImage
+--@api: LScatterPlot:renderImage
 do
-    -- TODO: example for LScatterPlot:drawToImage
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 256, height = 128 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local img = chart:renderImage()
+    print("scatter image type = " .. img:type())
+    print("scatter image width = " .. img:getWidth())
 end
 
-
---@api-stub: LScatterPlot:draw
+--@api: LScatterPlot:drawToImage
 do
-    -- TODO: example for LScatterPlot:draw
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 256, height = 128 })
+    local target = chart_target_image(256, 128)
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:drawToImage(target)
+    print("scatter target width = " .. target:getWidth())
 end
-
 
---@api-stub: LScatterPlot:nearest
+--@api: LScatterPlot:draw
 do
-    -- TODO: example for LScatterPlot:nearest
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 256, height = 128 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    chart:draw(20, 10, {})
+    print("scatter draw issued")
+    print("scatter type = " .. chart:type())
 end
 
-
---@api-stub: LScatterPlot:type
+--@api: LScatterPlot:nearest
 do
-    -- TODO: example for LScatterPlot:type
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 320, height = 180 })
+    chart:addSeries("north", { { 1, 12 }, { 2, 18 }, { 3, 15 } })
+    local hit = chart:nearest(120, 80)
+    print("scatter nearest found = " .. tostring(hit ~= nil))
+    print("scatter nearest series = " .. tostring(hit and hit.series))
 end
-
 
---@api-stub: LScatterPlot:typeOf
+--@api: LScatterPlot:type
 do
-    -- TODO: example for LScatterPlot:typeOf
-    -- keep this block until a real scenario is added
+    local chart = lurek.charts.newScatter({ width = 256, height = 128 })
+    print("type = " .. chart:type())
+    print("object = " .. tostring(chart:typeOf("LObject")))
 end
 
+--@api: LScatterPlot:typeOf
+do
+    local chart = lurek.charts.newScatter({ width = 256, height = 128 })
+    print("typeOf LScatterPlot = " .. tostring(chart:typeOf("LScatterPlot")))
+    print("typeOf LPieChart = " .. tostring(chart:typeOf("LPieChart")))
+end

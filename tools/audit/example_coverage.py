@@ -2,10 +2,10 @@
 """Cross-reference Lua example scripts against the lurek.* Lua API.
 
 Coverage is reported in four tiers:
-    - "FULL" -- --@api-stub: block present, NO "-- TODO:" line, and block body has 2+ non-empty lines
+    - "FULL" -- --@api: or --@api-stub: block present, NO "-- TODO:" line, and block body has 2+ non-empty lines
     - "PART" -- block present, no TODO, but body has fewer than 2 non-empty lines (thin block)
-    - "TODO" -- --@api-stub: block present AND has a "-- TODO:" line
-    - "MISS" -- no --@api-stub: marker at all (item not tracked in any example)
+    - "TODO" -- marker block present AND has a "-- TODO:" line
+    - "MISS" -- no --@api: / --@api-stub: marker at all (item not tracked in any example)
 
 Structural lint checks (E-codes) run automatically after the summary:
     E1 -- stub has no ``do`` block below it (not a recognised alias)
@@ -14,7 +14,7 @@ Structural lint checks (E-codes) run automatically after the summary:
     E4 -- ``do`` block body is thin (< 2 non-blank lines)
     E5 -- marker text is not a clean API identifier
     E6 -- marker text appears more than once across example files
-    E7 -- top-level ``do`` block has no immediately preceding ``--@api-stub:``
+    E7 -- top-level ``do`` block has no immediately preceding ``--@api:`` / ``--@api-stub:``
 
 Workflow:
   1. Run example_add_missing.py  -- adds --@api-stub: blocks with -- TODO: (pending)
@@ -36,7 +36,7 @@ Usage:
 
 Exit codes:
     0 -- no missing items and no structural lint issues
-    1 -- one or more items have no --@api-stub: marker, or structural lint issues found
+    1 -- one or more items have no example marker, or structural lint issues found
 """
 from __future__ import annotations
 import argparse, json, re, sys
@@ -61,6 +61,7 @@ WHILE_START_RE = re.compile(r'^while\b.*\bdo(?:\s*--.*)?$')
 REPEAT_RE = re.compile(r'^repeat(?:\s*--.*)?$')
 END_LINE_RE = re.compile(r'^end(?:\s*--.*)?$')
 UNTIL_LINE_RE = re.compile(r'^until\b')
+API_MARKER_RE = re.compile(r'^--@api(?:-stub)?:\s*(.+)$')
 
 # filename = module name exactly (src/render/ -> render.lua, src/ecs/ -> ecs.lua)
 # JSON key = src/ folder name; example file = content/examples/<src_folder>.lua
@@ -212,6 +213,21 @@ CANONICAL_API_MODULE: dict[str, str] = {
     'LMapScript:getStepCount': 'mapblock',
 }
 
+# Some classes are documented from multiple module views, but examples should
+# live in one canonical namespace file to avoid duplicate coverage findings.
+CANONICAL_OWNER_MODULE: dict[str, str] = {
+    'LAreaChart': 'charts',
+    'LBarChart': 'charts',
+    'LHeatmapChart': 'charts',
+    'LHistogramChart': 'charts',
+    'LLineChart': 'charts',
+    'LPieChart': 'charts',
+    'LScatterPlot': 'charts',
+    'LMapBlock': 'mapblock',
+    'LMapGroup': 'mapblock',
+    'LMapScript': 'mapblock',
+}
+
 
 @dataclass
 class ApiEntry:
@@ -348,6 +364,13 @@ def classify_block(block: dict | None) -> str:
     return 'PART'
 
 
+def _parse_api_marker(stripped: str) -> str | None:
+    match = API_MARKER_RE.match(stripped)
+    if not match:
+        return None
+    return match.group(1).strip()
+
+
 def load_texts(d: Path) -> dict[str, dict]:
     """Load all .lua files.
 
@@ -369,8 +392,8 @@ def load_texts(d: Path) -> dict[str, dict]:
             if stripped.startswith('--'):
                 comments += 1
 
-            if stripped.startswith('--@api-stub:'):
-                marker = stripped[len('--@api-stub:'):].strip()
+            marker = _parse_api_marker(stripped)
+            if marker is not None:
                 if marker in blocks:
                     prev_file, prev_line = global_markers.get(marker, (p.name, line_no))
                     EXTRA_LINT_ISSUES.append((
@@ -497,9 +520,17 @@ def _match_name(entry: 'ApiEntry', text: str) -> bool:
 def build_cov(entries: list[ApiEntry], texts: dict[str, dict]) -> dict[str, ModuleCov]:
     bk: dict[str, ModuleCov] = {}
     module_data_cache: dict[str, dict] = {}
+    seen_api_keys: set[tuple[str, str]] = set()
     for e in entries:
-        canonical_module = CANONICAL_API_MODULE.get(e.api_name)
+        canonical_module = (
+            CANONICAL_API_MODULE.get(e.api_name)
+            or CANONICAL_OWNER_MODULE.get(e.owner_type or '')
+        )
         key = canonical_module or e.module
+        dedupe_key = (key, e.api_name)
+        if dedupe_key in seen_api_keys:
+            continue
+        seen_api_keys.add(dedupe_key)
         example_file = MODULE_TO_EXAMPLE.get(key, key + '.lua')
         if key not in bk:
             bk[key] = ModuleCov(
@@ -583,7 +614,7 @@ def print_summary(bk: dict[str, ModuleCov], filt: str | None = None) -> None:
 
 
 def print_stubs(bk: dict[str, ModuleCov], filt: str | None = None) -> None:
-    """Show modules that have pending --@api-stub: blocks (-- TODO: still present)."""
+    """Show modules that have pending example marker blocks (-- TODO: still present)."""
     found = False
     for k, mc in sorted(bk.items()):
         if filt and filt.lower() not in k.lower():
@@ -595,7 +626,7 @@ def print_stubs(bk: dict[str, ModuleCov], filt: str | None = None) -> None:
         for fn in sorted(mc.todo_items):
             print(f'  --@api-stub: {fn}  [remove -- TODO: when done]')
     if not found:
-        print('No pending stubs. All --@api-stub: blocks have real scenario code.')
+        print('No pending stubs. All example marker blocks have real scenario code.')
 
 
 def print_missing(bk: dict[str, ModuleCov], filt: str | None = None) -> None:
@@ -609,7 +640,7 @@ def print_missing(bk: dict[str, ModuleCov], filt: str | None = None) -> None:
         real_pct = mc.pct
         print(f'\n[{k}] lurek.{mc.namespace} -> {example_label(mc)}{status} ({real_pct:.0f}% real, {mc.todo_count} todo)')
         for fn in sorted(mc.missing):
-            print(f'  - {fn}  [MISSING -- no --@api-stub: marker]')
+            print(f'  - {fn}  [MISSING -- no --@api: or --@api-stub: marker]')
         for fn in sorted(mc.todo_items):
             print(f'  ~ {fn}  [PENDING -- remove -- TODO: to mark as done]')
 
@@ -656,13 +687,13 @@ def export_markdown(bk: dict[str, ModuleCov], entries: list[ApiEntry], out_path:
 
 
 # ---------------------------------------------------------------------------
-# Lint: structural quality checks for --@api-stub: blocks
+# Lint: structural quality checks for --@api: / --@api-stub: blocks
 # ---------------------------------------------------------------------------
 
 # Valid marker: identifier chars, dots, optional single colon, optional .N suffix
 # Examples:  lurek.window.close  LFoo:getBar  LFoo:getBar.2
-STUB_TAG_RE = re.compile(r'^--@api-stub:\s*(.+)$')
-STUB_MARKER_VALID_RE = re.compile(
+MARKER_TAG_RE = re.compile(r'^--@api(?:-stub)?:\s*(.+)$')
+MARKER_VALID_RE = re.compile(
     r'^[A-Za-z_][A-Za-z0-9_]*'       # leading word (class or lurek)
     r'(?:\.[A-Za-z_][A-Za-z0-9_]*)*' # zero or more .word segments
     r'(?::[A-Za-z_][A-Za-z0-9_]*)?'  # optional :method
@@ -707,8 +738,8 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
       E4  ``do`` block body is thin (< LINT_MIN_BODY_LINES non-blank lines)
       E5  marker text is not a clean API identifier
       E6  marker text appears more than once across example files
-      E7  top-level ``do`` block has no immediately preceding stub marker
-      E8  stub block references a top-level helper function defined outside the block
+      E7  top-level ``do`` block has no immediately preceding example marker
+      E8  pending stub block references a top-level helper function defined outside the block
     """
     issues: list = []
 
@@ -731,11 +762,11 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
                 i += 1
                 continue
 
-            m = STUB_TAG_RE.match(stripped)
+            m = MARKER_TAG_RE.match(stripped)
             if not m:
                 if top_level_depth == 0 and DO_LINE_RE.match(stripped):
                     issues.append((p.name, i + 1, 'E7',
-                        'top-level do block is missing an immediately preceding --@api-stub: marker'))
+                        'top-level do block is missing an immediately preceding --@api: or --@api-stub: marker'))
                     end_idx, _ = _collect_do_block(lines, i)
                     top_level_depth = 0
                     i = end_idx + 1
@@ -748,9 +779,10 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
 
             marker = m.group(1).strip()
             stub_lineno = i + 1  # 1-based
+            is_pending_stub = stripped.startswith('--@api-stub:')
 
             # E5: marker must be a clean API identifier
-            if not STUB_MARKER_VALID_RE.match(marker):
+            if not MARKER_VALID_RE.match(marker):
                 issues.append((p.name, stub_lineno, 'E5',
                     f"marker '{marker}' is not a clean API identifier"))
 
@@ -768,7 +800,7 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
             next_stripped = lines[j].strip()
 
             # E3: immediately followed by another stub
-            if STUB_TAG_RE.match(next_stripped):
+            if MARKER_TAG_RE.match(next_stripped):
                 issues.append((p.name, stub_lineno, 'E3',
                     f"stub '{marker}': stacked - another stub follows with no do block"))
                 i = j  # let the loop pick up the next stub
@@ -792,22 +824,23 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
                     f"stub '{marker}': block has {len(non_blank)} non-blank line(s) "
                     f"(need >= {LINT_MIN_BODY_LINES})"))
 
-            block_local_helpers = {
-                helper_name
-                for body_line in body_lines
-                if (helper_name := _extract_function_name(body_line))
-            }
-            body_text = '\n'.join(body_lines)
-            for helper_name, helper_lineno in sorted(top_level_helpers.items(), key=lambda item: item[1]):
-                if helper_name in block_local_helpers:
-                    continue
-                if re.search(rf'\b{re.escape(helper_name)}\s*\(', body_text):
-                    issues.append((
-                        p.name,
-                        stub_lineno,
-                        'E8',
-                        f"stub '{marker}': references top-level helper '{helper_name}' defined at line {helper_lineno}",
-                    ))
+            if is_pending_stub:
+                block_local_helpers = {
+                    helper_name
+                    for body_line in body_lines
+                    if (helper_name := _extract_function_name(body_line))
+                }
+                body_text = '\n'.join(body_lines)
+                for helper_name, helper_lineno in sorted(top_level_helpers.items(), key=lambda item: item[1]):
+                    if helper_name in block_local_helpers:
+                        continue
+                    if re.search(rf'\b{re.escape(helper_name)}\s*\(', body_text):
+                        issues.append((
+                            p.name,
+                            stub_lineno,
+                            'E8',
+                            f"stub '{marker}': references top-level helper '{helper_name}' defined at line {helper_lineno}",
+                        ))
 
             i = end_idx + 1
 
@@ -851,9 +884,9 @@ def main() -> int:
     p.add_argument('--examples-dir', metavar='DIR', help='Directory with .lua example files (default: content/examples)')
     p.add_argument('--json',      action='store_true', help='Machine-readable JSON output')
     p.add_argument('--missing',   action='store_true', help='Show only missing items per module')
-    p.add_argument('--stubs',     action='store_true', help='Show modules with --@api-stub: blocks remaining')
+    p.add_argument('--stubs',     action='store_true', help='Show modules with pending example marker blocks remaining')
     p.add_argument('--summary',   action='store_true', help='Show summary table (default)')
-    p.add_argument('--lint',      action='store_true', help='Check structural quality of --@api-stub: blocks')
+    p.add_argument('--lint',      action='store_true', help='Check structural quality of example marker blocks')
     p.add_argument('--report',    action='store_true', help='CI gate: exit 1 if any gaps exist')
     p.add_argument('--no-stubs',  action='store_true', help='With --report: also fail if any stub blocks remain')
     p.add_argument('--module',    metavar='NAME',      help='Filter to one module')
@@ -936,7 +969,7 @@ def main() -> int:
         failures = []
         if has_gaps:
             gaps = sum(1 for mc in bk.values() if mc.miss_count)
-            failures.append(f'{gaps} module(s) have MISS API items (no stub marker).')
+            failures.append(f'{gaps} module(s) have MISS API items (no example marker).')
         if args.no_stubs and has_stubs:
             stubs = sum(1 for mc in bk.values() if mc.todo_count)
             failures.append(f'{stubs} module(s) still have TODO stub blocks (not real scenarios).')

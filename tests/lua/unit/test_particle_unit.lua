@@ -389,15 +389,12 @@ describe("lurek.particle rendering settings", function()
         expect_equal("random", lurek.particle.getInsertMode(ps), "insert mode random")
     end)
     -- @covers LParticleSystem:setBufferSize
-    it("setBufferSize / getBufferSize round-trip", function()
+    it("setBufferSize round-trips and truncates live particles when shrinking the pool", function()
         local ps = lurek.particle.newSystem({ maxParticles = 50 })
         lurek.particle.setBufferSize(ps, 200)
         expect_equal(200, lurek.particle.getBufferSize(ps), "buffer size")
-    end)
 
-    -- @covers LParticleSystem:setBufferSize
-    it("setBufferSize truncates live particles when shrinking the pool", function()
-        local ps = lurek.particle.newSystem({
+        ps = lurek.particle.newSystem({
             emissionRate = 0,
             maxParticles = 32,
             lifetimeMin = 5,

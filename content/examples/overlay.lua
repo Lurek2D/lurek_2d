@@ -1,7 +1,7 @@
 --- @title Overlay Effects
 --- @desc Weather, atmosphere, screen flash/shake/fade, and transitions.
 
---@api-stub: lurek.overlay.new
+--@api: lurek.overlay.new
 do
     local ov = lurek.overlay.new(800, 600)
     local w, h = ov:getDimensions()
@@ -9,14 +9,14 @@ do
     print("lurek.overlay.new size=" .. w .. "x" .. h)
 end
 
---@api-stub: lurek.overlay.newTransition
+--@api: lurek.overlay.newTransition
 do
     local tr = lurek.overlay.newTransition("wipe", 0.75, { 0.05, 0.10, 0.15, 1.0 })
     print("lurek.overlay.newTransition type=" .. tr:type())
     print("lurek.overlay.newTransition kind=" .. tr:kind())
 end
 
---@api-stub: LOverlay:clear
+--@api: LOverlay:clear
 do
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFlash(1, 1, 1, 0.5, 0.1)
@@ -25,7 +25,7 @@ do
     print("LOverlay:clear after=" .. tostring(ov:isActive()))
 end
 
---@api-stub: LOverlay:drawToImage
+--@api: LOverlay:drawToImage
 do
     local ov = lurek.overlay.new(200, 150)
     ov:flash(0.9, 0.95, 1.0, 0.6, 0.2)
@@ -34,7 +34,7 @@ do
     print("LOverlay:drawToImage active=" .. tostring(ov:isActive()))
 end
 
---@api-stub: LOverlay:fade
+--@api: LOverlay:fade
 do
     local ov = lurek.overlay.new(800, 600)
     ov:fade(0.05, 0.05, 0.10, 0.85, 0.5)
@@ -42,7 +42,7 @@ do
     print("LOverlay:fade active=" .. tostring(ov:isActive()))
 end
 
---@api-stub: LOverlay:flash
+--@api: LOverlay:flash
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -54,7 +54,7 @@ do
     print("LOverlay:flash alpha=" .. f2(ov:getFlashAlpha()))
 end
 
---@api-stub: LOverlay:getAmbientColor
+--@api: LOverlay:getAmbientColor
 do
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
@@ -66,14 +66,14 @@ do
     print("LOverlay:getAmbientColor=" .. rgba_text(r, g, b, a))
 end
 
---@api-stub: LOverlay:getCloudCount
+--@api: LOverlay:getCloudCount
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudCount(8)
     print("LOverlay:getCloudCount=" .. ov:getCloudCount())
 end
 
---@api-stub: LOverlay:getCloudOpacity
+--@api: LOverlay:getCloudOpacity
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -84,7 +84,7 @@ do
     print("LOverlay:getCloudOpacity=" .. f2(ov:getCloudOpacity()))
 end
 
---@api-stub: LOverlay:getCloudScale
+--@api: LOverlay:getCloudScale
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -95,7 +95,7 @@ do
     print("LOverlay:getCloudScale=" .. f2(ov:getCloudScale()))
 end
 
---@api-stub: LOverlay:getCloudSpeed
+--@api: LOverlay:getCloudSpeed
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -106,14 +106,14 @@ do
     print("LOverlay:getCloudSpeed=" .. f2(ov:getCloudSpeed()))
 end
 
---@api-stub: LOverlay:getDimensions
+--@api: LOverlay:getDimensions
 do
     local ov = lurek.overlay.new(800, 600)
     local w, h = ov:getDimensions()
     print("LOverlay:getDimensions=" .. w .. "x" .. h)
 end
 
---@api-stub: LOverlay:getFilmGrainIntensity
+--@api: LOverlay:getFilmGrainIntensity
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -124,7 +124,7 @@ do
     print("LOverlay:getFilmGrainIntensity=" .. f2(ov:getFilmGrainIntensity()))
 end
 
---@api-stub: LOverlay:getFlashAlpha
+--@api: LOverlay:getFlashAlpha
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -135,7 +135,7 @@ do
     print("LOverlay:getFlashAlpha=" .. f2(ov:getFlashAlpha()))
 end
 
---@api-stub: LOverlay:getFogColor
+--@api: LOverlay:getFogColor
 do
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
@@ -147,7 +147,7 @@ do
     print("LOverlay:getFogColor=" .. rgba_text(r, g, b, a))
 end
 
---@api-stub: LOverlay:getFogDensity
+--@api: LOverlay:getFogDensity
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -158,7 +158,7 @@ do
     print("LOverlay:getFogDensity=" .. f2(ov:getFogDensity()))
 end
 
---@api-stub: LOverlay:getHeatHazeIntensity
+--@api: LOverlay:getHeatHazeIntensity
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -169,13 +169,13 @@ do
     print("LOverlay:getHeatHazeIntensity=" .. f2(ov:getHeatHazeIntensity()))
 end
 
---@api-stub: LOverlay:getHeight
+--@api: LOverlay:getHeight
 do
     local ov = lurek.overlay.new(800, 600)
     print("LOverlay:getHeight=" .. ov:getHeight())
 end
 
---@api-stub: LOverlay:getLightningAlpha
+--@api: LOverlay:getLightningAlpha
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -186,7 +186,7 @@ do
     print("LOverlay:getLightningAlpha=" .. f2(ov:getLightningAlpha()))
 end
 
---@api-stub: LOverlay:getLightningColor
+--@api: LOverlay:getLightningColor
 do
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
@@ -198,7 +198,7 @@ do
     print("LOverlay:getLightningColor=" .. rgba_text(r, g, b, a))
 end
 
---@api-stub: LOverlay:getShakeOffset
+--@api: LOverlay:getShakeOffset
 do
     local function pair_text(x, y)
         return string.format("(%.2f, %.2f)", x, y)
@@ -210,14 +210,14 @@ do
     print("LOverlay:getShakeOffset=" .. pair_text(ox, oy))
 end
 
---@api-stub: LOverlay:getTimeOfDay
+--@api: LOverlay:getTimeOfDay
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setTimeOfDay(0.75)
     print("LOverlay:getTimeOfDay=" .. ov:getTimeOfDay())
 end
 
---@api-stub: LOverlay:getVignetteStrength
+--@api: LOverlay:getVignetteStrength
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -228,7 +228,7 @@ do
     print("LOverlay:getVignetteStrength=" .. f2(ov:getVignetteStrength()))
 end
 
---@api-stub: LOverlay:getWater
+--@api: LOverlay:getWater
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -241,14 +241,14 @@ do
     print("LOverlay:getWater wave=" .. f2(w.amplitude) .. "," .. f2(w.frequency) .. "," .. f2(w.speed))
 end
 
---@api-stub: LOverlay:getWeather
+--@api: LOverlay:getWeather
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setWeather("rain")
     print("LOverlay:getWeather=" .. ov:getWeather())
 end
 
---@api-stub: LOverlay:getWeatherIntensity
+--@api: LOverlay:getWeatherIntensity
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -259,13 +259,13 @@ do
     print("LOverlay:getWeatherIntensity=" .. f2(ov:getWeatherIntensity()))
 end
 
---@api-stub: LOverlay:getWidth
+--@api: LOverlay:getWidth
 do
     local ov = lurek.overlay.new(800, 600)
     print("LOverlay:getWidth=" .. ov:getWidth())
 end
 
---@api-stub: LOverlay:getWindDirection
+--@api: LOverlay:getWindDirection
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -276,7 +276,7 @@ do
     print("LOverlay:getWindDirection=" .. f2(ov:getWindDirection()))
 end
 
---@api-stub: LOverlay:getWindSpeed
+--@api: LOverlay:getWindSpeed
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -287,21 +287,21 @@ do
     print("LOverlay:getWindSpeed=" .. f2(ov:getWindSpeed()))
 end
 
---@api-stub: LOverlay:isActive
+--@api: LOverlay:isActive
 do
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFlash(1, 1, 1, 0.5, 0.3)
     print("LOverlay:isActive=" .. tostring(ov:isActive()))
 end
 
---@api-stub: LOverlay:isAmbientEnabled
+--@api: LOverlay:isAmbientEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setAmbientEnabled(true)
     print("LOverlay:isAmbientEnabled=" .. tostring(ov:isAmbientEnabled()))
 end
 
---@api-stub: LOverlay:isCloudShadowsEnabled
+--@api: LOverlay:isCloudShadowsEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudShadows(true)
@@ -309,63 +309,63 @@ do
     print("LOverlay:isCloudShadowsEnabled count=" .. ov:getCloudCount())
 end
 
---@api-stub: LOverlay:isFading
+--@api: LOverlay:isFading
 do
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFade(0.0, 0.0, 0.0, 1.0, 0.4)
     print("LOverlay:isFading=" .. tostring(ov:isFading()))
 end
 
---@api-stub: LOverlay:isFilmGrainEnabled
+--@api: LOverlay:isFilmGrainEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setFilmGrainEnabled(true)
     print("LOverlay:isFilmGrainEnabled=" .. tostring(ov:isFilmGrainEnabled()))
 end
 
---@api-stub: LOverlay:isFlashing
+--@api: LOverlay:isFlashing
 do
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFlash(1, 0, 0, 1.0, 0.5)
     print("LOverlay:isFlashing=" .. tostring(ov:isFlashing()))
 end
 
---@api-stub: LOverlay:isFogEnabled
+--@api: LOverlay:isFogEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setFogEnabled(true)
     print("LOverlay:isFogEnabled=" .. tostring(ov:isFogEnabled()))
 end
 
---@api-stub: LOverlay:isHeatHazeEnabled
+--@api: LOverlay:isHeatHazeEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setHeatHazeEnabled(true)
     print("LOverlay:isHeatHazeEnabled=" .. tostring(ov:isHeatHazeEnabled()))
 end
 
---@api-stub: LOverlay:isShaking
+--@api: LOverlay:isShaking
 do
     local ov = lurek.overlay.new(800, 600)
     ov:triggerShake(5.0, 0.5)
     print("LOverlay:isShaking=" .. tostring(ov:isShaking()))
 end
 
---@api-stub: LOverlay:isVignetteEnabled
+--@api: LOverlay:isVignetteEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setVignetteEnabled(true)
     print("LOverlay:isVignetteEnabled=" .. tostring(ov:isVignetteEnabled()))
 end
 
---@api-stub: LOverlay:isWeatherEnabled
+--@api: LOverlay:isWeatherEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setWeatherEnabled(true)
     print("LOverlay:isWeatherEnabled=" .. tostring(ov:isWeatherEnabled()))
 end
 
---@api-stub: LOverlay:pullAmbientFromLight
+--@api: LOverlay:pullAmbientFromLight
 do
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
@@ -381,7 +381,7 @@ do
     print("LOverlay:pullAmbientFromLight=" .. rgba_text(r, g, b, a))
 end
 
---@api-stub: LOverlay:pushAmbientToLight
+--@api: LOverlay:pushAmbientToLight
 do
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
@@ -397,7 +397,7 @@ do
     print("LOverlay:pushAmbientToLight=" .. rgba_text(r, g, b, a))
 end
 
---@api-stub: LOverlay:render
+--@api: LOverlay:render
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -410,14 +410,14 @@ do
     print("LOverlay:render flashAlpha=" .. f2(ov:getFlashAlpha()))
 end
 
---@api-stub: LOverlay:resize
+--@api: LOverlay:resize
 do
     local ov = lurek.overlay.new(800, 600)
     ov:resize(1280, 720)
     print("LOverlay:resize=" .. ov:getWidth() .. "x" .. ov:getHeight())
 end
 
---@api-stub: LOverlay:setAmbientColor
+--@api: LOverlay:setAmbientColor
 do
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
@@ -429,21 +429,21 @@ do
     print("LOverlay:setAmbientColor=" .. rgba_text(r, g, b, a))
 end
 
---@api-stub: LOverlay:setAmbientEnabled
+--@api: LOverlay:setAmbientEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setAmbientEnabled(true)
     print("LOverlay:setAmbientEnabled=" .. tostring(ov:isAmbientEnabled()))
 end
 
---@api-stub: LOverlay:setCloudCount
+--@api: LOverlay:setCloudCount
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudCount(12)
     print("LOverlay:setCloudCount=" .. ov:getCloudCount())
 end
 
---@api-stub: LOverlay:setCloudOpacity
+--@api: LOverlay:setCloudOpacity
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -454,7 +454,7 @@ do
     print("LOverlay:setCloudOpacity=" .. f2(ov:getCloudOpacity()))
 end
 
---@api-stub: LOverlay:setCloudScale
+--@api: LOverlay:setCloudScale
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -465,14 +465,14 @@ do
     print("LOverlay:setCloudScale=" .. f2(ov:getCloudScale()))
 end
 
---@api-stub: LOverlay:setCloudShadows
+--@api: LOverlay:setCloudShadows
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setCloudShadows(true)
     print("LOverlay:setCloudShadows=" .. tostring(ov:isCloudShadowsEnabled()))
 end
 
---@api-stub: LOverlay:setCloudSpeed
+--@api: LOverlay:setCloudSpeed
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -483,7 +483,7 @@ do
     print("LOverlay:setCloudSpeed=" .. f2(ov:getCloudSpeed()))
 end
 
---@api-stub: LOverlay:setCustomShader
+--@api: LOverlay:setCustomShader
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setCustomShader("scanlines")
@@ -493,14 +493,14 @@ do
     print("LOverlay:setCustomShader types=" .. type(img_with_shader) .. "," .. type(img_without_shader))
 end
 
---@api-stub: LOverlay:setFilmGrainEnabled
+--@api: LOverlay:setFilmGrainEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setFilmGrainEnabled(true)
     print("LOverlay:setFilmGrainEnabled=" .. tostring(ov:isFilmGrainEnabled()))
 end
 
---@api-stub: LOverlay:setFilmGrainIntensity
+--@api: LOverlay:setFilmGrainIntensity
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -511,7 +511,7 @@ do
     print("LOverlay:setFilmGrainIntensity=" .. f2(ov:getFilmGrainIntensity()))
 end
 
---@api-stub: LOverlay:setFogColor
+--@api: LOverlay:setFogColor
 do
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
@@ -523,7 +523,7 @@ do
     print("LOverlay:setFogColor=" .. rgba_text(r, g, b, a))
 end
 
---@api-stub: LOverlay:setFogDensity
+--@api: LOverlay:setFogDensity
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -534,21 +534,21 @@ do
     print("LOverlay:setFogDensity=" .. f2(ov:getFogDensity()))
 end
 
---@api-stub: LOverlay:setFogEnabled
+--@api: LOverlay:setFogEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setFogEnabled(true)
     print("LOverlay:setFogEnabled=" .. tostring(ov:isFogEnabled()))
 end
 
---@api-stub: LOverlay:setHeatHazeEnabled
+--@api: LOverlay:setHeatHazeEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setHeatHazeEnabled(true)
     print("LOverlay:setHeatHazeEnabled=" .. tostring(ov:isHeatHazeEnabled()))
 end
 
---@api-stub: LOverlay:setHeatHazeIntensity
+--@api: LOverlay:setHeatHazeIntensity
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -559,7 +559,7 @@ do
     print("LOverlay:setHeatHazeIntensity=" .. f2(ov:getHeatHazeIntensity()))
 end
 
---@api-stub: LOverlay:setLightningColor
+--@api: LOverlay:setLightningColor
 do
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
@@ -571,21 +571,21 @@ do
     print("LOverlay:setLightningColor=" .. rgba_text(r, g, b, a))
 end
 
---@api-stub: LOverlay:setTimeOfDay
+--@api: LOverlay:setTimeOfDay
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setTimeOfDay(0.5)
     print("LOverlay:setTimeOfDay=" .. ov:getTimeOfDay())
 end
 
---@api-stub: LOverlay:setVignetteEnabled
+--@api: LOverlay:setVignetteEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setVignetteEnabled(true)
     print("LOverlay:setVignetteEnabled=" .. tostring(ov:isVignetteEnabled()))
 end
 
---@api-stub: LOverlay:setVignetteStrength
+--@api: LOverlay:setVignetteStrength
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -596,7 +596,7 @@ do
     print("LOverlay:setVignetteStrength=" .. f2(ov:getVignetteStrength()))
 end
 
---@api-stub: LOverlay:setWater
+--@api: LOverlay:setWater
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -609,7 +609,7 @@ do
     print("LOverlay:setWater wave=" .. f2(w.amplitude) .. "," .. f2(w.frequency) .. "," .. f2(w.speed))
 end
 
---@api-stub: LOverlay:setWaterTint
+--@api: LOverlay:setWaterTint
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -622,21 +622,21 @@ do
     print("LOverlay:setWaterTint tint=" .. f2(w.tint_r) .. "," .. f2(w.tint_g) .. "," .. f2(w.tint_b) .. "," .. f2(w.tint_strength))
 end
 
---@api-stub: LOverlay:setWeather
+--@api: LOverlay:setWeather
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setWeather("snow")
     print("LOverlay:setWeather=" .. ov:getWeather())
 end
 
---@api-stub: LOverlay:setWeatherEnabled
+--@api: LOverlay:setWeatherEnabled
 do
     local ov = lurek.overlay.new(800, 600)
     ov:setWeatherEnabled(true)
     print("LOverlay:setWeatherEnabled=" .. tostring(ov:isWeatherEnabled()))
 end
 
---@api-stub: LOverlay:setWeatherIntensity
+--@api: LOverlay:setWeatherIntensity
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -647,7 +647,7 @@ do
     print("LOverlay:setWeatherIntensity=" .. f2(ov:getWeatherIntensity()))
 end
 
---@api-stub: LOverlay:setWindDirection
+--@api: LOverlay:setWindDirection
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -658,7 +658,7 @@ do
     print("LOverlay:setWindDirection=" .. f2(ov:getWindDirection()))
 end
 
---@api-stub: LOverlay:setWindSpeed
+--@api: LOverlay:setWindSpeed
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -669,14 +669,14 @@ do
     print("LOverlay:setWindSpeed=" .. f2(ov:getWindSpeed()))
 end
 
---@api-stub: LOverlay:shake
+--@api: LOverlay:shake
 do
     local ov = lurek.overlay.new(800, 600)
     ov:shake(8.0, 0.4)
     print("LOverlay:shake isShaking=" .. tostring(ov:isShaking()))
 end
 
---@api-stub: LOverlay:syncAmbientWithLight
+--@api: LOverlay:syncAmbientWithLight
 do
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
@@ -692,21 +692,21 @@ do
     print("LOverlay:syncAmbientWithLight=" .. rgba_text(r, g, b, a))
 end
 
---@api-stub: LOverlay:triggerFade
+--@api: LOverlay:triggerFade
 do
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFade(1.0, 0, 0, 0, 0.2)
     print("LOverlay:triggerFade isFading=" .. tostring(ov:isFading()))
 end
 
---@api-stub: LOverlay:triggerFlash
+--@api: LOverlay:triggerFlash
 do
     local ov = lurek.overlay.new(800, 600)
     ov:triggerFlash(1, 1, 0, 1.0, 0.2)
     print("LOverlay:triggerFlash isFlashing=" .. tostring(ov:isFlashing()))
 end
 
---@api-stub: LOverlay:triggerLightning
+--@api: LOverlay:triggerLightning
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -717,26 +717,26 @@ do
     print("LOverlay:triggerLightning alpha=" .. f2(ov:getLightningAlpha()))
 end
 
---@api-stub: LOverlay:triggerShake
+--@api: LOverlay:triggerShake
 do
     local ov = lurek.overlay.new(800, 600)
     ov:triggerShake(6.0, 0.3)
     print("LOverlay:triggerShake isShaking=" .. tostring(ov:isShaking()))
 end
 
---@api-stub: LOverlay:type
+--@api: LOverlay:type
 do
     local ov = lurek.overlay.new(800, 600)
     print("LOverlay:type=" .. ov:type())
 end
 
---@api-stub: LOverlay:typeOf
+--@api: LOverlay:typeOf
 do
     local ov = lurek.overlay.new(800, 600)
     print("LOverlay:typeOf LOverlay=" .. tostring(ov:typeOf("LOverlay")))
 end
 
---@api-stub: LOverlay:update
+--@api: LOverlay:update
 do
     local ov = lurek.overlay.new(800, 600)
     ov:triggerShake(5.0, 1.0)
@@ -744,7 +744,7 @@ do
     print("LOverlay:update isShaking=" .. tostring(ov:isShaking()))
 end
 
---@api-stub: LScreenTransition:color
+--@api: LScreenTransition:color
 do
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
@@ -755,14 +755,14 @@ do
     print("LScreenTransition:color=" .. rgba_text(r, g, b, a))
 end
 
---@api-stub: LScreenTransition:isActive
+--@api: LScreenTransition:isActive
 do
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     tr:play()
     print("LScreenTransition:isActive=" .. tostring(tr:isActive()))
 end
 
---@api-stub: LScreenTransition:isDone
+--@api: LScreenTransition:isDone
 do
     local tr = lurek.overlay.newTransition("fade", 0.2, { 0.0, 0.0, 0.0, 1.0 })
     tr:play()
@@ -770,13 +770,13 @@ do
     print("LScreenTransition:isDone=" .. tostring(tr:isDone()))
 end
 
---@api-stub: LScreenTransition:kind
+--@api: LScreenTransition:kind
 do
     local tr = lurek.overlay.newTransition("iris", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     print("LScreenTransition:kind=" .. tr:kind())
 end
 
---@api-stub: LScreenTransition:play
+--@api: LScreenTransition:play
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -788,7 +788,7 @@ do
     print("LScreenTransition:play progress=" .. f2(tr:progress()))
 end
 
---@api-stub: LScreenTransition:progress
+--@api: LScreenTransition:progress
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -800,7 +800,7 @@ do
     print("LScreenTransition:progress=" .. f2(tr:progress()))
 end
 
---@api-stub: LScreenTransition:reverse
+--@api: LScreenTransition:reverse
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -812,7 +812,7 @@ do
     print("LScreenTransition:reverse progress=" .. f2(tr:progress()))
 end
 
---@api-stub: LScreenTransition:setColor
+--@api: LScreenTransition:setColor
 do
     local function rgba_text(r, g, b, a)
         return string.format("(%.2f, %.2f, %.2f, %.2f)", r, g, b, a)
@@ -824,19 +824,19 @@ do
     print("LScreenTransition:setColor=" .. rgba_text(r, g, b, a))
 end
 
---@api-stub: LScreenTransition:type
+--@api: LScreenTransition:type
 do
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     print("LScreenTransition:type=" .. tr:type())
 end
 
---@api-stub: LScreenTransition:typeOf
+--@api: LScreenTransition:typeOf
 do
     local tr = lurek.overlay.newTransition("fade", 1.0, { 0.0, 0.0, 0.0, 1.0 })
     print("LScreenTransition:typeOf LScreenTransition=" .. tostring(tr:typeOf("LScreenTransition")))
 end
 
---@api-stub: LScreenTransition:update
+--@api: LScreenTransition:update
 do
     local function f2(value)
         return string.format("%.2f", value)
@@ -849,9 +849,15 @@ do
     print("LScreenTransition:update progress=" .. f2(tr:progress()))
 end
 
---@api-stub: LOverlay:getStats
+--@api: LOverlay:getStats
 do
-    -- TODO: example for LOverlay:getStats
-    -- keep this block until a real scenario is added
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherEnabled(true)
+    ov:setWeather("rain")
+    ov:setWeatherIntensity(0.6)
+    ov:triggerFlash(1.0, 1.0, 1.0, 0.7, 0.2)
+    local stats = ov:getStats()
+    print("overlay stats size=" .. stats.width .. "x" .. stats.height)
+    print("overlay stats effects=" .. stats.active_effects .. " weather=" .. tostring(stats.weather_enabled))
 end
 

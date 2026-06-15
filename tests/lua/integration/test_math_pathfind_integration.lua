@@ -10,8 +10,8 @@ describe("vec3 + pathfinding heuristic integration", function()
     -- @integration LVec3:distance
     -- @integration lurek.math.vec3
     -- @integration lurek.pathfind.newJpsGrid
-    -- @covers lurek.math.vec3
-    -- @covers lurek.pathfind.newJpsGrid
+    -- @integration lurek.math.vec3
+    -- @integration lurek.pathfind.newJpsGrid
     it("3D distances can weight JPS grid costs", function()
         -- Simulate two waypoints in 3D space
         local a = lurek.math.vec3(0, 0, 0)
