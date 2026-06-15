@@ -166,10 +166,14 @@ describe("SaveManager slot operations", function()
     -- @covers LSaveManager:getSlotInfo
     it("getSlotInfo returns a table for an existing slot", function()
         local sm = lurek.save.newSaveManager()
+        sm:setCompress(true)
+        sm:setSummary("compressed metadata")
         sm:register("info_data", function() return {} end, function() end)
         sm:save(SLOT)
         local info = sm:getSlotInfo(SLOT)
         expect_type("table", info)
+        expect_equal(SLOT, info.slot)
+        expect_equal("compressed metadata", info.summary)
     end)
 
     -- @covers LSaveManager:load

@@ -140,6 +140,49 @@ pub struct Camera2D {
     pub breathing: CameraBreathing,
 }
 impl Camera2D {
+    fn zoom_or_one(zoom: f32) -> f32 {
+        if zoom.abs() > f32::EPSILON {
+            zoom
+        } else {
+            1.0
+        }
+    }
+
+    fn viewport_center(&self) -> Vec2 {
+        Vec2::new(
+            self.viewport.x + self.viewport.width * 0.5,
+            self.viewport.y + self.viewport.height * 0.5,
+        )
+    }
+
+    fn render_center(&self) -> Vec2 {
+        let (ox, oy) = self.render_offset();
+        Vec2::new(self.position.x + ox, self.position.y + oy)
+    }
+
+    fn visible_half_extents(&self, zoom: f32, rotation: f32) -> Vec2 {
+        let zoom = Self::zoom_or_one(zoom);
+        let half_w = self.viewport.width * 0.5 / zoom;
+        let half_h = self.viewport.height * 0.5 / zoom;
+        let (sin_r, cos_r) = rotation.sin_cos();
+        Vec2::new(
+            half_w * cos_r.abs() + half_h * sin_r.abs(),
+            half_w * sin_r.abs() + half_h * cos_r.abs(),
+        )
+    }
+
+    fn screen_to_world_point(&self, screen: Vec2) -> Vec2 {
+        let centered = screen - self.viewport_center();
+        let zoom = Self::zoom_or_one(self.effective_zoom());
+        let local = (centered / zoom).rotate(-self.rotation);
+        self.render_center() + local
+    }
+
+    fn world_to_screen_point(&self, world: Vec2) -> Vec2 {
+        let local = (world - self.render_center()).rotate(self.rotation);
+        self.viewport_center() + local * Self::zoom_or_one(self.effective_zoom())
+    }
+
     /// Create 2D camera state and return it for the provided viewport size.
     pub fn new(viewport_w: f32, viewport_h: f32) -> Self {
         Self {
@@ -355,36 +398,34 @@ impl Camera2D {
     }
     /// Convert screen coordinates to world coordinates and return mapped pair.
     pub fn to_world_coords(&self, screen_x: f32, screen_y: f32) -> (f32, f32) {
-        let z = if self.zoom.abs() > f32::EPSILON {
-            self.zoom
-        } else {
-            1.0
-        };
-        let wx = (screen_x - self.viewport.width * 0.5) / z + self.position.x + self.shake_offset.x;
-        let wy =
-            (screen_y - self.viewport.height * 0.5) / z + self.position.y + self.shake_offset.y;
-        (wx, wy)
+        let point = self.screen_to_world_point(Vec2::new(screen_x, screen_y));
+        (point.x, point.y)
     }
     /// Convert world coordinates to screen coordinates and return mapped pair.
     pub fn to_screen_coords(&self, world_x: f32, world_y: f32) -> (f32, f32) {
-        let sx = (world_x - self.position.x - self.shake_offset.x) * self.zoom
-            + self.viewport.width * 0.5;
-        let sy = (world_y - self.position.y - self.shake_offset.y) * self.zoom
-            + self.viewport.height * 0.5;
-        (sx, sy)
+        let point = self.world_to_screen_point(Vec2::new(world_x, world_y));
+        (point.x, point.y)
     }
     /// Compute visible world rectangle and return (x, y, w, h).
     pub fn get_visible_area(&self) -> (f32, f32, f32, f32) {
-        let z = if self.zoom.abs() > f32::EPSILON {
-            self.zoom
-        } else {
-            1.0
-        };
-        let half_w = self.viewport.width * 0.5 / z;
-        let half_h = self.viewport.height * 0.5 / z;
-        let cx = self.position.x + self.shake_offset.x;
-        let cy = self.position.y + self.shake_offset.y;
-        (cx - half_w, cy - half_h, half_w * 2.0, half_h * 2.0)
+        let corners = [
+            self.screen_to_world_point(Vec2::new(self.viewport.x, self.viewport.y)),
+            self.screen_to_world_point(Vec2::new(
+                self.viewport.x + self.viewport.width,
+                self.viewport.y,
+            )),
+            self.screen_to_world_point(Vec2::new(
+                self.viewport.x,
+                self.viewport.y + self.viewport.height,
+            )),
+            self.screen_to_world_point(Vec2::new(
+                self.viewport.x + self.viewport.width,
+                self.viewport.y + self.viewport.height,
+            )),
+        ];
+        let points = corners.map(|corner| (corner.x, corner.y));
+        let rect = Rect::from_points(&points);
+        (rect.x, rect.y, rect.width, rect.height)
     }
     /// Set dead-zone size and return after storing half-extents.
     pub fn set_dead_zone(&mut self, w: f32, h: f32) {
@@ -461,17 +502,12 @@ impl Camera2D {
             self.prev_target = Some(target);
         }
         if let Some(bounds) = self.bounds {
-            let z = if self.zoom_target.abs() > f32::EPSILON {
-                self.zoom_target
-            } else {
-                1.0
-            };
-            let half_w = self.viewport.width * 0.5 / z;
-            let half_h = self.viewport.height * 0.5 / z;
-            let min_x = bounds.x + half_w;
-            let max_x = bounds.x + bounds.width - half_w;
-            let min_y = bounds.y + half_h;
-            let max_y = bounds.y + bounds.height - half_h;
+            let half_extents =
+                self.visible_half_extents(self.zoom_target.max(f32::EPSILON), self.rotation);
+            let min_x = bounds.x + half_extents.x;
+            let max_x = bounds.x + bounds.width - half_extents.x;
+            let min_y = bounds.y + half_extents.y;
+            let max_y = bounds.y + bounds.height - half_extents.y;
             if min_x <= max_x {
                 self.position.x = self.position.x.clamp(min_x, max_x);
             } else {

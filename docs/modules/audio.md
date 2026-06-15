@@ -122,6 +122,7 @@ lurek.audio.clearMidiSoundFont()
 do
     lurek.audio.clearMidiSoundFont()
     print("soundfont cleared = " .. tostring(not lurek.audio.hasMidiSoundFont()))
+    print("has sound font = " .. tostring(lurek.audio.hasMidiSoundFont()))
 end
 ```
 
@@ -582,6 +583,7 @@ lurek.audio.getJudgementWindows()
 do
     local windows = lurek.audio.getJudgementWindows()
     print("getJudgementWindows marker = " .. tostring(windows ~= nil))
+    print("lua type = " .. type(windows))
 end
 ```
 
@@ -2162,6 +2164,7 @@ lurek.audio.setJudgementWindows(windows)
 do
     lurek.audio.setJudgementWindows({ perfect = 0.03, good = 0.08, ok = 0.12 })
     print("setJudgementWindows marker")
+    print("judgement windows = " .. tostring(#lurek.audio.getJudgementWindows()))
 end
 ```
 
@@ -2954,7 +2957,9 @@ LBeatClock:beatTimeRemaining(division)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("beatTimeRemaining marker")
+    clock:start()
+    clock:tick(0.125)
+    print("beatTimeRemaining(8) = " .. tostring(clock:beatTimeRemaining(8)))
 end
 ```
 
@@ -2979,7 +2984,8 @@ LBeatClock:beatsPerBar()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("beatsPerBar marker")
+    clock:setBeatsPerBar(3)
+    print("beatsPerBar = " .. tostring(clock:beatsPerBar()))
 end
 ```
 
@@ -3004,7 +3010,8 @@ LBeatClock:bpm()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("bpm marker")
+    clock:setBpm(140.0)
+    print("bpm = " .. tostring(clock:bpm()))
 end
 ```
 
@@ -3089,7 +3096,11 @@ LBeatClock:drainFired()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("drainFired marker")
+    clock:scheduleAt(1.0)
+    clock:tick(0.6)
+    clock:tick(0.6)
+    local fired = clock:drainFired()
+    print("drainFired count = " .. tostring(#fired))
 end
 ```
 
@@ -3114,7 +3125,9 @@ LBeatClock:dump()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("dump marker")
+    clock:start()
+    local snap = clock:dump()
+    print("dump type = " .. type(snap))
 end
 ```
 
@@ -3172,7 +3185,9 @@ LBeatClock:getBar()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("getBar marker")
+    clock:start()
+    clock:tick(1.1)
+    print("bar = " .. tostring(clock:getBar()))
 end
 ```
 
@@ -3197,7 +3212,9 @@ LBeatClock:getBeat()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("getBeat marker")
+    clock:start()
+    clock:tick(0.75)
+    print("beat = " .. tostring(clock:getBeat()))
 end
 ```
 
@@ -3222,7 +3239,8 @@ LBeatClock:getBpm()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("getBpm marker")
+    clock:setBpm(128.0)
+    print("getBpm = " .. tostring(clock:getBpm()))
 end
 ```
 
@@ -3253,7 +3271,9 @@ LBeatClock:getPhase(division)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("getPhase marker")
+    clock:start()
+    clock:tick(0.125)
+    print("phase = " .. tostring(clock:getPhase(8)))
 end
 ```
 
@@ -3285,7 +3305,9 @@ LBeatClock:isOnBeat(division, tolerance)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("isOnBeat marker")
+    clock:start()
+    clock:tick(0.5)
+    print("isOnBeat = " .. tostring(clock:isOnBeat()))
 end
 ```
 
@@ -3310,7 +3332,8 @@ LBeatClock:isRunning()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("isRunning marker")
+    clock:start()
+    print("isRunning = " .. tostring(clock:isRunning()))
 end
 ```
 
@@ -3342,7 +3365,10 @@ LBeatClock:nearestBeat(division)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("nearestBeat marker")
+    clock:start()
+    clock:tick(0.2)
+    local beat, err = clock:nearestBeat(4)
+    print("nearestBeat = " .. tostring(beat) .. " err = " .. tostring(err))
 end
 ```
 
@@ -3400,7 +3426,10 @@ LBeatClock:position()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("position marker")
+    clock:start()
+    clock:tick(0.5)
+    local pos = clock:position()
+    print("position beat = " .. tostring(pos.beat) .. " bar = " .. tostring(pos.bar))
 end
 ```
 
@@ -3432,7 +3461,8 @@ LBeatClock:quantise(beat, grid)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("quantise marker")
+    local q = clock:quantise(1.3, 0.25)
+    print("quantise(1.3, 0.25) = " .. tostring(q))
 end
 ```
 
@@ -3458,7 +3488,9 @@ LBeatClock:rampBpm(target, seconds)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("rampBpm marker")
+    clock:rampBpm(150.0, 0.5)
+    clock:update(0.5)
+    print("bpm after ramp = " .. tostring(clock:getBpm()))
 end
 ```
 
@@ -3477,7 +3509,10 @@ LBeatClock:reset()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("reset marker")
+    clock:start()
+    clock:tick(1.0)
+    clock:reset()
+    print("beat after reset = " .. tostring(clock:getBeat()))
 end
 ```
 
@@ -3508,7 +3543,8 @@ LBeatClock:scheduleAt(beat)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("scheduleAt marker")
+    local ok = clock:scheduleAt(2.0)
+    print("scheduleAt ok = " .. tostring(ok))
 end
 ```
 
@@ -3533,7 +3569,8 @@ LBeatClock:secondsPerBeat()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("secondsPerBeat marker")
+    print("secondsPerBeat = " .. tostring(clock:secondsPerBeat()))
+    print("seconds for two beats = " .. tostring(clock:secondsPerBeat() * 2))
 end
 ```
 
@@ -3558,7 +3595,9 @@ LBeatClock:secondsToNextBeat()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("secondsToNextBeat marker")
+    clock:start()
+    clock:tick(0.125)
+    print("secondsToNextBeat = " .. tostring(clock:secondsToNextBeat()))
 end
 ```
 
@@ -3583,7 +3622,8 @@ LBeatClock:setBeatsPerBar(beats)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("setBeatsPerBar marker")
+    clock:setBeatsPerBar(3)
+    print("beatsPerBar = " .. tostring(clock:beatsPerBar()))
 end
 ```
 
@@ -3608,7 +3648,8 @@ LBeatClock:setBpm(bpm)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("setBpm marker")
+    clock:setBpm(90.0)
+    print("getBpm = " .. tostring(clock:getBpm()))
 end
 ```
 
@@ -3633,7 +3674,10 @@ LBeatClock:setSwing(amount)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("setSwing marker")
+    clock:setSwing(0.2)
+    clock:start()
+    clock:update(0.25)
+    print("phase after swing = " .. tostring(clock:getPhase(8)))
 end
 ```
 
@@ -3652,7 +3696,8 @@ LBeatClock:start()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("start marker")
+    clock:start()
+    print("isRunning = " .. tostring(clock:isRunning()))
 end
 ```
 
@@ -3671,7 +3716,9 @@ LBeatClock:stop()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("stop marker")
+    clock:start()
+    clock:stop()
+    print("isRunning = " .. tostring(clock:isRunning()))
 end
 ```
 
@@ -3695,8 +3742,12 @@ LBeatClock:syncToSource(source)
 
 ```lua
 do
+    local path = "content/examples/assets/audio/sample_loop.wav"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("syncToSource marker")
+    clock:syncToSource(src)
+    print("synced beat = " .. tostring(clock:getBeat()))
 end
 ```
 
@@ -3727,7 +3778,8 @@ LBeatClock:tap(wall_time_secs)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("tap marker")
+    clock:tap(0.0)
+    print("tap bpm = " .. tostring(clock:tap(0.5)))
 end
 ```
 
@@ -3758,7 +3810,9 @@ LBeatClock:tick(dt)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("tick marker")
+    clock:start()
+    local crossings = clock:tick(0.5)
+    print("tick crossings = " .. tostring(#crossings))
 end
 ```
 
@@ -3783,7 +3837,8 @@ LBeatClock:type()
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("type marker")
+    print("type = " .. tostring(clock:type()))
+    print("is clock object = " .. tostring(clock:typeOf("LBeatClock")))
 end
 ```
 
@@ -3814,7 +3869,8 @@ LBeatClock:typeOf(name)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("typeOf marker")
+    print("typeOf LBeatClock = " .. tostring(clock:typeOf("LBeatClock")))
+    print("type = " .. tostring(clock:type()))
 end
 ```
 
@@ -3845,7 +3901,9 @@ LBeatClock:update(dt)
 ```lua
 do
     local clock = lurek.audio.newBeatClock(120.0, 4)
-    print("update marker")
+    clock:start()
+    local events = clock:update(0.5)
+    print("update events = " .. tostring(#events))
 end
 ```
 
@@ -3900,6 +3958,7 @@ LBus:getName()
 do
     local bus = lurek.audio.newBus("gameplay")
     print("bus name = " .. bus:getName())
+    print("owner type = " .. tostring(bus:type()))
 end
 ```
 
@@ -4152,6 +4211,7 @@ LBus:type()
 do
     local bus = lurek.audio.newBus("test")
     print("type = " .. bus:type())
+    print("typeOf LObject = " .. tostring(bus:typeOf("LObject")))
 end
 ```
 
@@ -4183,6 +4243,7 @@ LBus:typeOf(name)
 do
     local bus = lurek.audio.newBus("check")
     print("is LBus = " .. tostring(bus:typeOf("LBus")))
+    print("type = " .. tostring(bus:type()))
 end
 ```
 
@@ -5049,6 +5110,7 @@ LMidiPlayer:isLoaded()
 do
     local player = lurek.audio.newMidiPlayer()
     print("loaded = " .. tostring(player:isLoaded()))
+    print("owner type = " .. tostring(player:type()))
 end
 ```
 
@@ -5806,6 +5868,7 @@ LMidiPlayer:type()
 do
     local player = lurek.audio.newMidiPlayer()
     print("type = " .. player:type())
+    print("typeOf LObject = " .. tostring(player:typeOf("LObject")))
 end
 ```
 
@@ -5837,6 +5900,7 @@ LMidiPlayer:typeOf(name)
 do
     local player = lurek.audio.newMidiPlayer()
     print("is LMidiPlayer = " .. tostring(player:typeOf("LMidiPlayer")))
+    print("type = " .. tostring(player:type()))
 end
 ```
 
@@ -6141,6 +6205,7 @@ LSoundData:type()
 do
     local sd = lurek.audio.newSoundData(100, 44100, 1)
     print("type = " .. sd:type())
+    print("typeOf LObject = " .. tostring(sd:typeOf("LObject")))
 end
 ```
 
@@ -6172,6 +6237,7 @@ LSoundData:typeOf(name)
 do
     local sd = lurek.audio.newSoundData(100, 44100, 1)
     print("is LSoundData = " .. tostring(sd:typeOf("LSoundData")))
+    print("type = " .. tostring(sd:type()))
 end
 ```
 

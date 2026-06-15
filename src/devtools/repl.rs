@@ -28,8 +28,8 @@ impl ReplConsole {
         log::debug!("devtools: repl eval → {result}");
         result
     }
-    /// Return an immutable slice of stored history entries.
-    pub fn history(&self) -> &[String] {
+    /// Return an iterator over stored history entries from oldest to newest.
+    pub fn history(&self) -> impl Iterator<Item = &String> {
         self.inner.history()
     }
     /// Clear command history and return unit.

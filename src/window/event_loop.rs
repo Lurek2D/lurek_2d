@@ -8,6 +8,7 @@ use winit::event_loop::ActiveEventLoop;
 use winit::monitor::MonitorHandle;
 use winit::window::Window;
 /// Snapshot of one connected display returned by `get_displays`.
+/// # Fields
 #[derive(Debug, Clone)]
 pub struct DisplayInfo {
     /// Zero-based index used in all other display-index parameters.
@@ -28,6 +29,17 @@ pub struct DisplayInfo {
     pub refresh_rate_hz: u32,
     /// `true` when this monitor is the OS-designated primary display.
     pub primary: bool,
+}
+/// Snapshot of one fullscreen video mode.
+/// # Fields
+#[derive(Debug, Clone, Copy)]
+pub struct FullscreenModeInfo {
+    /// Physical pixel width of the mode.
+    pub width: u32,
+    /// Physical pixel height of the mode.
+    pub height: u32,
+    /// Refresh rate in whole hertz.
+    pub refresh_rate_hz: u32,
 }
 /// Return `(x, y, width, height)` uniquely identifying a `MonitorHandle` by position and size.
 fn monitor_signature(monitor: &MonitorHandle) -> (i32, i32, u32, u32) {
@@ -69,6 +81,20 @@ fn monitor_to_info(
         primary,
     }
 }
+/// Build a deterministic fallback display snapshot when no live window handle is available.
+pub fn fallback_display_info(window_width: u32, window_height: u32, dpi_scale: f64) -> DisplayInfo {
+    DisplayInfo {
+        index: 0,
+        name: String::from("Primary"),
+        x: 0,
+        y: 0,
+        width: window_width,
+        height: window_height,
+        scale_factor: dpi_scale,
+        refresh_rate_hz: 60,
+        primary: true,
+    }
+}
 /// Return a `Vec<DisplayInfo>` for every monitor accessible to `window`, in enumeration order.
 pub fn get_displays(window: &Window) -> Vec<DisplayInfo> {
     let primary_sig = primary_signature(window);
@@ -77,6 +103,21 @@ pub fn get_displays(window: &Window) -> Vec<DisplayInfo> {
         .enumerate()
         .map(|(index, monitor)| monitor_to_info(index, &monitor, primary_sig))
         .collect()
+}
+/// Return the best available display list, falling back to one synthetic primary display when needed.
+pub fn display_snapshots(
+    window: Option<&Window>,
+    fallback_width: u32,
+    fallback_height: u32,
+    dpi_scale: f64,
+) -> Vec<DisplayInfo> {
+    if let Some(window) = window {
+        let displays = get_displays(window);
+        if !displays.is_empty() {
+            return displays;
+        }
+    }
+    vec![fallback_display_info(fallback_width, fallback_height, dpi_scale)]
 }
 /// Return the enumeration index of the monitor `window` currently occupies, or `None` if unavailable.
 pub fn current_display_index(window: &Window) -> Option<usize> {
@@ -87,6 +128,13 @@ pub fn current_display_index(window: &Window) -> Option<usize> {
         .enumerate()
         .find(|(_, monitor)| monitor_signature(monitor) == current_sig)
         .map(|(idx, _)| idx)
+}
+/// Return the current display index or `0` when the window is unavailable.
+pub fn current_display_index_or_default(window: Option<&Window>) -> i32 {
+    window
+        .and_then(current_display_index)
+        .map(|idx| idx as i32)
+        .unwrap_or(0)
 }
 /// Return the `MonitorHandle` for `display_index`; falls back to current → primary → first when `None`.
 fn monitor_by_index(window: &Window, display_index: Option<usize>) -> Option<MonitorHandle> {
@@ -108,6 +156,17 @@ pub fn desktop_dimensions_for_display(
         (size.width, size.height)
     })
 }
+/// Return desktop dimensions for `display_index`, or the provided fallback size when unavailable.
+pub fn desktop_dimensions_or_fallback(
+    window: Option<&Window>,
+    display_index: Option<usize>,
+    fallback_width: u32,
+    fallback_height: u32,
+) -> (u32, u32) {
+    window
+        .and_then(|win| desktop_dimensions_for_display(win, display_index))
+        .unwrap_or((fallback_width, fallback_height))
+}
 /// Return the OS name string for `display_index`; falls back to current/primary when `None`.
 pub fn display_name_for_display(window: &Window, display_index: Option<usize>) -> Option<String> {
     monitor_by_index(window, display_index).map(|monitor| {
@@ -115,6 +174,31 @@ pub fn display_name_for_display(window: &Window, display_index: Option<usize>) -
             .name()
             .unwrap_or_else(|| String::from("Unknown display"))
     })
+}
+/// Return the display name for `display_index`, or `"Unknown"` when unavailable.
+pub fn display_name_or_unknown(window: Option<&Window>, display_index: Option<usize>) -> String {
+    window
+        .and_then(|win| display_name_for_display(win, display_index))
+        .unwrap_or_else(|| "Unknown".to_string())
+}
+/// Return every fullscreen mode visible to the current window across all monitors.
+pub fn get_fullscreen_modes(window: &Window) -> Vec<FullscreenModeInfo> {
+    let mut modes = Vec::new();
+    for monitor in window.available_monitors() {
+        for mode in monitor.video_modes() {
+            let size = mode.size();
+            modes.push(FullscreenModeInfo {
+                width: size.width,
+                height: size.height,
+                refresh_rate_hz: mode.refresh_rate_millihertz() / 1000,
+            });
+        }
+    }
+    modes
+}
+/// Return every fullscreen mode for `window`, or an empty list when no live OS window exists yet.
+pub fn fullscreen_mode_snapshots(window: Option<&Window>) -> Vec<FullscreenModeInfo> {
+    window.map(get_fullscreen_modes).unwrap_or_default()
 }
 /// Move `window` to the center of monitor `display_index`; return `false` when that index doesn't exist.
 pub(crate) fn move_window_to_display(window: &Window, display_index: usize) -> bool {

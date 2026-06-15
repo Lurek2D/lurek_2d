@@ -11,6 +11,9 @@
 - Path smoothing helpers reduce noisy waypoint chains through line-of-sight checks.
 - Partial-path and budgeted search modes support frame-time-safe fallback behavior.
 - Async path pool support offloads heavy queries to worker threads.
+- Versioned async path queries support stale-result suppression for replanning-heavy agents.
+- Prioritized async path queries let urgent requests jump ahead of background work.
+- Streamed partial async path events support frame-friendly fallback movement while long searches continue.
 - Cancellation support helps avoid wasting work on stale async requests.
 - Flow-field support enables crowd movement toward goals with per-cell direction guidance.
 - Goal-map support enables multi-source distance and flee-style gradient queries.
@@ -41,6 +44,54 @@
 This module primarily collaborates with `flownet`, `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Functions
+
+### `lurek.pathfind.cancelAsyncPath`
+
+Marks an async path request as cancelled.
+
+```lua
+lurek.pathfind.cancelAsyncPath(request_id)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `request_id` | number | Request id returned by `submitAsyncPath`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | Always true once the cancel marker is recorded. |
+
+---
+
+### `lurek.pathfind.clearAsyncPaths`
+
+Drops all queued async path requests and recreates the worker pool with the configured thread count.
+
+```lua
+lurek.pathfind.clearAsyncPaths()
+```
+
+---
+
+### `lurek.pathfind.getAsyncPendingCount`
+
+Returns the number of async path requests that have not emitted a terminal event.
+
+```lua
+lurek.pathfind.getAsyncPendingCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Pending async request count. |
+
+---
 
 ### `lurek.pathfind.getThreadCount`
 
@@ -450,6 +501,22 @@ end
 
 ---
 
+### `lurek.pathfind.pollAsyncPaths`
+
+Returns all currently available async path events without blocking.
+
+```lua
+lurek.pathfind.pollAsyncPaths()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| table | Array of event tables with ids, status, optional path, and completion flags. |
+
+---
+
 ### `lurek.pathfind.rangeMap`
 
 Computes reachable cells from range map options.
@@ -516,6 +583,29 @@ do
     print("thread_count = " .. lurek.pathfind.getThreadCount())
 end
 ```
+
+---
+
+### `lurek.pathfind.submitAsyncPath`
+
+Queues an async path query against a navigation grid snapshot.
+
+```lua
+lurek.pathfind.submitAsyncPath(grid_ud, opts)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `grid_ud` | [LNavGrid](#lnavgrid) | Navigation grid to clone for the worker. |
+| `opts` | table | Options with start/goal cells and optional owner, version, priority, unit size, and stream budget. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Request id for polling and cancellation. |
 
 ---
 

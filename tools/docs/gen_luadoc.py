@@ -971,7 +971,7 @@ def main():
     engine_callbacks = data.get("engine_callbacks", [])
 
     # Maps internal json key â†’ actual Lua namespace (for modules that register under a different name)
-    _LUA_NAMESPACE = {}
+    _LUA_NAMESPACE = {"system": "runtime"}
 
     source_enums = data.get("lua_api", {}).get("enums", {})
 

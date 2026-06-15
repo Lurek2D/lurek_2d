@@ -1,12 +1,10 @@
 //! File: src/lua_api/register.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
+//! Builds the shared `lurek` Lua table and registers enabled public modules into a fresh VM.
+//! Centralizes module gating so runtime config decides which bindings are available to scripts.
 
 #[cfg(feature = "automation-plugin")]
 use super::automation_api;
-#[cfg(feature = "ui-charts")]
+#[cfg(feature = "charts")]
 use super::charts_api;
 #[cfg(feature = "devtools-plugin")]
 use super::devtools_api;
@@ -232,7 +230,7 @@ fn register_modules(
         flownet_api::register(lua, lurek, state.clone())?;
     }
 
-    #[cfg(feature = "ui-charts")]
+    #[cfg(feature = "charts")]
     charts_api::register(lua, lurek, state.clone())?;
 
     Ok(())

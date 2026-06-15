@@ -4,7 +4,7 @@
 //! - `lurek_run()` is the primary binary entry: initialises the Lua VM, loads the game's `main.lua`, and runs the winit event loop until the window closes.
 //! - `build_builtin_cli_script()` generates the embedded Lua bootstrap baked into the binary for headless and launch use cases.
 //! - Re-exports `binary` as `data` so existing `crate::data::` import paths continue to resolve while the module itself lives at `crate::binary::`.
-//! - Feature-gates optional subsystems: `automation` behind `automation-plugin`, `charts` behind `ui-charts`, keeping the binary lean for core builds.
+//! - Feature-gates optional subsystems: `automation` behind `automation-plugin`, `charts` behind `charts`, keeping the binary lean for core builds.
 //! - Suppresses `unused_doc_comments` and `clippy::doc_lazy_continuation` globally; detailed documentation lives in each subsystem's own `//!` headers, not here.
 //! - Contains a single `unsafe` block in the ZIP-extraction helper; all archive entry paths are validated against path-traversal before extraction.
 
@@ -30,7 +30,7 @@ pub mod automation;
 pub mod binary;
 /// Exposes the camera subsystem module.
 pub mod camera;
-#[cfg(feature = "ui-charts")]
+#[cfg(feature = "charts")]
 /// Exposes the charts subsystem module when the feature is enabled.
 pub mod charts;
 /// Exposes the cinematic timeline subsystem module.
@@ -76,6 +76,8 @@ pub mod grep;
 #[cfg(feature = "flownet")]
 /// Backward-compatible re-export so existing `crate::graph` imports continue to work.
 pub use flownet as graph;
+/// Exposes the director compatibility subsystem module.
+pub mod director;
 /// Exposes the HTML subsystem module.
 pub mod html;
 /// Exposes the internationalization subsystem module.
@@ -94,12 +96,10 @@ pub mod light;
 pub mod log;
 /// Exposes the Lua API bridge subsystem module.
 pub mod lua_api;
-/// Exposes the director compatibility subsystem module.
-pub mod director;
-/// Exposes the map block generation subsystem module.
-pub mod mapblock;
 /// Exposes the legacy map compatibility module.
 pub mod map;
+/// Exposes the map block generation subsystem module.
+pub mod mapblock;
 /// Exposes the math subsystem module.
 pub mod math;
 /// Exposes the MIDI playback and SoundFont management module.
@@ -155,6 +155,8 @@ pub mod terminal;
 /// Exposes the threading subsystem module.
 pub mod thread;
 
+/// Exposes the locomotion compatibility subsystem module.
+pub mod locomotion;
 /// Exposes the tilemap subsystem module.
 pub mod tilemap;
 /// Exposes the timer subsystem module.
@@ -167,8 +169,6 @@ pub mod ui;
 pub mod validator;
 /// Exposes the vector graphics SVG subsystem module.
 pub mod vector;
-/// Exposes the locomotion compatibility subsystem module.
-pub mod locomotion;
 /// Exposes the visibility subsystem module.
 pub mod visibility;
 /// Exposes the window subsystem module.

@@ -1,13 +1,12 @@
 //! File: src/lua_api/save_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
+//! Registers the public `lurek.save` API for slot persistence, auto-save scheduling, migration hooks, and metadata queries.
+//! Keeps Lua bindings thin by translating callbacks and tables into `src/save/` operations instead of embedding persistence logic here.
+//! Loads save payloads through the constrained parser in `src/save/save_manager.rs` so slot metadata and content never require arbitrary Lua evaluation.
 
 use super::SharedState;
 use crate::save::{
-    compress_save_content, decompress_save_content, serialize_table, SaveManager, SaveValue,
+    compress_save_content, decompress_save_content, parse_save_table, serialize_table, SaveManager,
+    SaveValue,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -19,10 +18,15 @@ fn slot_name_from_filename(filename: &str) -> Option<&str> {
         .strip_prefix("slot_")
         .and_then(|s| s.strip_suffix(".sav"))
 }
-/// Parses validated save content and evaluates it back into a Lua table.
-fn eval_save_content<'a>(vm: &'a Lua, content: &str) -> LuaResult<LuaTable<'a>> {
-    let validated = SaveManager::parse_save_string(content).map_err(LuaError::RuntimeError)?;
-    vm.load(validated.as_str()).eval()
+/// Parses validated save content into a Lua table without executing arbitrary code.
+fn parse_save_content<'a>(lua: &'a Lua, content: &str) -> LuaResult<LuaTable<'a>> {
+    let root = parse_save_table(content).map_err(LuaError::RuntimeError)?;
+    match SaveValue::Table(root).to_lua(lua)? {
+        LuaValue::Table(table) => Ok(table),
+        _ => Err(LuaError::RuntimeError(
+            "save root must decode to a table".to_string(),
+        )),
+    }
 }
 /// Manages persistent game state: registering data collectors/restorers, serializing to named.
 /// slots, handling schema migrations, auto-save timers, compression, and lifecycle hooks.
@@ -69,7 +73,7 @@ impl LuaSaveManager {
                 result.set(name.as_str(), val)?;
             }
         }
-        /// Performs the '__schema_version' operation.
+        // Reserve the schema marker key for migration routing on load.
         result.set("__schema_version", self.manager.schema_version())?;
         let timestamp = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -156,7 +160,7 @@ impl LuaSaveManager {
             Ok(s) => s,
             Err(e) => return Ok((false, Some(format!("lurek.save:load: {}", e)))),
         };
-        let data: LuaTable = match eval_save_content(lua, &content) {
+        let data: LuaTable = match parse_save_content(lua, &content) {
             Ok(t) => t,
             Err(e) => return Ok((false, Some(format!("lurek.save:load: corrupt save: {}", e)))),
         };
@@ -193,7 +197,11 @@ impl LuaSaveManager {
                 Err(_) => return Ok(None),
             }
         };
-        match eval_save_content(lua, &content) {
+        let content = match decompress_save_content(&content) {
+            Ok(decoded) => decoded,
+            Err(_) => return Ok(None),
+        };
+        match parse_save_content(lua, &content) {
             Ok(data) => {
                 let info = lua.create_table()?;
                 /// Performs the 'slot' operation.
@@ -331,9 +339,9 @@ impl LuaUserData for LuaSaveManager {
         });
         // -- update --
         /// Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
-        /// Returns true if an auto-save was triggered this tick (dirty flag was set and interval elapsed).
+        /// Returns the configured slot name when the timer reaches a dirty auto-save boundary, or nil otherwise.
         /// @param | dt | number | Delta time in seconds since the last frame.
-        /// @return | boolean | True if an auto-save was triggered during this update.
+        /// @return | string | Auto-save slot name when save work is due, or nil when no flush is needed yet.
         methods.add_method_mut("update", |_, this, dt: f64| Ok(this.manager.update(dt)));
         // -- setSummary --
         /// Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 â€“ Forest").

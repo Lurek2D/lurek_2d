@@ -3,6 +3,9 @@
 //! Delivers a shared identity contract for indexing, mapping, and query-level interoperability.
 
 /// Unique identifier for an ECS entity.
+///
+/// # Fields
+/// - `0`: Packed 32-bit entity identifier combining slot and generation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct EntityId(pub u32);
 

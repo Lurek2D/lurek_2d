@@ -1381,11 +1381,6 @@ fn lua_unit_svg_unit() {
 }
 
 #[test]
-fn lua_unit_system_unit() {
-    run_lua_test("unit/test_system_unit.lua");
-}
-
-#[test]
 fn lua_unit_terminal_unit() {
     run_lua_test("unit/test_terminal_unit.lua");
 }

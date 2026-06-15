@@ -12,7 +12,7 @@
 - Namespace: `lurek.font`
 - Lua API surface: `11` functions, `1` types, `8` methods
 - Rust test path(s): tests/rust/unit/font_tests.rs
-- Lua test path(s): tests/lua/unit/test_font_core_unit.lua
+- Lua test path(s): tests/lua/unit/test_font_unit.lua
 
 ## Summary
 

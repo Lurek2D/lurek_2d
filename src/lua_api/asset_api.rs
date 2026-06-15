@@ -1,9 +1,7 @@
-//! File: src/lua_api/asset_api.rs
-//! Module API documentation
+//! Lua bindings for the `lurek.asset` cache module.
 //!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
+//! Exposes ref-counted asset loading, metadata queries, batch preload, and
+//! search helpers over the shared runtime asset cache.
 
 use crate::asset::{AssetCache, AssetType};
 use crate::runtime::SharedState;
@@ -110,7 +108,34 @@ fn ids_to_handles_table<'lua>(
     Ok(out)
 }
 
-fn get_handle_entry(
+enum ResolvedAssetValue {
+    Text(Option<String>),
+    Binary(AssetType, String),
+    Unknown,
+}
+
+fn get_handle_value(
+    cache: &Rc<RefCell<AssetCache>>,
+    id: u64,
+    context: &str,
+) -> LuaResult<ResolvedAssetValue> {
+    let borrow = cache.borrow();
+    let entry = borrow
+        .get(id)
+        .ok_or_else(|| LuaError::RuntimeError(format!("{}: handle not loaded", context)))?;
+    Ok(match entry.asset_type {
+        AssetType::Text
+        | AssetType::Toml
+        | AssetType::Json
+        | AssetType::Obj
+        | AssetType::Shader
+        | AssetType::Lua => ResolvedAssetValue::Text(entry.text_content.clone()),
+        AssetType::Unknown(_) => ResolvedAssetValue::Unknown,
+        _ => ResolvedAssetValue::Binary(entry.asset_type.clone(), entry.path.clone()),
+    })
+}
+
+fn get_handle_info_entry(
     cache: &Rc<RefCell<AssetCache>>,
     id: u64,
     context: &str,
@@ -130,33 +155,28 @@ fn get_handle_entry(
     })
 }
 
-fn resolve_asset_value(lua: &Lua, entry: crate::asset::AssetEntry) -> LuaResult<LuaValue<'_>> {
-    match entry.asset_type {
-        AssetType::Text
-        | AssetType::Toml
-        | AssetType::Json
-        | AssetType::Obj
-        | AssetType::Shader
-        | AssetType::Lua => match entry.text_content {
+fn resolve_asset_value(lua: &Lua, entry: ResolvedAssetValue) -> LuaResult<LuaValue<'_>> {
+    match entry {
+        ResolvedAssetValue::Text(text_content) => match text_content {
             Some(s) => Ok(LuaValue::String(lua.create_string(&s)?)),
             None => Ok(LuaValue::Nil),
         },
-        AssetType::Image => {
+        ResolvedAssetValue::Binary(AssetType::Image, path) => {
             let image_tbl: LuaTable = lua.globals().get::<_, LuaTable>("lurek")?.get("image")?;
             let load_fn: LuaFunction = image_tbl.get("loadImage")?;
-            load_fn.call(entry.path)
+            load_fn.call(path)
         }
-        AssetType::Font => {
+        ResolvedAssetValue::Binary(AssetType::Font, path) => {
             let font_tbl: LuaTable = lua.globals().get::<_, LuaTable>("lurek")?.get("font")?;
             let load_fn: LuaFunction = font_tbl.get("load")?;
-            load_fn.call((entry.path, 16i64))
+            load_fn.call((path, 16i64))
         }
-        AssetType::Audio | AssetType::Music => {
+        ResolvedAssetValue::Binary(AssetType::Audio | AssetType::Music, path) => {
             let audio_tbl: LuaTable = lua.globals().get::<_, LuaTable>("lurek")?.get("audio")?;
             let new_source_fn: LuaFunction = audio_tbl.get("newSource")?;
-            new_source_fn.call(entry.path)
+            new_source_fn.call(path)
         }
-        AssetType::Unknown(_) => Ok(LuaValue::Nil),
+        ResolvedAssetValue::Binary(_, _) | ResolvedAssetValue::Unknown => Ok(LuaValue::Nil),
     }
 }
 
@@ -262,7 +282,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "get",
         lua.create_function(move |lua, handle: LuaAnyUserData| {
             let h = handle.borrow::<LuaAssetHandle>()?;
-            let entry = get_handle_entry(&get_cache, h.id, "lurek.asset.get")?;
+            let entry = get_handle_value(&get_cache, h.id, "lurek.asset.get")?;
             resolve_asset_value(lua, entry)
         })?,
     )?;
@@ -437,7 +457,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "getInfo",
         lua.create_function(move |lua, handle: LuaAnyUserData| {
             let h = handle.borrow::<LuaAssetHandle>()?;
-            let entry = get_handle_entry(&info_cache, h.id, "lurek.asset.getInfo")?;
+            let entry = get_handle_info_entry(&info_cache, h.id, "lurek.asset.getInfo")?;
             let name = entry.name.unwrap_or_else(|| {
                 std::path::Path::new(&entry.path)
                     .file_stem()

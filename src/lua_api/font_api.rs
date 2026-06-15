@@ -1,9 +1,7 @@
-//! File: src/lua_api/font_api.rs
-//! Module API documentation
+//! Lua bindings for `lurek.font`.
 //!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
+//! Exposes built-in and runtime-loaded font handles, measurement helpers,
+//! wrapping utilities, and shaping helpers backed by the render font store.
 
 use super::SharedState;
 use crate::render::font::{Font, AVAILABLE_POINT_SIZES};
@@ -11,6 +9,7 @@ use crate::runtime::resource_keys::FontKey;
 use mlua::prelude::*;
 use slotmap::Key;
 use std::cell::RefCell;
+use std::collections::HashSet;
 use std::path::Path;
 use std::rc::Rc;
 
@@ -151,7 +150,7 @@ fn font_name_for_key(st: &SharedState, key: FontKey) -> String {
             return format!("fontb_{}", AVAILABLE_POINT_SIZES[i]);
         }
     }
-    format!("font_{}", key.data().as_ffi())
+    format!("runtime_font_{}", key.data().as_ffi())
 }
 
 /// Determines the point size for a font key in shared state.
@@ -177,6 +176,50 @@ fn make_lua_font(state: Rc<RefCell<SharedState>>, key: FontKey) -> LuaFont {
         style,
         state,
     }
+}
+
+fn font_list_entries(st: &SharedState) -> Vec<(String, u32, &'static str)> {
+    let mut entries = Vec::new();
+    let mut builtin_keys = HashSet::new();
+
+    for (i, regular_key) in st.default_fonts.iter().enumerate() {
+        if let Some(key) = *regular_key {
+            builtin_keys.insert(key);
+            entries.push((
+                format!("font_{}", AVAILABLE_POINT_SIZES[i]),
+                AVAILABLE_POINT_SIZES[i],
+                "regular",
+            ));
+        }
+    }
+    for (i, bold_key) in st.default_bold_fonts.iter().enumerate() {
+        if let Some(key) = *bold_key {
+            builtin_keys.insert(key);
+            entries.push((
+                format!("fontb_{}", AVAILABLE_POINT_SIZES[i]),
+                AVAILABLE_POINT_SIZES[i],
+                "bold",
+            ));
+        }
+    }
+
+    let mut runtime_keys: Vec<FontKey> = st
+        .fonts
+        .iter()
+        .map(|(key, _)| key)
+        .filter(|key| !builtin_keys.contains(key))
+        .collect();
+    runtime_keys.sort_by_key(|key| key.data().as_ffi());
+
+    for key in runtime_keys {
+        entries.push((
+            font_name_for_key(st, key),
+            font_size_for_key(st, key),
+            font_style_str(st, key),
+        ));
+    }
+
+    entries
 }
 
 /// Registers the `lurek.font` namespace and returns the Lua table.
@@ -361,26 +404,12 @@ fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResult<Lu
             lua.create_function(move |lua, ()| {
                 let st = s.borrow();
                 let tbl = lua.create_table()?;
-                let mut idx = 1;
-                for (i, regular_key) in st.default_fonts.iter().enumerate() {
-                    if regular_key.is_some() {
-                        let entry = lua.create_table()?;
-                        entry.set("name", format!("font_{}", AVAILABLE_POINT_SIZES[i]))?;
-                        entry.set("size", AVAILABLE_POINT_SIZES[i])?;
-                        entry.set("style", "regular")?;
-                        tbl.set(idx, entry)?;
-                        idx += 1;
-                    }
-                }
-                for (i, bold_key) in st.default_bold_fonts.iter().enumerate() {
-                    if bold_key.is_some() {
-                        let entry = lua.create_table()?;
-                        entry.set("name", format!("fontb_{}", AVAILABLE_POINT_SIZES[i]))?;
-                        entry.set("size", AVAILABLE_POINT_SIZES[i])?;
-                        entry.set("style", "bold")?;
-                        tbl.set(idx, entry)?;
-                        idx += 1;
-                    }
+                for (idx, (name, size, style)) in font_list_entries(&st).into_iter().enumerate() {
+                    let entry = lua.create_table()?;
+                    entry.set("name", name)?;
+                    entry.set("size", size)?;
+                    entry.set("style", style)?;
+                    tbl.set(idx + 1, entry)?;
                 }
                 Ok(tbl)
             })?,

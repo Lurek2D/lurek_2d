@@ -78,7 +78,10 @@ mod blackboard_tests {
     fn set_and_get_number() {
         let mut bb = Blackboard::new("t");
         bb.set_number("hp", 42.0);
-        assert_eq!(bb.get("hp"), Some(&BlackboardValue::Number(42.0)));
+        match bb.get("hp") {
+            Some(BlackboardValue::Number(value)) => assert!((*value - 42.0).abs() < 1e-6),
+            other => panic!("expected numeric blackboard value, got {other:?}"),
+        }
     }
 
     #[test]
@@ -129,6 +132,7 @@ mod blackboard_tests {
         bb.set_bool("x", true);
         bb.set_bool("y", false);
         let keys = bb.keys();
+        assert_eq!(keys, vec!["x".to_string(), "y".to_string()]);
         assert_eq!(keys.len(), 2);
     }
 
@@ -223,6 +227,14 @@ mod event_bus_tests {
         assert!(bus.unsubscribe(id));
         assert_eq!(bus.total_count(), 0);
     }
+
+    #[test]
+    fn same_priority_listeners_are_ordered_by_subscription_id() {
+        let mut bus = EventBus::new("test");
+        let first = bus.subscribe("e", 10, false);
+        let second = bus.subscribe("e", 10, false);
+        assert_eq!(bus.get_listeners("e"), vec![first, second]);
+    }
 }
 
 // â”€â”€ Factory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -237,6 +249,54 @@ mod state_machine_tests {
         let mut sm = StateMachine::new("test");
         sm.add_state("idle", false, false, true);
         assert!(sm.has_update_callback("idle"));
+    }
+
+    #[test]
+    fn history_respects_cap_without_front_removal_regression() {
+        let mut sm = StateMachine::new("a");
+        sm.history_cap = 3;
+        sm.add_transition("a", "b", "a_to_b", false);
+        sm.add_transition("b", "c", "b_to_c", false);
+        sm.add_transition("c", "d", "c_to_d", false);
+        sm.transition_to("b");
+        sm.transition_to("c");
+        sm.transition_to("d");
+        assert_eq!(
+            sm.history(),
+            &["b".to_string(), "c".to_string(), "d".to_string()]
+        );
+    }
+}
+
+mod priority_queue_tests {
+    use super::*;
+
+    #[test]
+    fn pop_keeps_order_after_multiple_front_consumes() {
+        let mut queue = PriorityQueue::new("tasks");
+        let first = queue.push(10, "first");
+        let second = queue.push(9, "second");
+        let third = queue.push(8, "third");
+        assert_eq!(queue.pop(), Some((first, 10)));
+        assert_eq!(queue.pop(), Some((second, 9)));
+        assert_eq!(queue.peek().map(|item| item.id), Some(third));
+        assert_eq!(queue.len(), 1);
+    }
+}
+
+mod graph_tests {
+    use super::*;
+
+    #[test]
+    fn bfs_and_connectivity_use_cached_adjacency() {
+        let mut graph = Graph::new();
+        let a = graph.add_node("a");
+        let b = graph.add_node("b");
+        let c = graph.add_node("c");
+        graph.add_edge(a, b, 1.0, "ab");
+        graph.add_edge(b, c, 1.0, "bc");
+        assert_eq!(graph.bfs(a), vec![a, b, c]);
+        assert!(graph.is_connected(a, c));
     }
 }
 

@@ -1,111 +1,438 @@
-//! Fixed-size thread pool that runs A* pathfinding off the game thread.
-//! Submits jobs through channels and polls results without blocking.
-//! Shares one work queue across workers while skipping cancelled requests early.
-//! Gives pathfinding heavy workloads a parallel execution path.
-//! Keeps thread management isolated from callers.
+//! Prioritized async path-query service for off-thread A* execution.
+//! Supports cancellation, version-based stale-result suppression, and optional partial-path streaming.
+//! Keeps worker lifecycle and queue management isolated from Lua bindings and gameplay code.
 
 use crate::pathfind::{astar, NavGrid};
-use std::sync::{
-    mpsc,
-    mpsc::{Receiver, Sender},
-    Arc, Mutex,
-};
+use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashMap};
+use std::sync::atomic::{AtomicU64, Ordering as AtomicOrdering};
+use std::sync::{mpsc, Arc, Condvar, Mutex};
 use std::thread;
-/// In-flight A\* job sent to a worker thread.
-struct PathRequest {
-    /// Caller-assigned request identifier for correlation and cancellation.
-    id: u64,
-    /// Grid snapshot cloned at submission time so the worker owns it fully.
-    grid: NavGrid,
-    /// Starting cell.
-    start: (u32, u32),
-    /// Destination cell.
-    goal: (u32, u32),
-    /// Footprint size forwarded to A\*.
-    unit_size: u32,
-}
-/// Completed result returned from a worker: `(request_id, path_or_none)`.
+
+/// Legacy completed result returned from the compatibility `poll()` API.
 pub type PathResult = (u64, Option<Vec<(u32, u32)>>);
 
-/// Fixed-size worker pool that runs A\* off the game thread and delivers results via a channel.
-pub struct PathThreadPool {
-    /// Sender side of the work queue.
-    tx: Sender<PathRequest>,
-    /// Receiver for completed results polled each frame.
-    rx: Receiver<PathResult>,
-    /// Shared list of ids to skip before or during execution.
-    cancelled: Arc<Mutex<Vec<u64>>>,
-    /// Configured worker-thread count.
-    thread_count: usize,
-    /// Owned join handles kept alive as long as the pool lives.
-    _handles: Vec<thread::JoinHandle<()>>,
-    /// Number of jobs currently in-flight (submitted but not yet returned).
-    pending: Arc<Mutex<u32>>,
+/// Streaming/final state emitted for an async path request.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PathEventStatus {
+    /// Intermediate best-effort path produced before the search budget is exhausted.
+    Partial,
+    /// The goal was reached and the final full path is available.
+    Complete,
+    /// The request ended without reaching the goal. The payload may still contain a partial path.
+    Failed,
+    /// The request was explicitly cancelled before completion.
+    Cancelled,
+    /// The request was superseded by a newer version for the same owner.
+    Superseded,
 }
-/// Construction and job management for `PathThreadPool`.
-impl PathThreadPool {
-    /// Spawn `thread_count` workers (minimum 1) and connect them to shared channels.
-    pub fn new(thread_count: usize) -> Self {
-        let count = thread_count.max(1);
-        let (work_tx, work_rx) = mpsc::channel::<PathRequest>();
-        let (result_tx, result_rx) = mpsc::channel::<PathResult>();
-        let work_rx = Arc::new(Mutex::new(work_rx));
-        let cancelled: Arc<Mutex<Vec<u64>>> = Arc::new(Mutex::new(Vec::new()));
-        let pending: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
-        let mut handles = Vec::with_capacity(count);
-        for _ in 0..count {
-            let rx = Arc::clone(&work_rx);
-            let tx = result_tx.clone();
-            let cancel = Arc::clone(&cancelled);
-            let pend = Arc::clone(&pending);
-            let handle = thread::spawn(move || loop {
-                let req = {
-                    let lock = rx.lock();
-                    match lock {
-                        Ok(guard) => match guard.recv() {
-                            Ok(r) => r,
-                            Err(_) => return,
-                        },
-                        Err(_) => return,
-                    }
-                };
-                {
-                    let cancelled_ids = cancel.lock().unwrap_or_else(|e| e.into_inner());
-                    if cancelled_ids.contains(&req.id) {
-                        if let Ok(mut p) = pend.lock() {
-                            *p = p.saturating_sub(1);
-                        }
-                        continue;
-                    }
-                }
-                let (path, _complete) =
-                    astar::astar(&req.grid, req.start, req.goal, req.unit_size, 0);
-                {
-                    let cancelled_ids = cancel.lock().unwrap_or_else(|e| e.into_inner());
-                    if cancelled_ids.contains(&req.id) {
-                        if let Ok(mut p) = pend.lock() {
-                            *p = p.saturating_sub(1);
-                        }
-                        continue;
-                    }
-                }
-                let _ = tx.send((req.id, path));
-                if let Ok(mut p) = pend.lock() {
-                    *p = p.saturating_sub(1);
-                }
-            });
-            handles.push(handle);
-        }
+
+/// One event emitted by the async path-query service.
+#[derive(Debug, Clone)]
+pub struct AsyncPathEvent {
+    /// Caller-assigned request identifier.
+    pub id: u64,
+    /// Stable owner identifier used for version supersession.
+    pub owner_id: u64,
+    /// Caller-assigned version for stale-result suppression.
+    pub version: u64,
+    /// Event step index starting at 1 for each request.
+    pub step: u32,
+    /// Current request status.
+    pub status: PathEventStatus,
+    /// Best path known at this step, if any.
+    pub path: Option<Vec<(u32, u32)>>,
+    /// True only when the goal was actually reached.
+    pub complete: bool,
+    /// True when this is the terminal event for the request.
+    pub final_event: bool,
+}
+
+impl AsyncPathEvent {
+    fn terminal(
+        request: &AsyncPathRequest,
+        step: u32,
+        status: PathEventStatus,
+        path: Option<Vec<(u32, u32)>>,
+    ) -> Self {
         Self {
-            tx: work_tx,
-            rx: result_rx,
-            cancelled,
-            thread_count: count,
-            _handles: handles,
-            pending,
+            id: request.id,
+            owner_id: request.owner_id,
+            version: request.version,
+            step,
+            status,
+            complete: matches!(status, PathEventStatus::Complete),
+            final_event: true,
+            path,
         }
     }
-    /// Submit an A\* job; caller must pass a cloned grid snapshot.
+
+    fn partial(request: &AsyncPathRequest, step: u32, path: Option<Vec<(u32, u32)>>) -> Self {
+        Self {
+            id: request.id,
+            owner_id: request.owner_id,
+            version: request.version,
+            step,
+            status: PathEventStatus::Partial,
+            complete: false,
+            final_event: false,
+            path,
+        }
+    }
+}
+
+/// Caller-specified request metadata and search parameters.
+#[derive(Debug, Clone)]
+pub struct AsyncPathRequest {
+    /// Caller-assigned request identifier.
+    pub id: u64,
+    /// Stable owner/group identifier used for version supersession.
+    pub owner_id: u64,
+    /// Monotonic request version for the owner.
+    pub version: u64,
+    /// Higher values run before lower values once they reach the queue.
+    pub priority: i32,
+    /// Grid snapshot fully owned by the worker.
+    pub grid: NavGrid,
+    /// Start cell.
+    pub start: (u32, u32),
+    /// Goal cell.
+    pub goal: (u32, u32),
+    /// Clearance footprint forwarded to A*.
+    pub unit_size: u32,
+    /// Partial-stream budget per step. Zero disables streaming and runs one final search.
+    pub stream_budget: u32,
+}
+
+impl AsyncPathRequest {
+    /// Build a legacy one-shot request with no streaming or version tracking.
+    pub fn legacy(
+        id: u64,
+        grid: NavGrid,
+        start: (u32, u32),
+        goal: (u32, u32),
+        unit_size: u32,
+    ) -> Self {
+        Self {
+            id,
+            owner_id: id,
+            version: 0,
+            priority: 0,
+            grid,
+            start,
+            goal,
+            unit_size,
+            stream_budget: 0,
+        }
+    }
+
+    fn tracks_version(&self) -> bool {
+        self.version > 0 || self.owner_id != self.id
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CancelReason {
+    Cancelled,
+}
+
+#[derive(Debug)]
+struct QueuedRequest {
+    priority: i32,
+    sequence: u64,
+    request: AsyncPathRequest,
+}
+
+impl PartialEq for QueuedRequest {
+    fn eq(&self, other: &Self) -> bool {
+        self.priority == other.priority && self.sequence == other.sequence
+    }
+}
+
+impl Eq for QueuedRequest {}
+
+impl Ord for QueuedRequest {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.priority
+            .cmp(&other.priority)
+            .then_with(|| other.sequence.cmp(&self.sequence))
+    }
+}
+
+impl PartialOrd for QueuedRequest {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+#[derive(Debug, Default)]
+struct QueueState {
+    queue: BinaryHeap<QueuedRequest>,
+    shutdown_tokens: usize,
+    closed: bool,
+}
+
+#[derive(Debug, Default)]
+struct WorkQueue {
+    state: Mutex<QueueState>,
+    ready: Condvar,
+}
+
+impl WorkQueue {
+    fn push(&self, request: QueuedRequest) {
+        let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
+        if state.closed {
+            return;
+        }
+        state.queue.push(request);
+        self.ready.notify_one();
+    }
+
+    fn next(&self) -> Option<AsyncPathRequest> {
+        let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
+        loop {
+            if state.closed {
+                return None;
+            }
+            if state.shutdown_tokens > 0 {
+                state.shutdown_tokens -= 1;
+                return None;
+            }
+            if let Some(request) = state.queue.pop() {
+                return Some(request.request);
+            }
+            state = self.ready.wait(state).unwrap_or_else(|e| e.into_inner());
+        }
+    }
+
+    fn request_shutdown(&self, count: usize) {
+        let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
+        state.shutdown_tokens = state.shutdown_tokens.saturating_add(count);
+        self.ready.notify_all();
+    }
+
+    fn close(&self) {
+        let mut state = self.state.lock().unwrap_or_else(|e| e.into_inner());
+        state.closed = true;
+        self.ready.notify_all();
+    }
+}
+
+/// Fixed-size worker pool that runs prioritized path queries off the game thread.
+pub struct PathThreadPool {
+    /// Shared prioritized work queue.
+    queue: Arc<WorkQueue>,
+    /// Receiver for streamed and final events.
+    rx: mpsc::Receiver<AsyncPathEvent>,
+    /// Sender cloned into workers and reused for immediate terminal events.
+    result_tx: mpsc::Sender<AsyncPathEvent>,
+    /// Explicitly cancelled request ids.
+    cancelled: Arc<Mutex<HashMap<u64, CancelReason>>>,
+    /// Latest accepted version per owner for stale-result suppression.
+    latest_versions: Arc<Mutex<HashMap<u64, u64>>>,
+    /// Configured worker-thread count.
+    thread_count: usize,
+    /// Owned worker join handles.
+    handles: Vec<thread::JoinHandle<()>>,
+    /// Number of live requests submitted but not yet terminated.
+    pending: Arc<Mutex<u32>>,
+    /// Submission sequence used to keep FIFO order inside one priority level.
+    next_sequence: AtomicU64,
+}
+
+impl PathThreadPool {
+    /// Spawn `thread_count` workers (minimum 1).
+    pub fn new(thread_count: usize) -> Self {
+        let count = thread_count.max(1);
+        let (result_tx, result_rx) = mpsc::channel::<AsyncPathEvent>();
+        let queue = Arc::new(WorkQueue::default());
+        let cancelled = Arc::new(Mutex::new(HashMap::new()));
+        let latest_versions = Arc::new(Mutex::new(HashMap::new()));
+        let pending = Arc::new(Mutex::new(0));
+        let mut handles = Vec::with_capacity(count);
+        for _ in 0..count {
+            handles.push(Self::spawn_worker(
+                Arc::clone(&queue),
+                result_tx.clone(),
+                Arc::clone(&cancelled),
+                Arc::clone(&latest_versions),
+                Arc::clone(&pending),
+            ));
+        }
+        Self {
+            queue,
+            rx: result_rx,
+            result_tx,
+            cancelled,
+            latest_versions,
+            thread_count: count,
+            handles,
+            pending,
+            next_sequence: AtomicU64::new(0),
+        }
+    }
+
+    fn spawn_worker(
+        queue: Arc<WorkQueue>,
+        tx: mpsc::Sender<AsyncPathEvent>,
+        cancelled: Arc<Mutex<HashMap<u64, CancelReason>>>,
+        latest_versions: Arc<Mutex<HashMap<u64, u64>>>,
+        pending: Arc<Mutex<u32>>,
+    ) -> thread::JoinHandle<()> {
+        thread::spawn(move || {
+            while let Some(request) = queue.next() {
+                if let Some(event) = Self::terminal_state(&request, &cancelled, &latest_versions, 0)
+                {
+                    Self::finish_request(&tx, &pending, event);
+                    continue;
+                }
+
+                let max_budget = request
+                    .grid
+                    .get_width()
+                    .saturating_mul(request.grid.get_height())
+                    .max(1);
+                let mut step = 0u32;
+                let mut budget = if request.stream_budget == 0 {
+                    max_budget
+                } else {
+                    request.stream_budget.max(1).min(max_budget)
+                };
+
+                loop {
+                    step = step.saturating_add(1);
+                    let (path, reached_goal) = astar::astar(
+                        &request.grid,
+                        request.start,
+                        request.goal,
+                        request.unit_size,
+                        budget,
+                    );
+
+                    if let Some(event) =
+                        Self::terminal_state(&request, &cancelled, &latest_versions, step)
+                    {
+                        Self::finish_request(&tx, &pending, event);
+                        break;
+                    }
+
+                    let is_last_step =
+                        request.stream_budget == 0 || budget >= max_budget || path.is_none();
+                    let event = if reached_goal {
+                        AsyncPathEvent::terminal(&request, step, PathEventStatus::Complete, path)
+                    } else if is_last_step {
+                        AsyncPathEvent::terminal(&request, step, PathEventStatus::Failed, path)
+                    } else {
+                        AsyncPathEvent::partial(&request, step, path)
+                    };
+
+                    let final_event = event.final_event;
+                    let _ = tx.send(event);
+                    if final_event {
+                        if let Ok(mut pending_count) = pending.lock() {
+                            *pending_count = pending_count.saturating_sub(1);
+                        }
+                        break;
+                    }
+
+                    let next_budget = budget.saturating_mul(2).min(max_budget);
+                    budget = if next_budget == budget {
+                        max_budget
+                    } else {
+                        next_budget
+                    };
+                }
+            }
+        })
+    }
+
+    fn finish_request(
+        tx: &mpsc::Sender<AsyncPathEvent>,
+        pending: &Arc<Mutex<u32>>,
+        event: AsyncPathEvent,
+    ) {
+        let _ = tx.send(event);
+        if let Ok(mut pending_count) = pending.lock() {
+            *pending_count = pending_count.saturating_sub(1);
+        }
+    }
+
+    fn terminal_state(
+        request: &AsyncPathRequest,
+        cancelled: &Arc<Mutex<HashMap<u64, CancelReason>>>,
+        latest_versions: &Arc<Mutex<HashMap<u64, u64>>>,
+        step: u32,
+    ) -> Option<AsyncPathEvent> {
+        {
+            let mut cancelled_ids = cancelled.lock().unwrap_or_else(|e| e.into_inner());
+            if cancelled_ids.remove(&request.id).is_some() {
+                return Some(AsyncPathEvent::terminal(
+                    request,
+                    step,
+                    PathEventStatus::Cancelled,
+                    None,
+                ));
+            }
+        }
+
+        if request.tracks_version() {
+            let latest = latest_versions
+                .lock()
+                .unwrap_or_else(|e| e.into_inner())
+                .get(&request.owner_id)
+                .copied()
+                .unwrap_or(request.version);
+            if latest > request.version {
+                return Some(AsyncPathEvent::terminal(
+                    request,
+                    step,
+                    PathEventStatus::Superseded,
+                    None,
+                ));
+            }
+        }
+
+        None
+    }
+
+    /// Submit a request to the prioritized queue. Returns false when it is stale immediately.
+    pub fn submit_query(&self, request: AsyncPathRequest) -> bool {
+        if request.tracks_version() {
+            let mut latest = self
+                .latest_versions
+                .lock()
+                .unwrap_or_else(|e| e.into_inner());
+            let current = latest.get(&request.owner_id).copied().unwrap_or(0);
+            if request.version < current {
+                let _ = self.result_tx.send(AsyncPathEvent::terminal(
+                    &request,
+                    0,
+                    PathEventStatus::Superseded,
+                    None,
+                ));
+                return false;
+            }
+            latest.insert(request.owner_id, request.version);
+        }
+
+        if let Ok(mut cancelled_ids) = self.cancelled.lock() {
+            cancelled_ids.remove(&request.id);
+        }
+
+        if let Ok(mut pending_count) = self.pending.lock() {
+            *pending_count = pending_count.saturating_add(1);
+        }
+
+        let sequence = self.next_sequence.fetch_add(1, AtomicOrdering::Relaxed);
+        self.queue.push(QueuedRequest {
+            priority: request.priority,
+            sequence,
+            request,
+        });
+        true
+    }
+
+    /// Submit a legacy one-shot request. The id is also used as the owner id.
     pub fn submit(
         &self,
         id: u64,
@@ -114,43 +441,90 @@ impl PathThreadPool {
         goal: (u32, u32),
         unit_size: u32,
     ) {
-        if let Ok(mut p) = self.pending.lock() {
-            *p += 1;
-        }
-        let _ = self.tx.send(PathRequest {
+        let _ = self.submit_query(AsyncPathRequest::legacy(
             id,
-            grid: grid_snapshot,
+            grid_snapshot,
             start,
             goal,
             unit_size,
-        });
+        ));
     }
-    /// Drain all available completed results without blocking.
-    pub fn poll(&self) -> Vec<PathResult> {
+
+    /// Drain all streamed and final events without blocking.
+    pub fn poll_events(&self) -> Vec<AsyncPathEvent> {
         let mut results = Vec::new();
         while let Ok(result) = self.rx.try_recv() {
             results.push(result);
         }
         results
     }
-    /// Mark `id` as cancelled; workers skip it if still queued.
+
+    /// Drain only legacy-style final results from the event channel.
+    pub fn poll(&self) -> Vec<PathResult> {
+        self.poll_events()
+            .into_iter()
+            .filter(|event| event.final_event)
+            .map(|event| (event.id, event.path))
+            .collect()
+    }
+
+    /// Mark a request id as cancelled. The terminal cancel event is emitted by the worker.
     pub fn cancel(&self, id: u64) {
-        if let Ok(mut cancelled) = self.cancelled.lock() {
-            if !cancelled.contains(&id) {
-                cancelled.push(id);
-            }
+        if let Ok(mut cancelled_ids) = self.cancelled.lock() {
+            cancelled_ids.insert(id, CancelReason::Cancelled);
         }
     }
-    /// Return the number of jobs submitted but not yet delivered.
+
+    /// Return the number of live requests that have not emitted a terminal event.
     pub fn pending_count(&self) -> u32 {
         self.pending.lock().map(|p| *p).unwrap_or(0)
     }
-    /// Update the recorded thread count; does not respawn existing workers.
-    pub fn set_thread_count(&mut self, count: usize) {
-        self.thread_count = count.max(1);
+
+    fn reap_finished_workers(&mut self) {
+        let mut idx = 0;
+        while idx < self.handles.len() {
+            if self.handles[idx].is_finished() {
+                let handle = self.handles.swap_remove(idx);
+                let _ = handle.join();
+            } else {
+                idx += 1;
+            }
+        }
     }
+
+    /// Resize the worker pool. Shrinking retires workers after their current request.
+    pub fn set_thread_count(&mut self, count: usize) {
+        let target = count.max(1);
+        self.reap_finished_workers();
+        if target > self.thread_count {
+            let additional = target - self.thread_count;
+            self.handles.reserve(additional);
+            for _ in 0..additional {
+                self.handles.push(Self::spawn_worker(
+                    Arc::clone(&self.queue),
+                    self.result_tx.clone(),
+                    Arc::clone(&self.cancelled),
+                    Arc::clone(&self.latest_versions),
+                    Arc::clone(&self.pending),
+                ));
+            }
+        } else if target < self.thread_count {
+            self.queue.request_shutdown(self.thread_count - target);
+        }
+        self.thread_count = target;
+    }
+
     /// Return the configured worker thread count.
     pub fn get_thread_count(&self) -> usize {
         self.thread_count
+    }
+}
+
+impl Drop for PathThreadPool {
+    fn drop(&mut self) {
+        self.queue.close();
+        while let Some(handle) = self.handles.pop() {
+            let _ = handle.join();
+        }
     }
 }

@@ -17,14 +17,14 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9159 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32822 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9115 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32655 lines)
 
 ## Coverage
 
 - 70 modules
-- 6055 functions and methods
-- 100.0% documented
+- 6032 functions and methods
+- 99.8% documented
 
 ## API Module Index
 
@@ -49,12 +49,12 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.dialog](Module-dialog) | 10 | 4 | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry. |
 | [lurek.docs](Module-docs) | 26 | 5 | In-engine API docs-general catalog and lightweight schema validation for structured game data. |
 | [lurek.dsp](Module-dsp) | 28 | 7 | Digital signal processing: real-time effects chains, offline batch processing, audio visualization. |
-| [lurek.ecs](Module-ecs) | 1 | 1 | Entity-Component-System: identity / data / behaviour separation for runtime composition. |
+| [lurek.ecs](Module-ecs) | 2 | 3 | Entity-Component-System: identity / data / behaviour separation for runtime composition. |
 | [lurek.effect](Module-effect) | 10 | 3 | Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes. |
-| [lurek.engine](Module-engine) | 13 | 0 | File: src/lua_api/engine_api.rs Module API documentation TODO: add doc note 1 TODO: add doc note 2 |
+| [lurek.engine](Module-engine) | 13 | 0 | File: src/lua_api/engine_api.rs Registers the public lurek.engine namespace for engine timing, profiling, and memory diagnostics. |
 | [lurek.event](Module-event) | 16 | 1 | Centralised event queue: OS input, window state, custom Lua events, automation injections. |
 | [lurek.filesystem](Module-filesystem) | 44 | 3 | Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory. |
-| [lurek.flownet](Module-flownet) | 1 | 4 | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react. |
+| [lurek.graph](Module-flownet) | 1 | 4 | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react. |
 | [lurek.font](Module-font) | 11 | 1 | CPU-side font loading, glyph metrics, text measurement, and shaping for bitmap fonts. |
 | [lurek.globe](Module-globe) | 12 | 2 | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night. |
 | [lurek.grep](Module-grep) | 7 | 2 | Text search engine for game content: literal, regex, glob, fuzzy, parallel file search. |
@@ -75,7 +75,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.overlay](Module-overlay) | 2 | 2 | Screen overlay system: weather, atmosphere, screen effects, and transitions. |
 | [lurek.parallax](Module-parallax) | 3 | 2 | Multi-layer scrolling backgrounds with camera-relative scroll factors and blend modes. |
 | [lurek.particle](Module-particle) | 5 | 2 | Emitter-based 2D particle systems with bounded pools and Euler integration. |
-| [lurek.pathfind](Module-pathfind) | 13 | 9 | Grid / hex / iso / hierarchical / flow-field pathfinding. CPU-only, headless. Couples to ai. |
+| [lurek.pathfind](Module-pathfind) | 18 | 9 | Grid / hex / iso / hierarchical / flow-field pathfinding. CPU-only, headless. Couples to ai. |
 | [lurek.patterns](Module-patterns) | 24 | 24 | Twelve classic game-programming design patterns exposed as lurek.patterns.*. |
 | [lurek.physics](Module-physics) | 22 | 5 | Rigid-body 2D physics on top of rapier2d. Heavy dependency tree. |
 | [lurek.pipeline](Module-pipeline) | 3 | 2 | DAG-based workflow orchestration: analytics, test sequences, asset / mod processing. |
@@ -86,17 +86,17 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.repl](Module-repl) | 1 | 1 | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. |
 | [lurek.save](Module-save) | 1 | 1 | Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to serial. |
 | [lurek.scene](Module-scene) | 60 | 2 | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes. |
-| [lurek.serialize](Module-serialize) | 15 | 0 | Format-agnostic text serialisation centred on the recursive SerialValue enum. |
+| [lurek.serial](Module-serialize) | 15 | 0 | Format-agnostic text serialisation centred on the recursive SerialValue enum. |
 | [lurek.spine](Module-spine) | 4 | 2 | Hierarchical skeletal animation (own implementation; not the official Spine SDK â€” A-02 + licensing). |
 | [lurek.sprite](Module-sprite) | 8 | 5 | Sprite and sprite-batch rendering above the render command queue. |
 | [lurek.svg](Module-svg) | 1 | 1 | Lua bindings for the vector SVG graphics module. |
-| [lurek.system](Module-system) | 28 | 0 | File: src/lua_api/system_api.rs Module API documentation TODO: add doc note 1 TODO: add doc note 2 TODO: add doc note 3 |
+| [lurek.runtime](Module-system) | 28 | 0 | File: src/lua_api/system_api.rs Registers the public lurek.runtime namespace for host, process, and runtime utility helpers. |
 | [lurek.terminal](Module-terminal) | 29 | 2 | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
 | [lurek.thread](Module-thread) | 7 | 4 | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared). |
-| [lurek.tilemap](Module-tilemap) | 29 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
+| [lurek.physics](Module-tilemap) | 29 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [lurek.timer](Module-timer) | 21 | 1 | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |
 | [lurek.tween](Module-tween) | 15 | 6 | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
-| [lurek.ui](Module-ui) | 95 | 41 | Retained-mode widget system; rendering deferred through RenderCommand. |
+| [lurek.ui](Module-ui) | 90 | 36 | Retained-mode widget system; rendering deferred through RenderCommand. |
 | [lurek.validator](Module-validator) | 3 | 1 | Content validation engine: asset checks, import resolution, API compliance, custom rules. |
 | [lurek.visibility](Module-visibility) | 2 | 2 | Universal fog-of-war / discovery / line-of-sight system; geometry-agnostic, consumed by province/globe/minimap. |
 | [lurek.window](Module-window) | 55 | 0 | Window control via deferred WindowState writes; winit ops applied at frame start on the main thread. |

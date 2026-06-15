@@ -26,7 +26,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [dataframe](Module-dataframe) | `lurek.dataframe` | In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*). |
 | [event](Module-event) | `lurek.event` | Centralised event queue: OS input, window state, custom Lua events, automation injections. |
 | [filesystem](Module-filesystem) | `lurek.filesystem` | Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory. |
-| [flownet](Module-flownet) | `lurek.graph` | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react. |
+| [graph](Module-flownet) | `lurek.graph` | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react. |
 | [globe](Module-globe) | `lurek.globe` | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night. |
 | [layout](Module-layout) | `lurek.layout` | Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space. |
 | [log](Module-log) | `lurek.log` | Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG. |
@@ -35,7 +35,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [patterns](Module-patterns) | `lurek.patterns` | Twelve classic game-programming design patterns exposed as lurek.patterns.*. |
 | [repl](Module-repl) | `lurek.repl` | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. |
 | [runtime](Module-runtime) | `lurek.runtime` | Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree. |
-| [serialize](Module-serialize) | `lurek.serial` | Format-agnostic text serialisation centred on the recursive SerialValue enum. |
+| [serial](Module-serialize) | `lurek.serial` | Format-agnostic text serialisation centred on the recursive SerialValue enum. |
 | [thread](Module-thread) | `lurek.thread` | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared). |
 | [timer](Module-timer) | `lurek.timer` | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |
 
@@ -88,7 +88,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [spine](Module-spine) | `lurek.spine` | Hierarchical skeletal animation (own implementation; not the official Spine SDK â€” A-02 + licensing). |
 | [sprite](Module-sprite) | `lurek.sprite` | Sprite and sprite-batch rendering above the render command queue. |
 | [terminal](Module-terminal) | `lurek.terminal` | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
-| [tilemap](Module-tilemap) | `lurek.physics` | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
+| [physics](Module-tilemap) | `lurek.physics` | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [tween](Module-tween) | `lurek.tween` | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
 | [ui](Module-ui) | `lurek.ui` | Retained-mode widget system; rendering deferred through RenderCommand. |
 | [validator](Module-validator) | `lurek.validator` | Content validation engine: asset checks, import resolution, API compliance, custom rules. |
@@ -97,7 +97,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 
 | Module | Namespace | Purpose |
 |---|---|---|
-| [app](Module-app) | `lurek.input` | Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing. |
+| [input](Module-app) | `lurek.input` | Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing. |
 | [debugbridge](Module-debugbridge) | `lurek.debugbridge` | TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server. |
 | [devtools](Module-devtools) | `lurek.devtools` | In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*). |
 | [docs](Module-docs) | `lurek.docs` | In-engine API docs-general catalog and lightweight schema validation for structured game data. |
@@ -107,6 +107,6 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | Module | Namespace | Purpose |
 |---|---|---|
 | [AGENTS](Module-AGENTS) | `lurek.AGENTS` | Lurek2D runtime module. |
-| [engine](Module-engine) | `lurek.engine` | File: src/lua_api/engine_api.rs Module API documentation TODO: add doc note 1 TODO: add doc note 2 |
+| [engine](Module-engine) | `lurek.engine` | File: src/lua_api/engine_api.rs Registers the public lurek.engine namespace for engine timing, profiling, and memory diagnostics. |
 | [svg](Module-svg) | `lurek.svg` | Lua bindings for the vector SVG graphics module. |
-| [system](Module-system) | `lurek.system` | File: src/lua_api/system_api.rs Module API documentation TODO: add doc note 1 TODO: add doc note 2 TODO: add doc note 3 |
+| [runtime](Module-system) | `lurek.runtime` | File: src/lua_api/system_api.rs Registers the public lurek.runtime namespace for host, process, and runtime utility helpers. |

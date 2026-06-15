@@ -35,7 +35,7 @@ pub mod render;
 pub mod unit_pathfinder;
 pub use ai_flow_field::FlowField as SimpleFlowField;
 pub use astar::{astar, line_of_sight, smooth_path};
-pub use async_pool::PathThreadPool;
+pub use async_pool::{AsyncPathEvent, AsyncPathRequest, PathEventStatus, PathThreadPool};
 pub use bidir::bidirectional_astar;
 pub use flow_field::FlowField;
 pub use goal_map::{GoalMap, GoalSource, UNREACHABLE};

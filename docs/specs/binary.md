@@ -144,7 +144,7 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 - `lurek.binary.fromMsgPack(bytes) -> LuaValue`: Decodes a structured binary interchange payload back into Lua values.
 - `lurek.binary.getPackedSize(fmt, ...) -> integer`: Computes the packed byte size for values and a format string.
 - `lurek.binary.hash(algo_str, raw_data) -> string`: Hashes a binary string with a named algorithm.
-- `lurek.binary.newByteData(value) -> LByteData`: Creates ByteData from a size or string.
+- `lurek.binary.newByteData(value) -> LByteData`: Creates ByteData from a size or raw byte string.
 - `lurek.binary.newDataView(raw, offset?, size?) -> LDataView`: Creates a DataView over a binary string slice.
 - `lurek.binary.newRingBuffer(capacity) -> LRingBuffer`: Creates a fixed-capacity ring buffer for Lua values.
 - `lurek.binary.newWriter() -> LDataWriter`: Creates an empty binary data writer.

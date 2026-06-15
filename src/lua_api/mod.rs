@@ -26,7 +26,7 @@ pub mod callback_registry;
 /// Includes sub-tables: lurek.camera.follow.
 pub mod camera_api;
 /// Exposes the `lurek.charts` binding module.
-#[cfg(feature = "ui-charts")]
+#[cfg(feature = "charts")]
 pub mod charts_api;
 /// Exposes the `lurek.cinematic` binding module.
 pub mod cinematic_api;

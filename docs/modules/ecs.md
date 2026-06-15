@@ -7,7 +7,9 @@
 - Components can be attached and queried dynamically, enabling data-driven behavior composition.
 - Hierarchy, tags, and layers support practical grouping for rendering, logic, and tooling workflows.
 - Relationship support lets systems model directed links and graph-like ownership between entities.
+- Standalone relationship-manager handles are owned here through `lurek.ecs.newRelationshipManager()`.
 - Query APIs support include/exclude filtering so systems can target the exact data shape they need.
+- Cached query-view handles can reuse component-query results until the world query-change tick advances.
 - System registration and ordering rules provide deterministic update and render phase execution.
 - Dependency-aware scheduling reduces order-related bugs in multi-system simulations.
 - Blueprint and bulk-spawn features speed up content-heavy spawning scenarios.
@@ -21,6 +23,33 @@
 This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Functions
+
+### `lurek.ecs.newRelationshipManager`
+
+Creates a relationship manager for tracking numeric values and named levels between entity pairs.
+
+```lua
+lurek.ecs.newRelationshipManager()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LRelationshipManager](#lrelationshipmanager) | New relationship manager handle owned by `lurek.ecs`. |
+
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("stance", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:setLevel(1, 2, "stance", "friendly")
+    print("stance 1->2 = " .. tostring(rm:getLevel(1, 2, "stance")))
+end
+```
+
+---
 
 ### `lurek.ecs.newUniverse`
 
@@ -61,7 +90,274 @@ end
 
 ## Types
 
+- [LQueryView](#lqueryview)
+- [LRelationshipManager](#lrelationshipmanager)
 - [LUniverse](#luniverse)
+
+## LQueryView
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LQueryView:ids`
+
+Returns cached query results, refreshing when the owning universe query tick changed.
+
+```lua
+LQueryView:ids()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number[] | Array table of matching entity ids. |
+
+---
+
+#### `LQueryView:lastTick`
+
+Returns the universe query-change tick used to build the current cached ids.
+
+```lua
+LQueryView:lastTick()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Query-change tick for the cached result set. |
+
+---
+
+#### `LQueryView:type`
+
+Returns the Lua-visible type name for this cached query-view handle.
+
+```lua
+LQueryView:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LQueryView](#lqueryview)`. |
+
+---
+
+#### `LQueryView:typeOf`
+
+Returns whether this cached query-view handle matches a supported type name.
+
+```lua
+LQueryView:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | string | Type name to compare against `[LQueryView](#lqueryview)` and `LObject`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+**Example**
+
+```lua
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    local view = uni:newQueryView({"pos"})
+    print("query tick = " .. tostring(uni:getQueryChangeTick()))
+    print("query view type = " .. view:type())
+    print("is query view = " .. tostring(view:typeOf("LQueryView")))
+    print("cached ids = " .. #view:ids())
+    print("view tick = " .. tostring(view:lastTick()))
+end
+```
+
+---
+
+## LRelationshipManager
+
+### Type Fields
+
+*No documented fields for this handle.*
+
+### Type Methods
+
+#### `LRelationshipManager:adjustValue`
+
+```lua
+LRelationshipManager:adjustValue(a, b, delta)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `a` | any |  |
+| `b` | any |  |
+| `delta` | any |  |
+
+---
+
+#### `LRelationshipManager:defineType`
+
+```lua
+LRelationshipManager:defineType(name, levels, default_level)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+| `levels` | any |  |
+| `default_level?` | any |  |
+
+---
+
+#### `LRelationshipManager:getLevel`
+
+```lua
+LRelationshipManager:getLevel(a, b, type_name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `a` | any |  |
+| `b` | any |  |
+| `type_name` | any |  |
+
+---
+
+#### `LRelationshipManager:getValue`
+
+```lua
+LRelationshipManager:getValue(a, b)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `a` | any |  |
+| `b` | any |  |
+
+---
+
+#### `LRelationshipManager:pairCount`
+
+```lua
+LRelationshipManager:pairCount()
+```
+
+---
+
+#### `LRelationshipManager:removePair`
+
+```lua
+LRelationshipManager:removePair(a, b)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `a` | any |  |
+| `b` | any |  |
+
+---
+
+#### `LRelationshipManager:removeType`
+
+```lua
+LRelationshipManager:removeType(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+
+---
+
+#### `LRelationshipManager:setLevel`
+
+```lua
+LRelationshipManager:setLevel(a, b, type_name, level)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `a` | any |  |
+| `b` | any |  |
+| `type_name` | any |  |
+| `level` | any |  |
+
+---
+
+#### `LRelationshipManager:setValue`
+
+```lua
+LRelationshipManager:setValue(a, b, value)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `a` | any |  |
+| `b` | any |  |
+| `value` | any |  |
+
+---
+
+#### `LRelationshipManager:type`
+
+```lua
+LRelationshipManager:type()
+```
+
+---
+
+#### `LRelationshipManager:typeNames`
+
+```lua
+LRelationshipManager:typeNames()
+```
+
+---
+
+#### `LRelationshipManager:typeOf`
+
+```lua
+LRelationshipManager:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
+
+---
 
 ## LUniverse
 
@@ -925,6 +1221,22 @@ end
 
 ---
 
+#### `LUniverse:getQueryChangeTick`
+
+Returns the coarse invalidation tick used by cached ECS query views.
+
+```lua
+LUniverse:getQueryChangeTick()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Monotonic world query-change tick. |
+
+---
+
 #### `LUniverse:getRelated`
 
 Returns targets linked from an entity by a named relation.
@@ -1309,6 +1621,29 @@ do
     print(#u:listBlueprints())
 end
 ```
+
+---
+
+#### `LUniverse:newQueryView`
+
+Creates a cached component query view that refreshes only when this universe changes.
+
+```lua
+LUniverse:newQueryView(with_table, without_table)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `with_table` | table | Array table of required component names. |
+| `without_table?` | table | Optional array table of excluded component names. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| [LQueryView](#lqueryview) | Cached query-view handle bound to this universe. |
 
 ---
 

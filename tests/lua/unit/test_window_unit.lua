@@ -282,9 +282,13 @@ end)
 -- @describe lurek.window missing surface (Phase 17)
 describe("lurek.window missing surface (Phase 17)", function()
     -- @covers lurek.window.focus
-    it("focus is callable without error", function()
+    it("focus is callable without error and keeps focus queries stable", function()
         expect_type("function", lurek.window.focus)
-        lurek.window.focus()
+        local before = lurek.window.hasFocus()
+        expect_no_error(function()
+            lurek.window.focus()
+        end)
+        expect_equal(before, lurek.window.hasFocus())
     end)
 
     -- @covers lurek.window.getNativeDPIScale
@@ -328,6 +332,16 @@ describe("lurek.window missing surface (Phase 17)", function()
     it("isHighDPIAllowed returns a boolean", function()
         expect_type("function", lurek.window.isHighDPIAllowed)
         expect_type("boolean", lurek.window.isHighDPIAllowed())
+    end)
+end)
+
+-- @describe lurek.window cursor helpers
+describe("lurek.window cursor helpers", function()
+    -- @covers lurek.window.cursor.hasFocus
+    it("cursor.hasFocus mirrors the mouse focus query", function()
+        expect_type("table", lurek.window.cursor)
+        expect_type("function", lurek.window.cursor.hasFocus)
+        expect_equal(lurek.window.hasMouseFocus(), lurek.window.cursor.hasFocus())
     end)
 end)
 
@@ -544,6 +558,38 @@ describe("windowConfig helper", function()
         expect_equal(800, w)
         expect_equal(600, h)
         expect_equal(false, flags.fullscreen)
+    end)
+
+    -- @covers lurek.window.windowConfig
+    it("windowConfig applies only provided fields", function()
+        local title_before = lurek.window.getTitle()
+        local width_before, height_before = lurek.window.getDimensions()
+
+        expect_no_error(function()
+            lurek.window.windowConfig({
+                title = "Window Config Partial",
+            })
+        end)
+        expect_equal(title_before, lurek.window.getTitle())
+        local width_after, height_after = lurek.window.getDimensions()
+        expect_equal(width_before, width_after)
+        expect_equal(height_before, height_after)
+
+        expect_no_error(function()
+            lurek.window.windowConfig({
+                scaleMode = "stretch",
+            })
+        end)
+        local width_scale, height_scale = lurek.window.getDimensions()
+        expect_equal(width_before, width_scale)
+        expect_equal(height_before, height_scale)
+
+        expect_no_error(function()
+            lurek.window.windowConfig({
+                title = title_before,
+                scaleMode = "none",
+            })
+        end)
     end)
 end)
 end

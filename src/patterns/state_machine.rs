@@ -7,6 +7,12 @@
 use std::collections::HashMap;
 
 /// A single allowed transition between two named states.
+///
+/// # Fields
+/// - `from`: Source state name.
+/// - `to`: Destination state name.
+/// - `label`: Caller-assigned transition label.
+/// - `has_guard`: Whether callers must evaluate a guard before transitioning.
 #[derive(Debug, Clone)]
 pub struct TransitionRule {
     /// Source state name.
@@ -19,6 +25,11 @@ pub struct TransitionRule {
     pub has_guard: bool,
 }
 /// Finite state machine with explicit states, guarded transitions, and bounded history.
+///
+/// # Fields
+/// - `current`: Currently active state name.
+/// - `previous`: State active before the last transition.
+/// - `history_cap`: Maximum number of history entries kept.
 #[derive(Debug)]
 pub struct StateMachine {
     /// Currently active state name.
@@ -33,6 +44,8 @@ pub struct StateMachine {
     transitions: Vec<TransitionRule>,
     /// Ordered log of visited states, capped at `history_cap`.
     history: Vec<String>,
+    /// Index of the first live history entry within `history`.
+    history_start: usize,
 }
 /// Metadata about enter/exit/update callbacks registered for a state.
 #[derive(Debug, Default)]
@@ -59,6 +72,7 @@ impl StateMachine {
             states,
             transitions: Vec::new(),
             history: vec![initial.to_string()],
+            history_start: 0,
         }
     }
     /// Declare a state with callback presence flags.
@@ -106,22 +120,26 @@ impl StateMachine {
     }
     /// Transition to `to` if allowed; update history and `previous`; return false when blocked.
     pub fn transition_to(&mut self, to: &str) -> bool {
-        if !self.can_transition(&self.current.clone(), to) {
+        if !self.can_transition(self.current.as_str(), to) {
             return false;
         }
         let prev = self.current.clone();
         self.current = to.to_string();
-        self.previous = Some(prev.clone());
+        self.previous = Some(prev);
         self.states.entry(to.to_string()).or_default();
         self.history.push(to.to_string());
-        if self.history.len() > self.history_cap {
-            self.history.remove(0);
+        while self.history().len() > self.history_cap {
+            self.history_start += 1;
+        }
+        if self.history_start > 0 && self.history_start * 2 >= self.history.len() {
+            self.history.drain(..self.history_start);
+            self.history_start = 0;
         }
         true
     }
     /// Return the bounded history of visited states in chronological order.
     pub fn history(&self) -> &[String] {
-        &self.history
+        &self.history[self.history_start..]
     }
     /// Return all states reachable directly from `from` by a registered transition.
     pub fn reachable_from<'a>(&'a self, from: &str) -> Vec<&'a str> {

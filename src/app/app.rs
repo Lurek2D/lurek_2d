@@ -803,6 +803,7 @@ impl LurekApp {
             pending_minimize,
             pending_maximize,
             pending_restore,
+            pending_focus,
             pending_attention,
             pending_icon_path,
             pending_vsync,
@@ -826,6 +827,7 @@ impl LurekApp {
                 std::mem::take(&mut st.window_state.pending_minimize),
                 std::mem::take(&mut st.window_state.pending_maximize),
                 std::mem::take(&mut st.window_state.pending_restore),
+                std::mem::take(&mut st.window_state.pending_focus),
                 std::mem::take(&mut st.window_state.pending_attention),
                 st.window_state.pending_icon_path.take(),
                 st.window_state.pending_vsync.take(),
@@ -885,6 +887,9 @@ impl LurekApp {
         if pending_restore {
             window.set_minimized(false);
             window.set_maximized(false);
+        }
+        if pending_focus {
+            window.focus_window();
         }
         if pending_attention {
             window.request_user_attention(Some(winit::window::UserAttentionType::Informational));

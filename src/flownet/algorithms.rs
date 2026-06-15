@@ -13,10 +13,12 @@ impl Graph {
         let mut visited: HashSet<u64> = HashSet::new();
         let mut components = Vec::new();
         let mut adj: HashMap<u64, HashSet<u64>> = HashMap::new();
-        for &nid in self.nodes.keys() {
+        let mut node_ids: Vec<u64> = self.nodes.keys().copied().collect();
+        node_ids.sort_unstable();
+        for &nid in &node_ids {
             adj.entry(nid).or_default();
         }
-        for &from in self.nodes.keys() {
+        for &from in &node_ids {
             for &edge_id in self.outgoing_edge_ids_slice(from) {
                 if let Some(edge) = self.edges.get(&edge_id) {
                     adj.entry(edge.from_node).or_default().insert(edge.to_node);
@@ -24,7 +26,7 @@ impl Graph {
                 }
             }
         }
-        for &nid in self.nodes.keys() {
+        for &nid in &node_ids {
             if visited.contains(&nid) {
                 continue;
             }
@@ -156,7 +158,11 @@ impl Graph {
         }
         let mut sorted_edges: Vec<(&u64, f64)> =
             self.edges.iter().map(|(id, e)| (id, e.weight)).collect();
-        sorted_edges.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
+        sorted_edges.sort_by(|a, b| {
+            a.1.partial_cmp(&b.1)
+                .unwrap_or(std::cmp::Ordering::Equal)
+                .then_with(|| a.0.cmp(b.0))
+        });
         let mut parent: HashMap<u64, u64> = self.nodes.keys().map(|&id| (id, id)).collect();
         /// Find the disjoint-set representative for a node id.
         fn find(parent: &mut HashMap<u64, u64>, x: u64) -> u64 {

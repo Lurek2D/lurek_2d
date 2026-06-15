@@ -9,7 +9,7 @@ use crate::binary::compress::{compress, decompress, CompressFormat};
 use crate::log_msg;
 use crate::runtime::log_messages::{SV01, SV02, SV03, SV04};
 use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
-use mlua::prelude::{LuaError, LuaResult, LuaValue};
+use mlua::prelude::{Lua, LuaError, LuaResult, LuaValue};
 use std::collections::HashMap;
 
 /// Metadata stored alongside a save slot; used by Lua to display save-select UI.
@@ -172,7 +172,12 @@ pub fn serialize_table(data: &HashMap<String, SaveValue>, depth: u32) -> Result<
     let mut out = String::from("{\n");
     let indent = "  ".repeat((depth + 1) as usize);
     let close_indent = "  ".repeat(depth as usize);
-    for (key, value) in data {
+    let mut keys: Vec<&String> = data.keys().collect();
+    keys.sort_unstable();
+    for key in keys {
+        let value = data
+            .get(key)
+            .ok_or_else(|| format!("serialize_table: missing value for key '{key}'"))?;
         let key_str = if is_lua_identifier(key) {
             key.clone()
         } else {
@@ -247,6 +252,23 @@ impl SaveValue {
             ))),
         }
     }
+
+    /// Convert a `SaveValue` tree back into the equivalent Lua value.
+    pub fn to_lua<'lua>(&self, lua: &'lua Lua) -> LuaResult<LuaValue<'lua>> {
+        match self {
+            SaveValue::Nil => Ok(LuaValue::Nil),
+            SaveValue::Bool(value) => Ok(LuaValue::Boolean(*value)),
+            SaveValue::Number(value) => Ok(LuaValue::Number(*value)),
+            SaveValue::Str(value) => lua.create_string(value).map(LuaValue::String),
+            SaveValue::Table(entries) => {
+                let table = lua.create_table()?;
+                for (key, value) in entries {
+                    table.set(key.as_str(), value.to_lua(lua)?)?;
+                }
+                Ok(LuaValue::Table(table))
+            }
+        }
+    }
 }
 /// Return true if `s` is a valid Lua identifier (ASCII alpha/underscore start, alphanumeric rest).
 fn is_lua_identifier(s: &str) -> bool {
@@ -290,4 +312,207 @@ pub fn decompress_save_content(raw: &str) -> Result<String, String> {
         .map_err(|e| format!("base64 decode: {}", e))?;
     let bytes = decompress(&compressed, CompressFormat::Lz4)?;
     String::from_utf8(bytes).map_err(|e| format!("utf8: {}", e))
+}
+
+/// Parse a serialized `return { ... }` save payload back into a root table.
+pub fn parse_save_table(content: &str) -> Result<HashMap<String, SaveValue>, String> {
+    let validated = SaveManager::parse_save_string(content)?;
+    let mut parser = SaveParser::new(&validated);
+    match parser.parse_root()? {
+        SaveValue::Table(table) => Ok(table),
+        _ => Err("save root must be a table".to_string()),
+    }
+}
+
+/// Minimal parser for the constrained Lua table literal format emitted by `serialize_table`.
+struct SaveParser<'a> {
+    input: &'a str,
+    offset: usize,
+}
+
+impl<'a> SaveParser<'a> {
+    fn new(input: &'a str) -> Self {
+        Self { input, offset: 0 }
+    }
+
+    fn parse_root(&mut self) -> Result<SaveValue, String> {
+        self.skip_whitespace();
+        self.expect_keyword("return")?;
+        self.skip_whitespace();
+        let value = self.parse_value()?;
+        self.skip_whitespace();
+        if self.peek_char().is_some() {
+            return Err("unexpected trailing content after save root".to_string());
+        }
+        Ok(value)
+    }
+
+    fn parse_value(&mut self) -> Result<SaveValue, String> {
+        self.skip_whitespace();
+        match self.peek_char() {
+            Some('{') => self.parse_table().map(SaveValue::Table),
+            Some('"') => self.parse_string().map(SaveValue::Str),
+            Some('t') => {
+                self.expect_keyword("true")?;
+                Ok(SaveValue::Bool(true))
+            }
+            Some('f') => {
+                self.expect_keyword("false")?;
+                Ok(SaveValue::Bool(false))
+            }
+            Some('n') => {
+                self.expect_keyword("nil")?;
+                Ok(SaveValue::Nil)
+            }
+            Some('-' | '0'..='9') => self.parse_number().map(SaveValue::Number),
+            Some(other) => Err(format!("unexpected save token '{other}'")),
+            None => Err("unexpected end of save content".to_string()),
+        }
+    }
+
+    fn parse_table(&mut self) -> Result<HashMap<String, SaveValue>, String> {
+        self.expect_char('{')?;
+        self.skip_whitespace();
+        let mut table = HashMap::new();
+        while !matches!(self.peek_char(), Some('}')) {
+            let key = self.parse_key()?;
+            self.skip_whitespace();
+            self.expect_char('=')?;
+            let value = self.parse_value()?;
+            table.insert(key, value);
+            self.skip_whitespace();
+            if matches!(self.peek_char(), Some(',')) {
+                self.next_char();
+                self.skip_whitespace();
+                if matches!(self.peek_char(), Some('}')) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        self.expect_char('}')?;
+        Ok(table)
+    }
+
+    fn parse_key(&mut self) -> Result<String, String> {
+        self.skip_whitespace();
+        if matches!(self.peek_char(), Some('[')) {
+            self.expect_char('[')?;
+            let key = self.parse_string()?;
+            self.expect_char(']')?;
+            return Ok(key);
+        }
+        self.parse_identifier()
+    }
+
+    fn parse_identifier(&mut self) -> Result<String, String> {
+        let mut identifier = String::new();
+        let Some(first) = self.peek_char() else {
+            return Err("unexpected end of save content while reading key".to_string());
+        };
+        if !(first.is_ascii_alphabetic() || first == '_') {
+            return Err(format!("invalid save key start '{first}'"));
+        }
+        identifier.push(self.next_char().unwrap_or(first));
+        while let Some(ch) = self.peek_char() {
+            if ch.is_ascii_alphanumeric() || ch == '_' {
+                identifier.push(self.next_char().unwrap_or(ch));
+            } else {
+                break;
+            }
+        }
+        Ok(identifier)
+    }
+
+    fn parse_string(&mut self) -> Result<String, String> {
+        self.expect_char('"')?;
+        let mut out = String::new();
+        loop {
+            let Some(ch) = self.next_char() else {
+                return Err("unterminated save string literal".to_string());
+            };
+            match ch {
+                '"' => return Ok(out),
+                '\\' => {
+                    let escaped = self
+                        .next_char()
+                        .ok_or_else(|| "unterminated save string escape".to_string())?;
+                    match escaped {
+                        '\\' => out.push('\\'),
+                        '"' => out.push('"'),
+                        'n' => out.push('\n'),
+                        'r' => out.push('\r'),
+                        '0' => out.push('\0'),
+                        other => out.push(other),
+                    }
+                }
+                other => out.push(other),
+            }
+        }
+    }
+
+    fn parse_number(&mut self) -> Result<f64, String> {
+        let start = self.offset;
+        if matches!(self.peek_char(), Some('-')) {
+            self.next_char();
+        }
+        self.consume_digits();
+        if matches!(self.peek_char(), Some('.')) {
+            self.next_char();
+            self.consume_digits();
+        }
+        if matches!(self.peek_char(), Some('e' | 'E')) {
+            self.next_char();
+            if matches!(self.peek_char(), Some('+' | '-')) {
+                self.next_char();
+            }
+            self.consume_digits();
+        }
+        let raw = &self.input[start..self.offset];
+        raw.parse::<f64>()
+            .map_err(|error| format!("invalid save number '{raw}': {error}"))
+    }
+
+    fn consume_digits(&mut self) {
+        while matches!(self.peek_char(), Some('0'..='9')) {
+            self.next_char();
+        }
+    }
+
+    fn expect_keyword(&mut self, keyword: &str) -> Result<(), String> {
+        if !self.remaining().starts_with(keyword) {
+            return Err(format!("expected '{keyword}' in save payload"));
+        }
+        self.offset += keyword.len();
+        Ok(())
+    }
+
+    fn expect_char(&mut self, expected: char) -> Result<(), String> {
+        match self.next_char() {
+            Some(actual) if actual == expected => Ok(()),
+            Some(actual) => Err(format!("expected '{expected}' but found '{actual}'")),
+            None => Err(format!("expected '{expected}' but reached end of save content")),
+        }
+    }
+
+    fn skip_whitespace(&mut self) {
+        while matches!(self.peek_char(), Some(ch) if ch.is_whitespace()) {
+            self.next_char();
+        }
+    }
+
+    fn remaining(&self) -> &'a str {
+        &self.input[self.offset..]
+    }
+
+    fn peek_char(&self) -> Option<char> {
+        self.remaining().chars().next()
+    }
+
+    fn next_char(&mut self) -> Option<char> {
+        let ch = self.peek_char()?;
+        self.offset += ch.len_utf8();
+        Some(ch)
+    }
 }

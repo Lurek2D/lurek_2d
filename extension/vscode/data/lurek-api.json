@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-14",
+  "generated": "2026-06-15",
   "modules": [
     {
       "name": "agent",
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "asset",
-      "description": "File: src/lua_api/asset_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Lua bindings for the `lurek.asset` cache module.\n\nExposes ref-counted asset loading, metadata queries, batch preload, and\nsearch helpers over the shared runtime asset cache.",
       "functions": [
         {
           "name": "load",
@@ -3851,7 +3851,7 @@
     },
     {
       "name": "binary",
-      "description": "File: src/lua_api/binary_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "File: src/lua_api/binary_api.rs\nRegisters the public `lurek.binary` API for byte buffers, packing, compression, hashing, and encoding helpers.\nKeeps the Lua-facing layer focused on validation and userdata wiring while delegating byte-oriented logic to `src/binary/`.\nBridges Lua strings, tables, and scalars into raw byte operations without forcing UTF-8 interpretation on binary payloads.\nExposes mutable userdata handles such as `LByteData`, `LDataView`, and `LDataWriter` for structured binary workflows.\nReturns `mlua::Result` errors across the boundary so malformed offsets, bit ranges, and format strings stay recoverable from Lua.",
       "functions": [
         {
           "name": "pack",
@@ -4133,12 +4133,12 @@
           "name": "newByteData",
           "fullPath": "lurek.binary.newByteData",
           "signature": "(value)",
-          "description": "Creates ByteData from a size or string.",
+          "description": "Creates ByteData from a size or raw byte string.",
           "parameters": [
             {
               "name": "value",
               "type": "any",
-              "description": "Integer size for zeroed bytes, or string used as initial bytes.",
+              "description": "Integer size for zeroed bytes, or raw Lua string used as initial bytes.",
               "optional": false
             }
           ],
@@ -4355,7 +4355,7 @@
     },
     {
       "name": "camera",
-      "description": "File: src/lua_api/camera_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Lua bindings for `lurek.camera`.\n\nExposes camera construction, viewport transforms, rigs, path helpers, and\ntile-walker camera control over the runtime camera subsystem.",
       "functions": [
         {
           "name": "new",
@@ -4636,7 +4636,7 @@
     },
     {
       "name": "color",
-      "description": "File: src/lua_api/color_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Lua bindings for `lurek.color`.\n\nExposes constructors, color-space conversion, blending, palettes, and\nutility helpers over the engine's core `Color` type.",
       "functions": [
         {
           "name": "new",
@@ -4714,7 +4714,7 @@
           "name": "fromHex",
           "fullPath": "lurek.color.fromHex",
           "signature": "(hex)",
-          "description": "Parses a hex color string (\"#RRGGBB\" or \"#RRGGBBAA\") into a color table. Returns nil on invalid input.",
+          "description": "Parses a hex color string (\"#RGB\", \"#RGBA\", \"#RRGGBB\", or \"#RRGGBBAA\") into a color table.",
           "parameters": [
             {
               "name": "hex",
@@ -5483,7 +5483,7 @@
     },
     {
       "name": "cursor",
-      "description": "File: src/lua_api/cursor_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Lua bindings for `lurek.cursor`.\n\nExposes cursor managers, custom cursor pixel data, animated cursor frames,\ncontext rules, trails, and zoom helpers to Lua.",
       "functions": [
         {
           "name": "newManager",
@@ -8488,6 +8488,17 @@
           "returnType": "LUniverse",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "newRelationshipManager",
+          "fullPath": "lurek.ecs.newRelationshipManager",
+          "signature": "()",
+          "description": "Creates a relationship manager for tracking numeric values and named levels between entity pairs.",
+          "parameters": [],
+          "returns": "LRelationshipManager",
+          "returnType": "LRelationshipManager",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
@@ -8684,7 +8695,7 @@
     },
     {
       "name": "engine",
-      "description": "File: src/lua_api/engine_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2",
+      "description": "File: src/lua_api/engine_api.rs\nRegisters the public `lurek.engine` namespace for engine timing, profiling, and memory diagnostics.\nExposes read-mostly runtime metadata plus a small control surface for resource-budget reporting.",
       "functions": [
         {
           "name": "getVersion",
@@ -9932,7 +9943,7 @@
     },
     {
       "name": "flownet",
-      "description": "File: src/lua_api/flownet_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "File: src/lua_api/flownet_api.rs\nRegisters the public `lurek.graph` Lua API for FLOWNET graph creation, mutation, routing, and simulation.\nConverts Lua userdata handles into Rust graph ids while keeping storage and simulation logic inside `src/flownet/`.\nValidates numeric bounds, enum-like strings, and handle ownership at the Lua boundary before mutating graph state.\nDispatches simulation events back into Lua callbacks without exposing internal Rust containers directly.\nKeeps Lua-facing documentation, names, defaults, and runtime errors aligned with the FLOWNET module contract.",
       "functions": [
         {
           "name": "newGraph",
@@ -9950,7 +9961,7 @@
     },
     {
       "name": "font",
-      "description": "File: src/lua_api/font_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Lua bindings for `lurek.font`.\n\nExposes built-in and runtime-loaded font handles, measurement helpers,\nwrapping utilities, and shaping helpers backed by the render font store.",
       "functions": [
         {
           "name": "getDefault",
@@ -18776,6 +18787,81 @@
           "objectType": null
         },
         {
+          "name": "submitAsyncPath",
+          "fullPath": "lurek.pathfind.submitAsyncPath",
+          "signature": "(grid_ud, opts)",
+          "description": "Queues an async path query against a navigation grid snapshot.",
+          "parameters": [
+            {
+              "name": "grid_ud",
+              "type": "LNavGrid",
+              "description": "Navigation grid to clone for the worker.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Options with start/goal cells and optional owner, version, priority, unit size, and stream budget.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "pollAsyncPaths",
+          "fullPath": "lurek.pathfind.pollAsyncPaths",
+          "signature": "()",
+          "description": "Returns all currently available async path events without blocking.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "cancelAsyncPath",
+          "fullPath": "lurek.pathfind.cancelAsyncPath",
+          "signature": "(request_id)",
+          "description": "Marks an async path request as cancelled.",
+          "parameters": [
+            {
+              "name": "request_id",
+              "type": "integer",
+              "description": "Request id returned by `submitAsyncPath`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getAsyncPendingCount",
+          "fullPath": "lurek.pathfind.getAsyncPendingCount",
+          "signature": "()",
+          "description": "Returns the number of async path requests that have not emitted a terminal event.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "clearAsyncPaths",
+          "fullPath": "lurek.pathfind.clearAsyncPaths",
+          "signature": "()",
+          "description": "Drops all queued async path requests and recreates the worker pool with the configured thread count.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "newNavGridFromTileMap",
           "fullPath": "lurek.pathfind.newNavGridFromTileMap",
           "signature": "(tm_ud, layer_index, blocked_table)",
@@ -24746,7 +24832,7 @@
     },
     {
       "name": "repl",
-      "description": "File: src/lua_api/repl_api.rs\nModule API documentation\n\nTODO: add doc note 1",
+      "description": "File: src/lua_api/repl_api.rs\nRegisters the public `lurek.repl` API for creating headless Lua REPL sessions.\nKeeps the Lua-facing layer limited to userdata registration, result formatting, history exposure, and completion wiring.\nDelegates parsing, command handling, evaluation, and bounded history management to `src/repl/`.",
       "functions": [
         {
           "name": "new",
@@ -24771,7 +24857,7 @@
     },
     {
       "name": "save",
-      "description": "File: src/lua_api/save_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "File: src/lua_api/save_api.rs\nRegisters the public `lurek.save` API for slot persistence, auto-save scheduling, migration hooks, and metadata queries.\nKeeps Lua bindings thin by translating callbacks and tables into `src/save/` operations instead of embedding persistence logic here.\nLoads save payloads through the constrained parser in `src/save/save_manager.rs` so slot metadata and content never require arbitrary Lua evaluation.",
       "functions": [
         {
           "name": "newSaveManager",
@@ -25890,7 +25976,7 @@
     },
     {
       "name": "serialize",
-      "description": "File: src/lua_api/serialize_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2",
+      "description": "File: src/lua_api/serialize_api.rs\nRegisters the public `lurek.serial` API for multi-format encode, decode, and validation helpers.\nKeeps the Lua-facing layer thin by translating option tables and values into `src/serialize/` domain calls.\nReturns decoded Lua tables or encoded strings while delegating format-specific behavior to the serialization module.",
       "functions": [
         {
           "name": "fromJson",
@@ -26051,7 +26137,7 @@
         {
           "name": "encodeMsgPack",
           "fullPath": "lurek.serial.encodeMsgPack",
-          "signature": "(value)",
+          "signature": "lurek.serial.encodeMsgPack(value)",
           "description": "Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.",
           "parameters": [
             {
@@ -26554,7 +26640,7 @@
     },
     {
       "name": "system",
-      "description": "File: src/lua_api/system_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "File: src/lua_api/system_api.rs\nRegisters the public `lurek.runtime` namespace for host, process, and runtime utility helpers.\nKeeps environment queries, clipboard helpers, logging controls, and batch utilities in one runtime-facing surface.",
       "functions": [
         {
           "name": "getOS",
@@ -26835,10 +26921,10 @@
           "name": "getLastError",
           "fullPath": "lurek.runtime.getLastError",
           "signature": "()",
-          "description": "Returns the last error for Lua scripts in this module.",
+          "description": "",
           "parameters": [],
-          "returns": "table",
-          "returnType": "table",
+          "returns": "nil",
+          "returnType": "nil",
           "isMethod": false,
           "objectType": null
         },
@@ -30553,96 +30639,6 @@
           "objectType": null
         },
         {
-          "name": "newLineChart",
-          "fullPath": "lurek.ui.newLineChart",
-          "signature": "(opts)",
-          "description": "Creates a new line chart for data visualization.",
-          "parameters": [
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Table with width, height, and optional title.",
-              "optional": false
-            }
-          ],
-          "returns": "LLineChart",
-          "returnType": "LLineChart",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newBarChart",
-          "fullPath": "lurek.ui.newBarChart",
-          "signature": "(opts)",
-          "description": "Creates a new bar chart for data visualization.",
-          "parameters": [
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Table with width, height, and optional title.",
-              "optional": false
-            }
-          ],
-          "returns": "LBarChart",
-          "returnType": "LBarChart",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newScatterPlot",
-          "fullPath": "lurek.ui.newScatterPlot",
-          "signature": "(opts)",
-          "description": "Creates a new scatter plot for data visualization.",
-          "parameters": [
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Table with width, height, and optional title.",
-              "optional": false
-            }
-          ],
-          "returns": "LScatterPlot",
-          "returnType": "LScatterPlot",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newPieChart",
-          "fullPath": "lurek.ui.newPieChart",
-          "signature": "(opts)",
-          "description": "Creates a new pie chart for data visualization.",
-          "parameters": [
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Table with width, height, and optional title.",
-              "optional": false
-            }
-          ],
-          "returns": "LPieChart",
-          "returnType": "LPieChart",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
-          "name": "newAreaChart",
-          "fullPath": "lurek.ui.newAreaChart",
-          "signature": "(opts)",
-          "description": "Creates a new area chart for data visualization.",
-          "parameters": [
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Table with width, height, and optional title.",
-              "optional": false
-            }
-          ],
-          "returns": "LAreaChart",
-          "returnType": "LAreaChart",
-          "isMethod": false,
-          "objectType": null
-        },
-        {
           "name": "parseWidgetState",
           "fullPath": "lurek.ui.parseWidgetState",
           "signature": "(state)",
@@ -31071,7 +31067,7 @@
     },
     {
       "name": "window",
-      "description": "File: src/lua_api/window_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "File: src/lua_api/window_api.rs\nRegisters the public `lurek.window` API used by scripts to inspect and request desktop window changes.\nKeeps Lua bindings thin by delegating window state mutations and display queries to `src/window/`.\nBridges Lua tables into typed deferred window commands so the event loop can apply them safely.",
       "functions": [
         {
           "name": "setTitle",
@@ -31639,7 +31635,7 @@
           "name": "focus",
           "fullPath": "lurek.window.focus",
           "signature": "()",
-          "description": "Requests keyboard focus for the window. No-op if already focused.",
+          "description": "Requests keyboard focus for the window. The request is applied by the app loop on the next frame.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -37133,257 +37129,6 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LAreaChart"
-        },
-        {
-          "name": "addLayer",
-          "fullPath": "LAreaChart:addLayer",
-          "signature": "(name, vals_tbl, r, g, b)",
-          "description": "Adds a data layer to this area chart.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "The layer name.",
-              "optional": false
-            },
-            {
-              "name": "vals_tbl",
-              "type": "table",
-              "description": "Array of numeric values.",
-              "optional": false
-            },
-            {
-              "name": "r",
-              "type": "number",
-              "description": "Red color component.",
-              "optional": false
-            },
-            {
-              "name": "g",
-              "type": "number",
-              "description": "Green color component.",
-              "optional": false
-            },
-            {
-              "name": "b",
-              "type": "number",
-              "description": "Blue color component.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAreaChart"
-        },
-        {
-          "name": "addLayerFromDataFrame",
-          "fullPath": "LAreaChart:addLayerFromDataFrame",
-          "signature": "LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, [opts])",
-          "description": "Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "The layer name.",
-              "optional": false
-            },
-            {
-              "name": "df",
-              "type": "LDataFrame",
-              "description": "Source dataframe.",
-              "optional": false
-            },
-            {
-              "name": "value_col",
-              "type": "string",
-              "description": "Column name for layer values.",
-              "optional": false
-            },
-            {
-              "name": "r",
-              "type": "number",
-              "description": "Red color component.",
-              "optional": false
-            },
-            {
-              "name": "g",
-              "type": "number",
-              "description": "Green color component.",
-              "optional": false
-            },
-            {
-              "name": "b",
-              "type": "number",
-              "description": "Blue color component.",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Optional table with maxRows integer.",
-              "optional": true
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LAreaChart"
-        },
-        {
-          "name": "setYMax",
-          "fullPath": "LAreaChart:setYMax",
-          "signature": "(v)",
-          "description": "Sets the maximum Y-axis value for this area chart.",
-          "parameters": [
-            {
-              "name": "v",
-              "type": "number",
-              "description": "The Y-axis maximum.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAreaChart"
-        },
-        {
-          "name": "setXLabel",
-          "fullPath": "LAreaChart:setXLabel",
-          "signature": "(label)",
-          "description": "Sets the X-axis label for this area chart.",
-          "parameters": [
-            {
-              "name": "label",
-              "type": "string",
-              "description": "Axis label text.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAreaChart"
-        },
-        {
-          "name": "setYLabel",
-          "fullPath": "LAreaChart:setYLabel",
-          "signature": "(label)",
-          "description": "Sets the Y-axis label for this area chart.",
-          "parameters": [
-            {
-              "name": "label",
-              "type": "string",
-              "description": "Axis label text.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAreaChart"
-        },
-        {
-          "name": "setXTickCount",
-          "fullPath": "LAreaChart:setXTickCount",
-          "signature": "(count)",
-          "description": "Sets the number of X-axis tick labels for this area chart.",
-          "parameters": [
-            {
-              "name": "count",
-              "type": "integer",
-              "description": "Tick count, minimum 2.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAreaChart"
-        },
-        {
-          "name": "setYTickCount",
-          "fullPath": "LAreaChart:setYTickCount",
-          "signature": "(count)",
-          "description": "Sets the number of Y-axis tick labels for this area chart.",
-          "parameters": [
-            {
-              "name": "count",
-              "type": "integer",
-              "description": "Tick count, minimum 2.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAreaChart"
-        },
-        {
-          "name": "setShowLegend",
-          "fullPath": "LAreaChart:setShowLegend",
-          "signature": "(value)",
-          "description": "Enables or disables the layer legend for this area chart.",
-          "parameters": [
-            {
-              "name": "value",
-              "type": "boolean",
-              "description": "True to show the legend.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAreaChart"
-        },
-        {
-          "name": "drawToImage",
-          "fullPath": "LAreaChart:drawToImage",
-          "signature": "LAreaChart:drawToImage(target)",
-          "description": "Renders this area chart to an image buffer.",
-          "parameters": [
-            {
-              "name": "target",
-              "type": "LImageData",
-              "description": "The image to draw into.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAreaChart"
-        },
-        {
-          "name": "type",
-          "fullPath": "LAreaChart:type",
-          "signature": "()",
-          "description": "Returns the type name of this object.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LAreaChart"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LAreaChart:typeOf",
-          "signature": "(name)",
-          "description": "Checks whether this object matches the given type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to check.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LAreaChart"
         }
       ]
     },
@@ -41036,239 +40781,6 @@
           ],
           "returns": "nil",
           "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LBarChart"
-        },
-        {
-          "name": "addSeries",
-          "fullPath": "LBarChart:addSeries",
-          "signature": "(name, r, g, b)",
-          "description": "Adds a named series to this bar chart.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "The series name.",
-              "optional": false
-            },
-            {
-              "name": "r",
-              "type": "number",
-              "description": "Red color component.",
-              "optional": false
-            },
-            {
-              "name": "g",
-              "type": "number",
-              "description": "Green color component.",
-              "optional": false
-            },
-            {
-              "name": "b",
-              "type": "number",
-              "description": "Blue color component.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LBarChart"
-        },
-        {
-          "name": "addCategory",
-          "fullPath": "LBarChart:addCategory",
-          "signature": "(label, vals_tbl)",
-          "description": "Adds a category with values for each series.",
-          "parameters": [
-            {
-              "name": "label",
-              "type": "string",
-              "description": "The category label.",
-              "optional": false
-            },
-            {
-              "name": "vals_tbl",
-              "type": "table",
-              "description": "Array of values, one per series.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LBarChart"
-        },
-        {
-          "name": "setXLabel",
-          "fullPath": "LBarChart:setXLabel",
-          "signature": "(label)",
-          "description": "Sets the X-axis label for this bar chart.",
-          "parameters": [
-            {
-              "name": "label",
-              "type": "string",
-              "description": "Axis label text.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LBarChart"
-        },
-        {
-          "name": "setYLabel",
-          "fullPath": "LBarChart:setYLabel",
-          "signature": "(label)",
-          "description": "Sets the Y-axis label for this bar chart.",
-          "parameters": [
-            {
-              "name": "label",
-              "type": "string",
-              "description": "Axis label text.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LBarChart"
-        },
-        {
-          "name": "setXTickCount",
-          "fullPath": "LBarChart:setXTickCount",
-          "signature": "(count)",
-          "description": "Sets the number of X-axis tick labels for this bar chart.",
-          "parameters": [
-            {
-              "name": "count",
-              "type": "integer",
-              "description": "Tick count, minimum 2.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LBarChart"
-        },
-        {
-          "name": "setYTickCount",
-          "fullPath": "LBarChart:setYTickCount",
-          "signature": "(count)",
-          "description": "Sets the number of Y-axis tick labels for this bar chart.",
-          "parameters": [
-            {
-              "name": "count",
-              "type": "integer",
-              "description": "Tick count, minimum 2.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LBarChart"
-        },
-        {
-          "name": "setShowLegend",
-          "fullPath": "LBarChart:setShowLegend",
-          "signature": "(value)",
-          "description": "Enables or disables the series legend for this bar chart.",
-          "parameters": [
-            {
-              "name": "value",
-              "type": "boolean",
-              "description": "True to show the legend.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LBarChart"
-        },
-        {
-          "name": "addCategoriesFromDataFrame",
-          "fullPath": "LBarChart:addCategoriesFromDataFrame",
-          "signature": "LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, [opts])",
-          "description": "Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.",
-          "parameters": [
-            {
-              "name": "df",
-              "type": "LDataFrame",
-              "description": "Source dataframe.",
-              "optional": false
-            },
-            {
-              "name": "label_col",
-              "type": "string",
-              "description": "Column name for category labels.",
-              "optional": false
-            },
-            {
-              "name": "value_cols",
-              "type": "string[]",
-              "description": "Value columns matching registered series order.",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Optional table with maxRows integer.",
-              "optional": true
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LBarChart"
-        },
-        {
-          "name": "drawToImage",
-          "fullPath": "LBarChart:drawToImage",
-          "signature": "LBarChart:drawToImage(target)",
-          "description": "Renders this bar chart to an image buffer.",
-          "parameters": [
-            {
-              "name": "target",
-              "type": "LImageData",
-              "description": "The image to draw into.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LBarChart"
-        },
-        {
-          "name": "type",
-          "fullPath": "LBarChart:type",
-          "signature": "()",
-          "description": "Returns the type name of this object.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LBarChart"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LBarChart:typeOf",
-          "signature": "(name)",
-          "description": "Checks whether this object matches the given type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to check.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LBarChart"
         }
@@ -68633,6 +68145,87 @@
           "objectType": "LGraphEdge"
         },
         {
+          "name": "getReservedCapacity",
+          "fullPath": "LGraphEdge:getReservedCapacity",
+          "signature": "()",
+          "description": "Returns the total transit capacity reserved on this edge across all reservation keys.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGraphEdge"
+        },
+        {
+          "name": "getAvailableCapacity",
+          "fullPath": "LGraphEdge:getAvailableCapacity",
+          "signature": "()",
+          "description": "Returns how many transit slots remain after active items and reservations, or -1 when unlimited.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGraphEdge"
+        },
+        {
+          "name": "reserveCapacity",
+          "fullPath": "LGraphEdge:reserveCapacity",
+          "signature": "(key, [slots])",
+          "description": "Reserves transit capacity slots under a caller-provided key for planning and coordination.",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Reservation key used to group planner-owned capacity holds.",
+              "optional": false
+            },
+            {
+              "name": "slots",
+              "type": "integer",
+              "description": "Number of slots to reserve, defaulting to 1.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGraphEdge"
+        },
+        {
+          "name": "releaseCapacityReservation",
+          "fullPath": "LGraphEdge:releaseCapacityReservation",
+          "signature": "(key, [slots])",
+          "description": "Releases reserved transit capacity for a key and returns the number of slots removed.",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Reservation key to release.",
+              "optional": false
+            },
+            {
+              "name": "slots",
+              "type": "integer",
+              "description": "Number of slots to release, defaulting to all slots for that key.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGraphEdge"
+        },
+        {
+          "name": "clearCapacityReservations",
+          "fullPath": "LGraphEdge:clearCapacityReservations",
+          "signature": "()",
+          "description": "Removes every transit capacity reservation from this edge.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGraphEdge"
+        },
+        {
           "name": "getThroughput",
           "fullPath": "LGraphEdge:getThroughput",
           "signature": "()",
@@ -69176,6 +68769,87 @@
               "optional": false
             }
           ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGraphNode"
+        },
+        {
+          "name": "getReservedCapacity",
+          "fullPath": "LGraphNode:getReservedCapacity",
+          "signature": "()",
+          "description": "Returns the total item capacity reserved on this node across all reservation keys.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGraphNode"
+        },
+        {
+          "name": "getAvailableCapacity",
+          "fullPath": "LGraphNode:getAvailableCapacity",
+          "signature": "()",
+          "description": "Returns how many node inventory slots remain after active items and reservations, or -1 when unlimited.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGraphNode"
+        },
+        {
+          "name": "reserveCapacity",
+          "fullPath": "LGraphNode:reserveCapacity",
+          "signature": "(key, [slots])",
+          "description": "Reserves node inventory capacity under a caller-provided key for planning and coordination.",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Reservation key used to group planner-owned capacity holds.",
+              "optional": false
+            },
+            {
+              "name": "slots",
+              "type": "integer",
+              "description": "Number of slots to reserve, defaulting to 1.",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGraphNode"
+        },
+        {
+          "name": "releaseCapacityReservation",
+          "fullPath": "LGraphNode:releaseCapacityReservation",
+          "signature": "(key, [slots])",
+          "description": "Releases reserved node capacity for a key and returns the number of slots removed.",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "string",
+              "description": "Reservation key to release.",
+              "optional": false
+            },
+            {
+              "name": "slots",
+              "type": "integer",
+              "description": "Number of slots to release, defaulting to all slots for that key.",
+              "optional": true
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGraphNode"
+        },
+        {
+          "name": "clearCapacityReservations",
+          "fullPath": "LGraphNode:clearCapacityReservations",
+          "signature": "()",
+          "description": "Removes every inventory capacity reservation from this node.",
+          "parameters": [],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": true,
@@ -85640,281 +85314,6 @@
           ],
           "returns": "nil",
           "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "addSeries",
-          "fullPath": "LLineChart:addSeries",
-          "signature": "(name, pts_tbl, r, g, b)",
-          "description": "Adds a named series of points to this line chart.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "The series name.",
-              "optional": false
-            },
-            {
-              "name": "pts_tbl",
-              "type": "table",
-              "description": "Array of `{x, y}` point tables.",
-              "optional": false
-            },
-            {
-              "name": "r",
-              "type": "number",
-              "description": "Red color component.",
-              "optional": false
-            },
-            {
-              "name": "g",
-              "type": "number",
-              "description": "Green color component.",
-              "optional": false
-            },
-            {
-              "name": "b",
-              "type": "number",
-              "description": "Blue color component.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "addSeriesFromDataFrame",
-          "fullPath": "LLineChart:addSeriesFromDataFrame",
-          "signature": "LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, [opts])",
-          "description": "Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "The series name.",
-              "optional": false
-            },
-            {
-              "name": "df",
-              "type": "LDataFrame",
-              "description": "Source dataframe.",
-              "optional": false
-            },
-            {
-              "name": "x_col",
-              "type": "string",
-              "description": "Column name for X values.",
-              "optional": false
-            },
-            {
-              "name": "y_col",
-              "type": "string",
-              "description": "Column name for Y values.",
-              "optional": false
-            },
-            {
-              "name": "r",
-              "type": "number",
-              "description": "Red color component.",
-              "optional": false
-            },
-            {
-              "name": "g",
-              "type": "number",
-              "description": "Green color component.",
-              "optional": false
-            },
-            {
-              "name": "b",
-              "type": "number",
-              "description": "Blue color component.",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Optional table with maxRows integer.",
-              "optional": true
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "setYMax",
-          "fullPath": "LLineChart:setYMax",
-          "signature": "(v)",
-          "description": "Sets the maximum Y-axis value for this line chart.",
-          "parameters": [
-            {
-              "name": "v",
-              "type": "number",
-              "description": "The Y-axis maximum.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "setXMax",
-          "fullPath": "LLineChart:setXMax",
-          "signature": "(v)",
-          "description": "Sets the maximum X-axis value for this line chart.",
-          "parameters": [
-            {
-              "name": "v",
-              "type": "number",
-              "description": "The X-axis maximum.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "setXLabel",
-          "fullPath": "LLineChart:setXLabel",
-          "signature": "(label)",
-          "description": "Sets the X-axis label for this line chart.",
-          "parameters": [
-            {
-              "name": "label",
-              "type": "string",
-              "description": "Axis label text.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "setYLabel",
-          "fullPath": "LLineChart:setYLabel",
-          "signature": "(label)",
-          "description": "Sets the Y-axis label for this line chart.",
-          "parameters": [
-            {
-              "name": "label",
-              "type": "string",
-              "description": "Axis label text.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "setXTickCount",
-          "fullPath": "LLineChart:setXTickCount",
-          "signature": "(count)",
-          "description": "Sets the number of X-axis tick labels for this line chart.",
-          "parameters": [
-            {
-              "name": "count",
-              "type": "integer",
-              "description": "Tick count, minimum 2.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "setYTickCount",
-          "fullPath": "LLineChart:setYTickCount",
-          "signature": "(count)",
-          "description": "Sets the number of Y-axis tick labels for this line chart.",
-          "parameters": [
-            {
-              "name": "count",
-              "type": "integer",
-              "description": "Tick count, minimum 2.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "setShowLegend",
-          "fullPath": "LLineChart:setShowLegend",
-          "signature": "(value)",
-          "description": "Enables or disables the series legend for this line chart.",
-          "parameters": [
-            {
-              "name": "value",
-              "type": "boolean",
-              "description": "True to show the legend.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "drawToImage",
-          "fullPath": "LLineChart:drawToImage",
-          "signature": "LLineChart:drawToImage(target)",
-          "description": "Renders this line chart to an image buffer.",
-          "parameters": [
-            {
-              "name": "target",
-              "type": "LImageData",
-              "description": "The image to draw into.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "type",
-          "fullPath": "LLineChart:type",
-          "signature": "()",
-          "description": "Returns the type name of this object.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LLineChart"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LLineChart:typeOf",
-          "signature": "(name)",
-          "description": "Checks whether this object matches the given type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to check.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LLineChart"
         }
@@ -107984,149 +107383,6 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LPieChart"
-        },
-        {
-          "name": "addSegment",
-          "fullPath": "LPieChart:addSegment",
-          "signature": "(label, value, r, g, b)",
-          "description": "Adds a labeled segment to this pie chart widget.",
-          "parameters": [
-            {
-              "name": "label",
-              "type": "string",
-              "description": "The segment label.",
-              "optional": false
-            },
-            {
-              "name": "value",
-              "type": "number",
-              "description": "The segment value.",
-              "optional": false
-            },
-            {
-              "name": "r",
-              "type": "number",
-              "description": "Red color component.",
-              "optional": false
-            },
-            {
-              "name": "g",
-              "type": "number",
-              "description": "Green color component.",
-              "optional": false
-            },
-            {
-              "name": "b",
-              "type": "number",
-              "description": "Blue color component.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LPieChart"
-        },
-        {
-          "name": "addSegmentsFromDataFrame",
-          "fullPath": "LPieChart:addSegmentsFromDataFrame",
-          "signature": "LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, [opts])",
-          "description": "Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.",
-          "parameters": [
-            {
-              "name": "df",
-              "type": "LDataFrame",
-              "description": "Source dataframe.",
-              "optional": false
-            },
-            {
-              "name": "label_col",
-              "type": "string",
-              "description": "Column name for segment labels.",
-              "optional": false
-            },
-            {
-              "name": "value_col",
-              "type": "string",
-              "description": "Column name for segment values.",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Optional table with maxRows integer.",
-              "optional": true
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LPieChart"
-        },
-        {
-          "name": "setShowLegend",
-          "fullPath": "LPieChart:setShowLegend",
-          "signature": "(value)",
-          "description": "Enables or disables the segment legend for this pie chart.",
-          "parameters": [
-            {
-              "name": "value",
-              "type": "boolean",
-              "description": "True to show the legend.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LPieChart"
-        },
-        {
-          "name": "drawToImage",
-          "fullPath": "LPieChart:drawToImage",
-          "signature": "LPieChart:drawToImage(target)",
-          "description": "Renders this pie chart to an image buffer.",
-          "parameters": [
-            {
-              "name": "target",
-              "type": "LImageData",
-              "description": "The image to draw into.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LPieChart"
-        },
-        {
-          "name": "type",
-          "fullPath": "LPieChart:type",
-          "signature": "()",
-          "description": "Returns the type name of this object.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LPieChart"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LPieChart:typeOf",
-          "signature": "(name)",
-          "description": "Checks whether this object matches the given type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to check.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LPieChart"
         }
       ]
     },
@@ -113733,6 +112989,63 @@
       ]
     },
     {
+      "name": "LQueryView",
+      "description": "Lua-side cached ECS query view handle owned by one universe.",
+      "methods": [
+        {
+          "name": "type",
+          "fullPath": "LQueryView:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this cached query-view handle.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LQueryView"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LQueryView:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this cached query-view handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare against `LQueryView` and `LObject`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LQueryView"
+        },
+        {
+          "name": "ids",
+          "fullPath": "LQueryView:ids",
+          "signature": "()",
+          "description": "Returns cached query results, refreshing when the owning universe query tick changed.",
+          "parameters": [],
+          "returns": "integer[]",
+          "returnType": "integer[]",
+          "isMethod": true,
+          "objectType": "LQueryView"
+        },
+        {
+          "name": "lastTick",
+          "fullPath": "LQueryView:lastTick",
+          "signature": "()",
+          "description": "Returns the universe query-change tick used to build the current cached ids.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LQueryView"
+        }
+      ]
+    },
+    {
       "name": "LQueue",
       "description": "Lua-facing FIFO queue with optional capacity limit. Supports enqueue/dequeue from both ends.",
       "methods": [
@@ -117330,8 +116643,281 @@
     },
     {
       "name": "LRelationshipManager",
-      "description": "Lua-facing relationship manager for tracking numeric values and named levels between entity pairs.",
+      "description": "Lua-side relationship manager handle owned by `lurek.ecs`.",
       "methods": [
+        {
+          "name": "type",
+          "fullPath": "LRelationshipManager:type",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LRelationshipManager:typeOf",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
+        {
+          "name": "defineType",
+          "fullPath": "LRelationshipManager:defineType",
+          "signature": "(name, levels, [default_level])",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "levels",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "default_level",
+              "type": "any",
+              "description": "",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
+        {
+          "name": "removeType",
+          "fullPath": "LRelationshipManager:removeType",
+          "signature": "(name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
+        {
+          "name": "typeNames",
+          "fullPath": "LRelationshipManager:typeNames",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
+        {
+          "name": "setValue",
+          "fullPath": "LRelationshipManager:setValue",
+          "signature": "(a, b, value)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "a",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "value",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
+        {
+          "name": "getValue",
+          "fullPath": "LRelationshipManager:getValue",
+          "signature": "(a, b)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "a",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
+        {
+          "name": "adjustValue",
+          "fullPath": "LRelationshipManager:adjustValue",
+          "signature": "(a, b, delta)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "a",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "delta",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
+        {
+          "name": "setLevel",
+          "fullPath": "LRelationshipManager:setLevel",
+          "signature": "(a, b, type_name, level)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "a",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "type_name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "level",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
+        {
+          "name": "getLevel",
+          "fullPath": "LRelationshipManager:getLevel",
+          "signature": "(a, b, type_name)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "a",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "type_name",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
+        {
+          "name": "removePair",
+          "fullPath": "LRelationshipManager:removePair",
+          "signature": "(a, b)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "a",
+              "type": "any",
+              "description": "",
+              "optional": false
+            },
+            {
+              "name": "b",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
+        {
+          "name": "pairCount",
+          "fullPath": "LRelationshipManager:pairCount",
+          "signature": "()",
+          "description": "",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LRelationshipManager"
+        },
         {
           "name": "defineType",
           "fullPath": "LRelationshipManager:defineType",
@@ -118231,8 +117817,8 @@
               "optional": false
             }
           ],
-          "returns": "boolean",
-          "returnType": "boolean",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LSaveManager"
         },
@@ -118929,293 +118515,6 @@
           ],
           "returns": "nil",
           "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "addSeries",
-          "fullPath": "LScatterPlot:addSeries",
-          "signature": "(name, pts_tbl, r, g, b)",
-          "description": "Adds a data series to this scatter plot.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "The series name.",
-              "optional": false
-            },
-            {
-              "name": "pts_tbl",
-              "type": "table",
-              "description": "Array of {x, y} point tables.",
-              "optional": false
-            },
-            {
-              "name": "r",
-              "type": "number",
-              "description": "Red color component.",
-              "optional": false
-            },
-            {
-              "name": "g",
-              "type": "number",
-              "description": "Green color component.",
-              "optional": false
-            },
-            {
-              "name": "b",
-              "type": "number",
-              "description": "Blue color component.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "addSeriesFromDataFrame",
-          "fullPath": "LScatterPlot:addSeriesFromDataFrame",
-          "signature": "LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, [opts])",
-          "description": "Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "The series name.",
-              "optional": false
-            },
-            {
-              "name": "df",
-              "type": "LDataFrame",
-              "description": "Source dataframe.",
-              "optional": false
-            },
-            {
-              "name": "x_col",
-              "type": "string",
-              "description": "Column name for X values.",
-              "optional": false
-            },
-            {
-              "name": "y_col",
-              "type": "string",
-              "description": "Column name for Y values.",
-              "optional": false
-            },
-            {
-              "name": "r",
-              "type": "number",
-              "description": "Red color component.",
-              "optional": false
-            },
-            {
-              "name": "g",
-              "type": "number",
-              "description": "Green color component.",
-              "optional": false
-            },
-            {
-              "name": "b",
-              "type": "number",
-              "description": "Blue color component.",
-              "optional": false
-            },
-            {
-              "name": "opts",
-              "type": "table",
-              "description": "Optional table with maxRows integer.",
-              "optional": true
-            }
-          ],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "setXRange",
-          "fullPath": "LScatterPlot:setXRange",
-          "signature": "(mn, mx)",
-          "description": "Sets the X-axis range for this scatter plot.",
-          "parameters": [
-            {
-              "name": "mn",
-              "type": "number",
-              "description": "Minimum X value.",
-              "optional": false
-            },
-            {
-              "name": "mx",
-              "type": "number",
-              "description": "Maximum X value.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "setYRange",
-          "fullPath": "LScatterPlot:setYRange",
-          "signature": "(mn, mx)",
-          "description": "Sets the Y-axis range for this scatter plot.",
-          "parameters": [
-            {
-              "name": "mn",
-              "type": "number",
-              "description": "Minimum Y value.",
-              "optional": false
-            },
-            {
-              "name": "mx",
-              "type": "number",
-              "description": "Maximum Y value.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "setXLabel",
-          "fullPath": "LScatterPlot:setXLabel",
-          "signature": "(label)",
-          "description": "Sets the X-axis label for this scatter plot.",
-          "parameters": [
-            {
-              "name": "label",
-              "type": "string",
-              "description": "Axis label text.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "setYLabel",
-          "fullPath": "LScatterPlot:setYLabel",
-          "signature": "(label)",
-          "description": "Sets the Y-axis label for this scatter plot.",
-          "parameters": [
-            {
-              "name": "label",
-              "type": "string",
-              "description": "Axis label text.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "setXTickCount",
-          "fullPath": "LScatterPlot:setXTickCount",
-          "signature": "(count)",
-          "description": "Sets the number of X-axis tick labels for this scatter plot.",
-          "parameters": [
-            {
-              "name": "count",
-              "type": "integer",
-              "description": "Tick count, minimum 2.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "setYTickCount",
-          "fullPath": "LScatterPlot:setYTickCount",
-          "signature": "(count)",
-          "description": "Sets the number of Y-axis tick labels for this scatter plot.",
-          "parameters": [
-            {
-              "name": "count",
-              "type": "integer",
-              "description": "Tick count, minimum 2.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "setShowLegend",
-          "fullPath": "LScatterPlot:setShowLegend",
-          "signature": "(value)",
-          "description": "Enables or disables the series legend for this scatter plot.",
-          "parameters": [
-            {
-              "name": "value",
-              "type": "boolean",
-              "description": "True to show the legend.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "drawToImage",
-          "fullPath": "LScatterPlot:drawToImage",
-          "signature": "LScatterPlot:drawToImage(target)",
-          "description": "Renders this scatter plot to an image buffer.",
-          "parameters": [
-            {
-              "name": "target",
-              "type": "LImageData",
-              "description": "The image to draw into.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "type",
-          "fullPath": "LScatterPlot:type",
-          "signature": "()",
-          "description": "Returns the type name of this object.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LScatterPlot"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LScatterPlot:typeOf",
-          "signature": "(name)",
-          "description": "Checks whether this object matches the given type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to check.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LScatterPlot"
         }
@@ -154990,6 +154289,41 @@
           ],
           "returns": "integer[]",
           "returnType": "integer[]",
+          "isMethod": true,
+          "objectType": "LUniverse"
+        },
+        {
+          "name": "getQueryChangeTick",
+          "fullPath": "LUniverse:getQueryChangeTick",
+          "signature": "()",
+          "description": "Returns the coarse invalidation tick used by cached ECS query views.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LUniverse"
+        },
+        {
+          "name": "newQueryView",
+          "fullPath": "LUniverse:newQueryView",
+          "signature": "(with_table, [without_table])",
+          "description": "Creates a cached component query view that refreshes only when this universe changes.",
+          "parameters": [
+            {
+              "name": "with_table",
+              "type": "table",
+              "description": "Array table of required component names.",
+              "optional": false
+            },
+            {
+              "name": "without_table",
+              "type": "table",
+              "description": "Optional array table of excluded component names.",
+              "optional": true
+            }
+          ],
+          "returns": "LQueryView",
+          "returnType": "LQueryView",
           "isMethod": true,
           "objectType": "LUniverse"
         },

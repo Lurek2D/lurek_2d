@@ -3223,6 +3223,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
     // -- newRelationshipManager --
     /// Create a new relationship manager for tracking numeric values and named levels between entity pairs.
+    /// Deprecated alias: prefer `lurek.ecs.newRelationshipManager()` for new code.
     /// @return | LRelationshipManager | A new relationship manager instance.
     patterns.set(
         "newRelationshipManager",

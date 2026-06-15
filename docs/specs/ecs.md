@@ -11,7 +11,7 @@
 - Source path: `src/ecs/`
 - Binding: `src/lua_api/ecs_api.rs`
 - Namespace: `lurek.ecs`
-- Lua API surface: `1` functions, `4` types, `68` methods
+- Lua API surface: `2` functions, `6` types, `86` methods
 - Rust test path(s): tests/rust/unit/ecs_tests.rs
 - Lua test path(s): tests/lua/unit/test_ecs_core_unit.lua
 
@@ -22,7 +22,9 @@
 - Components can be attached and queried dynamically, enabling data-driven behavior composition.
 - Hierarchy, tags, and layers support practical grouping for rendering, logic, and tooling workflows.
 - Relationship support lets systems model directed links and graph-like ownership between entities.
+- Standalone relationship-manager handles are owned here through `lurek.ecs.newRelationshipManager()`.
 - Query APIs support include/exclude filtering so systems can target the exact data shape they need.
+- Cached query-view handles can reuse component-query results until the world query-change tick advances.
 - System registration and ordering rules provide deterministic update and render phase execution.
 - Dependency-aware scheduling reduces order-related bugs in multi-system simulations.
 - Blueprint and bulk-spawn features speed up content-heavy spawning scenarios.
@@ -58,6 +60,12 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Provides the high-level ECS module boundary for entities, components, relationships, and lifecycle management.
 - Connects identity, storage, query, and hierarchy capabilities into one composable runtime data model.
 - Delivers a stable integration surface for systems that need structured world state and deterministic access.
+
+### query_view.rs
+
+- Provides cached component-query views that reuse the last result set until the owning universe changes.
+- Stores normalized include and exclude component lists so repeated view refreshes stay deterministic.
+- Delivers coarse-grained query invalidation keyed off the universe change tick rather than per-call recomputation.
 
 ### relationships.rs
 
@@ -112,6 +120,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### Functions
 
+- `lurek.ecs.newRelationshipManager() -> LRelationshipManager`: Creates a relationship manager for tracking numeric values and named levels between entity pairs.
 - `lurek.ecs.newUniverse() -> LUniverse`: Creates an empty ECS universe for entity, component, system, and relationship management.
 
 ### Callbacks
@@ -126,6 +135,44 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - No documented module-level enums/constants.
 
 ### Types
+
+#### LQueryView Type
+
+- Lua-side cached ECS query view handle owned by one universe.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LQueryView:ids() -> integer[]`: Returns cached query results, refreshing when the owning universe query tick changed.
+- `LQueryView:lastTick() -> integer`: Returns the universe query-change tick used to build the current cached ids.
+- `LQueryView:type() -> string`: Returns the Lua-visible type name for this cached query-view handle.
+- `LQueryView:typeOf(name) -> boolean`: Returns whether this cached query-view handle matches a supported type name.
+
+#### LRelationshipManager Type
+
+- Lua-side relationship manager handle owned by `lurek.ecs`.
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LRelationshipManager:adjustValue(a, b, delta) -> nil`: Lua-visible method.
+- `LRelationshipManager:defineType(name, levels, default_level?) -> nil`: Lua-visible method.
+- `LRelationshipManager:getLevel(a, b, type_name) -> nil`: Lua-visible method.
+- `LRelationshipManager:getValue(a, b) -> nil`: Lua-visible method.
+- `LRelationshipManager:pairCount() -> nil`: Lua-visible method.
+- `LRelationshipManager:removePair(a, b) -> nil`: Lua-visible method.
+- `LRelationshipManager:removeType(name) -> nil`: Lua-visible method.
+- `LRelationshipManager:setLevel(a, b, type_name, level) -> nil`: Lua-visible method.
+- `LRelationshipManager:setValue(a, b, value) -> nil`: Lua-visible method.
+- `LRelationshipManager:type() -> nil`: Lua-visible method.
+- `LRelationshipManager:typeNames() -> nil`: Lua-visible method.
+- `LRelationshipManager:typeOf(name) -> nil`: Lua-visible method.
 
 #### LUniverse Type
 
@@ -165,6 +212,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LUniverse:getEntityCount() -> integer`: Returns the number of live entities in this universe.
 - `LUniverse:getLayer(id) -> integer`: Returns the numeric layer assigned to an entity.
 - `LUniverse:getParent(child_id) -> integer`: Returns the parent entity id for a child entity.
+- `LUniverse:getQueryChangeTick() -> integer`: Returns the coarse invalidation tick used by cached ECS query views.
 - `LUniverse:getRelated(from, name) -> integer[]`: Returns targets linked from an entity by a named relation.
 - `LUniverse:getSystemCount() -> integer`: Returns the number of registered systems.
 - `LUniverse:getTags(id) -> string[]`: Returns string tags assigned to an entity.
@@ -177,6 +225,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - `LUniverse:kill(id) -> nil`: Deletes an entity and removes its components from this universe.
 - `LUniverse:killRecursive(id) -> nil`: Deletes an entity and all descendant entities in its hierarchy.
 - `LUniverse:listBlueprints() -> string[]`: Returns names of all registered blueprints.
+- `LUniverse:newQueryView(with_table, without_table?) -> LQueryView`: Creates a cached component query view that refreshes only when this universe changes.
 - `LUniverse:onComponentAdded(name, cb) -> nil`: Registers a callback for queued component-add events with a given component name.
 - `LUniverse:onComponentRemoved(name, cb) -> nil`: Registers a callback for queued component-remove events with a given component name.
 - `LUniverse:query(...) -> integer[]`: Returns entities that have all component names passed as varargs.

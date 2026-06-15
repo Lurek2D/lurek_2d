@@ -10,6 +10,14 @@ do
     print("universe created, entities = " .. uni:getEntityCount())
 end
 
+--@api: lurek.ecs.newRelationshipManager
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("stance", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:setLevel(1, 2, "stance", "friendly")
+    print("stance 1->2 = " .. tostring(rm:getLevel(1, 2, "stance")))
+end
+
 --@api: LUniverse:spawn
 do
     local uni = lurek.ecs.newUniverse()
@@ -85,6 +93,24 @@ do
     local b = uni:spawn()
     uni:set(b, "pos", {x = 5, y = 5})
     print("with pos+vel = " .. #uni:query("pos", "vel"))
+end
+
+--@api: LUniverse:getQueryChangeTick
+--@api: LUniverse:newQueryView
+--@api: LQueryView:ids
+--@api: LQueryView:lastTick
+--@api: LQueryView:type
+--@api: LQueryView:typeOf
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    local view = uni:newQueryView({"pos"})
+    print("query tick = " .. tostring(uni:getQueryChangeTick()))
+    print("query view type = " .. view:type())
+    print("is query view = " .. tostring(view:typeOf("LQueryView")))
+    print("cached ids = " .. #view:ids())
+    print("view tick = " .. tostring(view:lastTick()))
 end
 
 --@api: LUniverse:each

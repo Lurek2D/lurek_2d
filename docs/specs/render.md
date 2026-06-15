@@ -470,6 +470,8 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 - CPU-side screenshot fallback for queued 2D render commands.
 - Replays a practical subset of `RenderCommand` values into `ImageData`.
 - Exists to support evidence capture in headless/unit environments where GPU readback is unavailable.
+- Module API documentation
+- TODO: add doc note 1
 
 
 

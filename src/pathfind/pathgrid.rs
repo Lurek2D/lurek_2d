@@ -71,6 +71,11 @@ pub struct PathGrid {
 impl PathGrid {
     /// Create a fully walkable `width × height` grid with given world-space `cell_size`.
     pub fn new(width: usize, height: usize, cell_size: f32) -> Self {
+        let cell_size = if cell_size.is_finite() && cell_size > 0.0 {
+            cell_size
+        } else {
+            1.0
+        };
         Self {
             width,
             height,
@@ -101,9 +106,9 @@ impl PathGrid {
             false
         }
     }
-    /// Set movement cost of cell `(x, y)`.
+    /// Set movement cost of cell `(x, y)` when `cost` is finite and strictly positive.
     pub fn set_cost(&mut self, x: usize, y: usize, cost: f32) {
-        if self.in_bounds(x, y) {
+        if self.in_bounds(x, y) && cost.is_finite() && cost > 0.0 {
             let idx = self.idx(x, y);
             self.cells[idx].cost = cost;
         }

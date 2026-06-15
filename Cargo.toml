@@ -9,7 +9,7 @@ readme = "README.md"
 
 [features]
 # LuaJIT — default scripting backend; JIT compilation for x86_64 desktop (Windows/Linux/macOS).
-default = ["lua-jit", "automation-plugin", "devtools-plugin", "ui-charts", "ui-layout-loader", "flownet", "flownet-parallel", "pipeline", "spine", "obj-loader"]
+default = ["lua-jit", "automation-plugin", "devtools-plugin", "charts", "ui-layout-loader", "flownet", "flownet-parallel", "pipeline", "spine", "obj-loader"]
 # OBJ model loader for 2D projection (raycaster, globe). Disable to reduce binary size.
 obj-loader = []
 lua-jit = ["mlua/luajit", "mlua/vendored"]
@@ -23,17 +23,17 @@ automation-plugin = []
 ecs-archetype = []
 # Enables long-running load tests not intended for default CI runs.
 long-load-tests = []
-# Optional UI plugin-style gates for heavier subsystems.
-ui-charts = []
+# Optional plugin-style gates for heavier subsystems.
+charts = []
 ui-layout-loader = []
 # Optional flownet subsystem gate.
 flownet = []
 # Enables rayon-backed flownet simulation update_parallel phase.
 flownet-parallel = ["flownet"]
 # Optional pipeline subsystem gate.
-pipeline = ["lua-jit", "ui-charts", "ui-layout-loader"]
+pipeline = ["lua-jit", "charts", "ui-layout-loader"]
 # Optional Spine subsystem gate.
-spine = ["lua-jit", "ui-charts", "ui-layout-loader"]
+spine = ["lua-jit", "charts", "ui-layout-loader"]
 
 [dependencies]
 # GPU-accelerated rendering — platform-split; see [target.'cfg(...)'.dependencies] sections near the end.
@@ -431,8 +431,8 @@ name = "save_tests"
 path = "tests/rust/unit/save_tests.rs"
 
 [[test]]
-name = "serial_tests"
-path = "tests/rust/unit/serial_tests.rs"
+name = "serialize_tests"
+path = "tests/rust/unit/serialize_tests.rs"
 
 [[test]]
 name = "spine_tests"
@@ -445,6 +445,22 @@ path = "tests/rust/unit/sprite_tests.rs"
 [[test]]
 name = "color_tests"
 path = "tests/rust/unit/color_tests.rs"
+
+[[test]]
+name = "asset_tests"
+path = "tests/rust/unit/asset_tests.rs"
+
+[[test]]
+name = "camera_tests"
+path = "tests/rust/unit/camera_tests.rs"
+
+[[test]]
+name = "cursor_tests"
+path = "tests/rust/unit/cursor_tests.rs"
+
+[[test]]
+name = "font_tests"
+path = "tests/rust/unit/font_tests.rs"
 
 [[test]]
 name = "terminal_tests"

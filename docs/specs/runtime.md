@@ -12,7 +12,7 @@
 - Source path: `src/runtime/`
 - Binding: None direct
 - Namespace: `lurek.runtime`
-- Lua API surface: `41` functions, `8` types, `0` methods
+- Lua API surface: `41` functions, `7` types, `0` methods
 - Rust test path(s): tests/rust/unit/runtime_tests.rs, tests/rust/unit/window_tests.rs, tests/rust/ext/graphics_runtime_smoke_tests.rs, plus runtime-focused unit coverage embedded in src/runtime/messages.rs
 - Lua test path(s): tests/lua/config/test_config.lua, tests/lua/unit/test_runtime_core_unit.lua
 
@@ -191,7 +191,7 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `lurek.runtime.getDebugOverlay() -> boolean`: Returns whether the on-screen debug overlay is currently enabled.
 - `lurek.runtime.getEnv(name) -> string`: Reads an environment variable by name. Returns `nil` if the variable is not set.
 - `lurek.runtime.getInfo() -> table`: Returns a table with comprehensive engine and host information.
-- `lurek.runtime.getLastError() -> table`: Returns the last error for Lua scripts in this module.
+- `lurek.runtime.getLastError() -> nil`: Lua-facing function documented in the binding source.
 - `lurek.runtime.getLogLevel() -> string`: Returns the current engine log verbosity level as a string.
 - `lurek.runtime.getMemorySize() -> number`: Returns the total physical memory of the host system in megabytes.
 - `lurek.runtime.getMessage(id) -> string`: Resolves a message string by its identifier from the engine message catalog.
@@ -322,21 +322,6 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 - `processors` (`integer`): Number of logical processors.
 - `renderer` (`string`): Renderer backend name.
 - `version` (`string`): Engine version string.
-
-##### Methods
-
-- No documented methods.
-
-#### LRuntimeGetLastErrorResult Type
-
-- Generated result shape from @field tags.
-
-##### Fields
-
-- `category` (`string`): Error category.
-- `code` (`string`): Error code.
-- `hint` (`string?`): Optional hint for resolution.
-- `message` (`string`): Error message.
 
 ##### Methods
 

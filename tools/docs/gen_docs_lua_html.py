@@ -47,6 +47,7 @@ _LUA_NAMESPACE = {
     "timer": "time",
     "event": "signal",
     "automation": "simulator",
+    "system": "runtime",
 }
 
 _EXAMPLE_FILE_ALIASES = {

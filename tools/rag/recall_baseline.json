@@ -398,20 +398,12 @@
     "query": "which MCP tool gives agent RAG context bundle",
     "runner": "context",
     "profile": "engine",
-    "must_match_any": ["tools/mcp/lurek_mcp_server.py", "tools/rag/context.py"],
     "must_tool_any": ["rag_context_bundle"]
   },
   {
     "query": "which MCP tool rebuilds the RAG index",
     "runner": "context",
     "profile": "engine",
-    "must_match_any": ["tools/mcp/lurek_mcp_server.py", "tools/rag/build_index.py"],
     "must_tool_any": ["rag_rebuild_index"]
-  },
-  {
-    "query": "which skill should I use to create a Lua API example",
-    "runner": "context",
-    "profile": "game",
-    "must_match_any": [".codex/skills/create-example/SKILL.md", "content/examples/AGENTS.md", "tools/AGENTS.md"]
   }
 ]

@@ -219,21 +219,21 @@ pub fn write(format: &str, values: &[BinValue]) -> Result<ByteData, String> {
                 buf.push(if v { 1u8 } else { 0u8 });
             }
             Token::Str => {
-                let s = coerce_str(values, val_idx, "str")?;
+                let bytes = coerce_bytes(values, val_idx, "str")?;
                 val_idx += 1;
-                let len = s.len() as u32;
+                let len = bytes.len() as u32;
                 let lb = if endian == Endian::Little {
                     len.to_le_bytes()
                 } else {
                     len.to_be_bytes()
                 };
                 buf.extend_from_slice(&lb);
-                buf.extend_from_slice(s.as_bytes());
+                buf.extend_from_slice(&bytes);
             }
             Token::CStr => {
-                let s = coerce_str(values, val_idx, "cstr")?;
+                let bytes = coerce_bytes(values, val_idx, "cstr")?;
                 val_idx += 1;
-                buf.extend_from_slice(s.as_bytes());
+                buf.extend_from_slice(&bytes);
                 buf.push(0u8);
             }
         }
@@ -364,9 +364,9 @@ pub fn read(format: &str, data: &[u8], offset: usize) -> Result<(Vec<BinValue>, 
                 } as usize;
                 pos += 4;
                 check_bounds(data, pos, len, "str")?;
-                let s = String::from_utf8_lossy(&data[pos..pos + len]).into_owned();
+                let bytes = data[pos..pos + len].to_vec();
                 pos += len;
-                values.push(BinValue::Str(s));
+                values.push(BinValue::Bytes(bytes));
             }
             Token::CStr => {
                 let start = pos;
@@ -378,9 +378,9 @@ pub fn read(format: &str, data: &[u8], offset: usize) -> Result<(Vec<BinValue>, 
                         "lurek.binary read 'cstr': null terminator not found starting at offset {start}"
                     ));
                 }
-                let s = String::from_utf8_lossy(&data[start..pos]).into_owned();
+                let bytes = data[start..pos].to_vec();
                 pos += 1;
-                values.push(BinValue::Str(s));
+                values.push(BinValue::Bytes(bytes));
             }
         }
     }
@@ -512,15 +512,13 @@ fn coerce_bool(values: &[BinValue], idx: usize, token: &str) -> Result<bool, Str
         )),
     }
 }
-/// Coerce value at index to string; return error when missing or incompatible.
-fn coerce_str(values: &[BinValue], idx: usize, token: &str) -> Result<String, String> {
+/// Coerce value at index to bytes; return error when missing or incompatible.
+fn coerce_bytes(values: &[BinValue], idx: usize, token: &str) -> Result<Vec<u8>, String> {
     match values.get(idx) {
-        Some(BinValue::Str(s)) => Ok(s.clone()),
-        Some(BinValue::Bytes(b)) => String::from_utf8(b.clone()).map_err(|e| {
-            format!("lurek.binary write '{token}': bytes at index {idx} are not valid UTF-8: {e}")
-        }),
+        Some(BinValue::Str(s)) => Ok(s.as_bytes().to_vec()),
+        Some(BinValue::Bytes(b)) => Ok(b.clone()),
         Some(_) => Err(format!(
-            "lurek.binary write '{token}': expected string at value index {idx}"
+            "lurek.binary write '{token}': expected string or bytes at value index {idx}"
         )),
         None => Err(format!(
             "lurek.binary write '{token}': not enough values (expected index {idx})"

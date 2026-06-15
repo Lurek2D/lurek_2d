@@ -67,3 +67,16 @@ fn load_command_returns_load_variant_for_valid_file() {
         })
     );
 }
+
+#[test]
+fn complete_includes_dynamic_top_level_globals() {
+    let lua = mlua::Lua::new();
+    let session = ReplSession::new(8);
+
+    lua.globals()
+        .set("custom_runtime_symbol", 7)
+        .expect("set global");
+
+    let completions = session.completions_for("custom_run", Some(&lua));
+    assert!(completions.iter().any(|item| item == "custom_runtime_symbol"));
+}

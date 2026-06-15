@@ -399,10 +399,12 @@ describe("math easing and randomness", function()
     -- @covers LRandomGenerator:setState
     it("setState restores the serialized generator state", function()
         local source = rng(19)
+        local first = source:random()
         local state = source:getState()
         local expected = source:random()
         local restored = rng(1)
         restored:setState(state)
+        expect_true(first ~= expected)
         expect_near(expected, restored:random(), 0.000001)
     end)
 
@@ -1233,6 +1235,13 @@ describe("math geometry utilities", function()
     -- @covers lurek.math.newSpatialHash
     it("newSpatialHash creates userdata", function()
         expect_type("userdata", spatial_hash(16))
+    end)
+
+    -- @covers lurek.math.newSpatialHash
+    it("newSpatialHash rejects non-positive cell sizes", function()
+        expect_error(function()
+            lurek.math.newSpatialHash(0)
+        end)
     end)
 
     -- @covers lurek.math.newRectPacker

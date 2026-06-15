@@ -112,6 +112,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Supports linear dead-reckoning prediction between ticks.
 - Handles server-authoritative reconciliation with a configurable blend factor.
 - Gives the multiplayer stack a compact sync model for replicated actors.
+- Module API documentation
 
 ### net_thread.rs
 
@@ -122,6 +123,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Spawns, polls, and shuts down the runtime while preserving request ordering.
 - Routes completed results back with correlation ids for outstanding work.
 - Keeps the blocking transport surface off the main loop.
+- Module API documentation
 
 ### netstat.rs
 

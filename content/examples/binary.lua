@@ -483,9 +483,10 @@ end
 
 --@api: LByteData:getString
 do
-    local bd = lurek.binary.newByteData("Hello")
+    local bd = lurek.binary.newByteData(string.char(0x48, 0x65, 0x00, 0xFF))
     print("str = " .. bd:getString())
     print("size = " .. bd:getSize())
+    print("byte[4] = " .. bd:getByte(3))
 end
 
 --@api: LByteData:getByte

@@ -1,9 +1,7 @@
-//! File: src/lua_api/color_api.rs
-//! Module API documentation
+//! Lua bindings for `lurek.color`.
 //!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
+//! Exposes constructors, color-space conversion, blending, palettes, and
+//! utility helpers over the engine's core `Color` type.
 
 use super::SharedState;
 use crate::color::{blend, gamma_to_linear, hsl_to_rgb, hsv_to_rgb, linear_to_gamma, retro, Color};
@@ -110,9 +108,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
 
     // -- fromHex --
-    /// Parses a hex color string ("#RRGGBB" or "#RRGGBBAA") into a color table. Returns nil on invalid input.
+    /// Parses a hex color string ("#RGB", "#RGBA", "#RRGGBB", or "#RRGGBBAA") into a color table.
     /// @param | hex | string | Hex color string with leading '#'.
-    /// @param | | | |
     /// @return | table|nil | Color table or nil if parsing fails.
     tbl.set(
         "fromHex",

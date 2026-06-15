@@ -701,7 +701,9 @@ def _determine_module_name(api_file: Path) -> str:
 
 def _lua_namespace(module: str) -> str:
     """Return the Lua-visible namespace key for a Rust module name."""
-    return module
+    return {
+        "system": "runtime",
+    }.get(module, module)
 
 
 def _collect_table_namespaces(lines: List[str]) -> Dict[str, str]:

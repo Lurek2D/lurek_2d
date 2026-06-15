@@ -22,11 +22,14 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ## Imports
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `ai`: Imports or references `src/ai/`. Cross-group dependency from ``Edge/Integration`` into `Feature Systems`.
 
 ## Files
 
+### mod.rs
 
+- Legacy compatibility shim for locomotion-facing types.
+- Re-exports steering behavior primitives from `crate::ai::steering`.
 
 
 
@@ -36,7 +39,7 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ## References
 
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `ai`: Imports or references `src/ai/`. Cross-group dependency from ``Edge/Integration`` into `Feature Systems`.
 
 ## Notes
 

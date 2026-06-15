@@ -1,12 +1,7 @@
-//! File: src/lua_api/camera_api.rs
-//! Module API documentation
+//! Lua bindings for `lurek.camera`.
 //!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
-
+//! Exposes camera construction, viewport transforms, rigs, path helpers, and
+//! tile-walker camera control over the runtime camera subsystem.
 use super::SharedState;
 use crate::camera::{Camera2D, CameraEasing, CameraPath, CameraRig2D, CameraWalker, ZoomTween};
 use crate::render::renderer::RenderCommand;

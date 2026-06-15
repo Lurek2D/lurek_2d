@@ -147,21 +147,21 @@ pub fn pack(format: &str, values: &[PackValue]) -> Result<ByteData, String> {
                 buf.extend_from_slice(&b);
             }
             's' => {
-                let s = get_as_string(values, val_idx, 's')?;
+                let bytes = get_as_bytes(values, val_idx, 's')?;
                 val_idx += 1;
-                let len = s.len() as u32;
+                let len = bytes.len() as u32;
                 let lb = if endian == Endian::Little {
                     len.to_le_bytes()
                 } else {
                     len.to_be_bytes()
                 };
                 buf.extend_from_slice(&lb);
-                buf.extend_from_slice(s.as_bytes());
+                buf.extend_from_slice(&bytes);
             }
             'z' => {
-                let s = get_as_string(values, val_idx, 'z')?;
+                let bytes = get_as_bytes(values, val_idx, 'z')?;
                 val_idx += 1;
-                buf.extend_from_slice(s.as_bytes());
+                buf.extend_from_slice(&bytes);
                 buf.push(0u8);
             }
             _ => {
@@ -287,9 +287,9 @@ pub fn unpack(format: &str, data: &[u8], offset: usize) -> Result<(Vec<PackValue
                     u32::from_be_bytes([a, b, c, d])
                 } as usize;
                 check_bounds(data, pos, len, 's')?;
-                let s = String::from_utf8_lossy(&data[pos..pos + len]).into_owned();
+                let bytes = data[pos..pos + len].to_vec();
                 pos += len;
-                values.push(PackValue::Str(s));
+                values.push(PackValue::Bytes(bytes));
             }
             'z' => {
                 let start = pos;
@@ -302,9 +302,9 @@ pub fn unpack(format: &str, data: &[u8], offset: usize) -> Result<(Vec<PackValue
                         start
                     ));
                 }
-                let s = String::from_utf8_lossy(&data[start..pos]).into_owned();
+                let bytes = data[start..pos].to_vec();
                 pos += 1;
-                values.push(PackValue::Str(s));
+                values.push(PackValue::Bytes(bytes));
             }
             _ => {
                 return Err(format!("unpack: unknown format character '{}'", ch));
@@ -340,14 +340,14 @@ pub fn get_packed_size(format: &str, values: &[PackValue]) -> Result<usize, Stri
                 val_idx += 1;
             }
             's' => {
-                let s = get_as_string(values, val_idx, 's')?;
+                let bytes = get_as_bytes(values, val_idx, 's')?;
                 val_idx += 1;
-                size += 4 + s.len();
+                size += 4 + bytes.len();
             }
             'z' => {
-                let s = get_as_string(values, val_idx, 'z')?;
+                let bytes = get_as_bytes(values, val_idx, 'z')?;
                 val_idx += 1;
-                size += s.len() + 1;
+                size += bytes.len() + 1;
             }
             _ => {
                 return Err(format!("getPackedSize: unknown format character '{}'", ch));
@@ -407,18 +407,13 @@ fn get_as_f64(values: &[PackValue], idx: usize, fmt: char) -> Result<f64, String
         )),
     }
 }
-/// Extract value at index as String; return error when missing or not text.
-fn get_as_string(values: &[PackValue], idx: usize, fmt: char) -> Result<String, String> {
+/// Extract value at index as bytes; return error when missing or not string-like.
+fn get_as_bytes(values: &[PackValue], idx: usize, fmt: char) -> Result<Vec<u8>, String> {
     match values.get(idx) {
-        Some(PackValue::Str(s)) => Ok(s.clone()),
-        Some(PackValue::Bytes(b)) => String::from_utf8(b.clone()).map_err(|e| {
-            format!(
-                "pack '{}': bytes at index {} are not valid UTF-8: {}",
-                fmt, idx, e
-            )
-        }),
+        Some(PackValue::Str(s)) => Ok(s.as_bytes().to_vec()),
+        Some(PackValue::Bytes(b)) => Ok(b.clone()),
         Some(_) => Err(format!(
-            "pack '{}': expected string at value index {}",
+            "pack '{}': expected string or bytes at value index {}",
             fmt, idx
         )),
         None => Err(format!(

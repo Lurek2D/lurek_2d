@@ -1,7 +1,7 @@
 //! File: src/lua_api/repl_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
+//! Registers the public `lurek.repl` API for creating headless Lua REPL sessions.
+//! Keeps the Lua-facing layer limited to userdata registration, result formatting, history exposure, and completion wiring.
+//! Delegates parsing, command handling, evaluation, and bounded history management to `src/repl/`.
 
 use crate::repl::ReplSession;
 use crate::runtime::SharedState;
@@ -30,7 +30,7 @@ impl LuaUserData for LuaReplSession {
         /// @return | string[] | History entry strings.
         methods.add_method("history", |lua, this, ()| {
             let table = lua.create_table()?;
-            for (index, entry) in this.inner.history().iter().enumerate() {
+            for (index, entry) in this.inner.history().enumerate() {
                 table.set(index + 1, entry.clone())?;
             }
             Ok(table)

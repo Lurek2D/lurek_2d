@@ -15,6 +15,8 @@ use super::node::{Node, OverflowPolicy};
 use crate::log_msg;
 use crate::runtime::log_messages::{GC01, GC02, GC03, GC04};
 use std::collections::{HashMap, HashSet};
+
+const FLOWNET_SERIALIZE_VERSION: u64 = 2;
 /// Aggregate counts derived from the current graph state.
 #[derive(Debug, Clone)]
 pub struct GraphStats {
@@ -79,6 +81,174 @@ impl Graph {
             next_item_id: 1,
         }
     }
+    /// Return an immutable node reference or a descriptive error.
+    fn require_node(&self, node_id: u64) -> Result<&Node, String> {
+        self.nodes
+            .get(&node_id)
+            .ok_or_else(|| format!("node {node_id} does not exist"))
+    }
+    /// Return a mutable node reference or a descriptive error.
+    fn require_node_mut(&mut self, node_id: u64) -> Result<&mut Node, String> {
+        self.nodes
+            .get_mut(&node_id)
+            .ok_or_else(|| format!("node {node_id} does not exist"))
+    }
+    /// Return an immutable edge reference or a descriptive error.
+    fn require_edge(&self, edge_id: u64) -> Result<&Edge, String> {
+        self.edges
+            .get(&edge_id)
+            .ok_or_else(|| format!("edge {edge_id} does not exist"))
+    }
+    /// Return a mutable edge reference or a descriptive error.
+    fn require_edge_mut(&mut self, edge_id: u64) -> Result<&mut Edge, String> {
+        self.edges
+            .get_mut(&edge_id)
+            .ok_or_else(|| format!("edge {edge_id} does not exist"))
+    }
+    /// Return an immutable item reference or a descriptive error.
+    fn require_item(&self, item_id: u64) -> Result<&GraphItem, String> {
+        self.items
+            .get(&item_id)
+            .ok_or_else(|| format!("item {item_id} does not exist"))
+    }
+    /// Return a mutable item reference or a descriptive error.
+    fn require_item_mut(&mut self, item_id: u64) -> Result<&mut GraphItem, String> {
+        self.items
+            .get_mut(&item_id)
+            .ok_or_else(|| format!("item {item_id} does not exist"))
+    }
+    /// Return true when the node inventory currently contains the item id.
+    fn node_inventory_contains(&self, node_id: u64, item_id: u64) -> bool {
+        self.nodes
+            .get(&node_id)
+            .is_some_and(|node| node.items.contains(&item_id))
+    }
+    /// Return true when the node queue currently contains the item id.
+    fn node_queue_contains(&self, node_id: u64, item_id: u64) -> bool {
+        self.nodes
+            .get(&node_id)
+            .is_some_and(|node| node.queue.contains(&item_id))
+    }
+    /// Remove an item id from the container referenced by its current item position.
+    fn detach_item_from_position(
+        &mut self,
+        item_id: u64,
+        position: &ItemPosition,
+    ) -> Result<(), String> {
+        match position {
+            ItemPosition::AtNode(node_id) => {
+                let node = self.require_node_mut(*node_id)?;
+                node.items.retain(|&id| id != item_id);
+                node.queue.retain(|&id| id != item_id);
+            }
+            ItemPosition::InTransit { edge_id, .. } => {
+                let edge = self.require_edge_mut(*edge_id)?;
+                edge.items_in_transit.retain(|&id| id != item_id);
+            }
+            ItemPosition::Unplaced => {}
+        }
+        Ok(())
+    }
+    /// Move an item to the unplaced state while removing any old container membership.
+    pub(crate) fn move_item_to_unplaced(&mut self, item_id: u64) -> Result<(), String> {
+        let position = self.require_item(item_id)?.position.clone();
+        self.detach_item_from_position(item_id, &position)?;
+        self.require_item_mut(item_id)?.position = ItemPosition::Unplaced;
+        Ok(())
+    }
+    /// Move an item into a node inventory and make that inventory its only owner.
+    pub(crate) fn move_item_to_node_inventory(
+        &mut self,
+        item_id: u64,
+        node_id: u64,
+    ) -> Result<(), String> {
+        self.require_node(node_id)?;
+        let position = self.require_item(item_id)?.position.clone();
+        self.detach_item_from_position(item_id, &position)?;
+        let node = self.require_node_mut(node_id)?;
+        if !node.items.contains(&item_id) {
+            node.items.push(item_id);
+        }
+        self.require_item_mut(item_id)?.position = ItemPosition::AtNode(node_id);
+        Ok(())
+    }
+    /// Move an item into a node queue and make that queue its only owner.
+    pub(crate) fn move_item_to_node_queue(
+        &mut self,
+        item_id: u64,
+        node_id: u64,
+    ) -> Result<bool, String> {
+        let can_enqueue = {
+            let node = self.require_node(node_id)?;
+            node.queue_capacity < 0 || node.queue.len() < node.queue_capacity as usize
+        };
+        if !can_enqueue {
+            return Ok(false);
+        }
+        let position = self.require_item(item_id)?.position.clone();
+        self.detach_item_from_position(item_id, &position)?;
+        let node = self.require_node_mut(node_id)?;
+        if !node.queue.contains(&item_id) {
+            node.queue.push_back(item_id);
+        }
+        self.require_item_mut(item_id)?.position = ItemPosition::AtNode(node_id);
+        Ok(true)
+    }
+    /// Move an item onto an edge transit buffer and reset its progress.
+    pub(crate) fn move_item_to_edge_transit(
+        &mut self,
+        item_id: u64,
+        edge_id: u64,
+        progress: f64,
+    ) -> Result<(), String> {
+        self.require_edge(edge_id)?;
+        let position = self.require_item(item_id)?.position.clone();
+        self.detach_item_from_position(item_id, &position)?;
+        let edge = self.require_edge_mut(edge_id)?;
+        if !edge.items_in_transit.contains(&item_id) {
+            edge.items_in_transit.push(item_id);
+        }
+        edge.cooldown_timer = edge.cooldown;
+        self.require_item_mut(item_id)?.position = ItemPosition::InTransit { edge_id, progress };
+        Ok(())
+    }
+    /// Kill an item and remove it from any container that currently owns it.
+    pub(crate) fn kill_item_and_detach(&mut self, item_id: u64) -> Result<(), String> {
+        self.move_item_to_unplaced(item_id)?;
+        self.require_item_mut(item_id)?.kill();
+        Ok(())
+    }
+    /// Validate that an item can be sent from the edge source node inventory.
+    fn ensure_item_ready_for_edge(&self, item_id: u64, edge: &Edge) -> Result<(), String> {
+        let item = self.require_item(item_id)?;
+        if !item.alive {
+            return Err(format!("item {item_id} is not alive"));
+        }
+        match item.position {
+            ItemPosition::AtNode(node_id) if node_id == edge.from_node => {
+                if self.node_inventory_contains(node_id, item_id) {
+                    Ok(())
+                } else if self.node_queue_contains(node_id, item_id) {
+                    Err(format!(
+                        "item {item_id} is queued on node {node_id} and cannot be sent"
+                    ))
+                } else {
+                    Err(format!(
+                        "item {item_id} position references node {node_id}, but that node does not own it"
+                    ))
+                }
+            }
+            ItemPosition::AtNode(node_id) => Err(format!(
+                "item {item_id} is on node {node_id}, but edge {edge_id} starts at node {}",
+                edge.from_node,
+                edge_id = edge.id.raw()
+            )),
+            ItemPosition::InTransit { edge_id, .. } => Err(format!(
+                "item {item_id} is already in transit on edge {edge_id}"
+            )),
+            ItemPosition::Unplaced => Err(format!("item {item_id} is unplaced")),
+        }
+    }
     /// Add an edge id to the outgoing and incoming indexes.
     fn index_edge(&mut self, edge_id: u64, from_node: u64, to_node: u64) {
         self.outgoing_index
@@ -125,23 +295,24 @@ impl Graph {
     }
     /// Remove a node and all connected edges, returning true when it existed.
     pub fn remove_node(&mut self, node_id: u64) -> bool {
-        if self.nodes.remove(&node_id).is_none() {
+        let Some(node) = self.nodes.get(&node_id) else {
             return false;
+        };
+        let mut edge_ids = self.get_outgoing_edges(node_id);
+        edge_ids.extend(self.get_incoming_edges(node_id));
+        edge_ids.sort_unstable();
+        edge_ids.dedup();
+        let mut item_ids = node.items.clone();
+        item_ids.extend(node.queue.iter().copied());
+        item_ids.sort_unstable();
+        item_ids.dedup();
+        for item_id in item_ids {
+            let _ = self.move_item_to_unplaced(item_id);
         }
-        let edge_ids: Vec<u64> = self
-            .edges
-            .values()
-            .filter(|e| e.from_node == node_id || e.to_node == node_id)
-            .map(|e| e.id.raw())
-            .collect();
         for eid in edge_ids {
             self.remove_edge(eid);
         }
-        for item in self.items.values_mut() {
-            if item.position == ItemPosition::AtNode(node_id) {
-                item.position = ItemPosition::Unplaced;
-            }
-        }
+        self.nodes.remove(&node_id);
         self.outgoing_index.remove(&node_id);
         self.incoming_index.remove(&node_id);
         log_msg!(debug, GC02, "{}", node_id);
@@ -153,7 +324,9 @@ impl Graph {
     }
     /// Return all node ids in arbitrary order.
     pub fn get_node_ids(&self) -> Vec<u64> {
-        self.nodes.keys().copied().collect()
+        let mut ids: Vec<u64> = self.nodes.keys().copied().collect();
+        ids.sort_unstable();
+        ids
     }
     /// Return the number of nodes. This function is part of the public API.
     pub fn get_node_count(&self) -> usize {
@@ -187,13 +360,18 @@ impl Graph {
     }
     /// Remove an edge and detach any items in transit, returning true when it existed.
     pub fn remove_edge(&mut self, edge_id: u64) -> bool {
+        let Some(transit_items) = self
+            .edges
+            .get(&edge_id)
+            .map(|edge| edge.items_in_transit.clone())
+        else {
+            return false;
+        };
+        for item_id in transit_items {
+            let _ = self.move_item_to_unplaced(item_id);
+        }
         if let Some(edge) = self.edges.remove(&edge_id) {
             self.unindex_edge(edge_id, edge.from_node, edge.to_node);
-            for &iid in &edge.items_in_transit {
-                if let Some(item) = self.items.get_mut(&iid) {
-                    item.position = ItemPosition::Unplaced;
-                }
-            }
             log_msg!(debug, GC04, "{}", edge_id);
             true
         } else {
@@ -206,7 +384,9 @@ impl Graph {
     }
     /// Return all edge ids in arbitrary order.
     pub fn get_edge_ids(&self) -> Vec<u64> {
-        self.edges.keys().copied().collect()
+        let mut ids: Vec<u64> = self.edges.keys().copied().collect();
+        ids.sort_unstable();
+        ids
     }
     /// Return the number of edges. This function is part of the public API.
     pub fn get_edge_count(&self) -> usize {
@@ -255,6 +435,7 @@ impl Graph {
             new_node.demands = old.demands.clone();
             new_node.supplies = old.supplies.clone();
             new_node.tags = old.tags.clone();
+            new_node.capacity_reservations = old.capacity_reservations.clone();
             node_map.insert(old_id, new_id);
         }
         let mut edge_map: HashMap<u64, u64> = HashMap::new();
@@ -285,6 +466,7 @@ impl Graph {
             new_edge.bidirectional = old_edge.bidirectional;
             new_edge.active = old_edge.active;
             new_edge.allowed_types = old_edge.allowed_types.clone();
+            new_edge.capacity_reservations = old_edge.capacity_reservations.clone();
             edge_map.insert(old_edge_id, new_edge_id);
         }
         let mut item_map: HashMap<u64, u64> = HashMap::new();
@@ -363,53 +545,39 @@ impl Graph {
     }
     /// Add an item to a node and return whether the placement succeeded.
     pub fn add_item_to_node(&mut self, item_id: u64, node_id: u64) -> Result<bool, String> {
-        if !self.items.contains_key(&item_id) {
-            return Err(format!("item {item_id} does not exist"));
+        let item = self.require_item(item_id)?;
+        if !item.alive {
+            return Err(format!("item {item_id} is not alive"));
         }
-        let node = self
-            .nodes
-            .get(&node_id)
-            .ok_or_else(|| format!("node {node_id} does not exist"))?;
+        if matches!(item.position, ItemPosition::AtNode(id) if id == node_id)
+            && (self.node_inventory_contains(node_id, item_id)
+                || self.node_queue_contains(node_id, item_id))
+        {
+            return Ok(true);
+        }
+        let node = self.require_node(node_id)?;
         if node.is_full() {
             match node.overflow_policy {
                 OverflowPolicy::Reject => return Ok(false),
                 OverflowPolicy::Destroy => {
-                    if let Some(item) = self.items.get_mut(&item_id) {
-                        item.kill();
-                    }
+                    self.kill_item_and_detach(item_id)?;
                     return Ok(false);
                 }
                 OverflowPolicy::Queue => {
-                    let node = self.nodes.get_mut(&node_id).unwrap();
-                    let queued = node.enqueue(item_id);
-                    if queued {
-                        if let Some(item) = self.items.get_mut(&item_id) {
-                            item.position = ItemPosition::AtNode(node_id);
-                        }
-                    }
-                    return Ok(queued);
+                    return self.move_item_to_node_queue(item_id, node_id);
                 }
             }
         }
-        let node = self.nodes.get_mut(&node_id).unwrap();
-        node.items.push(item_id);
-        if let Some(item) = self.items.get_mut(&item_id) {
-            item.position = ItemPosition::AtNode(node_id);
-        }
+        self.move_item_to_node_inventory(item_id, node_id)?;
         Ok(true)
     }
     /// Remove an item from the graph and all node or edge containers.
     pub fn remove_item(&mut self, item_id: u64) -> bool {
-        if self.items.remove(&item_id).is_none() {
+        let Some(position) = self.items.get(&item_id).map(|item| item.position.clone()) else {
             return false;
-        }
-        for node in self.nodes.values_mut() {
-            node.items.retain(|&id| id != item_id);
-            node.queue.retain(|&id| id != item_id);
-        }
-        for edge in self.edges.values_mut() {
-            edge.items_in_transit.retain(|&id| id != item_id);
-        }
+        };
+        let _ = self.detach_item_from_position(item_id, &position);
+        self.items.remove(&item_id);
         true
     }
     /// Return true when the item id exists.
@@ -418,7 +586,9 @@ impl Graph {
     }
     /// Return all item ids in arbitrary order.
     pub fn get_item_ids(&self) -> Vec<u64> {
-        self.items.keys().copied().collect()
+        let mut ids: Vec<u64> = self.items.keys().copied().collect();
+        ids.sort_unstable();
+        ids
     }
     /// Return the number of items. This function is part of the public API.
     pub fn get_item_count(&self) -> usize {
@@ -426,15 +596,9 @@ impl Graph {
     }
     /// Send an item onto an edge and return whether the transfer succeeded.
     pub fn send_item(&mut self, item_id: u64, edge_id: u64) -> Result<bool, String> {
-        let item = self
-            .items
-            .get(&item_id)
-            .ok_or_else(|| format!("item {item_id} does not exist"))?;
-        let item_type = item.item_type.clone();
-        let edge = self
-            .edges
-            .get(&edge_id)
-            .ok_or_else(|| format!("edge {edge_id} does not exist"))?;
+        let item_type = self.require_item(item_id)?.item_type.clone();
+        let edge = self.require_edge(edge_id)?;
+        self.ensure_item_ready_for_edge(item_id, edge)?;
         if !edge.active {
             return Ok(false);
         }
@@ -447,18 +611,7 @@ impl Graph {
         if edge.is_transit_full() {
             return Ok(false);
         }
-        let from_node = edge.from_node;
-        if let Some(node) = self.nodes.get_mut(&from_node) {
-            node.items.retain(|&id| id != item_id);
-        }
-        let edge = self.edges.get_mut(&edge_id).unwrap();
-        edge.items_in_transit.push(item_id);
-        edge.cooldown_timer = edge.cooldown;
-        let item = self.items.get_mut(&item_id).unwrap();
-        item.position = ItemPosition::InTransit {
-            edge_id,
-            progress: 0.0,
-        };
+        self.move_item_to_edge_transit(item_id, edge_id, 0.0)?;
         Ok(true)
     }
     /// Return aggregate counts derived from the current graph state.
@@ -582,26 +735,178 @@ impl Graph {
         let mut nodes_arr: Vec<Value> = self
             .nodes
             .values()
-            .map(|n| json!({ "id": n.id.raw(), "node_type": n.node_type, "capacity": n.capacity }))
+            .map(|n| {
+                let mut tags = n.get_tags();
+                tags.sort_unstable();
+                let mut conversions: Vec<Value> = n
+                    .conversions
+                    .values()
+                    .map(|rule| {
+                        json!({
+                            "in_type": rule.in_type,
+                            "out_type": rule.out_type,
+                            "in_count": rule.in_count,
+                            "out_count": rule.out_count
+                        })
+                    })
+                    .collect();
+                conversions.sort_by(|a, b| {
+                    a["in_type"]
+                        .as_str()
+                        .unwrap_or_default()
+                        .cmp(b["in_type"].as_str().unwrap_or_default())
+                });
+                let demands: Vec<Value> = n
+                    .demands
+                    .iter()
+                    .map(|d| {
+                        json!({
+                            "item_type": d.item_type,
+                            "quantity": d.quantity,
+                            "priority": d.priority
+                        })
+                    })
+                    .collect();
+                let supplies: Vec<Value> = n
+                    .supplies
+                    .iter()
+                    .map(|s| {
+                        json!({
+                            "item_type": s.item_type,
+                            "quantity": s.quantity
+                        })
+                    })
+                    .collect();
+                let mut capacity_reservations: Vec<Value> = n
+                    .capacity_reservations
+                    .iter()
+                    .map(|(key, slots)| json!({ "key": key, "slots": slots }))
+                    .collect();
+                capacity_reservations.sort_by(|a, b| {
+                    a["key"]
+                        .as_str()
+                        .unwrap_or_default()
+                        .cmp(b["key"].as_str().unwrap_or_default())
+                });
+                json!({
+                    "id": n.id.raw(),
+                    "node_type": n.node_type,
+                    "capacity": n.capacity,
+                    "active": n.active,
+                    "overflow_policy": n.overflow_policy.to_str(),
+                    "flow_mode": n.flow_mode.to_str(),
+                    "push_rate": n.push_rate,
+                    "pull_rate": n.pull_rate,
+                    "push_filter": n.push_filter,
+                    "pull_filter": n.pull_filter,
+                    "process_time": n.process_time,
+                    "queue_enabled": n.queue_enabled,
+                    "queue_capacity": n.queue_capacity,
+                    "queue": n.queue.iter().copied().collect::<Vec<u64>>(),
+                    "items": n.items,
+                    "conversions": conversions,
+                    "demands": demands,
+                    "supplies": supplies,
+                    "tags": tags,
+                    "capacity_reservations": capacity_reservations,
+                    "push_timer": n.push_timer,
+                    "pull_timer": n.pull_timer,
+                    "process_accumulator": n.process_accumulator
+                })
+            })
             .collect();
         nodes_arr.sort_by_key(|v| v["id"].as_u64().unwrap_or(0));
         let mut edges_arr: Vec<Value> = self
             .edges
             .values()
             .map(|e| {
-                json!({ "id": e.id.raw(), "from": e.from_node, "to": e.to_node,
-                    "weight": e.weight, "edge_type": e.edge_type,
-                    "bidirectional": e.bidirectional })
+                let mut allowed_types: Vec<String> = e.allowed_types.iter().cloned().collect();
+                allowed_types.sort_unstable();
+                let mut capacity_reservations: Vec<Value> = e
+                    .capacity_reservations
+                    .iter()
+                    .map(|(key, slots)| json!({ "key": key, "slots": slots }))
+                    .collect();
+                capacity_reservations.sort_by(|a, b| {
+                    a["key"]
+                        .as_str()
+                        .unwrap_or_default()
+                        .cmp(b["key"].as_str().unwrap_or_default())
+                });
+                json!({
+                    "id": e.id.raw(),
+                    "edge_type": e.edge_type,
+                    "from": e.from_node,
+                    "to": e.to_node,
+                    "capacity": e.capacity,
+                    "throughput": e.throughput,
+                    "travel_time": e.travel_time,
+                    "weight": e.weight,
+                    "speed_modifier": e.speed_modifier,
+                    "cooldown": e.cooldown,
+                    "cooldown_timer": e.cooldown_timer,
+                    "bidirectional": e.bidirectional,
+                    "active": e.active,
+                    "allowed_types": allowed_types,
+                    "capacity_reservations": capacity_reservations,
+                    "items_in_transit": e.items_in_transit
+                })
             })
             .collect();
         edges_arr.sort_by_key(|v| v["id"].as_u64().unwrap_or(0));
+        let mut items_arr: Vec<Value> = self
+            .items
+            .values()
+            .map(|item| {
+                let position = match item.get_position() {
+                    ItemPosition::AtNode(node_id) => {
+                        json!({ "kind": "node", "node_id": node_id })
+                    }
+                    ItemPosition::InTransit { edge_id, progress } => {
+                        json!({ "kind": "edge", "edge_id": edge_id, "progress": progress })
+                    }
+                    ItemPosition::Unplaced => json!({ "kind": "unplaced" }),
+                };
+                json!({
+                    "id": item.id.raw(),
+                    "item_type": item.item_type,
+                    "decay_time": item.decay_time,
+                    "remaining_life": item.remaining_life,
+                    "alive": item.alive,
+                    "priority": item.priority,
+                    "position": position
+                })
+            })
+            .collect();
+        items_arr.sort_by_key(|v| v["id"].as_u64().unwrap_or(0));
         let mut map = HashMap::new();
+        map.insert(
+            "version".to_string(),
+            Value::from(FLOWNET_SERIALIZE_VERSION),
+        );
         map.insert("nodes".to_string(), Value::Array(nodes_arr));
         map.insert("edges".to_string(), Value::Array(edges_arr));
+        map.insert("items".to_string(), Value::Array(items_arr));
         map
     }
     /// Deserialize a graph from the JSON-like value map or return a shape error.
     pub fn deserialize(data: &HashMap<String, serde_json::Value>) -> Result<Self, String> {
+        let version = data.get("version").and_then(serde_json::Value::as_u64);
+        if version.is_none() {
+            return Self::deserialize_legacy_topology(data);
+        }
+        if version != Some(FLOWNET_SERIALIZE_VERSION) {
+            return Err(format!(
+                "unsupported flownet serialization version: {:?}",
+                version
+            ));
+        }
+        Self::deserialize_full_state(data)
+    }
+    /// Deserialize the legacy topology-only payload used before versioned state snapshots.
+    fn deserialize_legacy_topology(
+        data: &HashMap<String, serde_json::Value>,
+    ) -> Result<Self, String> {
         let mut g = Self::new();
         if let Some(nodes_val) = data.get("nodes") {
             let arr = nodes_val.as_array().ok_or("nodes must be an array")?;
@@ -628,6 +933,329 @@ impl Graph {
                 }
             }
         }
+        Ok(g)
+    }
+    /// Deserialize the versioned full-state payload and validate cross-references.
+    fn deserialize_full_state(data: &HashMap<String, serde_json::Value>) -> Result<Self, String> {
+        use super::node::{ConversionRule, Demand, FlowMode, Supply};
+        use serde_json::Value;
+
+        fn parse_u64_array(value: &Value, label: &str) -> Result<Vec<u64>, String> {
+            let arr = value
+                .as_array()
+                .ok_or_else(|| format!("{label} must be an array"))?;
+            arr.iter()
+                .map(|entry| {
+                    entry
+                        .as_u64()
+                        .ok_or_else(|| format!("{label} entries must be integers"))
+                })
+                .collect()
+        }
+
+        let nodes_arr = data
+            .get("nodes")
+            .ok_or("nodes missing from flownet snapshot")?
+            .as_array()
+            .ok_or("nodes must be an array")?;
+        let edges_arr = data
+            .get("edges")
+            .ok_or("edges missing from flownet snapshot")?
+            .as_array()
+            .ok_or("edges must be an array")?;
+        let items_arr = data
+            .get("items")
+            .ok_or("items missing from flownet snapshot")?
+            .as_array()
+            .ok_or("items must be an array")?;
+
+        let mut g = Self::new();
+
+        for node_value in nodes_arr {
+            let node_id = node_value["id"]
+                .as_u64()
+                .ok_or("node id must be an integer")?;
+            let node_type = node_value["node_type"].as_str().unwrap_or("default");
+            let capacity = node_value["capacity"].as_i64().unwrap_or(-1) as i32;
+            let overflow_policy = node_value["overflow_policy"]
+                .as_str()
+                .unwrap_or("reject")
+                .parse::<OverflowPolicy>()?;
+            let flow_mode = node_value["flow_mode"]
+                .as_str()
+                .unwrap_or("passive")
+                .parse::<FlowMode>()?;
+            let queue_values = parse_u64_array(&node_value["queue"], "node.queue")?;
+            let item_values = parse_u64_array(&node_value["items"], "node.items")?;
+            let mut node = Node::new(node_id, node_type, capacity);
+            node.active = node_value["active"].as_bool().unwrap_or(true);
+            node.overflow_policy = overflow_policy;
+            node.flow_mode = flow_mode;
+            node.push_rate = node_value["push_rate"].as_f64().unwrap_or(1.0);
+            node.pull_rate = node_value["pull_rate"].as_f64().unwrap_or(1.0);
+            node.push_filter = node_value["push_filter"].as_str().map(str::to_string);
+            node.pull_filter = node_value["pull_filter"].as_str().map(str::to_string);
+            node.process_time = node_value["process_time"].as_f64().unwrap_or(0.0);
+            node.queue_enabled = node_value["queue_enabled"].as_bool().unwrap_or(false);
+            node.queue_capacity = node_value["queue_capacity"].as_i64().unwrap_or(-1) as i32;
+            node.queue = queue_values.into_iter().collect();
+            node.items = item_values;
+            if let Some(conversions) = node_value["conversions"].as_array() {
+                for conversion in conversions {
+                    let rule = ConversionRule {
+                        in_type: conversion["in_type"]
+                            .as_str()
+                            .ok_or("conversion.in_type must be a string")?
+                            .to_string(),
+                        out_type: conversion["out_type"]
+                            .as_str()
+                            .ok_or("conversion.out_type must be a string")?
+                            .to_string(),
+                        in_count: conversion["in_count"].as_u64().unwrap_or(1) as u32,
+                        out_count: conversion["out_count"].as_u64().unwrap_or(1) as u32,
+                    };
+                    node.set_conversion(rule);
+                }
+            }
+            if let Some(demands) = node_value["demands"].as_array() {
+                node.demands = demands
+                    .iter()
+                    .map(|value| {
+                        Ok(Demand {
+                            item_type: value["item_type"]
+                                .as_str()
+                                .ok_or("demand.item_type must be a string")
+                                .map(str::to_string)?,
+                            quantity: value["quantity"].as_i64().unwrap_or(0) as i32,
+                            priority: value["priority"].as_i64().unwrap_or(0) as i32,
+                        })
+                    })
+                    .collect::<Result<Vec<_>, String>>()?;
+            }
+            if let Some(supplies) = node_value["supplies"].as_array() {
+                node.supplies = supplies
+                    .iter()
+                    .map(|value| {
+                        Ok(Supply {
+                            item_type: value["item_type"]
+                                .as_str()
+                                .ok_or("supply.item_type must be a string")
+                                .map(str::to_string)?,
+                            quantity: value["quantity"].as_i64().unwrap_or(0) as i32,
+                        })
+                    })
+                    .collect::<Result<Vec<_>, String>>()?;
+            }
+            if let Some(tags) = node_value["tags"].as_array() {
+                node.tags = tags
+                    .iter()
+                    .map(|tag| {
+                        tag.as_str()
+                            .ok_or_else(|| "node tag must be a string".to_string())
+                            .map(str::to_string)
+                    })
+                    .collect::<Result<_, _>>()?;
+            }
+            if let Some(reservations) = node_value["capacity_reservations"].as_array() {
+                node.capacity_reservations = reservations
+                    .iter()
+                    .map(|reservation| {
+                        let key = reservation["key"]
+                            .as_str()
+                            .ok_or("node reservation key must be a string")?
+                            .to_string();
+                        let slots = reservation["slots"].as_u64().unwrap_or(0) as u32;
+                        Ok((key, slots))
+                    })
+                    .collect::<Result<_, String>>()?;
+            }
+            node.push_timer = node_value["push_timer"].as_f64().unwrap_or(0.0);
+            node.pull_timer = node_value["pull_timer"].as_f64().unwrap_or(0.0);
+            node.process_accumulator = node_value["process_accumulator"].as_f64().unwrap_or(0.0);
+
+            g.next_node_id = g.next_node_id.max(node_id + 1);
+            g.outgoing_index.entry(node_id).or_default();
+            g.incoming_index.entry(node_id).or_default();
+            g.nodes.insert(node_id, node);
+        }
+
+        for edge_value in edges_arr {
+            let edge_id = edge_value["id"]
+                .as_u64()
+                .ok_or("edge id must be an integer")?;
+            let from = edge_value["from"]
+                .as_u64()
+                .ok_or("edge.from must be an integer")?;
+            let to = edge_value["to"]
+                .as_u64()
+                .ok_or("edge.to must be an integer")?;
+            if !g.nodes.contains_key(&from) || !g.nodes.contains_key(&to) {
+                return Err(format!(
+                    "edge {edge_id} references missing endpoint(s): {from} -> {to}"
+                ));
+            }
+            let mut edge = Edge::new(
+                edge_id,
+                from,
+                to,
+                edge_value["edge_type"].as_str().unwrap_or("default"),
+            );
+            edge.capacity = edge_value["capacity"].as_i64().unwrap_or(-1) as i32;
+            edge.throughput = edge_value["throughput"].as_f64().unwrap_or(1.0);
+            edge.travel_time = edge_value["travel_time"].as_f64().unwrap_or(1.0);
+            edge.weight = edge_value["weight"].as_f64().unwrap_or(1.0);
+            edge.speed_modifier = edge_value["speed_modifier"].as_f64().unwrap_or(1.0);
+            edge.cooldown = edge_value["cooldown"].as_f64().unwrap_or(0.0);
+            edge.cooldown_timer = edge_value["cooldown_timer"].as_f64().unwrap_or(0.0);
+            edge.bidirectional = edge_value["bidirectional"].as_bool().unwrap_or(false);
+            edge.active = edge_value["active"].as_bool().unwrap_or(true);
+            edge.allowed_types = edge_value["allowed_types"]
+                .as_array()
+                .map(|types| {
+                    types
+                        .iter()
+                        .map(|value| {
+                            value
+                                .as_str()
+                                .ok_or_else(|| "edge allowed type must be a string".to_string())
+                                .map(str::to_string)
+                        })
+                        .collect::<Result<_, _>>()
+                })
+                .transpose()?
+                .unwrap_or_default();
+            if let Some(reservations) = edge_value["capacity_reservations"].as_array() {
+                edge.capacity_reservations = reservations
+                    .iter()
+                    .map(|reservation| {
+                        let key = reservation["key"]
+                            .as_str()
+                            .ok_or("edge reservation key must be a string")?
+                            .to_string();
+                        let slots = reservation["slots"].as_u64().unwrap_or(0) as u32;
+                        Ok((key, slots))
+                    })
+                    .collect::<Result<_, String>>()?;
+            }
+            edge.items_in_transit =
+                parse_u64_array(&edge_value["items_in_transit"], "edge.items_in_transit")?;
+
+            g.next_edge_id = g.next_edge_id.max(edge_id + 1);
+            g.edges.insert(edge_id, edge);
+            g.index_edge(edge_id, from, to);
+        }
+
+        for item_value in items_arr {
+            let item_id = item_value["id"]
+                .as_u64()
+                .ok_or("item id must be an integer")?;
+            let mut item = GraphItem::new(
+                item_id,
+                item_value["item_type"].as_str().unwrap_or("default"),
+                item_value["decay_time"].as_f64().unwrap_or(-1.0),
+            );
+            item.remaining_life = item_value["remaining_life"]
+                .as_f64()
+                .unwrap_or(item.decay_time);
+            item.alive = item_value["alive"].as_bool().unwrap_or(true);
+            item.priority = item_value["priority"].as_i64().unwrap_or(0) as i32;
+            let position_value = item_value
+                .get("position")
+                .ok_or("item.position is required")?;
+            item.position = match position_value["kind"].as_str().unwrap_or("unplaced") {
+                "node" => ItemPosition::AtNode(
+                    position_value["node_id"]
+                        .as_u64()
+                        .ok_or("item.position.node_id must be an integer")?,
+                ),
+                "edge" => ItemPosition::InTransit {
+                    edge_id: position_value["edge_id"]
+                        .as_u64()
+                        .ok_or("item.position.edge_id must be an integer")?,
+                    progress: position_value["progress"].as_f64().unwrap_or(0.0),
+                },
+                "unplaced" => ItemPosition::Unplaced,
+                other => return Err(format!("unknown item position kind '{other}'")),
+            };
+            g.next_item_id = g.next_item_id.max(item_id + 1);
+            g.items.insert(item_id, item);
+        }
+
+        for (node_id, node) in &g.nodes {
+            for item_id in &node.items {
+                let item = g
+                    .items
+                    .get(item_id)
+                    .ok_or_else(|| format!("node {node_id} references missing item {item_id}"))?;
+                match item.position {
+                    ItemPosition::AtNode(owner) if owner == *node_id => {}
+                    _ => {
+                        return Err(format!(
+                            "node {node_id} inventory references item {item_id} with mismatched position"
+                        ))
+                    }
+                }
+            }
+            for item_id in &node.queue {
+                let item = g.items.get(item_id).ok_or_else(|| {
+                    format!("node {node_id} queue references missing item {item_id}")
+                })?;
+                match item.position {
+                    ItemPosition::AtNode(owner) if owner == *node_id => {}
+                    _ => {
+                        return Err(format!(
+                        "node {node_id} queue references item {item_id} with mismatched position"
+                    ))
+                    }
+                }
+            }
+        }
+
+        for (edge_id, edge) in &g.edges {
+            for item_id in &edge.items_in_transit {
+                let item = g
+                    .items
+                    .get(item_id)
+                    .ok_or_else(|| format!("edge {edge_id} references missing item {item_id}"))?;
+                match item.position {
+                    ItemPosition::InTransit { edge_id: owner, .. } if owner == *edge_id => {}
+                    _ => {
+                        return Err(format!(
+                            "edge {edge_id} transit buffer references item {item_id} with mismatched position"
+                        ))
+                    }
+                }
+            }
+        }
+
+        for (item_id, item) in &g.items {
+            match item.position {
+                ItemPosition::AtNode(node_id) => {
+                    if !g.nodes.contains_key(&node_id) {
+                        return Err(format!("item {item_id} references missing node {node_id}"));
+                    }
+                    if !g.node_inventory_contains(node_id, *item_id)
+                        && !g.node_queue_contains(node_id, *item_id)
+                    {
+                        return Err(format!(
+                            "item {item_id} is positioned on node {node_id} but no node container owns it"
+                        ));
+                    }
+                }
+                ItemPosition::InTransit { edge_id, .. } => {
+                    let Some(edge) = g.edges.get(&edge_id) else {
+                        return Err(format!("item {item_id} references missing edge {edge_id}"));
+                    };
+                    if !edge.items_in_transit.contains(item_id) {
+                        return Err(format!(
+                            "item {item_id} is positioned on edge {edge_id} but the edge does not own it"
+                        ));
+                    }
+                }
+                ItemPosition::Unplaced => {}
+            }
+        }
+
         Ok(g)
     }
 }

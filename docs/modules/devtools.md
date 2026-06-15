@@ -86,6 +86,7 @@ lurek.devtools.debug(message)
 do
     lurek.devtools.debug("player pos = 100, 200")
     print("debug logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 ```
 
@@ -111,6 +112,7 @@ lurek.devtools.error(message)
 do
     lurek.devtools.error("save file warning emitted")
     print("error logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 ```
 
@@ -176,6 +178,7 @@ lurek.devtools.exposeWatch(name, getter, category)
 do
     local id = lurek.devtools.exposeWatch("health", function() return 100 end, "player")
     print("watch id = " .. id)
+    print("watch entries = " .. tostring(#lurek.devtools.getWatches()))
 end
 ```
 
@@ -201,6 +204,7 @@ lurek.devtools.fatal(message)
 do
     lurek.devtools.fatal("unrecoverable GPU error")
     print("fatal logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 ```
 
@@ -232,6 +236,7 @@ lurek.devtools.getCallStack(max_depth)
 do
     local frames = lurek.devtools.getCallStack(5)
     print("stack frames = " .. #frames)
+    print("lua type = " .. type(frames))
 end
 ```
 
@@ -283,6 +288,7 @@ lurek.devtools.getFrameHistorySize()
 do
     local n = lurek.devtools.getFrameHistorySize()
     print("history capacity = " .. n)
+    print("lua type = " .. type(n))
 end
 ```
 
@@ -364,6 +370,7 @@ lurek.devtools.getLogConsole()
 do
     local console = lurek.devtools.getLogConsole()
     print("console = " .. tostring(console))
+    print("lua type = " .. type(console))
 end
 ```
 
@@ -389,6 +396,7 @@ lurek.devtools.getLogFile()
 do
     local fp = lurek.devtools.getLogFile()
     print("log file = " .. fp)
+    print("lua type = " .. type(fp))
 end
 ```
 
@@ -446,6 +454,7 @@ lurek.devtools.getLogLevel()
 do
     local level = lurek.devtools.getLogLevel()
     print("log level = " .. level)
+    print("lua type = " .. type(level))
 end
 ```
 
@@ -509,6 +518,7 @@ lurek.devtools.getProfileFrameCount()
 do
     local n = lurek.devtools.getProfileFrameCount()
     print("profile frames = " .. n)
+    print("lua type = " .. type(n))
 end
 ```
 
@@ -534,6 +544,7 @@ lurek.devtools.getWatchInterval()
 do
     local v = lurek.devtools.getWatchInterval()
     print("interval = " .. v)
+    print("lua type = " .. type(v))
 end
 ```
 
@@ -611,6 +622,7 @@ lurek.devtools.info(message)
 do
     lurek.devtools.info("level loaded")
     print("info logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 ```
 
@@ -636,6 +648,7 @@ lurek.devtools.isConsoleOpen()
 do
     local v = lurek.devtools.isConsoleOpen()
     print("console open = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 ```
 
@@ -661,6 +674,7 @@ lurek.devtools.isEntityInspectorOpen()
 do
     local v = lurek.devtools.isEntityInspectorOpen()
     print("inspector open = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 ```
 
@@ -686,6 +700,7 @@ lurek.devtools.isProfilingEnabled()
 do
     local v = lurek.devtools.isProfilingEnabled()
     print("profiling = " .. tostring(v))
+    print("lua type = " .. type(v))
 end
 ```
 
@@ -712,6 +727,7 @@ lurek.devtools.log(level, message)
 do
     lurek.devtools.log("info", "game started")
     print("logged info message")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 ```
 
@@ -743,6 +759,7 @@ lurek.devtools.newFileWatcher(path)
 do
     local watcher = lurek.devtools.newFileWatcher("content/")
     print("watcher path = " .. watcher:getPath())
+    print("lua type = " .. type(watcher))
 end
 ```
 
@@ -801,6 +818,7 @@ lurek.devtools.openConsole()
 do
     local ok = lurek.devtools.openConsole()
     print("console opened = " .. tostring(ok))
+    print("console open = " .. tostring(lurek.devtools.isConsoleOpen()))
 end
 ```
 
@@ -826,6 +844,7 @@ lurek.devtools.openEntityInspector()
 do
     local ok = lurek.devtools.openEntityInspector()
     print("inspector opened = " .. tostring(ok))
+    print("entity inspector open = " .. tostring(lurek.devtools.isEntityInspectorOpen()))
 end
 ```
 
@@ -984,6 +1003,7 @@ lurek.devtools.recordGpuFrameTime(dt_val)
 do
     lurek.devtools.recordGpuFrameTime(0.008)
     print("gpu frame time recorded")
+    print("profiling = " .. tostring(lurek.devtools.isProfilingEnabled()))
 end
 ```
 
@@ -1035,6 +1055,7 @@ lurek.devtools.resetProfile()
 do
     lurek.devtools.resetProfile()
     print("profile reset, frames = " .. lurek.devtools.getProfileFrameCount())
+    print("profile frames = " .. tostring(lurek.devtools.getProfileFrameCount()))
 end
 ```
 
@@ -1087,6 +1108,7 @@ lurek.devtools.setFrameHistorySize(size)
 do
     lurek.devtools.setFrameHistorySize(120)
     print("history size set to 120")
+    print("frame history size = " .. tostring(lurek.devtools.getFrameHistorySize()))
 end
 ```
 
@@ -1112,6 +1134,7 @@ lurek.devtools.setLogConsole(enabled)
 do
     lurek.devtools.setLogConsole(true)
     print("console logging enabled")
+    print("console logging = " .. tostring(lurek.devtools.getLogConsole()))
 end
 ```
 
@@ -1137,6 +1160,7 @@ lurek.devtools.setLogFile(path)
 do
     lurek.devtools.setLogFile("logs/devtools.log")
     print("log file set")
+    print("log file = " .. tostring(lurek.devtools.getLogFile()))
 end
 ```
 
@@ -1162,6 +1186,7 @@ lurek.devtools.setLogLevel(level)
 do
     lurek.devtools.setLogLevel("warn")
     print("log level set to warn")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 ```
 
@@ -1187,6 +1212,7 @@ lurek.devtools.setProfilingEnabled(enabled)
 do
     lurek.devtools.setProfilingEnabled(true)
     print("profiling enabled")
+    print("profiling = " .. tostring(lurek.devtools.isProfilingEnabled()))
 end
 ```
 
@@ -1212,6 +1238,7 @@ lurek.devtools.setWatchInterval(interval)
 do
     lurek.devtools.setWatchInterval(0.5)
     print("interval set to 0.5s")
+    print("watch interval = " .. tostring(lurek.devtools.getWatchInterval()))
 end
 ```
 
@@ -1268,6 +1295,7 @@ lurek.devtools.trace(message)
 do
     lurek.devtools.trace("entering update loop")
     print("trace logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 ```
 
@@ -1325,6 +1353,7 @@ lurek.devtools.warn(message)
 do
     lurek.devtools.warn("texture missing fallback used")
     print("warn logged")
+    print("current level = " .. lurek.devtools.getLogLevel())
 end
 ```
 
@@ -1356,6 +1385,7 @@ lurek.devtools.watch(path)
 do
     local added = lurek.devtools.watch("content/examples/assets/layouts/sample_menu.html")
     print("watch added = " .. tostring(added))
+    print("watched paths = " .. tostring(#lurek.devtools.getWatchedPaths()))
 end
 ```
 
@@ -1452,6 +1482,7 @@ LFileWatcher:getPath()
 do
     local watcher = lurek.devtools.newFileWatcher("content/")
     print("watching = " .. watcher:getPath())
+    print("owner type = " .. tostring(watcher:type()))
 end
 ```
 
@@ -1505,6 +1536,7 @@ LFileWatcher:type()
 do
     local watcher = lurek.devtools.newFileWatcher("assets/")
     print("type = " .. watcher:type())
+    print("typeOf LObject = " .. tostring(watcher:typeOf("LObject")))
 end
 ```
 
@@ -1536,6 +1568,7 @@ LFileWatcher:typeOf(name)
 do
     local watcher = lurek.devtools.newFileWatcher("assets/textures/")
     print("is LFileWatcher = " .. tostring(watcher:typeOf("LFileWatcher")))
+    print("type = " .. tostring(watcher:type()))
 end
 ```
 
@@ -1678,6 +1711,7 @@ LReplConsole:type()
 do
     local repl = lurek.devtools.newRepl()
     print("type = " .. repl:type())
+    print("typeOf LObject = " .. tostring(repl:typeOf("LObject")))
 end
 ```
 
@@ -1709,6 +1743,7 @@ LReplConsole:typeOf(name)
 do
     local repl = lurek.devtools.newRepl()
     print("is LReplConsole = " .. tostring(repl:typeOf("LReplConsole")))
+    print("type = " .. tostring(repl:type()))
 end
 ```
 

@@ -12,7 +12,7 @@
 - Namespace: `lurek.color`
 - Lua API surface: `19` functions, `0` types, `0` methods
 - Rust test path(s): tests/rust/unit/color_tests.rs
-- Lua test path(s): tests/lua/unit/test_color_core_unit.lua
+- Lua test path(s): tests/lua/unit/test_color_unit.lua
 
 ## Summary
 
@@ -70,7 +70,7 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 - `lurek.color.additive(c1, c2) -> table`: Additive blend of two colors (clamped to 0â€“1 per channel).
 - `lurek.color.alphaBlend(fg, bg) -> table`: Alpha compositing (Porter-Duff "over") of foreground over background.
 - `lurek.color.brightness(r, g, b) -> number`: Computes perceived luminance (ITU-R BT.601) of an RGB color.
-- `lurek.color.fromHex(hex) -> table|nil`: Parses a hex color string ("#RRGGBB" or "#RRGGBBAA") into a color table. Returns nil on invalid input.
+- `lurek.color.fromHex(hex) -> table|nil`: Parses a hex color string ("#RGB", "#RGBA", "#RRGGBB", or "#RRGGBBAA") into a color table. Returns nil on invalid input.
 - `lurek.color.fromHsl(h, s, l) -> table`: Creates a color from HSL components. Returns an opaque color (alpha = 1).
 - `lurek.color.fromHsv(h, s, v) -> table`: Creates a color from HSV components. Returns an opaque color (alpha = 1).
 - `lurek.color.fromU8(r, g, b, a?) -> table`: Creates a color from 0â€“255 integer components. Alpha defaults to 255.

@@ -2489,6 +2489,7 @@ end
 
 --@api: lurek.patterns.newRelationshipManager
 do
+    -- Deprecated alias kept for compatibility. Prefer lurek.ecs.newRelationshipManager().
     local rm = lurek.patterns.newRelationshipManager()
     rm:setValue(1, 2, 50)
     rm:setValue(1, 3, -20)

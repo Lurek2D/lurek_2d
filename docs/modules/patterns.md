@@ -17,6 +17,7 @@
 - Hierarchical blackboards allow local override with parent fallback.
 - Observer primitives provide key-based reactive notifications.
 - Wildcard observers support broad state-change monitoring.
+- Relationship-manager construction remains available here as a compatibility alias, but new ownership lives under `lurek.ecs`.
 - Command stacks implement undo and redo with bounded history policies.
 - Batch commands support atomic rollback of multi-step operations.
 - Throttle and debounce utilities control cadence for noisy inputs and triggers.
@@ -586,6 +587,7 @@ lurek.patterns.newRelationshipManager()
 
 ```lua
 do
+    -- Deprecated alias kept for compatibility. Prefer lurek.ecs.newRelationshipManager().
     local rm = lurek.patterns.newRelationshipManager()
     rm:setValue(1, 2, 50)
     rm:setValue(1, 3, -20)
@@ -5503,8 +5505,6 @@ end
 
 #### `LRelationshipManager:adjustValue`
 
-Add a delta to the relationship value between two entities.
-
 ```lua
 LRelationshipManager:adjustValue(a, b, delta)
 ```
@@ -5513,9 +5513,9 @@ LRelationshipManager:adjustValue(a, b, delta)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | number | First entity ID. |
-| `b` | number | Second entity ID. |
-| `delta` | number | Amount to add (can be negative). |
+| `a` | any |  |
+| `b` | any |  |
+| `delta` | any |  |
 
 **Example**
 
@@ -5533,19 +5533,17 @@ end
 
 #### `LRelationshipManager:defineType`
 
-Define a relationship type with named levels (e.g. "friendship" with levels ["hostile", "neutral", "friendly"]).
-
 ```lua
-LRelationshipManager:defineType(name, levels, defaultLevel)
+LRelationshipManager:defineType(name, levels, default_level)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | The relationship type name. |
-| `levels` | table | Array of level name strings in order. |
-| `defaultLevel?` | string | The default level for new pairs. |
+| `name` | any |  |
+| `levels` | any |  |
+| `default_level?` | any |  |
 
 **Example**
 
@@ -5563,25 +5561,17 @@ end
 
 #### `LRelationshipManager:getLevel`
 
-Get the named level for a relationship type between two entities.
-
 ```lua
-LRelationshipManager:getLevel(a, b, typeName)
+LRelationshipManager:getLevel(a, b, type_name)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | number | First entity ID. |
-| `b` | number | Second entity ID. |
-| `typeName` | string | The relationship type. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string | The current level name, or nil when no level is assigned. |
+| `a` | any |  |
+| `b` | any |  |
+| `type_name` | any |  |
 
 **Example**
 
@@ -5599,8 +5589,6 @@ end
 
 #### `LRelationshipManager:getValue`
 
-Get the numeric relationship value between two entity IDs.
-
 ```lua
 LRelationshipManager:getValue(a, b)
 ```
@@ -5609,14 +5597,8 @@ LRelationshipManager:getValue(a, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | number | First entity ID. |
-| `b` | number | Second entity ID. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | The stored value (0 if not set). |
+| `a` | any |  |
+| `b` | any |  |
 
 **Example**
 
@@ -5634,17 +5616,9 @@ end
 
 #### `LRelationshipManager:pairCount`
 
-Return the total number of tracked entity pairs.
-
 ```lua
 LRelationshipManager:pairCount()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| number | Pair count. |
 
 **Example**
 
@@ -5663,8 +5637,6 @@ end
 
 #### `LRelationshipManager:removePair`
 
-Remove all relationship data between two entities.
-
 ```lua
 LRelationshipManager:removePair(a, b)
 ```
@@ -5673,8 +5645,8 @@ LRelationshipManager:removePair(a, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | number | First entity ID. |
-| `b` | number | Second entity ID. |
+| `a` | any |  |
+| `b` | any |  |
 
 **Example**
 
@@ -5694,8 +5666,6 @@ end
 
 #### `LRelationshipManager:removeType`
 
-Remove a relationship type definition.
-
 ```lua
 LRelationshipManager:removeType(name)
 ```
@@ -5704,7 +5674,7 @@ LRelationshipManager:removeType(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | string | The type name to remove. |
+| `name` | any |  |
 
 **Example**
 
@@ -5723,26 +5693,18 @@ end
 
 #### `LRelationshipManager:setLevel`
 
-Set the named level for a relationship type between two entities.
-
 ```lua
-LRelationshipManager:setLevel(a, b, typeName, level)
+LRelationshipManager:setLevel(a, b, type_name, level)
 ```
 
 **Parameters**
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | number | First entity ID. |
-| `b` | number | Second entity ID. |
-| `typeName` | string | The relationship type. |
-| `level` | string | The level name to assign. |
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| boolean | True if the level was set successfully. |
+| `a` | any |  |
+| `b` | any |  |
+| `type_name` | any |  |
+| `level` | any |  |
 
 **Example**
 
@@ -5760,8 +5722,6 @@ end
 
 #### `LRelationshipManager:setValue`
 
-Set the numeric relationship value between two entity IDs.
-
 ```lua
 LRelationshipManager:setValue(a, b, value)
 ```
@@ -5770,9 +5730,9 @@ LRelationshipManager:setValue(a, b, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | number | First entity ID. |
-| `b` | number | Second entity ID. |
-| `value` | number | The numeric value to store. |
+| `a` | any |  |
+| `b` | any |  |
+| `value` | any |  |
 
 **Example**
 
@@ -5788,19 +5748,19 @@ end
 
 ---
 
-#### `LRelationshipManager:typeNames`
+#### `LRelationshipManager:type`
 
-Return all defined relationship type names.
+```lua
+LRelationshipManager:type()
+```
+
+---
+
+#### `LRelationshipManager:typeNames`
 
 ```lua
 LRelationshipManager:typeNames()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| string[] | Type name strings. |
 
 **Example**
 
@@ -5814,6 +5774,20 @@ do
     print("first = " .. tostring(types[1]))
 end
 ```
+
+---
+
+#### `LRelationshipManager:typeOf`
+
+```lua
+LRelationshipManager:typeOf(name)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `name` | any |  |
 
 ---
 

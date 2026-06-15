@@ -312,6 +312,7 @@ lurek.input.getPlaybackFrame()
 do
     local frame = lurek.input.getPlaybackFrame()
     print("playback frame = " .. frame)
+    print("lua type = " .. type(frame))
 end
 ```
 
@@ -463,6 +464,7 @@ lurek.input.isRecording()
 do
     print("recording = " .. tostring(lurek.input.isRecording()))
     print("playing = " .. tostring(lurek.input.isPlayingBack()))
+    print("lua type = " .. type(tostring(lurek.input.isPlayingBack())))
 end
 ```
 

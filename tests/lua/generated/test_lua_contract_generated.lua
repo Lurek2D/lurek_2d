@@ -3,6 +3,106 @@
 
 -- @describe generated: top-level lurek contract
 describe("generated: top-level lurek contract", function()
+    -- @covers lurek.agent.cancel
+    it("lurek.agent.cancel exists", function()
+        expect_type("function", lurek.agent.cancel)
+    end)
+
+    -- @covers lurek.agent.complete
+    it("lurek.agent.complete exists", function()
+        expect_type("function", lurek.agent.complete)
+    end)
+
+    -- @covers lurek.agent.completeAsync
+    it("lurek.agent.completeAsync exists", function()
+        expect_type("function", lurek.agent.completeAsync)
+    end)
+
+    -- @covers lurek.agent.completeJson
+    it("lurek.agent.completeJson exists", function()
+        expect_type("function", lurek.agent.completeJson)
+    end)
+
+    -- @covers lurek.agent.configure
+    it("lurek.agent.configure exists", function()
+        expect_type("function", lurek.agent.configure)
+    end)
+
+    -- @covers lurek.agent.embed
+    it("lurek.agent.embed exists", function()
+        expect_type("function", lurek.agent.embed)
+    end)
+
+    -- @covers lurek.agent.isAvailable
+    it("lurek.agent.isAvailable exists", function()
+        expect_type("function", lurek.agent.isAvailable)
+    end)
+
+    -- @covers lurek.agent.listModels
+    it("lurek.agent.listModels exists", function()
+        expect_type("function", lurek.agent.listModels)
+    end)
+
+    -- @covers lurek.agent.new
+    it("lurek.agent.new exists", function()
+        expect_type("function", lurek.agent.new)
+    end)
+
+    -- @covers lurek.agent.newAgentMemory
+    it("lurek.agent.newAgentMemory exists", function()
+        expect_type("function", lurek.agent.newAgentMemory)
+    end)
+
+    -- @covers lurek.agent.newChat
+    it("lurek.agent.newChat exists", function()
+        expect_type("function", lurek.agent.newChat)
+    end)
+
+    -- @covers lurek.agent.newEpisodicMemory
+    it("lurek.agent.newEpisodicMemory exists", function()
+        expect_type("function", lurek.agent.newEpisodicMemory)
+    end)
+
+    -- @covers lurek.agent.newManager
+    it("lurek.agent.newManager exists", function()
+        expect_type("function", lurek.agent.newManager)
+    end)
+
+    -- @covers lurek.agent.newOllama
+    it("lurek.agent.newOllama exists", function()
+        expect_type("function", lurek.agent.newOllama)
+    end)
+
+    -- @covers lurek.agent.newSemanticMemory
+    it("lurek.agent.newSemanticMemory exists", function()
+        expect_type("function", lurek.agent.newSemanticMemory)
+    end)
+
+    -- @covers lurek.agent.newSystem
+    it("lurek.agent.newSystem exists", function()
+        expect_type("function", lurek.agent.newSystem)
+    end)
+
+    -- @covers lurek.agent.newTemplate
+    it("lurek.agent.newTemplate exists", function()
+        expect_type("function", lurek.agent.newTemplate)
+    end)
+
+    -- @covers lurek.agent.newWorkingMemory
+    it("lurek.agent.newWorkingMemory exists", function()
+        expect_type("function", lurek.agent.newWorkingMemory)
+    end)
+
+    -- @covers lurek.agent.pendingCount
+    it("lurek.agent.pendingCount exists", function()
+        expect_type("function", lurek.agent.pendingCount)
+    end)
+
+    -- @covers lurek.agent.update
+    it("lurek.agent.update exists", function()
+        expect_type("function", lurek.agent.update)
+    end)
+
     -- @covers lurek.ai.newAIDirector
     it("lurek.ai.newAIDirector exists", function()
         expect_type("function", lurek.ai.newAIDirector)
@@ -218,6 +318,126 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.animation.newSyncGroup)
     end)
 
+    -- @covers lurek.asset.addTag
+    it("lurek.asset.addTag exists", function()
+        expect_type("function", lurek.asset.addTag)
+    end)
+
+    -- @covers lurek.asset.clear
+    it("lurek.asset.clear exists", function()
+        expect_type("function", lurek.asset.clear)
+    end)
+
+    -- @covers lurek.asset.findByGroup
+    it("lurek.asset.findByGroup exists", function()
+        expect_type("function", lurek.asset.findByGroup)
+    end)
+
+    -- @covers lurek.asset.findByName
+    it("lurek.asset.findByName exists", function()
+        expect_type("function", lurek.asset.findByName)
+    end)
+
+    -- @covers lurek.asset.findByTag
+    it("lurek.asset.findByTag exists", function()
+        expect_type("function", lurek.asset.findByTag)
+    end)
+
+    -- @covers lurek.asset.findByType
+    it("lurek.asset.findByType exists", function()
+        expect_type("function", lurek.asset.findByType)
+    end)
+
+    -- @covers lurek.asset.get
+    it("lurek.asset.get exists", function()
+        expect_type("function", lurek.asset.get)
+    end)
+
+    -- @covers lurek.asset.getGroup
+    it("lurek.asset.getGroup exists", function()
+        expect_type("function", lurek.asset.getGroup)
+    end)
+
+    -- @covers lurek.asset.getInfo
+    it("lurek.asset.getInfo exists", function()
+        expect_type("function", lurek.asset.getInfo)
+    end)
+
+    -- @covers lurek.asset.getName
+    it("lurek.asset.getName exists", function()
+        expect_type("function", lurek.asset.getName)
+    end)
+
+    -- @covers lurek.asset.getPath
+    it("lurek.asset.getPath exists", function()
+        expect_type("function", lurek.asset.getPath)
+    end)
+
+    -- @covers lurek.asset.getTags
+    it("lurek.asset.getTags exists", function()
+        expect_type("function", lurek.asset.getTags)
+    end)
+
+    -- @covers lurek.asset.getType
+    it("lurek.asset.getType exists", function()
+        expect_type("function", lurek.asset.getType)
+    end)
+
+    -- @covers lurek.asset.hasTag
+    it("lurek.asset.hasTag exists", function()
+        expect_type("function", lurek.asset.hasTag)
+    end)
+
+    -- @covers lurek.asset.isLoaded
+    it("lurek.asset.isLoaded exists", function()
+        expect_type("function", lurek.asset.isLoaded)
+    end)
+
+    -- @covers lurek.asset.load
+    it("lurek.asset.load exists", function()
+        expect_type("function", lurek.asset.load)
+    end)
+
+    -- @covers lurek.asset.preload
+    it("lurek.asset.preload exists", function()
+        expect_type("function", lurek.asset.preload)
+    end)
+
+    -- @covers lurek.asset.refcount
+    it("lurek.asset.refcount exists", function()
+        expect_type("function", lurek.asset.refcount)
+    end)
+
+    -- @covers lurek.asset.removeTag
+    it("lurek.asset.removeTag exists", function()
+        expect_type("function", lurek.asset.removeTag)
+    end)
+
+    -- @covers lurek.asset.setGroup
+    it("lurek.asset.setGroup exists", function()
+        expect_type("function", lurek.asset.setGroup)
+    end)
+
+    -- @covers lurek.asset.setName
+    it("lurek.asset.setName exists", function()
+        expect_type("function", lurek.asset.setName)
+    end)
+
+    -- @covers lurek.asset.stats
+    it("lurek.asset.stats exists", function()
+        expect_type("function", lurek.asset.stats)
+    end)
+
+    -- @covers lurek.asset.unload
+    it("lurek.asset.unload exists", function()
+        expect_type("function", lurek.asset.unload)
+    end)
+
+    -- @covers lurek.audio.beatClockFromSource
+    it("lurek.audio.beatClockFromSource exists", function()
+        expect_type("function", lurek.audio.beatClockFromSource)
+    end)
+
     -- @covers lurek.audio.clearFilter
     it("lurek.audio.clearFilter exists", function()
         expect_type("function", lurek.audio.clearFilter)
@@ -296,6 +516,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.audio.getHighpass
     it("lurek.audio.getHighpass exists", function()
         expect_type("function", lurek.audio.getHighpass)
+    end)
+
+    -- @covers lurek.audio.getJudgementWindows
+    it("lurek.audio.getJudgementWindows exists", function()
+        expect_type("function", lurek.audio.getJudgementWindows)
     end)
 
     -- @covers lurek.audio.getListener
@@ -398,6 +623,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.audio.isLooping)
     end)
 
+    -- @covers lurek.audio.isMuted
+    it("lurek.audio.isMuted exists", function()
+        expect_type("function", lurek.audio.isMuted)
+    end)
+
     -- @covers lurek.audio.isPaused
     it("lurek.audio.isPaused exists", function()
         expect_type("function", lurek.audio.isPaused)
@@ -413,9 +643,29 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.audio.isStopped)
     end)
 
+    -- @covers lurek.audio.judgeBeat
+    it("lurek.audio.judgeBeat exists", function()
+        expect_type("function", lurek.audio.judgeBeat)
+    end)
+
+    -- @covers lurek.audio.manager.pauseAll
+    it("lurek.audio.manager.pauseAll exists", function()
+        expect_type("function", lurek.audio.manager.pauseAll)
+    end)
+
+    -- @covers lurek.audio.manager.resumeAll
+    it("lurek.audio.manager.resumeAll exists", function()
+        expect_type("function", lurek.audio.manager.resumeAll)
+    end)
+
     -- @covers lurek.audio.mixInto
     it("lurek.audio.mixInto exists", function()
         expect_type("function", lurek.audio.mixInto)
+    end)
+
+    -- @covers lurek.audio.newBeatClock
+    it("lurek.audio.newBeatClock exists", function()
+        expect_type("function", lurek.audio.newBeatClock)
     end)
 
     -- @covers lurek.audio.newBus
@@ -478,6 +728,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.audio.playQueueable)
     end)
 
+    -- @covers lurek.audio.playSfx
+    it("lurek.audio.playSfx exists", function()
+        expect_type("function", lurek.audio.playSfx)
+    end)
+
     -- @covers lurek.audio.queueSource
     it("lurek.audio.queueSource exists", function()
         expect_type("function", lurek.audio.queueSource)
@@ -523,6 +778,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.audio.setHighpass)
     end)
 
+    -- @covers lurek.audio.setJudgementWindows
+    it("lurek.audio.setJudgementWindows exists", function()
+        expect_type("function", lurek.audio.setJudgementWindows)
+    end)
+
     -- @covers lurek.audio.setListener
     it("lurek.audio.setListener exists", function()
         expect_type("function", lurek.audio.setListener)
@@ -556,6 +816,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.audio.setMidiSoundFont
     it("lurek.audio.setMidiSoundFont exists", function()
         expect_type("function", lurek.audio.setMidiSoundFont)
+    end)
+
+    -- @covers lurek.audio.setMuted
+    it("lurek.audio.setMuted exists", function()
+        expect_type("function", lurek.audio.setMuted)
     end)
 
     -- @covers lurek.audio.setOrientation
@@ -621,6 +886,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.audio.stopAll
     it("lurek.audio.stopAll exists", function()
         expect_type("function", lurek.audio.stopAll)
+    end)
+
+    -- @covers lurek.audio.stopMusic
+    it("lurek.audio.stopMusic exists", function()
+        expect_type("function", lurek.audio.stopMusic)
     end)
 
     -- @covers lurek.audio.stopQueueable
@@ -918,6 +1188,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.camera.newRig)
     end)
 
+    -- @covers lurek.camera.newWalker
+    it("lurek.camera.newWalker exists", function()
+        expect_type("function", lurek.camera.newWalker)
+    end)
+
     -- @covers lurek.charts.defaultPalette
     it("lurek.charts.defaultPalette exists", function()
         expect_type("function", lurek.charts.defaultPalette)
@@ -931,6 +1206,16 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.charts.newBar
     it("lurek.charts.newBar exists", function()
         expect_type("function", lurek.charts.newBar)
+    end)
+
+    -- @covers lurek.charts.newHeatmap
+    it("lurek.charts.newHeatmap exists", function()
+        expect_type("function", lurek.charts.newHeatmap)
+    end)
+
+    -- @covers lurek.charts.newHistogram
+    it("lurek.charts.newHistogram exists", function()
+        expect_type("function", lurek.charts.newHistogram)
     end)
 
     -- @covers lurek.charts.newLine
@@ -951,6 +1236,16 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.charts.seriesColor
     it("lurek.charts.seriesColor exists", function()
         expect_type("function", lurek.charts.seriesColor)
+    end)
+
+    -- @covers lurek.cinematic.new
+    it("lurek.cinematic.new exists", function()
+        expect_type("function", lurek.cinematic.new)
+    end)
+
+    -- @covers lurek.cinematic.newTimeline
+    it("lurek.cinematic.newTimeline exists", function()
+        expect_type("function", lurek.cinematic.newTimeline)
     end)
 
     -- @covers lurek.color.additive
@@ -996,6 +1291,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.color.invert
     it("lurek.color.invert exists", function()
         expect_type("function", lurek.color.invert)
+    end)
+
+    -- @covers lurek.color.lerp
+    it("lurek.color.lerp exists", function()
+        expect_type("function", lurek.color.lerp)
     end)
 
     -- @covers lurek.color.linearToGamma
@@ -1533,9 +1833,34 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.devtools.watch)
     end)
 
+    -- @covers lurek.dialog.call
+    it("lurek.dialog.call exists", function()
+        expect_type("function", lurek.dialog.call)
+    end)
+
+    -- @covers lurek.dialog.choice
+    it("lurek.dialog.choice exists", function()
+        expect_type("function", lurek.dialog.choice)
+    end)
+
+    -- @covers lurek.dialog.event
+    it("lurek.dialog.event exists", function()
+        expect_type("function", lurek.dialog.event)
+    end)
+
+    -- @covers lurek.dialog.jump
+    it("lurek.dialog.jump exists", function()
+        expect_type("function", lurek.dialog.jump)
+    end)
+
     -- @covers lurek.dialog.newAI
     it("lurek.dialog.newAI exists", function()
         expect_type("function", lurek.dialog.newAI)
+    end)
+
+    -- @covers lurek.dialog.newSequencer
+    it("lurek.dialog.newSequencer exists", function()
+        expect_type("function", lurek.dialog.newSequencer)
     end)
 
     -- @covers lurek.dialog.newSpeakerRegistry
@@ -1546,6 +1871,16 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.dialog.newState
     it("lurek.dialog.newState exists", function()
         expect_type("function", lurek.dialog.newState)
+    end)
+
+    -- @covers lurek.dialog.say
+    it("lurek.dialog.say exists", function()
+        expect_type("function", lurek.dialog.say)
+    end)
+
+    -- @covers lurek.dialog.wait
+    it("lurek.dialog.wait exists", function()
+        expect_type("function", lurek.dialog.wait)
     end)
 
     -- @covers lurek.docs.checkStaleness
@@ -1818,6 +2153,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.dsp.waveformToPng)
     end)
 
+    -- @covers lurek.ecs.newRelationshipManager
+    it("lurek.ecs.newRelationshipManager exists", function()
+        expect_type("function", lurek.ecs.newRelationshipManager)
+    end)
+
     -- @covers lurek.ecs.newUniverse
     it("lurek.ecs.newUniverse exists", function()
         expect_type("function", lurek.ecs.newUniverse)
@@ -1871,6 +2211,151 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.effect.setShaderErrorDisplay
     it("lurek.effect.setShaderErrorDisplay exists", function()
         expect_type("function", lurek.effect.setShaderErrorDisplay)
+    end)
+
+    -- @covers lurek.engine.fps
+    it("lurek.engine.fps exists", function()
+        expect_type("function", lurek.engine.fps)
+    end)
+
+    -- @covers lurek.engine.frameCount
+    it("lurek.engine.frameCount exists", function()
+        expect_type("function", lurek.engine.frameCount)
+    end)
+
+    -- @covers lurek.engine.getConfigRevision
+    it("lurek.engine.getConfigRevision exists", function()
+        expect_type("function", lurek.engine.getConfigRevision)
+    end)
+
+    -- @covers lurek.engine.getFrameBudget
+    it("lurek.engine.getFrameBudget exists", function()
+        expect_type("function", lurek.engine.getFrameBudget)
+    end)
+
+    -- @covers lurek.engine.getFrameProfile
+    it("lurek.engine.getFrameProfile exists", function()
+        expect_type("function", lurek.engine.getFrameProfile)
+    end)
+
+    -- @covers lurek.engine.getFrameProfileText
+    it("lurek.engine.getFrameProfileText exists", function()
+        expect_type("function", lurek.engine.getFrameProfileText)
+    end)
+
+    -- @covers lurek.engine.getResourceStats
+    it("lurek.engine.getResourceStats exists", function()
+        expect_type("function", lurek.engine.getResourceStats)
+    end)
+
+    -- @covers lurek.engine.getVersion
+    it("lurek.engine.getVersion exists", function()
+        expect_type("function", lurek.engine.getVersion)
+    end)
+
+    -- @covers lurek.engine.isDebug
+    it("lurek.engine.isDebug exists", function()
+        expect_type("function", lurek.engine.isDebug)
+    end)
+
+    -- @covers lurek.engine.memoryUsage
+    it("lurek.engine.memoryUsage exists", function()
+        expect_type("function", lurek.engine.memoryUsage)
+    end)
+
+    -- @covers lurek.engine.platform
+    it("lurek.engine.platform exists", function()
+        expect_type("function", lurek.engine.platform)
+    end)
+
+    -- @covers lurek.engine.setResourceBudget
+    it("lurek.engine.setResourceBudget exists", function()
+        expect_type("function", lurek.engine.setResourceBudget)
+    end)
+
+    -- @covers lurek.engine.uptime
+    it("lurek.engine.uptime exists", function()
+        expect_type("function", lurek.engine.uptime)
+    end)
+
+    -- @covers lurek.event.clear
+    it("lurek.event.clear exists", function()
+        expect_type("function", lurek.event.clear)
+    end)
+
+    -- @covers lurek.event.clearHistory
+    it("lurek.event.clearHistory exists", function()
+        expect_type("function", lurek.event.clearHistory)
+    end)
+
+    -- @covers lurek.event.enableHistory
+    it("lurek.event.enableHistory exists", function()
+        expect_type("function", lurek.event.enableHistory)
+    end)
+
+    -- @covers lurek.event.exit
+    it("lurek.event.exit exists", function()
+        expect_type("function", lurek.event.exit)
+    end)
+
+    -- @covers lurek.event.flushDeferred
+    it("lurek.event.flushDeferred exists", function()
+        expect_type("function", lurek.event.flushDeferred)
+    end)
+
+    -- @covers lurek.event.getHistory
+    it("lurek.event.getHistory exists", function()
+        expect_type("function", lurek.event.getHistory)
+    end)
+
+    -- @covers lurek.event.newSignal
+    it("lurek.event.newSignal exists", function()
+        expect_type("function", lurek.event.newSignal)
+    end)
+
+    -- @covers lurek.event.poll
+    it("lurek.event.poll exists", function()
+        expect_type("function", lurek.event.poll)
+    end)
+
+    -- @covers lurek.event.pump
+    it("lurek.event.pump exists", function()
+        expect_type("function", lurek.event.pump)
+    end)
+
+    -- @covers lurek.event.push
+    it("lurek.event.push exists", function()
+        expect_type("function", lurek.event.push)
+    end)
+
+    -- @covers lurek.event.pushDeferred
+    it("lurek.event.pushDeferred exists", function()
+        expect_type("function", lurek.event.pushDeferred)
+    end)
+
+    -- @covers lurek.event.pushDeferredPriority
+    it("lurek.event.pushDeferredPriority exists", function()
+        expect_type("function", lurek.event.pushDeferredPriority)
+    end)
+
+    -- @covers lurek.event.pushPriority
+    it("lurek.event.pushPriority exists", function()
+        expect_type("function", lurek.event.pushPriority)
+    end)
+
+    -- @covers lurek.event.quit
+    it("lurek.event.quit exists", function()
+        expect_type("function", lurek.event.quit)
+    end)
+
+    -- @covers lurek.event.restart
+    it("lurek.event.restart exists", function()
+        expect_type("function", lurek.event.restart)
+    end)
+
+    -- @covers lurek.event.wait
+    it("lurek.event.wait exists", function()
+        expect_type("function", lurek.event.wait)
     end)
 
     -- @covers lurek.filesystem.append
@@ -2193,6 +2678,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.globe.new)
     end)
 
+    -- @covers lurek.globe.newRegistry
+    it("lurek.globe.newRegistry exists", function()
+        expect_type("function", lurek.globe.newRegistry)
+    end)
+
     -- @covers lurek.globe.raySphereIntersect
     it("lurek.globe.raySphereIntersect exists", function()
         expect_type("function", lurek.globe.raySphereIntersect)
@@ -2503,6 +2993,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.image.newProvinceGrid)
     end)
 
+    -- @covers lurek.image.saveGIF
+    it("lurek.image.saveGIF exists", function()
+        expect_type("function", lurek.image.saveGIF)
+    end)
+
     -- @covers lurek.image.saveImage
     it("lurek.image.saveImage exists", function()
         expect_type("function", lurek.image.saveImage)
@@ -2511,6 +3006,451 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.image.savePNG
     it("lurek.image.savePNG exists", function()
         expect_type("function", lurek.image.savePNG)
+    end)
+
+    -- @covers lurek.input.advancePlayback
+    it("lurek.input.advancePlayback exists", function()
+        expect_type("function", lurek.input.advancePlayback)
+    end)
+
+    -- @covers lurek.input.bind
+    it("lurek.input.bind exists", function()
+        expect_type("function", lurek.input.bind)
+    end)
+
+    -- @covers lurek.input.clearBindings
+    it("lurek.input.clearBindings exists", function()
+        expect_type("function", lurek.input.clearBindings)
+    end)
+
+    -- @covers lurek.input.define
+    it("lurek.input.define exists", function()
+        expect_type("function", lurek.input.define)
+    end)
+
+    -- @covers lurek.input.deserializeBindings
+    it("lurek.input.deserializeBindings exists", function()
+        expect_type("function", lurek.input.deserializeBindings)
+    end)
+
+    -- @covers lurek.input.gamepad.getAxis
+    it("lurek.input.gamepad.getAxis exists", function()
+        expect_type("function", lurek.input.gamepad.getAxis)
+    end)
+
+    -- @covers lurek.input.gamepad.getAxisCount
+    it("lurek.input.gamepad.getAxisCount exists", function()
+        expect_type("function", lurek.input.gamepad.getAxisCount)
+    end)
+
+    -- @covers lurek.input.gamepad.getBackgroundEvents
+    it("lurek.input.gamepad.getBackgroundEvents exists", function()
+        expect_type("function", lurek.input.gamepad.getBackgroundEvents)
+    end)
+
+    -- @covers lurek.input.gamepad.getButtonCount
+    it("lurek.input.gamepad.getButtonCount exists", function()
+        expect_type("function", lurek.input.gamepad.getButtonCount)
+    end)
+
+    -- @covers lurek.input.gamepad.getCount
+    it("lurek.input.gamepad.getCount exists", function()
+        expect_type("function", lurek.input.gamepad.getCount)
+    end)
+
+    -- @covers lurek.input.gamepad.getGUID
+    it("lurek.input.gamepad.getGUID exists", function()
+        expect_type("function", lurek.input.gamepad.getGUID)
+    end)
+
+    -- @covers lurek.input.gamepad.getGamepadMappingString
+    it("lurek.input.gamepad.getGamepadMappingString exists", function()
+        expect_type("function", lurek.input.gamepad.getGamepadMappingString)
+    end)
+
+    -- @covers lurek.input.gamepad.getHat
+    it("lurek.input.gamepad.getHat exists", function()
+        expect_type("function", lurek.input.gamepad.getHat)
+    end)
+
+    -- @covers lurek.input.gamepad.getJoystickCount
+    it("lurek.input.gamepad.getJoystickCount exists", function()
+        expect_type("function", lurek.input.gamepad.getJoystickCount)
+    end)
+
+    -- @covers lurek.input.gamepad.getJoysticks
+    it("lurek.input.gamepad.getJoysticks exists", function()
+        expect_type("function", lurek.input.gamepad.getJoysticks)
+    end)
+
+    -- @covers lurek.input.gamepad.getName
+    it("lurek.input.gamepad.getName exists", function()
+        expect_type("function", lurek.input.gamepad.getName)
+    end)
+
+    -- @covers lurek.input.gamepad.isConnected
+    it("lurek.input.gamepad.isConnected exists", function()
+        expect_type("function", lurek.input.gamepad.isConnected)
+    end)
+
+    -- @covers lurek.input.gamepad.isDown
+    it("lurek.input.gamepad.isDown exists", function()
+        expect_type("function", lurek.input.gamepad.isDown)
+    end)
+
+    -- @covers lurek.input.gamepad.isGamepad
+    it("lurek.input.gamepad.isGamepad exists", function()
+        expect_type("function", lurek.input.gamepad.isGamepad)
+    end)
+
+    -- @covers lurek.input.gamepad.isVibrationSupported
+    it("lurek.input.gamepad.isVibrationSupported exists", function()
+        expect_type("function", lurek.input.gamepad.isVibrationSupported)
+    end)
+
+    -- @covers lurek.input.gamepad.loadGamepadMappings
+    it("lurek.input.gamepad.loadGamepadMappings exists", function()
+        expect_type("function", lurek.input.gamepad.loadGamepadMappings)
+    end)
+
+    -- @covers lurek.input.gamepad.saveGamepadMappings
+    it("lurek.input.gamepad.saveGamepadMappings exists", function()
+        expect_type("function", lurek.input.gamepad.saveGamepadMappings)
+    end)
+
+    -- @covers lurek.input.gamepad.setBackgroundEvents
+    it("lurek.input.gamepad.setBackgroundEvents exists", function()
+        expect_type("function", lurek.input.gamepad.setBackgroundEvents)
+    end)
+
+    -- @covers lurek.input.gamepad.setGamepadMapping
+    it("lurek.input.gamepad.setGamepadMapping exists", function()
+        expect_type("function", lurek.input.gamepad.setGamepadMapping)
+    end)
+
+    -- @covers lurek.input.gamepad.setVibration
+    it("lurek.input.gamepad.setVibration exists", function()
+        expect_type("function", lurek.input.gamepad.setVibration)
+    end)
+
+    -- @covers lurek.input.gamepad.vibrate
+    it("lurek.input.gamepad.vibrate exists", function()
+        expect_type("function", lurek.input.gamepad.vibrate)
+    end)
+
+    -- @covers lurek.input.gamepad.virtualDpad
+    it("lurek.input.gamepad.virtualDpad exists", function()
+        expect_type("function", lurek.input.gamepad.virtualDpad)
+    end)
+
+    -- @covers lurek.input.gamepad.wasConnected
+    it("lurek.input.gamepad.wasConnected exists", function()
+        expect_type("function", lurek.input.gamepad.wasConnected)
+    end)
+
+    -- @covers lurek.input.gamepad.wasDisconnected
+    it("lurek.input.gamepad.wasDisconnected exists", function()
+        expect_type("function", lurek.input.gamepad.wasDisconnected)
+    end)
+
+    -- @covers lurek.input.gamepad.wasPressed
+    it("lurek.input.gamepad.wasPressed exists", function()
+        expect_type("function", lurek.input.gamepad.wasPressed)
+    end)
+
+    -- @covers lurek.input.gamepad.wasReleased
+    it("lurek.input.gamepad.wasReleased exists", function()
+        expect_type("function", lurek.input.gamepad.wasReleased)
+    end)
+
+    -- @covers lurek.input.getAxis
+    it("lurek.input.getAxis exists", function()
+        expect_type("function", lurek.input.getAxis)
+    end)
+
+    -- @covers lurek.input.getBindings
+    it("lurek.input.getBindings exists", function()
+        expect_type("function", lurek.input.getBindings)
+    end)
+
+    -- @covers lurek.input.getByCategory
+    it("lurek.input.getByCategory exists", function()
+        expect_type("function", lurek.input.getByCategory)
+    end)
+
+    -- @covers lurek.input.getConflicts
+    it("lurek.input.getConflicts exists", function()
+        expect_type("function", lurek.input.getConflicts)
+    end)
+
+    -- @covers lurek.input.getPlaybackFrame
+    it("lurek.input.getPlaybackFrame exists", function()
+        expect_type("function", lurek.input.getPlaybackFrame)
+    end)
+
+    -- @covers lurek.input.getVector
+    it("lurek.input.getVector exists", function()
+        expect_type("function", lurek.input.getVector)
+    end)
+
+    -- @covers lurek.input.isActionDown
+    it("lurek.input.isActionDown exists", function()
+        expect_type("function", lurek.input.isActionDown)
+    end)
+
+    -- @covers lurek.input.isDown
+    it("lurek.input.isDown exists", function()
+        expect_type("function", lurek.input.isDown)
+    end)
+
+    -- @covers lurek.input.isPlayingBack
+    it("lurek.input.isPlayingBack exists", function()
+        expect_type("function", lurek.input.isPlayingBack)
+    end)
+
+    -- @covers lurek.input.isRecording
+    it("lurek.input.isRecording exists", function()
+        expect_type("function", lurek.input.isRecording)
+    end)
+
+    -- @covers lurek.input.keyboard.getKeyFromScancode
+    it("lurek.input.keyboard.getKeyFromScancode exists", function()
+        expect_type("function", lurek.input.keyboard.getKeyFromScancode)
+    end)
+
+    -- @covers lurek.input.keyboard.getScancodeFromKey
+    it("lurek.input.keyboard.getScancodeFromKey exists", function()
+        expect_type("function", lurek.input.keyboard.getScancodeFromKey)
+    end)
+
+    -- @covers lurek.input.keyboard.hasKeyRepeat
+    it("lurek.input.keyboard.hasKeyRepeat exists", function()
+        expect_type("function", lurek.input.keyboard.hasKeyRepeat)
+    end)
+
+    -- @covers lurek.input.keyboard.hasTextInput
+    it("lurek.input.keyboard.hasTextInput exists", function()
+        expect_type("function", lurek.input.keyboard.hasTextInput)
+    end)
+
+    -- @covers lurek.input.keyboard.isDown
+    it("lurek.input.keyboard.isDown exists", function()
+        expect_type("function", lurek.input.keyboard.isDown)
+    end)
+
+    -- @covers lurek.input.keyboard.isModifierActive
+    it("lurek.input.keyboard.isModifierActive exists", function()
+        expect_type("function", lurek.input.keyboard.isModifierActive)
+    end)
+
+    -- @covers lurek.input.keyboard.isScancodeDown
+    it("lurek.input.keyboard.isScancodeDown exists", function()
+        expect_type("function", lurek.input.keyboard.isScancodeDown)
+    end)
+
+    -- @covers lurek.input.keyboard.setKeyRepeat
+    it("lurek.input.keyboard.setKeyRepeat exists", function()
+        expect_type("function", lurek.input.keyboard.setKeyRepeat)
+    end)
+
+    -- @covers lurek.input.keyboard.setTextInput
+    it("lurek.input.keyboard.setTextInput exists", function()
+        expect_type("function", lurek.input.keyboard.setTextInput)
+    end)
+
+    -- @covers lurek.input.loadRecording
+    it("lurek.input.loadRecording exists", function()
+        expect_type("function", lurek.input.loadRecording)
+    end)
+
+    -- @covers lurek.input.mouse.getCursor
+    it("lurek.input.mouse.getCursor exists", function()
+        expect_type("function", lurek.input.mouse.getCursor)
+    end)
+
+    -- @covers lurek.input.mouse.getPosition
+    it("lurek.input.mouse.getPosition exists", function()
+        expect_type("function", lurek.input.mouse.getPosition)
+    end)
+
+    -- @covers lurek.input.mouse.getRelativeMode
+    it("lurek.input.mouse.getRelativeMode exists", function()
+        expect_type("function", lurek.input.mouse.getRelativeMode)
+    end)
+
+    -- @covers lurek.input.mouse.getSystemCursor
+    it("lurek.input.mouse.getSystemCursor exists", function()
+        expect_type("function", lurek.input.mouse.getSystemCursor)
+    end)
+
+    -- @covers lurek.input.mouse.getWheelDelta
+    it("lurek.input.mouse.getWheelDelta exists", function()
+        expect_type("function", lurek.input.mouse.getWheelDelta)
+    end)
+
+    -- @covers lurek.input.mouse.getX
+    it("lurek.input.mouse.getX exists", function()
+        expect_type("function", lurek.input.mouse.getX)
+    end)
+
+    -- @covers lurek.input.mouse.getY
+    it("lurek.input.mouse.getY exists", function()
+        expect_type("function", lurek.input.mouse.getY)
+    end)
+
+    -- @covers lurek.input.mouse.isCursorSupported
+    it("lurek.input.mouse.isCursorSupported exists", function()
+        expect_type("function", lurek.input.mouse.isCursorSupported)
+    end)
+
+    -- @covers lurek.input.mouse.isDown
+    it("lurek.input.mouse.isDown exists", function()
+        expect_type("function", lurek.input.mouse.isDown)
+    end)
+
+    -- @covers lurek.input.mouse.isGrabbed
+    it("lurek.input.mouse.isGrabbed exists", function()
+        expect_type("function", lurek.input.mouse.isGrabbed)
+    end)
+
+    -- @covers lurek.input.mouse.isVisible
+    it("lurek.input.mouse.isVisible exists", function()
+        expect_type("function", lurek.input.mouse.isVisible)
+    end)
+
+    -- @covers lurek.input.mouse.newCursor
+    it("lurek.input.mouse.newCursor exists", function()
+        expect_type("function", lurek.input.mouse.newCursor)
+    end)
+
+    -- @covers lurek.input.mouse.setCursor
+    it("lurek.input.mouse.setCursor exists", function()
+        expect_type("function", lurek.input.mouse.setCursor)
+    end)
+
+    -- @covers lurek.input.mouse.setGrabbed
+    it("lurek.input.mouse.setGrabbed exists", function()
+        expect_type("function", lurek.input.mouse.setGrabbed)
+    end)
+
+    -- @covers lurek.input.mouse.setPosition
+    it("lurek.input.mouse.setPosition exists", function()
+        expect_type("function", lurek.input.mouse.setPosition)
+    end)
+
+    -- @covers lurek.input.mouse.setRelativeMode
+    it("lurek.input.mouse.setRelativeMode exists", function()
+        expect_type("function", lurek.input.mouse.setRelativeMode)
+    end)
+
+    -- @covers lurek.input.mouse.setVisible
+    it("lurek.input.mouse.setVisible exists", function()
+        expect_type("function", lurek.input.mouse.setVisible)
+    end)
+
+    -- @covers lurek.input.newCombo
+    it("lurek.input.newCombo exists", function()
+        expect_type("function", lurek.input.newCombo)
+    end)
+
+    -- @covers lurek.input.newMapping
+    it("lurek.input.newMapping exists", function()
+        expect_type("function", lurek.input.newMapping)
+    end)
+
+    -- @covers lurek.input.onRebind
+    it("lurek.input.onRebind exists", function()
+        expect_type("function", lurek.input.onRebind)
+    end)
+
+    -- @covers lurek.input.reset
+    it("lurek.input.reset exists", function()
+        expect_type("function", lurek.input.reset)
+    end)
+
+    -- @covers lurek.input.serializeBindings
+    it("lurek.input.serializeBindings exists", function()
+        expect_type("function", lurek.input.serializeBindings)
+    end)
+
+    -- @covers lurek.input.startPlayback
+    it("lurek.input.startPlayback exists", function()
+        expect_type("function", lurek.input.startPlayback)
+    end)
+
+    -- @covers lurek.input.startRecording
+    it("lurek.input.startRecording exists", function()
+        expect_type("function", lurek.input.startRecording)
+    end)
+
+    -- @covers lurek.input.stopPlayback
+    it("lurek.input.stopPlayback exists", function()
+        expect_type("function", lurek.input.stopPlayback)
+    end)
+
+    -- @covers lurek.input.stopRecording
+    it("lurek.input.stopRecording exists", function()
+        expect_type("function", lurek.input.stopRecording)
+    end)
+
+    -- @covers lurek.input.touch.getPosition
+    it("lurek.input.touch.getPosition exists", function()
+        expect_type("function", lurek.input.touch.getPosition)
+    end)
+
+    -- @covers lurek.input.touch.getPressure
+    it("lurek.input.touch.getPressure exists", function()
+        expect_type("function", lurek.input.touch.getPressure)
+    end)
+
+    -- @covers lurek.input.touch.getTouchCount
+    it("lurek.input.touch.getTouchCount exists", function()
+        expect_type("function", lurek.input.touch.getTouchCount)
+    end)
+
+    -- @covers lurek.input.touch.getTouches
+    it("lurek.input.touch.getTouches exists", function()
+        expect_type("function", lurek.input.touch.getTouches)
+    end)
+
+    -- @covers lurek.input.touch.wasPressed
+    it("lurek.input.touch.wasPressed exists", function()
+        expect_type("function", lurek.input.touch.wasPressed)
+    end)
+
+    -- @covers lurek.input.touch.wasReleased
+    it("lurek.input.touch.wasReleased exists", function()
+        expect_type("function", lurek.input.touch.wasReleased)
+    end)
+
+    -- @covers lurek.input.unbind
+    it("lurek.input.unbind exists", function()
+        expect_type("function", lurek.input.unbind)
+    end)
+
+    -- @covers lurek.input.wasActionPressed
+    it("lurek.input.wasActionPressed exists", function()
+        expect_type("function", lurek.input.wasActionPressed)
+    end)
+
+    -- @covers lurek.input.wasActionPressedWithin
+    it("lurek.input.wasActionPressedWithin exists", function()
+        expect_type("function", lurek.input.wasActionPressedWithin)
+    end)
+
+    -- @covers lurek.input.wasActionReleased
+    it("lurek.input.wasActionReleased exists", function()
+        expect_type("function", lurek.input.wasActionReleased)
+    end)
+
+    -- @covers lurek.input.wasPressed
+    it("lurek.input.wasPressed exists", function()
+        expect_type("function", lurek.input.wasPressed)
+    end)
+
+    -- @covers lurek.input.wasReleased
+    it("lurek.input.wasReleased exists", function()
+        expect_type("function", lurek.input.wasReleased)
     end)
 
     -- @covers lurek.layout.centerInArea
@@ -2538,14 +3478,59 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.layout.tree)
     end)
 
+    -- @covers lurek.learning.defineEnv
+    it("lurek.learning.defineEnv exists", function()
+        expect_type("function", lurek.learning.defineEnv)
+    end)
+
+    -- @covers lurek.learning.frameStack
+    it("lurek.learning.frameStack exists", function()
+        expect_type("function", lurek.learning.frameStack)
+    end)
+
+    -- @covers lurek.learning.loadOnnx
+    it("lurek.learning.loadOnnx exists", function()
+        expect_type("function", lurek.learning.loadOnnx)
+    end)
+
     -- @covers lurek.learning.newBandit
     it("lurek.learning.newBandit exists", function()
         expect_type("function", lurek.learning.newBandit)
     end)
 
+    -- @covers lurek.learning.newConv2D
+    it("lurek.learning.newConv2D exists", function()
+        expect_type("function", lurek.learning.newConv2D)
+    end)
+
+    -- @covers lurek.learning.newEngine
+    it("lurek.learning.newEngine exists", function()
+        expect_type("function", lurek.learning.newEngine)
+    end)
+
     -- @covers lurek.learning.newGeneticAlgorithm
     it("lurek.learning.newGeneticAlgorithm exists", function()
         expect_type("function", lurek.learning.newGeneticAlgorithm)
+    end)
+
+    -- @covers lurek.learning.newGru
+    it("lurek.learning.newGru exists", function()
+        expect_type("function", lurek.learning.newGru)
+    end)
+
+    -- @covers lurek.learning.newLstm
+    it("lurek.learning.newLstm exists", function()
+        expect_type("function", lurek.learning.newLstm)
+    end)
+
+    -- @covers lurek.learning.newMaxPool2D
+    it("lurek.learning.newMaxPool2D exists", function()
+        expect_type("function", lurek.learning.newMaxPool2D)
+    end)
+
+    -- @covers lurek.learning.newMultiHeadAttention
+    it("lurek.learning.newMultiHeadAttention exists", function()
+        expect_type("function", lurek.learning.newMultiHeadAttention)
     end)
 
     -- @covers lurek.learning.newNeuralNet
@@ -2558,9 +3543,44 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.learning.newNeuroevolution)
     end)
 
+    -- @covers lurek.learning.newPositionalEncoding
+    it("lurek.learning.newPositionalEncoding exists", function()
+        expect_type("function", lurek.learning.newPositionalEncoding)
+    end)
+
     -- @covers lurek.learning.newQLearner
     it("lurek.learning.newQLearner exists", function()
         expect_type("function", lurek.learning.newQLearner)
+    end)
+
+    -- @covers lurek.learning.newTensor
+    it("lurek.learning.newTensor exists", function()
+        expect_type("function", lurek.learning.newTensor)
+    end)
+
+    -- @covers lurek.learning.newTransformerDecoder
+    it("lurek.learning.newTransformerDecoder exists", function()
+        expect_type("function", lurek.learning.newTransformerDecoder)
+    end)
+
+    -- @covers lurek.learning.newTransformerEncoder
+    it("lurek.learning.newTransformerEncoder exists", function()
+        expect_type("function", lurek.learning.newTransformerEncoder)
+    end)
+
+    -- @covers lurek.learning.normalizeEnv
+    it("lurek.learning.normalizeEnv exists", function()
+        expect_type("function", lurek.learning.normalizeEnv)
+    end)
+
+    -- @covers lurek.learning.timeLimit
+    it("lurek.learning.timeLimit exists", function()
+        expect_type("function", lurek.learning.timeLimit)
+    end)
+
+    -- @covers lurek.learning.wrap
+    it("lurek.learning.wrap exists", function()
+        expect_type("function", lurek.learning.wrap)
     end)
 
     -- @covers lurek.light.advanceFlickers
@@ -2908,6 +3928,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.math.cos)
     end)
 
+    -- @covers lurek.math.cubicBezier
+    it("lurek.math.cubicBezier exists", function()
+        expect_type("function", lurek.math.cubicBezier)
+    end)
+
     -- @covers lurek.math.deg
     it("lurek.math.deg exists", function()
         expect_type("function", lurek.math.deg)
@@ -2926,6 +3951,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.math.distanceSq
     it("lurek.math.distanceSq exists", function()
         expect_type("function", lurek.math.distanceSq)
+    end)
+
+    -- @covers lurek.math.easingNames
+    it("lurek.math.easingNames exists", function()
+        expect_type("function", lurek.math.easingNames)
     end)
 
     -- @covers lurek.math.exp
@@ -3058,6 +4088,16 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.math.log)
     end)
 
+    -- @covers lurek.math.lootFromList
+    it("lurek.math.lootFromList exists", function()
+        expect_type("function", lurek.math.lootFromList)
+    end)
+
+    -- @covers lurek.math.lootFromToml
+    it("lurek.math.lootFromToml exists", function()
+        expect_type("function", lurek.math.lootFromToml)
+    end)
+
     -- @covers lurek.math.max
     it("lurek.math.max exists", function()
         expect_type("function", lurek.math.max)
@@ -3076,6 +4116,16 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.math.newCircle
     it("lurek.math.newCircle exists", function()
         expect_type("function", lurek.math.newCircle)
+    end)
+
+    -- @covers lurek.math.newLootTable
+    it("lurek.math.newLootTable exists", function()
+        expect_type("function", lurek.math.newLootTable)
+    end)
+
+    -- @covers lurek.math.newPityTracker
+    it("lurek.math.newPityTracker exists", function()
+        expect_type("function", lurek.math.newPityTracker)
     end)
 
     -- @covers lurek.math.newRandomGenerator
@@ -3218,6 +4268,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.math.round)
     end)
 
+    -- @covers lurek.math.sampleWithPity
+    it("lurek.math.sampleWithPity exists", function()
+        expect_type("function", lurek.math.sampleWithPity)
+    end)
+
     -- @covers lurek.math.segmentIntersectsSegment
     it("lurek.math.segmentIntersectsSegment exists", function()
         expect_type("function", lurek.math.segmentIntersectsSegment)
@@ -3323,6 +4378,21 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.network.discoverLobbies)
     end)
 
+    -- @covers lurek.network.getPlayerList
+    it("lurek.network.getPlayerList exists", function()
+        expect_type("function", lurek.network.getPlayerList)
+    end)
+
+    -- @covers lurek.network.getRoom
+    it("lurek.network.getRoom exists", function()
+        expect_type("function", lurek.network.getRoom)
+    end)
+
+    -- @covers lurek.network.isAllReady
+    it("lurek.network.isAllReady exists", function()
+        expect_type("function", lurek.network.isAllReady)
+    end)
+
     -- @covers lurek.network.joinRoom
     it("lurek.network.joinRoom exists", function()
         expect_type("function", lurek.network.joinRoom)
@@ -3353,9 +4423,19 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.network.newHost)
     end)
 
+    -- @covers lurek.network.newNetState
+    it("lurek.network.newNetState exists", function()
+        expect_type("function", lurek.network.newNetState)
+    end)
+
     -- @covers lurek.network.newRelayTicket
     it("lurek.network.newRelayTicket exists", function()
         expect_type("function", lurek.network.newRelayTicket)
+    end)
+
+    -- @covers lurek.network.newRpc
+    it("lurek.network.newRpc exists", function()
+        expect_type("function", lurek.network.newRpc)
     end)
 
     -- @covers lurek.network.newRuntime
@@ -3371,6 +4451,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.network.pack
     it("lurek.network.pack exists", function()
         expect_type("function", lurek.network.pack)
+    end)
+
+    -- @covers lurek.network.packSnapshot
+    it("lurek.network.packSnapshot exists", function()
+        expect_type("function", lurek.network.packSnapshot)
     end)
 
     -- @covers lurek.network.parsePunchProbe
@@ -3393,6 +4478,26 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.network.reconcileSnapshot)
     end)
 
+    -- @covers lurek.network.reconcileWithPolicy
+    it("lurek.network.reconcileWithPolicy exists", function()
+        expect_type("function", lurek.network.reconcileWithPolicy)
+    end)
+
+    -- @covers lurek.network.setReady
+    it("lurek.network.setReady exists", function()
+        expect_type("function", lurek.network.setReady)
+    end)
+
+    -- @covers lurek.network.sseCollect
+    it("lurek.network.sseCollect exists", function()
+        expect_type("function", lurek.network.sseCollect)
+    end)
+
+    -- @covers lurek.network.sseConnect
+    it("lurek.network.sseConnect exists", function()
+        expect_type("function", lurek.network.sseConnect)
+    end)
+
     -- @covers lurek.network.syncEntity
     it("lurek.network.syncEntity exists", function()
         expect_type("function", lurek.network.syncEntity)
@@ -3401,6 +4506,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.network.unpack
     it("lurek.network.unpack exists", function()
         expect_type("function", lurek.network.unpack)
+    end)
+
+    -- @covers lurek.network.unpackSnapshot
+    it("lurek.network.unpackSnapshot exists", function()
+        expect_type("function", lurek.network.unpackSnapshot)
     end)
 
     -- @covers lurek.overlay.new
@@ -3453,6 +4563,21 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.particle.newTrail)
     end)
 
+    -- @covers lurek.pathfind.cancelAsyncPath
+    it("lurek.pathfind.cancelAsyncPath exists", function()
+        expect_type("function", lurek.pathfind.cancelAsyncPath)
+    end)
+
+    -- @covers lurek.pathfind.clearAsyncPaths
+    it("lurek.pathfind.clearAsyncPaths exists", function()
+        expect_type("function", lurek.pathfind.clearAsyncPaths)
+    end)
+
+    -- @covers lurek.pathfind.getAsyncPendingCount
+    it("lurek.pathfind.getAsyncPendingCount exists", function()
+        expect_type("function", lurek.pathfind.getAsyncPendingCount)
+    end)
+
     -- @covers lurek.pathfind.getThreadCount
     it("lurek.pathfind.getThreadCount exists", function()
         expect_type("function", lurek.pathfind.getThreadCount)
@@ -3461,6 +4586,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.pathfind.newFlowField
     it("lurek.pathfind.newFlowField exists", function()
         expect_type("function", lurek.pathfind.newFlowField)
+    end)
+
+    -- @covers lurek.pathfind.newGoalMap
+    it("lurek.pathfind.newGoalMap exists", function()
+        expect_type("function", lurek.pathfind.newGoalMap)
     end)
 
     -- @covers lurek.pathfind.newHexGrid
@@ -3503,6 +4633,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.pathfind.newPathfinder)
     end)
 
+    -- @covers lurek.pathfind.pollAsyncPaths
+    it("lurek.pathfind.pollAsyncPaths exists", function()
+        expect_type("function", lurek.pathfind.pollAsyncPaths)
+    end)
+
     -- @covers lurek.pathfind.rangeMap
     it("lurek.pathfind.rangeMap exists", function()
         expect_type("function", lurek.pathfind.rangeMap)
@@ -3511,6 +4646,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.pathfind.setThreadCount
     it("lurek.pathfind.setThreadCount exists", function()
         expect_type("function", lurek.pathfind.setThreadCount)
+    end)
+
+    -- @covers lurek.pathfind.submitAsyncPath
+    it("lurek.pathfind.submitAsyncPath exists", function()
+        expect_type("function", lurek.pathfind.submitAsyncPath)
     end)
 
     -- @covers lurek.patterns.newBehaviorTree
@@ -3673,11 +4813,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.physics.newBody)
     end)
 
-    -- @covers lurek.procgen.newCellular
-    it("lurek.procgen.newCellular exists", function()
-        expect_type("function", lurek.procgen.newCellular)
-    end)
-
     -- @covers lurek.physics.newChainShape
     it("lurek.physics.newChainShape exists", function()
         expect_type("function", lurek.physics.newChainShape)
@@ -3828,6 +4963,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.procgen.newBiomeClassifier)
     end)
 
+    -- @covers lurek.procgen.newCellular
+    it("lurek.procgen.newCellular exists", function()
+        expect_type("function", lurek.procgen.newCellular)
+    end)
+
     -- @covers lurek.procgen.newNoiseGenerator
     it("lurek.procgen.newNoiseGenerator exists", function()
         expect_type("function", lurek.procgen.newNoiseGenerator)
@@ -3883,6 +5023,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.procgen.roomsDungeonWithPrefabs)
     end)
 
+    -- @covers lurek.procgen.setConstraintsFromLLM
+    it("lurek.procgen.setConstraintsFromLLM exists", function()
+        expect_type("function", lurek.procgen.setConstraintsFromLLM)
+    end)
+
     -- @covers lurek.procgen.simplex2d
     it("lurek.procgen.simplex2d exists", function()
         expect_type("function", lurek.procgen.simplex2d)
@@ -3901,6 +5046,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.procgen.voronoi
     it("lurek.procgen.voronoi exists", function()
         expect_type("function", lurek.procgen.voronoi)
+    end)
+
+    -- @covers lurek.procgen.wfcFromPrompt
+    it("lurek.procgen.wfcFromPrompt exists", function()
+        expect_type("function", lurek.procgen.wfcFromPrompt)
     end)
 
     -- @covers lurek.procgen.wfcGenerate
@@ -3993,9 +5143,24 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.raycaster.applyLitShade)
     end)
 
+    -- @covers lurek.raycaster.buildMultiLevelScene
+    it("lurek.raycaster.buildMultiLevelScene exists", function()
+        expect_type("function", lurek.raycaster.buildMultiLevelScene)
+    end)
+
+    -- @covers lurek.raycaster.buildMultiLevelSceneFromAdapter
+    it("lurek.raycaster.buildMultiLevelSceneFromAdapter exists", function()
+        expect_type("function", lurek.raycaster.buildMultiLevelSceneFromAdapter)
+    end)
+
     -- @covers lurek.raycaster.distanceShade
     it("lurek.raycaster.distanceShade exists", function()
         expect_type("function", lurek.raycaster.distanceShade)
+    end)
+
+    -- @covers lurek.raycaster.getLastBuildStats
+    it("lurek.raycaster.getLastBuildStats exists", function()
+        expect_type("function", lurek.raycaster.getLastBuildStats)
     end)
 
     -- @covers lurek.raycaster.new
@@ -4018,14 +5183,34 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.raycaster.newMap)
     end)
 
+    -- @covers lurek.raycaster.newMultiLevelGrid
+    it("lurek.raycaster.newMultiLevelGrid exists", function()
+        expect_type("function", lurek.raycaster.newMultiLevelGrid)
+    end)
+
     -- @covers lurek.raycaster.newPointLight
     it("lurek.raycaster.newPointLight exists", function()
         expect_type("function", lurek.raycaster.newPointLight)
     end)
 
+    -- @covers lurek.raycaster.newSceneAdapter
+    it("lurek.raycaster.newSceneAdapter exists", function()
+        expect_type("function", lurek.raycaster.newSceneAdapter)
+    end)
+
     -- @covers lurek.raycaster.newSpriteManager
     it("lurek.raycaster.newSpriteManager exists", function()
         expect_type("function", lurek.raycaster.newSpriteManager)
+    end)
+
+    -- @covers lurek.raycaster.pickScreenMultiLevel
+    it("lurek.raycaster.pickScreenMultiLevel exists", function()
+        expect_type("function", lurek.raycaster.pickScreenMultiLevel)
+    end)
+
+    -- @covers lurek.raycaster.pickScreenMultiLevelFromAdapter
+    it("lurek.raycaster.pickScreenMultiLevelFromAdapter exists", function()
+        expect_type("function", lurek.raycaster.pickScreenMultiLevelFromAdapter)
     end)
 
     -- @covers lurek.raycaster.projectColumn
@@ -4331,6 +5516,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.render.newCanvas
     it("lurek.render.newCanvas exists", function()
         expect_type("function", lurek.render.newCanvas)
+    end)
+
+    -- @covers lurek.render.newDepthSorter
+    it("lurek.render.newDepthSorter exists", function()
+        expect_type("function", lurek.render.newDepthSorter)
     end)
 
     -- @covers lurek.render.newDrawLayer
@@ -4763,6 +5953,381 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.save.newSaveManager)
     end)
 
+    -- @covers lurek.scene.clear
+    it("lurek.scene.clear exists", function()
+        expect_type("function", lurek.scene.clear)
+    end)
+
+    -- @covers lurek.scene.clearQueuedTransitions
+    it("lurek.scene.clearQueuedTransitions exists", function()
+        expect_type("function", lurek.scene.clearQueuedTransitions)
+    end)
+
+    -- @covers lurek.scene.define
+    it("lurek.scene.define exists", function()
+        expect_type("function", lurek.scene.define)
+    end)
+
+    -- @covers lurek.scene.depth
+    it("lurek.scene.depth exists", function()
+        expect_type("function", lurek.scene.depth)
+    end)
+
+    -- @covers lurek.scene.deserializeScene
+    it("lurek.scene.deserializeScene exists", function()
+        expect_type("function", lurek.scene.deserializeScene)
+    end)
+
+    -- @covers lurek.scene.draw
+    it("lurek.scene.draw exists", function()
+        expect_type("function", lurek.scene.draw)
+    end)
+
+    -- @covers lurek.scene.getActiveScenes
+    it("lurek.scene.getActiveScenes exists", function()
+        expect_type("function", lurek.scene.getActiveScenes)
+    end)
+
+    -- @covers lurek.scene.getCurrent
+    it("lurek.scene.getCurrent exists", function()
+        expect_type("function", lurek.scene.getCurrent)
+    end)
+
+    -- @covers lurek.scene.getCurrentLayer
+    it("lurek.scene.getCurrentLayer exists", function()
+        expect_type("function", lurek.scene.getCurrentLayer)
+    end)
+
+    -- @covers lurek.scene.getData
+    it("lurek.scene.getData exists", function()
+        expect_type("function", lurek.scene.getData)
+    end)
+
+    -- @covers lurek.scene.getQueuedTransitionCount
+    it("lurek.scene.getQueuedTransitionCount exists", function()
+        expect_type("function", lurek.scene.getQueuedTransitionCount)
+    end)
+
+    -- @covers lurek.scene.getRegistered
+    it("lurek.scene.getRegistered exists", function()
+        expect_type("function", lurek.scene.getRegistered)
+    end)
+
+    -- @covers lurek.scene.getRegisteredNames
+    it("lurek.scene.getRegisteredNames exists", function()
+        expect_type("function", lurek.scene.getRegisteredNames)
+    end)
+
+    -- @covers lurek.scene.getRenderActiveScenes
+    it("lurek.scene.getRenderActiveScenes exists", function()
+        expect_type("function", lurek.scene.getRenderActiveScenes)
+    end)
+
+    -- @covers lurek.scene.getStackSize
+    it("lurek.scene.getStackSize exists", function()
+        expect_type("function", lurek.scene.getStackSize)
+    end)
+
+    -- @covers lurek.scene.getTransitionProgress
+    it("lurek.scene.getTransitionProgress exists", function()
+        expect_type("function", lurek.scene.getTransitionProgress)
+    end)
+
+    -- @covers lurek.scene.getTransitionProgressEased
+    it("lurek.scene.getTransitionProgressEased exists", function()
+        expect_type("function", lurek.scene.getTransitionProgressEased)
+    end)
+
+    -- @covers lurek.scene.getTransitionTypes
+    it("lurek.scene.getTransitionTypes exists", function()
+        expect_type("function", lurek.scene.getTransitionTypes)
+    end)
+
+    -- @covers lurek.scene.hasData
+    it("lurek.scene.hasData exists", function()
+        expect_type("function", lurek.scene.hasData)
+    end)
+
+    -- @covers lurek.scene.hasRegistered
+    it("lurek.scene.hasRegistered exists", function()
+        expect_type("function", lurek.scene.hasRegistered)
+    end)
+
+    -- @covers lurek.scene.isEmpty
+    it("lurek.scene.isEmpty exists", function()
+        expect_type("function", lurek.scene.isEmpty)
+    end)
+
+    -- @covers lurek.scene.isLateEnabled
+    it("lurek.scene.isLateEnabled exists", function()
+        expect_type("function", lurek.scene.isLateEnabled)
+    end)
+
+    -- @covers lurek.scene.isOverlay
+    it("lurek.scene.isOverlay exists", function()
+        expect_type("function", lurek.scene.isOverlay)
+    end)
+
+    -- @covers lurek.scene.isPhysicsEnabled
+    it("lurek.scene.isPhysicsEnabled exists", function()
+        expect_type("function", lurek.scene.isPhysicsEnabled)
+    end)
+
+    -- @covers lurek.scene.isPreloaded
+    it("lurek.scene.isPreloaded exists", function()
+        expect_type("function", lurek.scene.isPreloaded)
+    end)
+
+    -- @covers lurek.scene.isProcessEnabled
+    it("lurek.scene.isProcessEnabled exists", function()
+        expect_type("function", lurek.scene.isProcessEnabled)
+    end)
+
+    -- @covers lurek.scene.isTransitioning
+    it("lurek.scene.isTransitioning exists", function()
+        expect_type("function", lurek.scene.isTransitioning)
+    end)
+
+    -- @covers lurek.scene.isUpdateEnabled
+    it("lurek.scene.isUpdateEnabled exists", function()
+        expect_type("function", lurek.scene.isUpdateEnabled)
+    end)
+
+    -- @covers lurek.scene.new
+    it("lurek.scene.new exists", function()
+        expect_type("function", lurek.scene.new)
+    end)
+
+    -- @covers lurek.scene.newDepthSorter
+    it("lurek.scene.newDepthSorter exists", function()
+        expect_type("function", lurek.scene.newDepthSorter)
+    end)
+
+    -- @covers lurek.scene.newObjectContainer
+    it("lurek.scene.newObjectContainer exists", function()
+        expect_type("function", lurek.scene.newObjectContainer)
+    end)
+
+    -- @covers lurek.scene.newScene
+    it("lurek.scene.newScene exists", function()
+        expect_type("function", lurek.scene.newScene)
+    end)
+
+    -- @covers lurek.scene.pop
+    it("lurek.scene.pop exists", function()
+        expect_type("function", lurek.scene.pop)
+    end)
+
+    -- @covers lurek.scene.popTo
+    it("lurek.scene.popTo exists", function()
+        expect_type("function", lurek.scene.popTo)
+    end)
+
+    -- @covers lurek.scene.preload
+    it("lurek.scene.preload exists", function()
+        expect_type("function", lurek.scene.preload)
+    end)
+
+    -- @covers lurek.scene.process
+    it("lurek.scene.process exists", function()
+        expect_type("function", lurek.scene.process)
+    end)
+
+    -- @covers lurek.scene.processLate
+    it("lurek.scene.processLate exists", function()
+        expect_type("function", lurek.scene.processLate)
+    end)
+
+    -- @covers lurek.scene.processPhysics
+    it("lurek.scene.processPhysics exists", function()
+        expect_type("function", lurek.scene.processPhysics)
+    end)
+
+    -- @covers lurek.scene.push
+    it("lurek.scene.push exists", function()
+        expect_type("function", lurek.scene.push)
+    end)
+
+    -- @covers lurek.scene.pushOverlay
+    it("lurek.scene.pushOverlay exists", function()
+        expect_type("function", lurek.scene.pushOverlay)
+    end)
+
+    -- @covers lurek.scene.pushPreloaded
+    it("lurek.scene.pushPreloaded exists", function()
+        expect_type("function", lurek.scene.pushPreloaded)
+    end)
+
+    -- @covers lurek.scene.queueTransition
+    it("lurek.scene.queueTransition exists", function()
+        expect_type("function", lurek.scene.queueTransition)
+    end)
+
+    -- @covers lurek.scene.registerScene
+    it("lurek.scene.registerScene exists", function()
+        expect_type("function", lurek.scene.registerScene)
+    end)
+
+    -- @covers lurek.scene.removeData
+    it("lurek.scene.removeData exists", function()
+        expect_type("function", lurek.scene.removeData)
+    end)
+
+    -- @covers lurek.scene.render
+    it("lurek.scene.render exists", function()
+        expect_type("function", lurek.scene.render)
+    end)
+
+    -- @covers lurek.scene.renderUi
+    it("lurek.scene.renderUi exists", function()
+        expect_type("function", lurek.scene.renderUi)
+    end)
+
+    -- @covers lurek.scene.serializeScene
+    it("lurek.scene.serializeScene exists", function()
+        expect_type("function", lurek.scene.serializeScene)
+    end)
+
+    -- @covers lurek.scene.setCurrentLayer
+    it("lurek.scene.setCurrentLayer exists", function()
+        expect_type("function", lurek.scene.setCurrentLayer)
+    end)
+
+    -- @covers lurek.scene.setData
+    it("lurek.scene.setData exists", function()
+        expect_type("function", lurek.scene.setData)
+    end)
+
+    -- @covers lurek.scene.setLateEnabled
+    it("lurek.scene.setLateEnabled exists", function()
+        expect_type("function", lurek.scene.setLateEnabled)
+    end)
+
+    -- @covers lurek.scene.setPhysicsEnabled
+    it("lurek.scene.setPhysicsEnabled exists", function()
+        expect_type("function", lurek.scene.setPhysicsEnabled)
+    end)
+
+    -- @covers lurek.scene.setProcessEnabled
+    it("lurek.scene.setProcessEnabled exists", function()
+        expect_type("function", lurek.scene.setProcessEnabled)
+    end)
+
+    -- @covers lurek.scene.setUpdateEnabled
+    it("lurek.scene.setUpdateEnabled exists", function()
+        expect_type("function", lurek.scene.setUpdateEnabled)
+    end)
+
+    -- @covers lurek.scene.switchTo
+    it("lurek.scene.switchTo exists", function()
+        expect_type("function", lurek.scene.switchTo)
+    end)
+
+    -- @covers lurek.scene.transitions.fade
+    it("lurek.scene.transitions.fade exists", function()
+        expect_type("function", lurek.scene.transitions.fade)
+    end)
+
+    -- @covers lurek.scene.transitions.iris
+    it("lurek.scene.transitions.iris exists", function()
+        expect_type("function", lurek.scene.transitions.iris)
+    end)
+
+    -- @covers lurek.scene.transitions.slide
+    it("lurek.scene.transitions.slide exists", function()
+        expect_type("function", lurek.scene.transitions.slide)
+    end)
+
+    -- @covers lurek.scene.transitions.wipe
+    it("lurek.scene.transitions.wipe exists", function()
+        expect_type("function", lurek.scene.transitions.wipe)
+    end)
+
+    -- @covers lurek.scene.unregisterScene
+    it("lurek.scene.unregisterScene exists", function()
+        expect_type("function", lurek.scene.unregisterScene)
+    end)
+
+    -- @covers lurek.scene.update
+    it("lurek.scene.update exists", function()
+        expect_type("function", lurek.scene.update)
+    end)
+
+    -- @covers lurek.serial.applyDefaults
+    it("lurek.serial.applyDefaults exists", function()
+        expect_type("function", lurek.serial.applyDefaults)
+    end)
+
+    -- @covers lurek.serial.decode
+    it("lurek.serial.decode exists", function()
+        expect_type("function", lurek.serial.decode)
+    end)
+
+    -- @covers lurek.serial.decodeMsgPack
+    it("lurek.serial.decodeMsgPack exists", function()
+        expect_type("function", lurek.serial.decodeMsgPack)
+    end)
+
+    -- @covers lurek.serial.decodeXml
+    it("lurek.serial.decodeXml exists", function()
+        expect_type("function", lurek.serial.decodeXml)
+    end)
+
+    -- @covers lurek.serial.detectFormat
+    it("lurek.serial.detectFormat exists", function()
+        expect_type("function", lurek.serial.detectFormat)
+    end)
+
+    -- @covers lurek.serial.encode
+    it("lurek.serial.encode exists", function()
+        expect_type("function", lurek.serial.encode)
+    end)
+
+    -- @covers lurek.serial.encodeMsgPack
+    it("lurek.serial.encodeMsgPack exists", function()
+        expect_type("function", lurek.serial.encodeMsgPack)
+    end)
+
+    -- @covers lurek.serial.fromCsv
+    it("lurek.serial.fromCsv exists", function()
+        expect_type("function", lurek.serial.fromCsv)
+    end)
+
+    -- @covers lurek.serial.fromIni
+    it("lurek.serial.fromIni exists", function()
+        expect_type("function", lurek.serial.fromIni)
+    end)
+
+    -- @covers lurek.serial.fromJson
+    it("lurek.serial.fromJson exists", function()
+        expect_type("function", lurek.serial.fromJson)
+    end)
+
+    -- @covers lurek.serial.fromToml
+    it("lurek.serial.fromToml exists", function()
+        expect_type("function", lurek.serial.fromToml)
+    end)
+
+    -- @covers lurek.serial.toCsv
+    it("lurek.serial.toCsv exists", function()
+        expect_type("function", lurek.serial.toCsv)
+    end)
+
+    -- @covers lurek.serial.toJson
+    it("lurek.serial.toJson exists", function()
+        expect_type("function", lurek.serial.toJson)
+    end)
+
+    -- @covers lurek.serial.toToml
+    it("lurek.serial.toToml exists", function()
+        expect_type("function", lurek.serial.toToml)
+    end)
+
+    -- @covers lurek.serial.validate
+    it("lurek.serial.validate exists", function()
+        expect_type("function", lurek.serial.validate)
+    end)
+
     -- @covers lurek.spine.animationFromJson
     it("lurek.spine.animationFromJson exists", function()
         expect_type("function", lurek.spine.animationFromJson)
@@ -4776,6 +6341,21 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.spine.newSkeletonAnimation
     it("lurek.spine.newSkeletonAnimation exists", function()
         expect_type("function", lurek.spine.newSkeletonAnimation)
+    end)
+
+    -- @covers lurek.spine.skeletonFromJson
+    it("lurek.spine.skeletonFromJson exists", function()
+        expect_type("function", lurek.spine.skeletonFromJson)
+    end)
+
+    -- @covers lurek.sprite.newAnimator
+    it("lurek.sprite.newAnimator exists", function()
+        expect_type("function", lurek.sprite.newAnimator)
+    end)
+
+    -- @covers lurek.sprite.newAtlasPacker
+    it("lurek.sprite.newAtlasPacker exists", function()
+        expect_type("function", lurek.sprite.newAtlasPacker)
     end)
 
     -- @covers lurek.sprite.newAtlasSheet
@@ -4793,6 +6373,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.sprite.newSheet)
     end)
 
+    -- @covers lurek.sprite.newSprite
+    it("lurek.sprite.newSprite exists", function()
+        expect_type("function", lurek.sprite.newSprite)
+    end)
+
     -- @covers lurek.sprite.parseAsepriteAtlas
     it("lurek.sprite.parseAsepriteAtlas exists", function()
         expect_type("function", lurek.sprite.parseAsepriteAtlas)
@@ -4801,6 +6386,11 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.sprite.parseAtlas
     it("lurek.sprite.parseAtlas exists", function()
         expect_type("function", lurek.sprite.parseAtlas)
+    end)
+
+    -- @covers lurek.svg.load
+    it("lurek.svg.load exists", function()
+        expect_type("function", lurek.svg.load)
     end)
 
     -- @covers lurek.terminal.addCompletion
@@ -5113,6 +6703,11 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.tilemap.newTileSet)
     end)
 
+    -- @covers lurek.tilemap.syncMinimap
+    it("lurek.tilemap.syncMinimap exists", function()
+        expect_type("function", lurek.tilemap.syncMinimap)
+    end)
+
     -- @covers lurek.tilemap.toScreenHex
     it("lurek.tilemap.toScreenHex exists", function()
         expect_type("function", lurek.tilemap.toScreenHex)
@@ -5226,6 +6821,81 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.timer.waitSeconds
     it("lurek.timer.waitSeconds exists", function()
         expect_type("function", lurek.timer.waitSeconds)
+    end)
+
+    -- @covers lurek.tween.cancelAll
+    it("lurek.tween.cancelAll exists", function()
+        expect_type("function", lurek.tween.cancelAll)
+    end)
+
+    -- @covers lurek.tween.delay
+    it("lurek.tween.delay exists", function()
+        expect_type("function", lurek.tween.delay)
+    end)
+
+    -- @covers lurek.tween.getActiveCount
+    it("lurek.tween.getActiveCount exists", function()
+        expect_type("function", lurek.tween.getActiveCount)
+    end)
+
+    -- @covers lurek.tween.getEasingNames
+    it("lurek.tween.getEasingNames exists", function()
+        expect_type("function", lurek.tween.getEasingNames)
+    end)
+
+    -- @covers lurek.tween.newChain
+    it("lurek.tween.newChain exists", function()
+        expect_type("function", lurek.tween.newChain)
+    end)
+
+    -- @covers lurek.tween.newState
+    it("lurek.tween.newState exists", function()
+        expect_type("function", lurek.tween.newState)
+    end)
+
+    -- @covers lurek.tween.parallel
+    it("lurek.tween.parallel exists", function()
+        expect_type("function", lurek.tween.parallel)
+    end)
+
+    -- @covers lurek.tween.registerEasing
+    it("lurek.tween.registerEasing exists", function()
+        expect_type("function", lurek.tween.registerEasing)
+    end)
+
+    -- @covers lurek.tween.sequence
+    it("lurek.tween.sequence exists", function()
+        expect_type("function", lurek.tween.sequence)
+    end)
+
+    -- @covers lurek.tween.spring
+    it("lurek.tween.spring exists", function()
+        expect_type("function", lurek.tween.spring)
+    end)
+
+    -- @covers lurek.tween.to
+    it("lurek.tween.to exists", function()
+        expect_type("function", lurek.tween.to)
+    end)
+
+    -- @covers lurek.tween.tween
+    it("lurek.tween.tween exists", function()
+        expect_type("function", lurek.tween.tween)
+    end)
+
+    -- @covers lurek.tween.tweenChain
+    it("lurek.tween.tweenChain exists", function()
+        expect_type("function", lurek.tween.tweenChain)
+    end)
+
+    -- @covers lurek.tween.tweenColor
+    it("lurek.tween.tweenColor exists", function()
+        expect_type("function", lurek.tween.tweenColor)
+    end)
+
+    -- @covers lurek.tween.update
+    it("lurek.tween.update exists", function()
+        expect_type("function", lurek.tween.update)
     end)
 
     -- @covers lurek.ui.addToast
@@ -5363,6 +7033,16 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.ui.getWidgetFont)
     end)
 
+    -- @covers lurek.ui.hasAutoInput
+    it("lurek.ui.hasAutoInput exists", function()
+        expect_type("function", lurek.ui.hasAutoInput)
+    end)
+
+    -- @covers lurek.ui.hasAutoUpdate
+    it("lurek.ui.hasAutoUpdate exists", function()
+        expect_type("function", lurek.ui.hasAutoUpdate)
+    end)
+
     -- @covers lurek.ui.keypressed
     it("lurek.ui.keypressed exists", function()
         expect_type("function", lurek.ui.keypressed)
@@ -5403,19 +7083,9 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.ui.newAccordion)
     end)
 
-    -- @covers lurek.ui.newAreaChart
-    it("lurek.ui.newAreaChart exists", function()
-        expect_type("function", lurek.ui.newAreaChart)
-    end)
-
     -- @covers lurek.ui.newBadge
     it("lurek.ui.newBadge exists", function()
         expect_type("function", lurek.ui.newBadge)
-    end)
-
-    -- @covers lurek.ui.newBarChart
-    it("lurek.ui.newBarChart exists", function()
-        expect_type("function", lurek.ui.newBarChart)
     end)
 
     -- @covers lurek.ui.newButton
@@ -5468,11 +7138,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.ui.newLayout)
     end)
 
-    -- @covers lurek.ui.newLineChart
-    it("lurek.ui.newLineChart exists", function()
-        expect_type("function", lurek.ui.newLineChart)
-    end)
-
     -- @covers lurek.ui.newList
     it("lurek.ui.newList exists", function()
         expect_type("function", lurek.ui.newList)
@@ -5498,11 +7163,6 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.ui.newPanel)
     end)
 
-    -- @covers lurek.ui.newPieChart
-    it("lurek.ui.newPieChart exists", function()
-        expect_type("function", lurek.ui.newPieChart)
-    end)
-
     -- @covers lurek.ui.newProgressBar
     it("lurek.ui.newProgressBar exists", function()
         expect_type("function", lurek.ui.newProgressBar)
@@ -5511,11 +7171,6 @@ describe("generated: top-level lurek contract", function()
     -- @covers lurek.ui.newRadioButton
     it("lurek.ui.newRadioButton exists", function()
         expect_type("function", lurek.ui.newRadioButton)
-    end)
-
-    -- @covers lurek.ui.newScatterPlot
-    it("lurek.ui.newScatterPlot exists", function()
-        expect_type("function", lurek.ui.newScatterPlot)
     end)
 
     -- @covers lurek.ui.newScrollBar
@@ -5618,6 +7273,16 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.ui.renderToImage)
     end)
 
+    -- @covers lurek.ui.setAutoInput
+    it("lurek.ui.setAutoInput exists", function()
+        expect_type("function", lurek.ui.setAutoInput)
+    end)
+
+    -- @covers lurek.ui.setAutoUpdate
+    it("lurek.ui.setAutoUpdate exists", function()
+        expect_type("function", lurek.ui.setAutoUpdate)
+    end)
+
     -- @covers lurek.ui.setBaseResolution
     it("lurek.ui.setBaseResolution exists", function()
         expect_type("function", lurek.ui.setBaseResolution)
@@ -5703,5 +7368,286 @@ describe("generated: top-level lurek contract", function()
         expect_type("function", lurek.visibility.new)
     end)
 
+    -- @covers lurek.visibility.newFov
+    it("lurek.visibility.newFov exists", function()
+        expect_type("function", lurek.visibility.newFov)
+    end)
+
+    -- @covers lurek.window.close
+    it("lurek.window.close exists", function()
+        expect_type("function", lurek.window.close)
+    end)
+
+    -- @covers lurek.window.flash
+    it("lurek.window.flash exists", function()
+        expect_type("function", lurek.window.flash)
+    end)
+
+    -- @covers lurek.window.focus
+    it("lurek.window.focus exists", function()
+        expect_type("function", lurek.window.focus)
+    end)
+
+    -- @covers lurek.window.fromPixels
+    it("lurek.window.fromPixels exists", function()
+        expect_type("function", lurek.window.fromPixels)
+    end)
+
+    -- @covers lurek.window.getCurrentDisplay
+    it("lurek.window.getCurrentDisplay exists", function()
+        expect_type("function", lurek.window.getCurrentDisplay)
+    end)
+
+    -- @covers lurek.window.getDPIScale
+    it("lurek.window.getDPIScale exists", function()
+        expect_type("function", lurek.window.getDPIScale)
+    end)
+
+    -- @covers lurek.window.getDesktopDimensions
+    it("lurek.window.getDesktopDimensions exists", function()
+        expect_type("function", lurek.window.getDesktopDimensions)
+    end)
+
+    -- @covers lurek.window.getDimensions
+    it("lurek.window.getDimensions exists", function()
+        expect_type("function", lurek.window.getDimensions)
+    end)
+
+    -- @covers lurek.window.getDisplayCount
+    it("lurek.window.getDisplayCount exists", function()
+        expect_type("function", lurek.window.getDisplayCount)
+    end)
+
+    -- @covers lurek.window.getDisplayName
+    it("lurek.window.getDisplayName exists", function()
+        expect_type("function", lurek.window.getDisplayName)
+    end)
+
+    -- @covers lurek.window.getDisplayOrientation
+    it("lurek.window.getDisplayOrientation exists", function()
+        expect_type("function", lurek.window.getDisplayOrientation)
+    end)
+
+    -- @covers lurek.window.getDisplays
+    it("lurek.window.getDisplays exists", function()
+        expect_type("function", lurek.window.getDisplays)
+    end)
+
+    -- @covers lurek.window.getFullscreen
+    it("lurek.window.getFullscreen exists", function()
+        expect_type("function", lurek.window.getFullscreen)
+    end)
+
+    -- @covers lurek.window.getFullscreenModes
+    it("lurek.window.getFullscreenModes exists", function()
+        expect_type("function", lurek.window.getFullscreenModes)
+    end)
+
+    -- @covers lurek.window.getGameHeight
+    it("lurek.window.getGameHeight exists", function()
+        expect_type("function", lurek.window.getGameHeight)
+    end)
+
+    -- @covers lurek.window.getGameWidth
+    it("lurek.window.getGameWidth exists", function()
+        expect_type("function", lurek.window.getGameWidth)
+    end)
+
+    -- @covers lurek.window.getHeight
+    it("lurek.window.getHeight exists", function()
+        expect_type("function", lurek.window.getHeight)
+    end)
+
+    -- @covers lurek.window.getMode
+    it("lurek.window.getMode exists", function()
+        expect_type("function", lurek.window.getMode)
+    end)
+
+    -- @covers lurek.window.getNativeDPIScale
+    it("lurek.window.getNativeDPIScale exists", function()
+        expect_type("function", lurek.window.getNativeDPIScale)
+    end)
+
+    -- @covers lurek.window.getPixelDimensions
+    it("lurek.window.getPixelDimensions exists", function()
+        expect_type("function", lurek.window.getPixelDimensions)
+    end)
+
+    -- @covers lurek.window.getPosition
+    it("lurek.window.getPosition exists", function()
+        expect_type("function", lurek.window.getPosition)
+    end)
+
+    -- @covers lurek.window.getSafeArea
+    it("lurek.window.getSafeArea exists", function()
+        expect_type("function", lurek.window.getSafeArea)
+    end)
+
+    -- @covers lurek.window.getScaleInfo
+    it("lurek.window.getScaleInfo exists", function()
+        expect_type("function", lurek.window.getScaleInfo)
+    end)
+
+    -- @covers lurek.window.getScaleMode
+    it("lurek.window.getScaleMode exists", function()
+        expect_type("function", lurek.window.getScaleMode)
+    end)
+
+    -- @covers lurek.window.getSystemTheme
+    it("lurek.window.getSystemTheme exists", function()
+        expect_type("function", lurek.window.getSystemTheme)
+    end)
+
+    -- @covers lurek.window.getTitle
+    it("lurek.window.getTitle exists", function()
+        expect_type("function", lurek.window.getTitle)
+    end)
+
+    -- @covers lurek.window.getVSync
+    it("lurek.window.getVSync exists", function()
+        expect_type("function", lurek.window.getVSync)
+    end)
+
+    -- @covers lurek.window.getWidth
+    it("lurek.window.getWidth exists", function()
+        expect_type("function", lurek.window.getWidth)
+    end)
+
+    -- @covers lurek.window.hasFocus
+    it("lurek.window.hasFocus exists", function()
+        expect_type("function", lurek.window.hasFocus)
+    end)
+
+    -- @covers lurek.window.hasMouseFocus
+    it("lurek.window.hasMouseFocus exists", function()
+        expect_type("function", lurek.window.hasMouseFocus)
+    end)
+
+    -- @covers lurek.window.isFullscreen
+    it("lurek.window.isFullscreen exists", function()
+        expect_type("function", lurek.window.isFullscreen)
+    end)
+
+    -- @covers lurek.window.isHighDPIAllowed
+    it("lurek.window.isHighDPIAllowed exists", function()
+        expect_type("function", lurek.window.isHighDPIAllowed)
+    end)
+
+    -- @covers lurek.window.isMaximized
+    it("lurek.window.isMaximized exists", function()
+        expect_type("function", lurek.window.isMaximized)
+    end)
+
+    -- @covers lurek.window.isMinimized
+    it("lurek.window.isMinimized exists", function()
+        expect_type("function", lurek.window.isMinimized)
+    end)
+
+    -- @covers lurek.window.isOpen
+    it("lurek.window.isOpen exists", function()
+        expect_type("function", lurek.window.isOpen)
+    end)
+
+    -- @covers lurek.window.isResizable
+    it("lurek.window.isResizable exists", function()
+        expect_type("function", lurek.window.isResizable)
+    end)
+
+    -- @covers lurek.window.isVisible
+    it("lurek.window.isVisible exists", function()
+        expect_type("function", lurek.window.isVisible)
+    end)
+
+    -- @covers lurek.window.maximize
+    it("lurek.window.maximize exists", function()
+        expect_type("function", lurek.window.maximize)
+    end)
+
+    -- @covers lurek.window.minimize
+    it("lurek.window.minimize exists", function()
+        expect_type("function", lurek.window.minimize)
+    end)
+
+    -- @covers lurek.window.onDpiChange
+    it("lurek.window.onDpiChange exists", function()
+        expect_type("function", lurek.window.onDpiChange)
+    end)
+
+    -- @covers lurek.window.openFileDialog
+    it("lurek.window.openFileDialog exists", function()
+        expect_type("function", lurek.window.openFileDialog)
+    end)
+
+    -- @covers lurek.window.pollDpiChange
+    it("lurek.window.pollDpiChange exists", function()
+        expect_type("function", lurek.window.pollDpiChange)
+    end)
+
+    -- @covers lurek.window.requestAttention
+    it("lurek.window.requestAttention exists", function()
+        expect_type("function", lurek.window.requestAttention)
+    end)
+
+    -- @covers lurek.window.restore
+    it("lurek.window.restore exists", function()
+        expect_type("function", lurek.window.restore)
+    end)
+
+    -- @covers lurek.window.setDisplay
+    it("lurek.window.setDisplay exists", function()
+        expect_type("function", lurek.window.setDisplay)
+    end)
+
+    -- @covers lurek.window.setFullscreen
+    it("lurek.window.setFullscreen exists", function()
+        expect_type("function", lurek.window.setFullscreen)
+    end)
+
+    -- @covers lurek.window.setIcon
+    it("lurek.window.setIcon exists", function()
+        expect_type("function", lurek.window.setIcon)
+    end)
+
+    -- @covers lurek.window.setMode
+    it("lurek.window.setMode exists", function()
+        expect_type("function", lurek.window.setMode)
+    end)
+
+    -- @covers lurek.window.setPosition
+    it("lurek.window.setPosition exists", function()
+        expect_type("function", lurek.window.setPosition)
+    end)
+
+    -- @covers lurek.window.setScaleMode
+    it("lurek.window.setScaleMode exists", function()
+        expect_type("function", lurek.window.setScaleMode)
+    end)
+
+    -- @covers lurek.window.setTitle
+    it("lurek.window.setTitle exists", function()
+        expect_type("function", lurek.window.setTitle)
+    end)
+
+    -- @covers lurek.window.setVSync
+    it("lurek.window.setVSync exists", function()
+        expect_type("function", lurek.window.setVSync)
+    end)
+
+    -- @covers lurek.window.showMessageBox
+    it("lurek.window.showMessageBox exists", function()
+        expect_type("function", lurek.window.showMessageBox)
+    end)
+
+    -- @covers lurek.window.toPixels
+    it("lurek.window.toPixels exists", function()
+        expect_type("function", lurek.window.toPixels)
+    end)
+
+    -- @covers lurek.window.windowConfig
+    it("lurek.window.windowConfig exists", function()
+        expect_type("function", lurek.window.windowConfig)
+    end)
+
 end)
+
 test_summary()

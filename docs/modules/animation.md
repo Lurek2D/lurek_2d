@@ -598,7 +598,7 @@ LAnimStateMachine:draw(image, x, y, opts)
 
 ```lua
 do
-    local atlas = lurek.render.newImage("assets/icon.png")
+    local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("idle", { 0 }, 8, true)
@@ -730,7 +730,7 @@ LAnimStateMachine:setImage(image)
 
 ```lua
 do
-    local atlas = lurek.render.newImage("assets/icon.png")
+    local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("idle", { 0 }, 8, true)
@@ -1283,7 +1283,7 @@ LAnimation:draw(image, x, y, opts)
 
 ```lua
 do
-    local atlas = lurek.render.newImage("assets/icon.png")
+    local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("idle", { 0 }, 1, true)
@@ -1850,7 +1850,7 @@ LAnimation:setImage(image)
 
 ```lua
 do
-    local atlas = lurek.render.newImage("assets/icon.png")
+    local atlas = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("idle", { 0 }, 1, true)

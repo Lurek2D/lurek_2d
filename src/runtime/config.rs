@@ -19,6 +19,7 @@ use serde::{Deserialize, Serialize};
 use std::path::Path;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Top-level runtime configuration consumed during engine startup.
+/// # Fields
 pub struct Config {
     /// Runtime mode selection and mode-level startup behavior.
     pub runtime: RuntimeConfig,
@@ -49,12 +50,14 @@ pub struct Config {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Runtime mode configuration loaded from `[runtime]`.
+/// # Fields
 pub struct RuntimeConfig {
     /// Selected startup mode; CLI flags override this value.
     pub mode: RuntimeMode,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Renderer backend configuration.
+/// # Fields
 pub struct RenderConfig {
     /// Requested backend name.
     pub backend: String,
@@ -67,6 +70,7 @@ pub struct RenderConfig {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Window and viewport configuration.
+/// # Fields
 pub struct WindowConfig {
     /// Initial window width in pixels.
     pub width: u32,
@@ -101,6 +105,7 @@ pub struct WindowConfig {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Terminal-grid mode defaults used by GUI-backed TUI startup.
+/// # Fields
 pub struct TuiConfig {
     /// Number of terminal columns.
     pub cols: u32,
@@ -117,6 +122,7 @@ pub struct TuiConfig {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// GUI-rendered interactive Lua REPL defaults used by CLI startup.
+/// # Fields
 pub struct CliConfig {
     /// Number of terminal columns.
     pub cols: u32,
@@ -131,6 +137,7 @@ pub struct CliConfig {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Headless runtime defaults for callback stepping.
+/// # Fields
 pub struct HeadlessConfig {
     #[serde(default)]
     /// Optional number of process frames to execute after init and ready.
@@ -145,6 +152,7 @@ fn default_true() -> bool {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Feature-toggle table for engine modules.
+/// # Fields
 pub struct ModulesConfig {
     /// Enable audio module.
     pub audio: bool,
@@ -346,6 +354,7 @@ impl ModulesConfig {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// Performance-related runtime configuration.
+/// # Fields
 pub struct PerformanceConfig {
     /// Target frame rate for main loop pacing.
     pub target_fps: u32,

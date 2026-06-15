@@ -2,7 +2,7 @@
 
 // TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
-use lurek2d::flownet::Graph;
+use lurek2d::flownet::{Graph, ItemPosition, OverflowPolicy};
 
 // â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -157,5 +157,178 @@ mod simulation_tests {
             .expect("subgraph edge expected");
         let edge = sub.edges.get(&only_edge).expect("subgraph edge lookup");
         assert_eq!(edge.items_in_transit.len(), 1);
+    }
+
+    #[test]
+    fn add_item_to_node_moves_item_without_duplicate_ownership() {
+        let mut g = Graph::new();
+        let a = g.add_node("a", -1);
+        let b = g.add_node("b", -1);
+        let item = g.create_item("ore", -1.0);
+
+        assert!(g.add_item_to_node(item, a).expect("place on a"));
+        assert!(g.add_item_to_node(item, b).expect("move to b"));
+
+        assert!(g.nodes.get(&a).expect("node a").items.is_empty());
+        assert_eq!(g.nodes.get(&b).expect("node b").items, vec![item]);
+        assert_eq!(
+            g.items.get(&item).expect("item").position,
+            ItemPosition::AtNode(b)
+        );
+    }
+
+    #[test]
+    fn send_item_rejects_invalid_item_locations() {
+        let mut g = Graph::new();
+        let a = g.add_node("a", 1);
+        let b = g.add_node("b", 1);
+        let edge = g.add_edge(a, b, Some("belt")).expect("edge");
+        let item = g.create_item("ore", -1.0);
+
+        let err = g
+            .send_item(item, edge)
+            .expect_err("unplaced items should not send");
+        assert!(err.contains("unplaced"));
+
+        assert!(g.add_item_to_node(item, b).expect("place on wrong node"));
+        let err = g
+            .send_item(item, edge)
+            .expect_err("wrong source node should fail");
+        assert!(err.contains("starts at node"));
+
+        assert!(g.remove_item(item));
+        let live_item = g.create_item("ore", -1.0);
+        assert!(g.add_item_to_node(live_item, a).expect("place on source"));
+        assert!(g.send_item(live_item, edge).expect("first send works"));
+        let err = g
+            .send_item(live_item, edge)
+            .expect_err("second send while in transit should fail");
+        assert!(err.contains("already in transit"));
+    }
+
+    #[test]
+    fn serialize_round_trip_preserves_full_state() {
+        let mut g = Graph::new();
+        let source = g.add_node("source", 1);
+        let sink = g.add_node("sink", 1);
+        let edge = g.add_edge(source, sink, Some("belt")).expect("edge");
+
+        {
+            let node = g.nodes.get_mut(&sink).expect("sink node");
+            node.overflow_policy = OverflowPolicy::Queue;
+            node.queue_enabled = true;
+            node.queue_capacity = 4;
+            node.push_rate = 2.0;
+            node.pull_rate = 3.0;
+            node.process_time = 0.5;
+            node.add_tag("hub");
+            node.add_supply("ore", 7);
+            node.add_demand("plate", 3, 2);
+            assert!(node.reserve_capacity("planner-a", 1));
+        }
+        {
+            let e = g.edges.get_mut(&edge).expect("edge");
+            e.capacity = 5;
+            e.throughput = 2.0;
+            e.travel_time = 4.0;
+            e.weight = 1.5;
+            e.speed_modifier = 1.25;
+            e.cooldown = 0.75;
+            e.add_allowed_type("ore");
+            e.bidirectional = true;
+            assert!(e.reserve_capacity("planner-a", 2));
+        }
+
+        let moving = g.create_item("ore", 10.0);
+        let queued = g.create_item("ore", -1.0);
+        let blocker = g.create_item("ore", -1.0);
+        assert!(g.add_item_to_node(moving, source).expect("place moving"));
+        assert!(g.send_item(moving, edge).expect("send moving"));
+        assert!(g.add_item_to_node(blocker, sink).expect("fill sink"));
+        assert!(g.add_item_to_node(queued, sink).expect("queue queued item"));
+
+        let snapshot = g.serialize();
+        let restored = Graph::deserialize(&snapshot).expect("restore full flownet state");
+
+        assert_eq!(restored.get_node_count(), 2);
+        assert_eq!(restored.get_edge_count(), 1);
+        assert_eq!(restored.get_item_count(), 3);
+        assert_eq!(
+            restored
+                .edges
+                .get(&edge)
+                .expect("restored edge")
+                .items_in_transit,
+            vec![moving]
+        );
+        assert_eq!(
+            restored
+                .nodes
+                .get(&sink)
+                .expect("restored sink")
+                .queue
+                .iter()
+                .copied()
+                .collect::<Vec<_>>(),
+            vec![queued]
+        );
+        assert_eq!(
+            restored.items.get(&moving).expect("moving item").position,
+            ItemPosition::InTransit {
+                edge_id: edge,
+                progress: 0.0
+            }
+        );
+        assert_eq!(
+            restored.items.get(&queued).expect("queued item").position,
+            ItemPosition::AtNode(sink)
+        );
+        assert!(restored
+            .nodes
+            .get(&sink)
+            .expect("restored sink")
+            .tags
+            .contains("hub"));
+        assert_eq!(
+            restored
+                .nodes
+                .get(&sink)
+                .expect("restored sink")
+                .get_reserved_capacity(),
+            1
+        );
+        assert_eq!(
+            restored
+                .edges
+                .get(&edge)
+                .expect("restored edge")
+                .get_reserved_capacity(),
+            2
+        );
+    }
+
+    #[test]
+    fn node_and_edge_reservations_reduce_available_capacity() {
+        let mut g = Graph::new();
+        let a = g.add_node("a", 3);
+        let b = g.add_node("b", 2);
+        let edge = g.add_edge(a, b, Some("belt")).expect("edge");
+
+        let node = g.nodes.get_mut(&b).expect("node b");
+        assert_eq!(node.get_available_capacity(), 2);
+        assert!(node.reserve_capacity("planner-a", 1));
+        assert_eq!(node.get_reserved_capacity(), 1);
+        assert_eq!(node.get_available_capacity(), 1);
+        assert_eq!(node.release_capacity_reservation("planner-a", Some(1)), 1);
+        assert_eq!(node.get_reserved_capacity(), 0);
+
+        let edge_ref = g.edges.get_mut(&edge).expect("edge");
+        edge_ref.capacity = 2;
+        assert_eq!(edge_ref.get_available_capacity(), 2);
+        assert!(edge_ref.reserve_capacity("planner-a", 1));
+        assert_eq!(edge_ref.get_reserved_capacity(), 1);
+        assert_eq!(edge_ref.get_available_capacity(), 1);
+        edge_ref.clear_capacity_reservations();
+        assert_eq!(edge_ref.get_reserved_capacity(), 0);
     }
 }

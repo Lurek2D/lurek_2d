@@ -167,7 +167,8 @@ lurek.tween.newChain(looping)
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("newChain ok = " .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "intro" })
+    print("steps = " .. tostring(chain:len()))
 end
 ```
 
@@ -1698,8 +1699,12 @@ LTweenChain:call(fn)
 
 ```lua
 do
+    local called = false
     local chain = lurek.tween.newChain()
-    print("call marker chain=" .. tostring(chain ~= nil))
+    chain:call(function() called = true end)
+    chain:start()
+    lurek.tween.update(0.01)
+    print("called = " .. tostring(called))
 end
 ```
 
@@ -1718,7 +1723,9 @@ LTweenChain:clear()
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("clear marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1 })
+    chain:clear()
+    print("len after clear = " .. tostring(chain:len()))
 end
 ```
 
@@ -1743,7 +1750,8 @@ LTweenChain:cursor()
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("cursor marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1 })
+    print("cursor = " .. tostring(chain:cursor()))
 end
 ```
 
@@ -1767,8 +1775,12 @@ LTweenChain:getIteration()
 
 ```lua
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("getIteration marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 1 }, 0.01, "linear"):loop(2)
+    chain:start()
+    lurek.tween.update(0.03)
+    print("iteration = " .. tostring(chain:getIteration()))
 end
 ```
 
@@ -1792,8 +1804,12 @@ LTweenChain:getProgress()
 
 ```lua
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("getProgress marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.2, "linear")
+    chain:start()
+    lurek.tween.update(0.1)
+    print("progress = " .. tostring(chain:getProgress()))
 end
 ```
 
@@ -1817,8 +1833,11 @@ LTweenChain:isActive()
 
 ```lua
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("isActive marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.1, "linear")
+    chain:start()
+    print("isActive = " .. tostring(chain:isActive()))
 end
 ```
 
@@ -1842,8 +1861,12 @@ LTweenChain:isComplete()
 
 ```lua
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("isComplete marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.05, "linear")
+    chain:start()
+    lurek.tween.update(0.06)
+    print("isComplete = " .. tostring(chain:isComplete()))
 end
 ```
 
@@ -1868,7 +1891,9 @@ LTweenChain:isFinished()
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("isFinished marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.01 })
+    chain:tick(0.02)
+    print("isFinished = " .. tostring(chain:isFinished()))
 end
 ```
 
@@ -1893,7 +1918,8 @@ LTweenChain:isLooping()
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("isLooping marker chain=" .. tostring(chain ~= nil))
+    chain:setLooping(true)
+    print("isLooping = " .. tostring(chain:isLooping()))
 end
 ```
 
@@ -1918,7 +1944,10 @@ LTweenChain:jumpTo(step)
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("jumpTo marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "a" })
+    chain:push({ from = 1.0, to = 2.0, duration = 0.1, label = "b" })
+    chain:jumpTo(2)
+    print("cursor after jump = " .. tostring(chain:cursor()))
 end
 ```
 
@@ -1943,7 +1972,9 @@ LTweenChain:len()
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("len marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1 })
+    chain:push({ from = 1.0, to = 2.0, duration = 0.1 })
+    print("len = " .. tostring(chain:len()))
 end
 ```
 
@@ -1973,8 +2004,12 @@ LTweenChain:loop(n)
 
 ```lua
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("loop marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 1 }, 0.01, "linear"):loop(2)
+    chain:start()
+    lurek.tween.update(0.03)
+    print("iteration = " .. tostring(chain:getIteration()))
 end
 ```
 
@@ -2004,8 +2039,12 @@ LTweenChain:onComplete(fn)
 
 ```lua
 do
+    local done = false
     local chain = lurek.tween.newChain()
-    print("onComplete marker chain=" .. tostring(chain ~= nil))
+    chain:wait(0.01):onComplete(function() done = true end)
+    chain:start()
+    lurek.tween.update(0.02)
+    print("complete callback = " .. tostring(done))
 end
 ```
 
@@ -2035,8 +2074,12 @@ LTweenChain:onLoop(fn)
 
 ```lua
 do
+    local loops = 0
     local chain = lurek.tween.newChain()
-    print("onLoop marker chain=" .. tostring(chain ~= nil))
+    chain:to({ x = 0 }, { x = 1 }, 0.01, "linear"):loop(2):onLoop(function() loops = loops + 1 end)
+    chain:start()
+    lurek.tween.update(0.03)
+    print("loops = " .. tostring(loops))
 end
 ```
 
@@ -2060,8 +2103,13 @@ LTweenChain:pause()
 
 ```lua
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("pause marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.1, "linear")
+    chain:start()
+    lurek.tween.update(0.05)
+    chain:pause()
+    print("progress after pause = " .. tostring(chain:getProgress()))
 end
 ```
 
@@ -2092,7 +2140,8 @@ LTweenChain:push(opts)
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("push marker chain=" .. tostring(chain ~= nil))
+    local idx = chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "intro" })
+    print("push index = " .. tostring(idx))
 end
 ```
 
@@ -2111,7 +2160,10 @@ LTweenChain:reset()
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("reset marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 5.0, duration = 1.0 })
+    chain:tick(0.5)
+    chain:reset()
+    print("value after reset = " .. tostring(chain:value()))
 end
 ```
 
@@ -2135,8 +2187,13 @@ LTweenChain:resume()
 
 ```lua
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("resume marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.1, "linear")
+    chain:start()
+    chain:pause()
+    chain:resume()
+    print("active after resume = " .. tostring(chain:isActive()))
 end
 ```
 
@@ -2161,7 +2218,8 @@ LTweenChain:setLooping(looping)
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("setLooping marker chain=" .. tostring(chain ~= nil))
+    chain:setLooping(true)
+    print("looping = " .. tostring(chain:isLooping()))
 end
 ```
 
@@ -2185,8 +2243,11 @@ LTweenChain:start()
 
 ```lua
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("start marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.1, "linear")
+    chain:start()
+    print("active = " .. tostring(chain:isActive()))
 end
 ```
 
@@ -2210,8 +2271,12 @@ LTweenChain:stop()
 
 ```lua
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("stop marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.1, "linear")
+    chain:start()
+    chain:stop()
+    print("active after stop = " .. tostring(chain:isActive()))
 end
 ```
 
@@ -2242,7 +2307,9 @@ LTweenChain:tick(dt)
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("tick marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 1.0, duration = 0.1, label = "step" })
+    local events = chain:tick(0.2)
+    print("tick events = " .. tostring(#events))
 end
 ```
 
@@ -2275,8 +2342,12 @@ LTweenChain:to(target, fields, dur, easing)
 
 ```lua
 do
+    local obj = { x = 0 }
     local chain = lurek.tween.newChain()
-    print("to marker chain=" .. tostring(chain ~= nil))
+    chain:to(obj, { x = 10 }, 0.25, "linear")
+    chain:start()
+    lurek.tween.update(0.25)
+    print("x = " .. tostring(obj.x))
 end
 ```
 
@@ -2301,7 +2372,8 @@ LTweenChain:type()
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("type marker chain=" .. tostring(chain ~= nil))
+    print("type = " .. tostring(chain:type()))
+    print("typeOf LTweenChain = " .. tostring(chain:typeOf("LTweenChain")))
 end
 ```
 
@@ -2332,7 +2404,8 @@ LTweenChain:typeOf(name)
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("typeOf marker chain=" .. tostring(chain ~= nil))
+    print("typeOf LTweenChain = " .. tostring(chain:typeOf("LTweenChain")))
+    print("type = " .. tostring(chain:type()))
 end
 ```
 
@@ -2357,7 +2430,9 @@ LTweenChain:value()
 ```lua
 do
     local chain = lurek.tween.newChain()
-    print("value marker chain=" .. tostring(chain ~= nil))
+    chain:push({ from = 0.0, to = 5.0, duration = 1.0 })
+    chain:tick(0.5)
+    print("value = " .. tostring(chain:value()))
 end
 ```
 
@@ -2388,8 +2463,12 @@ LTweenChain:wait(seconds, callback)
 
 ```lua
 do
+    local fired = false
     local chain = lurek.tween.newChain()
-    print("wait marker chain=" .. tostring(chain ~= nil))
+    chain:wait(0.1, function() fired = true end)
+    chain:start()
+    lurek.tween.update(0.1)
+    print("wait fired = " .. tostring(fired))
 end
 ```
 

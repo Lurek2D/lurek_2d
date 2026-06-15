@@ -1,9 +1,9 @@
 -- Reorganized unit test file.
 -- Source files are isolated in do-end blocks to preserve local helper scope.
 
--- BEGIN test_ecs_core_unit.lua
+-- BEGIN test_ecs_unit.lua
 do
--- tests/lua/unit/test_ecs_core_unit.lua
+-- tests/lua/unit/test_ecs_unit.lua
 -- Canonical unit coverage for lurek.ecs and LUniverse.
 
 local function new_world()
@@ -34,6 +34,24 @@ describe("lurek.ecs functions", function()
         local world = new_world()
         expect_equal("LUniverse", world:type())
     end)
+
+    -- @covers lurek.ecs.newRelationshipManager
+    it("newRelationshipManager creates a relationship manager userdata", function()
+        local rm = lurek.ecs.newRelationshipManager()
+        expect_equal("LRelationshipManager", rm:type())
+    end)
+
+    -- @covers LRelationshipManager:type
+    it("relationship manager type returns the userdata name", function()
+        local rm = lurek.ecs.newRelationshipManager()
+        expect_equal("LRelationshipManager", rm:type())
+    end)
+
+    -- @covers LRelationshipManager:typeOf
+    it("relationship manager typeOf accepts its type name", function()
+        local rm = lurek.ecs.newRelationshipManager()
+        expect_true(rm:typeOf("LRelationshipManager"))
+    end)
 end)
 
 -- @describe LUniverse lifecycle and metadata
@@ -60,8 +78,11 @@ describe("LUniverse lifecycle and metadata", function()
     it("kill removes an entity from the live set", function()
         local world = new_world()
         local entity = world:spawn()
+        local other = world:spawn()
+        world:addRelation(other, "owns", entity)
         world:kill(entity)
         expect_false(contains_id(world:getEntities(), entity))
+        expect_equal(0, #world:getRelated(other, "owns"))
     end)
 
     -- @covers LUniverse:getEntityCount
@@ -156,13 +177,13 @@ describe("LUniverse components", function()
     it("getComponents returns a table of current components", function()
         local world = new_world()
         local entity = world:spawn()
-        world:set(entity, "hp", 50)
         world:set(entity, "name", "hero")
+        world:set(entity, "hp", 50)
         local components = world:getComponents(entity)
         expect_type("table", components)
         expect_equal(2, #components)
-        expect_true(contains_id(components, "hp"))
-        expect_true(contains_id(components, "name"))
+        expect_equal("hp", components[1])
+        expect_equal("name", components[2])
     end)
 end)
 
@@ -179,6 +200,81 @@ describe("LUniverse querying", function()
         local ids = world:query("pos", "vel")
         expect_equal(1, #ids)
         expect_equal(a, ids[1])
+    end)
+
+    -- @covers LUniverse:getQueryChangeTick
+    it("getQueryChangeTick advances after selection-affecting mutations", function()
+        local world = new_world()
+        expect_equal(0, world:getQueryChangeTick())
+
+        local entity = world:spawn()
+        local after_spawn = world:getQueryChangeTick()
+        expect_true(after_spawn > 0)
+
+        world:set(entity, "pos", { x = 1, y = 2 })
+        local after_set = world:getQueryChangeTick()
+        expect_true(after_set > after_spawn)
+
+        world:remove(entity, "pos")
+        local after_remove = world:getQueryChangeTick()
+        expect_true(after_remove > after_set)
+    end)
+
+    -- @covers LUniverse:newQueryView
+    it("newQueryView creates a cached query view bound to the world", function()
+        local world = new_world()
+        local view = world:newQueryView({ "pos" })
+        expect_equal("LQueryView", view:type())
+    end)
+
+    -- @covers LQueryView:type
+    it("query views report their Lua-visible type name", function()
+        local world = new_world()
+        local view = world:newQueryView({ "pos" })
+        expect_equal("LQueryView", view:type())
+    end)
+
+    -- @covers LQueryView:typeOf
+    it("query views support typeOf checks", function()
+        local world = new_world()
+        local view = world:newQueryView({ "pos" })
+        expect_true(view:typeOf("LQueryView"))
+        expect_true(view:typeOf("LObject"))
+        expect_equal(false, view:typeOf("LUniverse"))
+    end)
+
+    -- @covers LQueryView:ids
+    it("query view ids refresh when the world query tick changes", function()
+        local world = new_world()
+        local first = world:spawn()
+        world:set(first, "pos", { x = 0, y = 0 })
+        local view = world:newQueryView({ "pos" })
+
+        local ids = view:ids()
+        expect_equal(1, #ids)
+        expect_equal(first, ids[1])
+
+        local second = world:spawn()
+        world:set(second, "pos", { x = 2, y = 3 })
+        ids = view:ids()
+        expect_equal(2, #ids)
+        expect_equal(first, ids[1])
+        expect_equal(second, ids[2])
+    end)
+
+    -- @covers LQueryView:lastTick
+    it("query view lastTick tracks the world tick used to build cached ids", function()
+        local world = new_world()
+        local entity = world:spawn()
+        world:set(entity, "pos", { x = 0, y = 0 })
+        local view = world:newQueryView({ "pos" })
+
+        local ids = view:ids()
+        expect_equal(1, #ids)
+        expect_equal(world:getQueryChangeTick(), view:lastTick())
+
+        world:remove(entity, "pos")
+        expect_equal(world:getQueryChangeTick(), view:lastTick())
     end)
 
     -- @covers LUniverse:each
@@ -500,10 +596,11 @@ describe("LUniverse blueprints", function()
     -- @covers LUniverse:listBlueprints
     it("listBlueprints returns registered blueprint names", function()
         local world = new_world()
-        define_enemy_blueprint(world)
         world:defineBlueprint("bullet", { speed = 50 })
+        define_enemy_blueprint(world)
         local names = world:listBlueprints()
-        expect_true(#names >= 2)
+        expect_equal("bullet", names[1])
+        expect_equal("enemy", names[2])
     end)
 
     -- @covers LUniverse:getBlueprintComponents
@@ -616,6 +713,12 @@ describe("LUniverse hierarchy", function()
         local child = world:spawn()
         world:setParent(child, parent)
         expect_equal(parent, world:getParent(child))
+        expect_error(function()
+            world:setParent(parent, parent)
+        end)
+        expect_error(function()
+            world:setParent(parent, child)
+        end)
     end)
 
     -- @covers LUniverse:getParent

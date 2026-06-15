@@ -1,11 +1,9 @@
 //! File: src/lua_api/flownet_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
+//! Registers the public `lurek.graph` Lua API for FLOWNET graph creation, mutation, routing, and simulation.
+//! Converts Lua userdata handles into Rust graph ids while keeping storage and simulation logic inside `src/flownet/`.
+//! Validates numeric bounds, enum-like strings, and handle ownership at the Lua boundary before mutating graph state.
+//! Dispatches simulation events back into Lua callbacks without exposing internal Rust containers directly.
+//! Keeps Lua-facing documentation, names, defaults, and runtime errors aligned with the FLOWNET module contract.
 
 use crate::flownet::pathfinding::PathResult;
 use crate::flownet::{ConversionRule, FlowMode, Graph, GraphEvent, ItemPosition, OverflowPolicy};
@@ -28,6 +26,81 @@ const VALID_EVENTS: &[&str] = &[
     "itemQueued",
     "itemDequeued",
 ];
+
+fn graph_api_error(method: &str, message: impl Into<String>) -> LuaError {
+    LuaError::RuntimeError(format!("lurek.graph.{method}: {}", message.into()))
+}
+
+fn map_graph_error<T>(method: &str, result: Result<T, String>) -> LuaResult<T> {
+    result.map_err(|message| graph_api_error(method, message))
+}
+
+fn ensure_finite(method: &str, field: &str, value: f64) -> LuaResult<f64> {
+    if !value.is_finite() {
+        return Err(graph_api_error(method, format!("{field} must be finite")));
+    }
+    Ok(value)
+}
+
+fn ensure_non_negative_finite(method: &str, field: &str, value: f64) -> LuaResult<f64> {
+    let value = ensure_finite(method, field, value)?;
+    if value < 0.0 {
+        return Err(graph_api_error(
+            method,
+            format!("{field} must be greater than or equal to 0"),
+        ));
+    }
+    Ok(value)
+}
+
+fn ensure_positive_finite(method: &str, field: &str, value: f64) -> LuaResult<f64> {
+    let value = ensure_finite(method, field, value)?;
+    if value <= 0.0 {
+        return Err(graph_api_error(
+            method,
+            format!("{field} must be greater than 0"),
+        ));
+    }
+    Ok(value)
+}
+
+fn ensure_capacity_like(method: &str, field: &str, value: i32) -> LuaResult<i32> {
+    if value < -1 {
+        return Err(graph_api_error(
+            method,
+            format!("{field} must be -1 or greater"),
+        ));
+    }
+    Ok(value)
+}
+
+fn ensure_decay_time(method: &str, value: f64) -> LuaResult<f64> {
+    let value = ensure_finite(method, "decay_time", value)?;
+    if value < 0.0 && value != -1.0 {
+        return Err(graph_api_error(
+            method,
+            "decay_time must be -1 or greater than or equal to 0",
+        ));
+    }
+    Ok(value)
+}
+
+fn ensure_reservation_key(method: &str, key: String) -> LuaResult<String> {
+    if key.trim().is_empty() {
+        return Err(graph_api_error(method, "reservation key must not be empty"));
+    }
+    Ok(key)
+}
+
+fn ensure_positive_slots(method: &str, field: &str, slots: u32) -> LuaResult<u32> {
+    if slots == 0 {
+        return Err(graph_api_error(
+            method,
+            format!("{field} must be greater than 0"),
+        ));
+    }
+    Ok(slots)
+}
 #[derive(Clone)]
 /// Lua-side graph handle storing graph state and registered event callbacks.
 struct LuaGraph {
@@ -186,6 +259,7 @@ impl LuaUserData for LuaGraphItem {
         /// Sets the total decay lifetime for this item.
         /// @param | t | number | Decay time in seconds, or the graph's sentinel for no decay.
         methods.add_method("setDecayTime", |_, this, t: f64| {
+            let t = ensure_decay_time("LGraphItem.setDecayTime", t)?;
             with_item_mut!(this, g, item, {
                 item.set_decay_time(t);
                 Ok(())
@@ -328,8 +402,68 @@ impl LuaUserData for LuaEdge {
         /// Sets this edge's maximum concurrent item capacity.
         /// @param | c | integer | New edge capacity.
         methods.add_method("setCapacity", |_, this, c: i32| {
+            let c = ensure_capacity_like("LGraphEdge.setCapacity", "capacity", c)?;
             with_edge_mut!(this, g, edge, {
                 edge.capacity = c;
+                Ok(())
+            })
+        });
+        // -- getReservedCapacity --
+        /// Returns the total transit capacity reserved on this edge across all reservation keys.
+        /// @return | integer | Reserved transit slot count.
+        methods.add_method("getReservedCapacity", |_, this, ()| {
+            with_edge!(this, g, edge, Ok(edge.get_reserved_capacity()))
+        });
+        // -- getAvailableCapacity --
+        /// Returns how many transit slots remain after active items and reservations, or -1 when unlimited.
+        /// @return | integer | Available transit slots, or -1 when the edge capacity is unlimited.
+        methods.add_method("getAvailableCapacity", |_, this, ()| {
+            with_edge!(this, g, edge, Ok(edge.get_available_capacity()))
+        });
+        // -- reserveCapacity --
+        /// Reserves transit capacity slots under a caller-provided key for planning and coordination.
+        /// @param | key | string | Reservation key used to group planner-owned capacity holds.
+        /// @param | slots | integer? | Number of slots to reserve, defaulting to 1.
+        /// @return | boolean | True when the reservation fit within currently available capacity.
+        methods.add_method(
+            "reserveCapacity",
+            |_, this, (key, slots): (String, Option<u32>)| {
+                let key = ensure_reservation_key("LGraphEdge.reserveCapacity", key)?;
+                let slots = ensure_positive_slots(
+                    "LGraphEdge.reserveCapacity",
+                    "slots",
+                    slots.unwrap_or(1),
+                )?;
+                with_edge_mut!(this, g, edge, Ok(edge.reserve_capacity(&key, slots)))
+            },
+        );
+        // -- releaseCapacityReservation --
+        /// Releases reserved transit capacity for a key and returns the number of slots removed.
+        /// @param | key | string | Reservation key to release.
+        /// @param | slots | integer? | Number of slots to release, defaulting to all slots for that key.
+        /// @return | integer | Number of slots actually released.
+        methods.add_method(
+            "releaseCapacityReservation",
+            |_, this, (key, slots): (String, Option<u32>)| {
+                let key = ensure_reservation_key("LGraphEdge.releaseCapacityReservation", key)?;
+                let slots = match slots {
+                    Some(value) => Some(ensure_positive_slots(
+                        "LGraphEdge.releaseCapacityReservation",
+                        "slots",
+                        value,
+                    )?),
+                    None => None,
+                };
+                with_edge_mut!(this, g, edge, {
+                    Ok(edge.release_capacity_reservation(&key, slots))
+                })
+            },
+        );
+        // -- clearCapacityReservations --
+        /// Removes every transit capacity reservation from this edge.
+        methods.add_method("clearCapacityReservations", |_, this, ()| {
+            with_edge_mut!(this, g, edge, {
+                edge.clear_capacity_reservations();
                 Ok(())
             })
         });
@@ -343,6 +477,7 @@ impl LuaUserData for LuaEdge {
         /// Sets this edge's throughput value.
         /// @param | t | number | New throughput.
         methods.add_method("setThroughput", |_, this, t: f64| {
+            let t = ensure_non_negative_finite("LGraphEdge.setThroughput", "throughput", t)?;
             with_edge_mut!(this, g, edge, {
                 edge.throughput = t;
                 Ok(())
@@ -358,6 +493,7 @@ impl LuaUserData for LuaEdge {
         /// Sets the travel time for items moving across this edge.
         /// @param | t | number | Travel time in seconds.
         methods.add_method("setTravelTime", |_, this, t: f64| {
+            let t = ensure_positive_finite("LGraphEdge.setTravelTime", "travel_time", t)?;
             with_edge_mut!(this, g, edge, {
                 edge.travel_time = t;
                 Ok(())
@@ -373,6 +509,7 @@ impl LuaUserData for LuaEdge {
         /// Sets the pathfinding weight for this edge.
         /// @param | w | number | Edge weight.
         methods.add_method("setWeight", |_, this, w: f64| {
+            let w = ensure_non_negative_finite("LGraphEdge.setWeight", "weight", w)?;
             with_edge_mut!(this, g, edge, {
                 edge.weight = w;
                 Ok(())
@@ -388,6 +525,7 @@ impl LuaUserData for LuaEdge {
         /// Sets this edge's speed modifier value.
         /// @param | m | number | Speed modifier.
         methods.add_method("setSpeedModifier", |_, this, m: f64| {
+            let m = ensure_positive_finite("LGraphEdge.setSpeedModifier", "speed_modifier", m)?;
             with_edge_mut!(this, g, edge, {
                 edge.speed_modifier = m;
                 Ok(())
@@ -403,6 +541,7 @@ impl LuaUserData for LuaEdge {
         /// Sets this edge's cooldown timer value.
         /// @param | c | number | Cooldown in seconds.
         methods.add_method("setCooldown", |_, this, c: f64| {
+            let c = ensure_non_negative_finite("LGraphEdge.setCooldown", "cooldown", c)?;
             with_edge_mut!(this, g, edge, {
                 edge.cooldown = c;
                 Ok(())
@@ -540,8 +679,68 @@ impl LuaUserData for LuaNode {
         /// Sets this node's item capacity value.
         /// @param | c | integer | New node capacity.
         methods.add_method("setCapacity", |_, this, c: i32| {
+            let c = ensure_capacity_like("LGraphNode.setCapacity", "capacity", c)?;
             with_node_mut!(this, g, node, {
                 node.set_capacity(c);
+                Ok(())
+            })
+        });
+        // -- getReservedCapacity --
+        /// Returns the total item capacity reserved on this node across all reservation keys.
+        /// @return | integer | Reserved node slot count.
+        methods.add_method("getReservedCapacity", |_, this, ()| {
+            with_node!(this, g, node, Ok(node.get_reserved_capacity()))
+        });
+        // -- getAvailableCapacity --
+        /// Returns how many node inventory slots remain after active items and reservations, or -1 when unlimited.
+        /// @return | integer | Available inventory slots, or -1 when the node capacity is unlimited.
+        methods.add_method("getAvailableCapacity", |_, this, ()| {
+            with_node!(this, g, node, Ok(node.get_available_capacity()))
+        });
+        // -- reserveCapacity --
+        /// Reserves node inventory capacity under a caller-provided key for planning and coordination.
+        /// @param | key | string | Reservation key used to group planner-owned capacity holds.
+        /// @param | slots | integer? | Number of slots to reserve, defaulting to 1.
+        /// @return | boolean | True when the reservation fit within currently available capacity.
+        methods.add_method(
+            "reserveCapacity",
+            |_, this, (key, slots): (String, Option<u32>)| {
+                let key = ensure_reservation_key("LGraphNode.reserveCapacity", key)?;
+                let slots = ensure_positive_slots(
+                    "LGraphNode.reserveCapacity",
+                    "slots",
+                    slots.unwrap_or(1),
+                )?;
+                with_node_mut!(this, g, node, Ok(node.reserve_capacity(&key, slots)))
+            },
+        );
+        // -- releaseCapacityReservation --
+        /// Releases reserved node capacity for a key and returns the number of slots removed.
+        /// @param | key | string | Reservation key to release.
+        /// @param | slots | integer? | Number of slots to release, defaulting to all slots for that key.
+        /// @return | integer | Number of slots actually released.
+        methods.add_method(
+            "releaseCapacityReservation",
+            |_, this, (key, slots): (String, Option<u32>)| {
+                let key = ensure_reservation_key("LGraphNode.releaseCapacityReservation", key)?;
+                let slots = match slots {
+                    Some(value) => Some(ensure_positive_slots(
+                        "LGraphNode.releaseCapacityReservation",
+                        "slots",
+                        value,
+                    )?),
+                    None => None,
+                };
+                with_node_mut!(this, g, node, {
+                    Ok(node.release_capacity_reservation(&key, slots))
+                })
+            },
+        );
+        // -- clearCapacityReservations --
+        /// Removes every inventory capacity reservation from this node.
+        methods.add_method("clearCapacityReservations", |_, this, ()| {
+            with_node_mut!(this, g, node, {
+                node.clear_capacity_reservations();
                 Ok(())
             })
         });
@@ -614,6 +813,7 @@ impl LuaUserData for LuaNode {
         /// Sets this node's push rate for this object.
         /// @param | r | number | New push rate.
         methods.add_method("setPushRate", |_, this, r: f64| {
+            let r = ensure_non_negative_finite("LGraphNode.setPushRate", "push_rate", r)?;
             with_node_mut!(this, g, node, {
                 node.push_rate = r;
                 Ok(())
@@ -629,6 +829,7 @@ impl LuaUserData for LuaNode {
         /// Sets this node's pull rate for this object.
         /// @param | r | number | New pull rate.
         methods.add_method("setPullRate", |_, this, r: f64| {
+            let r = ensure_non_negative_finite("LGraphNode.setPullRate", "pull_rate", r)?;
             with_node_mut!(this, g, node, {
                 node.pull_rate = r;
                 Ok(())
@@ -674,6 +875,7 @@ impl LuaUserData for LuaNode {
         /// Sets the processing time used by this node's conversions.
         /// @param | t | number | Processing time in seconds.
         methods.add_method("setProcessTime", |_, this, t: f64| {
+            let t = ensure_non_negative_finite("LGraphNode.setProcessTime", "process_time", t)?;
             with_node_mut!(this, g, node, {
                 node.process_time = t;
                 Ok(())
@@ -704,6 +906,7 @@ impl LuaUserData for LuaNode {
         /// Sets this node's queue capacity value.
         /// @param | c | integer | Queue capacity.
         methods.add_method("setQueueCapacity", |_, this, c: i32| {
+            let c = ensure_capacity_like("LGraphNode.setQueueCapacity", "queue_capacity", c)?;
             with_node_mut!(this, g, node, {
                 node.queue_capacity = c;
                 Ok(())
@@ -966,7 +1169,7 @@ impl LuaUserData for LuaGraph {
             "addNode",
             |_, this, (node_type, capacity): (Option<String>, Option<i32>)| {
                 let t = node_type.as_deref().unwrap_or("default");
-                let c = capacity.unwrap_or(-1);
+                let c = ensure_capacity_like("addNode", "capacity", capacity.unwrap_or(-1))?;
                 let id = this.inner.borrow_mut().add_node(t, c);
                 Ok(LuaNode {
                     graph: this.inner.clone(),
@@ -984,7 +1187,10 @@ impl LuaUserData for LuaGraph {
                 node.id
             };
             if !this.inner.borrow().has_node(node_id) {
-                return Err(LuaError::RuntimeError("node not found".into()));
+                return Err(graph_api_error(
+                    "removeNode",
+                    format!("node {node_id} does not exist"),
+                ));
             }
             Ok(this.inner.borrow_mut().remove_node(node_id))
         });
@@ -1029,11 +1235,12 @@ impl LuaUserData for LuaGraph {
         methods.add_method("addEdge", |_, this, (from_ud, to_ud, edge_type): (LuaAnyUserData, LuaAnyUserData, Option<String>)| {
                 let from = from_ud.borrow::<LuaNode>()?;
                 let to = to_ud.borrow::<LuaNode>()?;
-                let id = this
-                    .inner
-                    .borrow_mut()
-                    .add_edge(from.id, to.id, edge_type.as_deref())
-                    .map_err(LuaError::RuntimeError)?;
+                let id = map_graph_error(
+                    "addEdge",
+                    this.inner
+                        .borrow_mut()
+                        .add_edge(from.id, to.id, edge_type.as_deref()),
+                )?;
                 Ok(LuaEdge {
                     graph: this.inner.clone(),
                     id,
@@ -1128,7 +1335,7 @@ impl LuaUserData for LuaGraph {
             "createItem",
             |_, this, (item_type, decay_time): (Option<String>, Option<f64>)| {
                 let t = item_type.as_deref().unwrap_or("default");
-                let d = decay_time.unwrap_or(-1.0);
+                let d = ensure_decay_time("createItem", decay_time.unwrap_or(-1.0))?;
                 let id = this.inner.borrow_mut().create_item(t, d);
                 Ok(LuaGraphItem {
                     graph: this.inner.clone(),
@@ -1145,10 +1352,10 @@ impl LuaUserData for LuaGraph {
             |_, this, (item_ud, node_ud): (LuaAnyUserData, LuaAnyUserData)| {
                 let item = item_ud.borrow::<LuaGraphItem>()?;
                 let node = node_ud.borrow::<LuaNode>()?;
-                this.inner
-                    .borrow_mut()
-                    .add_item_to_node(item.id, node.id)
-                    .map_err(LuaError::RuntimeError)
+                map_graph_error(
+                    "addItem",
+                    this.inner.borrow_mut().add_item_to_node(item.id, node.id),
+                )
             },
         );
         // -- removeItem --
@@ -1200,16 +1407,17 @@ impl LuaUserData for LuaGraph {
             |_, this, (item_ud, edge_ud): (LuaAnyUserData, LuaAnyUserData)| {
                 let item = item_ud.borrow::<LuaGraphItem>()?;
                 let edge = edge_ud.borrow::<LuaEdge>()?;
-                this.inner
-                    .borrow_mut()
-                    .send_item(item.id, edge.id)
-                    .map_err(LuaError::RuntimeError)
+                map_graph_error(
+                    "sendItem",
+                    this.inner.borrow_mut().send_item(item.id, edge.id),
+                )
             },
         );
         // -- update --
         /// Advances graph simulation by delta time and dispatches generated callbacks.
         /// @param | dt | number | Delta time in seconds.
         methods.add_method("update", |lua, this, dt: f64| {
+            let dt = ensure_non_negative_finite("update", "dt", dt)?;
             let events = this.inner.borrow_mut().update(dt);
             let cbs = this.callbacks.borrow();
             dispatch_events(lua, &this.inner, &cbs, events)
@@ -1225,6 +1433,7 @@ impl LuaUserData for LuaGraph {
         /// Advances graph simulation through the parallel update path and dispatches generated callbacks.
         /// @param | dt | number | Delta time in seconds.
         methods.add_method("tickParallel", |lua, this, dt: f64| {
+            let dt = ensure_non_negative_finite("tickParallel", "dt", dt)?;
             let events = this.inner.borrow_mut().update_parallel(dt);
             let cbs = this.callbacks.borrow();
             dispatch_events(lua, &this.inner, &cbs, events)
@@ -1528,6 +1737,7 @@ impl LuaUserData for LuaGraph {
                     .as_ref()
                     .and_then(|c| c.get::<_, Option<i32>>("capacity").ok().flatten())
                     .unwrap_or(-1);
+                let capacity = ensure_capacity_like("batchAddNodes", "capacity", capacity)?;
                 let ids = lua.create_table()?;
                 let mut graph = this.inner.borrow_mut();
                 for i in 1..=count {
@@ -1550,9 +1760,10 @@ impl LuaUserData for LuaGraph {
                 let from: u64 = entry.get(1)?;
                 let to: u64 = entry.get(2)?;
                 let edge_type: Option<String> = entry.get(3).ok();
-                let edge_id = graph
-                    .add_edge(from, to, edge_type.as_deref())
-                    .map_err(LuaError::RuntimeError)?;
+                let edge_id = map_graph_error(
+                    "batchAddEdges",
+                    graph.add_edge(from, to, edge_type.as_deref()),
+                )?;
                 result.set(idx, edge_id)?;
                 idx += 1;
             }
@@ -1563,6 +1774,7 @@ impl LuaUserData for LuaGraph {
         /// @param | dt | number | Delta time per step.
         /// @param | iterations | integer | Number of steps to run.
         methods.add_method("batchStep", |lua, this, (dt, iterations): (f64, u32)| {
+            let dt = ensure_non_negative_finite("batchStep", "dt", dt)?;
             let mut all_events = Vec::new();
             {
                 let mut graph = this.inner.borrow_mut();

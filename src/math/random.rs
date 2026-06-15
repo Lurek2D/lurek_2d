@@ -10,7 +10,7 @@ use fastrand::Rng;
 pub struct RandomGenerator {
     /// The underlying fast RNG state.
     rng: Rng,
-    /// Seed value recorded at construction or last `set_seed` call.
+    /// Seed value recorded at construction or last explicit `set_seed` call.
     seed: u64,
 }
 impl RandomGenerator {
@@ -56,16 +56,17 @@ impl RandomGenerator {
     pub fn get_seed(&self) -> u64 {
         self.seed
     }
-    /// Serialise the current seed to a string for save-file persistence.
+    /// Serialise the current RNG state to a string for save-file persistence.
     pub fn get_state(&self) -> String {
-        format!("{}", self.seed)
+        self.rng.get_seed().to_string()
     }
-    /// Restore the seed from a previously serialised state string; returns error on parse failure.
+    /// Restore the current RNG state from a previously serialised state string; returns error on parse failure.
     pub fn set_state(&mut self, state: &str) -> Result<(), String> {
         let seed: u64 = state
             .parse()
             .map_err(|_| format!("Invalid state string: {}", state))?;
-        self.set_seed(seed);
+        self.seed = seed;
+        self.rng.seed(seed);
         Ok(())
     }
     /// Roll one N-sided die (1 to sides inclusive). Returns 1 when sides < 1.
@@ -147,10 +148,13 @@ impl RandomGenerator {
         self.random() < p
     }
 }
-/// Clone by constructing a new generator with the same stored seed.
+/// Clone by duplicating the live RNG state so the clone continues from the same point.
 impl Clone for RandomGenerator {
     fn clone(&self) -> Self {
-        Self::with_seed(self.seed)
+        Self {
+            rng: self.rng.clone(),
+            seed: self.seed,
+        }
     }
 }
 /// Provide a default unseeded generator via `new()`.

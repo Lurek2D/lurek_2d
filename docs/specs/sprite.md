@@ -54,6 +54,7 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - Stateful sprite-clip animator used by the Lua-facing `lurek.sprite` API.
 - This module owns playback state transitions and frame stepping rules. Lua
 - bindings should stay thin and delegate update logic to this type.
+- Module API documentation
 
 ### atlas.rs
 

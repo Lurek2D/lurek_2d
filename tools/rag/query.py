@@ -134,6 +134,61 @@ EXAMPLE_TOKENS = {"demo", "demos", "example", "examples", "sample", "samples", "
 API_TOKENS = {"api", "callback", "callbacks", "function", "functions", "method", "methods", "reference"}
 SOURCE_TOKENS = {"bug", "fix", "implement", "implementation", "module", "rust", "source", "src"}
 PROMPT_TOKENS = {"prompt", "prompts", "routing", "route"}
+MODULE_ALIAS_MAP = {
+    "music": "audio",
+    "sound": "audio",
+    "sounds": "audio",
+    "sfx": "audio",
+    "voice": "audio",
+    "voices": "audio",
+    "collision": "physics",
+    "collisions": "physics",
+    "rigidbody": "physics",
+    "rigidbodies": "physics",
+    "sensor": "physics",
+    "sensors": "physics",
+    "zoom": "camera",
+    "shake": "camera",
+    "fullscreen": "window",
+    "dpi": "window",
+}
+MODULE_QUERY_STOPWORDS = {
+    "how",
+    "do",
+    "does",
+    "did",
+    "i",
+    "the",
+    "a",
+    "an",
+    "and",
+    "or",
+    "for",
+    "of",
+    "in",
+    "on",
+    "my",
+    "me",
+    "what",
+    "when",
+    "where",
+    "which",
+    "why",
+    "use",
+    "using",
+    "create",
+    "should",
+    "would",
+    "could",
+    "give",
+    "gives",
+    "play",
+    "into",
+    "with",
+    "from",
+    "that",
+    "this",
+}
 
 
 def connect(db_path_override: Path | None = None) -> duckdb.DuckDBPyConnection:
@@ -205,7 +260,13 @@ def _normalize_bool(value: Any) -> bool:
 
 
 def _dedupe_tokens(safe_query: str) -> list[str]:
-    return list(dict.fromkeys(token.lower() for token in safe_query.split() if token))
+    return list(
+        dict.fromkeys(
+            token.lower()
+            for token in safe_query.split()
+            if token and token.lower() not in MODULE_QUERY_STOPWORDS
+        )
+    )
 
 
 def _build_snippet(content: str, tokens: list[str]) -> str:
@@ -629,6 +690,18 @@ def _adjusted_rank(row: dict[str, Any], safe_query: str, intent: dict[str, Any])
             score -= 10.0
         if source_kind in {"example", "source", "docs", "page"} and not path.startswith("tools/"):
             score += 12.0
+    if "mcp" in tokens and "rag" in tokens and ("rebuild" in tokens or "build" in tokens or "index" in tokens):
+        if path == "tools/mcp/lurek_mcp_server.py":
+            score -= 34.0
+        if path == "tools/rag/build_index.py":
+            score -= 28.0
+    if "skill" in tokens and intent["wants_examples"] and intent["wants_api"]:
+        if path == ".codex/skills/create-example/skill.md":
+            score -= 42.0
+        if path == "content/examples/agents.md":
+            score -= 20.0
+        if source_kind == "skill" and "example" in path:
+            score -= 14.0
     if "agents" in tokens or "workflow" in tokens or "rules" in tokens or "contract" in tokens or "contracts" in tokens:
         if path == "agents.md":
             score -= 30.0
@@ -699,7 +772,7 @@ def _extract_query_tokens(query: str, *, limit: int = 8) -> list[str]:
     tokens: list[str] = []
     for match in QUERY_TOKEN_RE.findall(query or ""):
         token = match.lower().strip("./-")
-        if len(token) < 3 or token in seen:
+        if len(token) < 3 or token in seen or token in MODULE_QUERY_STOPWORDS:
             continue
         seen.add(token)
         tokens.append(token)
@@ -720,9 +793,24 @@ def _extract_module_terms(query: str, *, limit: int = 6) -> list[str]:
                 modules.append(module_name)
                 if len(modules) >= limit:
                     return modules
-    for token in _extract_query_tokens(query, limit=limit * 2):
+    query_tokens = _extract_query_tokens(query, limit=limit * 4)
+    for token in query_tokens:
+        alias = MODULE_ALIAS_MAP.get(token.lower())
+        if alias and alias not in seen:
+            seen.add(alias)
+            modules.append(alias)
+            if len(modules) >= limit:
+                return modules
+    for token in query_tokens:
         lowered = token.lower()
-        if lowered in ECOSYSTEM_TOKENS:
+        if lowered in GAMEPLAY_HINT_TOKENS and lowered not in {"example", "examples"} and lowered not in seen:
+            seen.add(lowered)
+            modules.append(lowered)
+            if len(modules) >= limit:
+                return modules
+    for token in query_tokens:
+        lowered = token.lower()
+        if lowered in ECOSYSTEM_TOKENS or lowered in MODULE_QUERY_STOPWORDS:
             continue
         if lowered not in seen:
             seen.add(lowered)

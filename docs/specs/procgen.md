@@ -168,6 +168,7 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 - Even-spacing point sampler for procedural placement problems where randomness should look natural without collapsing into visible clustering.
 - The file implements Bridson-style Poisson disk generation with acceleration structures and seeded control so distribution quality and reproducibility both stay strong.
 - Functionally this file delivers scattered-but-separated 2D points for trees, loot, enemies, landmarks, and other placement-heavy content.
+- Module API documentation
 
 ### render.rs
 

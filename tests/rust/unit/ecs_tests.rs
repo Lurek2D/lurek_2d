@@ -4,6 +4,7 @@
 
 use lurek2d::ecs::relationships::RelationshipManager;
 use lurek2d::ecs::universe::Universe;
+use mlua::{Lua, Value as LuaValue};
 
 // â”€â”€ universe â€” generational ID packing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -89,6 +90,48 @@ mod universe_tests {
         assert!(tick.is_empty());
         assert!(post.is_empty());
     }
+
+    #[test]
+    fn generation_saturation_retires_slot_instead_of_wrapping() {
+        let lua = Lua::new();
+        let mut u = Universe::new();
+        let mut last = 0u32;
+        for _ in 0..=u8::MAX {
+            let id = u.spawn().raw();
+            last = id;
+            u.kill(id.into(), &lua).expect("kill should succeed");
+        }
+        assert_eq!(Universe::unpack_slot(last), 1);
+        assert_eq!(Universe::unpack_gen(last), u8::MAX);
+
+        let next = u.spawn().raw();
+        assert_eq!(Universe::unpack_slot(next), 2);
+        assert_eq!(Universe::unpack_gen(next), 0);
+    }
+
+    #[test]
+    fn query_change_tick_advances_on_selection_mutations() {
+        let lua = Lua::new();
+        let mut u = Universe::new();
+        assert_eq!(u.get_query_change_tick(), 0);
+
+        let id = u.spawn().raw();
+        let after_spawn = u.get_query_change_tick();
+        assert!(after_spawn > 0);
+
+        u.set_component(&lua, id, "pos", LuaValue::Integer(1))
+            .expect("set_component should succeed");
+        let after_set = u.get_query_change_tick();
+        assert!(after_set > after_spawn);
+
+        u.remove_component(&lua, id, "pos")
+            .expect("remove_component should succeed");
+        let after_remove = u.get_query_change_tick();
+        assert!(after_remove > after_set);
+
+        u.kill(id.into(), &lua).expect("kill should succeed");
+        assert!(u.get_query_change_tick() > after_remove);
+    }
 }
 
 // â”€â”€ relationships â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -145,7 +188,7 @@ mod relationships_tests {
         mgr.define_type("Mood", vec!["happy".into(), "sad".into()], "happy");
         mgr.define_type("Bond", vec!["weak".into(), "strong".into()], "weak");
         let names = mgr.type_names();
-        assert_eq!(names.len(), 2);
+        assert_eq!(names, vec!["Bond".to_string(), "Mood".to_string()]);
     }
 
     #[test]
@@ -173,5 +216,18 @@ mod relationships_tests {
         assert_eq!(mgr.relation_count(), 1);
         mgr.set_value(3, 4, 2.0);
         assert_eq!(mgr.relation_count(), 2);
+    }
+
+    #[test]
+    fn remove_entity_clears_pairwise_and_directed_relations() {
+        let mut mgr = RelationshipManager::new();
+        mgr.set_value(1, 2, 5.0);
+        mgr.set_value(3, 4, 2.0);
+        mgr.add_link(1, "owns", 2);
+        mgr.add_link(5, "sees", 1);
+        mgr.remove_entity(1);
+        assert_eq!(mgr.relation_count(), 1);
+        assert!(!mgr.has_link(1, "owns", 2));
+        assert!(!mgr.has_link(5, "sees", 1));
     }
 }

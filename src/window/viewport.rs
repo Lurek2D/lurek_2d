@@ -42,6 +42,7 @@ pub fn from_pixels(ws: &WindowState, x: f32, y: f32) -> (f32, f32) {
     (sx, sy)
 }
 /// Snapshot of all viewport scale and offset values returned by `get_scale_info`.
+/// # Fields
 pub struct ScaleInfo {
     /// Horizontal scale factor from game to screen pixels.
     pub scale_x: f32,

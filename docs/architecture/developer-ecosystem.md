@@ -678,7 +678,7 @@ The primary requirement for these editors is that they **must generate and save 
 ### 38. GlobalAutoloadEditor
 - **Reference / Inspiration:** Godot Autoloads / Project Settings.
 - **Use case:** Managing persistent global singletons and services that survive scene loads.
-- **Lurek API Integration:** Registers modules via `lurek.system` and `lurek.scene`.
+- **Lurek API Integration:** Registers modules via `lurek.runtime` and `lurek.scene`.
 - **Ideas / Vision:** Solves the problem of "where do I put the player's inventory across levels?". Provides a clean registry for persistent Lua scripts.
 - **Feature list:**
   - Singleton script registration table.
@@ -723,7 +723,7 @@ The primary requirement for these editors is that they **must generate and save 
 ### 41. ProjectExportEditor
 - **Reference / Inspiration:** Godot Export Profiles, Unity Build Settings.
 - **Use case:** Configuring platform-specific build settings and compiling the game.
-- **Lurek API Integration:** Interfaces with `lurek.engine` and `lurek.system` compilation flags.
+- **Lurek API Integration:** Interfaces with `lurek.engine` and `lurek.runtime` compilation flags.
 - **Ideas / Vision:** The final step. Replaces writing manual Cargo build scripts with a visual UI to set app icons, window sizing, and platform targeting.
 - **Feature list:**
   - Target platform selection (Windows, Linux, macOS).

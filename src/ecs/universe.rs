@@ -26,6 +26,12 @@ mod systems;
 const MAX_BITMAP_TAGS: usize = 63;
 #[derive(Debug, Default, Clone)]
 /// Captures component and entity changes accumulated since the previous diff read.
+///
+/// # Fields
+/// - `added_components`: Component additions as `(entity_id, component_name)` pairs.
+/// - `removed_components`: Component removals as `(entity_id, component_name)` pairs.
+/// - `deleted_entities`: Entity ids deleted since the previous diff drain.
+/// - `dirty_entities`: Entity ids whose component rows changed since the previous diff drain.
 pub struct SnapshotDiff {
     /// Component additions recorded as `(entity_id, component_name)` pairs.
     pub added_components: Vec<(u32, String)>,
@@ -37,6 +43,9 @@ pub struct SnapshotDiff {
     pub dirty_entities: Vec<u32>,
 }
 /// Owns all ECS entity state, component rows, tags, systems, and relationship data.
+///
+/// # Fields
+/// - `relationships`: Pairwise and directed inter-entity relationship storage.
 pub struct Universe {
     /// Next fresh slot id used when no recycled slots are available.
     next_id: u32,
@@ -46,12 +55,16 @@ pub struct Universe {
     alive: HashSet<u32>,
     /// Generation counters keyed by entity slot.
     generations: HashMap<u32, u8>,
+    /// Slots permanently retired after generation saturation to avoid stale-id aliasing.
+    retired_slots: HashSet<u32>,
     /// Per-entity string tags keyed by slot.
     string_tags: HashMap<u32, Vec<String>>,
     /// Reverse index from tag name to packed entity ids.
     tag_index: HashMap<String, Vec<u32>>,
     /// Registered bitmap tag names ordered by bit position.
     bitmap_tag_names: Vec<String>,
+    /// Bitmap tag bits keyed by tag name for O(1) lookup.
+    bitmap_tag_bits: HashMap<String, u8>,
     /// Per-entity bitmap tag masks keyed by slot.
     bitmap_masks: HashMap<u32, u64>,
     /// Per-entity layer values keyed by slot.
@@ -85,6 +98,8 @@ pub struct Universe {
     dirty_set: HashSet<u32>,
     /// Buffered entity deletions since the last diff drain.
     deleted_entities: Vec<u32>,
+    /// Coarse invalidation tick for cached query views and other selection caches.
+    query_change_tick: u64,
     /// Relationship graph and directed link state associated with this universe.
     pub relationships: RelationshipManager,
 }
@@ -97,9 +112,11 @@ impl Universe {
             free_list: Vec::new(),
             alive: HashSet::new(),
             generations: HashMap::new(),
+            retired_slots: HashSet::new(),
             string_tags: HashMap::new(),
             tag_index: HashMap::new(),
             bitmap_tag_names: Vec::new(),
+            bitmap_tag_bits: HashMap::new(),
             bitmap_masks: HashMap::new(),
             layers: HashMap::new(),
             parents: HashMap::new(),
@@ -117,6 +134,7 @@ impl Universe {
             remove_events: Vec::new(),
             dirty_set: HashSet::new(),
             deleted_entities: Vec::new(),
+            query_change_tick: 0,
             relationships: RelationshipManager::new(),
         }
     }
@@ -177,6 +195,41 @@ impl Universe {
     fn current_gen(&self, slot: u32) -> u8 {
         *self.generations.get(&slot).unwrap_or(&0)
     }
+
+    #[inline]
+    /// Advances the coarse query invalidation tick after a selection-affecting mutation.
+    fn bump_query_change_tick(&mut self) {
+        self.query_change_tick = self.query_change_tick.wrapping_add(1);
+    }
+
+    /// Returns the coarse invalidation tick used by cached ECS query views.
+    pub fn get_query_change_tick(&self) -> u64 {
+        self.query_change_tick
+    }
+
+    #[inline]
+    /// Returns a runtime error when `id` is not a currently live entity.
+    fn ensure_alive(&self, id: u32, context: &str) -> LuaResult<()> {
+        if self.is_alive(id) {
+            Ok(())
+        } else {
+            Err(mlua::Error::runtime(format!(
+                "{context}: entity {} is not alive",
+                id
+            )))
+        }
+    }
+
+    /// Returns the packed ancestry chain for `entity`, stopping at the root.
+    fn ancestry_chain(&self, entity: u32) -> Vec<u32> {
+        let mut chain = Vec::new();
+        let mut cursor = self.get_parent(entity);
+        while let Some(parent_id) = cursor {
+            chain.push(parent_id);
+            cursor = self.get_parent(parent_id);
+        }
+        chain
+    }
     #[cfg(feature = "ecs-archetype")]
     /// Rebuilds archetype query indices from one entity component row.
     fn reindex_component_row(&mut self, slot: u32, row: &Table) -> LuaResult<()> {
@@ -223,14 +276,19 @@ impl Universe {
     /// Allocates a live entity id, reusing a recycled slot when available.
     pub fn spawn(&mut self) -> EntityId {
         log_msg!(debug, EN02_ENTITY_SPAWN);
-        let slot = if let Some(recycled) = self.free_list.pop() {
-            recycled
-        } else {
-            let s = self.next_id;
-            self.next_id += 1;
-            s
+        let slot = loop {
+            if let Some(recycled) = self.free_list.pop() {
+                if !self.retired_slots.contains(&recycled) {
+                    break recycled;
+                }
+            } else {
+                let s = self.next_id;
+                self.next_id += 1;
+                break s;
+            }
         };
         self.alive.insert(slot);
+        self.bump_query_change_tick();
         EntityId(Self::pack_id(slot, self.current_gen(slot)))
     }
     /// Deletes one entity, clears its stored state, and recycles its slot.
@@ -241,6 +299,7 @@ impl Universe {
             return Ok(());
         }
         self.alive.remove(&slot);
+        self.relationships.remove_entity(id.raw());
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
             store.set(slot, LuaValue::Nil)?;
@@ -272,27 +331,61 @@ impl Universe {
                 self.parents.remove(&cs);
             }
         }
-        *self.generations.entry(slot).or_insert(0) += 1;
-        self.free_list.push(slot);
+        match self.generations.entry(slot) {
+            std::collections::hash_map::Entry::Occupied(mut entry) => {
+                if *entry.get() == u8::MAX {
+                    self.retired_slots.insert(slot);
+                } else {
+                    *entry.get_mut() += 1;
+                    self.free_list.push(slot);
+                }
+            }
+            std::collections::hash_map::Entry::Vacant(entry) => {
+                entry.insert(1);
+                self.free_list.push(slot);
+            }
+        }
         self.deleted_entities.push(id.raw());
+        self.bump_query_change_tick();
         Ok(())
     }
     /// Reassigns the parent of an entity within the hierarchy graph.
-    pub fn set_parent(&mut self, entity: u32, parent: Option<u32>) {
+    pub fn set_parent(&mut self, entity: u32, parent: Option<u32>) -> LuaResult<()> {
+        self.ensure_alive(entity, "lurek.ecs.setParent")?;
+        if let Some(parent_id) = parent {
+            self.ensure_alive(parent_id, "lurek.ecs.setParent")?;
+            if parent_id == entity {
+                return Err(mlua::Error::runtime(
+                    "lurek.ecs.setParent: entity cannot be its own parent",
+                ));
+            }
+            if self.ancestry_chain(parent_id).contains(&entity) {
+                return Err(mlua::Error::runtime(
+                    "lurek.ecs.setParent: cyclic hierarchy is not allowed",
+                ));
+            }
+        }
         let entity_slot = Self::unpack_slot(entity);
         if let Some(old_parent_slot) = self.parents.remove(&entity_slot) {
+            let mut remove_bucket = false;
             if let Some(siblings) = self.children.get_mut(&old_parent_slot) {
                 siblings.retain(|&c| c != entity_slot);
+                remove_bucket = siblings.is_empty();
+            }
+            if remove_bucket {
+                self.children.remove(&old_parent_slot);
             }
         }
         if let Some(new_parent) = parent {
             let parent_slot = Self::unpack_slot(new_parent);
             self.parents.insert(entity_slot, parent_slot);
-            self.children
-                .entry(parent_slot)
-                .or_default()
-                .push(entity_slot);
+            let siblings = self.children.entry(parent_slot).or_default();
+            if !siblings.contains(&entity_slot) {
+                siblings.push(entity_slot);
+            }
         }
+        self.bump_query_change_tick();
+        Ok(())
     }
     /// Returns the packed parent id for an entity when one is assigned.
     pub fn get_parent(&self, entity: u32) -> Option<u32> {
@@ -384,6 +477,7 @@ impl Universe {
             .insert(slot);
         self.add_events.push((id, name.to_string()));
         self.dirty_set.insert(id);
+        self.bump_query_change_tick();
         Ok(())
     }
     /// Reads one component value from an entity row, yielding `nil` when absent.
@@ -435,6 +529,7 @@ impl Universe {
                     }
                     self.remove_events.push((id, name.to_string()));
                     self.dirty_set.insert(id);
+                    self.bump_query_change_tick();
                 }
             }
         }
@@ -453,31 +548,54 @@ impl Universe {
                 }
             }
         }
+        names.sort();
         Ok(names)
     }
     /// Returns entity ids whose rows contain every requested component name.
     pub fn query(&self, lua: &Lua, names: &[String]) -> LuaResult<Vec<u32>> {
+        self.query_component_sets(lua, names, &[])
+    }
+
+    /// Returns entity ids that match required components and exclude forbidden components.
+    pub(crate) fn query_component_sets(
+        &self,
+        lua: &Lua,
+        with_names: &[String],
+        without_names: &[String],
+    ) -> LuaResult<Vec<u32>> {
         let mut result = Vec::new();
-        if names.is_empty() {
-            return Ok(self.get_entities());
-        }
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
-            for slot in self.candidate_slots_for_all(names) {
+            for slot in self.candidate_slots_for_all(with_names) {
                 if let Ok(entity_table) = store.get::<_, Table>(slot) {
                     let mut all = true;
-                    for name in names {
+                    for name in with_names {
                         let val: LuaValue = entity_table.get(name.as_str())?;
                         if val.is_nil() {
                             all = false;
                             break;
                         }
                     }
-                    if all {
+                    if !all {
+                        continue;
+                    }
+                    let mut has_excluded = false;
+                    for name in without_names {
+                        let val: LuaValue = entity_table.get(name.as_str())?;
+                        if !val.is_nil() {
+                            has_excluded = true;
+                            break;
+                        }
+                    }
+                    if !has_excluded {
                         result.push(Self::pack_id(slot, self.current_gen(slot)));
                     }
+                } else if with_names.is_empty() {
+                    result.push(Self::pack_id(slot, self.current_gen(slot)));
                 }
             }
+        } else if with_names.is_empty() {
+            result = self.get_entities();
         }
         result.sort();
         Ok(result)
@@ -511,13 +629,18 @@ impl Universe {
         if !tags.contains(&tag_str) {
             tags.push(tag_str.clone());
             self.tag_index.entry(tag_str).or_default().push(id);
+            self.bump_query_change_tick();
         }
     }
     /// Removes a string tag from an entity and the reverse tag index.
     pub fn remove_tag(&mut self, id: u32, tag: &str) {
         let slot = Self::unpack_slot(id);
         if let Some(tags) = self.string_tags.get_mut(&slot) {
+            let before = tags.len();
             tags.retain(|t| t != tag);
+            if tags.len() != before {
+                self.bump_query_change_tick();
+            }
         }
         if let Some(entries) = self.tag_index.get_mut(tag) {
             entries.retain(|&tid| tid != id);
@@ -554,8 +677,8 @@ impl Universe {
     }
     /// Resolves or allocates the bitmap bit position for a tag name.
     fn get_or_define_tag_bit(&mut self, name: &str) -> LuaResult<u8> {
-        if let Some(pos) = self.bitmap_tag_names.iter().position(|n| n == name) {
-            return Ok(pos as u8);
+        if let Some(&bit) = self.bitmap_tag_bits.get(name) {
+            return Ok(bit);
         }
         if self.bitmap_tag_names.len() >= MAX_BITMAP_TAGS {
             return Err(mlua::Error::runtime(format!(
@@ -565,6 +688,7 @@ impl Universe {
         }
         let bit = self.bitmap_tag_names.len() as u8;
         self.bitmap_tag_names.push(name.to_string());
+        self.bitmap_tag_bits.insert(name.to_string(), bit);
         Ok(bit)
     }
     /// Reserves and returns the bitmap bit position for a tag name.
@@ -579,22 +703,30 @@ impl Universe {
         let slot = Self::unpack_slot(id);
         let bit = self.get_or_define_tag_bit(name)?;
         let mask = self.bitmap_masks.entry(slot).or_insert(0);
+        let before = *mask;
         *mask |= 1u64 << bit;
+        if *mask != before {
+            self.bump_query_change_tick();
+        }
         Ok(())
     }
     /// Clears one bitmap tag bit on an entity when the tag exists.
     pub fn bitmap_untag(&mut self, id: u32, name: &str) {
         let slot = Self::unpack_slot(id);
-        if let Some(pos) = self.bitmap_tag_names.iter().position(|n| n == name) {
+        if let Some(&pos) = self.bitmap_tag_bits.get(name) {
             if let Some(mask) = self.bitmap_masks.get_mut(&slot) {
+                let before = *mask;
                 *mask &= !(1u64 << pos);
+                if *mask != before {
+                    self.bump_query_change_tick();
+                }
             }
         }
     }
     /// Returns whether an entity currently has the named bitmap tag bit set.
     pub fn has_bitmap_tag(&self, id: u32, name: &str) -> bool {
         let slot = Self::unpack_slot(id);
-        if let Some(pos) = self.bitmap_tag_names.iter().position(|n| n == name) {
+        if let Some(&pos) = self.bitmap_tag_bits.get(name) {
             if let Some(mask) = self.bitmap_masks.get(&slot) {
                 return (*mask & (1u64 << pos)) != 0;
             }
@@ -603,7 +735,7 @@ impl Universe {
     }
     /// Returns live entities whose bitmap mask includes the named tag bit.
     pub fn query_bitmap_tag(&self, name: &str) -> Vec<u32> {
-        if let Some(pos) = self.bitmap_tag_names.iter().position(|n| n == name) {
+        if let Some(&pos) = self.bitmap_tag_bits.get(name) {
             let bit = 1u64 << pos;
             let mut result: Vec<u32> = self
                 .alive
@@ -626,7 +758,7 @@ impl Universe {
     pub fn query_bitmap_any(&self, names: &[String]) -> Vec<u32> {
         let mut combined = 0u64;
         for name in names {
-            if let Some(pos) = self.bitmap_tag_names.iter().position(|n| n == name) {
+            if let Some(&pos) = self.bitmap_tag_bits.get(name.as_str()) {
                 combined |= 1u64 << pos;
             }
         }
@@ -651,7 +783,7 @@ impl Universe {
     pub fn query_bitmap_all(&self, names: &[String]) -> Vec<u32> {
         let mut combined = 0u64;
         for name in names {
-            if let Some(pos) = self.bitmap_tag_names.iter().position(|n| n == name) {
+            if let Some(&pos) = self.bitmap_tag_bits.get(name.as_str()) {
                 combined |= 1u64 << pos;
             } else {
                 return Vec::new();
@@ -676,15 +808,16 @@ impl Universe {
     }
     /// Returns the bit position assigned to a bitmap tag name.
     pub fn get_bitmap_tag_bit(&self, name: &str) -> Option<u8> {
-        self.bitmap_tag_names
-            .iter()
-            .position(|n| n == name)
-            .map(|p| p as u8)
+        self.bitmap_tag_bits.get(name).copied()
     }
     /// Writes the layer value for a live entity.
     pub fn set_layer(&mut self, id: u32, layer: i32) {
         if self.is_alive(id) {
-            self.layers.insert(Self::unpack_slot(id), layer);
+            let slot = Self::unpack_slot(id);
+            let previous = self.layers.insert(slot, layer);
+            if previous != Some(layer) {
+                self.bump_query_change_tick();
+            }
         }
     }
     /// Returns the stored layer value for an entity, defaulting to zero.
@@ -804,6 +937,7 @@ impl Universe {
                 names.push(k);
             }
         }
+        names.sort();
         Ok(names)
     }
     /// Returns a deep-copied Lua table containing one blueprint's component template.
@@ -828,6 +962,9 @@ impl Universe {
         self.string_tags.clear();
         self.tag_index.clear();
         self.generations.clear();
+        self.retired_slots.clear();
+        self.bitmap_tag_names.clear();
+        self.bitmap_tag_bits.clear();
         self.bitmap_masks.clear();
         self.layers.clear();
         self.parents.clear();
@@ -840,6 +977,8 @@ impl Universe {
         self.remove_events.clear();
         self.dirty_set.clear();
         self.deleted_entities.clear();
+        self.relationships = RelationshipManager::new();
+        self.bump_query_change_tick();
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
             let keys: Vec<u32> = store
@@ -887,6 +1026,42 @@ impl Universe {
             deleted_entities,
             dirty_entities,
         }
+    }
+
+    /// Adds a named directed relation between two live entities.
+    pub fn add_relation(&mut self, from: u32, name: &str, to: u32) -> LuaResult<()> {
+        self.ensure_alive(from, "lurek.ecs.addRelation")?;
+        self.ensure_alive(to, "lurek.ecs.addRelation")?;
+        self.relationships.add_link(from, name, to);
+        Ok(())
+    }
+
+    /// Returns targets linked from a live entity by a named relation.
+    pub fn get_related(&self, from: u32, name: &str) -> LuaResult<Vec<u32>> {
+        self.ensure_alive(from, "lurek.ecs.getRelated")?;
+        Ok(self.relationships.get_links(from, name).to_vec())
+    }
+
+    /// Removes one named directed relation between live entities.
+    pub fn remove_relation(&mut self, from: u32, name: &str, to: u32) -> LuaResult<()> {
+        self.ensure_alive(from, "lurek.ecs.removeRelation")?;
+        self.ensure_alive(to, "lurek.ecs.removeRelation")?;
+        self.relationships.remove_link(from, name, to);
+        Ok(())
+    }
+
+    /// Clears every target for one named relation from a live source entity.
+    pub fn clear_relations(&mut self, from: u32, name: &str) -> LuaResult<()> {
+        self.ensure_alive(from, "lurek.ecs.clearRelations")?;
+        self.relationships.clear_links(from, name);
+        Ok(())
+    }
+
+    /// Returns whether a named directed relation exists between two live entities.
+    pub fn has_relation(&self, from: u32, name: &str, to: u32) -> LuaResult<bool> {
+        self.ensure_alive(from, "lurek.ecs.hasRelation")?;
+        self.ensure_alive(to, "lurek.ecs.hasRelation")?;
+        Ok(self.relationships.has_link(from, name, to))
     }
 }
 /// Default trait forwarding to `Universe::new()`.

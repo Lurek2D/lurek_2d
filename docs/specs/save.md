@@ -11,8 +11,8 @@
 - Binding: `src/lua_api/save_api.rs`
 - Namespace: `lurek.save`
 - Lua API surface: `1` functions, `3` types, `27` methods
-- Rust test path(s): tests/rust/unit/savegame_tests.rs
-- Lua test path(s): tests/lua/unit/test_save.lua, tests/lua/stress/test_save_stress.lua, tests/lua/security/test_save_validation.lua, tests/lua/integration/test_save_ecs.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_save_ecs_scene.lua
+- Rust test path(s): tests/rust/unit/save_tests.rs
+- Lua test path(s): tests/lua/unit/test_save_unit.lua, tests/lua/stress/test_save_stress.lua, tests/lua/security/test_save_security.lua, tests/lua/integration/test_save_ecs_integration.lua, tests/lua/integration/test_save_tilemap_integration.lua, tests/lua/integration/test_save_ecs_scene_integration.lua
 
 ## Summary
 
@@ -39,6 +39,7 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 - This module provides the save-system surface for collecting game state, storing it by slot, and restoring it later.
 - It combines persistence, compression, backup rotation, and migration support under one gameplay-facing feature stack.
 - At the highest level this is the engine subsystem that turns live Lua state into durable save slots.
+- Save payload serialization writes keys in stable sorted order so repeated saves stay reproducible for diffing, testing, and recovery tooling.
 
 ### save_manager.rs
 
@@ -107,7 +108,7 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 - `LSaveManager:type() -> string`: Return the type name string for this userdata object.
 - `LSaveManager:typeOf(name) -> boolean`: Check whether this object matches a given type name. Supports "LSaveManager" and "Object".
 - `LSaveManager:unregister(name) -> nil`: Remove a previously registered data section by name, cleaning up its collector and restorer callbacks.
-- `LSaveManager:update(dt) -> boolean`: Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
+- `LSaveManager:update(dt) -> string`: Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
 
 #### LSaveManagerGetSlotInfoResult Type
 

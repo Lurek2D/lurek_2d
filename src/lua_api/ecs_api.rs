@@ -8,6 +8,7 @@
 //! TODO: add doc note 5
 
 use super::SharedState;
+use crate::ecs::query_view::QueryView;
 use crate::ecs::Universe;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -23,6 +24,116 @@ pub struct LuaUniverse {
     /// Registered callbacks keyed by component name for remove events.
     remove_observers: Rc<RefCell<HashMap<String, Vec<LuaRegistryKey>>>>,
 }
+
+#[derive(Clone)]
+/// Lua-side relationship manager handle owned by `lurek.ecs`.
+pub struct LuaRelationshipManager {
+    /// Shared relationship storage used by all cloned Lua handles.
+    inner: Rc<RefCell<crate::ecs::RelationshipManager>>,
+}
+
+#[derive(Clone)]
+/// Lua-side cached ECS query view handle owned by one universe.
+pub struct LuaQueryView {
+    /// Universe handle used to refresh the cached query results.
+    world: LuaUniverse,
+    /// Shared query-view cache state.
+    inner: Rc<RefCell<QueryView>>,
+}
+
+impl LuaUserData for LuaRelationshipManager {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        methods.add_method("type", |_, _, ()| Ok("LRelationshipManager"));
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LRelationshipManager" || name == "LObject")
+        });
+        methods.add_method(
+            "defineType",
+            |_, this, (name, levels, default_level): (String, LuaTable, Option<String>)| {
+                let levels: Vec<String> = levels
+                    .sequence_values::<String>()
+                    .collect::<LuaResult<_>>()?;
+                this.inner.borrow_mut().define_type(
+                    &name,
+                    levels,
+                    default_level.as_deref().unwrap_or(""),
+                );
+                Ok(())
+            },
+        );
+        methods.add_method("removeType", |_, this, name: String| {
+            this.inner.borrow_mut().remove_type(&name);
+            Ok(())
+        });
+        methods.add_method("typeNames", |_, this, ()| {
+            Ok(this.inner.borrow().type_names())
+        });
+        methods.add_method("setValue", |_, this, (a, b, value): (u32, u32, f64)| {
+            this.inner.borrow_mut().set_value(a, b, value);
+            Ok(())
+        });
+        methods.add_method("getValue", |_, this, (a, b): (u32, u32)| {
+            Ok(this.inner.borrow().get_value(a, b))
+        });
+        methods.add_method("adjustValue", |_, this, (a, b, delta): (u32, u32, f64)| {
+            this.inner.borrow_mut().adjust_value(a, b, delta);
+            Ok(())
+        });
+        methods.add_method(
+            "setLevel",
+            |_, this, (a, b, type_name, level): (u32, u32, String, String)| {
+                Ok(this.inner.borrow_mut().set_level(a, b, &type_name, &level))
+            },
+        );
+        methods.add_method(
+            "getLevel",
+            |_, this, (a, b, type_name): (u32, u32, String)| {
+                Ok(this.inner.borrow().get_level(a, b, &type_name))
+            },
+        );
+        methods.add_method("removePair", |_, this, (a, b): (u32, u32)| {
+            this.inner.borrow_mut().remove_relation(a, b);
+            Ok(())
+        });
+        methods.add_method("pairCount", |_, this, ()| {
+            Ok(this.inner.borrow().relation_count())
+        });
+    }
+}
+
+impl LuaUserData for LuaQueryView {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- type --
+        /// Returns the Lua-visible type name for this cached query-view handle.
+        /// @return | string | The string `LQueryView`.
+        methods.add_method("type", |_, _, ()| Ok("LQueryView"));
+        // -- typeOf --
+        /// Returns whether this cached query-view handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LQueryView` and `LObject`.
+        /// @return | boolean | True when the supplied type name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LQueryView" || name == "LObject")
+        });
+        // -- ids --
+        /// Returns cached query results, refreshing when the owning universe query tick changed.
+        /// @return | integer[] | Array table of matching entity ids.
+        methods.add_method("ids", |lua, this, ()| {
+            let world = this.world.inner.borrow();
+            let ids = this.inner.borrow_mut().ids(&world, lua)?.to_vec();
+            Ok(ids)
+        });
+        // -- lastTick --
+        /// Returns the universe query-change tick used to build the current cached ids.
+        /// @return | integer | Query-change tick for the cached result set.
+        methods.add_method("lastTick", |lua, this, ()| {
+            let world = this.world.inner.borrow();
+            let mut view = this.inner.borrow_mut();
+            view.refresh(&world, lua)?;
+            Ok(view.last_change_tick())
+        });
+    }
+}
+
 /// Provides Lua methods for ECS entity, component, system, tag, blueprint, hierarchy, observer, and relation operations.
 impl LuaUserData for LuaUniverse {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -100,6 +211,36 @@ impl LuaUserData for LuaUniverse {
                 .collect();
             this.inner.borrow().query(lua, &names)
         });
+        // -- getQueryChangeTick --
+        /// Returns the coarse invalidation tick used by cached ECS query views.
+        /// @return | integer | Monotonic world query-change tick.
+        methods.add_method("getQueryChangeTick", |_, this, ()| {
+            Ok(this.inner.borrow().get_query_change_tick())
+        });
+        // -- newQueryView --
+        /// Creates a cached component query view that refreshes only when this universe changes.
+        /// @param | with_table | table | Array table of required component names.
+        /// @param | without_table | table? | Optional array table of excluded component names.
+        /// @return | LQueryView | Cached query-view handle bound to this universe.
+        methods.add_method(
+            "newQueryView",
+            |_, this, (with_table, without_table): (LuaTable, Option<LuaTable>)| {
+                let with_names: Vec<String> = with_table
+                    .sequence_values::<String>()
+                    .collect::<LuaResult<_>>()?;
+                let without_names = if let Some(without_table) = without_table {
+                    without_table
+                        .sequence_values::<String>()
+                        .collect::<LuaResult<_>>()?
+                } else {
+                    Vec::new()
+                };
+                Ok(LuaQueryView {
+                    world: this.clone(),
+                    inner: Rc::new(RefCell::new(QueryView::new(with_names, without_names))),
+                })
+            },
+        );
         // -- each --
         /// Iterates entities with one component and calls a Lua callback for each match.
         /// @param | name | string | Component name used to select entities.
@@ -570,8 +711,7 @@ impl LuaUserData for LuaUniverse {
         methods.add_method(
             "setParent",
             |_, this, (child_id, parent_id): (u32, Option<u32>)| {
-                this.inner.borrow_mut().set_parent(child_id, parent_id);
-                Ok(())
+                this.inner.borrow_mut().set_parent(child_id, parent_id)
             },
         );
         // -- getParent --
@@ -727,11 +867,7 @@ impl LuaUserData for LuaUniverse {
         methods.add_method(
             "addRelation",
             |_, this, (from, name, to): (u32, String, u32)| {
-                this.inner
-                    .borrow_mut()
-                    .relationships
-                    .add_link(from, &name, to);
-                Ok(())
+                this.inner.borrow_mut().add_relation(from, &name, to)
             },
         );
         // -- getRelated --
@@ -740,8 +876,7 @@ impl LuaUserData for LuaUniverse {
         /// @param | name | string | Relation name.
         /// @return | integer[] | Array table of related target entity ids.
         methods.add_method("getRelated", |lua, this, (from, name): (u32, String)| {
-            let inner = this.inner.borrow();
-            let ids = inner.relationships.get_links(from, &name);
+            let ids = this.inner.borrow().get_related(from, &name)?;
             let tbl = lua.create_table()?;
             for (i, id) in ids.iter().enumerate() {
                 tbl.set(i + 1, *id)?;
@@ -756,11 +891,7 @@ impl LuaUserData for LuaUniverse {
         methods.add_method(
             "removeRelation",
             |_, this, (from, name, to): (u32, String, u32)| {
-                this.inner
-                    .borrow_mut()
-                    .relationships
-                    .remove_link(from, &name, to);
-                Ok(())
+                this.inner.borrow_mut().remove_relation(from, &name, to)
             },
         );
         // -- clearRelations --
@@ -768,11 +899,7 @@ impl LuaUserData for LuaUniverse {
         /// @param | from | integer | Source entity id.
         /// @param | name | string | Relation name to clear.
         methods.add_method("clearRelations", |_, this, (from, name): (u32, String)| {
-            this.inner
-                .borrow_mut()
-                .relationships
-                .clear_links(from, &name);
-            Ok(())
+            this.inner.borrow_mut().clear_relations(from, &name)
         });
         // -- hasRelation --
         /// Returns whether a named directed relation exists between two entities.
@@ -783,7 +910,7 @@ impl LuaUserData for LuaUniverse {
         methods.add_method(
             "hasRelation",
             |_, this, (from, name, to): (u32, String, u32)| {
-                Ok(this.inner.borrow().relationships.has_link(from, &name, to))
+                this.inner.borrow().has_relation(from, &name, to)
             },
         );
         // -- type --
@@ -812,6 +939,17 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 inner: Rc::new(RefCell::new(Universe::new())),
                 add_observers: Rc::new(RefCell::new(HashMap::new())),
                 remove_observers: Rc::new(RefCell::new(HashMap::new())),
+            })
+        })?,
+    )?;
+    // -- newRelationshipManager --
+    /// Creates a relationship manager for tracking numeric values and named levels between entity pairs.
+    /// @return | LRelationshipManager | New relationship manager handle owned by `lurek.ecs`.
+    tbl.set(
+        "newRelationshipManager",
+        lua.create_function(|_, ()| {
+            Ok(LuaRelationshipManager {
+                inner: Rc::new(RefCell::new(crate::ecs::RelationshipManager::new())),
             })
         })?,
     )?;

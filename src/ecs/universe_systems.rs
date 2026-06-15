@@ -62,14 +62,20 @@ impl Universe {
             .enumerate()
             .map(|(p, &idx)| (idx, p))
             .collect();
+        let name_to_pos: std::collections::HashMap<&str, usize> = candidates
+            .iter()
+            .enumerate()
+            .filter_map(|(pos, &idx)| {
+                self.system_names
+                    .get(idx - 1)
+                    .map(|name| (name.as_str(), pos))
+            })
+            .collect();
         let mut in_degree = vec![0usize; n];
         let mut adj: Vec<Vec<usize>> = vec![Vec::new(); n];
         for (pos_b, &idx_b) in candidates.iter().enumerate() {
             for dep_name in &self.system_deps[idx_b - 1] {
-                if let Some((&idx_a, &pos_a)) = pos_of.iter().find(|(&idx, _)| {
-                    self.system_names.get(idx - 1).map(|s| s.as_str()) == Some(dep_name.as_str())
-                }) {
-                    let _ = idx_a;
+                if let Some(&pos_a) = name_to_pos.get(dep_name.as_str()) {
                     adj[pos_a].push(pos_b);
                     in_degree[pos_b] += 1;
                 }
@@ -88,8 +94,18 @@ impl Universe {
             }
         }
         if result.len() < n {
+            let mut emitted = vec![false; n];
+            for &idx in &result {
+                if let Some(&pos) = pos_of.get(&idx) {
+                    emitted[pos] = true;
+                }
+            }
             for &idx in &candidates {
-                if !result.contains(&idx) {
+                if let Some(&pos) = pos_of.get(&idx) {
+                    if emitted[pos] {
+                        continue;
+                    }
+                    emitted[pos] = true;
                     result.push(idx);
                 }
             }

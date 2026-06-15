@@ -170,6 +170,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - The representation stays close to the base raycaster model, which keeps level transitions understandable for rendering and gameplay code.
 - Special transitions can move the viewer between slices without inventing a separate world format or renderer.
 - The design is meant to add vertical richness while preserving the core assumptions of the column-based pipeline.
+- Module API documentation
 
 ### projection.rs
 
@@ -204,6 +205,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - into raycaster sprite, light, and optional model descriptors.
 - It exists so gameplay code can treat physics bodies as the source of truth
 - while still feeding the raycaster with pseudo-3D presentation inputs.
+- Module API documentation
 
 ### segment.rs
 
@@ -217,6 +219,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - It keeps sprite placement, identity, and visibility data in one registry so gameplay systems can add props, pickups, or actors cheaply.
 - When the camera needs them, sprites are exposed in depth-aware order that fits alpha-friendly first-person rendering.
 - The registry therefore acts as the dynamic object layer that rides on top of static map geometry.
+- Module API documentation
 
 ### sprite_projection.rs
 
@@ -231,6 +234,8 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - Screen size, camera pose, and tile scale are all part of the picker state, which keeps repeated queries stable across a frame.
 - The result reports both tile identity and hit character so callers can tell which cell was reached and from which side it was approached.
 - This makes the file the practical bridge between first-person view coordinates and gameplay selection on the underlying map.
+- Module API documentation
+- TODO: add doc note 1
 
 ### visibility.rs
 
@@ -254,6 +259,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - This file defines per-cell wall feature descriptors that refine how a blocking tile should render and behave.
 - Features let one tile become a half-height barrier, a window with a visible opening, or a sliding door without changing the base 2D map format.
 - The data stays compact and cell-local so scene building, collision, and editor-facing APIs can all consult the same description.
+- Module API documentation
 
 
 
@@ -710,7 +716,7 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 - `LSceneAdapter:bindBodySprite(body, texture, opts?) -> nil`: Binds a billboard sprite to a live physics body.
 - `LSceneAdapter:clear() -> nil`: Removes every tracked entry from the adapter.
 - `LSceneAdapter:clearLights() -> nil`: Removes every tracked light entry from the adapter.
-- `LSceneAdapter:clearModels() -> nil`: Lua-visible method.
+- `LSceneAdapter:clearModels() -> nil`: Clears models.
 - `LSceneAdapter:clearSprites() -> nil`: Removes every tracked sprite entry from the adapter.
 - `LSceneAdapter:sceneInputs() -> table`: Resolves the current runtime snapshot into `{ lights, sprites, models }` tables.
 - `LSceneAdapter:type() -> string`: Returns the type name of this object.

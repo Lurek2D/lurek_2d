@@ -74,6 +74,7 @@ pub struct ContextRule {
 #[derive(Debug)]
 pub struct CursorManager {
     active: CursorState,
+    default_cursor: CursorState,
     current_context: CursorContext,
     rules: Vec<ContextRule>,
     trail: Option<CursorTrail>,
@@ -86,8 +87,10 @@ pub struct CursorManager {
 impl CursorManager {
     /// Create a new `CursorManager` with default system arrow cursor and no rules.
     pub fn new() -> Self {
+        let default_cursor = CursorState::System(SystemCursor::Arrow);
         Self {
-            active: CursorState::System(SystemCursor::Arrow),
+            active: default_cursor.clone(),
+            default_cursor,
             current_context: CursorContext::Default,
             rules: Vec::new(),
             trail: None,
@@ -100,46 +103,60 @@ impl CursorManager {
 
     /// Switch the active cursor to an OS system cursor shape.
     pub fn set_system(&mut self, cursor: SystemCursor) {
-        self.active = CursorState::System(cursor);
+        let state = CursorState::System(cursor);
+        self.default_cursor = state.clone();
+        self.active = state;
     }
 
     /// Switch the active cursor to a custom RGBA image cursor.
     pub fn set_custom(&mut self, cursor: CustomCursor) {
-        self.active = CursorState::Custom(cursor);
+        let state = CursorState::Custom(cursor);
+        self.default_cursor = state.clone();
+        self.active = state;
     }
 
     /// Switch the active cursor to an animated frame cursor.
     pub fn set_animated(&mut self, cursor: AnimatedCursor) {
-        self.active = CursorState::Animated(cursor);
+        let state = CursorState::Animated(cursor);
+        self.default_cursor = state.clone();
+        self.active = state;
+    }
+
+    fn apply_context_cursor(&mut self) {
+        self.active = self
+            .rules
+            .iter()
+            .find(|rule| rule.context == self.current_context)
+            .map(|rule| rule.cursor.clone())
+            .unwrap_or_else(|| self.default_cursor.clone());
     }
 
     /// Activate the named context, applying its registered cursor rule if one exists.
     pub fn set_context(&mut self, ctx: CursorContext) {
-        if ctx == self.current_context {
-            return;
-        }
-        self.current_context = ctx.clone();
-        for rule in &self.rules {
-            if rule.context == ctx {
-                self.active = rule.cursor.clone();
-                return;
-            }
-        }
+        self.current_context = ctx;
+        self.apply_context_cursor();
     }
 
     /// Register a context-to-cursor rule; replaces any existing rule for the same context.
     pub fn add_rule(&mut self, rule: ContextRule) {
+        let touched_current = rule.context == self.current_context;
         // Replace existing rule for same context
         if let Some(existing) = self.rules.iter_mut().find(|r| r.context == rule.context) {
             existing.cursor = rule.cursor;
         } else {
             self.rules.push(rule);
         }
+        if touched_current {
+            self.apply_context_cursor();
+        }
     }
 
     /// Remove the rule associated with the given context, if any.
     pub fn remove_rule(&mut self, ctx: &CursorContext) {
         self.rules.retain(|r| &r.context != ctx);
+        if &self.current_context == ctx {
+            self.apply_context_cursor();
+        }
     }
 
     /// Tick cursor state: record the new screen position, advance animated frames, and update the trail.

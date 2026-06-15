@@ -10,6 +10,14 @@ use super::{
 use super::{from_msgpack, to_msgpack, SerialValue};
 
 /// Supported serialization formats.
+///
+/// # Variants
+/// - `Json`: JSON text documents.
+/// - `Toml`: TOML configuration documents.
+/// - `Csv`: Delimited tabular text.
+/// - `MsgPack`: Binary MessagePack payloads.
+/// - `Xml`: XML text documents.
+/// - `Ini`: INI-style key/value configuration text.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SerialFormat {
     /// JSON format.
@@ -74,6 +82,9 @@ impl SerialFormat {
 }
 
 /// Options controlling text decoding behavior.
+///
+/// # Fields
+/// - `csv`: CSV-specific parsing options used when decoding delimited text.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct DecodeOptions {
     /// CSV-specific parsing options.
@@ -81,6 +92,10 @@ pub struct DecodeOptions {
 }
 
 /// Options controlling encoding behavior.
+///
+/// # Fields
+/// - `json_pretty`: Whether JSON output should be pretty-printed.
+/// - `csv`: CSV-specific encoding options.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct EncodeOptions {
     /// When true, JSON output is pretty-printed.
@@ -89,7 +104,11 @@ pub struct EncodeOptions {
     pub csv: CsvOptions,
 }
 
-/// Result of encoding a value — either UTF-8 text or raw bytes.
+/// Result of encoding a value into text or binary output.
+///
+/// # Variants
+/// - `Text`: UTF-8 textual payload.
+/// - `Binary`: Raw byte payload such as MessagePack.
 pub enum EncodedValue {
     /// UTF-8 encoded text output.
     Text(String),

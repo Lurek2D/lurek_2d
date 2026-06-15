@@ -1054,7 +1054,7 @@ impl LuaUserData for LuaReplConsole {
         /// @return | string[] | History entry strings.
         methods.add_method("history", |lua, this, ()| {
             let t = lua.create_table()?;
-            for (i, entry) in this.inner.history().iter().enumerate() {
+            for (i, entry) in this.inner.history().enumerate() {
                 t.set(i + 1, entry.clone())?;
             }
             Ok(t)

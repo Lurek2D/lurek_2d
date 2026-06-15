@@ -600,7 +600,7 @@ lurek.filesystem.mount(src, mp)
 
 ```lua
 do
-    local ok = lurek.filesystem.mount("assets", "game_assets")
+    local ok = lurek.filesystem.mount("content/examples/assets", "game_assets")
     print("mount ok = " .. tostring(ok))
 end
 ```

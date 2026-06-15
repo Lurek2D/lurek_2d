@@ -64,7 +64,7 @@ fn lerp_color(a: [f32; 4], b: [f32; 4], t: f32) -> [f32; 4] {
 }
 
 impl HeatmapChart {
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn new(config: ChartConfig) -> Self {
         Self {
             config,
@@ -80,7 +80,7 @@ impl HeatmapChart {
         }
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn resize(&mut self, rows: usize, cols: usize) {
         self.rows = rows;
         self.cols = cols;
@@ -89,7 +89,7 @@ impl HeatmapChart {
         self.col_labels.resize(cols, String::new());
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn set_matrix(
         &mut self,
         rows: usize,
@@ -108,7 +108,7 @@ impl HeatmapChart {
         self.values.resize(rows.saturating_mul(cols), 0.0);
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn set_matrix_from_dataframe(
         &mut self,
         df: &DataFrame,
@@ -171,7 +171,7 @@ impl HeatmapChart {
         Ok(limit.min(self.values.len()))
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn set_cell(&mut self, row: usize, col: usize, value: f32) {
         if row >= self.rows || col >= self.cols || !value.is_finite() {
             return;
@@ -182,7 +182,7 @@ impl HeatmapChart {
         }
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn clear(&mut self) {
         self.rows = 0;
         self.cols = 0;
@@ -191,47 +191,47 @@ impl HeatmapChart {
         self.col_labels.clear();
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn set_row_labels(&mut self, labels: Vec<String>) {
         self.row_labels = labels;
         self.row_labels.resize(self.rows, String::new());
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn set_col_labels(&mut self, labels: Vec<String>) {
         self.col_labels = labels;
         self.col_labels.resize(self.cols, String::new());
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn set_value_range(&mut self, min: f32, max: f32) {
         if min.is_finite() && max.is_finite() && max > min {
             self.value_range = Some((min, max));
         }
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn clear_value_range(&mut self) {
         self.value_range = None;
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn set_color_range(&mut self, low: [f32; 4], high: [f32; 4]) {
         self.low_color = low;
         self.high_color = high;
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn set_show_values(&mut self, show_values: bool) {
         self.show_values = show_values;
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn draw_to_image(&self, img: &mut ImageData) {
         self.render(img.as_mut_bytes());
     }
 
-/// TODO: add chart API documentation
+    /// TODO: add chart API documentation
     pub fn render(&self, buffer: &mut [u8]) {
         let width = self.config.width;
         let height = self.config.height;

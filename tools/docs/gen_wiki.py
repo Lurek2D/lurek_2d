@@ -691,10 +691,19 @@ def module_group(context: Context, module: str) -> str:
 
 
 def namespace(context: Context, module: str) -> str:
+    if module == "system":
+        return "lurek.runtime"
     info = context.specs.get(module)
     if info and info.namespace:
         return info.namespace
     return f"lurek.{module}" if module in context.api_modules else ""
+
+
+def module_label(context: Context, module: str) -> str:
+    lua_namespace = namespace(context, module)
+    if lua_namespace.startswith("lurek."):
+        return lua_namespace.removeprefix("lurek.")
+    return module
 
 
 def module_description(context: Context, module: str) -> str:
@@ -1235,7 +1244,7 @@ def modules_page(context: Context) -> Page:
             continue
         body += [f"## {group}", "", "| Module | Namespace | Purpose |", "|---|---|---|"]
         for module in group_modules:
-            body.append(f"| {page_link('Module-' + module, module)} | `{namespace(context, module) or '-'}` | {table_cell(module_description(context, module))} |")
+            body.append(f"| {page_link('Module-' + module, module_label(context, module))} | `{namespace(context, module) or '-'}` | {table_cell(module_description(context, module))} |")
         body.append("")
     return Page("Modules.md", page("Modules", body))
 
@@ -1264,7 +1273,7 @@ def api_page(context: Context) -> Page:
     ]
     for module in sorted(context.api_modules):
         api_module = context.api_modules[module]
-        body.append(f"| {page_link('Module-' + module, 'lurek.' + module)} | {len(functions(api_module))} | {len(classes(api_module))} | {table_cell(module_description(context, module))} |")
+        body.append(f"| {page_link('Module-' + module, namespace(context, module) or ('lurek.' + module))} | {len(functions(api_module))} | {len(classes(api_module))} | {table_cell(module_description(context, module))} |")
     body += ["", f"One-page callable index: {wiki('API-Reference', 'API Reference')}."]
     return Page("API.md", page("API", body))
 
@@ -1274,7 +1283,7 @@ def api_reference_page(context: Context) -> Page:
     separator = " " + chr(183) + " "
     for module in sorted(context.api_modules):
         api_module = context.api_modules[module]
-        body += [f"## lurek.{module}", "", wiki('Module-' + module, 'Module page'), ""]
+        body += [f"## {namespace(context, module) or ('lurek.' + module)}", "", wiki('Module-' + module, 'Module page'), ""]
         function_list = functions(api_module)
         if function_list:
             body.append("```lua")

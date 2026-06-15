@@ -11,7 +11,7 @@
 - Source path: `src/flownet/`
 - Binding: `src/lua_api/flownet_api.rs`
 - Namespace: `lurek.graph`
-- Lua API surface: `1` functions, `7` types, `130` methods
+- Lua API surface: `1` functions, `7` types, `140` methods
 - Rust test path(s): tests/rust/unit/flownet_tests.rs plus inline flownet module tests
 - Lua test path(s): tests/lua/unit/test_flownet.lua and related flownet stress and golden suites
 
@@ -20,9 +20,11 @@
 - This module gives users a simulation-ready logistics graph for resource movement and transformation gameplay.
 - You can model producers, consumers, processors, and transit routes as explicit network structures.
 - Node capacities, queue behavior, and overflow policies control how congestion is handled.
+- Planner-facing capacity reservations let scripts soft-book node and edge slots before committing transfers.
 - Push and pull mechanics support both source-driven and demand-driven transfer strategies.
 - Edge constraints such as throughput, cooldown, direction, and filtering define realistic transport limits.
 - Item lifecycles include transit, placement, decay, and cleanup behavior for long-running simulations.
+- Item placement is single-owner: one item cannot validly exist in multiple node, queue, or transit containers at once.
 - Conversion rules enable factory-style nodes that transform inputs into outputs over time.
 - Pathfinding support computes practical routes under dynamic network constraints.
 - Supply-demand balancing helps route available goods toward prioritized deficits.
@@ -33,6 +35,7 @@
 - Debug render output helps users visualize topology quickly while tuning behavior.
 - Event callbacks expose simulation transitions for UI and analytics integration.
 - Subgraph extraction allows focused operations on selected regions of a large network.
+- Versioned serialization preserves full node, edge, item, queue, and transit state for deterministic round-trips.
 - Bulk node and edge creation supports procedural generation workflows.
 - The module is suitable for economy loops, factory systems, routing puzzles, and colony logistics.
 - It combines planning, simulation, and diagnostics in one runtime surface.
@@ -236,10 +239,13 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 - `LGraphEdge:addAllowedType(t) -> nil`: Allows an item type to traverse this edge.
 - `LGraphEdge:clearAllowedTypes() -> nil`: Clears this edge's item type allow-list.
+- `LGraphEdge:clearCapacityReservations() -> nil`: Removes every transit capacity reservation from this edge.
+- `LGraphEdge:getAvailableCapacity() -> integer`: Returns how many transit slots remain after active items and reservations, or -1 when unlimited.
 - `LGraphEdge:getCapacity() -> integer`: Returns this edge's maximum concurrent item capacity.
 - `LGraphEdge:getCooldown() -> number`: Returns this edge's cooldown timer value.
 - `LGraphEdge:getFrom() -> LGraphNode`: Returns the source node for this edge.
 - `LGraphEdge:getItemsInTransit() -> LGraphItem[]`: Returns graph items currently traveling along this edge.
+- `LGraphEdge:getReservedCapacity() -> integer`: Returns the total transit capacity reserved on this edge across all reservation keys.
 - `LGraphEdge:getSpeedModifier() -> number`: Returns this edge's speed modifier.
 - `LGraphEdge:getThroughput() -> number`: Returns this edge's throughput value.
 - `LGraphEdge:getTo() -> LGraphNode`: Returns the destination node for this edge.
@@ -250,7 +256,9 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraphEdge:isBidirectional() -> boolean`: Returns whether this edge allows travel in both directions.
 - `LGraphEdge:isItemTypeAllowed(t) -> boolean`: Returns whether an item type may traverse this edge.
 - `LGraphEdge:isOnCooldown() -> boolean`: Returns whether this edge is currently on cooldown.
+- `LGraphEdge:releaseCapacityReservation(key, slots?) -> integer`: Releases reserved transit capacity for a key and returns the number of slots removed.
 - `LGraphEdge:removeAllowedType(t) -> boolean`: Removes an item type from this edge's allow-list.
+- `LGraphEdge:reserveCapacity(key, slots?) -> boolean`: Reserves transit capacity slots under a caller-provided key for planning and coordination.
 - `LGraphEdge:setActive(a) -> nil`: Enables or disables this edge for routing and simulation.
 - `LGraphEdge:setBidirectional(b) -> nil`: Sets whether this edge allows travel in both directions.
 - `LGraphEdge:setCapacity(c) -> nil`: Sets this edge's maximum concurrent item capacity.
@@ -349,12 +357,14 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraphNode:addSupply(item_type, quantity) -> nil`: Adds supply quantity for an item type on this node.
 - `LGraphNode:addTag(tag) -> nil`: Adds a tag to this node on this object.
 - `LGraphNode:clearAllConversions() -> nil`: Removes every conversion rule from this node.
+- `LGraphNode:clearCapacityReservations() -> nil`: Removes every inventory capacity reservation from this node.
 - `LGraphNode:clearConversion(in_type) -> boolean`: Removes a conversion rule by input item type.
 - `LGraphNode:clearDemands() -> nil`: Removes every demand entry from this node.
 - `LGraphNode:clearSupplies() -> nil`: Removes every supply entry from this node.
 - `LGraphNode:clearTags() -> nil`: Removes every tag from this graph node.
 - `LGraphNode:dequeue() -> LGraphItem`: Removes and returns the next item from this node's explicit queue.
 - `LGraphNode:enqueue(item_ud) -> boolean`: Adds an item handle to this node's explicit queue.
+- `LGraphNode:getAvailableCapacity() -> integer`: Returns how many node inventory slots remain after active items and reservations, or -1 when unlimited.
 - `LGraphNode:getCapacity() -> integer`: Returns this node's item capacity.
 - `LGraphNode:getEdges(dir?) -> LGraphEdge[]`: Returns edge handles connected to this node in the requested direction.
 - `LGraphNode:getFlowMode() -> string`: Returns this node's flow mode name.
@@ -368,15 +378,18 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - `LGraphNode:getPushRate() -> number`: Returns this node's push rate value.
 - `LGraphNode:getQueueCapacity() -> integer`: Returns this node's queue capacity.
 - `LGraphNode:getQueueSize() -> integer`: Returns the number of item ids currently queued at this node.
+- `LGraphNode:getReservedCapacity() -> integer`: Returns the total item capacity reserved on this node across all reservation keys.
 - `LGraphNode:getTags() -> string[]`: Returns all tags assigned to this node.
 - `LGraphNode:getType() -> string`: Returns this node's type classification string.
 - `LGraphNode:hasTag(tag) -> boolean`: Returns whether this node has a tag.
 - `LGraphNode:isActive() -> boolean`: Returns whether this node is active for graph simulation.
 - `LGraphNode:isFull() -> boolean`: Returns whether this node has reached its item capacity.
 - `LGraphNode:isQueueEnabled() -> boolean`: Returns whether this node's explicit queue is enabled.
+- `LGraphNode:releaseCapacityReservation(key, slots?) -> integer`: Releases reserved node capacity for a key and returns the number of slots removed.
 - `LGraphNode:removeDemand(item_type) -> boolean`: Removes demand entry for an item type from this node.
 - `LGraphNode:removeSupply(item_type) -> boolean`: Removes supply entry for an item type from this node.
 - `LGraphNode:removeTag(tag) -> boolean`: Removes a tag from this node on this object.
+- `LGraphNode:reserveCapacity(key, slots?) -> boolean`: Reserves node inventory capacity under a caller-provided key for planning and coordination.
 - `LGraphNode:setActive(a) -> nil`: Enables or disables this node for graph simulation.
 - `LGraphNode:setCapacity(c) -> nil`: Sets this node's item capacity value.
 - `LGraphNode:setConversion(in_type, out_type, in_count?, out_count?) -> nil`: Configures an item conversion rule on this node.

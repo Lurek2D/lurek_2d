@@ -7,6 +7,7 @@
 
 use crate::runtime::shared_state::{FullscreenType, WindowState};
 /// Snapshot of the window's current mode returned by `get_mode`.
+/// # Fields
 pub struct ModeInfo {
     /// `true` when the window is currently in any fullscreen mode.
     pub fullscreen: bool,
@@ -15,9 +16,50 @@ pub struct ModeInfo {
     /// Current vsync mode integer (0 = off, 1 = on, -1 = adaptive).
     pub vsync: i32,
 }
+/// Deferred batch of optional window state updates parsed from Lua-facing config helpers.
+pub(crate) struct WindowConfigRequest {
+    /// Optional replacement title.
+    pub title: Option<String>,
+    /// Optional logical size.
+    pub size: Option<(u32, u32)>,
+    /// Optional fullscreen enable flag.
+    pub fullscreen: Option<bool>,
+    /// Optional fullscreen type string.
+    pub fullscreen_type: Option<String>,
+    /// Optional vsync mode integer.
+    pub vsync: Option<i32>,
+    /// Optional physical desktop position.
+    pub position: Option<(i32, i32)>,
+    /// Optional scale-mode name.
+    pub scale_mode: Option<String>,
+    /// Optional display index.
+    pub display: Option<i32>,
+}
+/// One native file-dialog filter row.
+pub(crate) struct FileDialogFilter {
+    /// Display name shown by the OS picker.
+    pub name: String,
+    /// Allowed file extensions without dots.
+    pub extensions: Vec<String>,
+}
+/// Native file-dialog options independent from the Lua table representation.
+pub(crate) struct FileDialogOptions {
+    /// Optional dialog title.
+    pub title: Option<String>,
+    /// Optional initial directory or file path.
+    pub default_path: Option<String>,
+    /// Whether multi-select mode is enabled.
+    pub multiple: bool,
+    /// Ordered list of extension filters.
+    pub filters: Vec<FileDialogFilter>,
+}
 /// Stage a window title change to `title`; applied by the event loop next frame.
 pub fn set_title(ws: &mut WindowState, title: &str) {
     ws.pending_title = Some(title.to_owned());
+}
+/// Stage a request for the OS window to receive user focus on the next event-loop apply.
+pub fn focus(ws: &mut WindowState) {
+    ws.pending_focus = true;
 }
 /// Stage a fullscreen toggle; `mode` is `"exclusive"` or `"desktop"`; applied next frame.
 pub fn set_fullscreen(ws: &mut WindowState, flag: bool, mode: &str) {
@@ -59,6 +101,17 @@ pub fn set_display(ws: &mut WindowState, display_index: i32) -> bool {
     }
     ws.pending_display_index = Some(display_index as usize);
     true
+}
+/// Stage a display change request or return a stable contract error string.
+pub(crate) fn request_display_change(
+    ws: &mut WindowState,
+    display_index: i32,
+) -> Result<(), String> {
+    if set_display(ws, display_index) {
+        Ok(())
+    } else {
+        Err("lurek.window.setDisplay: display index must be >= 0".to_string())
+    }
 }
 /// Stage a minimize request; applied next frame.
 pub fn minimize(ws: &mut WindowState) {
@@ -111,6 +164,14 @@ pub fn get_fullscreen_type_str(ws: &WindowState) -> &'static str {
         FullscreenType::Exclusive => "exclusive",
     }
 }
+/// Return the display orientation implied by logical window dimensions.
+pub fn display_orientation(window_width: u32, window_height: u32) -> &'static str {
+    if window_width >= window_height {
+        "landscape"
+    } else {
+        "portrait"
+    }
+}
 /// Return `(is_fullscreen, fullscreen_type_str)` as a convenience pair.
 pub fn get_fullscreen(ws: &WindowState) -> (bool, &'static str) {
     (ws.fullscreen, get_fullscreen_type_str(ws))
@@ -160,6 +221,34 @@ pub fn set_mode(
         set_vsync(ws, v);
     }
 }
+/// Apply a parsed batch of optional window configuration fields using the existing deferred helpers.
+pub(crate) fn apply_window_config_request(ws: &mut WindowState, request: WindowConfigRequest) {
+    if let Some(title) = request.title.as_deref() {
+        set_title(ws, title);
+    }
+    if let Some((w, h)) = request.size {
+        set_size(ws, w, h);
+    }
+    if let Some(fullscreen) = request.fullscreen {
+        set_fullscreen(
+            ws,
+            fullscreen,
+            request.fullscreen_type.as_deref().unwrap_or("desktop"),
+        );
+    }
+    if let Some(vsync) = request.vsync {
+        set_vsync(ws, vsync);
+    }
+    if let Some((x, y)) = request.position {
+        set_position(ws, x, y);
+    }
+    if let Some(scale_mode) = request.scale_mode.as_deref() {
+        crate::window::viewport::set_scale_mode_validated(ws, scale_mode);
+    }
+    if let Some(display) = request.display {
+        let _ = set_display(ws, display);
+    }
+}
 /// Return a `ModeInfo` snapshot of the current fullscreen and vsync state.
 pub fn get_mode(ws: &WindowState) -> ModeInfo {
     ModeInfo {
@@ -198,4 +287,38 @@ pub fn show_message_box(
         rfd::MessageDialogResult::Cancel => "cancel",
         rfd::MessageDialogResult::Custom(_) => "ok",
     }
+}
+/// Apply the portable option subset used by `lurek.window.openFileDialog`.
+pub(crate) fn configure_file_dialog(
+    mut dialog: rfd::FileDialog,
+    options: &FileDialogOptions,
+) -> rfd::FileDialog {
+    if let Some(title) = options.title.as_deref() {
+        dialog = dialog.set_title(title);
+    }
+    if let Some(default_path) = options.default_path.as_deref() {
+        dialog = dialog.set_directory(default_path);
+    }
+    for filter in &options.filters {
+        let ext_refs: Vec<&str> = filter.extensions.iter().map(String::as_str).collect();
+        dialog = dialog.add_filter(&filter.name, &ext_refs);
+    }
+    dialog
+}
+/// Open a native file picker and return the selected paths as UTF-8 strings.
+pub(crate) fn open_file_dialog_paths(options: &FileDialogOptions) -> Vec<String> {
+    let dialog = configure_file_dialog(rfd::FileDialog::new(), options);
+    if options.multiple {
+        return dialog
+            .pick_files()
+            .unwrap_or_default()
+            .into_iter()
+            .map(|path| path.to_string_lossy().to_string())
+            .collect();
+    }
+    dialog
+        .pick_file()
+        .into_iter()
+        .map(|path| path.to_string_lossy().to_string())
+        .collect()
 }

@@ -2,10 +2,36 @@
 
 // TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
-use lurek2d::pathfind::{DiagonalMode, IsoGrid, NavGrid, PathThreadPool};
+use lurek2d::pathfind::{
+    AsyncPathRequest, DiagonalMode, IsoGrid, NavGrid, PathEventStatus, PathThreadPool,
+    UnitPathfinder,
+};
+use std::cell::RefCell;
+use std::rc::Rc;
+use std::thread;
+use std::time::{Duration, Instant};
 
 mod async_pool_tests {
     use super::*;
+
+    fn collect_events_until(
+        pool: &PathThreadPool,
+        predicate: impl Fn(&[lurek2d::pathfind::AsyncPathEvent]) -> bool,
+    ) -> Vec<lurek2d::pathfind::AsyncPathEvent> {
+        let deadline = Instant::now() + Duration::from_secs(2);
+        let mut events = Vec::new();
+        while Instant::now() < deadline {
+            let mut batch = pool.poll_events();
+            if !batch.is_empty() {
+                events.append(&mut batch);
+                if predicate(&events) {
+                    return events;
+                }
+            }
+            thread::sleep(Duration::from_millis(5));
+        }
+        events
+    }
 
     #[test]
     fn default_thread_count_is_at_least_one() {
@@ -21,10 +47,110 @@ mod async_pool_tests {
     }
 
     #[test]
-    fn set_thread_count_updates_pool_size() {
+    fn set_thread_count_updates_configured_pool_size() {
         let mut pool = PathThreadPool::new(1);
         pool.set_thread_count(4);
         assert_eq!(pool.get_thread_count(), 4);
+    }
+
+    #[test]
+    fn streaming_request_emits_partial_then_complete() {
+        let pool = PathThreadPool::new(1);
+        let events = {
+            let request = AsyncPathRequest {
+                id: 1,
+                owner_id: 1,
+                version: 0,
+                priority: 0,
+                grid: NavGrid::new(64, 64),
+                start: (0, 0),
+                goal: (63, 63),
+                unit_size: 1,
+                stream_budget: 4,
+            };
+            assert!(pool.submit_query(request));
+            collect_events_until(&pool, |events| {
+                events.iter().any(|e| e.status == PathEventStatus::Partial)
+                    && events
+                        .iter()
+                        .any(|e| e.status == PathEventStatus::Complete && e.final_event)
+            })
+        };
+
+        assert!(events.iter().any(|e| e.status == PathEventStatus::Partial));
+        assert!(events
+            .iter()
+            .any(|e| e.status == PathEventStatus::Complete && e.final_event));
+    }
+
+    #[test]
+    fn cancelled_request_emits_cancelled_terminal_event() {
+        let pool = PathThreadPool::new(1);
+        let request = AsyncPathRequest {
+            id: 2,
+            owner_id: 2,
+            version: 0,
+            priority: 0,
+            grid: NavGrid::new(96, 96),
+            start: (0, 0),
+            goal: (95, 95),
+            unit_size: 1,
+            stream_budget: 8,
+        };
+        assert!(pool.submit_query(request));
+        pool.cancel(2);
+        let events = collect_events_until(&pool, |events| {
+            events
+                .iter()
+                .any(|e| e.id == 2 && e.status == PathEventStatus::Cancelled && e.final_event)
+        });
+
+        assert!(events
+            .iter()
+            .any(|e| e.id == 2 && e.status == PathEventStatus::Cancelled && e.final_event));
+    }
+
+    #[test]
+    fn newer_version_supersedes_older_request() {
+        let pool = PathThreadPool::new(1);
+        assert!(pool.submit_query(AsyncPathRequest {
+            id: 3,
+            owner_id: 77,
+            version: 1,
+            priority: 0,
+            grid: NavGrid::new(96, 96),
+            start: (0, 0),
+            goal: (95, 95),
+            unit_size: 1,
+            stream_budget: 8,
+        }));
+        assert!(pool.submit_query(AsyncPathRequest {
+            id: 4,
+            owner_id: 77,
+            version: 2,
+            priority: 1,
+            grid: NavGrid::new(96, 96),
+            start: (0, 0),
+            goal: (95, 95),
+            unit_size: 1,
+            stream_budget: 8,
+        }));
+
+        let events = collect_events_until(&pool, |events| {
+            events
+                .iter()
+                .any(|e| e.id == 3 && e.status == PathEventStatus::Superseded && e.final_event)
+                && events
+                    .iter()
+                    .any(|e| e.id == 4 && e.status == PathEventStatus::Complete && e.final_event)
+        });
+
+        assert!(events
+            .iter()
+            .any(|e| e.id == 3 && e.status == PathEventStatus::Superseded && e.final_event));
+        assert!(events
+            .iter()
+            .any(|e| e.id == 4 && e.status == PathEventStatus::Complete && e.final_event));
     }
 }
 
@@ -161,5 +287,32 @@ mod nav_grid_internal_tests {
         );
         assert_eq!(DiagonalMode::from_lua_str("bogus"), None);
         assert_eq!(DiagonalMode::Always.to_lua_str(), "always");
+    }
+
+    #[test]
+    fn fill_rect_saturates_large_extents_without_panicking() {
+        let mut g = NavGrid::new(4, 4);
+        g.fill_rect(3, 3, u32::MAX, u32::MAX, 9);
+        assert_eq!(g.get_cost(3, 3), 9);
+    }
+}
+
+mod unit_pathfinder_internal_tests {
+    use super::*;
+
+    fn new_pathfinder(width: u32, height: u32) -> UnitPathfinder {
+        UnitPathfinder::new(Rc::new(RefCell::new(NavGrid::new(width, height))))
+    }
+
+    #[test]
+    fn nearest_walkable_out_of_bounds_returns_none() {
+        let pathfinder = new_pathfinder(4, 4);
+        assert_eq!(pathfinder.find_nearest_walkable(99, 99, 3, 1), None);
+    }
+
+    #[test]
+    fn unreachable_out_of_bounds_returns_false() {
+        let pathfinder = new_pathfinder(4, 4);
+        assert!(!pathfinder.is_reachable(0, 0, 99, 99, 1));
     }
 }

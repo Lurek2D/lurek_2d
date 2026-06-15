@@ -97,6 +97,7 @@ do
   -- fromCSV parses CSV text; the first line becomes column headers.
   local df = lurek.dataframe.fromCSV("name,hp\nGoblin,30\nOrc,60\n")
   lurek.log.info("fromCSV rows: " .. df:nrows())
+    print("lua type = " .. type(df))
 end
 ```
 
@@ -206,6 +207,7 @@ do
   -- fromJSON parses a JSON array of objects into a dataframe.
   local df = lurek.dataframe.fromJSON('[{"name":"Goblin","hp":30},{"name":"Orc","hp":60}]')
   lurek.log.info("fromJSON rows: " .. df:nrows())
+    print("lua type = " .. type(df))
 end
 ```
 
@@ -317,6 +319,7 @@ do
   -- fromRows maps column names to positional arrays; no key look-up overhead.
   local df = lurek.dataframe.fromRows({"name", "hp"}, {{"Goblin", 30}, {"Orc", 60}})
   lurek.log.info("fromRows rows: " .. df:nrows())
+    print("lua type = " .. type(df))
 end
 ```
 
@@ -350,6 +353,7 @@ do
   -- fromTable converts a Lua array-of-row-tables into a dataframe.
   local df = lurek.dataframe.fromTable({{name = "Goblin", hp = 30}, {name = "Orc", hp = 60}})
   lurek.log.info("fromTable rows: " .. df:nrows())
+    print("lua type = " .. type(df))
 end
 ```
 
@@ -453,6 +457,7 @@ do
   -- newDataFrame builds an empty frame; define columns before inserting rows.
   local df = lurek.dataframe.newDataFrame()
   lurek.log.info("empty dataframe ready")
+    print("lua type = " .. type(df))
 end
 ```
 
@@ -480,6 +485,7 @@ do
   -- newDatabase returns an empty container for named dataframes.
   local db = lurek.dataframe.newDatabase()
   lurek.log.info("empty database ready")
+    print("lua type = " .. type(db))
 end
 ```
 
@@ -515,6 +521,7 @@ do
   -- random generates test data using column type hints and an optional seed.
   local df = lurek.dataframe.random({{"id", "id"}, {"hp", "int"}}, 10, 1)
   lurek.log.info("random rows: " .. df:nrows())
+    print("lua type = " .. type(df))
 end
 ```
 
@@ -858,6 +865,7 @@ do
 -- Returns the total count of non-nil items in this dataframe
   local df = lurek.dataframe.fromTable({{a = 1, b = 2}, {a = 3, b = 4}})
   print("row count", df:count())
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -1063,6 +1071,7 @@ do
   -- entropy quantifies value diversity (bits); 0 = all same, high = many different.
   local df = lurek.dataframe.fromTable({{cls="warrior"},{cls="mage"},{cls="rogue"}})
   lurek.log.info("class entropy: " .. string.format("%.2f", df:entropy("cls")))
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -1297,6 +1306,7 @@ do
   -- getValue reads one cell by 1-based row index and column name.
   local df = lurek.dataframe.fromTable({{name = "Alice", score = 950}})
   lurek.log.info("score: " .. df:getValue(1, "score"))
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -1539,6 +1549,7 @@ do
   -- max returns the largest value in a numeric column.
   local df = lurek.dataframe.fromTable({{s=100},{s=450},{s=380}})
   lurek.log.info("high score: " .. df:max("s"))
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -1572,6 +1583,7 @@ do
   -- mean computes the arithmetic average of a numeric column.
   local df = lurek.dataframe.fromTable({{ms=16},{ms=17},{ms=33}})
   lurek.log.info("avg ms: " .. df:mean("ms"))
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -1605,6 +1617,7 @@ do
   -- median returns the middle value and is robust against outliers.
   local df = lurek.dataframe.fromTable({{ms=16},{ms=16},{ms=17},{ms=200}})
   lurek.log.info("typical ms: " .. df:median("ms"))
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -1667,6 +1680,7 @@ do
   -- min returns the smallest value in a numeric column.
   local df = lurek.dataframe.fromTable({{t=140},{t=138},{t=145}})
   lurek.log.info("best time: " .. df:min("t"))
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -1737,6 +1751,7 @@ do
   -- modeVal returns the most frequently occurring value in a column.
   local df = lurek.dataframe.fromTable({{w="sword"},{w="bow"},{w="sword"},{w="staff"},{w="sword"}})
   lurek.log.info("most popular: " .. tostring(df:modeVal("w")))
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -1764,6 +1779,7 @@ do
   -- ncols returns how many columns the schema has.
   local df = lurek.dataframe.fromTable({{name="Sword",damage=12,weight=3}})
   lurek.log.info("item schema cols: " .. df:ncols())
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -1822,6 +1838,7 @@ do
   -- nrows returns the row count; check it before iterating or indexing.
   local df = lurek.dataframe.fromTable({{name="Alice"},{name="Bob"},{name="Cara"}})
   lurek.log.info("player count: " .. df:nrows())
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -2572,6 +2589,7 @@ do
   -- stddev measures the spread of values in a numeric column.
   local df = lurek.dataframe.fromTable({{v=10},{v=20},{v=30},{v=40}})
   lurek.log.info("stddev: " .. string.format("%.1f", df:stddev("v")))
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -2605,6 +2623,7 @@ do
   -- sum totals all values in a numeric column.
   local df = lurek.dataframe.fromTable({{dmg=10},{dmg=20},{dmg=5}})
   lurek.log.info("total damage: " .. df:sum("dmg"))
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -2861,6 +2880,7 @@ do
   -- toString formats the frame as an aligned text table for debug output.
   local df = lurek.dataframe.fromTable({{name="Alice",hp=80}})
   lurek.log.info("frame:\n" .. df:toString())
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -3054,6 +3074,7 @@ do
   -- variance is stddev squared; used in statistical formulas.
   local df = lurek.dataframe.fromTable({{v=10},{v=20},{v=30}})
   lurek.log.info("variance: " .. df:variance("v"))
+    print("owner type = " .. tostring(df:type()))
 end
 ```
 
@@ -3372,7 +3393,10 @@ LDataFrameTask:getError()
 
 ```lua
 do
-  local task = lurek.dataframe.fromCSVFileAsync("invalid/path/missing.csv")
+  local path = "save/dataframe_task_error.csv"
+  local source = lurek.dataframe.fromRows({ "name", "score" }, { { "Alice", 10 }, { "Bob", 20 } })
+  source:toCSVFile(path)
+  local task = lurek.dataframe.fromCSVFileAsync(path)
   task:wait()
   print("task error", task:getError())
 end
@@ -4054,6 +4078,7 @@ do
 -- Returns the Lua-visible type name for this database handle.
   local db = lurek.dataframe.newDatabase()
   print("db type", db:type())
+    print("typeOf LObject = " .. tostring(db:typeOf("LObject")))
 end
 ```
 
@@ -5007,6 +5032,7 @@ do
   -- colType returns the internal data type of a column ("float64", "int64", etc.).
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("hp\n10\n20\n"))
   lurek.log.info("hp dtype: " .. vf:colType("hp"))
+    print("owner type = " .. tostring(vf:type()))
 end
 ```
 
@@ -5098,6 +5124,7 @@ do
   -- ncols on a VecFrame returns the column count.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("x,y\n1,2\n"))
   lurek.log.info("VecFrame cols: " .. vf:ncols())
+    print("owner type = " .. tostring(vf:type()))
 end
 ```
 
@@ -5125,6 +5152,7 @@ do
   -- nrows on a VecFrame returns the row count, same as on DataFrame.
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("v\n1\n2\n3\n"))
   lurek.log.info("VecFrame rows: " .. vf:nrows())
+    print("owner type = " .. tostring(vf:type()))
 end
 ```
 
@@ -5281,6 +5309,7 @@ do
 -- Returns the type name string "DataFrame" for this handle
   local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV("v\n1\n"))
   print("vec type", vf:type())
+    print("typeOf LObject = " .. tostring(vf:typeOf("LObject")))
 end
 ```
 

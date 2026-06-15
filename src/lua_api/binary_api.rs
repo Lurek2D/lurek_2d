@@ -1,11 +1,9 @@
 //! File: src/lua_api/binary_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
+//! Registers the public `lurek.binary` API for byte buffers, packing, compression, hashing, and encoding helpers.
+//! Keeps the Lua-facing layer focused on validation and userdata wiring while delegating byte-oriented logic to `src/binary/`.
+//! Bridges Lua strings, tables, and scalars into raw byte operations without forcing UTF-8 interpretation on binary payloads.
+//! Exposes mutable userdata handles such as `LByteData`, `LDataView`, and `LDataWriter` for structured binary workflows.
+//! Returns `mlua::Result` errors across the boundary so malformed offsets, bit ranges, and format strings stay recoverable from Lua.
 
 use super::SharedState;
 use crate::binary::{
@@ -20,13 +18,22 @@ use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
 use std::sync::Arc;
+
+fn require_byte(this: &ByteData, byte_offset: usize, op: &str) -> LuaResult<u8> {
+    this.get_byte(byte_offset).ok_or_else(|| {
+        LuaError::RuntimeError(format!(
+            "lurek.binary: {op} could not read byte at offset {byte_offset}"
+        ))
+    })
+}
+
 /// Converts Lua varargs into binary pack values.
 fn lua_values_to_pack(vals: LuaMultiValue) -> Vec<PackValue> {
     vals.into_iter()
         .map(|v| match v {
             LuaValue::Integer(n) => PackValue::Int(n),
             LuaValue::Number(n) => PackValue::Double(n),
-            LuaValue::String(s) => PackValue::Str(s.to_str().unwrap_or("").to_string()),
+            LuaValue::String(s) => PackValue::Bytes(s.as_bytes().to_vec()),
             LuaValue::Boolean(b) => PackValue::Int(b as i64),
             _ => PackValue::Int(0),
         })
@@ -51,7 +58,7 @@ fn lua_values_to_bin(vals: LuaMultiValue) -> Vec<BinValue> {
         .map(|v| match v {
             LuaValue::Integer(n) => BinValue::I64(n),
             LuaValue::Number(n) => BinValue::F64(n),
-            LuaValue::String(s) => BinValue::Str(s.to_str().unwrap_or("").to_string()),
+            LuaValue::String(s) => BinValue::Bytes(s.as_bytes().to_vec()),
             LuaValue::Boolean(b) => BinValue::Bool(b),
             _ => BinValue::I64(0),
         })
@@ -112,12 +119,7 @@ fn byte_data_from_lua_value(value: LuaValue) -> LuaResult<ByteData> {
     match value {
         LuaValue::Integer(n) => Ok(ByteData::new(n.max(0) as usize)),
         LuaValue::Number(n) => Ok(ByteData::new(n.max(0.0) as usize)),
-        LuaValue::String(s) => {
-            let text = s
-                .to_str()
-                .map_err(|error| LuaError::RuntimeError(error.to_string()))?;
-            Ok(ByteData::from_string(text))
-        }
+        LuaValue::String(s) => Ok(ByteData::from_bytes(s.as_bytes().to_vec())),
         _ => Err(LuaError::RuntimeError(
             "newByteData expects a number (size) or string".to_string(),
         )),
@@ -467,8 +469,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|_, raw_data: LuaString| Ok(binary::crc32(raw_data.as_bytes())))?,
     )?;
     // -- newByteData --
-    /// Creates ByteData from a size or string.
-    /// @param | value | any | Integer size for zeroed bytes, or string used as initial bytes.
+    /// Creates ByteData from a size or raw byte string.
+    /// @param | value | any | Integer size for zeroed bytes, or raw Lua string used as initial bytes.
     /// @return | LByteData | New LByteData userdata.
     tbl.set(
         "newByteData",
@@ -881,8 +883,8 @@ impl mlua::UserData for ByteData {
         methods.add_method("getSize", |_, this, ()| Ok(this.len()));
         // -- getString --
         /// Returns the byte buffer as a string.
-        /// @return | string | Byte buffer contents as a Lua string.
-        methods.add_method("getString", |_, this, ()| Ok(this.get_string()));
+        /// @return | string | Raw byte buffer contents as a Lua string without UTF-8 validation.
+        methods.add_method("getString", |lua, this, ()| lua.create_string(this.as_bytes()));
         // -- getByte --
         /// Reads one byte at a zero-based offset.
         /// @param | offset | integer | Zero-based byte offset.
@@ -938,7 +940,7 @@ impl mlua::UserData for ByteData {
                         bit_offset
                     )));
                 }
-                let current = this.get_byte(byte_offset).unwrap();
+                let current = require_byte(this, byte_offset, "setBit")?;
                 let new_val = if value {
                     current | (1u8 << bit_offset)
                 } else {
@@ -969,7 +971,7 @@ impl mlua::UserData for ByteData {
                         bit_offset
                     )));
                 }
-                let byte = this.get_byte(byte_offset).unwrap();
+                let byte = require_byte(this, byte_offset, "getBit")?;
                 Ok((byte >> bit_offset) & 1 == 1)
             },
         );
@@ -999,7 +1001,7 @@ impl mlua::UserData for ByteData {
                             this.len()
                         )));
                     }
-                    let byte = this.get_byte(b).unwrap();
+                    let byte = require_byte(this, b, "readBits")?;
                     if (byte >> bit) & 1 == 1 {
                         result |= 1u32 << i;
                     }

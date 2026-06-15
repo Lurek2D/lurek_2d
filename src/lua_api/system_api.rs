@@ -1,9 +1,6 @@
 //! File: src/lua_api/system_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
+//! Registers the public `lurek.runtime` namespace for host, process, and runtime utility helpers.
+//! Keeps environment queries, clipboard helpers, logging controls, and batch utilities in one runtime-facing surface.
 
 use super::SharedState;
 use crate::log_msg;
@@ -16,7 +13,7 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-/// Registers all `lurek.system` functions into the Lua runtime table.
+/// Registers all `lurek.runtime` functions into the Lua runtime table.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let system = lua.create_table()?;
 
@@ -102,18 +99,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getInfo",
         lua.create_function(|lua, ()| {
             let info = lua.create_table()?;
-            /// Performs the 'engine' operation.
             info.set("engine", "Lurek2D")?;
-            /// Performs the 'version' operation.
             info.set("version", env!("CARGO_PKG_VERSION"))?;
-            /// Performs the 'lua_version' operation.
             info.set("lua_version", "Lua 5.4")?;
-            /// Performs the 'renderer' operation.
             info.set("renderer", "wgpu")?;
             info.set("os", get_os_name())?;
-            /// Performs the 'processors' operation.
             info.set("processors", get_processor_count())?;
-            /// Performs the 'memory' operation.
             info.set("memory", get_memory_size())?;
             Ok(info)
         })?,
@@ -217,52 +208,39 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |lua, ()| {
             let st = s.borrow();
             let tbl = lua.create_table()?;
-            /// Performs the 'runtime_mode' operation.
             tbl.set("runtime_mode", st.runtime_mode.as_str())?;
             let fixed_dt = st.physics_run.fixed_dt;
             let physics_tick_rate = if fixed_dt > 0.0 { 1.0 / fixed_dt } else { 0.0 };
-            /// Performs the 'physics_tick_rate' operation.
             tbl.set("physics_tick_rate", physics_tick_rate)?;
             let fixed_update_dt = st.physics_run.fixed_update_dt;
             if fixed_update_dt > 0.0 {
-                /// Performs the 'fixed_update_tick_rate' operation.
                 tbl.set("fixed_update_tick_rate", 1.0 / fixed_update_dt)?;
             } else {
-                /// Performs the 'fixed_update_tick_rate' operation.
                 tbl.set("fixed_update_tick_rate", mlua::Value::Nil)?;
             }
             if let Some(ms) = st.frame_budget_warn_ms {
                 // frame_budget_warn_ms: per-frame time budget threshold in milliseconds
-                /// Performs the 'frame_budget_warn_ms' operation.
                 tbl.set("frame_budget_warn_ms", ms)?;
             } else {
                 // frame_budget_warn_ms: not configured
-                /// Performs the 'frame_budget_warn_ms' operation.
                 tbl.set("frame_budget_warn_ms", mlua::Value::Nil)?;
             }
             if let Some(ms) = st.lua_callback_timeout_ms {
                 // lua_callback_timeout_ms: per-callback Lua execution time limit in milliseconds
-                /// Performs the 'lua_callback_timeout_ms' operation.
                 tbl.set("lua_callback_timeout_ms", ms)?;
             } else {
                 // lua_callback_timeout_ms: not configured
-                /// Performs the 'lua_callback_timeout_ms' operation.
                 tbl.set("lua_callback_timeout_ms", mlua::Value::Nil)?;
             }
             // vsync: whether vertical sync is currently enabled
-            /// Performs the 'vsync' operation.
             tbl.set("vsync", st.window_state.vsync_mode != 0)?;
             // log_level: current logging verbosity level string
-            /// Performs the 'log_level' operation.
             tbl.set("log_level", log_messages::get_log_level().to_string())?;
             // default_font_size: configured built-in default render font point size
-            /// Performs the 'default_font_size' operation.
             tbl.set("default_font_size", st.default_font_size)?;
             // default_font_bold: whether the configured default render font uses the bold variant
-            /// Performs the 'default_font_bold' operation.
             tbl.set("default_font_bold", st.default_font_bold)?;
             // config_reload_revision: number of times the engine config has been reloaded
-            /// Performs the 'config_reload_revision' operation.
             tbl.set("config_reload_revision", st.config_reload_revision)?;
             Ok(tbl)
         })?,
@@ -294,7 +272,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- setLogLevel --
     /// Sets the engine-wide log verbosity level at runtime.
     /// @param | level | string | Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`.
-    #[allow(unused_doc_comments)]
     system.set(
         "setLogLevel",
         lua.create_function(|_, level: String| {
@@ -306,7 +283,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- getLogLevel --
     /// Returns the current engine log verbosity level as a string.
     /// @return | string | Current log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`.
-    #[allow(unused_doc_comments)]
     system.set(
         "getLogLevel",
         lua.create_function(|_, ()| Ok(log_messages::get_log_level().to_string()))?,
@@ -316,7 +292,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// Writes a message to the engine log at the specified severity level.
     /// @param | level | string | Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`. Defaults to `"info"` if unrecognized.
     /// @param | message | string | The message text to log.
-    #[allow(unused_doc_comments)]
     system.set(
         "log",
         lua.create_function(|_, (level, message): (String, String)| {
@@ -338,29 +313,18 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @field | code | string | Error code.
     /// @field | category | string | Error category.
     /// @field | hint | string? | Optional hint for resolution.
-    #[allow(unused_doc_comments)]
     {
         let s = state_for_error.clone();
-        /// Returns the last error for Lua scripts in this module.
-        /// @return | table | Table result returned by this call.
-        /// @field | message | string | Error message.
-        /// @field | code | string | Error code.
-        /// @field | category | string | Error category.
-        /// @field | hint | string? | Optional hint for resolution.
         system.set(
             "getLastError",
             lua.create_function(move |lua, ()| {
                 let state = s.borrow();
                 if let Some(ref err_info) = state.last_error {
                     let tbl = lua.create_table()?;
-                    /// Performs the 'message' operation.
                     tbl.set("message", err_info.message.as_str())?;
-                    /// Performs the 'code' operation.
                     tbl.set("code", err_info.code.as_str())?;
-                    /// Performs the 'category' operation.
                     tbl.set("category", err_info.category.as_str())?;
                     if let Some(ref hint) = err_info.hint {
-                        /// Performs the 'hint' operation.
                         tbl.set("hint", hint.as_str())?;
                     }
                     Ok(mlua::Value::Table(tbl))
@@ -475,11 +439,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 i += 1;
             }
             let result = lua.create_table()?;
-            /// Performs the 'flags' operation.
             result.set("flags", flags)?;
-            /// Performs the 'options' operation.
             result.set("options", options)?;
-            /// Performs the 'positional' operation.
             result.set("positional", positional)?;
             Ok(result)
         })?,
@@ -506,9 +467,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let (name, func) = pair?;
                 if had_error && stop_on_error {
                     let entry = lua.create_table()?;
-                    /// Performs the 'status' operation.
                     entry.set("status", "skipped")?;
-                    /// Performs the 'time' operation.
                     entry.set("time", 0.0)?;
                     results.set(name, entry)?;
                     continue;
@@ -517,18 +476,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 let entry = lua.create_table()?;
                 match func.call::<_, LuaMultiValue>(()) {
                     Ok(_) => {
-                        /// Performs the 'status' operation.
                         entry.set("status", "passed")?;
                     }
                     Err(e) => {
-                        /// Performs the 'status' operation.
                         entry.set("status", "failed")?;
-                        /// Performs the 'error' operation.
                         entry.set("error", e.to_string())?;
                         had_error = true;
                     }
                 }
-                /// Performs the 'time' operation.
                 entry.set("time", start.elapsed().as_secs_f64())?;
                 results.set(name, entry)?;
             }
@@ -562,7 +517,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok((passed, failed, skipped))
         })?,
     )?;
-    /// Performs the 'runtime' operation.
     lurek.set("runtime", system)?;
     Ok(())
 }

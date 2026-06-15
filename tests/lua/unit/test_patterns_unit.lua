@@ -1,7 +1,7 @@
 -- Reorganized unit test file.
 -- Source files are isolated in do-end blocks to preserve local helper scope.
 
--- BEGIN test_patterns_core_unit.lua
+-- BEGIN test_patterns_unit.lua
 do
 -- Canonical unit coverage for lurek.patterns.
 
@@ -1694,8 +1694,8 @@ describe("relationship and behavior structures", function()
         rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
         rm:defineType("trust", {"low", "medium", "high"}, "medium")
         local names = rm:typeNames()
-        expect_true(table_contains(names, "friendship"))
-        expect_true(table_contains(names, "trust"))
+        expect_equal("friendship", names[1])
+        expect_equal("trust", names[2])
     end)
 
     -- @covers LRelationshipManager:setValue

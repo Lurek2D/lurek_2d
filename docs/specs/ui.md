@@ -6,7 +6,7 @@
 - Rich control catalog featuring standard inputs, numeric steppers, combo selections, and visual containers.
 - Supports resizable window shells, modal dialog triggers, and nine-slice border-stretching layouts.
 - Declarative TOML layouts, semantic theme tokens, alpha-aware animations, and drag-and-drop event dispatching.
-- Integrates data graph series renderers with direct DataFrame bindings, and headless screenshot exports.
+- Integrates retained widgets, theme/layout flows, and headless screenshot exports.
 
 ## General Info
 
@@ -14,7 +14,7 @@
 - Source path: `src/ui/`
 - Binding: `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
-- Lua API surface: `95` functions, `44` types, `383` methods
+- Lua API surface: `90` functions, `39` types, `331` methods
 - Rust test path(s): tests/rust/unit/gui_tests.rs
 - Lua test path(s): tests/lua/unit/test_gui.lua, tests/lua/unit/test_ui_input_unit.lua, tests/lua/unit/test_ui_layout.lua, tests/lua/integration/test_i18n_ui.lua
 
@@ -44,9 +44,9 @@
 - Additional controls include list, combo, progress, separator, and spacer variants.
 - Extended widgets include dialogs, menus, tree views, toolbars, and badges.
 - Notification/toast systems provide transient user feedback primitives.
-- Data visualization widgets support line, bar, pie, area, and scatter charts.
-- Chart rendering maps abstract data series to viewport-aware geometry.
-- DataFrame integration supports direct table-to-chart workflows.
+- Charts are owned by `lurek.charts`; `lurek.ui` should not expose chart constructors or chart-specific rendering wrappers.
+- Telemetry and analytics data can still be presented inside UI layouts by embedding textures or images produced by other modules.
+- DataFrame integration in this module stays focused on table/grid presentation and layout-driven UI flows.
 - Theming maps widget type/state to style records and semantic tokens.
 - Style records include colors, borders, shadows, spacing, and typography knobs.
 - Fallback style resolution keeps partial themes functional.
@@ -105,7 +105,6 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 
 ## Imports
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `image`: Imports or references `image` from `src/image/`.
 - `math`: Imports or references `math` from `src/math/`.
@@ -157,15 +156,6 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - It packages core interaction primitives in one predictable and reusable control set.
 - It establishes stable semantics for input-heavy interfaces across gameplay and tools.
 - It forms the practical interaction surface most UI scripts build on top of.
-
-### data_graph_renderer.rs
-
-- This file provides the data graph renderer used for chart-like UI visualization surfaces.
-- It supports multiple series forms so lines, points, and bars share one rendering core.
-- It maps graph space to screen space with reversible coordinate conversion helpers.
-- It computes automatic ranges so diverse datasets fit cleanly into constrained viewports.
-- It serves both runtime HUD analytics and editor-facing diagnostic chart panels.
-- It keeps chart rendering behavior consistent across tooling and in-game dashboards.
 
 ### extras.rs
 
@@ -292,9 +282,7 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `lurek.ui.mousepressed(x, y, btn?) -> boolean`: Delivers a mouse press event to the UI.
 - `lurek.ui.mousereleased(x, y, btn?) -> boolean`: Delivers a mouse release event to the UI.
 - `lurek.ui.newAccordion() -> LAccordion`: Creates a new accordion widget with collapsible sections.
-- `lurek.ui.newAreaChart(opts) -> LAreaChart`: Creates a new area chart for data visualization.
 - `lurek.ui.newBadge(count?) -> LBadge`: Creates a new badge widget for displaying counts.
-- `lurek.ui.newBarChart(opts) -> LBarChart`: Creates a new bar chart for data visualization.
 - `lurek.ui.newButton(text?) -> LButton`: Creates a new button widget with optional label text.
 - `lurek.ui.newCheckbox(text?) -> LCheckbox`: Creates a new checkbox widget with optional label.
 - `lurek.ui.newColorPicker() -> LColorPicker`: Creates a new color picker widget for color selection.
@@ -305,16 +293,13 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `lurek.ui.newImageWidget() -> LImageWidget`: Creates a new image display widget.
 - `lurek.ui.newLabel(text?) -> LLabel`: Creates a new label widget for displaying text.
 - `lurek.ui.newLayout(direction?) -> LLayout`: Creates a new layout container widget.
-- `lurek.ui.newLineChart(opts) -> LLineChart`: Creates a new line chart for data visualization.
 - `lurek.ui.newList() -> LListBox`: Creates a new list box widget for item selection.
 - `lurek.ui.newMenuBar() -> LMenuBar`: Creates a new menu bar widget for top-level menus.
 - `lurek.ui.newMenuItem(text?) -> LMenuItem`: Creates a new menu item widget with optional text.
 - `lurek.ui.newNinePatch() -> LNinePatch`: Creates a new nine-patch widget for scalable bordered images.
 - `lurek.ui.newPanel() -> LPanel`: Creates a new panel widget (container).
-- `lurek.ui.newPieChart(opts) -> LPieChart`: Creates a new pie chart for data visualization.
 - `lurek.ui.newProgressBar(min?, max?) -> LProgressBar`: Creates a new progress bar widget with min and max.
 - `lurek.ui.newRadioButton(text?, group?) -> LRadioButton`: Creates a new radio button widget in a named group.
-- `lurek.ui.newScatterPlot(opts) -> LScatterPlot`: Creates a new scatter plot for data visualization.
 - `lurek.ui.newScrollBar(vertical?) -> LScrollBar`: Creates a new scroll bar widget for content scrolling.
 - `lurek.ui.newScrollPanel() -> LScrollPanel`: Creates a new scrollable panel widget.
 - `lurek.ui.newSeparator(vertical?) -> LSeparator`: Creates a new separator widget for visual division.
@@ -390,28 +375,6 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LAccordion:setExclusive(v) -> nil`: Sets exclusive mode. When true, expanding one section collapses all others.
 - `LAccordion:toggleSection(section_idx) -> boolean`: Toggles the expanded state of an accordion section by its 1-based index.
 
-#### LAreaChart Type
-
-- Lua-exposed area chart for data visualization.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LAreaChart:addLayer(name, vals_tbl, r, g, b) -> nil`: Adds a data layer to this area chart.
-- `LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, opts?) -> integer`: Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
-- `LAreaChart:drawToImage(target) -> nil`: Renders this area chart to an image buffer.
-- `LAreaChart:setShowLegend(value) -> nil`: Enables or disables the layer legend for this area chart.
-- `LAreaChart:setXLabel(label) -> nil`: Sets the X-axis label for this area chart.
-- `LAreaChart:setXTickCount(count) -> nil`: Sets the number of X-axis tick labels for this area chart.
-- `LAreaChart:setYLabel(label) -> nil`: Sets the Y-axis label for this area chart.
-- `LAreaChart:setYMax(v) -> nil`: Sets the maximum Y-axis value for this area chart.
-- `LAreaChart:setYTickCount(count) -> nil`: Sets the number of Y-axis tick labels for this area chart.
-- `LAreaChart:type() -> string`: Returns the type name of this object.
-- `LAreaChart:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
 #### LBadge Type
 
 - Adds badge-specific methods to a notification badge widget table.
@@ -425,28 +388,6 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LBadge:getCount() -> integer`: Returns the current notification count of this badge.
 - `LBadge:getDisplayText() -> string`: Returns the formatted display text of this badge (e.g. "99+" when count exceeds the maximum).
 - `LBadge:setCount(count) -> nil`: Sets the notification count displayed by this badge.
-
-#### LBarChart Type
-
-- Lua-exposed bar chart for data visualization.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts?) -> integer`: Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
-- `LBarChart:addCategory(label, vals_tbl) -> nil`: Adds a category with values for each series.
-- `LBarChart:addSeries(name, r, g, b) -> nil`: Adds a named series to this bar chart.
-- `LBarChart:drawToImage(target) -> nil`: Renders this bar chart to an image buffer.
-- `LBarChart:setShowLegend(value) -> nil`: Enables or disables the series legend for this bar chart.
-- `LBarChart:setXLabel(label) -> nil`: Sets the X-axis label for this bar chart.
-- `LBarChart:setXTickCount(count) -> nil`: Sets the number of X-axis tick labels for this bar chart.
-- `LBarChart:setYLabel(label) -> nil`: Sets the Y-axis label for this bar chart.
-- `LBarChart:setYTickCount(count) -> nil`: Sets the number of Y-axis tick labels for this bar chart.
-- `LBarChart:type() -> string`: Returns the type name of this object.
-- `LBarChart:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LButton Type
 
@@ -668,29 +609,6 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LLayout:setSpacing(spacing) -> nil`: Sets the spacing in pixels between child widgets in this layout.
 - `LLayout:setWrap(wrap) -> nil`: Enables or disables wrapping of children to the next row/column when they overflow.
 
-#### LLineChart Type
-
-- Lua-exposed line chart for data visualization.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LLineChart:addSeries(name, pts_tbl, r, g, b) -> nil`: Adds a named series of points to this line chart.
-- `LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts?) -> integer`: Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
-- `LLineChart:drawToImage(target) -> nil`: Renders this line chart to an image buffer.
-- `LLineChart:setShowLegend(value) -> nil`: Enables or disables the series legend for this line chart.
-- `LLineChart:setXLabel(label) -> nil`: Sets the X-axis label for this line chart.
-- `LLineChart:setXMax(v) -> nil`: Sets the maximum X-axis value for this line chart.
-- `LLineChart:setXTickCount(count) -> nil`: Sets the number of X-axis tick labels for this line chart.
-- `LLineChart:setYLabel(label) -> nil`: Sets the Y-axis label for this line chart.
-- `LLineChart:setYMax(v) -> nil`: Sets the maximum Y-axis value for this line chart.
-- `LLineChart:setYTickCount(count) -> nil`: Sets the number of Y-axis tick labels for this line chart.
-- `LLineChart:type() -> string`: Returns the type name of this object.
-- `LLineChart:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
 #### LListBox Type
 
 - Adds list-box-specific methods to a list box widget table.
@@ -794,23 +712,6 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LPanel:setScrollable(scrollable) -> nil`: Enables or disables scrolling within this panel.
 - `LPanel:setTitle(title) -> nil`: Sets the title text displayed on this panel's header.
 
-#### LPieChart Type
-
-- Lua-exposed pie chart for data visualization.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LPieChart:addSegment(label, value, r, g, b) -> nil`: Adds a labeled segment to this pie chart widget.
-- `LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts?) -> integer`: Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.
-- `LPieChart:drawToImage(target) -> nil`: Renders this pie chart to an image buffer.
-- `LPieChart:setShowLegend(value) -> nil`: Enables or disables the segment legend for this pie chart.
-- `LPieChart:type() -> string`: Returns the type name of this object.
-- `LPieChart:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
-
 #### LProgressBar Type
 
 - Adds progress-bar-specific methods to a progress bar widget table.
@@ -845,29 +746,6 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 - `LRadioButton:setOnChange(f) -> nil`: Registers a callback invoked when this radio button's selection changes.
 - `LRadioButton:setSelected(v) -> nil`: Sets the selected state of this radio button.
 - `LRadioButton:setText(text) -> nil`: Sets the label text of this radio button.
-
-#### LScatterPlot Type
-
-- Lua-exposed scatter plot for data visualization.
-
-##### Fields
-
-- No documented fields.
-
-##### Methods
-
-- `LScatterPlot:addSeries(name, pts_tbl, r, g, b) -> nil`: Adds a data series to this scatter plot.
-- `LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts?) -> integer`: Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
-- `LScatterPlot:drawToImage(target) -> nil`: Renders this scatter plot to an image buffer.
-- `LScatterPlot:setShowLegend(value) -> nil`: Enables or disables the series legend for this scatter plot.
-- `LScatterPlot:setXLabel(label) -> nil`: Sets the X-axis label for this scatter plot.
-- `LScatterPlot:setXRange(mn, mx) -> nil`: Sets the X-axis range for this scatter plot.
-- `LScatterPlot:setXTickCount(count) -> nil`: Sets the number of X-axis tick labels for this scatter plot.
-- `LScatterPlot:setYLabel(label) -> nil`: Sets the Y-axis label for this scatter plot.
-- `LScatterPlot:setYRange(mn, mx) -> nil`: Sets the Y-axis range for this scatter plot.
-- `LScatterPlot:setYTickCount(count) -> nil`: Sets the number of Y-axis tick labels for this scatter plot.
-- `LScatterPlot:type() -> string`: Returns the type name of this object.
-- `LScatterPlot:typeOf(name) -> boolean`: Checks whether this object matches the given type name.
 
 #### LScrollBar Type
 
@@ -1254,7 +1132,6 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 
 ## References
 
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `image`: Imports or references `image` from `src/image/`.
 - `math`: Imports or references `math` from `src/math/`.

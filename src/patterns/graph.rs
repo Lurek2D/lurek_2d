@@ -5,7 +5,13 @@
 //! Connectivity checks, node metadata, and edge labels make the graph more than a bare container by supporting practical gameplay queries around ownership, routes, influence, or dependency webs.
 //! Functionally this file delivers the relational map backbone for systems that need editable topology, traversable links, and stable graph identities in script-friendly form.
 
+use std::collections::{HashMap, HashSet, VecDeque};
+
 /// A graph node with a debug label.
+///
+/// # Fields
+/// - `id`: Stable node identifier within the owning graph.
+/// - `label`: Human-readable node label.
 #[derive(Debug, Clone)]
 pub struct GraphNode {
     /// Unique identifier within the owning `Graph`.
@@ -14,6 +20,13 @@ pub struct GraphNode {
     pub label: String,
 }
 /// A directed edge connecting two nodes with a weight and label.
+///
+/// # Fields
+/// - `id`: Stable edge identifier.
+/// - `from`: Source node id.
+/// - `to`: Destination node id.
+/// - `weight`: Traversal cost or score.
+/// - `label`: Human-readable edge label.
 #[derive(Debug, Clone)]
 pub struct GraphEdge {
     /// Unique edge identifier.
@@ -28,12 +41,19 @@ pub struct GraphEdge {
     pub label: String,
 }
 /// Adjacency-list graph supporting directed and undirected modes.
+///
+/// # Fields
+/// - `undirected`: Whether reverse edges are inserted automatically.
 #[derive(Debug, Clone)]
 pub struct Graph {
     /// All nodes.
     nodes: Vec<GraphNode>,
     /// All edges; undirected graphs store both directions.
     edges: Vec<GraphEdge>,
+    /// Node id to vector index lookup.
+    node_index: HashMap<u32, usize>,
+    /// Cached outgoing neighbor ids keyed by source node id.
+    adjacency: HashMap<u32, Vec<u32>>,
     /// Next node id to assign.
     next_node: u32,
     /// Next edge id to assign.
@@ -48,6 +68,8 @@ impl Graph {
         Self {
             nodes: Vec::new(),
             edges: Vec::new(),
+            node_index: HashMap::new(),
+            adjacency: HashMap::new(),
             next_node: 1,
             next_edge: 1,
             undirected: false,
@@ -68,13 +90,19 @@ impl Graph {
             id,
             label: label.to_string(),
         });
+        self.node_index.insert(id, self.nodes.len() - 1);
+        self.adjacency.entry(id).or_default();
         id
     }
     /// Remove node `id` and all edges incident to it; return true when it existed.
     pub fn remove_node(&mut self, id: u32) -> bool {
-        if let Some(pos) = self.nodes.iter().position(|n| n.id == id) {
+        if let Some(pos) = self.node_index.remove(&id) {
             self.nodes.swap_remove(pos);
+            if let Some(node) = self.nodes.get(pos) {
+                self.node_index.insert(node.id, pos);
+            }
             self.edges.retain(|e| e.from != id && e.to != id);
+            self.rebuild_adjacency();
             true
         } else {
             false
@@ -82,11 +110,13 @@ impl Graph {
     }
     /// Return a reference to the node with `id`, or `None`.
     pub fn get_node(&self, id: u32) -> Option<&GraphNode> {
-        self.nodes.iter().find(|n| n.id == id)
+        self.node_index
+            .get(&id)
+            .and_then(|&idx| self.nodes.get(idx))
     }
     /// Return true when a node with `id` exists.
     pub fn has_node(&self, id: u32) -> bool {
-        self.nodes.iter().any(|n| n.id == id)
+        self.node_index.contains_key(&id)
     }
     /// Return all node ids. This function is part of the public API.
     pub fn node_ids(&self) -> Vec<u32> {
@@ -119,13 +149,21 @@ impl Graph {
                 label: label.to_string(),
             });
         }
+        self.adjacency.entry(from).or_default().push(to);
+        if self.undirected && from != to {
+            self.adjacency.entry(to).or_default().push(from);
+        }
         id
     }
     /// Remove all edges with `id`; return true when at least one was removed.
     pub fn remove_edge(&mut self, id: u32) -> bool {
         let before = self.edges.len();
         self.edges.retain(|e| e.id != id);
-        self.edges.len() < before
+        let removed = self.edges.len() < before;
+        if removed {
+            self.rebuild_adjacency();
+        }
+        removed
     }
     /// Return a reference to the first edge with `id`, or `None`.
     pub fn get_edge(&self, id: u32) -> Option<&GraphEdge> {
@@ -145,15 +183,10 @@ impl Graph {
     }
     /// Return the ids of all direct outgoing neighbours of `node_id`.
     pub fn neighbors(&self, node_id: u32) -> Vec<u32> {
-        self.edges
-            .iter()
-            .filter(|e| e.from == node_id)
-            .map(|e| e.to)
-            .collect()
+        self.adjacency.get(&node_id).cloned().unwrap_or_default()
     }
     /// Return node ids reachable from `start` in BFS order.
     pub fn bfs(&self, start: u32) -> Vec<u32> {
-        use std::collections::{HashSet, VecDeque};
         let mut visited = HashSet::new();
         let mut queue = VecDeque::new();
         let mut order = Vec::new();
@@ -164,9 +197,11 @@ impl Graph {
         visited.insert(start);
         while let Some(cur) = queue.pop_front() {
             order.push(cur);
-            for &nb in &self.neighbors(cur) {
-                if visited.insert(nb) {
-                    queue.push_back(nb);
+            if let Some(neighbors) = self.adjacency.get(&cur) {
+                for &nb in neighbors {
+                    if visited.insert(nb) {
+                        queue.push_back(nb);
+                    }
                 }
             }
         }
@@ -174,34 +209,61 @@ impl Graph {
     }
     /// Return node ids reachable from `start` in DFS order.
     pub fn dfs(&self, start: u32) -> Vec<u32> {
-        let mut visited = std::collections::HashSet::new();
+        let mut visited = HashSet::new();
         let mut order = Vec::new();
         self.dfs_inner(start, &mut visited, &mut order);
         order
     }
     /// Recursive DFS helper accumulating visited nodes into `order`.
-    fn dfs_inner(
-        &self,
-        cur: u32,
-        visited: &mut std::collections::HashSet<u32>,
-        order: &mut Vec<u32>,
-    ) {
+    fn dfs_inner(&self, cur: u32, visited: &mut HashSet<u32>, order: &mut Vec<u32>) {
         if !visited.insert(cur) {
             return;
         }
         order.push(cur);
-        for &nb in &self.neighbors(cur) {
-            self.dfs_inner(nb, visited, order);
+        if let Some(neighbors) = self.adjacency.get(&cur) {
+            for &nb in neighbors {
+                self.dfs_inner(nb, visited, order);
+            }
+        }
+    }
+    /// Rebuilds cached outgoing adjacency lists from `edges`.
+    fn rebuild_adjacency(&mut self) {
+        self.adjacency.clear();
+        for node in &self.nodes {
+            self.adjacency.entry(node.id).or_default();
+        }
+        for edge in &self.edges {
+            self.adjacency.entry(edge.from).or_default().push(edge.to);
         }
     }
     /// Return true when `to` is reachable from `from`.
     pub fn is_connected(&self, from: u32, to: u32) -> bool {
-        self.bfs(from).contains(&to)
+        if !self.has_node(from) || !self.has_node(to) {
+            return false;
+        }
+        let mut visited = HashSet::new();
+        let mut queue = VecDeque::from([from]);
+        visited.insert(from);
+        while let Some(cur) = queue.pop_front() {
+            if cur == to {
+                return true;
+            }
+            if let Some(neighbors) = self.adjacency.get(&cur) {
+                for &nb in neighbors {
+                    if visited.insert(nb) {
+                        queue.push_back(nb);
+                    }
+                }
+            }
+        }
+        false
     }
     /// Remove all nodes and edges. This function is part of the public API.
     pub fn clear(&mut self) {
         self.nodes.clear();
         self.edges.clear();
+        self.node_index.clear();
+        self.adjacency.clear();
     }
 }
 /// Delegates to `Self::new()`.

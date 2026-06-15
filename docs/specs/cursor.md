@@ -11,7 +11,7 @@
 - Binding: `src/lua_api/cursor_api.rs`
 - Namespace: `lurek.cursor`
 - Lua API surface: `4` functions, `3` types, `30` methods
-- Rust test path(s): None found in the workspace
+- Rust test path(s): tests/rust/unit/cursor_tests.rs
 - Lua test path(s): tests/lua/unit/test_cursor_unit.lua
 
 ## Summary

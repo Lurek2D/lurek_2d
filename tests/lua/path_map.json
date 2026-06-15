@@ -204,7 +204,6 @@
   "unit/test_spine_core_unit.lua": "unit/test_spine_unit.lua",
   "unit/test_sprite_core_unit.lua": "unit/test_sprite_unit.lua",
   "unit/test_svg_unit.lua": "unit/test_svg_unit.lua",
-  "unit/test_system_core_unit.lua": "unit/test_system_unit.lua",
   "unit/test_terminal_core_unit.lua": "unit/test_terminal_unit.lua",
   "unit/test_thread_core_unit.lua": "unit/test_thread_unit.lua",
   "unit/test_tilemap_core_unit.lua": "unit/test_tilemap_unit.lua",

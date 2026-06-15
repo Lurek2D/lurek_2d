@@ -4,6 +4,12 @@
 //! Functionally this delivers stable urgency-based ordering for task systems, AI planners, turn resolution, and any script logic that needs predictable priority arbitration.
 
 /// A single entry in the queue with a stable tie-breaking sequence number.
+///
+/// # Fields
+/// - `id`: Stable queue entry identifier.
+/// - `priority`: Higher values are dequeued first.
+/// - `label`: Debug-oriented label string.
+/// - `seq`: FIFO tie-breaker for equal priority entries.
 #[derive(Debug, Clone)]
 pub struct PriorityItem {
     /// Unique item id.
@@ -16,6 +22,9 @@ pub struct PriorityItem {
     pub seq: u64,
 }
 /// Sorted queue of `PriorityItem` entries.
+///
+/// # Fields
+/// - `name`: Debug name for this queue instance.
 #[derive(Debug)]
 pub struct PriorityQueue {
     /// Debug name.
@@ -26,6 +35,8 @@ pub struct PriorityQueue {
     next_seq: u64,
     /// Items stored in descending priority order.
     items: Vec<PriorityItem>,
+    /// Index of the first live item within `items`.
+    head: usize,
 }
 /// All methods for `PriorityQueue`.
 impl PriorityQueue {
@@ -36,6 +47,7 @@ impl PriorityQueue {
             next_id: 1,
             next_seq: 0,
             items: Vec::new(),
+            head: 0,
         }
     }
     /// Insert an item with `priority` and `label`; return its id.
@@ -51,43 +63,73 @@ impl PriorityQueue {
             seq,
         };
         let pos = self
-            .items
+            .active_items()
             .partition_point(|x| x.priority > priority || (x.priority == priority && x.seq < seq));
-        self.items.insert(pos, item);
+        self.items.insert(self.head + pos, item);
         id
     }
     /// Return a reference to the highest-priority item without removing it.
     pub fn peek(&self) -> Option<&PriorityItem> {
-        self.items.first()
+        self.active_items().first()
     }
     /// Remove and return the highest-priority item's id and priority.
     pub fn pop(&mut self) -> Option<(u64, i64)> {
-        if self.items.is_empty() {
-            return None;
-        }
-        let item = self.items.remove(0);
+        let item = self.active_items().first()?.clone();
+        self.head += 1;
+        self.compact();
         Some((item.id, item.priority))
     }
     /// Remove the item with `id`; return true when it was found.
     pub fn remove(&mut self, id: u64) -> bool {
-        let before = self.items.len();
-        self.items.retain(|i| i.id != id);
-        self.items.len() < before
+        let before = self.len();
+        if before == 0 {
+            return false;
+        }
+        let mut kept = self.active_items().to_vec();
+        kept.retain(|i| i.id != id);
+        if kept.len() == before {
+            return false;
+        }
+        self.items = kept;
+        self.head = 0;
+        true
     }
     /// Return the number of items in the queue.
     pub fn len(&self) -> usize {
-        self.items.len()
+        self.items.len().saturating_sub(self.head)
     }
     /// Return true when the queue is empty.
     pub fn is_empty(&self) -> bool {
-        self.items.is_empty()
+        self.len() == 0
     }
     /// Return all items in priority order.
     pub fn items(&self) -> &[PriorityItem] {
-        &self.items
+        self.active_items()
     }
     /// Remove all items. This function is part of the public API.
     pub fn clear(&mut self) {
         self.items.clear();
+        self.head = 0;
+    }
+
+    /// Returns the live queue slice from highest to lowest priority.
+    fn active_items(&self) -> &[PriorityItem] {
+        &self.items[self.head..]
+    }
+
+    /// Compacts consumed front slack after repeated pops.
+    fn compact(&mut self) {
+        if self.head == 0 {
+            return;
+        }
+        if self.head >= self.items.len() {
+            self.items.clear();
+            self.head = 0;
+            return;
+        }
+        if self.head * 2 >= self.items.len() {
+            self.items.drain(..self.head);
+            self.head = 0;
+        }
     }
 }

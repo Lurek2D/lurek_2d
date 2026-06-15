@@ -78,6 +78,7 @@ describe("LReplSession", function()
     -- @covers LReplSession:complete
     it("complete includes lurek.repl suggestions", function()
         local repl = lurek.repl.new(8)
+        repl:eval("custom_runtime_symbol = 7")
         local completions = repl:complete("lurek.re")
         local found = false
         for _, item in ipairs(completions) do
@@ -87,6 +88,15 @@ describe("LReplSession", function()
             end
         end
         expect_true(found)
+
+        local dynamic_found = false
+        for _, item in ipairs(repl:complete("custom_run")) do
+            if item == "custom_runtime_symbol" then
+                dynamic_found = true
+                break
+            end
+        end
+        expect_true(dynamic_found)
     end)
 
     -- @covers LReplSession:type

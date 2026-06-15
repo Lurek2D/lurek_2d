@@ -52,7 +52,7 @@ lurek.docs.checkStaleness(catalog_ud, source_dir)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local result = lurek.docs.checkStaleness(cat, "src/math/")
     print("stale = " .. #result.stale .. " current = " .. #result.current)
 end
@@ -85,7 +85,7 @@ lurek.docs.coverage(catalog_ud)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local documented, live = lurek.docs.coverage(cat)
     print("documented=" .. documented .. " live=" .. live)
 end
@@ -119,7 +119,7 @@ lurek.docs.coverageModule(module_name, catalog_ud)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local documented, live = lurek.docs.coverageModule("math", cat)
     print("math documented=" .. documented .. " live=" .. live)
 end
@@ -148,6 +148,7 @@ lurek.docs.describe(qualified_name, description)
 do
     lurek.docs.describe("lurek.math.lerp", "Linearly interpolates between a and b.")
     print("description set")
+    print("catalog type = " .. type(lurek.docs.getCatalog()))
 end
 ```
 
@@ -172,7 +173,7 @@ lurek.docs.exportAll(catalog_ud, output_dir)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportAll(cat, "build/docs/")
     print("all docs exported")
 end
@@ -199,7 +200,7 @@ lurek.docs.exportCheatsheet(catalog_ud, path)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportCheatsheet(cat, "build/cheatsheet.txt")
     print("cheatsheet exported")
 end
@@ -226,7 +227,7 @@ lurek.docs.exportCompletions(catalog_ud, path)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportCompletions(cat, "build/completions.json")
     print("completions exported")
 end
@@ -253,7 +254,7 @@ lurek.docs.exportHover(catalog_ud, path)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportHover(cat, "build/hover.json")
     print("hover exported")
 end
@@ -280,7 +281,7 @@ lurek.docs.exportMarkdown(catalog_ud, path)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportMarkdown(cat, "build/api.md")
     print("markdown exported")
 end
@@ -307,7 +308,7 @@ lurek.docs.exportSignatures(catalog_ud, path)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     lurek.docs.exportSignatures(cat, "build/signatures.json")
     print("signatures exported")
 end
@@ -335,6 +336,7 @@ lurek.docs.getCatalog()
 do
     local cat = lurek.docs.getCatalog()
     print("catalog entries = " .. cat:entryCount())
+    print("lua type = " .. type(cat))
 end
 ```
 
@@ -430,8 +432,8 @@ lurek.docs.quality(catalog_ud)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("quality score = " .. qr:getOverallScore())
 end
 ```
@@ -463,7 +465,7 @@ lurek.docs.qualityModule(module_name, catalog_ud)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local qr = lurek.docs.qualityModule("math", cat)
     print("math quality = " .. qr:getOverallScore())
 end
@@ -497,6 +499,7 @@ lurek.docs.reflectLive(ns)
 do
     local data = lurek.docs.reflectLive("math")
     print("reflect math type = " .. type(data))
+    print("lua type = " .. type(data))
 end
 ```
 
@@ -582,6 +585,7 @@ lurek.docs.scan(opts)
 do
     local cat = lurek.docs.scan()
     print("scanned entries = " .. cat:entryCount())
+    print("lua type = " .. type(cat))
 end
 ```
 
@@ -613,6 +617,7 @@ lurek.docs.scanModule(module_name)
 do
     local cat = lurek.docs.scanModule("math")
     print("math entries = " .. cat:entryCount())
+    print("lua type = " .. type(cat))
 end
 ```
 
@@ -645,6 +650,7 @@ lurek.docs.schema(rules, name)
 do
     local s = lurek.docs.schema({ name = { type = "string", required = true }, age = { type = "number" } }, "PlayerSchema")
     print("schema name = " .. s:getName())
+    print("lua type = " .. type(s))
 end
 ```
 
@@ -775,8 +781,8 @@ lurek.docs.validate(catalog_ud)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("valid = " .. tostring(report:isValid()))
 end
 ```
@@ -808,7 +814,7 @@ lurek.docs.validateModule(module_name, catalog_ud)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local report = lurek.docs.validateModule("math", cat)
     print("math missing = " .. report:missingCount())
 end
@@ -868,7 +874,7 @@ LApiCatalog:entryCount(module)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local total = cat:entryCount()
     local math_count = cat:entryCount("math")
     print("total=" .. total .. " math=" .. math_count)
@@ -901,7 +907,7 @@ LApiCatalog:filter(predicate)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local fns = cat:filter(function(entry) return entry:getKind() == "function" end)
     print("functions = " .. fns:entryCount())
 end
@@ -933,7 +939,7 @@ LApiCatalog:getEntries(module)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local all = cat:getEntries()
     local math_entries = cat:getEntries("math")
     print("all=" .. #all .. " math=" .. #math_entries)
@@ -966,8 +972,9 @@ LApiCatalog:getEntry(qualified_name)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     print("found entry = " .. tostring(cat:getEntry("lurek.math.lerp") ~= nil))
+    print("owner type = " .. tostring(cat:type()))
 end
 ```
 
@@ -991,7 +998,7 @@ LApiCatalog:getModules()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local modules = cat:getModules()
     print("modules = " .. #modules)
 end
@@ -1023,7 +1030,7 @@ LApiCatalog:getTypeMethods(qualified_name)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local methods = cat:getTypeMethods("LVec2")
     print("LVec2 methods = " .. #methods)
 end
@@ -1055,7 +1062,7 @@ LApiCatalog:getTypes(module_name)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local types = cat:getTypes("math")
     print("math types = " .. #types)
 end
@@ -1120,7 +1127,7 @@ LApiCatalog:search(query)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     local results = cat:search("lerp")
     print("search results = " .. #results)
 end
@@ -1198,8 +1205,9 @@ LApiCatalog:type()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     print("type = " .. cat:type())
+    print("typeOf LObject = " .. tostring(cat:typeOf("LObject")))
 end
 ```
 
@@ -1229,8 +1237,9 @@ LApiCatalog:typeOf(name)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
+    local cat = docs_example_cat
     print("is LApiCatalog = " .. tostring(cat:typeOf("LApiCatalog")))
+    print("type = " .. tostring(cat:type()))
 end
 ```
 
@@ -1262,8 +1271,9 @@ LDocEntry:getDeprecated()
 
 ```lua
 do
-    local deprecated = lurek.docs.scan():getEntry("lurek.math.lerp"):getDeprecated()
+    local deprecated = docs_example_entry:getDeprecated()
     print("deprecated = " .. type(deprecated))
+    print("deprecated value = " .. tostring(deprecated))
 end
 ```
 
@@ -1287,8 +1297,9 @@ LDocEntry:getDescription()
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("desc len = " .. #entry:getDescription())
+    print("owner type = " .. tostring(entry:type()))
 end
 ```
 
@@ -1312,8 +1323,9 @@ LDocEntry:getExample()
 
 ```lua
 do
-    local example = lurek.docs.scan():getEntry("lurek.math.lerp"):getExample()
+    local example = docs_example_entry:getExample()
     print("example = " .. type(example))
+    print("example length = " .. tostring(example and #example or 0))
 end
 ```
 
@@ -1337,8 +1349,9 @@ LDocEntry:getKind()
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("kind = " .. entry:getKind())
+    print("owner type = " .. tostring(entry:type()))
 end
 ```
 
@@ -1362,8 +1375,9 @@ LDocEntry:getModule()
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("module = " .. entry:getModule())
+    print("owner type = " .. tostring(entry:type()))
 end
 ```
 
@@ -1387,8 +1401,9 @@ LDocEntry:getName()
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("name = " .. entry:getName())
+    print("owner type = " .. tostring(entry:type()))
 end
 ```
 
@@ -1412,8 +1427,9 @@ LDocEntry:getParameters()
 
 ```lua
 do
-    local params = lurek.docs.scan():getEntry("lurek.math.lerp"):getParameters()
+    local params = docs_example_entry:getParameters()
     print("params = " .. #params)
+    print("params lua type = " .. type(params))
 end
 ```
 
@@ -1437,8 +1453,9 @@ LDocEntry:getQualifiedName()
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("qualified = " .. entry:getQualifiedName())
+    print("owner type = " .. tostring(entry:type()))
 end
 ```
 
@@ -1462,8 +1479,9 @@ LDocEntry:getReturns()
 
 ```lua
 do
-    local returns = lurek.docs.scan():getEntry("lurek.math.lerp"):getReturns()
+    local returns = docs_example_entry:getReturns()
     print("returns = " .. #returns)
+    print("returns lua type = " .. type(returns))
 end
 ```
 
@@ -1487,8 +1505,9 @@ LDocEntry:getScore()
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("score = " .. entry:getScore())
+    print("owner type = " .. tostring(entry:type()))
 end
 ```
 
@@ -1512,8 +1531,9 @@ LDocEntry:getSince()
 
 ```lua
 do
-    local since = lurek.docs.scan():getEntry("lurek.math.lerp"):getSince()
+    local since = docs_example_entry:getSince()
     print("since = " .. type(since))
+    print("since value = " .. tostring(since))
 end
 ```
 
@@ -1537,8 +1557,9 @@ LDocEntry:hasDescription()
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("hasDesc = " .. tostring(entry:hasDescription()))
+    print("owner type = " .. tostring(entry:type()))
 end
 ```
 
@@ -1562,8 +1583,9 @@ LDocEntry:hasExample()
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("hasExample = " .. tostring(entry:hasExample()))
+    print("owner type = " .. tostring(entry:type()))
 end
 ```
 
@@ -1587,8 +1609,9 @@ LDocEntry:hasParameters()
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("hasParams = " .. tostring(entry:hasParameters()))
+    print("owner type = " .. tostring(entry:type()))
 end
 ```
 
@@ -1612,8 +1635,9 @@ LDocEntry:hasReturnType()
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("hasReturn = " .. tostring(entry:hasReturnType()))
+    print("owner type = " .. tostring(entry:type()))
 end
 ```
 
@@ -1637,8 +1661,9 @@ LDocEntry:type()
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("type = " .. entry:type())
+    print("typeOf LObject = " .. tostring(entry:typeOf("LObject")))
 end
 ```
 
@@ -1668,8 +1693,9 @@ LDocEntry:typeOf(name)
 
 ```lua
 do
-    local entry = lurek.docs.scan():getEntry("lurek.math.lerp")
+    local entry = docs_example_entry
     print("is LDocEntry = " .. tostring(entry:typeOf("LDocEntry")))
+    print("type = " .. tostring(entry:type()))
 end
 ```
 
@@ -1707,8 +1733,8 @@ LQualityReport:getBest(count)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local best = qr:getBest(5)
     print("best 5 = " .. #best)
 end
@@ -1740,8 +1766,8 @@ LQualityReport:getByGrade(grade)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local a_entries = qr:getByGrade("A")
     print("grade A entries = " .. #a_entries)
 end
@@ -1767,8 +1793,8 @@ LQualityReport:getGrade()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("grade = " .. qr:getGrade())
 end
 ```
@@ -1793,8 +1819,8 @@ LQualityReport:getModuleScores()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local scores = qr:getModuleScores()
     print("module scores type = " .. type(scores))
 end
@@ -1820,8 +1846,8 @@ LQualityReport:getOverallScore()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("score = " .. qr:getOverallScore())
 end
 ```
@@ -1846,8 +1872,8 @@ LQualityReport:getSummary()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("summary = " .. qr:getSummary())
 end
 ```
@@ -1878,8 +1904,8 @@ LQualityReport:getWorst(count)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local worst = qr:getWorst(5)
     print("worst 5 = " .. #worst)
 end
@@ -1905,8 +1931,8 @@ LQualityReport:toJSON()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local json = qr:toJSON()
     print("json length = " .. #json)
 end
@@ -1932,8 +1958,8 @@ LQualityReport:toTable()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     local t = qr:toTable()
     print("overall = " .. t.overallScore .. " grade = " .. t.grade)
 end
@@ -1959,8 +1985,8 @@ LQualityReport:type()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("type = " .. qr:type())
 end
 ```
@@ -1991,8 +2017,8 @@ LQualityReport:typeOf(name)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local qr = lurek.docs.quality(cat)
+    local cat = docs_example_cat
+    local qr = docs_example_quality
     print("is report = " .. tostring(qr:typeOf("LQualityReport")))
 end
 ```
@@ -2059,6 +2085,7 @@ LSchema:check(data)
 do
     local s = lurek.docs.schema({x = {type = "number"}})
     print("check = " .. tostring(s:check({x = 42})))
+    print("owner type = " .. tostring(s:type()))
 end
 ```
 
@@ -2110,6 +2137,7 @@ LSchema:getName()
 do
     local s = lurek.docs.schema({}, "TestSchema")
     print("name = " .. s:getName())
+    print("owner type = " .. tostring(s:type()))
 end
 ```
 
@@ -2135,6 +2163,7 @@ LSchema:type()
 do
     local s = lurek.docs.schema({})
     print("type = " .. s:type())
+    print("typeOf LObject = " .. tostring(s:typeOf("LObject")))
 end
 ```
 
@@ -2166,6 +2195,7 @@ LSchema:typeOf(name)
 do
     local s = lurek.docs.schema({})
     print("is LSchema = " .. tostring(s:typeOf("LSchema")))
+    print("type = " .. tostring(s:type()))
 end
 ```
 
@@ -2230,8 +2260,8 @@ LValidationReport:getIncomplete()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     local incomplete = report:getIncomplete()
     print("incomplete = " .. #incomplete)
 end
@@ -2257,8 +2287,8 @@ LValidationReport:getMissing()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     local missing = report:getMissing()
     print("missing = " .. #missing)
 end
@@ -2284,8 +2314,8 @@ LValidationReport:getPhantom()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     local phantom = report:getPhantom()
     print("phantom = " .. #phantom)
 end
@@ -2311,8 +2341,8 @@ LValidationReport:getSummary()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("summary = " .. report:getSummary())
 end
 ```
@@ -2337,8 +2367,8 @@ LValidationReport:incompleteCount()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("incomplete count = " .. report:incompleteCount())
 end
 ```
@@ -2363,8 +2393,8 @@ LValidationReport:isValid()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("valid = " .. tostring(report:isValid()))
 end
 ```
@@ -2389,8 +2419,8 @@ LValidationReport:missingCount()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("missing count = " .. report:missingCount())
 end
 ```
@@ -2415,8 +2445,8 @@ LValidationReport:phantomCount()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("phantom count = " .. report:phantomCount())
 end
 ```
@@ -2441,8 +2471,8 @@ LValidationReport:toJSON()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     local json = report:toJSON()
     print("json length = " .. #json)
 end
@@ -2468,8 +2498,8 @@ LValidationReport:toTable()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     local t = report:toTable()
     print("table keys: missing=" .. #t.missing .. " phantom=" .. #t.phantom)
 end
@@ -2495,8 +2525,8 @@ LValidationReport:type()
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("type = " .. report:type())
 end
 ```
@@ -2527,8 +2557,8 @@ LValidationReport:typeOf(name)
 
 ```lua
 do
-    local cat = lurek.docs.scan()
-    local report = lurek.docs.validate(cat)
+    local cat = docs_example_cat
+    local report = docs_example_validate
     print("is report = " .. tostring(report:typeOf("LValidationReport")))
 end
 ```

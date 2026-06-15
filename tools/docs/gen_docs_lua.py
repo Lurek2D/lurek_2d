@@ -33,6 +33,7 @@ _LUA_NAMESPACE = {
     "timer":      "time",       # lurek.timer.* (registered as "time" in timer_api.rs)
     "event":      "signal",     # lurek.event.* (registered as "signal" in event_api.rs)
     "automation": "simulator",  # lurek.automation.* (registered as "simulator" in automation_api.rs)
+    "system":     "runtime",    # lurek.runtime.* is implemented in system_api.rs
 }
 
 _TODO_RE = re.compile(r"(?i)\bTODO(\([^)]+\))?:?.*")

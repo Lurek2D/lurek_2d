@@ -45,7 +45,6 @@ The glossary collects terms that appear across module and API pages.
 - `LAnimSyncGroup` ([lurek.animation](Module-animation)) - Lua-side animation synchronization group for coordinating multiple animation handles.
 - `LApiCatalog` ([lurek.docs](Module-docs)) - Provides Lua methods for querying, merging, filtering, and exporting catalog data.
 - `LAreaChart` ([lurek.charts](Module-charts)) - Lua handle for an area chart with stacked layers or named series.
-- `LAreaChart` ([lurek.ui](Module-ui)) - Lua-exposed area chart for data visualization.
 - `LArray` ([lurek.compute](Module-compute)) - Lua-side multidimensional numeric array handle.
 - `LAssetHandle` ([lurek.asset](Module-asset)) - Lua-side handle for a single cached asset entry.
 - `LAtlasPacker` ([lurek.sprite](Module-sprite)) - Lua-visible wrapper around an in-memory atlas packer for dynamic sprite region allocation.
@@ -53,7 +52,6 @@ The glossary collects terms that appear across module and API pages.
 - `LBadge` ([lurek.ui](Module-ui)) - Adds badge-specific methods to a notification badge widget table.
 - `LBandit` ([lurek.learning](Module-learning)) - Lua handle for multi-armed bandit action selection.
 - `LBarChart` ([lurek.charts](Module-charts)) - Lua handle for a grouped bar chart with named series and category labels.
-- `LBarChart` ([lurek.ui](Module-ui)) - Lua-exposed bar chart for data visualization.
 - `LBeatClock` ([lurek.audio](Module-audio)) - Lua-side wrapper for a musical beat clock.
 - `LBehaviorTree` ([lurek.ai](Module-ai)) - Lua handle for a behavior tree root and its most recent execution status.
 - `LBehaviorTree` ([lurek.patterns](Module-patterns)) - Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
@@ -144,3 +142,5 @@ The glossary collects terms that appear across module and API pages.
 - `LHexGrid` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a hexagonal grid.
 - `LHistogramChart` ([lurek.charts](Module-charts)) - Lua handle for a histogram chart that bins named numeric samples.
 - `LHtmlDocument` ([lurek.html](Module-html)) - Lua-side HTML document handle with DOM state, callbacks, and render command access.
+- `LHtmlElement` ([lurek.html](Module-html)) - Lua-side DOM element handle with stale-generation detection.
+- `LHTNDomain` ([lurek.ai](Module-ai)) - Lua handle for a hierarchical task network domain.

@@ -160,10 +160,13 @@ impl UnitPathfinder {
         unit_size: u32,
     ) -> Option<(u32, u32)> {
         let grid = self.grid.borrow();
+        let (w, h) = grid.get_dimensions();
+        if x >= w || y >= h {
+            return None;
+        }
         if grid.is_walkable(x, y, unit_size) {
             return Some((x, y));
         }
-        let (w, h) = grid.get_dimensions();
         let mut visited = vec![false; (w * h) as usize];
         let mut queue = VecDeque::new();
         visited[(y * w + x) as usize] = true;
@@ -195,10 +198,13 @@ impl UnitPathfinder {
     pub fn is_reachable(&self, x1: u32, y1: u32, x2: u32, y2: u32, unit_size: u32) -> bool {
         let grid = self.grid.borrow();
         let us = unit_size.max(1);
+        let (w, h) = grid.get_dimensions();
+        if x1 >= w || y1 >= h || x2 >= w || y2 >= h {
+            return false;
+        }
         if !grid.is_walkable(x1, y1, us) || !grid.is_walkable(x2, y2, us) {
             return false;
         }
-        let (w, h) = grid.get_dimensions();
         let mut visited = vec![false; (w * h) as usize];
         let mut queue = VecDeque::new();
         visited[(y1 * w + x1) as usize] = true;

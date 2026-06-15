@@ -1,4 +1,4 @@
-//! File: tests/rust/unit/serial_tests.rs
+//! File: tests/rust/unit/serialize_tests.rs
 
 // TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
@@ -110,6 +110,23 @@ mod lua_table_tests {
         let val = LuaValue::Function(func);
         assert!(from_lua(&val).is_err());
     }
+
+    #[test]
+    fn from_lua_keeps_mixed_tables_as_maps() {
+        let lua = Lua::new();
+        let table = lua.create_table().unwrap();
+        table.set(1, "sword").unwrap();
+        table.set("equip", "shield").unwrap();
+
+        let back = from_lua(&LuaValue::Table(table)).unwrap();
+        match back {
+            SerialValue::Map(map) => {
+                assert!(matches!(map.get("1"), Some(SerialValue::Str(value)) if value == "sword"));
+                assert!(matches!(map.get("equip"), Some(SerialValue::Str(value)) if value == "shield"));
+            }
+            other => panic!("expected Map, got {:?}", other),
+        }
+    }
 }
 
 mod schema_defaults_tests {
@@ -136,5 +153,32 @@ mod schema_defaults_tests {
             SerialValue::Map(m) => assert!(matches!(m.get("hp"), Some(SerialValue::Int(100)))),
             other => panic!("expected map, got {other:?}"),
         }
+    }
+}
+
+mod csv_tests {
+    use indexmap::IndexMap;
+    use lurek2d::serial::{to_csv, CsvOptions, SerialValue};
+
+    #[test]
+    fn to_csv_writes_rows_in_header_order() {
+        let mut first = IndexMap::new();
+        first.insert("name".to_string(), SerialValue::Str("ada".to_string()));
+        first.insert("score".to_string(), SerialValue::Str("10".to_string()));
+
+        let mut second = IndexMap::new();
+        second.insert("score".to_string(), SerialValue::Str("20".to_string()));
+        second.insert("name".to_string(), SerialValue::Str("lin".to_string()));
+
+        let csv = to_csv(
+            &SerialValue::Seq(vec![SerialValue::Map(first), SerialValue::Map(second)]),
+            CsvOptions::default(),
+        )
+        .unwrap();
+
+        let lines: Vec<&str> = csv.lines().collect();
+        assert_eq!(lines[0], "name,score");
+        assert_eq!(lines[1], "ada,10");
+        assert_eq!(lines[2], "lin,20");
     }
 }

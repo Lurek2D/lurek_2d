@@ -77,7 +77,7 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 - `lurek.window.close() -> nil`: Closes the window and signals the engine to shut down.
 - `lurek.window.flash() -> nil`: Flashes the window briefly to attract the user's attention.
-- `lurek.window.focus() -> nil`: Requests keyboard focus for the window. No-op if already focused.
+- `lurek.window.focus() -> nil`: Requests keyboard focus for the window. The request is applied by the app loop on the next frame.
 - `lurek.window.fromPixels(value) -> number`: Converts a value from physical pixel units to logical (DPI-independent) units using the current DPI scale.
 - `lurek.window.getCurrentDisplay() -> number`: Returns the index of the display that currently contains the window.
 - `lurek.window.getDPIScale() -> number`: Returns the current DPI scale factor of the window. A value of 2.0 means the display uses 2x scaling (e.g., Retina).

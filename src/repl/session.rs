@@ -8,6 +8,7 @@ use crate::repl::commands::ReplCommand;
 use crate::repl::completer::complete_prefix;
 use crate::repl::value::value_to_string;
 use mlua::prelude::*;
+use std::collections::VecDeque;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 /// Result of evaluating one REPL line.
@@ -38,7 +39,7 @@ impl ReplResult {
 /// Release-safe Lua REPL session with bounded command history.
 pub struct ReplSession {
     /// Stored input history in oldest-to-newest order.
-    history: Vec<String>,
+    history: VecDeque<String>,
     /// Maximum number of history entries retained.
     max_history: usize,
 }
@@ -55,7 +56,7 @@ impl ReplSession {
     pub fn new(max_history: usize) -> Self {
         let capacity = max_history.max(1);
         Self {
-            history: Vec::with_capacity(capacity.min(64)),
+            history: VecDeque::with_capacity(capacity.min(64)),
             max_history: capacity,
         }
     }
@@ -81,8 +82,8 @@ impl ReplSession {
     }
 
     /// Return an immutable view of recorded history entries.
-    pub fn history(&self) -> &[String] {
-        &self.history
+    pub fn history(&self) -> impl Iterator<Item = &String> {
+        self.history.iter()
     }
 
     /// Clear all recorded REPL command history entries.
@@ -148,9 +149,9 @@ impl ReplSession {
     /// Append `entry` and evict the oldest entry when the capacity is exceeded.
     fn push_history(&mut self, entry: String) {
         if self.history.len() >= self.max_history {
-            self.history.remove(0);
+            self.history.pop_front();
         }
-        self.history.push(entry);
+        self.history.push_back(entry);
     }
 }
 

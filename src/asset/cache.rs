@@ -7,6 +7,7 @@
 //! Serves as the core state container behind the engine-facing `lurek.asset` behavior.
 
 use std::collections::{HashMap, HashSet};
+use std::path::{Component, Path};
 
 /// Asset type discriminant used by the `lurek.asset` cache registry.
 ///
@@ -26,7 +27,7 @@ use std::collections::{HashMap, HashSet};
 /// - `Shader`: shader source text cached in memory.
 /// - `Lua`: Lua source text cached in memory.
 /// - `Unknown(String)`: unrecognized type string stored as-is.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum AssetType {
     /// Raster image; resolved via `lurek.image.loadImage`.
     Image,
@@ -141,7 +142,66 @@ pub struct AssetEntry {
 /// - `next_id`: monotonically increasing handle counter.
 pub struct AssetCache {
     entries: HashMap<u64, AssetEntry>,
+    keys: HashMap<AssetKey, u64>,
     next_id: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+struct AssetKey {
+    path: String,
+    asset_type: String,
+}
+
+impl AssetKey {
+    fn new(path: &str, asset_type: &AssetType) -> Self {
+        Self {
+            path: normalize_asset_path(path),
+            asset_type: asset_type.as_str().to_string(),
+        }
+    }
+}
+
+fn normalize_asset_path(path: &str) -> String {
+    if let Ok(canonical) = std::fs::canonicalize(path) {
+        let canonical = canonical.to_string_lossy().replace('\\', "/");
+        return if cfg!(windows) {
+            canonical.to_lowercase()
+        } else {
+            canonical
+        };
+    }
+
+    let mut normalized_parts: Vec<String> = Vec::new();
+    for component in Path::new(path).components() {
+        match component {
+            Component::CurDir => {}
+            Component::ParentDir => {
+                if normalized_parts.last().is_some_and(|part| part != "..") {
+                    normalized_parts.pop();
+                } else {
+                    normalized_parts.push("..".to_string());
+                }
+            }
+            Component::Normal(part) => {
+                normalized_parts.push(part.to_string_lossy().into_owned());
+            }
+            Component::RootDir => {
+                normalized_parts.clear();
+                normalized_parts.push(String::new());
+            }
+            Component::Prefix(prefix) => {
+                normalized_parts.clear();
+                normalized_parts.push(prefix.as_os_str().to_string_lossy().into_owned());
+            }
+        }
+    }
+
+    let normalized = normalized_parts.join("/");
+    if cfg!(windows) {
+        normalized.to_lowercase()
+    } else {
+        normalized
+    }
 }
 
 impl AssetCache {
@@ -149,20 +209,28 @@ impl AssetCache {
     pub fn new() -> Self {
         Self {
             entries: HashMap::new(),
+            keys: HashMap::new(),
             next_id: 1,
         }
     }
 
-    /// Registers a new entry and returns its unique handle ID.
+    /// Registers or reuses an entry and returns its unique handle ID.
     ///
-    /// The initial ref count is `1`. Name, group, and tags can be set after
-    /// registration with the corresponding setter methods.
+    /// When the same `(normalized path, asset type)` pair is already present,
+    /// the existing entry is retained and its ref count is incremented.
+    /// Otherwise, a new entry is created with initial ref count `1`.
     pub fn register(
         &mut self,
         path: String,
         asset_type: AssetType,
         text_content: Option<String>,
     ) -> u64 {
+        let key = AssetKey::new(&path, &asset_type);
+        if let Some(id) = self.keys.get(&key).copied() {
+            self.inc_ref(id);
+            return id;
+        }
+
         let id = self.next_id;
         self.next_id += 1;
         self.entries.insert(
@@ -177,6 +245,7 @@ impl AssetCache {
                 tags: HashSet::new(),
             },
         );
+        self.keys.insert(key, id);
         id
     }
 
@@ -189,11 +258,16 @@ impl AssetCache {
 
     /// Decrements the ref count for `id`; removes the entry when it reaches zero.
     pub fn dec_ref(&mut self, id: u64) {
-        if let Some(e) = self.entries.get_mut(&id) {
+        let removal_key = if let Some(e) = self.entries.get_mut(&id) {
             e.ref_count = e.ref_count.saturating_sub(1);
-            if e.ref_count == 0 {
-                self.entries.remove(&id);
-            }
+            (e.ref_count == 0).then(|| AssetKey::new(&e.path, &e.asset_type))
+        } else {
+            None
+        };
+
+        if let Some(key) = removal_key {
+            self.entries.remove(&id);
+            self.keys.remove(&key);
         }
     }
 
@@ -341,6 +415,7 @@ impl AssetCache {
     /// Removes all entries from the cache, regardless of ref counts.
     pub fn clear(&mut self) {
         self.entries.clear();
+        self.keys.clear();
     }
 
     /// Returns an iterator over all `(id, entry)` pairs.

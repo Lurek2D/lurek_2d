@@ -12,7 +12,7 @@
 - Source path: `src/pathfind/`
 - Binding: `src/lua_api/pathfind_api.rs`
 - Namespace: `lurek.pathfind`
-- Lua API surface: `13` functions, `22` types, `104` methods
+- Lua API surface: `18` functions, `22` types, `104` methods
 - Rust test path(s): tests/rust/unit/pathfinding_tests.rs
 - Lua test path(s): tests/lua/unit/test_pathfind.lua, tests/lua/stress/test_pathfind_stress.lua, tests/lua/golden/test_pathfind_golden_grid.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_pathfind_ecs.lua, tests/lua/integration/test_ai_pathfind.lua
 
@@ -27,6 +27,9 @@
 - Path smoothing helpers reduce noisy waypoint chains through line-of-sight checks.
 - Partial-path and budgeted search modes support frame-time-safe fallback behavior.
 - Async path pool support offloads heavy queries to worker threads.
+- Versioned async path queries support stale-result suppression for replanning-heavy agents.
+- Prioritized async path queries let urgent requests jump ahead of background work.
+- Streamed partial async path events support frame-friendly fallback movement while long searches continue.
 - Cancellation support helps avoid wasting work on stale async requests.
 - Flow-field support enables crowd movement toward goals with per-cell direction guidance.
 - Goal-map support enables multi-source distance and flee-style gradient queries.
@@ -84,11 +87,9 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ### async_pool.rs
 
-- Fixed-size thread pool that runs A* pathfinding off the game thread.
-- Submits jobs through channels and polls results without blocking.
-- Shares one work queue across workers while skipping cancelled requests early.
-- Gives pathfinding heavy workloads a parallel execution path.
-- Keeps thread management isolated from callers.
+- Prioritized async path-query service for off-thread A* execution.
+- Supports cancellation, version-based stale-result suppression, and optional partial-path streaming.
+- Keeps worker lifecycle and queue management isolated from Lua bindings and gameplay code.
 
 ### bidir.rs
 
@@ -258,6 +259,9 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ### Functions
 
+- `lurek.pathfind.cancelAsyncPath(request_id) -> boolean`: Marks an async path request as cancelled.
+- `lurek.pathfind.clearAsyncPaths() -> nil`: Drops all queued async path requests and recreates the worker pool with the configured thread count.
+- `lurek.pathfind.getAsyncPendingCount() -> integer`: Returns the number of async path requests that have not emitted a terminal event.
 - `lurek.pathfind.getThreadCount() -> integer`: Returns the configured pathfinding thread count.
 - `lurek.pathfind.newFlowField(grid_ud) -> LFlowField`: Creates a flow field for a navigation grid.
 - `lurek.pathfind.newGoalMap(width, height) -> LGoalMap`: Creates a new multi-source Dijkstra distance-field goal map for the given grid dimensions.
@@ -269,8 +273,10 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 - `lurek.pathfind.newPathFlowField(grid_ud) -> LAIFlowField`: Creates an AI flow field from a path grid.
 - `lurek.pathfind.newPathGrid(w, h, cell_size) -> LPathGrid`: Creates a cell-size path grid with given dimensions.
 - `lurek.pathfind.newPathfinder(grid_ud) -> LUnitPathfinder`: Creates a unit pathfinder for a navigation grid.
+- `lurek.pathfind.pollAsyncPaths() -> table`: Returns all currently available async path events without blocking.
 - `lurek.pathfind.rangeMap(opts) -> table`: Computes reachable cells from range map options.
 - `lurek.pathfind.setThreadCount(count) -> nil`: Sets the configured pathfinding worker-thread count.
+- `lurek.pathfind.submitAsyncPath(grid_ud, opts) -> integer`: Queues an async path query against a navigation grid snapshot.
 
 ### Callbacks
 

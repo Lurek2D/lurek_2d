@@ -14,20 +14,89 @@ use crate::pathfind::goal_map::{GoalMap, GoalSource};
 use crate::pathfind::hpa::{build_abstract, hpa_star, AbstractGraph};
 use crate::pathfind::pathgrid::PathGrid;
 use crate::pathfind::{
-    bidirectional_astar, DiagonalMode, FlowField, NavGrid, NavMesh, UnitPathfinder, Waypoint,
+    bidirectional_astar, AsyncPathEvent, AsyncPathRequest, DiagonalMode, FlowField, NavGrid,
+    NavMesh, PathEventStatus, PathThreadPool, UnitPathfinder, Waypoint,
 };
 use crate::pathfind::{HexGrid, HexLayout, JpsGrid, RangeMap};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
-use std::sync::atomic::{AtomicU32, Ordering};
+use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
+use std::sync::{Mutex, OnceLock};
 
 static PATHFIND_THREAD_COUNT: AtomicU32 = AtomicU32::new(1);
+static NEXT_ASYNC_PATH_REQUEST_ID: AtomicU64 = AtomicU64::new(1);
+static PATHFIND_ASYNC_POOL: OnceLock<Mutex<PathThreadPool>> = OnceLock::new();
+
+fn async_pool() -> &'static Mutex<PathThreadPool> {
+    PATHFIND_ASYNC_POOL.get_or_init(|| {
+        Mutex::new(PathThreadPool::new(
+            PATHFIND_THREAD_COUNT.load(Ordering::Relaxed).max(1) as usize,
+        ))
+    })
+}
+
+fn with_async_pool<T>(f: impl FnOnce(&mut PathThreadPool) -> T) -> T {
+    let mut pool = async_pool().lock().unwrap_or_else(|e| e.into_inner());
+    f(&mut pool)
+}
 
 fn one_based_to_zero_based(value: u32, label: &str) -> LuaResult<u32> {
     value.checked_sub(1).ok_or_else(|| {
         LuaError::RuntimeError(format!("{} must be >= 1 for one-based coordinates", label))
     })
+}
+
+fn one_based_to_zero_based_usize(value: usize, label: &str) -> LuaResult<usize> {
+    value.checked_sub(1).ok_or_else(|| {
+        LuaError::RuntimeError(format!("{} must be >= 1 for one-based coordinates", label))
+    })
+}
+
+fn one_based_coords_u32(x: u32, y: u32, x_label: &str, y_label: &str) -> LuaResult<(u32, u32)> {
+    Ok((
+        one_based_to_zero_based(x, x_label)?,
+        one_based_to_zero_based(y, y_label)?,
+    ))
+}
+
+fn one_based_coords_usize(
+    x: usize,
+    y: usize,
+    x_label: &str,
+    y_label: &str,
+) -> LuaResult<(usize, usize)> {
+    Ok((
+        one_based_to_zero_based_usize(x, x_label)?,
+        one_based_to_zero_based_usize(y, y_label)?,
+    ))
+}
+
+fn require_positive_u32(value: u32, label: &str) -> LuaResult<u32> {
+    if value == 0 {
+        Err(LuaError::RuntimeError(format!("{} must be > 0", label)))
+    } else {
+        Ok(value)
+    }
+}
+
+fn require_positive_usize(value: usize, label: &str) -> LuaResult<usize> {
+    if value == 0 {
+        Err(LuaError::RuntimeError(format!("{} must be > 0", label)))
+    } else {
+        Ok(value)
+    }
+}
+
+fn require_positive_f32(value: f32, label: &str) -> LuaResult<f32> {
+    if value.is_finite() && value > 0.0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{} must be a finite number greater than 0",
+            label
+        )))
+    }
 }
 
 /// Converts zero-based Rust waypoints into one-based Lua point tables.
@@ -56,6 +125,43 @@ fn lua_to_waypoints(tbl: &LuaTable) -> LuaResult<Vec<Waypoint>> {
         });
     }
     Ok(waypoints)
+}
+
+fn tuple_path_to_lua<'a>(lua: &'a Lua, path: &[(u32, u32)]) -> LuaResult<LuaTable<'a>> {
+    let tbl = lua.create_table()?;
+    for (i, (x, y)) in path.iter().enumerate() {
+        let entry = lua.create_table()?;
+        entry.set("x", *x + 1)?;
+        entry.set("y", *y + 1)?;
+        tbl.set(i + 1, entry)?;
+    }
+    Ok(tbl)
+}
+
+fn path_event_status_name(status: PathEventStatus) -> &'static str {
+    match status {
+        PathEventStatus::Partial => "partial",
+        PathEventStatus::Complete => "complete",
+        PathEventStatus::Failed => "failed",
+        PathEventStatus::Cancelled => "cancelled",
+        PathEventStatus::Superseded => "superseded",
+    }
+}
+
+fn path_event_to_lua<'a>(lua: &'a Lua, event: AsyncPathEvent) -> LuaResult<LuaTable<'a>> {
+    let tbl = lua.create_table()?;
+    tbl.set("id", event.id)?;
+    tbl.set("owner_id", event.owner_id)?;
+    tbl.set("version", event.version)?;
+    tbl.set("step", event.step)?;
+    tbl.set("status", path_event_status_name(event.status))?;
+    tbl.set("complete", event.complete)?;
+    tbl.set("final", event.final_event)?;
+    match event.path {
+        Some(path) => tbl.set("path", tuple_path_to_lua(lua, &path)?)?,
+        None => tbl.set("path", LuaValue::Nil)?,
+    }
+    Ok(tbl)
 }
 /// Lua-side wrapper for a navigation grid and optional abstract graph cache.
 pub struct LuaNavGrid {
@@ -92,7 +198,8 @@ impl LuaUserData for LuaNavGrid {
         /// @param | y | integer | One-based row.
         /// @param | cost | integer | Movement cost (0â€“255).
         methods.add_method("setCost", |_, this, (x, y, cost): (u32, u32, u8)| {
-            this.inner.borrow_mut().set_cost(x - 1, y - 1, cost);
+            let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+            this.inner.borrow_mut().set_cost(x, y, cost);
             Ok(())
         });
         // -- getCost --
@@ -101,7 +208,8 @@ impl LuaUserData for LuaNavGrid {
         /// @param | y | integer | One-based row.
         /// @return | integer | Movement cost.
         methods.add_method("getCost", |_, this, (x, y): (u32, u32)| {
-            Ok(this.inner.borrow().get_cost(x - 1, y - 1))
+            let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+            Ok(this.inner.borrow().get_cost(x, y))
         });
         // -- setBlocked --
         /// Sets blocked state at a one-based grid cell.
@@ -111,7 +219,8 @@ impl LuaUserData for LuaNavGrid {
         methods.add_method(
             "setBlocked",
             |_, this, (x, y, blocked): (u32, u32, bool)| {
-                this.inner.borrow_mut().set_blocked(x - 1, y - 1, blocked);
+                let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+                this.inner.borrow_mut().set_blocked(x, y, blocked);
                 Ok(())
             },
         );
@@ -121,7 +230,8 @@ impl LuaUserData for LuaNavGrid {
         /// @param | y | integer | One-based row.
         /// @return | boolean | True when blocked.
         methods.add_method("isBlocked", |_, this, (x, y): (u32, u32)| {
-            Ok(this.inner.borrow().is_blocked(x - 1, y - 1))
+            let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+            Ok(this.inner.borrow().is_blocked(x, y))
         });
         // -- isWalkable --
         /// Returns whether a one-based grid cell is walkable for a unit size.
@@ -132,10 +242,11 @@ impl LuaUserData for LuaNavGrid {
         methods.add_method(
             "isWalkable",
             |_, this, (x, y, unit_size): (u32, u32, Option<u32>)| {
-                Ok(this
-                    .inner
-                    .borrow()
-                    .is_walkable(x - 1, y - 1, unit_size.unwrap_or(1)))
+                Ok(this.inner.borrow().is_walkable(
+                    one_based_to_zero_based(x, "x")?,
+                    one_based_to_zero_based(y, "y")?,
+                    unit_size.unwrap_or(1),
+                ))
             },
         );
         // -- fill --
@@ -155,7 +266,8 @@ impl LuaUserData for LuaNavGrid {
         methods.add_method(
             "fillRect",
             |_, this, (x, y, w, h, cost): (u32, u32, u32, u32, u8)| {
-                this.inner.borrow_mut().fill_rect(x - 1, y - 1, w, h, cost);
+                let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+                this.inner.borrow_mut().fill_rect(x, y, w, h, cost);
                 Ok(())
             },
         );
@@ -249,7 +361,8 @@ impl LuaUserData for LuaNavGrid {
         /// @param | w | integer | Region width in cells.
         /// @param | h | integer | Region height in cells.
         methods.add_method("setDirty", |_, this, (x, y, w, h): (u32, u32, u32, u32)| {
-            this.inner.borrow_mut().set_dirty(x - 1, y - 1, w, h);
+            let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+            this.inner.borrow_mut().set_dirty(x, y, w, h);
             Ok(())
         });
         // -- clearDirty --
@@ -452,11 +565,13 @@ impl LuaUserData for LuaUnitPathfinder {
                 u32,
                 Option<u32>,
             )| {
+                let (sx, sy) = one_based_coords_u32(x1, y1, "x1", "y1")?;
+                let (gx, gy) = one_based_coords_u32(x2, y2, "x2", "y2")?;
                 let (path, complete) = this.inner.borrow().find_partial_path(
-                    x1 - 1,
-                    y1 - 1,
-                    x2 - 1,
-                    y2 - 1,
+                    sx,
+                    sy,
+                    gx,
+                    gy,
                     max_nodes,
                     unit_size.unwrap_or(1),
                 );
@@ -473,16 +588,20 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @return | integer | One-based row of the nearest walkable cell, or nil.
         methods.add_method(
             "findNearestWalkable",
-            |_, this, (x, y, max_radius, unit_size): (u32, u32, u32, Option<u32>)| match this
-                .inner
-                .borrow()
-                .find_nearest_walkable(x - 1, y - 1, max_radius, unit_size.unwrap_or(1))
-            {
-                Some((rx, ry)) => Ok((
-                    LuaValue::Integer((rx + 1) as i64),
-                    LuaValue::Integer((ry + 1) as i64),
-                )),
-                None => Ok((LuaValue::Nil, LuaValue::Nil)),
+            |_, this, (x, y, max_radius, unit_size): (u32, u32, u32, Option<u32>)| {
+                let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+                match this.inner.borrow().find_nearest_walkable(
+                    x,
+                    y,
+                    max_radius,
+                    unit_size.unwrap_or(1),
+                ) {
+                    Some((rx, ry)) => Ok((
+                        LuaValue::Integer((rx + 1) as i64),
+                        LuaValue::Integer((ry + 1) as i64),
+                    )),
+                    None => Ok((LuaValue::Nil, LuaValue::Nil)),
+                }
             },
         );
         // -- isReachable --
@@ -496,13 +615,12 @@ impl LuaUserData for LuaUnitPathfinder {
         methods.add_method(
             "isReachable",
             |_, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
-                Ok(this.inner.borrow().is_reachable(
-                    x1 - 1,
-                    y1 - 1,
-                    x2 - 1,
-                    y2 - 1,
-                    unit_size.unwrap_or(1),
-                ))
+                let (sx, sy) = one_based_coords_u32(x1, y1, "x1", "y1")?;
+                let (gx, gy) = one_based_coords_u32(x2, y2, "x2", "y2")?;
+                Ok(this
+                    .inner
+                    .borrow()
+                    .is_reachable(sx, sy, gx, gy, unit_size.unwrap_or(1)))
             },
         );
         // -- heuristicDistance --
@@ -515,12 +633,9 @@ impl LuaUserData for LuaUnitPathfinder {
         methods.add_method(
             "heuristicDistance",
             |_, _this, (x1, y1, x2, y2): (u32, u32, u32, u32)| {
-                Ok(UnitPathfinder::heuristic_distance(
-                    x1 - 1,
-                    y1 - 1,
-                    x2 - 1,
-                    y2 - 1,
-                ))
+                let (sx, sy) = one_based_coords_u32(x1, y1, "x1", "y1")?;
+                let (gx, gy) = one_based_coords_u32(x2, y2, "x2", "y2")?;
+                Ok(UnitPathfinder::heuristic_distance(sx, sy, gx, gy))
             },
         );
         // -- lineOfSight --
@@ -534,13 +649,12 @@ impl LuaUserData for LuaUnitPathfinder {
         methods.add_method(
             "lineOfSight",
             |_, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
-                Ok(this.inner.borrow().line_of_sight(
-                    x1 - 1,
-                    y1 - 1,
-                    x2 - 1,
-                    y2 - 1,
-                    unit_size.unwrap_or(1),
-                ))
+                let (sx, sy) = one_based_coords_u32(x1, y1, "x1", "y1")?;
+                let (gx, gy) = one_based_coords_u32(x2, y2, "x2", "y2")?;
+                Ok(this
+                    .inner
+                    .borrow()
+                    .line_of_sight(sx, sy, gx, gy, unit_size.unwrap_or(1)))
             },
         );
         // -- setCacheEnabled --
@@ -604,9 +718,10 @@ impl LuaUserData for LuaFlowField {
         methods.add_method(
             "calculate",
             |_, this, (tx, ty, unit_size): (u32, u32, Option<u32>)| {
+                let (tx, ty) = one_based_coords_u32(tx, ty, "tx", "ty")?;
                 this.inner
                     .borrow_mut()
-                    .calculate(tx - 1, ty - 1, unit_size.unwrap_or(1));
+                    .calculate(tx, ty, unit_size.unwrap_or(1));
                 Ok(())
             },
         );
@@ -622,7 +737,7 @@ impl LuaUserData for LuaFlowField {
                     let entry = pair?;
                     let x: u32 = entry.get("x")?;
                     let y: u32 = entry.get("y")?;
-                    pts.push((x - 1, y - 1));
+                    pts.push(one_based_coords_u32(x, y, "x", "y")?);
                 }
                 this.inner
                     .borrow_mut()
@@ -637,7 +752,8 @@ impl LuaUserData for LuaFlowField {
         /// @return | number | Direction X component.
         /// @return | number | Direction Y component.
         methods.add_method("getDirection", |_, this, (x, y): (u32, u32)| {
-            Ok(this.inner.borrow().get_direction(x - 1, y - 1))
+            let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+            Ok(this.inner.borrow().get_direction(x, y))
         });
         // -- getDirectionAngle --
         /// Returns flow direction angle at a one-based grid cell.
@@ -645,7 +761,8 @@ impl LuaUserData for LuaFlowField {
         /// @param | y | integer | One-based row.
         /// @return | number | Direction angle in radians.
         methods.add_method("getDirectionAngle", |_, this, (x, y): (u32, u32)| {
-            Ok(this.inner.borrow().get_direction_angle(x - 1, y - 1))
+            let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+            Ok(this.inner.borrow().get_direction_angle(x, y))
         });
         // -- getCostToTarget --
         /// Returns integration cost to the target from a one-based grid cell.
@@ -653,7 +770,8 @@ impl LuaUserData for LuaFlowField {
         /// @param | y | integer | One-based row.
         /// @return | number | Integration cost to the nearest target.
         methods.add_method("getCostToTarget", |_, this, (x, y): (u32, u32)| {
-            Ok(this.inner.borrow().get_cost_to_target(x - 1, y - 1))
+            let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+            Ok(this.inner.borrow().get_cost_to_target(x, y))
         });
         // -- isCalculated --
         /// Returns whether the flow field has been calculated.
@@ -739,7 +857,8 @@ impl LuaUserData for LuaPathGrid {
         /// @param | y | integer | One-based row.
         /// @param | w | boolean | True to mark the cell walkable.
         methods.add_method("setWalkable", |_, this, (x, y, w): (usize, usize, bool)| {
-            this.inner.borrow_mut().set_walkable(x - 1, y - 1, w);
+            let (x, y) = one_based_coords_usize(x, y, "x", "y")?;
+            this.inner.borrow_mut().set_walkable(x, y, w);
             Ok(())
         });
         // -- isWalkable --
@@ -748,7 +867,8 @@ impl LuaUserData for LuaPathGrid {
         /// @param | y | integer | One-based row.
         /// @return | boolean | True when walkable.
         methods.add_method("isWalkable", |_, this, (x, y): (usize, usize)| {
-            Ok(this.inner.borrow().is_walkable(x - 1, y - 1))
+            let (x, y) = one_based_coords_usize(x, y, "x", "y")?;
+            Ok(this.inner.borrow().is_walkable(x, y))
         });
         // -- setCost --
         /// Sets movement cost at a one-based cell.
@@ -756,7 +876,8 @@ impl LuaUserData for LuaPathGrid {
         /// @param | y | integer | One-based row.
         /// @param | cost | number | Movement cost value.
         methods.add_method("setCost", |_, this, (x, y, cost): (usize, usize, f32)| {
-            this.inner.borrow_mut().set_cost(x - 1, y - 1, cost);
+            let (x, y) = one_based_coords_usize(x, y, "x", "y")?;
+            this.inner.borrow_mut().set_cost(x, y, cost);
             Ok(())
         });
         // -- getCost --
@@ -765,7 +886,8 @@ impl LuaUserData for LuaPathGrid {
         /// @param | y | integer | One-based row.
         /// @return | number | Movement cost.
         methods.add_method("getCost", |_, this, (x, y): (usize, usize)| {
-            Ok(this.inner.borrow().get_cost(x - 1, y - 1))
+            let (x, y) = one_based_coords_usize(x, y, "x", "y")?;
+            Ok(this.inner.borrow().get_cost(x, y))
         });
         // -- findPath --
         /// Finds a path between one-based path grid cells.
@@ -779,11 +901,9 @@ impl LuaUserData for LuaPathGrid {
         methods.add_method(
             "findPath",
             |lua, this, (sx, sy, gx, gy): (usize, usize, usize, usize)| -> LuaResult<LuaValue> {
-                match this
-                    .inner
-                    .borrow()
-                    .find_path(sx - 1, sy - 1, gx - 1, gy - 1)
-                {
+                let (sx, sy) = one_based_coords_usize(sx, sy, "sx", "sy")?;
+                let (gx, gy) = one_based_coords_usize(gx, gy, "gx", "gy")?;
+                match this.inner.borrow().find_path(sx, sy, gx, gy) {
                     None => Ok(LuaValue::Nil),
                     Some(pts) => {
                         let tbl = lua.create_table()?;
@@ -812,11 +932,9 @@ impl LuaUserData for LuaPathGrid {
         methods.add_method(
             "findPathSmoothed",
             |lua, this, (sx, sy, gx, gy): (usize, usize, usize, usize)| -> LuaResult<LuaValue> {
-                match this
-                    .inner
-                    .borrow()
-                    .find_path_smoothed(sx - 1, sy - 1, gx - 1, gy - 1)
-                {
+                let (sx, sy) = one_based_coords_usize(sx, sy, "sx", "sy")?;
+                let (gx, gy) = one_based_coords_usize(gx, gy, "gx", "gy")?;
+                match this.inner.borrow().find_path_smoothed(sx, sy, gx, gy) {
                     None => Ok(LuaValue::Nil),
                     Some(pts) => {
                         let tbl = lua.create_table()?;
@@ -877,7 +995,8 @@ impl LuaUserData for LuaAiFlowField {
         /// @param | x | integer | One-based goal column.
         /// @param | y | integer | One-based goal row.
         methods.add_method("setGoal", |_, this, (x, y): (usize, usize)| {
-            this.inner.borrow_mut().set_goal(x - 1, y - 1);
+            let (x, y) = one_based_coords_usize(x, y, "x", "y")?;
+            this.inner.borrow_mut().set_goal(x, y);
             Ok(())
         });
         // -- getGoal --
@@ -903,7 +1022,8 @@ impl LuaUserData for LuaAiFlowField {
         /// @return | number | Direction X component.
         /// @return | number | Direction Y component.
         methods.add_method("getDirection", |_, this, (x, y): (usize, usize)| {
-            Ok(this.inner.borrow().get_direction(x - 1, y - 1))
+            let (x, y) = one_based_coords_usize(x, y, "x", "y")?;
+            Ok(this.inner.borrow().get_direction(x, y))
         });
         // -- getDistance --
         /// Returns distance to goal for a one-based cell.
@@ -911,7 +1031,8 @@ impl LuaUserData for LuaAiFlowField {
         /// @param | y | integer | One-based row.
         /// @return | number | Distance to the goal.
         methods.add_method("getDistance", |_, this, (x, y): (usize, usize)| {
-            Ok(this.inner.borrow().get_distance(x - 1, y - 1))
+            let (x, y) = one_based_coords_usize(x, y, "x", "y")?;
+            Ok(this.inner.borrow().get_distance(x, y))
         });
         // -- type --
         /// Returns the Lua-visible type name for this AI flow field handle.
@@ -942,9 +1063,8 @@ impl LuaUserData for LuaHexGrid {
         methods.add_method_mut(
             "setBlocked",
             |_, this, (col, row, blocked): (u32, u32, bool)| {
-                this.inner
-                    .borrow_mut()
-                    .set_blocked(col - 1, row - 1, blocked);
+                let (col, row) = one_based_coords_u32(col, row, "col", "row")?;
+                this.inner.borrow_mut().set_blocked(col, row, blocked);
                 Ok(())
             },
         );
@@ -954,7 +1074,8 @@ impl LuaUserData for LuaHexGrid {
         /// @param | row | integer | One-based hex row.
         /// @param | cost | number | Movement cost value.
         methods.add_method_mut("setCost", |_, this, (col, row, cost): (u32, u32, f32)| {
-            this.inner.borrow_mut().set_cost(col - 1, row - 1, cost);
+            let (col, row) = one_based_coords_u32(col, row, "col", "row")?;
+            this.inner.borrow_mut().set_cost(col, row, cost);
             Ok(())
         });
         // -- isBlocked --
@@ -963,7 +1084,8 @@ impl LuaUserData for LuaHexGrid {
         /// @param | row | integer | One-based hex row.
         /// @return | boolean | True when blocked.
         methods.add_method("isBlocked", |_, this, (col, row): (u32, u32)| {
-            Ok(this.inner.borrow().is_blocked(col - 1, row - 1))
+            let (col, row) = one_based_coords_u32(col, row, "col", "row")?;
+            Ok(this.inner.borrow().is_blocked(col, row))
         });
         // -- findPath --
         /// Finds a path between one-based hex cells.
@@ -976,23 +1098,23 @@ impl LuaUserData for LuaHexGrid {
         /// @field | row | integer | Row.
         methods.add_method(
             "findPath",
-            |lua, this, (fc, fr, tc, tr): (u32, u32, u32, u32)| match this
-                .inner
-                .borrow()
-                .find_path((fc - 1, fr - 1), (tc - 1, tr - 1))
-            {
-                None => Ok(LuaValue::Nil),
-                Some(path) => {
-                    let t = lua.create_table()?;
-                    for (i, (c, r)) in path.iter().enumerate() {
-                        let cell = lua.create_table()?;
-                        /// The 'col' field value exposed to Lua scripts.
-                        cell.set("col", c + 1)?;
-                        /// The 'row' field value exposed to Lua scripts.
-                        cell.set("row", r + 1)?;
-                        t.set(i + 1, cell)?;
+            |lua, this, (fc, fr, tc, tr): (u32, u32, u32, u32)| {
+                let from = one_based_coords_u32(fc, fr, "fc", "fr")?;
+                let to = one_based_coords_u32(tc, tr, "tc", "tr")?;
+                match this.inner.borrow().find_path(from, to) {
+                    None => Ok(LuaValue::Nil),
+                    Some(path) => {
+                        let t = lua.create_table()?;
+                        for (i, (c, r)) in path.iter().enumerate() {
+                            let cell = lua.create_table()?;
+                            /// The 'col' field value exposed to Lua scripts.
+                            cell.set("col", c + 1)?;
+                            /// The 'row' field value exposed to Lua scripts.
+                            cell.set("row", r + 1)?;
+                            t.set(i + 1, cell)?;
+                        }
+                        Ok(LuaValue::Table(t))
                     }
-                    Ok(LuaValue::Table(t))
                 }
             },
         );
@@ -1006,10 +1128,9 @@ impl LuaUserData for LuaHexGrid {
         methods.add_method(
             "lineOfSight",
             |_, this, (fc, fr, tc, tr): (u32, u32, u32, u32)| {
-                Ok(this
-                    .inner
-                    .borrow()
-                    .line_of_sight((fc - 1, fr - 1), (tc - 1, tr - 1)))
+                let from = one_based_coords_u32(fc, fr, "fc", "fr")?;
+                let to = one_based_coords_u32(tc, tr, "tc", "tr")?;
+                Ok(this.inner.borrow().line_of_sight(from, to))
             },
         );
         // -- fieldOfView --
@@ -1023,10 +1144,8 @@ impl LuaUserData for LuaHexGrid {
         methods.add_method(
             "fieldOfView",
             |lua, this, (col, row, max_range): (u32, u32, u32)| {
-                let cells = this
-                    .inner
-                    .borrow()
-                    .field_of_view((col - 1, row - 1), max_range);
+                let origin = one_based_coords_u32(col, row, "col", "row")?;
+                let cells = this.inner.borrow().field_of_view(origin, max_range);
                 let t = lua.create_table()?;
                 for (i, (c, r)) in cells.iter().enumerate() {
                     let cell = lua.create_table()?;
@@ -1050,10 +1169,8 @@ impl LuaUserData for LuaHexGrid {
         methods.add_method(
             "rangeOfMovement",
             |lua, this, (col, row, budget): (u32, u32, f32)| {
-                let cells = this
-                    .inner
-                    .borrow()
-                    .range_of_movement((col - 1, row - 1), budget);
+                let origin = one_based_coords_u32(col, row, "col", "row")?;
+                let cells = this.inner.borrow().range_of_movement(origin, budget);
                 let t = lua.create_table()?;
                 for (i, (c, r)) in cells.iter().enumerate() {
                     let cell = lua.create_table()?;
@@ -1076,10 +1193,9 @@ impl LuaUserData for LuaHexGrid {
         methods.add_method(
             "distance",
             |_, this, (c1, r1, c2, r2): (u32, u32, u32, u32)| {
-                Ok(this
-                    .inner
-                    .borrow()
-                    .distance((c1 - 1, r1 - 1), (c2 - 1, r2 - 1)))
+                let from = one_based_coords_u32(c1, r1, "c1", "r1")?;
+                let to = one_based_coords_u32(c2, r2, "c2", "r2")?;
+                Ok(this.inner.borrow().distance(from, to))
             },
         );
         // -- type --
@@ -1111,7 +1227,8 @@ impl LuaUserData for LuaJpsGrid {
         methods.add_method_mut(
             "setBlocked",
             |_, this, (x, y, blocked): (u32, u32, bool)| {
-                this.inner.borrow_mut().set_blocked(x - 1, y - 1, blocked);
+                let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+                this.inner.borrow_mut().set_blocked(x, y, blocked);
                 Ok(())
             },
         );
@@ -1121,7 +1238,8 @@ impl LuaUserData for LuaJpsGrid {
         /// @param | y | integer | One-based row.
         /// @return | boolean | True when blocked.
         methods.add_method("isBlocked", |_, this, (x, y): (u32, u32)| {
-            Ok(this.inner.borrow().is_blocked(x - 1, y - 1))
+            let (x, y) = one_based_coords_u32(x, y, "x", "y")?;
+            Ok(this.inner.borrow().is_blocked(x, y))
         });
         // -- findPath --
         /// Finds a JPS path between one-based grid cells.
@@ -1134,23 +1252,23 @@ impl LuaUserData for LuaJpsGrid {
         /// @field | y | number | Y.
         methods.add_method(
             "findPath",
-            |lua, this, (fx, fy, tx, ty): (u32, u32, u32, u32)| match this
-                .inner
-                .borrow()
-                .find_path((fx - 1, fy - 1), (tx - 1, ty - 1))
-            {
-                None => Ok(LuaValue::Nil),
-                Some(path) => {
-                    let t = lua.create_table()?;
-                    for (i, (x, y)) in path.iter().enumerate() {
-                        let cell = lua.create_table()?;
-                        /// The 'x' field value exposed to Lua scripts.
-                        cell.set("x", x + 1)?;
-                        /// The 'y' field value exposed to Lua scripts.
-                        cell.set("y", y + 1)?;
-                        t.set(i + 1, cell)?;
+            |lua, this, (fx, fy, tx, ty): (u32, u32, u32, u32)| {
+                let from = one_based_coords_u32(fx, fy, "fx", "fy")?;
+                let to = one_based_coords_u32(tx, ty, "tx", "ty")?;
+                match this.inner.borrow().find_path(from, to) {
+                    None => Ok(LuaValue::Nil),
+                    Some(path) => {
+                        let t = lua.create_table()?;
+                        for (i, (x, y)) in path.iter().enumerate() {
+                            let cell = lua.create_table()?;
+                            /// The 'x' field value exposed to Lua scripts.
+                            cell.set("x", x + 1)?;
+                            /// The 'y' field value exposed to Lua scripts.
+                            cell.set("y", y + 1)?;
+                            t.set(i + 1, cell)?;
+                        }
+                        Ok(LuaValue::Table(t))
                     }
-                    Ok(LuaValue::Table(t))
                 }
             },
         );
@@ -1270,6 +1388,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "newNavGrid",
         lua.create_function(|_, (width, height): (u32, u32)| {
+            let width = require_positive_u32(width, "width")?;
+            let height = require_positive_u32(height, "height")?;
             Ok(LuaNavGrid {
                 inner: Rc::new(RefCell::new(NavGrid::new(width, height))),
                 abstract_graph: Rc::new(RefCell::new(None)),
@@ -1311,6 +1431,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "newPathGrid",
         lua.create_function(|_, (w, h, cell_size): (usize, usize, f32)| {
+            let w = require_positive_usize(w, "w")?;
+            let h = require_positive_usize(h, "h")?;
+            let cell_size = require_positive_f32(cell_size, "cell_size")?;
             Ok(LuaPathGrid {
                 inner: Rc::new(RefCell::new(PathGrid::new(w, h, cell_size))),
             })
@@ -1340,7 +1463,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "setThreadCount",
         lua.create_function(|_, count: u32| {
-            PATHFIND_THREAD_COUNT.store(count.max(1), Ordering::Relaxed);
+            let count = count.max(1);
+            PATHFIND_THREAD_COUNT.store(count, Ordering::Relaxed);
+            if let Some(pool) = PATHFIND_ASYNC_POOL.get() {
+                let mut guard = pool.lock().unwrap_or_else(|e| e.into_inner());
+                guard.set_thread_count(count as usize);
+            }
             Ok(())
         })?,
     )?;
@@ -1350,7 +1478,97 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "getThreadCount",
         lua.create_function(|_, ()| -> LuaResult<u32> {
-            Ok(PATHFIND_THREAD_COUNT.load(Ordering::Relaxed).max(1))
+            if let Some(pool) = PATHFIND_ASYNC_POOL.get() {
+                let guard = pool.lock().unwrap_or_else(|e| e.into_inner());
+                Ok(guard.get_thread_count() as u32)
+            } else {
+                Ok(PATHFIND_THREAD_COUNT.load(Ordering::Relaxed).max(1))
+            }
+        })?,
+    )?;
+    // -- submitAsyncPath --
+    /// Queues an async path query against a navigation grid snapshot.
+    /// @param | grid_ud | LNavGrid | Navigation grid to clone for the worker.
+    /// @param | opts | table | Options with start/goal cells and optional owner, version, priority, unit size, and stream budget.
+    /// @return | integer | Request id for polling and cancellation.
+    tbl.set(
+        "submitAsyncPath",
+        lua.create_function(|_, (grid_ud, opts): (LuaAnyUserData, LuaTable)| {
+            let grid = grid_ud.borrow::<LuaNavGrid>()?;
+            let sx: u32 = opts.get("start_x")?;
+            let sy: u32 = opts.get("start_y")?;
+            let gx: u32 = opts.get("goal_x")?;
+            let gy: u32 = opts.get("goal_y")?;
+            let unit_size = opts.get::<_, Option<u32>>("unit_size")?.unwrap_or(1).max(1);
+            let request_id = opts
+                .get::<_, Option<u64>>("request_id")?
+                .unwrap_or_else(|| NEXT_ASYNC_PATH_REQUEST_ID.fetch_add(1, Ordering::Relaxed));
+            let owner_id = opts
+                .get::<_, Option<u64>>("owner_id")?
+                .unwrap_or(request_id);
+            let version = opts.get::<_, Option<u64>>("version")?.unwrap_or(0);
+            let priority = opts.get::<_, Option<i32>>("priority")?.unwrap_or(0);
+            let stream_budget = opts.get::<_, Option<u32>>("stream_budget")?.unwrap_or(0);
+            let request = AsyncPathRequest {
+                id: request_id,
+                owner_id,
+                version,
+                priority,
+                grid: grid.inner.borrow().clone(),
+                start: one_based_coords_u32(sx, sy, "start_x", "start_y")?,
+                goal: one_based_coords_u32(gx, gy, "goal_x", "goal_y")?,
+                unit_size,
+                stream_budget,
+            };
+            with_async_pool(|pool| {
+                let _ = pool.submit_query(request);
+            });
+            Ok(request_id)
+        })?,
+    )?;
+    // -- pollAsyncPaths --
+    /// Returns all currently available async path events without blocking.
+    /// @return | table | Array of event tables with ids, status, optional path, and completion flags.
+    tbl.set(
+        "pollAsyncPaths",
+        lua.create_function(|lua, ()| {
+            let events = with_async_pool(|pool| pool.poll_events());
+            let out = lua.create_table()?;
+            for (i, event) in events.into_iter().enumerate() {
+                out.set(i + 1, path_event_to_lua(lua, event)?)?;
+            }
+            Ok(out)
+        })?,
+    )?;
+    // -- cancelAsyncPath --
+    /// Marks an async path request as cancelled.
+    /// @param | request_id | integer | Request id returned by `submitAsyncPath`.
+    /// @return | boolean | Always true once the cancel marker is recorded.
+    tbl.set(
+        "cancelAsyncPath",
+        lua.create_function(|_, request_id: u64| {
+            with_async_pool(|pool| pool.cancel(request_id));
+            Ok(true)
+        })?,
+    )?;
+    // -- getAsyncPendingCount --
+    /// Returns the number of async path requests that have not emitted a terminal event.
+    /// @return | integer | Pending async request count.
+    tbl.set(
+        "getAsyncPendingCount",
+        lua.create_function(|_, ()| Ok(with_async_pool(|pool| pool.pending_count())))?,
+    )?;
+    // -- clearAsyncPaths --
+    /// Drops all queued async path requests and recreates the worker pool with the configured thread count.
+    tbl.set(
+        "clearAsyncPaths",
+        lua.create_function(|_, ()| {
+            with_async_pool(|pool| {
+                *pool = PathThreadPool::new(
+                    PATHFIND_THREAD_COUNT.load(Ordering::Relaxed).max(1) as usize
+                );
+            });
+            Ok(())
         })?,
     )?;
     // -- newNavGridFromTileMap --
@@ -1365,7 +1583,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             |_, (tm_ud, layer_index, blocked_table): (LuaAnyUserData, usize, mlua::Table)| {
                 let tilemap_ud = tm_ud.borrow::<LuaTileMap>()?;
                 let tm = tilemap_ud.inner.borrow();
-                let layer_idx = layer_index.saturating_sub(1);
+                let layer_idx = one_based_to_zero_based_usize(layer_index, "layer_index")?;
                 let (w, h) = tm.get_layer_dimensions(layer_idx).ok_or_else(|| {
                     LuaError::RuntimeError(format!("layer {} does not exist", layer_index))
                 })?;
@@ -1448,6 +1666,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             let ox: u32 = opts.get("origin_x")?;
             let oy: u32 = opts.get("origin_y")?;
             let budget: f32 = opts.get("budget")?;
+            let width = require_positive_u32(width, "width")?;
+            let height = require_positive_u32(height, "height")?;
+            let (ox, oy) = one_based_coords_u32(ox, oy, "origin_x", "origin_y")?;
             let diagonal: bool = opts.get("diagonal").unwrap_or(false);
             let cost_n = (width * height) as usize;
             let mut costs_v = vec![1.0f32; cost_n];
@@ -1467,14 +1688,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 }
             }
             let rm = RangeMap::from_grid(
-                width,
-                height,
-                &costs_v,
-                &blocked_v,
-                ox - 1,
-                oy - 1,
-                budget,
-                diagonal,
+                width, height, &costs_v, &blocked_v, ox, oy, budget, diagonal,
             );
             let cells_tbl = lua.create_table()?;
             let mut count = 0;
@@ -1507,6 +1721,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set(
         "newGoalMap",
         lua.create_function(|_, (width, height): (u32, u32)| {
+            let width = require_positive_u32(width, "width")?;
+            let height = require_positive_u32(height, "height")?;
             Ok(LuaGoalMap {
                 inner: RefCell::new(GoalMap::new(width, height)),
                 blocker_key: RefCell::new(None),

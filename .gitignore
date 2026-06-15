@@ -38,3 +38,5 @@ extension/vscode/node_modules/
 # Transient test output logs and scratch directories
 extension/vscode/.vscode-test/
 tools/rag/rag_index.db
+tools/rag/rag_index.duckdb
+tools/rag/rag_index.duckdb.wal

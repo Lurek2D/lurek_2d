@@ -46,46 +46,46 @@ local function build_charts(ctx)
         frame_max(monthly_frame, A.savings)
     )
 
-    local line = lurek.ui.newLineChart({ width = 486, height = 184 })
+    local line = lurek.charts.newLine({ width = 486, height = 184 })
     if monthly_frame then
-        line:addSeriesFromDataFrame("income", monthly_frame, "month_index", A.income, C.COLORS.green[1], C.COLORS.green[2], C.COLORS.green[3])
-        line:addSeriesFromDataFrame("expense", monthly_frame, "month_index", A.expense, C.COLORS.red[1], C.COLORS.red[2], C.COLORS.red[3])
-        line:addSeriesFromDataFrame("savings", monthly_frame, "month_index", A.savings, C.COLORS.cyan[1], C.COLORS.cyan[2], C.COLORS.cyan[3])
+        line:addSeriesFromDataFrame("income", monthly_frame, "month_index", A.income, C.COLORS.green)
+        line:addSeriesFromDataFrame("expense", monthly_frame, "month_index", A.expense, C.COLORS.red)
+        line:addSeriesFromDataFrame("savings", monthly_frame, "month_index", A.savings, C.COLORS.cyan)
     end
     line:setXMax(math.max(1, frame_max(monthly_frame, "month_index")))
     line:setYMax(y_max)
     charts.cashflow = chart_image(line, 486, 184)
 
-    local area = lurek.ui.newAreaChart({ width = 220, height = 96 })
+    local area = lurek.charts.newArea({ width = 220, height = 96 })
     if monthly_frame then
-        area:addLayerFromDataFrame("expense", monthly_frame, A.expense, C.COLORS.red[1], C.COLORS.red[2], C.COLORS.red[3])
-        area:addLayerFromDataFrame("income", monthly_frame, A.income, C.COLORS.green[1], C.COLORS.green[2], C.COLORS.green[3])
+        area:addLayerFromDataFrame("expense", monthly_frame, A.expense, C.COLORS.red)
+        area:addLayerFromDataFrame("income", monthly_frame, A.income, C.COLORS.green)
     end
     area:setYMax(y_max)
     charts.monthly_area = chart_image(area, 220, 96)
 
-    local cat = lurek.ui.newBarChart({ width = 360, height = 278 })
-    cat:addSeries("expense", C.COLORS.blue[1], C.COLORS.blue[2], C.COLORS.blue[3])
+    local cat = lurek.charts.newBar({ width = 360, height = 278 })
+    cat:addSeries("expense", {}, C.COLORS.blue)
     if categories_frame then cat:addCategoriesFromDataFrame(categories_frame, "category_clean", { A.expense }) end
     charts.categories = chart_image(cat, 360, 278)
 
-    local members = lurek.ui.newBarChart({ width = 360, height = 210 })
-    members:addSeries("expense", C.COLORS.violet[1], C.COLORS.violet[2], C.COLORS.violet[3])
+    local members = lurek.charts.newBar({ width = 360, height = 210 })
+    members:addSeries("expense", {}, C.COLORS.violet)
     if members_frame then members:addCategoriesFromDataFrame(members_frame, "member_clean", { A.expense }) end
     charts.members = chart_image(members, 360, 210)
 
-    local recurring = lurek.ui.newBarChart({ width = 360, height = 124 })
-    recurring:addSeries("expense", C.COLORS.amber[1], C.COLORS.amber[2], C.COLORS.amber[3])
+    local recurring = lurek.charts.newBar({ width = 360, height = 124 })
+    recurring:addSeries("expense", {}, C.COLORS.amber)
     if recurring_frame then recurring:addCategoriesFromDataFrame(recurring_frame, "merchant", { A.expense }) end
     charts.recurring = chart_image(recurring, 360, 124)
 
-    local pie = lurek.ui.newPieChart({ width = 220, height = 130 })
+    local pie = lurek.charts.newPie({ width = 220, height = 130 })
     if payment_frame then pie:addSegmentsFromDataFrame(payment_frame, "payment_method", A.expense) end
     charts.payments = chart_image(pie, 220, 130)
 
-    local scatter = lurek.ui.newScatterPlot({ width = 340, height = 210 })
+    local scatter = lurek.charts.newScatter({ width = 340, height = 210 })
     if anomalies_frame then
-        scatter:addSeriesFromDataFrame("anomaly", anomalies_frame, "month_index", "amount_abs", C.COLORS.red[1], C.COLORS.red[2], C.COLORS.red[3])
+        scatter:addSeriesFromDataFrame("anomaly", anomalies_frame, "month_index", "amount_abs", C.COLORS.red)
     end
     scatter:setXRange(1, math.max(60, frame_max(monthly_frame, "month_index")))
     scatter:setYRange(0, math.max(1, frame_max(anomalies_frame, "amount_abs")))

@@ -15,7 +15,7 @@ local rt = lurek.runtime
 
 -- @snippet lurek.runtime.platform_branch
 -- @prefix lk-sys-platform-branch
--- @module system
+-- @module runtime
 -- @description Use to apply platform-specific code paths (e.g. keyboard shortcuts, path separators, OS integration). Combine with getArch() for more precise dispatch (e.g. "Windows" + "x86_64").
 -- @body
 local SNIP_1_rt  = lurek.runtime
@@ -33,7 +33,7 @@ end
 
 -- @snippet lurek.runtime.version_guard
 -- @prefix lk-sys-version-guard
--- @module system
+-- @module runtime
 -- @description Use at game boot to verify the engine version meets the minimum requirement. Fail fast with a clear message rather than crashing later on a missing API or changed behaviour.
 -- @body
 local SNIP_1_rt  = lurek.runtime
@@ -53,7 +53,7 @@ print("version ok")
 
 -- @snippet lurek.runtime.full_info_dump
 -- @prefix lk-sys-info-dump
--- @module system
+-- @module runtime
 -- @description Use during development or debug builds to log the full engine environment (OS, version, Lua runtime, renderer, CPU count, memory). Gate behind isDebug to avoid leaking info in release builds.
 -- @body
 local SNIP_1_rt   = lurek.runtime
@@ -74,7 +74,7 @@ end
 
 -- @snippet lurek.runtime.env_probe_path
 -- @prefix lk-sys-env-path
--- @module system
+-- @module runtime
 -- @description Use to read environment variables for configuring dev overrides, save directories, or tool paths without hardcoding. Falls back gracefully when the variable is not set.
 -- @body
 local SNIP_1_rt       = lurek.runtime
@@ -86,7 +86,7 @@ print("log_dir="  .. log_dir)
 
 -- @snippet lurek.runtime.parseargs_config_bootstrap
 -- @prefix lk-sys-parseargs
--- @module system
+-- @module runtime
 -- @description Use to parse --flag and --key=value CLI arguments at game startup. parseArgs returns structured flags, options, and positional args so you can override config values without editing files.
 -- @body
 local SNIP_1_rt     = lurek.runtime
@@ -107,7 +107,7 @@ print("start_map="  .. map_name)
 
 -- @snippet lurek.runtime.log_structured
 -- @prefix lk-sys-log
--- @module system
+-- @module runtime
 -- @description Use lurek.runtime.log() for structured game-level log entries instead of print(). Level-tagged messages integrate with the RUST_LOG filter so debug lines are suppressed in release builds automatically.
 -- @body
 local SNIP_1_rt = lurek.runtime
@@ -119,7 +119,7 @@ rt.log("error", "Failed to load asset: assets/fonts/missing.ttf")
 
 -- @snippet lurek.runtime.loglevel_dev_vs_release
 -- @prefix lk-sys-loglevel
--- @module system
+-- @module runtime
 -- @description Use setLogLevel to lower verbosity in release builds and raise it during development sessions. Pair with getLogLevel() to display the current level in a debug overlay or settings menu.
 -- @body
 local SNIP_1_rt = lurek.runtime
@@ -137,7 +137,7 @@ print("log level=" .. rt.getLogLevel())
 
 -- @snippet lurek.runtime.clipboard_copy_paste
 -- @prefix lk-sys-clipboard
--- @module system
+-- @module runtime
 -- @description Use for user-facing copy/paste: share codes, map seeds, chat messages. getClipboardText returns nil when the clipboard is empty or unavailable — always guard before using the value.
 -- @body
 local SNIP_1_rt = lurek.runtime
@@ -161,7 +161,7 @@ end
 
 -- @snippet lurek.runtime.config_inspect_hotreload
 -- @prefix lk-sys-config-inspect
--- @module system
+-- @module runtime
 -- @description Use to read active engine config at runtime and detect when a hot- reload has occurred (config_reload_revision increments). Apply changed values without restarting.
 -- @body
 local SNIP_1_rt  = lurek.runtime
@@ -183,7 +183,7 @@ _ = last_rev
 
 -- @snippet lurek.runtime.last_error_recovery
 -- @prefix lk-sys-last-error
--- @module system
+-- @module runtime
 -- @description Use getLastError() after calls that can fail to show a user-facing error message and log a diagnostic hint. The table includes message, code, category, and an optional hint for resolution.
 -- @body
 local SNIP_1_rt  = lurek.runtime
@@ -200,7 +200,7 @@ end
 
 -- @snippet lurek.runtime.error_snapshot_diagnostic
 -- @prefix lk-sys-error-snapshot
--- @module system
+-- @module runtime
 -- @description Use errorSnapshot to create a structured JSON diagnostic that captures the engine state at the point of failure — useful for crash reporters, telemetry, and support tickets.
 -- @body
 local SNIP_1_rt   = lurek.runtime
@@ -216,7 +216,7 @@ print("snapshot JSON: " .. #snap .. " chars")
 
 -- @snippet lurek.runtime.runbatch_boot_checks
 -- @prefix lk-sys-runbatch
--- @module system
+-- @module runtime
 -- @description Use runBatch to run a set of named boot validation tasks and collect per-task pass/fail/time results. getBatchResults summarises the counts for a single-line CI gate or dev-mode startup report.
 -- @body
 local SNIP_1_rt = lurek.runtime

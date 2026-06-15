@@ -295,17 +295,9 @@ end
 
 ### `lurek.runtime.getLastError`
 
-Returns the last error for Lua scripts in this module.
-
 ```lua
 lurek.runtime.getLastError()
 ```
-
-**Returns**
-
-| Type | Description |
-|------|-------------|
-| LRuntimeGetLastErrorResult | Table result returned by this call. |
 
 **Example**
 

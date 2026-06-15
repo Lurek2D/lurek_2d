@@ -1,8 +1,7 @@
 //! File: src/lua_api/serialize_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
+//! Registers the public `lurek.serial` API for multi-format encode, decode, and validation helpers.
+//! Keeps the Lua-facing layer thin by translating option tables and values into `src/serialize/` domain calls.
+//! Returns decoded Lua tables or encoded strings while delegating format-specific behavior to the serialization module.
 
 use super::SharedState;
 use crate::serialize::{
@@ -13,6 +12,7 @@ use crate::serialize::{
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+
 /// Resolves the first byte of an optional delimiter string, defaulting to a comma.
 fn parse_delimiter(delim: Option<String>) -> u8 {
     delim
@@ -20,6 +20,15 @@ fn parse_delimiter(delim: Option<String>) -> u8 {
         .and_then(|d| d.as_bytes().first().copied())
         .unwrap_or(b',')
 }
+
+/// Builds CSV options from explicit Lua arguments.
+fn csv_options_from_args(delim: Option<String>, headers: Option<bool>) -> CsvOptions {
+    CsvOptions {
+        delimiter: parse_delimiter(delim),
+        has_headers: headers.unwrap_or(true),
+    }
+}
+
 /// Parses CSV decoding and encoding options from an optional Lua options table.
 fn csv_options_from_table(opts: Option<LuaTable>) -> LuaResult<CsvOptions> {
     let mut out = CsvOptions::default();
@@ -31,6 +40,7 @@ fn csv_options_from_table(opts: Option<LuaTable>) -> LuaResult<CsvOptions> {
     }
     Ok(out)
 }
+
 /// Parses shared serialization encode options from an optional Lua options table.
 fn encode_options_from_table(opts: Option<LuaTable>) -> LuaResult<EncodeOptions> {
     let mut out = EncodeOptions::default();
@@ -41,10 +51,105 @@ fn encode_options_from_table(opts: Option<LuaTable>) -> LuaResult<EncodeOptions>
     }
     Ok(out)
 }
+
+/// Parses a user-supplied format label into a `SerialFormat`.
+fn parse_format_arg(op: &str, format: Option<&str>) -> LuaResult<Option<SerialFormat>> {
+    format
+        .map(|name| {
+            SerialFormat::parse(name).ok_or_else(|| {
+                LuaError::RuntimeError(format!(
+                    "{op}: unknown format (expected json/toml/csv/xml/ini/msgpack)"
+                ))
+            })
+        })
+        .transpose()
+}
+
+/// Encodes one Lua table into MessagePack after validating the Lua-facing input type.
+fn encode_msgpack_value<'lua>(
+    lua: &'lua Lua,
+    value: LuaValue<'lua>,
+) -> LuaResult<LuaString<'lua>> {
+    if !matches!(value, LuaValue::Table(_)) {
+        return Err(LuaError::RuntimeError(
+            "encodeMsgPack: argument must be a table".to_string(),
+        ));
+    }
+    let val = from_lua(&value)?;
+    let bytes = crate::serialize::to_msgpack(&val).map_err(LuaError::RuntimeError)?;
+    lua.create_string(&bytes)
+}
+
+/// Validates a Lua value against a Lua schema table and returns the Lua-facing result tuple.
+fn validate_value(value: LuaValue, schema: LuaValue) -> LuaResult<(bool, Option<String>)> {
+    let val = from_lua(&value)?;
+    let sch = from_lua(&schema)?;
+    match crate::serialize::validate_schema(&val, &sch) {
+        Ok(()) => Ok((true, None)),
+        Err(msg) => Ok((false, Some(msg))),
+    }
+}
+
+/// Decodes a string or binary payload into a Lua value using the requested serialization format.
+fn decode_payload<'lua>(
+    lua: &'lua Lua,
+    payload: LuaValue<'lua>,
+    format: Option<String>,
+    opts: Option<LuaTable<'lua>>,
+) -> LuaResult<LuaValue<'lua>> {
+    let fmt = parse_format_arg("decode", format.as_deref())?;
+    let csv = csv_options_from_table(opts)?;
+    let decoded = match (payload, fmt) {
+        (LuaValue::String(bytes), Some(SerialFormat::MsgPack)) => {
+            crate::serialize::decode_bytes(bytes.as_bytes(), SerialFormat::MsgPack)
+                .map_err(LuaError::RuntimeError)?
+        }
+        (LuaValue::String(text), explicit_format) => {
+            let input = text.to_str().map_err(|error| {
+                let label = if explicit_format.is_some() {
+                    "decode: expected UTF-8 text"
+                } else {
+                    "decode: expected UTF-8 text for auto-detect"
+                };
+                LuaError::RuntimeError(format!("{label}: {error}"))
+            })?;
+            crate::serialize::decode_text(input, explicit_format, DecodeOptions { csv })
+                .map_err(LuaError::RuntimeError)?
+        }
+        _ => {
+            return Err(LuaError::RuntimeError(
+                "decode: payload must be a string".to_string(),
+            ))
+        }
+    };
+    to_lua(lua, &decoded)
+}
+
+/// Encodes a Lua value into the requested serialization format and returns a Lua string.
+fn encode_payload<'lua>(
+    lua: &'lua Lua,
+    value: LuaValue<'lua>,
+    format: String,
+    opts: Option<LuaTable<'lua>>,
+) -> LuaResult<LuaString<'lua>> {
+    let val = from_lua(&value)?;
+    let fmt = SerialFormat::parse(&format).ok_or_else(|| {
+        LuaError::RuntimeError("encode: unknown format (expected json/toml/csv/msgpack)".to_string())
+    })?;
+    let encoded =
+        crate::serialize::encode(&val, fmt, encode_options_from_table(opts)?)
+            .map_err(LuaError::RuntimeError)?;
+    match encoded {
+        EncodedValue::Text(text) => lua.create_string(&text),
+        EncodedValue::Binary(bytes) => lua.create_string(&bytes),
+    }
+}
+
 /// Registers the `lurek.serialize` module into the Lua runtime.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
+    // --- Text codecs --------------------------------------------------------
     // -- fromJson --
     /// Parses a JSON string into a Lua table. Use this to load configuration files, network responses, or any structured data stored as JSON.
     /// @param | text | string | A valid JSON string to parse.
@@ -66,7 +171,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         "toJson",
         lua.create_function(|_, (value, pretty): (LuaValue, Option<bool>)| {
             let val = from_lua(&value)?;
-            crate::serialize::to_json(&val, pretty.unwrap_or(false)).map_err(LuaError::RuntimeError)
+            crate::serialize::to_json(&val, pretty.unwrap_or(false))
+                .map_err(LuaError::RuntimeError)
         })?,
     )?;
 
@@ -114,16 +220,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | table | An array of row tables containing the parsed CSV data.
     tbl.set(
         "fromCsv",
-        lua.create_function(
-            |lua, (s, delim, headers): (String, Option<String>, Option<bool>)| {
-                let opts = CsvOptions {
-                    delimiter: parse_delimiter(delim),
-                    has_headers: headers.unwrap_or(true),
-                };
-                let val = crate::serialize::from_csv(&s, opts).map_err(LuaError::RuntimeError)?;
-                to_lua(lua, &val)
-            },
-        )?,
+        lua.create_function(|lua, (s, delim, headers): (String, Option<String>, Option<bool>)| {
+            let val = crate::serialize::from_csv(&s, csv_options_from_args(delim, headers))
+                .map_err(LuaError::RuntimeError)?;
+            to_lua(lua, &val)
+        })?,
     )?;
 
     // -- toCsv --
@@ -134,34 +235,21 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | string | The CSV-encoded string of the table data.
     tbl.set(
         "toCsv",
-        lua.create_function(
-            |_, (value, delim, headers): (LuaValue, Option<String>, Option<bool>)| {
-                let opts = CsvOptions {
-                    delimiter: parse_delimiter(delim),
-                    has_headers: headers.unwrap_or(true),
-                };
-                let val = from_lua(&value)?;
-                crate::serialize::to_csv(&val, opts).map_err(LuaError::RuntimeError)
-            },
-        )?,
+        lua.create_function(|_, (value, delim, headers): (LuaValue, Option<String>, Option<bool>)| {
+            let val = from_lua(&value)?;
+            crate::serialize::to_csv(&val, csv_options_from_args(delim, headers))
+                .map_err(LuaError::RuntimeError)
+        })?,
     )?;
 
+    // --- Binary codecs ------------------------------------------------------
     // -- encodeMsgPack --
     /// Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
     /// @param | value | table | The Lua table to encode. Must be a table (not a primitive).
     /// @return | string | A binary string containing the MessagePack-encoded data.
     tbl.set(
         "encodeMsgPack",
-        lua.create_function(|lua, value: LuaValue| {
-            if !matches!(value, LuaValue::Table(_)) {
-                return Err(LuaError::RuntimeError(
-                    "encodeMsgPack: argument must be a table".to_string(),
-                ));
-            }
-            let val = from_lua(&value)?;
-            let bytes = crate::serialize::to_msgpack(&val).map_err(LuaError::RuntimeError)?;
-            lua.create_string(&bytes)
-        })?,
+        lua.create_function(encode_msgpack_value)?,
     )?;
 
     // -- decodeMsgPack --
@@ -189,6 +277,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
+    // --- Validation and detection ------------------------------------------
     // -- validate --
     /// Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
     /// @param | value | any | The data to validate.
@@ -197,14 +286,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | string | An error message describing the validation failure, or nil on success.
     tbl.set(
         "validate",
-        lua.create_function(|_, (value, schema): (LuaValue, LuaValue)| {
-            let val = from_lua(&value)?;
-            let sch = from_lua(&schema)?;
-            match crate::serialize::validate_schema(&val, &sch) {
-                Ok(()) => Ok((true, None::<String>)),
-                Err(msg) => Ok((false, Some(msg))),
-            }
-        })?,
+        lua.create_function(|_, (value, schema): (LuaValue, LuaValue)| validate_value(value, schema))?,
     )?;
 
     // -- detectFormat --
@@ -218,6 +300,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
+    // --- Unified front door -------------------------------------------------
     // -- decode --
     /// Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
     /// @param | payload | string | The raw string (or binary for msgpack) to decode.
@@ -226,66 +309,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | table | The decoded Lua table.
     tbl.set(
         "decode",
-        lua.create_function(
-            |lua, (payload, format, opts): (LuaValue, Option<String>, Option<LuaTable>)| {
-                let fmt = if let Some(name) = format.as_deref() {
-                    Some(SerialFormat::parse(name).ok_or_else(|| {
-                        LuaError::RuntimeError(
-                            "decode: unknown format (expected json/toml/csv/xml/ini/msgpack)"
-                                .to_string(),
-                        )
-                    })?)
-                } else {
-                    None
-                };
-                let val = match (payload, fmt) {
-                    (LuaValue::String(bytes), Some(SerialFormat::MsgPack)) => {
-                        crate::serialize::decode_bytes(bytes.as_bytes(), SerialFormat::MsgPack)
-                            .map_err(LuaError::RuntimeError)?
-                    }
-                    (LuaValue::String(text), Some(f)) => {
-                        let s = text
-                            .to_str()
-                            .map_err(|e| {
-                                LuaError::RuntimeError(format!("decode: expected UTF-8 text: {e}"))
-                            })?
-                            .to_string();
-                        crate::serialize::decode_text(
-                            &s,
-                            Some(f),
-                            DecodeOptions {
-                                csv: csv_options_from_table(opts)?,
-                            },
-                        )
-                        .map_err(LuaError::RuntimeError)?
-                    }
-                    (LuaValue::String(text), None) => {
-                        let s = text
-                            .to_str()
-                            .map_err(|e| {
-                                LuaError::RuntimeError(format!(
-                                    "decode: expected UTF-8 text for auto-detect: {e}"
-                                ))
-                            })?
-                            .to_string();
-                        crate::serialize::decode_text(
-                            &s,
-                            None,
-                            DecodeOptions {
-                                csv: csv_options_from_table(opts)?,
-                            },
-                        )
-                        .map_err(LuaError::RuntimeError)?
-                    }
-                    _ => {
-                        return Err(LuaError::RuntimeError(
-                            "decode: payload must be a string".to_string(),
-                        ));
-                    }
-                };
-                to_lua(lua, &val)
-            },
-        )?,
+        lua.create_function(|lua, (payload, format, opts): (LuaValue, Option<String>, Option<LuaTable>)| {
+            decode_payload(lua, payload, format, opts)
+        })?,
     )?;
 
     // -- encode --
@@ -296,22 +322,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// @return | string | The encoded string (text or binary depending on format).
     tbl.set(
         "encode",
-        lua.create_function(
-            |lua, (value, format, opts): (LuaValue, String, Option<LuaTable>)| {
-                let val = from_lua(&value)?;
-                let fmt = SerialFormat::parse(&format).ok_or_else(|| {
-                    LuaError::RuntimeError(
-                        "encode: unknown format (expected json/toml/csv/msgpack)".to_string(),
-                    )
-                })?;
-                let encoded = crate::serialize::encode(&val, fmt, encode_options_from_table(opts)?)
-                    .map_err(LuaError::RuntimeError)?;
-                match encoded {
-                    EncodedValue::Text(s) => lua.create_string(&s),
-                    EncodedValue::Binary(bytes) => lua.create_string(&bytes),
-                }
-            },
-        )?,
+        lua.create_function(|lua, (value, format, opts): (LuaValue, String, Option<LuaTable>)| {
+            encode_payload(lua, value, format, opts)
+        })?,
     )?;
 
     // -- applyDefaults --
@@ -329,9 +342,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             to_lua(lua, &patched)
         })?,
     )?;
-    /// Performs the 'serialize' operation.
+
     lurek.set("serialize", tbl.clone())?;
-    // Backward-compatibility alias
     lurek.set("serial", tbl)?;
     Ok(())
 }

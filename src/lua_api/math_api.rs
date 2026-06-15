@@ -1697,6 +1697,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "newSpatialHash",
         lua.create_function(|lua, cell_size: f32| {
+            if !cell_size.is_finite() || cell_size <= 0.0 {
+                return Err(LuaError::runtime(
+                    "cell_size must be a finite number greater than 0",
+                ));
+            }
             lua.create_userdata(LuaSpatialHash {
                 inner: SpatialHash::new(cell_size),
             })

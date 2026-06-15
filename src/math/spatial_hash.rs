@@ -35,6 +35,11 @@ pub struct SpatialHash {
 impl SpatialHash {
     /// Construct an empty hash with the given uniform `cell_size`.
     pub fn new(cell_size: f32) -> Self {
+        let cell_size = if cell_size.is_finite() && cell_size > 0.0 {
+            cell_size
+        } else {
+            1.0
+        };
         Self {
             cell_size,
             items: HashMap::new(),

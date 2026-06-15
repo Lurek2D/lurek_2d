@@ -41,6 +41,7 @@ lurek.effect.getEffectTypes()
 do
     local types = lurek.effect.getEffectTypes()
     print("available types = " .. #types)
+    print("lua type = " .. type(types))
 end
 ```
 
@@ -92,6 +93,7 @@ lurek.effect.getShaderErrorDisplay()
 do
     local on = lurek.effect.getShaderErrorDisplay()
     print("shader error display = " .. tostring(on))
+    print("lua type = " .. type(on))
 end
 ```
 
@@ -123,6 +125,7 @@ lurek.effect.newCustomEffect(shader_id)
 do
     local fx = lurek.effect.newCustomEffect(1)
     print("custom effect built-in = " .. tostring(fx:isBuiltIn()))
+    print("lua type = " .. type(fx))
 end
 ```
 
@@ -187,6 +190,7 @@ lurek.effect.newImageEffect(spec, params)
 do
     local ie = lurek.effect.newImageEffect()
     print("image effect count = " .. ie:getEffectCount())
+    print("lua type = " .. type(ie))
 end
 ```
 
@@ -218,6 +222,7 @@ lurek.effect.newPass(shader_id)
 do
     local fx = lurek.effect.newPass(2)
     print("pass type = " .. fx:getType())
+    print("lua type = " .. type(fx))
 end
 ```
 
@@ -251,6 +256,7 @@ lurek.effect.newPresetStack(name, w, h)
 do
     local stack = lurek.effect.newPresetStack("retro_tv", 320, 240)
     print("preset stack effects = " .. stack:getEffectCount())
+    print("lua type = " .. type(stack))
 end
 ```
 
@@ -283,6 +289,7 @@ lurek.effect.newStack(w, h)
 do
     local stack = lurek.effect.newStack(800, 600)
     print("stack w=" .. stack:getWidth() .. " h=" .. stack:getHeight())
+    print("lua type = " .. type(stack))
 end
 ```
 
@@ -308,6 +315,7 @@ lurek.effect.setShaderErrorDisplay(enabled)
 do
     lurek.effect.setShaderErrorDisplay(true)
     print("shader errors on")
+    print("shader error display = " .. tostring(lurek.effect.getShaderErrorDisplay()))
 end
 ```
 
@@ -671,6 +679,7 @@ LImageEffect:type()
 do
     local ie = lurek.effect.newImageEffect()
     print("type = " .. ie:type())
+    print("typeOf LObject = " .. tostring(ie:typeOf("LObject")))
 end
 ```
 
@@ -702,6 +711,7 @@ LImageEffect:typeOf(name)
 do
     local ie = lurek.effect.newImageEffect()
     print("is ImageEffect = " .. tostring(ie:typeOf("LImageEffect")))
+    print("type = " .. tostring(ie:type()))
 end
 ```
 
@@ -775,6 +785,7 @@ LPostFxEffect:getEffectType()
 do
     local fx = lurek.effect.newEffect("bloom")
     print("effectType = " .. fx:getEffectType())
+    print("owner type = " .. tostring(fx:type()))
 end
 ```
 
@@ -861,6 +872,7 @@ LPostFxEffect:getType()
 do
     local fx = lurek.effect.newEffect("blur")
     print("type = " .. fx:getType())
+    print("owner type = " .. tostring(fx:type()))
 end
 ```
 
@@ -886,6 +898,7 @@ LPostFxEffect:getTypeName()
 do
     local fx = lurek.effect.newEffect("crt")
     print("typeName = " .. fx:getTypeName())
+    print("owner type = " .. tostring(fx:type()))
 end
 ```
 
@@ -943,6 +956,7 @@ LPostFxEffect:isAutoUniforms()
 do
     local fx = lurek.effect.newEffect("bloom")
     print("autoUniforms = " .. tostring(fx:isAutoUniforms()))
+    print("owner type = " .. tostring(fx:type()))
 end
 ```
 
@@ -968,6 +982,7 @@ LPostFxEffect:isBuiltIn()
 do
     local fx = lurek.effect.newEffect("blur")
     print("builtIn = " .. tostring(fx:isBuiltIn()))
+    print("owner type = " .. tostring(fx:type()))
 end
 ```
 
@@ -993,6 +1008,7 @@ LPostFxEffect:isEnabled()
 do
     local fx = lurek.effect.newEffect("bloom")
     print("enabled = " .. tostring(fx:isEnabled()))
+    print("owner type = " .. tostring(fx:type()))
 end
 ```
 
@@ -1305,6 +1321,7 @@ LPostFxEffect:type()
 do
     local fx = lurek.effect.newEffect("blur")
     print("type = " .. fx:type())
+    print("typeOf LObject = " .. tostring(fx:typeOf("LObject")))
 end
 ```
 
@@ -1336,6 +1353,7 @@ LPostFxEffect:typeOf(name)
 do
     local fx = lurek.effect.newEffect("blur")
     print("is PostFxEffect = " .. tostring(fx:typeOf("LPostFxEffect")))
+    print("type = " .. tostring(fx:type()))
 end
 ```
 
@@ -1674,6 +1692,7 @@ LPostFxStack:getHeight()
 do
     local stack = lurek.effect.newStack(1024, 768)
     print("height = " .. stack:getHeight())
+    print("owner type = " .. tostring(stack:type()))
 end
 ```
 
@@ -1699,6 +1718,7 @@ LPostFxStack:getWidth()
 do
     local stack = lurek.effect.newStack(1024, 768)
     print("width = " .. stack:getWidth())
+    print("owner type = " .. tostring(stack:type()))
 end
 ```
 
@@ -1752,6 +1772,7 @@ LPostFxStack:isCapturing()
 do
     local stack = lurek.effect.newStack(800, 600)
     print("capturing = " .. tostring(stack:isCapturing()))
+    print("owner type = " .. tostring(stack:type()))
 end
 ```
 
@@ -1777,6 +1798,7 @@ LPostFxStack:isEmpty()
 do
     local stack = lurek.effect.newStack(800, 600)
     print("empty = " .. tostring(stack:isEmpty()))
+    print("owner type = " .. tostring(stack:type()))
 end
 ```
 
@@ -1977,6 +1999,7 @@ LPostFxStack:type()
 do
     local stack = lurek.effect.newStack(800, 600)
     print("type = " .. stack:type())
+    print("typeOf LObject = " .. tostring(stack:typeOf("LObject")))
 end
 ```
 
@@ -2008,6 +2031,7 @@ LPostFxStack:typeOf(name)
 do
     local stack = lurek.effect.newStack(800, 600)
     print("is PostFxStack = " .. tostring(stack:typeOf("LPostFxStack")))
+    print("type = " .. tostring(stack:type()))
 end
 ```
 

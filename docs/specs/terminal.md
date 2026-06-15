@@ -108,6 +108,7 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 - Shared text helpers used across the terminal subsystem.
 - These helpers centralize UTF-8-safe character counting, truncation, and indexing logic.
+- Module API documentation
 
 ### widget.rs
 

@@ -118,6 +118,8 @@
   - [LSynthesizer](#lsynthesizer)
   - [LWaveform](#lwaveform)
 - [lurek.ecs](#lurekecs)
+  - [LQueryView](#lqueryview)
+  - [LRelationshipManager](#lrelationshipmanager)
   - [LUniverse](#luniverse)
 - [lurek.effect](#lurekeffect)
   - [LImageEffect](#limageeffect)
@@ -130,7 +132,7 @@
   - [LFileData](#lfiledata)
   - [LFileHandle](#lfilehandle)
   - [LZipMount](#lzipmount)
-- [lurek.flownet](#lurekflownet)
+- [lurek.graph](#lurekgraph)
   - [LGraph](#lgraph)
   - [LGraphEdge](#lgraphedge)
   - [LGraphItem](#lgraphitem)
@@ -305,7 +307,7 @@
 - [lurek.scene](#lurekscene)
   - [LDepthSorter](#ldepthsorter)
   - [LSceneObjectContainer](#lsceneobjectcontainer)
-- [lurek.serialize](#lurekserialize)
+- [lurek.serial](#lurekserial)
 - [lurek.spine](#lurekspine)
   - [LSkeleton](#lskeleton)
   - [LSkeletonAnimation](#lskeletonanimation)
@@ -317,7 +319,7 @@
   - [LSpriteSheet](#lspritesheet)
 - [lurek.svg](#lureksvg)
   - [LSvgImage](#lsvgimage)
-- [lurek.system](#lureksystem)
+- [lurek.runtime](#lurekruntime)
 - [lurek.terminal](#lurekterminal)
   - [LTerminal](#lterminal)
   - [LWidget](#lwidget)
@@ -326,7 +328,7 @@
   - [LPromise](#lpromise)
   - [LThreadHandle](#lthreadhandle)
   - [LThreadPool](#lthreadpool)
-- [lurek.tilemap](#lurektilemap)
+- [lurek.physics](#lurekphysics)
   - [LAutoTileSheet](#lautotilesheet)
   - [LChunkMap](#lchunkmap)
   - [LIsoMap](#lisomap)
@@ -348,9 +350,7 @@
   - [LTweenState](#ltweenstate)
 - [lurek.ui](#lurekui)
   - [LAccordion](#laccordion)
-  - [LAreaChart](#lareachart)
   - [LBadge](#lbadge)
-  - [LBarChart](#lbarchart)
   - [LButton](#lbutton)
   - [LCheckbox](#lcheckbox)
   - [LColorPicker](#lcolorpicker)
@@ -362,16 +362,13 @@
   - [LImageWidget](#limagewidget)
   - [LLabel](#llabel)
   - [LLayout](#llayout)
-  - [LLineChart](#llinechart)
   - [LListBox](#llistbox)
   - [LMenuBar](#lmenubar)
   - [LMenuItem](#lmenuitem)
   - [LNinePatch](#lninepatch)
   - [LPanel](#lpanel)
-  - [LPieChart](#lpiechart)
   - [LProgressBar](#lprogressbar)
   - [LRadioButton](#lradiobutton)
-  - [LScatterPlot](#lscatterplot)
   - [LScrollBar](#lscrollbar)
   - [LScrollPanel](#lscrollpanel)
   - [LSeparator](#lseparator)
@@ -1447,7 +1444,7 @@ lurek.binary.encodeToml(tbl: table) -> string -- Encodes a Lua table into a TOML
 lurek.binary.fromMsgPack(bytes: string) -> LuaValue -- Decodes a structured binary interchange payload back into Lua values.
 lurek.binary.getPackedSize(fmt: string, ...: any) -> integer -- Computes the packed byte size for values and a format string.
 lurek.binary.hash(algo_str: string, raw_data: string) -> string -- Hashes a binary string with a named algorithm.
-lurek.binary.newByteData(value: any) -> LByteData -- Creates ByteData from a size or string.
+lurek.binary.newByteData(value: any) -> LByteData -- Creates ByteData from a size or raw byte string.
 lurek.binary.newDataView(raw: string, [offset]: integer, [size]: integer) -> LDataView -- Creates a DataView over a binary string slice.
 lurek.binary.newRingBuffer(capacity: integer) -> LRingBuffer -- Creates a fixed-capacity ring buffer for Lua values.
 lurek.binary.newWriter() -> LDataWriter -- Creates an empty binary data writer.
@@ -1900,7 +1897,7 @@ LCinematicTimeline:update(dt: number) -- Advances time by dt (only if playing).
 lurek.color.additive(c1: table, c2: table) -> table -- Additive blend of two colors (clamped to 0â€“1 per channel).
 lurek.color.alphaBlend(fg: table, bg: table) -> table -- Alpha compositing (Porter-Duff "over") of foreground over background.
 lurek.color.brightness(r: number, g: number, b: number) -> number -- Computes perceived luminance (ITU-R BT.601) of an RGB color.
-lurek.color.fromHex(hex: string) -> table|nil -- Parses a hex color string ("#RRGGBB" or "#RRGGBBAA") into a color table. Returns nil on invalid input.
+lurek.color.fromHex(hex: string) -> table|nil -- Parses a hex color string ("#RGB", "#RGBA", "#RRGGBB", or "#RRGGBBAA") into a color table.
 lurek.color.fromHsl(h: number, s: number, l: number) -> table -- Creates a color from HSL components. Returns an opaque color (alpha = 1).
 lurek.color.fromHsv(h: number, s: number, v: number) -> table -- Creates a color from HSV components. Returns an opaque color (alpha = 1).
 lurek.color.fromU8(r: integer, g: integer, b: integer, [a]: integer) -> table -- Creates a color from 0â€“255 integer components. Alpha defaults to 255.
@@ -2683,7 +2680,34 @@ LWaveform:type() -> string -- Returns the waveform identifier string.
 [Module page](Module-ecs)
 
 ```lua
+lurek.ecs.newRelationshipManager() -> LRelationshipManager -- Creates a relationship manager for tracking numeric values and named levels between entity pairs.
 lurek.ecs.newUniverse() -> LUniverse -- Creates an empty ECS universe for entity, component, system, and relationship management.
+```
+
+### LQueryView
+
+```lua
+LQueryView:ids() -> integer[] -- Returns cached query results, refreshing when the owning universe query tick changed.
+LQueryView:lastTick() -> integer -- Returns the universe query-change tick used to build the current cached ids.
+LQueryView:type() -> string -- Returns the Lua-visible type name for this cached query-view handle.
+LQueryView:typeOf(name: string) -> boolean -- Returns whether this cached query-view handle matches a supported type name.
+```
+
+### LRelationshipManager
+
+```lua
+LRelationshipManager:adjustValue(a: any, b: any, delta: any)
+LRelationshipManager:defineType(name: any, levels: any, [default_level]: any)
+LRelationshipManager:getLevel(a: any, b: any, type_name: any)
+LRelationshipManager:getValue(a: any, b: any)
+LRelationshipManager:pairCount()
+LRelationshipManager:removePair(a: any, b: any)
+LRelationshipManager:removeType(name: any)
+LRelationshipManager:setLevel(a: any, b: any, type_name: any, level: any)
+LRelationshipManager:setValue(a: any, b: any, value: any)
+LRelationshipManager:type()
+LRelationshipManager:typeNames()
+LRelationshipManager:typeOf(name: any)
 ```
 
 ### LUniverse
@@ -2717,6 +2741,7 @@ LUniverse:getEntitiesSorted() -> integer[] -- Returns live entities sorted by EC
 LUniverse:getEntityCount() -> integer -- Returns the number of live entities in this universe.
 LUniverse:getLayer(id: integer) -> integer -- Returns the numeric layer assigned to an entity.
 LUniverse:getParent(child_id: integer) -> integer -- Returns the parent entity id for a child entity.
+LUniverse:getQueryChangeTick() -> integer -- Returns the coarse invalidation tick used by cached ECS query views.
 LUniverse:getRelated(from: integer, name: string) -> integer[] -- Returns targets linked from an entity by a named relation.
 LUniverse:getSystemCount() -> integer -- Returns the number of registered systems.
 LUniverse:getTags(id: integer) -> string[] -- Returns string tags assigned to an entity.
@@ -2729,6 +2754,7 @@ LUniverse:isAlive(id: integer) -> boolean -- Returns whether an entity id curren
 LUniverse:kill(id: integer) -- Deletes an entity and removes its components from this universe.
 LUniverse:killRecursive(id: integer) -- Deletes an entity and all descendant entities in its hierarchy.
 LUniverse:listBlueprints() -> string[] -- Returns names of all registered blueprints.
+LUniverse:newQueryView(with_table: table, [without_table]: table) -> LQueryView -- Creates a cached component query view that refreshes only when this universe changes.
 LUniverse:onComponentAdded(name: string, cb: function) -- Registers a callback for queued component-add events with a given component name.
 LUniverse:onComponentRemoved(name: string, cb: function) -- Registers a callback for queued component-remove events with a given component name.
 LUniverse:query(...: string) -> integer[] -- Returns entities that have all component names passed as varargs.
@@ -3002,7 +3028,7 @@ LZipMount:type() -> string -- Returns the Lua-visible type name for this ZIP mou
 LZipMount:typeOf(name: string) -> boolean -- Returns whether this ZIP mount handle matches a supported type name.
 ```
 
-## lurek.flownet
+## lurek.graph
 
 [Module page](Module-flownet)
 
@@ -3063,10 +3089,13 @@ LGraph:update(dt: number) -- Advances graph simulation by delta time and dispatc
 ```lua
 LGraphEdge:addAllowedType(t: string) -- Allows an item type to traverse this edge.
 LGraphEdge:clearAllowedTypes() -- Clears this edge's item type allow-list.
+LGraphEdge:clearCapacityReservations() -- Removes every transit capacity reservation from this edge.
+LGraphEdge:getAvailableCapacity() -> integer -- Returns how many transit slots remain after active items and reservations, or -1 when unlimited.
 LGraphEdge:getCapacity() -> integer -- Returns this edge's maximum concurrent item capacity.
 LGraphEdge:getCooldown() -> number -- Returns this edge's cooldown timer value.
 LGraphEdge:getFrom() -> LGraphNode -- Returns the source node for this edge.
 LGraphEdge:getItemsInTransit() -> LGraphItem[] -- Returns graph items currently traveling along this edge.
+LGraphEdge:getReservedCapacity() -> integer -- Returns the total transit capacity reserved on this edge across all reservation keys.
 LGraphEdge:getSpeedModifier() -> number -- Returns this edge's speed modifier.
 LGraphEdge:getThroughput() -> number -- Returns this edge's throughput value.
 LGraphEdge:getTo() -> LGraphNode -- Returns the destination node for this edge.
@@ -3077,7 +3106,9 @@ LGraphEdge:isActive() -> boolean -- Returns whether this edge is active for rout
 LGraphEdge:isBidirectional() -> boolean -- Returns whether this edge allows travel in both directions.
 LGraphEdge:isItemTypeAllowed(t: string) -> boolean -- Returns whether an item type may traverse this edge.
 LGraphEdge:isOnCooldown() -> boolean -- Returns whether this edge is currently on cooldown.
+LGraphEdge:releaseCapacityReservation(key: string, [slots]: integer) -> integer -- Releases reserved transit capacity for a key and returns the number of slots removed.
 LGraphEdge:removeAllowedType(t: string) -> boolean -- Removes an item type from this edge's allow-list.
+LGraphEdge:reserveCapacity(key: string, [slots]: integer) -> boolean -- Reserves transit capacity slots under a caller-provided key for planning and coordination.
 LGraphEdge:setActive(a: boolean) -- Enables or disables this edge for routing and simulation.
 LGraphEdge:setBidirectional(b: boolean) -- Sets whether this edge allows travel in both directions.
 LGraphEdge:setCapacity(c: integer) -- Sets this edge's maximum concurrent item capacity.
@@ -3115,12 +3146,14 @@ LGraphNode:addDemand(item_type: string, quantity: integer, [priority]: integer) 
 LGraphNode:addSupply(item_type: string, quantity: integer) -- Adds supply quantity for an item type on this node.
 LGraphNode:addTag(tag: string) -- Adds a tag to this node on this object.
 LGraphNode:clearAllConversions() -- Removes every conversion rule from this node.
+LGraphNode:clearCapacityReservations() -- Removes every inventory capacity reservation from this node.
 LGraphNode:clearConversion(in_type: string) -> boolean -- Removes a conversion rule by input item type.
 LGraphNode:clearDemands() -- Removes every demand entry from this node.
 LGraphNode:clearSupplies() -- Removes every supply entry from this node.
 LGraphNode:clearTags() -- Removes every tag from this graph node.
 LGraphNode:dequeue() -> LGraphItem -- Removes and returns the next item from this node's explicit queue.
 LGraphNode:enqueue(item_ud: LGraphItem) -> boolean -- Adds an item handle to this node's explicit queue.
+LGraphNode:getAvailableCapacity() -> integer -- Returns how many node inventory slots remain after active items and reservations, or -1 when unlimited.
 LGraphNode:getCapacity() -> integer -- Returns this node's item capacity.
 LGraphNode:getEdges([dir]: string) -> LGraphEdge[] -- Returns edge handles connected to this node in the requested direction.
 LGraphNode:getFlowMode() -> string -- Returns this node's flow mode name.
@@ -3134,15 +3167,18 @@ LGraphNode:getPushFilter() -> string -- Returns this node's optional push item-t
 LGraphNode:getPushRate() -> number -- Returns this node's push rate value.
 LGraphNode:getQueueCapacity() -> integer -- Returns this node's queue capacity.
 LGraphNode:getQueueSize() -> integer -- Returns the number of item ids currently queued at this node.
+LGraphNode:getReservedCapacity() -> integer -- Returns the total item capacity reserved on this node across all reservation keys.
 LGraphNode:getTags() -> string[] -- Returns all tags assigned to this node.
 LGraphNode:getType() -> string -- Returns this node's type classification string.
 LGraphNode:hasTag(tag: string) -> boolean -- Returns whether this node has a tag.
 LGraphNode:isActive() -> boolean -- Returns whether this node is active for graph simulation.
 LGraphNode:isFull() -> boolean -- Returns whether this node has reached its item capacity.
 LGraphNode:isQueueEnabled() -> boolean -- Returns whether this node's explicit queue is enabled.
+LGraphNode:releaseCapacityReservation(key: string, [slots]: integer) -> integer -- Releases reserved node capacity for a key and returns the number of slots removed.
 LGraphNode:removeDemand(item_type: string) -> boolean -- Removes demand entry for an item type from this node.
 LGraphNode:removeSupply(item_type: string) -> boolean -- Removes supply entry for an item type from this node.
 LGraphNode:removeTag(tag: string) -> boolean -- Removes a tag from this node on this object.
+LGraphNode:reserveCapacity(key: string, [slots]: integer) -> boolean -- Reserves node inventory capacity under a caller-provided key for planning and coordination.
 LGraphNode:setActive(a: boolean) -- Enables or disables this node for graph simulation.
 LGraphNode:setCapacity(c: integer) -- Sets this node's item capacity value.
 LGraphNode:setConversion(in_type: string, out_type: string, [in_count]: integer, [out_count]: integer) -- Configures an item conversion rule on this node.
@@ -5216,6 +5252,9 @@ LTrail:update(dt: number) -- Updates trail point lifetimes. This method is avail
 [Module page](Module-pathfind)
 
 ```lua
+lurek.pathfind.cancelAsyncPath(request_id: integer) -> boolean -- Marks an async path request as cancelled.
+lurek.pathfind.clearAsyncPaths() -- Drops all queued async path requests and recreates the worker pool with the configured thread count.
+lurek.pathfind.getAsyncPendingCount() -> integer -- Returns the number of async path requests that have not emitted a terminal event.
 lurek.pathfind.getThreadCount() -> integer -- Returns the configured pathfinding thread count.
 lurek.pathfind.newFlowField(grid_ud: LNavGrid) -> LFlowField -- Creates a flow field for a navigation grid.
 lurek.pathfind.newGoalMap(width: integer, height: integer) -> LGoalMap -- Creates a new multi-source Dijkstra distance-field goal map for the given grid dimensions.
@@ -5227,8 +5266,10 @@ lurek.pathfind.newNavMesh() -> LNavMesh -- Creates an empty navigation mesh for 
 lurek.pathfind.newPathfinder(grid_ud: LNavGrid) -> LUnitPathfinder -- Creates a unit pathfinder for a navigation grid.
 lurek.pathfind.newPathFlowField(grid_ud: LPathGrid) -> LAIFlowField -- Creates an AI flow field from a path grid.
 lurek.pathfind.newPathGrid(w: integer, h: integer, cell_size: number) -> LPathGrid -- Creates a cell-size path grid with given dimensions.
+lurek.pathfind.pollAsyncPaths() -> table -- Returns all currently available async path events without blocking.
 lurek.pathfind.rangeMap(opts: table) -> table -- Computes reachable cells from range map options.
 lurek.pathfind.setThreadCount(count: integer) -- Sets the configured pathfinding worker-thread count.
+lurek.pathfind.submitAsyncPath(grid_ud: LNavGrid, opts: table) -> integer -- Queues an async path query against a navigation grid snapshot.
 ```
 
 ### LAIFlowField
@@ -6741,7 +6782,7 @@ LSaveManager:setSummary(summary: string) -- Set a human-readable summary string 
 LSaveManager:type() -> string -- Return the type name string for this userdata object.
 LSaveManager:typeOf(name: string) -> boolean -- Check whether this object matches a given type name. Supports "LSaveManager" and "Object".
 LSaveManager:unregister(name: string) -- Remove a previously registered data section by name, cleaning up its collector and restorer callbacks.
-LSaveManager:update(dt: number) -> boolean -- Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
+LSaveManager:update(dt: number) -> string -- Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
 ```
 
 ## lurek.scene
@@ -6842,7 +6883,7 @@ LSceneObjectContainer:typeOf(name: string) -> boolean -- Checks whether this con
 LSceneObjectContainer:update(dt: number) -- Call update(dt) on all objects that have an update method.
 ```
 
-## lurek.serialize
+## lurek.serial
 
 [Module page](Module-serialize)
 
@@ -7049,7 +7090,7 @@ LSvgImage:type() -> string -- Returns the fixed type name for this userdata.
 LSvgImage:typeOf(name: string) -> boolean -- Check whether this object matches a given type name.
 ```
 
-## lurek.system
+## lurek.runtime
 
 [Module page](Module-system)
 
@@ -7063,7 +7104,7 @@ lurek.runtime.getConfig() -> table -- Returns a table containing the current eng
 lurek.runtime.getDebugOverlay() -> boolean -- Returns whether the on-screen debug overlay is currently enabled.
 lurek.runtime.getEnv(name: string) -> string -- Reads an environment variable by name. Returns `nil` if the variable is not set.
 lurek.runtime.getInfo() -> table -- Returns a table with comprehensive engine and host information.
-lurek.runtime.getLastError() -> table -- Returns the last error for Lua scripts in this module.
+lurek.runtime.getLastError()
 lurek.runtime.getLogLevel() -> string -- Returns the current engine log verbosity level as a string.
 lurek.runtime.getMemorySize() -> number -- Returns the total physical memory of the host system in megabytes.
 lurek.runtime.getMessage(id: string) -> string -- Resolves a message string by its identifier from the engine message catalog.
@@ -7257,7 +7298,7 @@ LThreadPool:type() -> string -- Returns the type name of this object.
 LThreadPool:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
 
-## lurek.tilemap
+## lurek.physics
 
 [Module page](Module-tilemap)
 
@@ -7742,9 +7783,7 @@ lurek.ui.mousemoved(x: number, y: number) -> boolean -- Delivers a mouse move ev
 lurek.ui.mousepressed(x: number, y: number, [btn]: integer) -> boolean -- Delivers a mouse press event to the UI.
 lurek.ui.mousereleased(x: number, y: number, [btn]: integer) -> boolean -- Delivers a mouse release event to the UI.
 lurek.ui.newAccordion() -> LAccordion -- Creates a new accordion widget with collapsible sections.
-lurek.ui.newAreaChart(opts: table) -> LAreaChart -- Creates a new area chart for data visualization.
 lurek.ui.newBadge([count]: integer) -> LBadge -- Creates a new badge widget for displaying counts.
-lurek.ui.newBarChart(opts: table) -> LBarChart -- Creates a new bar chart for data visualization.
 lurek.ui.newButton([text]: string) -> LButton -- Creates a new button widget with optional label text.
 lurek.ui.newCheckbox([text]: string) -> LCheckbox -- Creates a new checkbox widget with optional label.
 lurek.ui.newColorPicker() -> LColorPicker -- Creates a new color picker widget for color selection.
@@ -7755,16 +7794,13 @@ lurek.ui.newDockPanel() -> LDockPanel -- Creates a new dock panel widget for doc
 lurek.ui.newImageWidget() -> LImageWidget -- Creates a new image display widget.
 lurek.ui.newLabel([text]: string) -> LLabel -- Creates a new label widget for displaying text.
 lurek.ui.newLayout([direction]: string) -> LLayout -- Creates a new layout container widget.
-lurek.ui.newLineChart(opts: table) -> LLineChart -- Creates a new line chart for data visualization.
 lurek.ui.newList() -> LListBox -- Creates a new list box widget for item selection.
 lurek.ui.newMenuBar() -> LMenuBar -- Creates a new menu bar widget for top-level menus.
 lurek.ui.newMenuItem([text]: string) -> LMenuItem -- Creates a new menu item widget with optional text.
 lurek.ui.newNinePatch() -> LNinePatch -- Creates a new nine-patch widget for scalable bordered images.
 lurek.ui.newPanel() -> LPanel -- Creates a new panel widget (container).
-lurek.ui.newPieChart(opts: table) -> LPieChart -- Creates a new pie chart for data visualization.
 lurek.ui.newProgressBar([min]: number, [max]: number) -> LProgressBar -- Creates a new progress bar widget with min and max.
 lurek.ui.newRadioButton([text]: string, [group]: string) -> LRadioButton -- Creates a new radio button widget in a named group.
-lurek.ui.newScatterPlot(opts: table) -> LScatterPlot -- Creates a new scatter plot for data visualization.
 lurek.ui.newScrollBar([vertical]: boolean) -> LScrollBar -- Creates a new scroll bar widget for content scrolling.
 lurek.ui.newScrollPanel() -> LScrollPanel -- Creates a new scrollable panel widget.
 lurek.ui.newSeparator([vertical]: boolean) -> LSeparator -- Creates a new separator widget for visual division.
@@ -7814,44 +7850,12 @@ LAccordion:setExclusive(v: boolean) -- Sets exclusive mode. When true, expanding
 LAccordion:toggleSection(section_idx: integer) -> boolean -- Toggles the expanded state of an accordion section by its 1-based index.
 ```
 
-### LAreaChart
-
-```lua
-LAreaChart:addLayer(name: string, vals_tbl: table, r: number, g: number, b: number) -- Adds a data layer to this area chart.
-LAreaChart:addLayerFromDataFrame(name: string, df: LDataFrame, value_col: string, r: number, g: number, b: number, [opts]: table) -> integer -- Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
-LAreaChart:drawToImage(target: LImageData) -- Renders this area chart to an image buffer.
-LAreaChart:setShowLegend(value: boolean) -- Enables or disables the layer legend for this area chart.
-LAreaChart:setXLabel(label: string) -- Sets the X-axis label for this area chart.
-LAreaChart:setXTickCount(count: integer) -- Sets the number of X-axis tick labels for this area chart.
-LAreaChart:setYLabel(label: string) -- Sets the Y-axis label for this area chart.
-LAreaChart:setYMax(v: number) -- Sets the maximum Y-axis value for this area chart.
-LAreaChart:setYTickCount(count: integer) -- Sets the number of Y-axis tick labels for this area chart.
-LAreaChart:type() -> string -- Returns the type name of this object.
-LAreaChart:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
-```
-
 ### LBadge
 
 ```lua
 LBadge:getCount() -> integer -- Returns the current notification count of this badge.
 LBadge:getDisplayText() -> string -- Returns the formatted display text of this badge (e.g. "99+" when count exceeds the maximum).
 LBadge:setCount(count: integer) -- Sets the notification count displayed by this badge.
-```
-
-### LBarChart
-
-```lua
-LBarChart:addCategoriesFromDataFrame(df: LDataFrame, label_col: string, value_cols: string[], [opts]: table) -> integer -- Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
-LBarChart:addCategory(label: string, vals_tbl: table) -- Adds a category with values for each series.
-LBarChart:addSeries(name: string, r: number, g: number, b: number) -- Adds a named series to this bar chart.
-LBarChart:drawToImage(target: LImageData) -- Renders this bar chart to an image buffer.
-LBarChart:setShowLegend(value: boolean) -- Enables or disables the series legend for this bar chart.
-LBarChart:setXLabel(label: string) -- Sets the X-axis label for this bar chart.
-LBarChart:setXTickCount(count: integer) -- Sets the number of X-axis tick labels for this bar chart.
-LBarChart:setYLabel(label: string) -- Sets the Y-axis label for this bar chart.
-LBarChart:setYTickCount(count: integer) -- Sets the number of Y-axis tick labels for this bar chart.
-LBarChart:type() -> string -- Returns the type name of this object.
-LBarChart:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
 
 ### LButton
@@ -8008,23 +8012,6 @@ LLayout:setSpacing(spacing: number) -- Sets the spacing in pixels between child 
 LLayout:setWrap(wrap: boolean) -- Enables or disables wrapping of children to the next row/column when they overflow.
 ```
 
-### LLineChart
-
-```lua
-LLineChart:addSeries(name: string, pts_tbl: table, r: number, g: number, b: number) -- Adds a named series of points to this line chart.
-LLineChart:addSeriesFromDataFrame(name: string, df: LDataFrame, x_col: string, y_col: string, r: number, g: number, b: number, [opts]: table) -> integer -- Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
-LLineChart:drawToImage(target: LImageData) -- Renders this line chart to an image buffer.
-LLineChart:setShowLegend(value: boolean) -- Enables or disables the series legend for this line chart.
-LLineChart:setXLabel(label: string) -- Sets the X-axis label for this line chart.
-LLineChart:setXMax(v: number) -- Sets the maximum X-axis value for this line chart.
-LLineChart:setXTickCount(count: integer) -- Sets the number of X-axis tick labels for this line chart.
-LLineChart:setYLabel(label: string) -- Sets the Y-axis label for this line chart.
-LLineChart:setYMax(v: number) -- Sets the maximum Y-axis value for this line chart.
-LLineChart:setYTickCount(count: integer) -- Sets the number of Y-axis tick labels for this line chart.
-LLineChart:type() -> string -- Returns the type name of this object.
-LLineChart:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
-```
-
 ### LListBox
 
 ```lua
@@ -8079,17 +8066,6 @@ LPanel:setScrollable(scrollable: boolean) -- Enables or disables scrolling withi
 LPanel:setTitle(title: string) -- Sets the title text displayed on this panel's header.
 ```
 
-### LPieChart
-
-```lua
-LPieChart:addSegment(label: string, value: number, r: number, g: number, b: number) -- Adds a labeled segment to this pie chart widget.
-LPieChart:addSegmentsFromDataFrame(df: LDataFrame, label_col: string, value_col: string, [opts]: table) -> integer -- Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric v...
-LPieChart:drawToImage(target: LImageData) -- Renders this pie chart to an image buffer.
-LPieChart:setShowLegend(value: boolean) -- Enables or disables the segment legend for this pie chart.
-LPieChart:type() -> string -- Returns the type name of this object.
-LPieChart:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
-```
-
 ### LProgressBar
 
 ```lua
@@ -8111,23 +8087,6 @@ LRadioButton:setGroup(group: string) -- Sets the radio button group name. Button
 LRadioButton:setOnChange(f: function) -- Registers a callback invoked when this radio button's selection changes.
 LRadioButton:setSelected(v: boolean) -- Sets the selected state of this radio button.
 LRadioButton:setText(text: string) -- Sets the label text of this radio button.
-```
-
-### LScatterPlot
-
-```lua
-LScatterPlot:addSeries(name: string, pts_tbl: table, r: number, g: number, b: number) -- Adds a data series to this scatter plot.
-LScatterPlot:addSeriesFromDataFrame(name: string, df: LDataFrame, x_col: string, y_col: string, r: number, g: number, b: number, [opts]: table) -> integer -- Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
-LScatterPlot:drawToImage(target: LImageData) -- Renders this scatter plot to an image buffer.
-LScatterPlot:setShowLegend(value: boolean) -- Enables or disables the series legend for this scatter plot.
-LScatterPlot:setXLabel(label: string) -- Sets the X-axis label for this scatter plot.
-LScatterPlot:setXRange(mn: number, mx: number) -- Sets the X-axis range for this scatter plot.
-LScatterPlot:setXTickCount(count: integer) -- Sets the number of X-axis tick labels for this scatter plot.
-LScatterPlot:setYLabel(label: string) -- Sets the Y-axis label for this scatter plot.
-LScatterPlot:setYRange(mn: number, mx: number) -- Sets the Y-axis range for this scatter plot.
-LScatterPlot:setYTickCount(count: integer) -- Sets the number of Y-axis tick labels for this scatter plot.
-LScatterPlot:type() -> string -- Returns the type name of this object.
-LScatterPlot:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
 ```
 
 ### LScrollBar
@@ -8467,7 +8426,7 @@ LVisibilityGrid:sharesVisibility(player_a: integer, player_b: integer) -> boolea
 ```lua
 lurek.window.close() -- Closes the window and signals the engine to shut down.
 lurek.window.flash() -- Flashes the window briefly to attract the user's attention.
-lurek.window.focus() -- Requests keyboard focus for the window. No-op if already focused.
+lurek.window.focus() -- Requests keyboard focus for the window. The request is applied by the app loop on the next frame.
 lurek.window.fromPixels(value: number) -> number -- Converts a value from physical pixel units to logical (DPI-independent) units using the current DPI scale.
 lurek.window.getCurrentDisplay() -> number -- Returns the index of the display that currently contains the window.
 lurek.window.getDesktopDimensions([display]: integer) -> number -- Returns the desktop resolution of a specific display, or the current display if none is specified.

@@ -9,6 +9,12 @@ use crate::runtime::log_messages::{BB01, BB02, BB03};
 use std::collections::HashMap;
 use std::fmt;
 /// Typed value stored in a `Blackboard` entry.
+///
+/// # Variants
+/// - `Bool`: Boolean flag value.
+/// - `Number`: Floating-point numeric value.
+/// - `Text`: UTF-8 string value.
+/// - `Nil`: Explicit absent value.
 #[derive(Debug, Clone, PartialEq)]
 pub enum BlackboardValue {
     /// Boolean flag.
@@ -36,6 +42,10 @@ impl fmt::Display for BlackboardValue {
 /// Used as the canonical blackboard type by both `crate::patterns` and `crate::ai`.
 /// The patterns layer provides structural storage and revision tracking.
 /// The AI layer adds runtime parent-chain semantics via [`set_parent`](Blackboard::set_parent).
+///
+/// # Fields
+/// - `name`: Debug name for this board instance.
+/// - `revision`: Global monotonic write counter.
 #[derive(Debug, Clone)]
 pub struct Blackboard {
     /// Debug name for the board instance.
@@ -130,7 +140,9 @@ impl Blackboard {
     }
     /// Return all local keys as owned strings.
     pub fn keys(&self) -> Vec<String> {
-        self.data.keys().cloned().collect()
+        let mut keys: Vec<String> = self.data.keys().cloned().collect();
+        keys.sort();
+        keys
     }
     /// Return all `(key, value)` pairs as a vector (local entries only).
     pub fn snapshot(&self) -> Vec<(&str, &BlackboardValue)> {

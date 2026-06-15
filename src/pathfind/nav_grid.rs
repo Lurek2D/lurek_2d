@@ -56,13 +56,31 @@ pub struct NavGrid {
 }
 /// Construction, query, and mutation methods for `NavGrid`.
 impl NavGrid {
+    /// Return the flat storage length for `width * height`, panicking with context on overflow.
+    fn grid_len(width: u32, height: u32) -> usize {
+        width
+            .checked_mul(height)
+            .and_then(|len| usize::try_from(len).ok())
+            .expect("NavGrid dimensions overflow addressable storage")
+    }
+
+    /// Return the flat cell index for `(x, y)`, or `None` when out-of-bounds.
+    fn index(&self, x: u32, y: u32) -> Option<usize> {
+        if x >= self.width || y >= self.height {
+            return None;
+        }
+        y.checked_mul(self.width)
+            .and_then(|row| row.checked_add(x))
+            .and_then(|idx| usize::try_from(idx).ok())
+    }
+
     /// Create a fully walkable `width × height` grid with all costs set to `1`.
     pub fn new(width: u32, height: u32) -> Self {
         log_msg!(debug, NG01, "{}x{}", width, height);
         Self {
             width,
             height,
-            costs: vec![1u8; (width * height) as usize],
+            costs: vec![1u8; Self::grid_len(width, height)],
             chunk_size: 16,
             diagonal_mode: DiagonalMode::NoCornerCut,
             dirty_rects: Vec::new(),
@@ -72,7 +90,7 @@ impl NavGrid {
     pub fn from_costs(width: u32, height: u32, costs: Vec<u8>) -> Self {
         assert_eq!(
             costs.len(),
-            (width * height) as usize,
+            Self::grid_len(width, height),
             "costs length must equal width * height"
         );
         log_msg!(debug, NG02, "{}x{} {} costs", width, height, costs.len());
@@ -99,16 +117,13 @@ impl NavGrid {
     }
     /// Return the cost at `(x, y)`; returns `0` (blocked) for out-of-bounds coordinates.
     pub fn get_cost(&self, x: u32, y: u32) -> u8 {
-        if x >= self.width || y >= self.height {
-            return 0;
-        }
-        self.costs[(y * self.width + x) as usize]
+        self.index(x, y).map_or(0, |idx| self.costs[idx])
     }
     /// Set the cost at `(x, y)`; silently ignores out-of-bounds coordinates.
     pub fn set_cost(&mut self, x: u32, y: u32, cost: u8) {
-        if x < self.width && y < self.height {
+        if let Some(idx) = self.index(x, y) {
             log_msg!(trace, NG03, "({}, {})={}", x, y, cost);
-            self.costs[(y * self.width + x) as usize] = cost;
+            self.costs[idx] = cost;
         }
     }
     /// Return true when `(x, y)` has cost `0` (blocked) or is out-of-bounds.
@@ -122,7 +137,13 @@ impl NavGrid {
     /// Return true when a `unit_size × unit_size` footprint anchored at `(x, y)` is fully walkable.
     pub fn is_walkable(&self, x: u32, y: u32, unit_size: u32) -> bool {
         let size = unit_size.max(1);
-        if x + size > self.width || y + size > self.height {
+        let Some(x_end) = x.checked_add(size) else {
+            return false;
+        };
+        let Some(y_end) = y.checked_add(size) else {
+            return false;
+        };
+        if x_end > self.width || y_end > self.height {
             return false;
         }
         for dy in 0..size {
@@ -140,17 +161,19 @@ impl NavGrid {
     }
     /// Set all cells in the axis-aligned rectangle at `(x, y, w, h)` to `cost`.
     pub fn fill_rect(&mut self, x: u32, y: u32, w: u32, h: u32, cost: u8) {
-        let x_end = (x + w).min(self.width);
-        let y_end = (y + h).min(self.height);
+        let x_end = x.saturating_add(w).min(self.width);
+        let y_end = y.saturating_add(h).min(self.height);
         for cy in y..y_end {
             for cx in x..x_end {
-                self.costs[(cy * self.width + cx) as usize] = cost;
+                if let Some(idx) = self.index(cx, cy) {
+                    self.costs[idx] = cost;
+                }
             }
         }
     }
     /// Replace the cost buffer from `data`; return an error if the length does not match `width * height`.
     pub fn load_from_bytes(&mut self, data: &[u8]) -> Result<(), String> {
-        let expected = (self.width * self.height) as usize;
+        let expected = Self::grid_len(self.width, self.height);
         if data.len() != expected {
             return Err(format!("expected {} bytes, got {}", expected, data.len()));
         }

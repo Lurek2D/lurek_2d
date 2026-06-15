@@ -598,6 +598,17 @@ describe("camera explicit owner coverage", function()
         expect_near(0.0, wy, 0.001)
     end)
 
+    it("round-trips coordinates with viewport offsets", function()
+        local cam = new_camera_local()
+        cam:setViewport(80, 40, 320, 240)
+        cam:setPosition(25, -10)
+        cam:setZoom(2.0)
+        local world_x, world_y = cam:toWorld(200, 150)
+        local screen_x, screen_y = cam:toScreen(world_x, world_y)
+        expect_near(200.0, screen_x, 0.001)
+        expect_near(150.0, screen_y, 0.001)
+    end)
+
     -- @covers LCamera:pathProgress
     it("returns path progress while following a path", function()
         local cam = new_camera_local()

@@ -169,6 +169,7 @@
   - [dune2_like](#dune2like)
   - [eu2](#eu2)
   - [frontier_tactics](#frontiertactics)
+  - [hex_logistics](#hexlogistics)
   - [hex_strategy](#hexstrategy)
   - [logic_game](#logicgame)
   - [match3](#match3)
@@ -1374,6 +1375,14 @@ Playable grand-strategy province slice with semi-historical countries, campaign 
 **Category:** strategy / tactics **Status:** skeleton
 
 **Modules:** [ai](Module-ai), [event](Module-event), [input](Module-input), [minimap](Module-minimap), [pathfind](Module-pathfind), [render](Module-render), [tilemap](Module-tilemap), [visibility](Module-visibility), +1
+
+### [hex_logistics](../tree/main/content/games/strategy/hex_logistics)
+
+![hex_logistics screenshot](../raw/main/content/games/strategy/hex_logistics/screen.png)
+
+Real-time hex logistics prototype with ship-based construction, local building storage, and physical resource drones.
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [math](Module-math), [render](Module-render), [timer](Module-timer), [window](Module-window)
 
 ### [hex_strategy](../tree/main/content/games/strategy/hex_strategy)
 

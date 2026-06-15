@@ -75,7 +75,7 @@ A static `MODULES` slice in `src/lua_api/register.rs` holds all standard modules
 
 ### Feature-Gated Modules
 
-Modules behind Cargo features (`automation-plugin`, `devtools-plugin`, `graph`, `ui-charts`) cannot appear in the static slice because `#[cfg]` is a compile-time decision. These are registered separately after the slice iteration:
+Modules behind Cargo features (`automation-plugin`, `devtools-plugin`, `graph`, `charts`) cannot appear in the static slice because `#[cfg]` is a compile-time decision. These are registered separately after the slice iteration:
 
 ```rust
 #[cfg(feature = "devtools-plugin")]

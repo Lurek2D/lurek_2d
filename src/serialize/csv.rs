@@ -9,6 +9,10 @@ use indexmap::IndexMap;
 use std::io::Read;
 
 /// Options controlling CSV parsing and serialization behavior.
+///
+/// # Fields
+/// - `delimiter`: Single-byte field separator used when reading and writing CSV.
+/// - `has_headers`: Whether the first row should be treated as column names.
 #[derive(Debug, Clone, Copy)]
 pub struct CsvOptions {
     /// Column separator byte (default `,`).
@@ -80,10 +84,40 @@ pub fn to_csv(val: &SerialValue, opts: CsvOptions) -> Result<String, String> {
         if let Some(first) = rows.first() {
             match first {
                 SerialValue::Map(map) => {
-                    let headers: Vec<&str> = map.keys().map(|k| k.as_str()).collect();
+                    let headers: Vec<String> = map.keys().cloned().collect();
                     writer
                         .write_record(&headers)
                         .map_err(|e| format!("CSV encode error: {e}"))?;
+
+                    for row in rows {
+                        match row {
+                            SerialValue::Map(map) => {
+                                let values: Vec<String> = headers
+                                    .iter()
+                                    .map(|header| {
+                                        map.get(header)
+                                            .map(ToString::to_string)
+                                            .unwrap_or_default()
+                                    })
+                                    .collect();
+                                writer
+                                    .write_record(&values)
+                                    .map_err(|e| format!("CSV encode error: {e}"))?;
+                            }
+                            _ => {
+                                return Err(
+                                    "to_csv: rows must be maps when has_headers is true"
+                                        .to_string(),
+                                )
+                            }
+                        }
+                    }
+                    writer
+                        .flush()
+                        .map_err(|e| format!("CSV encode error: {e}"))?;
+                    drop(writer);
+                    return String::from_utf8(out)
+                        .map_err(|e| format!("CSV encode error: {e}"));
                 }
                 _ => return Err("to_csv: rows must be maps when has_headers is true".to_string()),
             }

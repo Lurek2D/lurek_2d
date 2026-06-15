@@ -5,9 +5,11 @@
 - This module gives users a simulation-ready logistics graph for resource movement and transformation gameplay.
 - You can model producers, consumers, processors, and transit routes as explicit network structures.
 - Node capacities, queue behavior, and overflow policies control how congestion is handled.
+- Planner-facing capacity reservations let scripts soft-book node and edge slots before committing transfers.
 - Push and pull mechanics support both source-driven and demand-driven transfer strategies.
 - Edge constraints such as throughput, cooldown, direction, and filtering define realistic transport limits.
 - Item lifecycles include transit, placement, decay, and cleanup behavior for long-running simulations.
+- Item placement is single-owner: one item cannot validly exist in multiple node, queue, or transit containers at once.
 - Conversion rules enable factory-style nodes that transform inputs into outputs over time.
 - Pathfinding support computes practical routes under dynamic network constraints.
 - Supply-demand balancing helps route available goods toward prioritized deficits.
@@ -18,6 +20,7 @@
 - Debug render output helps users visualize topology quickly while tuning behavior.
 - Event callbacks expose simulation transitions for UI and analytics integration.
 - Subgraph extraction allows focused operations on selected regions of a large network.
+- Versioned serialization preserves full node, edge, item, queue, and transit state for deterministic round-trips.
 - Bulk node and edge creation supports procedural generation workflows.
 - The module is suitable for economy loops, factory systems, routing puzzles, and colony logistics.
 - It combines planning, simulation, and diagnostics in one runtime surface.
@@ -1443,6 +1446,61 @@ end
 
 ---
 
+#### `LGraphEdge:clearCapacityReservations`
+
+Removes every transit capacity reservation from this edge.
+
+```lua
+LGraphEdge:clearCapacityReservations()
+```
+
+**Example**
+
+```lua
+do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    local e = g:addEdge(a, b)
+    e:setCapacity(4)
+    e:reserveCapacity("planner-a", 2)
+    e:clearCapacityReservations()
+    print("reserved capacity = " .. e:getReservedCapacity())
+end
+```
+
+---
+
+#### `LGraphEdge:getAvailableCapacity`
+
+Returns how many transit slots remain after active items and reservations, or -1 when unlimited.
+
+```lua
+LGraphEdge:getAvailableCapacity()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Available transit slots, or -1 when the edge capacity is unlimited. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    local e = g:addEdge(a, b)
+    e:setCapacity(4)
+    e:reserveCapacity("planner-a", 2)
+    print("available capacity = " .. e:getAvailableCapacity())
+end
+```
+
+---
+
 #### `LGraphEdge:getCapacity`
 
 Returns this edge's maximum concurrent item capacity.
@@ -1550,6 +1608,36 @@ do
     local e = g:addEdge(a, b)
     local items = e:getItemsInTransit()
     print("in transit = " .. #items)
+end
+```
+
+---
+
+#### `LGraphEdge:getReservedCapacity`
+
+Returns the total transit capacity reserved on this edge across all reservation keys.
+
+```lua
+LGraphEdge:getReservedCapacity()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Reserved transit slot count. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    local e = g:addEdge(a, b)
+    e:setCapacity(4)
+    e:reserveCapacity("planner-a", 2)
+    print("reserved capacity = " .. e:getReservedCapacity())
 end
 ```
 
@@ -1841,6 +1929,44 @@ end
 
 ---
 
+#### `LGraphEdge:releaseCapacityReservation`
+
+Releases reserved transit capacity for a key and returns the number of slots removed.
+
+```lua
+LGraphEdge:releaseCapacityReservation(key, slots)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `key` | string | Reservation key to release. |
+| `slots?` | number | Number of slots to release, defaulting to all slots for that key. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of slots actually released. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    local e = g:addEdge(a, b)
+    e:setCapacity(4)
+    e:reserveCapacity("planner-a", 2)
+    local released = e:releaseCapacityReservation("planner-a", 1)
+    print("released slots = " .. released)
+end
+```
+
+---
+
 #### `LGraphEdge:removeAllowedType`
 
 Removes an item type from this edge's allow-list.
@@ -1871,6 +1997,43 @@ do
     e:addAllowedType("coal")
     local ok = e:removeAllowedType("coal")
     print("removed = " .. tostring(ok))
+end
+```
+
+---
+
+#### `LGraphEdge:reserveCapacity`
+
+Reserves transit capacity slots under a caller-provided key for planning and coordination.
+
+```lua
+LGraphEdge:reserveCapacity(key, slots)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `key` | string | Reservation key used to group planner-owned capacity holds. |
+| `slots?` | number | Number of slots to reserve, defaulting to 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the reservation fit within currently available capacity. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    local e = g:addEdge(a, b)
+    e:setCapacity(4)
+    local ok = e:reserveCapacity("planner-a", 2)
+    print("reservation accepted = " .. tostring(ok))
 end
 ```
 
@@ -2633,6 +2796,28 @@ end
 
 ---
 
+#### `LGraphNode:clearCapacityReservations`
+
+Removes every inventory capacity reservation from this node.
+
+```lua
+LGraphNode:clearCapacityReservations()
+```
+
+**Example**
+
+```lua
+do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode("warehouse", 5)
+    n:reserveCapacity("planner-a", 2)
+    n:clearCapacityReservations()
+    print("reserved capacity = " .. n:getReservedCapacity())
+end
+```
+
+---
+
 #### `LGraphNode:clearConversion`
 
 Removes a conversion rule by input item type.
@@ -2801,6 +2986,33 @@ do
     local queued = n:enqueue(item)
     print("queue size = " .. n:getQueueSize())
     print("enqueued = " .. tostring(queued))
+end
+```
+
+---
+
+#### `LGraphNode:getAvailableCapacity`
+
+Returns how many node inventory slots remain after active items and reservations, or -1 when unlimited.
+
+```lua
+LGraphNode:getAvailableCapacity()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Available inventory slots, or -1 when the node capacity is unlimited. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode("warehouse", 5)
+    n:reserveCapacity("planner-a", 2)
+    print("available capacity = " .. n:getAvailableCapacity())
 end
 ```
 
@@ -3156,6 +3368,33 @@ end
 
 ---
 
+#### `LGraphNode:getReservedCapacity`
+
+Returns the total item capacity reserved on this node across all reservation keys.
+
+```lua
+LGraphNode:getReservedCapacity()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Reserved node slot count. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode("warehouse", 5)
+    n:reserveCapacity("planner-a", 2)
+    print("reserved capacity = " .. n:getReservedCapacity())
+end
+```
+
+---
+
 #### `LGraphNode:getTags`
 
 Returns all tags assigned to this node.
@@ -3322,6 +3561,41 @@ end
 
 ---
 
+#### `LGraphNode:releaseCapacityReservation`
+
+Releases reserved node capacity for a key and returns the number of slots removed.
+
+```lua
+LGraphNode:releaseCapacityReservation(key, slots)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `key` | string | Reservation key to release. |
+| `slots?` | number | Number of slots to release, defaulting to all slots for that key. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Number of slots actually released. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode("warehouse", 5)
+    n:reserveCapacity("planner-a", 2)
+    local released = n:releaseCapacityReservation("planner-a", 1)
+    print("released slots = " .. released)
+end
+```
+
+---
+
 #### `LGraphNode:removeDemand`
 
 Removes demand entry for an item type from this node.
@@ -3419,6 +3693,40 @@ do
     n:addTag("temp")
     local ok = n:removeTag("temp")
     print("removed = " .. tostring(ok))
+end
+```
+
+---
+
+#### `LGraphNode:reserveCapacity`
+
+Reserves node inventory capacity under a caller-provided key for planning and coordination.
+
+```lua
+LGraphNode:reserveCapacity(key, slots)
+```
+
+**Parameters**
+
+| Name | Type | Description |
+|------|------|-------------|
+| `key` | string | Reservation key used to group planner-owned capacity holds. |
+| `slots?` | number | Number of slots to reserve, defaulting to 1. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the reservation fit within currently available capacity. |
+
+**Example**
+
+```lua
+do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode("warehouse", 5)
+    local ok = n:reserveCapacity("planner-a", 2)
+    print("reservation accepted = " .. tostring(ok))
 end
 ```
 

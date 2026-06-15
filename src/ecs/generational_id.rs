@@ -3,6 +3,9 @@
 //! Delivers the identity encoding contract used by ECS storage and lifecycle reuse rules.
 
 /// Stateless namespace for encoding and decoding packed entity identifiers.
+///
+/// # Fields
+/// This helper owns no runtime fields; it is a zero-sized namespace type.
 pub struct GenerationalId;
 
 /// Encoding and decoding helpers for packed generational entity ids.

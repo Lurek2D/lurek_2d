@@ -5,7 +5,7 @@
 - The repl module gives users an embeddable headless Lua REPL for live runtime inspection and quick experimentation.
 - Session state includes bounded history so command context stays manageable over long usage.
 - Colon-prefixed commands support console-style control behavior alongside Lua evaluation.
-- Completion scans keywords and live globals, including dot-path suggestions.
+- Completion scans keywords and live globals, including top-level and dot-path suggestions.
 - Value formatting produces readable output suited to interactive debugging sessions.
 
 This module is mostly self-contained inside the `Core Runtime` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.

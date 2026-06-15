@@ -874,7 +874,7 @@ LSaveManager:update(dt)
 
 | Type | Description |
 |------|-------------|
-| boolean | True if an auto-save was triggered during this update. |
+| string | Auto-save slot name when save work is due, or nil when no flush is needed yet. |
 
 **Example**
 

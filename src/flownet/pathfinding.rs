@@ -288,7 +288,9 @@ impl Graph {
                 result.insert(edge.from_node);
             }
         }
-        result.into_iter().collect()
+        let mut neighbors: Vec<u64> = result.into_iter().collect();
+        neighbors.sort_unstable();
+        neighbors
     }
     /// Reconstruct a path result from predecessor links and the final cost.
     fn reconstruct_path(

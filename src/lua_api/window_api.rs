@@ -1,22 +1,231 @@
 //! File: src/lua_api/window_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
+//! Registers the public `lurek.window` API used by scripts to inspect and request desktop window changes.
+//! Keeps Lua bindings thin by delegating window state mutations and display queries to `src/window/`.
+//! Bridges Lua tables into typed deferred window commands so the event loop can apply them safely.
 
 use super::SharedState;
 use crate::window;
+use crate::window::management::{
+    apply_window_config_request, open_file_dialog_paths, request_display_change, FileDialogFilter,
+    FileDialogOptions, WindowConfigRequest,
+};
 use mlua::prelude::*;
-use rfd;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+fn normalize_display_index(display: Option<i32>) -> Option<usize> {
+    display.and_then(|value| usize::try_from(value).ok())
+}
+
+fn require_non_negative_display_index(display: i32) -> LuaResult<i32> {
+    if display < 0 {
+        return Err(LuaError::RuntimeError(
+            "lurek.window.setDisplay: display index must be >= 0".to_string(),
+        ));
+    }
+    Ok(display)
+}
+
+fn validate_icon_path(state: &SharedState, path: &str) -> LuaResult<()> {
+    if path.is_empty() {
+        return Err(LuaError::RuntimeError(
+            "lurek.window.setIcon: path must not be empty".to_string(),
+        ));
+    }
+    if !state.fs.exists(path) {
+        return Err(LuaError::RuntimeError(format!(
+            "lurek.window.setIcon: file not found: {path}"
+        )));
+    }
+    Ok(())
+}
+
+fn parse_mode_flags(flags: Option<&LuaTable>) -> LuaResult<(Option<bool>, Option<String>, Option<i32>)> {
+    let fullscreen = flags
+        .map(|table| table.get::<_, bool>("fullscreen"))
+        .transpose()?;
+    let fullscreen_type = flags
+        .map(|table| table.get::<_, String>("fullscreentype"))
+        .transpose()?;
+    let vsync = flags
+        .map(|table| table.get::<_, i32>("vsync"))
+        .transpose()?;
+    Ok((fullscreen, fullscreen_type, vsync))
+}
+
+fn parse_window_config_request(opts: &LuaTable) -> LuaResult<WindowConfigRequest> {
+    Ok(WindowConfigRequest {
+        title: opts.get::<_, String>("title").ok(),
+        size: match (opts.get::<_, u32>("width").ok(), opts.get::<_, u32>("height").ok()) {
+            (Some(width), Some(height)) => Some((width, height)),
+            _ => None,
+        },
+        fullscreen: opts.get::<_, bool>("fullscreen").ok(),
+        fullscreen_type: opts.get::<_, String>("fullscreentype").ok(),
+        vsync: opts.get::<_, i32>("vsync").ok(),
+        position: match (opts.get::<_, i32>("x").ok(), opts.get::<_, i32>("y").ok()) {
+            (Some(x), Some(y)) => Some((x, y)),
+            _ => None,
+        },
+        scale_mode: opts.get::<_, String>("scaleMode").ok(),
+        display: opts.get::<_, i32>("display").ok(),
+    })
+}
+
+fn parse_file_dialog_options(opts: Option<LuaTable>) -> LuaResult<FileDialogOptions> {
+    let Some(opts) = opts else {
+        return Ok(FileDialogOptions {
+            title: None,
+            default_path: None,
+            multiple: false,
+            filters: Vec::new(),
+        });
+    };
+
+    let mut filters = Vec::new();
+    if let Ok(filter_table) = opts.get::<_, LuaTable>("filters") {
+        for item in filter_table.sequence_values::<LuaTable>() {
+            let filter = item?;
+            let name = filter.get::<_, String>("name").unwrap_or_default();
+            let extensions = filter
+                .get::<_, LuaTable>("extensions")
+                .ok()
+                .map(|exts| exts.sequence_values::<String>().filter_map(Result::ok).collect())
+                .unwrap_or_default();
+            filters.push(FileDialogFilter { name, extensions });
+        }
+    }
+
+    Ok(FileDialogOptions {
+        title: opts.get::<_, String>("title").ok(),
+        default_path: opts.get::<_, String>("defaultPath").ok(),
+        multiple: opts.get::<_, bool>("multiple").unwrap_or(false),
+        filters,
+    })
+}
+
+fn make_display_table<'lua>(
+    lua: &'lua Lua,
+    display: &window::DisplayInfo,
+) -> LuaResult<LuaTable<'lua>> {
+    let info = lua.create_table()?;
+    info.set("index", display.index)?;
+    info.set("name", display.name.as_str())?;
+    info.set("x", display.x)?;
+    info.set("y", display.y)?;
+    info.set("width", display.width)?;
+    info.set("height", display.height)?;
+    info.set("scale", display.scale_factor)?;
+    info.set("refreshRate", display.refresh_rate_hz)?;
+    info.set("primary", display.primary)?;
+    Ok(info)
+}
+
+fn make_display_list_table<'lua>(
+    lua: &'lua Lua,
+    displays: &[window::DisplayInfo],
+) -> LuaResult<LuaTable<'lua>> {
+    let result = lua.create_table()?;
+    for (idx, display) in displays.iter().enumerate() {
+        result.set(idx + 1, make_display_table(lua, display)?)?;
+    }
+    Ok(result)
+}
+
+fn make_mode_flags_table(lua: &Lua, info: window::ModeInfo) -> LuaResult<LuaTable<'_>> {
+    let flags = lua.create_table()?;
+    flags.set("fullscreen", info.fullscreen)?;
+    flags.set("fullscreentype", info.fullscreen_type)?;
+    flags.set("vsync", info.vsync)?;
+    Ok(flags)
+}
+
+fn make_scale_info_table(lua: &Lua, info: window::ScaleInfo) -> LuaResult<LuaTable<'_>> {
+    let table = lua.create_table()?;
+    table.set("scale_x", info.scale_x)?;
+    table.set("scale_y", info.scale_y)?;
+    table.set("offset_x", info.offset_x)?;
+    table.set("offset_y", info.offset_y)?;
+    table.set("game_width", info.game_width)?;
+    table.set("game_height", info.game_height)?;
+    Ok(table)
+}
+
+fn make_fullscreen_modes_table<'lua>(
+    lua: &'lua Lua,
+    modes: &[window::FullscreenModeInfo],
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    for (idx, mode) in modes.iter().enumerate() {
+        let entry = lua.create_table()?;
+        entry.set("width", mode.width)?;
+        entry.set("height", mode.height)?;
+        entry.set("refreshRate", mode.refresh_rate_hz)?;
+        table.set(idx + 1, entry)?;
+    }
+    Ok(table)
+}
+
+fn string_list_table<'lua>(
+    lua: &'lua Lua,
+    values: &[String],
+) -> LuaResult<LuaTable<'lua>> {
+    let table = lua.create_table()?;
+    for (idx, value) in values.iter().enumerate() {
+        table.set(idx + 1, value.as_str())?;
+    }
+    Ok(table)
+}
+
+fn replace_registry_callback(
+    lua: &Lua,
+    slot: &RefCell<Option<LuaRegistryKey>>,
+    func: LuaFunction,
+) -> LuaResult<()> {
+    let key = lua.create_registry_value(func)?;
+    if let Some(old) = slot.borrow_mut().replace(key) {
+        lua.remove_registry_value(old)?;
+    }
+    Ok(())
+}
+
+fn poll_dpi_change_callback(
+    lua: &Lua,
+    state: &SharedState,
+    prev_dpi: &RefCell<f64>,
+    callback: &RefCell<Option<LuaRegistryKey>>,
+) -> LuaResult<f64> {
+    let current = state.window_state.dpi_scale;
+    let prev = *prev_dpi.borrow();
+    if (current - prev).abs() > f64::EPSILON {
+        *prev_dpi.borrow_mut() = current;
+        if let Some(key) = callback.borrow().as_ref() {
+            if let Ok(func) = lua.registry_value::<LuaFunction>(key) {
+                func.call::<_, ()>(current)?;
+            }
+        }
+    }
+    Ok(current)
+}
+
+fn open_file_dialog_result<'lua>(
+    lua: &'lua Lua,
+    state: &SharedState,
+    opts: Option<LuaTable<'lua>>,
+) -> LuaResult<LuaValue<'lua>> {
+    if matches!(state.runtime_mode, crate::runtime::RuntimeMode::Headless) {
+        return Ok(LuaValue::Table(lua.create_table()?));
+    }
+    let options = parse_file_dialog_options(opts)?;
+    let paths = open_file_dialog_paths(&options);
+    Ok(LuaValue::Table(string_list_table(lua, &paths)?))
+}
 
 /// Registers the `lurek.window` module and all its Lua-facing methods.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+
+    // --- Basic window properties ---
     let s = state.clone();
     // -- setTitle --
     /// Sets the window title bar text. This function is exposed to Lua scripts.
@@ -217,6 +426,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 .unwrap_or(1))
         })?,
     )?;
+
+    // --- Position and displays ---
     let s = state.clone();
     // -- getDisplays --
     /// Returns a list of all connected displays with their properties. Each entry contains index, name, position (x, y), resolution (width, height), scale factor, refresh rate, and whether it is the primary monitor.
@@ -233,54 +444,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "getDisplays",
         lua.create_function(move |lua, ()| {
-            let result = lua.create_table()?;
             let st = s.borrow();
-            if let Some(win) = st.window.as_ref() {
-                for (idx, display) in window::get_displays(win).iter().enumerate() {
-                    let info = lua.create_table()?;
-                    /// Performs the 'index' operation.
-                    info.set("index", display.index)?;
-                    /// Performs the 'name' operation.
-                    info.set("name", display.name.as_str())?;
-                    /// The 'x' field value exposed to Lua scripts.
-                    info.set("x", display.x)?;
-                    /// The 'y' field value exposed to Lua scripts.
-                    info.set("y", display.y)?;
-                    /// Performs the 'width' operation.
-                    info.set("width", display.width)?;
-                    /// Performs the 'height' operation.
-                    info.set("height", display.height)?;
-                    /// Performs the 'scale' operation.
-                    info.set("scale", display.scale_factor)?;
-                    /// Performs the 'refreshRate' operation.
-                    info.set("refreshRate", display.refresh_rate_hz)?;
-                    /// Performs the 'primary' operation.
-                    info.set("primary", display.primary)?;
-                    result.set(idx + 1, info)?;
-                }
-                return Ok(result);
-            }
-            let fallback = lua.create_table()?;
-            /// Performs the 'index' operation.
-            fallback.set("index", 0)?;
-            /// Performs the 'name' operation.
-            fallback.set("name", "Primary")?;
-            /// The 'x' field value exposed to Lua scripts.
-            fallback.set("x", 0)?;
-            /// The 'y' field value exposed to Lua scripts.
-            fallback.set("y", 0)?;
-            /// Performs the 'width' operation.
-            fallback.set("width", st.window_width)?;
-            /// Performs the 'height' operation.
-            fallback.set("height", st.window_height)?;
-            /// Performs the 'scale' operation.
-            fallback.set("scale", st.window_state.dpi_scale)?;
-            /// Performs the 'refreshRate' operation.
-            fallback.set("refreshRate", 60)?;
-            /// Performs the 'primary' operation.
-            fallback.set("primary", true)?;
-            result.set(1, fallback)?;
-            Ok(result)
+            let displays = window::display_snapshots(
+                st.window.as_deref(),
+                st.window_width,
+                st.window_height,
+                st.window_state.dpi_scale,
+            );
+            make_display_list_table(lua, &displays)
         })?,
     )?;
     let s = state.clone();
@@ -290,13 +461,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "getCurrentDisplay",
         lua.create_function(move |_, ()| {
-            let st = s.borrow();
-            Ok(st
-                .window
-                .as_ref()
-                .and_then(|w| window::current_display_index(w))
-                .map(|idx| idx as i32)
-                .unwrap_or(0))
+            Ok(window::current_display_index_or_default(
+                s.borrow().window.as_deref(),
+            ))
         })?,
     )?;
     let s = state.clone();
@@ -306,12 +473,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "setDisplay",
         lua.create_function(move |_, display: i32| {
-            if !window::set_display(&mut s.borrow_mut().window_state, display) {
-                return Err(LuaError::RuntimeError(
-                    "setDisplay: display index must be >= 0".to_string(),
-                ));
-            }
-            Ok(())
+            require_non_negative_display_index(display)?;
+            request_display_change(&mut s.borrow_mut().window_state, display)
+                .map_err(LuaError::RuntimeError)
         })?,
     )?;
     let s = state.clone();
@@ -324,21 +488,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getDesktopDimensions",
         lua.create_function(move |_, display: Option<i32>| {
             let st = s.borrow();
-            if let Some(win) = st.window.as_ref() {
-                let display_index = display.and_then(|value| {
-                    if value < 0 {
-                        None
-                    } else {
-                        Some(value as usize)
-                    }
-                });
-                if let Some((w, h)) = window::desktop_dimensions_for_display(win, display_index) {
-                    return Ok((w, h));
-                }
-            }
-            Ok((st.window_width, st.window_height))
+            Ok(window::desktop_dimensions_or_fallback(
+                st.window.as_deref(),
+                normalize_display_index(display),
+                st.window_width,
+                st.window_height,
+            ))
         })?,
     )?;
+
+    // --- DPI and scale ---
     let s = state.clone();
     // -- getDPIScale --
     /// Returns the current DPI scale factor of the window. A value of 2.0 means the display uses 2x scaling (e.g., Retina).
@@ -376,15 +535,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "setIcon",
         lua.create_function(move |_, path: String| {
-            if path.is_empty() {
-                return Err(LuaError::RuntimeError(
-                    "setIcon: path must not be empty".to_string(),
-                ));
-            }
-            if !s.borrow().fs.exists(&path) {
-                return Err(LuaError::RuntimeError(format!(
-                    "setIcon: file not found: {path}"
-                )));
+            {
+                let shared = s.borrow();
+                validate_icon_path(&shared, &path)?;
             }
             window::set_icon(&mut s.borrow_mut().window_state, &path);
             Ok(())
@@ -399,13 +552,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "setMode",
         lua.create_function(move |_, (w, h, flags): (u32, u32, Option<LuaTable>)| {
-            let fs = flags
-                .as_ref()
-                .and_then(|f| f.get::<_, bool>("fullscreen").ok());
-            let fst = flags
-                .as_ref()
-                .and_then(|f| f.get::<_, String>("fullscreentype").ok());
-            let vsync = flags.as_ref().and_then(|f| f.get::<_, i32>("vsync").ok());
+            let (fs, fst, vsync) = parse_mode_flags(flags.as_ref())?;
             window::set_mode(
                 &mut s.borrow_mut().window_state,
                 w,
@@ -417,6 +564,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             Ok(())
         })?,
     )?;
+
+    // --- Fullscreen and mode ---
     let s = state.clone();
     // -- getMode --
     /// Returns the current window display mode: width, height, and a flags table containing fullscreen state, fullscreen type, and VSync mode.
@@ -431,14 +580,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |lua, ()| {
             let st = s.borrow();
             let info = window::get_mode(&st.window_state);
-            let flags = lua.create_table()?;
-            /// Performs the 'fullscreen' operation.
-            flags.set("fullscreen", info.fullscreen)?;
-            /// Performs the 'fullscreentype' operation.
-            flags.set("fullscreentype", info.fullscreen_type)?;
-            /// Performs the 'vsync' operation.
-            flags.set("vsync", info.vsync)?;
-            Ok((st.window_width, st.window_height, flags))
+            Ok((st.window_width, st.window_height, make_mode_flags_table(lua, info)?))
         })?,
     )?;
     let s = state.clone();
@@ -448,37 +590,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "windowConfig",
         lua.create_function(move |_, opts: LuaTable| {
+            let request = parse_window_config_request(&opts)?;
             let mut st = s.borrow_mut();
-            if let Ok(title) = opts.get::<_, String>("title") {
-                window::set_title(&mut st.window_state, &title);
-            }
-            let width = opts.get::<_, u32>("width").ok();
-            let height = opts.get::<_, u32>("height").ok();
-            if let (Some(w), Some(h)) = (width, height) {
-                let fullscreen = opts.get::<_, bool>("fullscreen").ok();
-                let fullscreentype = opts.get::<_, String>("fullscreentype").ok();
-                let vsync = opts.get::<_, i32>("vsync").ok();
-                window::set_mode(
-                    &mut st.window_state,
-                    w,
-                    h,
-                    fullscreen,
-                    fullscreentype.as_deref(),
-                    vsync,
-                );
-            }
-            if let (Ok(x), Ok(y)) = (opts.get::<_, i32>("x"), opts.get::<_, i32>("y")) {
-                window::set_position(&mut st.window_state, x, y);
-            }
-            if let Ok(scale_mode) = opts.get::<_, String>("scaleMode") {
-                window::set_scale_mode_validated(&mut st.window_state, &scale_mode);
-            }
-            if let Ok(display) = opts.get::<_, i32>("display") {
-                let _ = window::set_display(&mut st.window_state, display);
-            }
+            apply_window_config_request(&mut st.window_state, request);
             Ok(())
         })?,
     )?;
+
+    // --- State queries ---
     let s = state.clone();
     // -- close --
     /// Closes the window and signals the engine to shut down.
@@ -519,26 +638,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "getFullscreenModes",
         lua.create_function(move |lua, ()| {
-            let result = lua.create_table()?;
-            let st = s.borrow();
-            if let Some(win) = st.window.as_ref() {
-                let mut idx = 1i32;
-                for monitor in win.available_monitors() {
-                    for mode in monitor.video_modes() {
-                        let t = lua.create_table()?;
-                        let sz = mode.size();
-                        /// Performs the 'width' operation.
-                        t.set("width", sz.width)?;
-                        /// Performs the 'height' operation.
-                        t.set("height", sz.height)?;
-                        /// Performs the 'refreshRate' operation.
-                        t.set("refreshRate", mode.refresh_rate_millihertz() / 1000)?;
-                        result.set(idx, t)?;
-                        idx += 1;
-                    }
-                }
-            }
-            Ok(result)
+            let modes = window::fullscreen_mode_snapshots(s.borrow().window.as_deref());
+            make_fullscreen_modes_table(lua, &modes)
         })?,
     )?;
     let s = state.clone();
@@ -549,20 +650,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "getDisplayName",
         lua.create_function(move |_, display: Option<i32>| {
-            let st = s.borrow();
-            if let Some(win) = st.window.as_ref() {
-                let display_index = display.and_then(|value| {
-                    if value < 0 {
-                        None
-                    } else {
-                        Some(value as usize)
-                    }
-                });
-                if let Some(name) = window::display_name_for_display(win, display_index) {
-                    return Ok(name);
-                }
-            }
-            Ok(String::from("Unknown"))
+            Ok(window::display_name_or_unknown(
+                s.borrow().window.as_deref(),
+                normalize_display_index(display),
+            ))
         })?,
     )?;
     let s = state.clone();
@@ -614,9 +705,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             },
         )?,
     )?;
+    let s = state.clone();
     // -- focus --
-    /// Requests keyboard focus for the window. No-op if already focused.
-    tbl.set("focus", lua.create_function(|_, ()| Ok(()))?)?;
+    /// Requests keyboard focus for the window. The request is applied by the app loop on the next frame.
+    tbl.set(
+        "focus",
+        lua.create_function(move |_, ()| {
+            window::focus(&mut s.borrow_mut().window_state);
+            Ok(())
+        })?,
+    )?;
     let s = state.clone();
     // -- getNativeDPIScale --
     /// Returns the native DPI scale factor reported by the operating system.
@@ -633,11 +731,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getDisplayOrientation",
         lua.create_function(move |_, ()| {
             let st = s.borrow();
-            Ok(if st.window_width >= st.window_height {
-                "landscape"
-            } else {
-                "portrait"
-            })
+            Ok(window::display_orientation(st.window_width, st.window_height))
         })?,
     )?;
     let s = state.clone();
@@ -684,20 +778,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getScaleInfo",
         lua.create_function(move |lua, ()| {
             let info = window::get_scale_info(&s.borrow().window_state);
-            let t = lua.create_table()?;
-            /// Performs the 'scale_x' operation.
-            t.set("scale_x", info.scale_x)?;
-            /// Performs the 'scale_y' operation.
-            t.set("scale_y", info.scale_y)?;
-            /// Performs the 'offset_x' operation.
-            t.set("offset_x", info.offset_x)?;
-            /// Performs the 'offset_y' operation.
-            t.set("offset_y", info.offset_y)?;
-            /// Performs the 'game_width' operation.
-            t.set("game_width", info.game_width)?;
-            /// Performs the 'game_height' operation.
-            t.set("game_height", info.game_height)?;
-            Ok(t)
+            make_scale_info_table(lua, info)
         })?,
     )?;
     let s = state.clone();
@@ -768,13 +849,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | func | function | Callback receiving the new DPI scale as a number.
     tbl.set(
         "onDpiChange",
-        lua.create_function(move |lua, func: LuaFunction| {
-            let key = lua.create_registry_value(func)?;
-            if let Some(old) = dc.borrow_mut().replace(key) {
-                lua.remove_registry_value(old)?;
-            }
-            Ok(())
-        })?,
+        lua.create_function(move |lua, func: LuaFunction| replace_registry_callback(lua, &dc, func))?,
     )?;
     let dc = dpi_callback;
     let pd = prev_dpi;
@@ -785,17 +860,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "pollDpiChange",
         lua.create_function(move |lua, ()| {
-            let current = s.borrow().window_state.dpi_scale;
-            let prev = *pd.borrow();
-            if (current - prev).abs() > f64::EPSILON {
-                *pd.borrow_mut() = current;
-                if let Some(key) = dc.borrow().as_ref() {
-                    if let Ok(func) = lua.registry_value::<LuaFunction>(key) {
-                        func.call::<_, ()>(current)?;
-                    }
-                }
-            }
-            Ok(current)
+            poll_dpi_change_callback(lua, &s.borrow(), &pd, &dc)
         })?,
     )?;
     // -- openFileDialog --
@@ -806,130 +871,102 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "openFileDialog",
         lua.create_function(move |lua, opts: Option<LuaTable>| {
-            if matches!(
-                state_for_open_file_dialog.borrow().runtime_mode,
-                crate::runtime::RuntimeMode::Headless
-            ) {
-                return Ok(LuaValue::Table(lua.create_table()?));
-            }
-            let mut dialog = rfd::FileDialog::new();
-            let mut multi = false;
-            if let Some(t) = &opts {
-                if let Ok(title) = t.get::<_, String>("title") {
-                    dialog = dialog.set_title(title);
-                }
-                if let Ok(dp) = t.get::<_, String>("defaultPath") {
-                    dialog = dialog.set_directory(dp);
-                }
-                if let Ok(m) = t.get::<_, bool>("multiple") {
-                    multi = m;
-                }
-                if let Ok(filters) = t.get::<_, LuaTable>("filters") {
-                    for pair in filters.sequence_values::<LuaTable>() {
-                        let ft = pair?;
-                        let name: String = ft.get("name").unwrap_or_default();
-                        let exts: Vec<String> = ft
-                            .get::<_, LuaTable>("extensions")
-                            .map(|tbl| {
-                                tbl.sequence_values::<String>()
-                                    .filter_map(|r| r.ok())
-                                    .collect()
-                            })
-                            .unwrap_or_default();
-                        let ext_refs: Vec<&str> = exts.iter().map(|s| s.as_str()).collect();
-                        dialog = dialog.add_filter(&name, &ext_refs);
-                    }
-                }
-            }
-            if multi {
-                match dialog.pick_files() {
-                    Some(paths) => {
-                        let tbl = lua.create_table()?;
-                        for (i, p) in paths.iter().enumerate() {
-                            tbl.set(i + 1, p.to_string_lossy().to_string())?;
-                        }
-                        Ok(LuaValue::Table(tbl))
-                    }
-                    None => {
-                        let tbl = lua.create_table()?;
-                        Ok(LuaValue::Table(tbl))
-                    }
-                }
-            } else {
-                let tbl = lua.create_table()?;
-                match dialog.pick_file() {
-                    Some(path) => {
-                        tbl.set(1, path.to_string_lossy().to_string())?;
-                        Ok(LuaValue::Table(tbl))
-                    }
-                    None => Ok(LuaValue::Table(tbl)),
-                }
-            }
+            open_file_dialog_result(lua, &state_for_open_file_dialog.borrow(), opts)
         })?,
     )?;
+
+    // --- Convenience subtables ---
     let display_tbl = lua.create_table()?;
-    /// Performs the 'getCount' operation.
+    /// Returns the number of connected displays.
+    /// @return | number | The total number of available displays.
     display_tbl.set("getCount", tbl.get::<_, LuaFunction>("getDisplayCount")?)?;
-    /// Performs the 'getName' operation.
+    /// Returns the human-readable name of a display.
+    /// @param | display | integer? | Zero-based display index. Uses the current display if omitted.
+    /// @return | string | The display name.
     display_tbl.set("getName", tbl.get::<_, LuaFunction>("getDisplayName")?)?;
+    /// Returns the desktop resolution of a display.
+    /// @param | display | integer? | Zero-based display index. Uses the current display if omitted.
+    /// @return | number | Desktop width in pixels.
+    /// @return | number | Desktop height in pixels.
     display_tbl.set(
         "getDesktopDimensions",
         tbl.get::<_, LuaFunction>("getDesktopDimensions")?,
     )?;
-    /// Performs the 'getDisplays' operation.
+    /// Returns a list of all connected displays with their properties.
+    /// @return | table | Array of display info tables.
     display_tbl.set("getDisplays", tbl.get::<_, LuaFunction>("getDisplays")?)?;
+    /// Returns the index of the display that currently contains the window.
+    /// @return | number | The zero-based index of the current display.
     display_tbl.set(
         "getCurrent",
         tbl.get::<_, LuaFunction>("getCurrentDisplay")?,
     )?;
-    /// Performs the 'setCurrent' operation.
+    /// Moves the window to the specified display.
+    /// @param | display | integer | Zero-based index of the target display.
     display_tbl.set("setCurrent", tbl.get::<_, LuaFunction>("setDisplay")?)?;
-    // display: subtable of display/monitor query and control functions.
-    /// Performs the 'display' operation.
+    /// Convenience subtable for display query and routing helpers.
+    /// @return | table | Table containing display-related functions.
     tbl.set("display", display_tbl)?;
     let mode_tbl = lua.create_table()?;
-    /// The 'set' field value exposed to Lua scripts.
+    /// Sets the window display mode with size and optional flags.
+    /// @param | w | integer | The desired window width in pixels.
+    /// @param | h | integer | The desired window height in pixels.
+    /// @param | flags | table? | Optional fullscreen and vsync flags.
     mode_tbl.set("set", tbl.get::<_, LuaFunction>("setMode")?)?;
-    /// The 'get' field value exposed to Lua scripts.
+    /// Returns the current window display mode.
+    /// @return | number | The window width.
+    /// @return | number | The window height.
+    /// @return | table | Flags table with fullscreen and vsync fields.
     mode_tbl.set("get", tbl.get::<_, LuaFunction>("getMode")?)?;
-    /// Performs the 'setFullscreen' operation.
+    /// Enables or disables fullscreen mode.
+    /// @param | enabled | boolean | Whether to enter fullscreen.
+    /// @param | fstype | string? | Fullscreen type: "desktop" or "exclusive".
     mode_tbl.set("setFullscreen", tbl.get::<_, LuaFunction>("setFullscreen")?)?;
-    /// Performs the 'getFullscreen' operation.
+    /// Returns the current fullscreen state and type.
+    /// @return | boolean | Whether fullscreen is active.
+    /// @return | string | The fullscreen type.
     mode_tbl.set("getFullscreen", tbl.get::<_, LuaFunction>("getFullscreen")?)?;
-    /// Performs the 'isFullscreen' operation.
+    /// Returns whether the window is currently in fullscreen mode.
+    /// @return | boolean | True if the window is fullscreen.
     mode_tbl.set("isFullscreen", tbl.get::<_, LuaFunction>("isFullscreen")?)?;
-    /// Performs the 'setVSync' operation.
+    /// Sets the vertical sync mode.
+    /// @param | mode | integer | VSync mode: 0 = off, 1 = on, -1 = adaptive.
     mode_tbl.set("setVSync", tbl.get::<_, LuaFunction>("setVSync")?)?;
-    /// Performs the 'getVSync' operation.
+    /// Returns the current VSync mode.
+    /// @return | number | The current VSync mode.
     mode_tbl.set("getVSync", tbl.get::<_, LuaFunction>("getVSync")?)?;
-    /// Performs the 'minimize' operation.
+    /// Minimizes the window to the taskbar.
     mode_tbl.set("minimize", tbl.get::<_, LuaFunction>("minimize")?)?;
-    /// Performs the 'maximize' operation.
+    /// Maximizes the window to fill the screen.
     mode_tbl.set("maximize", tbl.get::<_, LuaFunction>("maximize")?)?;
-    /// Performs the 'restore' operation.
+    /// Restores the window from minimized or maximized state.
     mode_tbl.set("restore", tbl.get::<_, LuaFunction>("restore")?)?;
-    /// Performs the 'isMinimized' operation.
+    /// Returns whether the window is currently minimized.
+    /// @return | boolean | True if the window is minimized.
     mode_tbl.set("isMinimized", tbl.get::<_, LuaFunction>("isMinimized")?)?;
-    /// Performs the 'isMaximized' operation.
+    /// Returns whether the window is currently maximized.
+    /// @return | boolean | True if the window is maximized.
     mode_tbl.set("isMaximized", tbl.get::<_, LuaFunction>("isMaximized")?)?;
-    /// Performs the 'isVisible' operation.
+    /// Returns whether the window is currently visible on screen.
+    /// @return | boolean | True if the window is visible.
     mode_tbl.set("isVisible", tbl.get::<_, LuaFunction>("isVisible")?)?;
+    /// Requests user attention for the window.
     mode_tbl.set(
         "requestAttention",
         tbl.get::<_, LuaFunction>("requestAttention")?,
     )?;
-    /// Performs the 'flash' operation.
+    /// Flashes the window to attract user attention.
     mode_tbl.set("flash", tbl.get::<_, LuaFunction>("flash")?)?;
-    // mode: subtable of window mode and state management functions.
-    /// Performs the 'mode' operation.
+    /// Convenience subtable for mode and visibility helpers.
+    /// @return | table | Table containing mode-related functions.
     tbl.set("mode", mode_tbl)?;
     let cursor_tbl = lua.create_table()?;
-    /// Performs the 'hasFocus' operation.
+    /// Returns whether the mouse cursor is inside the window.
+    /// @return | boolean | True if the mouse cursor is within the window bounds.
     cursor_tbl.set("hasFocus", tbl.get::<_, LuaFunction>("hasMouseFocus")?)?;
-    // cursor: subtable of cursor focus utilities.
-    /// Performs the 'cursor' operation.
+    /// Convenience subtable for cursor-related helpers.
+    /// @return | table | Table containing cursor functions.
     tbl.set("cursor", cursor_tbl)?;
-    /// Performs the 'window' operation.
     lurek.set("window", tbl)?;
     Ok(())
 }

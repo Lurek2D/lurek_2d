@@ -150,6 +150,8 @@ pub struct Node {
     pub supplies: Vec<Supply>,
     /// Arbitrary node tags.
     pub tags: HashSet<String>,
+    /// Capacity reservations keyed by planner or reservation tag.
+    pub(crate) capacity_reservations: HashMap<String, u32>,
     /// Accumulated push timer state.
     pub(crate) push_timer: f64,
     /// Accumulated pull timer state.
@@ -180,6 +182,7 @@ impl Node {
             demands: Vec::new(),
             supplies: Vec::new(),
             tags: HashSet::new(),
+            capacity_reservations: HashMap::new(),
             push_timer: 0.0,
             pull_timer: 0.0,
             process_accumulator: 0.0,
@@ -212,6 +215,57 @@ impl Node {
     /// Return the number of items currently held on the node.
     pub fn item_count(&self) -> usize {
         self.items.len()
+    }
+    /// Return the total reserved capacity slots on this node.
+    pub fn get_reserved_capacity(&self) -> u32 {
+        self.capacity_reservations.values().copied().sum()
+    }
+    /// Return the currently available capacity after reservations, or -1 when unlimited.
+    pub fn get_available_capacity(&self) -> i32 {
+        if self.capacity < 0 {
+            -1
+        } else {
+            let occupied = self
+                .items
+                .len()
+                .saturating_add(self.get_reserved_capacity() as usize);
+            (self.capacity as i64 - occupied as i64).max(0) as i32
+        }
+    }
+    /// Return true when the node can reserve the requested number of slots.
+    pub fn can_reserve_capacity(&self, slots: u32) -> bool {
+        if self.capacity < 0 {
+            true
+        } else {
+            self.get_available_capacity() >= slots as i32
+        }
+    }
+    /// Reserve node capacity slots under a caller-provided key.
+    pub fn reserve_capacity(&mut self, key: &str, slots: u32) -> bool {
+        if !self.can_reserve_capacity(slots) {
+            return false;
+        }
+        *self
+            .capacity_reservations
+            .entry(key.to_string())
+            .or_insert(0) += slots;
+        true
+    }
+    /// Release up to `slots` reservations for a key and return the amount removed.
+    pub fn release_capacity_reservation(&mut self, key: &str, slots: Option<u32>) -> u32 {
+        let Some(current) = self.capacity_reservations.get_mut(key) else {
+            return 0;
+        };
+        let removed = slots.unwrap_or(*current).min(*current);
+        *current -= removed;
+        if *current == 0 {
+            self.capacity_reservations.remove(key);
+        }
+        removed
+    }
+    /// Remove every capacity reservation from this node.
+    pub fn clear_capacity_reservations(&mut self) {
+        self.capacity_reservations.clear();
     }
     /// Add a tag to the node. This function is part of the public API.
     pub fn add_tag(&mut self, tag: &str) {

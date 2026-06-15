@@ -7,6 +7,8 @@
 - Supports line, bar, area, scatter, pie, histogram, and heatmap workflows so teams can choose the right visual grammar per metric.
 - Helps debug progression, economy, and performance trends during live sessions instead of offline exports.
 - Exposes chart titles, sizing, and palette controls for fast integration into HUD or debug overlays.
+- Owns the public charting API; UI should consume chart output as images/textures instead of exposing duplicate chart constructors.
+- Telemetry-oriented modules such as `devtools`, `overlay`, and `particle` expose raw stats; this module visualizes caller-provided data rather than collecting metrics itself.
 - Handles value-range mapping and coordinate transforms so scripts can focus on data, not pixel math.
 - Works well for static snapshots and repeated redraws in tooling panels.
 - Bridges DataFrame-style analytics output with immediate visual interpretation.

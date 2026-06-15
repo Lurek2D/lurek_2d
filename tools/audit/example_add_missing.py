@@ -99,7 +99,7 @@ MODULE_TO_EXAMPLE: dict[str, str] = {
     'serial':      'serial.lua',
     'spine':       'spine.lua',
     'sprite':      'sprite.lua',
-    'system':      'system.lua',
+    'system':      'runtime.lua',
     'terminal':    'terminal.lua',
     'thread':      'thread.lua',
     'tilemap':     'tilemap.lua',

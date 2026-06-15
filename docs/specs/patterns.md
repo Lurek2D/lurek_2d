@@ -34,6 +34,7 @@
 - Hierarchical blackboards allow local override with parent fallback.
 - Observer primitives provide key-based reactive notifications.
 - Wildcard observers support broad state-change monitoring.
+- Relationship-manager construction remains available here as a compatibility alias, but new ownership lives under `lurek.ecs`.
 - Command stacks implement undo and redo with bounded history policies.
 - Batch commands support atomic rollback of multi-step operations.
 - Throttle and debounce utilities control cadence for noisy inputs and triggers.

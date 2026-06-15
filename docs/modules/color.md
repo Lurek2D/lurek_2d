@@ -118,7 +118,7 @@ end
 
 ### `lurek.color.fromHex`
 
-Parses a hex color string ("#RRGGBB" or "#RRGGBBAA") into a color table. Returns nil on invalid input.
+Parses a hex color string ("#RGB", "#RGBA", "#RRGGBB", or "#RRGGBBAA") into a color table.
 
 ```lua
 lurek.color.fromHex(hex)

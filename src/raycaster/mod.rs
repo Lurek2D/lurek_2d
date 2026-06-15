@@ -62,12 +62,20 @@ pub use lighting::{apply_lit_shade, compute_lighting, PointLight};
 pub use multilevel::{MultiLevelGrid, RaycasterLevel};
 pub use projection::{distance_shade, project_column};
 pub use ray_hit::RayHit;
-pub use scene::{BillboardSprite, CeilingQuad, EntityPickKind, EntityPickResult, FloorQuad, ModelMesh, RaycasterBuildStats, RaycasterScene, WallQuad};
+pub use scene::{
+    BillboardSprite, CeilingQuad, EntityPickKind, EntityPickResult, FloorQuad, ModelMesh,
+    RaycasterBuildStats, RaycasterScene, WallQuad,
+};
 #[cfg(feature = "obj-loader")]
 pub use scene_adapter::{ResolvedSceneModel, SceneAdapterModel};
-pub use scene_adapter::{ResolvedSceneTransform, SceneAdapter, SceneAdapterLight, SceneAdapterSprite, SceneTransform};
+pub use scene_adapter::{
+    ResolvedSceneTransform, SceneAdapter, SceneAdapterLight, SceneAdapterSprite, SceneTransform,
+};
 pub use segment::{cast_ray_2d, Segment};
-pub use sprite_manager::{DirectionalSpriteTextures as ManagedDirectionalSpriteTextures, DirectionalSpriteVariant, SpriteManager, WorldSprite as ManagedSprite};
+pub use sprite_manager::{
+    DirectionalSpriteTextures as ManagedDirectionalSpriteTextures, DirectionalSpriteVariant,
+    SpriteManager, WorldSprite as ManagedSprite,
+};
 pub use sprite_projection::SpriteProjection;
 pub use tile_picker::{PickResult, PickSurface, PickWallSection, ScreenPickParams, TilePicker};
 pub use visibility::field_of_view;

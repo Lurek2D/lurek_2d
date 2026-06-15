@@ -42,6 +42,14 @@ describe("lurek.font.list", function()
         expect_true(type(entry.size) == "number", "size is number")
         expect_true(type(entry.style) == "string", "style is string")
     end)
+
+    it("includes runtime-loaded fonts in the public list", function()
+        local before = lurek.font.list()
+        local loaded = lurek.font.load("content/examples/assets/fonts/sample_font.ttf", 14)
+        expect_equal("userdata", type(loaded))
+        local after = lurek.font.list()
+        expect_true(#after > #before, "runtime-loaded font should appear in lurek.font.list()")
+    end)
 end)
 
 -- @describe lurek.font.measure

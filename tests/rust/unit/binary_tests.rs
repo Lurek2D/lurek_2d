@@ -149,6 +149,7 @@ mod compress_tests {
 
 mod pack_tests {
     use lurek2d::binary::pack::{get_packed_size, PackValue};
+    use lurek2d::binary::{pack, unpack};
 
     #[test]
     fn get_packed_size_accepts_mixed_format_int_and_string() {
@@ -173,6 +174,16 @@ mod pack_tests {
         // 'd' = 8 bytes (double) at values[1]
         // 's' = 4 bytes (length) + 4 bytes (content) at values[2]
         assert_eq!(size, 4 + 8 + 4 + 4);
+    }
+
+    #[test]
+    fn pack_and_unpack_preserve_non_utf8_bytes() {
+        let payload = vec![0xFF_u8, 0x00, 0x41, 0x80];
+        let packed = pack("s", &[PackValue::Bytes(payload.clone())]).expect("pack");
+        let (values, next) = unpack("s", packed.as_bytes(), 0).expect("unpack");
+
+        assert_eq!(next, packed.len());
+        assert!(matches!(values.first(), Some(PackValue::Bytes(bytes)) if bytes == &payload));
     }
 }
 
@@ -217,5 +228,19 @@ mod data_writer_tests {
         w.write_bytes(&[4, 5]);
         let buf = w.into_bytes();
         assert_eq!(buf, vec![1, 2, 3, 4, 5]);
+    }
+}
+
+mod bin_pack_tests {
+    use lurek2d::binary::{bin_read, bin_write, BinValue};
+
+    #[test]
+    fn bin_write_and_read_preserve_non_utf8_bytes() {
+        let payload = vec![0xFF_u8, 0x00, 0x41, 0x80];
+        let encoded = bin_write("str", &[BinValue::Bytes(payload.clone())]).expect("write");
+        let (values, next) = bin_read("str", encoded.as_bytes(), 0).expect("read");
+
+        assert_eq!(next, encoded.len());
+        assert!(matches!(values.first(), Some(BinValue::Bytes(bytes)) if bytes == &payload));
     }
 }

@@ -1,9 +1,7 @@
-//! File: src/lua_api/cursor_api.rs
-//! Module API documentation
+//! Lua bindings for `lurek.cursor`.
 //!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
+//! Exposes cursor managers, custom cursor pixel data, animated cursor frames,
+//! context rules, trails, and zoom helpers to Lua.
 
 use super::SharedState;
 use crate::cursor::{

@@ -215,6 +215,12 @@ do
     print("mouse focus = " .. tostring(v))
 end
 
+--@api: lurek.window.cursor.hasFocus
+do
+    print("cursor focus = " .. tostring(lurek.window.cursor.hasFocus()))
+    print("matches mouse focus = " .. tostring(lurek.window.cursor.hasFocus() == lurek.window.hasMouseFocus()))
+end
+
 --@api: lurek.window.focus
 do
     print("before focus = " .. tostring(lurek.window.hasFocus()))

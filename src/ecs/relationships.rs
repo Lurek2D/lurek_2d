@@ -8,8 +8,14 @@
 use crate::log_msg;
 use crate::runtime::log_messages::{RL01, RL02, RL03};
 use std::collections::HashMap;
+
 #[derive(Debug, Clone)]
 /// Declares a named relationship kind and the allowed level labels for it.
+///
+/// # Fields
+/// - `name`: Stable type identifier used for lookups.
+/// - `levels`: Allowed ordered level labels for this type.
+/// - `default_level`: Fallback label returned when a pair has no explicit level.
 pub struct RelationType {
     /// Stable relationship type name used as the lookup key.
     pub name: String,
@@ -41,6 +47,12 @@ impl RelationType {
 }
 #[derive(Debug, Clone)]
 /// Stores pairwise relationship data for an unordered entity pair.
+///
+/// # Fields
+/// - `from_id`: First packed entity id in canonical ascending order.
+/// - `to_id`: Second packed entity id in canonical ascending order.
+/// - `value`: Numeric affinity or score for the pair.
+/// - `type_levels`: Explicit level label per relationship type.
 pub struct Relationship {
     /// First packed entity id in canonical sorted order.
     pub from_id: u32,
@@ -65,6 +77,11 @@ impl Relationship {
 }
 #[derive(Debug, Default)]
 /// Owns relationship types, pairwise relation records, and directed named links.
+///
+/// # Fields
+/// - `types`: Registered relationship ladders keyed by type name.
+/// - `relations`: Canonical unordered pair records keyed by entity ids.
+/// - `directed`: Named one-way links keyed by source id and link name.
 pub struct RelationshipManager {
     /// Registered relationship type definitions keyed by name.
     types: HashMap<String, RelationType>,
@@ -113,7 +130,9 @@ impl RelationshipManager {
     }
     /// Returns the set of registered relationship type names.
     pub fn type_names(&self) -> Vec<String> {
-        self.types.keys().cloned().collect()
+        let mut names: Vec<String> = self.types.keys().cloned().collect();
+        names.sort();
+        names
     }
     /// Returns the relation entry for a pair, creating it on first access.
     fn ensure(&mut self, a: u32, b: u32) -> &mut Relationship {
@@ -202,8 +221,16 @@ impl RelationshipManager {
     }
     /// Removes one directed link target from a source entity and link name.
     pub fn remove_link(&mut self, from: u32, name: &str, to: u32) {
-        if let Some(targets) = self.directed.get_mut(&(from, name.to_string())) {
+        let key = (from, name.to_string());
+        let mut should_remove_key = false;
+        if let Some(targets) = self.directed.get_mut(&key) {
             targets.retain(|&id| id != to);
+            if targets.is_empty() {
+                should_remove_key = true;
+            }
+        }
+        if should_remove_key {
+            self.directed.remove(&key);
         }
     }
     /// Removes all directed link targets for a source entity and link name.
@@ -216,5 +243,18 @@ impl RelationshipManager {
             .get(&(from, name.to_string()))
             .map(|v| v.contains(&to))
             .unwrap_or(false)
+    }
+
+    /// Removes all pairwise and directed relationship state that references `entity_id`.
+    pub fn remove_entity(&mut self, entity_id: u32) {
+        self.relations
+            .retain(|&(a, b), _| a != entity_id && b != entity_id);
+        self.directed.retain(|(from, _), targets| {
+            if *from == entity_id {
+                return false;
+            }
+            targets.retain(|&id| id != entity_id);
+            !targets.is_empty()
+        });
     }
 }

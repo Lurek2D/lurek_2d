@@ -65,7 +65,7 @@ end
 
 ### `lurek.window.focus`
 
-Requests keyboard focus for the window. No-op if already focused.
+Requests keyboard focus for the window. The request is applied by the app loop on the next frame.
 
 ```lua
 lurek.window.focus()
@@ -1104,9 +1104,16 @@ lurek.window.openFileDialog(opts)
 
 ```lua
 do
-    local files = lurek.window.openFileDialog({ title = "Select file", multiple = true })
-    print("selected file count:", #files)
-    print("first file:", tostring(files[1]))
+    local opts = { title = "Select file", multiple = true }
+    local interactive = lurek.runtime.getEnv("LUREK_RUN_INTERACTIVE_DIALOGS") == "1"
+    if interactive then
+        local files = lurek.window.openFileDialog(opts)
+        print("selected file count:", #files)
+        print("first file:", tostring(files[1]))
+    else
+        print("set LUREK_RUN_INTERACTIVE_DIALOGS=1 to run the blocking file dialog example")
+        print("dialog title:", opts.title)
+    end
 end
 ```
 
@@ -1432,8 +1439,13 @@ do
     local message = "Do you want to save before exit?"
     local box_type = "warning"
     local btn_type = "yesno"
-    local result = lurek.window.showMessageBox(title, message, box_type, btn_type)
-    print("message box result:", result)
+    local interactive = lurek.runtime.getEnv("LUREK_RUN_INTERACTIVE_DIALOGS") == "1"
+    if interactive then
+        local result = lurek.window.showMessageBox(title, message, box_type, btn_type)
+        print("message box result:", result)
+    else
+        print("set LUREK_RUN_INTERACTIVE_DIALOGS=1 to run the blocking message box example")
+    end
 end
 ```
 

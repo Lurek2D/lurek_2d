@@ -8,6 +8,15 @@ use indexmap::IndexMap;
 use mlua::prelude::{Lua, LuaResult, LuaValue};
 use std::fmt;
 /// Type-erased value tree used for Lua-to-Rust serialization.
+///
+/// # Variants
+/// - `Null`: Nil / absent value.
+/// - `Bool`: Boolean value.
+/// - `Int`: Integer numeric value.
+/// - `Float`: Floating-point numeric value.
+/// - `Str`: UTF-8 string value.
+/// - `Seq`: Dense array-style table.
+/// - `Map`: String-keyed or mixed Lua table.
 #[derive(Debug, Clone)]
 pub enum SerialValue {
     /// Nil / absent value.
@@ -84,22 +93,57 @@ pub fn from_lua(val: &LuaValue) -> LuaResult<SerialValue> {
         LuaValue::Table(t) => {
             let raw_len = t.raw_len();
             if raw_len > 0 {
+                let mut seq_values = vec![None; raw_len];
+                let mut map = IndexMap::new();
+                let mut total_entries = 0usize;
                 let mut is_seq = true;
-                for i in 1..=raw_len as i64 {
-                    let v: LuaValue = t.get(i)?;
-                    if v == LuaValue::Nil {
-                        is_seq = false;
-                        break;
+
+                for pair in t.clone().pairs::<LuaValue, LuaValue>() {
+                    let (k, v) = pair?;
+                    total_entries += 1;
+                    let converted = from_lua(&v)?;
+                    match &k {
+                        LuaValue::Integer(n) if *n >= 1 && (*n as usize) <= raw_len => {
+                            seq_values[*n as usize - 1] = Some(converted.clone());
+                            map.insert(n.to_string(), converted);
+                        }
+                        LuaValue::String(s) => {
+                            is_seq = false;
+                            let key = s
+                                .to_str()
+                                .map_err(|e| {
+                                    mlua::Error::RuntimeError(format!("Invalid UTF-8 key: {e}"))
+                                })?
+                                .to_string();
+                            map.insert(key, converted);
+                        }
+                        LuaValue::Number(f) => {
+                            is_seq = false;
+                            map.insert(f.to_string(), converted);
+                        }
+                        _ => {
+                            return Err(mlua::Error::RuntimeError(
+                                "serial: table keys must be strings or numbers".to_string(),
+                            ));
+                        }
                     }
                 }
-                if is_seq {
-                    let mut arr = Vec::with_capacity(raw_len);
-                    for i in 1..=raw_len as i64 {
-                        let v: LuaValue = t.get(i)?;
-                        arr.push(from_lua(&v)?);
-                    }
-                    return Ok(SerialValue::Seq(arr));
+
+                if is_seq
+                    && total_entries == raw_len
+                    && seq_values.iter().all(Option::is_some)
+                {
+                    let sequence = seq_values.into_iter().collect::<Option<Vec<_>>>().ok_or_else(
+                        || {
+                            mlua::Error::RuntimeError(
+                                "serial: sequence table validation drifted during conversion"
+                                    .to_string(),
+                            )
+                        },
+                    )?;
+                    return Ok(SerialValue::Seq(sequence));
                 }
+                return Ok(SerialValue::Map(map));
             }
             let mut map = IndexMap::new();
             for pair in t.clone().pairs::<LuaValue, LuaValue>() {

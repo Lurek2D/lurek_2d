@@ -52,7 +52,8 @@ pub enum FullscreenType {
     Exclusive,
 }
 #[derive(Debug)]
-/// Runtime data model for WindowState.
+/// Runtime data model for deferred and observed window state shared across Lua bindings and the app loop.
+/// # Fields
 pub struct WindowState {
     /// Stores focused state.
     pub focused: bool,
@@ -88,6 +89,8 @@ pub struct WindowState {
     pub pending_maximize: bool,
     /// Stores pending_restore state.
     pub pending_restore: bool,
+    /// Stores pending_focus state.
+    pub pending_focus: bool,
     /// Stores pending_close state.
     pub pending_close: bool,
     /// Stores pending_attention state.
@@ -141,6 +144,7 @@ impl Default for WindowState {
             pending_minimize: false,
             pending_maximize: false,
             pending_restore: false,
+            pending_focus: false,
             pending_close: false,
             pending_attention: false,
             pending_icon_path: None,
@@ -160,7 +164,8 @@ impl Default for WindowState {
     }
 }
 #[derive(Debug, Clone)]
-/// Runtime data model for ErrorInfo.
+/// Runtime data model for the latest engine error snapshot exposed to Lua and diagnostics.
+/// # Fields
 pub struct ErrorInfo {
     /// Stores message state.
     pub message: String,
@@ -172,13 +177,15 @@ pub struct ErrorInfo {
     pub hint: Option<String>,
 }
 #[derive(Debug, Clone, PartialEq, Eq)]
-/// Runtime data model for ScreenshotRequest.
+/// Runtime data model for a deferred screenshot capture request.
+/// # Fields
 pub struct ScreenshotRequest {
     /// Stores path state.
     pub path: String,
 }
 #[derive(Debug, Clone, Copy, Default)]
-/// Runtime data model for FrameProfile.
+/// Runtime data model for per-frame timing buckets captured by the runtime.
+/// # Fields
 pub struct FrameProfile {
     /// Stores app_tick_ms state.
     pub app_tick_ms: f32,
@@ -204,7 +211,8 @@ pub struct FrameProfile {
     pub callback_total_ms: f32,
 }
 #[derive(Debug, Clone, Copy, Default)]
-/// Runtime data model for ResourceMemoryStats.
+/// Runtime data model for aggregate resource memory and object-count statistics.
+/// # Fields
 pub struct ResourceMemoryStats {
     /// Stores texture_bytes state.
     pub texture_bytes: u64,
@@ -228,7 +236,8 @@ pub struct ResourceMemoryStats {
     pub shader_count: u64,
 }
 #[derive(Debug, Clone)]
-/// Runtime data model for PhysicsRunConfig.
+/// Runtime data model for fixed-step physics and fixed-update scheduling.
+/// # Fields
 pub struct PhysicsRunConfig {
     /// Stores fixed_dt state.
     pub fixed_dt: f64,
@@ -251,7 +260,8 @@ impl Default for PhysicsRunConfig {
         }
     }
 }
-/// Runtime data model for SharedState.
+/// Runtime data model for the engine's shared mutable runtime container.
+/// # Fields
 pub struct SharedState {
     /// Stores render_commands state.
     pub render_commands: Vec<RenderCommand>,
@@ -738,7 +748,8 @@ impl SharedState {
         }
     }
 }
-/// Runtime data model for RendererStats.
+/// Runtime data model for aggregate renderer counters derived from the current frame state.
+/// # Fields
 pub struct RendererStats {
     /// Stores draw_calls state.
     pub draw_calls: usize,

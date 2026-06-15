@@ -41,6 +41,8 @@ pub struct FontRegistry {
     fonts: HashMap<u32, BitmapFont>,
     /// Name-to-ID lookup.
     by_name: HashMap<String, u32>,
+    /// Stable registration order for unique font names.
+    order: Vec<String>,
     /// Next available handle ID.
     next_id: u32,
 }
@@ -51,6 +53,7 @@ impl FontRegistry {
         Self {
             fonts: HashMap::new(),
             by_name: HashMap::new(),
+            order: Vec::new(),
             next_id: 1,
         }
     }
@@ -59,6 +62,12 @@ impl FontRegistry {
     ///
     /// If a font with the same name already exists, it is replaced.
     pub fn register(&mut self, name: &str, font: BitmapFont) -> FontHandle {
+        if let Some(existing_id) = self.by_name.get(name).copied() {
+            self.fonts.remove(&existing_id);
+        } else {
+            self.order.push(name.to_string());
+        }
+
         let id = self.next_id;
         self.next_id += 1;
 
@@ -93,19 +102,22 @@ impl FontRegistry {
 
     /// Returns the first registered font, or `None` if the registry is empty.
     pub fn default_font(&self) -> Option<&BitmapFont> {
-        // Return the font with the lowest ID (first registered).
-        if let Some(min_id) = self.fonts.keys().min() {
-            self.fonts.get(min_id)
-        } else {
-            None
+        for name in &self.order {
+            if let Some(id) = self.by_name.get(name) {
+                if let Some(font) = self.fonts.get(id) {
+                    return Some(font);
+                }
+            }
         }
+        None
     }
 
     /// Lists all registered font handles.
     pub fn list_fonts(&self) -> Vec<FontHandle> {
-        self.by_name
+        self.order
             .iter()
-            .filter_map(|(name, &id)| {
+            .filter_map(|name| {
+                let id = *self.by_name.get(name)?;
                 let font = self.fonts.get(&id)?;
                 Some(FontHandle {
                     id,

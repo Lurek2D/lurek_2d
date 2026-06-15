@@ -398,7 +398,7 @@ end
 
 ### `lurek.binary.newByteData`
 
-Creates ByteData from a size or string.
+Creates ByteData from a size or raw byte string.
 
 ```lua
 lurek.binary.newByteData(value)
@@ -408,7 +408,7 @@ lurek.binary.newByteData(value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `value` | any | Integer size for zeroed bytes, or string used as initial bytes. |
+| `value` | any | Integer size for zeroed bytes, or raw Lua string used as initial bytes. |
 
 **Returns**
 
@@ -910,15 +910,16 @@ LByteData:getString()
 
 | Type | Description |
 |------|-------------|
-| string | Byte buffer contents as a Lua string. |
+| string | Raw byte buffer contents as a Lua string without UTF-8 validation. |
 
 **Example**
 
 ```lua
 do
-    local bd = lurek.binary.newByteData("Hello")
+    local bd = lurek.binary.newByteData(string.char(0x48, 0x65, 0x00, 0xFF))
     print("str = " .. bd:getString())
     print("size = " .. bd:getSize())
+    print("byte[4] = " .. bd:getByte(3))
 end
 ```
 

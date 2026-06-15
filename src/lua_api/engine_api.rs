@@ -1,8 +1,6 @@
 //! File: src/lua_api/engine_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
+//! Registers the public `lurek.engine` namespace for engine timing, profiling, and memory diagnostics.
+//! Exposes read-mostly runtime metadata plus a small control surface for resource-budget reporting.
 
 use super::SharedState;
 use crate::app::frame_profile::format_frame_profile_line;
@@ -36,9 +34,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|lua, ()| {
             let bytes = lua.used_memory();
             let out = lua.create_table()?;
-            /// Performs the 'lua_bytes' operation.
             out.set("lua_bytes", bytes as u64)?;
-            /// Performs the 'lua_kb' operation.
             out.set("lua_kb", (bytes as f64 / 1024.0 * 100.0).round() / 100.0)?;
             Ok(out)
         })?,
@@ -120,25 +116,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             let st = s.borrow();
             let stats = st.resource_memory_stats();
             let out = lua.create_table()?;
-            /// Performs the 'texture_bytes' operation.
             out.set("texture_bytes", stats.texture_bytes)?;
-            /// Performs the 'font_bytes' operation.
             out.set("font_bytes", stats.font_bytes)?;
-            /// Performs the 'canvas_bytes' operation.
             out.set("canvas_bytes", stats.canvas_bytes)?;
-            /// Performs the 'shader_bytes' operation.
             out.set("shader_bytes", stats.shader_bytes)?;
-            /// Performs the 'total_bytes' operation.
             out.set("total_bytes", stats.total_bytes)?;
-            /// Performs the 'budget_bytes' operation.
             out.set("budget_bytes", stats.budget_bytes)?;
-            /// Performs the 'texture_count' operation.
             out.set("texture_count", stats.texture_count)?;
-            /// Performs the 'font_count' operation.
             out.set("font_count", stats.font_count)?;
-            /// Performs the 'canvas_count' operation.
             out.set("canvas_count", stats.canvas_count)?;
-            /// Performs the 'shader_count' operation.
             out.set("shader_count", stats.shader_count)?;
             Ok(out)
         })?,
@@ -163,27 +149,16 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |lua, ()| {
             let profile = s.borrow().frame_profile;
             let out = lua.create_table()?;
-            /// Performs the 'app_tick_ms' operation.
             out.set("app_tick_ms", profile.app_tick_ms)?;
-            /// Performs the 'app_update_ms' operation.
             out.set("app_update_ms", profile.app_update_ms)?;
-            /// Performs the 'app_render_ms' operation.
             out.set("app_render_ms", profile.app_render_ms)?;
-            /// Performs the 'app_frame_total_ms' operation.
             out.set("app_frame_total_ms", profile.app_frame_total_ms)?;
-            /// Performs the 'process_physics_ms' operation.
             out.set("process_physics_ms", profile.process_physics_ms)?;
-            /// Performs the 'fixed_update_ms' operation.
             out.set("fixed_update_ms", profile.fixed_update_ms)?;
-            /// Performs the 'process_ms' operation.
             out.set("process_ms", profile.process_ms)?;
-            /// Performs the 'process_late_ms' operation.
             out.set("process_late_ms", profile.process_late_ms)?;
-            /// Performs the 'draw_ms' operation.
             out.set("draw_ms", profile.draw_ms)?;
-            /// Performs the 'draw_ui_ms' operation.
             out.set("draw_ui_ms", profile.draw_ui_ms)?;
-            /// Performs the 'callback_total_ms' operation.
             out.set("callback_total_ms", profile.callback_total_ms)?;
             Ok(out)
         })?,
@@ -207,7 +182,6 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getConfigRevision",
         lua.create_function(move |_, ()| Ok(s.borrow().config_reload_revision))?,
     )?;
-    /// Performs the 'engine' operation.
     lurek.set("engine", tbl)?;
     Ok(())
 }

@@ -70,7 +70,7 @@ impl EventBus {
             .values()
             .filter(|s| s.event == event || s.event == "*")
             .collect();
-        listeners.sort_by(|a, b| b.priority.cmp(&a.priority));
+        listeners.sort_by(|a, b| b.priority.cmp(&a.priority).then(a.id.cmp(&b.id)));
         listeners.iter().map(|s| s.id).collect()
     }
     /// Remove all `once` subscriptions from `ids` and return the removed ids.

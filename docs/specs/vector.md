@@ -45,6 +45,7 @@ This module primarily collaborates with `math`, `render`, `runtime`. Its respons
 - Provides hierarchy queries (parent, children, count), bounding box extraction,
 - color/visibility/transform reads and resets, and GPU canvas caching for vector subtrees.
 - All mutation methods follow the same error contract: return `Err` when the element ID is absent.
+- Module API documentation
 
 
 

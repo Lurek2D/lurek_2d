@@ -16,31 +16,7 @@ impl Universe {
         with_names: &[String],
         without_names: &[String],
     ) -> LuaResult<Vec<u32>> {
-        let mut result = Vec::new();
-        if let Some(ref key) = self.component_store {
-            let store: Table = lua.registry_value(key)?;
-            for slot in self.candidate_slots_for_all(with_names) {
-                if let Ok(entity_table) = store.get::<_, Table>(slot) {
-                    let mut has_excluded = false;
-                    for name in without_names {
-                        let val: LuaValue = entity_table.get(name.as_str())?;
-                        if !val.is_nil() {
-                            has_excluded = true;
-                            break;
-                        }
-                    }
-                    if !has_excluded {
-                        result.push(Self::pack_id(slot, self.current_gen(slot)));
-                    }
-                } else if with_names.is_empty() {
-                    result.push(Self::pack_id(slot, self.current_gen(slot)));
-                }
-            }
-        } else if with_names.is_empty() {
-            result = self.get_entities();
-        }
-        result.sort();
-        Ok(result)
+        self.query_component_sets(lua, with_names, without_names)
     }
     /// Invokes a Lua callback with entity ids followed by multiple requested component values.
     pub fn query_multi(&self, lua: &Lua, names: &[String], callback: Function) -> LuaResult<()> {
@@ -161,6 +137,9 @@ impl Universe {
         self.string_tags.clear();
         self.tag_index.clear();
         self.generations.clear();
+        self.retired_slots.clear();
+        self.bitmap_tag_names.clear();
+        self.bitmap_tag_bits.clear();
         self.bitmap_masks.clear();
         self.layers.clear();
         self.parents.clear();
@@ -184,16 +163,18 @@ impl Universe {
         self.ensure_stores(lua)?;
         let comp_store = self.get_component_store(lua)?;
         if let Ok(btnames) = snapshot.get::<_, Table>("bitmap_tags") {
-            for name in btnames.clone().sequence_values::<String>() {
+            for name in btnames.sequence_values::<String>() {
                 let name = name?;
-                if !self.bitmap_tag_names.contains(&name) {
+                if !self.bitmap_tag_bits.contains_key(name.as_str()) {
+                    let bit = self.bitmap_tag_names.len() as u8;
+                    self.bitmap_tag_bits.insert(name.clone(), bit);
                     self.bitmap_tag_names.push(name);
                 }
             }
         }
         let entities: Table = snapshot.get("entities")?;
         let mut parent_data: Vec<(u32, u32)> = Vec::new();
-        for entry_val in entities.clone().sequence_values::<Table>() {
+        for entry_val in entities.sequence_values::<Table>() {
             let entry = entry_val?;
             let id: u32 = entry.get("id")?;
             let slot = Self::unpack_slot(id);
@@ -205,7 +186,7 @@ impl Universe {
             }
             let comp_row = lua.create_table()?;
             if let Ok(components) = entry.get::<_, Table>("components") {
-                for pair in components.clone().pairs::<LuaValue, LuaValue>() {
+                for pair in components.pairs::<LuaValue, LuaValue>() {
                     let (k, v) = pair?;
                     comp_row.set(k, v)?;
                 }
@@ -246,6 +227,7 @@ impl Universe {
                     .push(child_slot);
             }
         }
+        self.bump_query_change_tick();
         Ok(())
     }
 }

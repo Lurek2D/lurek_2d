@@ -312,6 +312,15 @@ describe("byte data methods", function()
     -- @covers LByteData:getString
     it("getString returns the backing bytes", function()
         expect_equal("hello", new_byte_data("hello"):getString())
+
+        local raw = string.char(0xFF, 0x00, 0x41, 0x80)
+        local bytes = new_byte_data(raw)
+        local echoed = bytes:getString()
+        expect_equal(#raw, #echoed)
+        expect_equal(0xFF, string.byte(echoed, 1))
+        expect_equal(0x00, string.byte(echoed, 2))
+        expect_equal(0x41, string.byte(echoed, 3))
+        expect_equal(0x80, string.byte(echoed, 4))
     end)
 
     -- @covers LByteData:getByte

@@ -731,6 +731,367 @@ describe("LuaAreaChart methods", function()
         expect_true(w > 0)
     end)
 
+    -- @covers LAreaChart:setYMax
+    it("setYMax keeps area chart renderable with explicit range", function()
+        local chart = lurek.charts.newArea({ width = 96, height = 72 })
+        chart:setYMax(100)
+        chart:addSeries("temp", {{1, 10}, {2, 20}, {3, 15}})
+        expect_chart_draws(chart, 96, 72)
+    end)
+
+    -- @describe explicit charts-owner coverage migrated from ui wrappers
+    describe("explicit charts-owner coverage migrated from ui wrappers", function()
+        -- @covers LLineChart:addSeriesFromDataFrame
+        it("addSeriesFromDataFrame skips non numeric points for line charts", function()
+            local df = lurek.dataframe.fromRows({ "month", "savings" }, {
+                { 1, 240 },
+                { 2, "260" },
+                { 3, "bad" },
+            })
+            local chart = lurek.charts.newLine({ width = 64, height = 64 })
+            expect_equal(1, chart:addSeriesFromDataFrame("Savings", df, "month", "savings"))
+        end)
+
+        -- @covers LLineChart:setXMax
+        it("setXMax keeps line charts renderable", function()
+            local chart = lurek.charts.newLine({ width = 96, height = 72 })
+            chart:setXMax(10)
+            chart:addSeries("speed", {{1, 10}, {2, 20}, {10, 15}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LLineChart:setYMax
+        it("setYMax keeps line charts renderable", function()
+            local chart = lurek.charts.newLine({ width = 96, height = 72 })
+            chart:setYMax(50)
+            chart:addSeries("speed", {{1, 10}, {2, 20}, {3, 15}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LLineChart:setXLabel
+        it("setXLabel keeps annotated line charts renderable", function()
+            local chart = lurek.charts.newLine({ width = 96, height = 72 })
+            chart:setXLabel("Time")
+            chart:addSeries("speed", {{1, 10}, {2, 20}, {3, 15}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LLineChart:setYLabel
+        it("setYLabel keeps annotated line charts renderable", function()
+            local chart = lurek.charts.newLine({ width = 96, height = 72 })
+            chart:setYLabel("Speed")
+            chart:addSeries("speed", {{1, 10}, {2, 20}, {3, 15}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LLineChart:setXTickCount
+        it("setXTickCount keeps annotated line charts renderable", function()
+            local chart = lurek.charts.newLine({ width = 96, height = 72 })
+            chart:setXTickCount(6)
+            chart:addSeries("speed", {{1, 10}, {2, 20}, {3, 15}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LLineChart:setYTickCount
+        it("setYTickCount keeps annotated line charts renderable", function()
+            local chart = lurek.charts.newLine({ width = 96, height = 72 })
+            chart:setYTickCount(6)
+            chart:addSeries("speed", {{1, 10}, {2, 20}, {3, 15}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LLineChart:setShowLegend
+        it("setShowLegend keeps annotated line charts renderable", function()
+            local chart = lurek.charts.newLine({ width = 96, height = 72 })
+            chart:setShowLegend(true)
+            chart:addSeries("speed", {{1, 10}, {2, 20}, {3, 15}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LLineChart:drawToImage
+        it("drawToImage paints line charts into existing image data", function()
+            local chart = lurek.charts.newLine({ width = 64, height = 64 })
+            chart:addSeries("speed", {{1, 10}, {2, 20}, {3, 15}})
+            expect_chart_draws(chart, 64, 64)
+        end)
+
+        -- @covers LLineChart:type
+        it("type returns LLineChart for charts module line charts", function()
+            expect_equal("LLineChart", lurek.charts.newLine({ width = 64, height = 64 }):type())
+        end)
+
+        -- @covers LLineChart:typeOf
+        it("typeOf recognizes LLineChart for charts module line charts", function()
+            expect_true(lurek.charts.newLine({ width = 64, height = 64 }):typeOf("LLineChart"))
+        end)
+
+        -- @covers LBarChart:setXLabel
+        it("setXLabel keeps annotated bar charts renderable", function()
+            local chart = lurek.charts.newBar({ width = 96, height = 72 })
+            chart:setXLabel("Month")
+            chart:addSeries("Q1", {})
+            chart:addCategory("Jan", {30})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LBarChart:setYLabel
+        it("setYLabel keeps annotated bar charts renderable", function()
+            local chart = lurek.charts.newBar({ width = 96, height = 72 })
+            chart:setYLabel("Units")
+            chart:addSeries("Q1", {})
+            chart:addCategory("Jan", {30})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LBarChart:setXTickCount
+        it("setXTickCount keeps annotated bar charts renderable", function()
+            local chart = lurek.charts.newBar({ width = 96, height = 72 })
+            chart:setXTickCount(6)
+            chart:addSeries("Q1", {})
+            chart:addCategory("Jan", {30})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LBarChart:setYTickCount
+        it("setYTickCount keeps annotated bar charts renderable", function()
+            local chart = lurek.charts.newBar({ width = 96, height = 72 })
+            chart:setYTickCount(6)
+            chart:addSeries("Q1", {})
+            chart:addCategory("Jan", {30})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LBarChart:setShowLegend
+        it("setShowLegend keeps annotated bar charts renderable", function()
+            local chart = lurek.charts.newBar({ width = 96, height = 72 })
+            chart:setShowLegend(true)
+            chart:addSeries("Q1", {})
+            chart:addCategory("Jan", {30})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LBarChart:drawToImage
+        it("drawToImage paints bar charts into existing image data", function()
+            local chart = lurek.charts.newBar({ width = 64, height = 64 })
+            chart:addSeries("Q1", {})
+            chart:addCategory("Jan", {30})
+            expect_chart_draws(chart, 64, 64)
+        end)
+
+        -- @covers LBarChart:type
+        it("type returns LBarChart for charts module bar charts", function()
+            expect_equal("LBarChart", lurek.charts.newBar({ width = 64, height = 64 }):type())
+        end)
+
+        -- @covers LBarChart:typeOf
+        it("typeOf recognizes LBarChart for charts module bar charts", function()
+            expect_true(lurek.charts.newBar({ width = 64, height = 64 }):typeOf("LBarChart"))
+        end)
+
+        -- @covers LScatterPlot:addSeriesFromDataFrame
+        it("addSeriesFromDataFrame skips non numeric points for scatter plots", function()
+            local df = lurek.dataframe.fromRows({ "x", "y" }, {
+                { 1, 2 },
+                { 3, 4 },
+                { 5, "bad" },
+            })
+            local chart = lurek.charts.newScatter({ width = 64, height = 64 })
+            expect_equal(2, chart:addSeriesFromDataFrame("Points", df, "x", "y"))
+        end)
+
+        -- @covers LScatterPlot:setXRange
+        it("setXRange keeps scatter charts renderable", function()
+            local chart = lurek.charts.newScatter({ width = 96, height = 72 })
+            chart:setXRange(0, 10)
+            chart:addSeries("Points", {{1, 2}, {3, 4}, {5, 6}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LScatterPlot:setYRange
+        it("setYRange keeps scatter charts renderable", function()
+            local chart = lurek.charts.newScatter({ width = 96, height = 72 })
+            chart:setYRange(0, 10)
+            chart:addSeries("Points", {{1, 2}, {3, 4}, {5, 6}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LScatterPlot:setXLabel
+        it("setXLabel keeps annotated scatter charts renderable", function()
+            local chart = lurek.charts.newScatter({ width = 96, height = 72 })
+            chart:setXLabel("Axis X")
+            chart:addSeries("Points", {{1, 2}, {3, 4}, {5, 6}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LScatterPlot:setYLabel
+        it("setYLabel keeps annotated scatter charts renderable", function()
+            local chart = lurek.charts.newScatter({ width = 96, height = 72 })
+            chart:setYLabel("Axis Y")
+            chart:addSeries("Points", {{1, 2}, {3, 4}, {5, 6}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LScatterPlot:setXTickCount
+        it("setXTickCount keeps annotated scatter charts renderable", function()
+            local chart = lurek.charts.newScatter({ width = 96, height = 72 })
+            chart:setXTickCount(6)
+            chart:addSeries("Points", {{1, 2}, {3, 4}, {5, 6}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LScatterPlot:setYTickCount
+        it("setYTickCount keeps annotated scatter charts renderable", function()
+            local chart = lurek.charts.newScatter({ width = 96, height = 72 })
+            chart:setYTickCount(6)
+            chart:addSeries("Points", {{1, 2}, {3, 4}, {5, 6}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LScatterPlot:setShowLegend
+        it("setShowLegend keeps annotated scatter charts renderable", function()
+            local chart = lurek.charts.newScatter({ width = 96, height = 72 })
+            chart:setShowLegend(true)
+            chart:addSeries("Points", {{1, 2}, {3, 4}, {5, 6}})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LScatterPlot:drawToImage
+        it("drawToImage paints scatter charts into existing image data", function()
+            local chart = lurek.charts.newScatter({ width = 64, height = 64 })
+            chart:addSeries("Points", {{1, 2}, {3, 4}, {5, 6}})
+            expect_chart_draws(chart, 64, 64)
+        end)
+
+        -- @covers LScatterPlot:type
+        it("type returns LScatterPlot for charts module scatter charts", function()
+            expect_equal("LScatterPlot", lurek.charts.newScatter({ width = 64, height = 64 }):type())
+        end)
+
+        -- @covers LScatterPlot:typeOf
+        it("typeOf recognizes LScatterPlot for charts module scatter charts", function()
+            expect_true(lurek.charts.newScatter({ width = 64, height = 64 }):typeOf("LScatterPlot"))
+        end)
+
+        -- @covers LPieChart:addSegment
+        it("addSegment adds drawable pie data", function()
+            local chart = lurek.charts.newPie({ width = 64, height = 64 })
+            chart:addSegment("Food", 420)
+            expect_chart_draws(chart, 64, 64)
+        end)
+
+        -- @covers LPieChart:addSegmentsFromDataFrame
+        it("addSegmentsFromDataFrame skips invalid pie values", function()
+            local df = lurek.dataframe.fromRows({ "category", "amount" }, {
+                { "Food", 420 },
+                { "Rent", "1200" },
+                { "Skip", "bad" },
+                { "Zero", 0 },
+            })
+            local chart = lurek.charts.newPie({ width = 64, height = 64 })
+            expect_equal(1, chart:addSegmentsFromDataFrame(df, "category", "amount"))
+        end)
+
+        -- @covers LPieChart:setShowLegend
+        it("setShowLegend keeps annotated pie charts renderable", function()
+            local chart = lurek.charts.newPie({ width = 96, height = 72 })
+            chart:setShowLegend(true)
+            chart:addSegment("Food", 420)
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LPieChart:drawToImage
+        it("drawToImage paints pie charts into existing image data", function()
+            local chart = lurek.charts.newPie({ width = 64, height = 64 })
+            chart:addSegment("Food", 420)
+            expect_chart_draws(chart, 64, 64)
+        end)
+
+        -- @covers LPieChart:type
+        it("type returns LPieChart for charts module pie charts", function()
+            expect_equal("LPieChart", lurek.charts.newPie({ width = 64, height = 64 }):type())
+        end)
+
+        -- @covers LPieChart:typeOf
+        it("typeOf recognizes LPieChart for charts module pie charts", function()
+            expect_true(lurek.charts.newPie({ width = 64, height = 64 }):typeOf("LPieChart"))
+        end)
+
+        -- @covers LAreaChart:addLayer
+        it("addLayer adds drawable area layer data", function()
+            local chart = lurek.charts.newArea({ width = 64, height = 64 })
+            chart:addLayer("series1", {10, 20, 30, 25, 15})
+            expect_chart_draws(chart, 64, 64)
+        end)
+
+        -- @covers LAreaChart:addLayerFromDataFrame
+        it("addLayerFromDataFrame copies dataframe values for area charts", function()
+            local df = lurek.dataframe.fromRows({ "balance" }, {
+                { 1200 },
+                { "1325" },
+                { "bad" },
+            })
+            local chart = lurek.charts.newArea({ width = 64, height = 64 })
+            expect_equal(3, chart:addLayerFromDataFrame("Balance", df, "balance"))
+        end)
+
+        -- @covers LAreaChart:setXLabel
+        it("setXLabel keeps annotated area charts renderable", function()
+            local chart = lurek.charts.newArea({ width = 96, height = 72 })
+            chart:setXLabel("Step")
+            chart:addLayer("series1", {10, 20, 30, 25, 15})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LAreaChart:setYLabel
+        it("setYLabel keeps annotated area charts renderable", function()
+            local chart = lurek.charts.newArea({ width = 96, height = 72 })
+            chart:setYLabel("Load")
+            chart:addLayer("series1", {10, 20, 30, 25, 15})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LAreaChart:setXTickCount
+        it("setXTickCount keeps annotated area charts renderable", function()
+            local chart = lurek.charts.newArea({ width = 96, height = 72 })
+            chart:setXTickCount(6)
+            chart:addLayer("series1", {10, 20, 30, 25, 15})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LAreaChart:setYTickCount
+        it("setYTickCount keeps annotated area charts renderable", function()
+            local chart = lurek.charts.newArea({ width = 96, height = 72 })
+            chart:setYTickCount(6)
+            chart:addLayer("series1", {10, 20, 30, 25, 15})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LAreaChart:setShowLegend
+        it("setShowLegend keeps annotated area charts renderable", function()
+            local chart = lurek.charts.newArea({ width = 96, height = 72 })
+            chart:setShowLegend(true)
+            chart:addLayer("series1", {10, 20, 30, 25, 15})
+            expect_chart_draws(chart, 96, 72)
+        end)
+
+        -- @covers LAreaChart:drawToImage
+        it("drawToImage paints area charts into existing image data", function()
+            local chart = lurek.charts.newArea({ width = 64, height = 64 })
+            chart:addLayer("series1", {10, 20, 30, 25, 15})
+            expect_chart_draws(chart, 64, 64)
+        end)
+
+        -- @covers LAreaChart:type
+        it("type returns LAreaChart for charts module area charts", function()
+            expect_equal("LAreaChart", lurek.charts.newArea({ width = 64, height = 64 }):type())
+        end)
+
+        -- @covers LAreaChart:typeOf
+        it("typeOf recognizes LAreaChart for charts module area charts", function()
+            expect_true(lurek.charts.newArea({ width = 64, height = 64 }):typeOf("LAreaChart"))
+        end)
+    end)
+
     -- @describe explicit strict-owner coverage additions
     describe("explicit strict-owner coverage additions", function()
         -- @covers LLineChart:draw

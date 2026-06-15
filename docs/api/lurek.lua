@@ -1187,13 +1187,6 @@ LRuntimeGetConfigResult = {}
 ---@field version string Engine version string.
 LRuntimeGetInfoResult = {}
 
----@class LRuntimeGetLastErrorResult
----@field category string Error category.
----@field code string Error code.
----@field hint string? Optional hint for resolution.
----@field message string Error message.
-LRuntimeGetLastErrorResult = {}
-
 ---@class LRuntimeParseArgsResult
 ---@field flags table Boolean flags indexed by name.
 ---@field options table String options indexed by name.
@@ -1790,8 +1783,8 @@ lurek.sprite = {}
 ---@class lurek.svg
 lurek.svg = {}
 
----@class lurek.system
-lurek.system = {}
+---@class lurek.runtime
+lurek.runtime = {}
 
 ---@class lurek.terminal
 lurek.terminal = {}
@@ -2179,6 +2172,14 @@ LSynthesizer = {}
 --- Lua-visible procedural waveform descriptor used for repeated SoundData rendering.
 ---@class LWaveform
 LWaveform = {}
+
+--- Lua-side cached ECS query view handle owned by one universe.
+---@class LQueryView
+LQueryView = {}
+
+--- Lua-side relationship manager handle owned by `lurek.ecs`.
+---@class LRelationshipManager
+LRelationshipManager = {}
 
 --- Lua-side handle for one ECS universe.
 ---@class LUniverse
@@ -2918,17 +2919,9 @@ LTweenState = {}
 ---@class LAccordion : LUiWidget
 LAccordion = {}
 
---- Lua-exposed area chart for data visualization.
----@class LAreaChart
-LAreaChart = {}
-
 --- Adds badge-specific methods to a notification badge widget table.
 ---@class LBadge : LUiWidget
 LBadge = {}
-
---- Lua-exposed bar chart for data visualization.
----@class LBarChart
-LBarChart = {}
 
 --- Adds button-specific methods (setText, getText) to a button widget table.
 ---@class LButton : LUiWidget
@@ -2974,10 +2967,6 @@ LLabel = {}
 ---@class LLayout : LUiWidget
 LLayout = {}
 
---- Lua-exposed line chart for data visualization.
----@class LLineChart
-LLineChart = {}
-
 --- Adds list-box-specific methods to a list box widget table.
 ---@class LListBox : LUiWidget
 LListBox = {}
@@ -2998,10 +2987,6 @@ LNinePatch = {}
 ---@class LPanel : LUiWidget
 LPanel = {}
 
---- Lua-exposed pie chart for data visualization.
----@class LPieChart
-LPieChart = {}
-
 --- Adds progress-bar-specific methods to a progress bar widget table.
 ---@class LProgressBar : LUiWidget
 LProgressBar = {}
@@ -3009,10 +2994,6 @@ LProgressBar = {}
 --- Adds radio-button-specific methods to a radio button widget table.
 ---@class LRadioButton : LUiWidget
 LRadioButton = {}
-
---- Lua-exposed scatter plot for data visualization.
----@class LScatterPlot
-LScatterPlot = {}
 
 --- Adds scroll-bar-specific methods to a scroll bar widget table.
 ---@class LScrollBar : LUiWidget
@@ -6695,7 +6676,7 @@ function LByteData:getByte(offset) end
 function LByteData:getSize() end
 
 --- Returns the byte buffer as a string.
----@return string Byte buffer contents as a Lua string.
+---@return string Raw byte buffer contents as a Lua string without UTF-8 validation.
 function LByteData:getString() end
 
 --- Reads up to 32 bits starting at a byte and bit offset.
@@ -6961,8 +6942,8 @@ lurek.binary.getPackedSize = function(fmt, ...) end
 ---@return string Hash digest string.
 lurek.binary.hash = function(algo_str, raw_data) end
 
---- Creates ByteData from a size or string.
----@param value any Integer size for zeroed bytes, or string used as initial bytes.
+--- Creates ByteData from a size or raw byte string.
+---@param value any Integer size for zeroed bytes, or raw Lua string used as initial bytes.
 ---@return LByteData New LByteData userdata.
 lurek.binary.newByteData = function(value) end
 
@@ -8255,7 +8236,7 @@ lurek.color.alphaBlend = function(fg, bg) end
 ---@return number Perceived brightness (0â€“1).
 lurek.color.brightness = function(r, g, b) end
 
---- Parses a hex color string ("#RRGGBB" or "#RRGGBBAA") into a color table. Returns nil on invalid input.
+--- Parses a hex color string ("#RGB", "#RGBA", "#RRGGBB", or "#RRGGBBAA") into a color table.
 ---@param hex string Hex color string with leading '#'.
 ---@return table nil | Color table or nil if parsing fails.
 lurek.color.fromHex = function(hex) end
@@ -11115,6 +11096,69 @@ lurek.dsp.spectrogramToPng = function(input, output, width, height) end
 ---@return boolean True when the output image was written successfully.
 lurek.dsp.waveformToPng = function(input, output, width, height) end
 
+--- Returns cached query results, refreshing when the owning universe query tick changed.
+---@return number[] Array table of matching entity ids.
+function LQueryView:ids() end
+
+--- Returns the universe query-change tick used to build the current cached ids.
+---@return number Query-change tick for the cached result set.
+function LQueryView:lastTick() end
+
+--- Returns the Lua-visible type name for this cached query-view handle.
+---@return string The string `LQueryView`.
+function LQueryView:type() end
+
+--- Returns whether this cached query-view handle matches a supported type name.
+---@param name string Type name to compare against `LQueryView` and `LObject`.
+---@return boolean True when the supplied type name matches this handle.
+function LQueryView:typeOf(name) end
+
+---@param a any
+---@param b any
+---@param delta any
+function LRelationshipManager:adjustValue(a, b, delta) end
+
+---@param name any
+---@param levels any
+---@param default_level? any
+function LRelationshipManager:defineType(name, levels, default_level) end
+
+---@param a any
+---@param b any
+---@param type_name any
+function LRelationshipManager:getLevel(a, b, type_name) end
+
+---@param a any
+---@param b any
+function LRelationshipManager:getValue(a, b) end
+
+function LRelationshipManager:pairCount() end
+
+---@param a any
+---@param b any
+function LRelationshipManager:removePair(a, b) end
+
+---@param name any
+function LRelationshipManager:removeType(name) end
+
+---@param a any
+---@param b any
+---@param type_name any
+---@param level any
+function LRelationshipManager:setLevel(a, b, type_name, level) end
+
+---@param a any
+---@param b any
+---@param value any
+function LRelationshipManager:setValue(a, b, value) end
+
+function LRelationshipManager:type() end
+
+function LRelationshipManager:typeNames() end
+
+---@param name any
+function LRelationshipManager:typeOf(name) end
+
 --- Adds a named directed relation from one entity to another.
 ---@param from number Source entity id.
 ---@param name string Relation name.
@@ -11249,6 +11293,10 @@ function LUniverse:getLayer(id) end
 ---@return number Parent entity id, or nil when the entity has no parent.
 function LUniverse:getParent(child_id) end
 
+--- Returns the coarse invalidation tick used by cached ECS query views.
+---@return number Monotonic world query-change tick.
+function LUniverse:getQueryChangeTick() end
+
 --- Returns targets linked from an entity by a named relation.
 ---@param from number Source entity id.
 ---@param name string Relation name.
@@ -11310,6 +11358,12 @@ function LUniverse:killRecursive(id) end
 --- Returns names of all registered blueprints.
 ---@return string[] Blueprint names.
 function LUniverse:listBlueprints() end
+
+--- Creates a cached component query view that refreshes only when this universe changes.
+---@param with_table table Array table of required component names.
+---@param without_table? table Optional array table of excluded component names.
+---@return LQueryView Cached query-view handle bound to this universe.
+function LUniverse:newQueryView(with_table, without_table) end
 
 --- Registers a callback for queued component-add events with a given component name.
 ---@param name string Component name whose add events are observed.
@@ -11445,6 +11499,10 @@ function LUniverse:update(dt) end
 ---@param phase string System phase name to run.
 ---@param dt number Frame delta time in seconds.
 function LUniverse:updatePhase(phase, dt) end
+
+--- Creates a relationship manager for tracking numeric values and named levels between entity pairs.
+---@return LRelationshipManager New relationship manager handle owned by `lurek.ecs`.
+lurek.ecs.newRelationshipManager = function() end
 
 --- Creates an empty ECS universe for entity, component, system, and relationship management.
 ---@return LUniverse New universe handle.
@@ -12465,6 +12523,13 @@ function LGraphEdge:addAllowedType(t) end
 --- Clears this edge's item type allow-list.
 function LGraphEdge:clearAllowedTypes() end
 
+--- Removes every transit capacity reservation from this edge.
+function LGraphEdge:clearCapacityReservations() end
+
+--- Returns how many transit slots remain after active items and reservations, or -1 when unlimited.
+---@return number Available transit slots, or -1 when the edge capacity is unlimited.
+function LGraphEdge:getAvailableCapacity() end
+
 --- Returns this edge's maximum concurrent item capacity.
 ---@return number Edge capacity.
 function LGraphEdge:getCapacity() end
@@ -12480,6 +12545,10 @@ function LGraphEdge:getFrom() end
 --- Returns graph items currently traveling along this edge.
 ---@return LGraphItem[] `LGraphItem` handles.
 function LGraphEdge:getItemsInTransit() end
+
+--- Returns the total transit capacity reserved on this edge across all reservation keys.
+---@return number Reserved transit slot count.
+function LGraphEdge:getReservedCapacity() end
 
 --- Returns this edge's speed modifier.
 ---@return number Speed modifier.
@@ -12522,10 +12591,22 @@ function LGraphEdge:isItemTypeAllowed(t) end
 ---@return boolean True when cooldown is active.
 function LGraphEdge:isOnCooldown() end
 
+--- Releases reserved transit capacity for a key and returns the number of slots removed.
+---@param key string Reservation key to release.
+---@param slots? number Number of slots to release, defaulting to all slots for that key.
+---@return number Number of slots actually released.
+function LGraphEdge:releaseCapacityReservation(key, slots) end
+
 --- Removes an item type from this edge's allow-list.
 ---@param t string Item type to remove.
 ---@return boolean True when the type was present.
 function LGraphEdge:removeAllowedType(t) end
+
+--- Reserves transit capacity slots under a caller-provided key for planning and coordination.
+---@param key string Reservation key used to group planner-owned capacity holds.
+---@param slots? number Number of slots to reserve, defaulting to 1.
+---@return boolean True when the reservation fit within currently available capacity.
+function LGraphEdge:reserveCapacity(key, slots) end
 
 --- Enables or disables this edge for routing and simulation.
 ---@param a boolean New active flag.
@@ -12640,6 +12721,9 @@ function LGraphNode:addTag(tag) end
 --- Removes every conversion rule from this node.
 function LGraphNode:clearAllConversions() end
 
+--- Removes every inventory capacity reservation from this node.
+function LGraphNode:clearCapacityReservations() end
+
 --- Removes a conversion rule by input item type.
 ---@param in_type string Input item type.
 ---@return boolean True when a conversion rule was removed.
@@ -12662,6 +12746,10 @@ function LGraphNode:dequeue() end
 ---@param item_ud LGraphItem Item handle to enqueue.
 ---@return boolean True when the item was queued.
 function LGraphNode:enqueue(item_ud) end
+
+--- Returns how many node inventory slots remain after active items and reservations, or -1 when unlimited.
+---@return number Available inventory slots, or -1 when the node capacity is unlimited.
+function LGraphNode:getAvailableCapacity() end
 
 --- Returns this node's item capacity.
 ---@return number Node capacity.
@@ -12716,6 +12804,10 @@ function LGraphNode:getQueueCapacity() end
 ---@return number Queue size.
 function LGraphNode:getQueueSize() end
 
+--- Returns the total item capacity reserved on this node across all reservation keys.
+---@return number Reserved node slot count.
+function LGraphNode:getReservedCapacity() end
+
 --- Returns all tags assigned to this node.
 ---@return string[] Tag strings.
 function LGraphNode:getTags() end
@@ -12741,6 +12833,12 @@ function LGraphNode:isFull() end
 ---@return boolean True when queueing is enabled.
 function LGraphNode:isQueueEnabled() end
 
+--- Releases reserved node capacity for a key and returns the number of slots removed.
+---@param key string Reservation key to release.
+---@param slots? number Number of slots to release, defaulting to all slots for that key.
+---@return number Number of slots actually released.
+function LGraphNode:releaseCapacityReservation(key, slots) end
+
 --- Removes demand entry for an item type from this node.
 ---@param item_type string Item type demand entry to remove.
 ---@return boolean True when demand existed.
@@ -12755,6 +12853,12 @@ function LGraphNode:removeSupply(item_type) end
 ---@param tag string Tag to remove.
 ---@return boolean True when the tag was present.
 function LGraphNode:removeTag(tag) end
+
+--- Reserves node inventory capacity under a caller-provided key for planning and coordination.
+---@param key string Reservation key used to group planner-owned capacity holds.
+---@param slots? number Number of slots to reserve, defaulting to 1.
+---@return boolean True when the reservation fit within currently available capacity.
+function LGraphNode:reserveCapacity(key, slots) end
 
 --- Enables or disables this node for graph simulation.
 ---@param a boolean New active flag.
@@ -21134,6 +21238,18 @@ function LUnitPathfinder:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LUnitPathfinder:typeOf(name) end
 
+--- Marks an async path request as cancelled.
+---@param request_id number Request id returned by `submitAsyncPath`.
+---@return boolean Always true once the cancel marker is recorded.
+lurek.pathfind.cancelAsyncPath = function(request_id) end
+
+--- Drops all queued async path requests and recreates the worker pool with the configured thread count.
+lurek.pathfind.clearAsyncPaths = function() end
+
+--- Returns the number of async path requests that have not emitted a terminal event.
+---@return number Pending async request count.
+lurek.pathfind.getAsyncPendingCount = function() end
+
 --- Returns the configured pathfinding thread count.
 ---@return number Thread count (minimum 1).
 lurek.pathfind.getThreadCount = function() end
@@ -21196,6 +21312,10 @@ lurek.pathfind.newPathGrid = function(w, h, cell_size) end
 ---@return LUnitPathfinder New pathfinder handle.
 lurek.pathfind.newPathfinder = function(grid_ud) end
 
+--- Returns all currently available async path events without blocking.
+---@return table Array of event tables with ids, status, optional path, and completion flags.
+lurek.pathfind.pollAsyncPaths = function() end
+
 --- Computes reachable cells from range map options.
 ---@param opts table Options with dimensions, origin, budget, optional diagonal flag, costs, and blocked cells.
 ---@return LPathfindRangeMapResult Range map result with `cells`, `width`, and `height` fields.
@@ -21204,6 +21324,12 @@ lurek.pathfind.rangeMap = function(opts) end
 --- Sets the configured pathfinding worker-thread count.
 ---@param count number Desired thread count.
 lurek.pathfind.setThreadCount = function(count) end
+
+--- Queues an async path query against a navigation grid snapshot.
+---@param grid_ud LNavGrid Navigation grid to clone for the worker.
+---@param opts table Options with start/goal cells and optional owner, version, priority, unit size, and stream budget.
+---@return number Request id for polling and cancellation.
+lurek.pathfind.submitAsyncPath = function(grid_ud, opts) end
 
 --- Attach a child node to a parent composite or decorator node.
 ---@param parentId number The parent node ID.
@@ -26662,7 +26788,7 @@ function LSaveManager:unregister(name) end
 
 --- Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
 ---@param dt number Delta time in seconds since the last frame.
----@return boolean True if an auto-save was triggered during this update.
+---@return string Auto-save slot name when save work is due, or nil when no flush is needed yet.
 function LSaveManager:update(dt) end
 
 --- Create a new SaveManager instance for managing persistent game saves.
@@ -27782,8 +27908,6 @@ lurek.runtime.getEnv = function(name) end
 ---@return LRuntimeGetInfoResult Table with fields: `engine` (string), `version` (string), `lua_version` (string), `renderer` (string), `os` (string), `processors` (number), `memory` (number).
 lurek.runtime.getInfo = function() end
 
---- Returns the last error for Lua scripts in this module.
----@return LRuntimeGetLastErrorResult Table result returned by this call.
 lurek.runtime.getLastError = function() end
 
 --- Returns the current engine log verbosity level as a string.
@@ -30244,62 +30368,6 @@ function LAccordion:setExclusive(v) end
 ---@return boolean The new expanded state.
 function LAccordion:toggleSection(section_idx) end
 
---- Adds a data layer to this area chart.
----@param name string The layer name.
----@param vals_tbl table Array of numeric values.
----@param r number Red color component.
----@param g number Green color component.
----@param b number Blue color component.
-function LAreaChart:addLayer(name, vals_tbl, r, g, b) end
-
---- Adds one area layer from a dataframe column, using zero for missing or non-numeric cells.
----@param name string The layer name.
----@param df LDataFrame Source dataframe.
----@param value_col string Column name for layer values.
----@param r number Red color component.
----@param g number Green color component.
----@param b number Blue color component.
----@param opts? table Optional table with maxRows integer.
----@return number Number of values copied into the layer.
-function LAreaChart:addLayerFromDataFrame(name, df, value_col, r, g, b, opts) end
-
---- Renders this area chart to an image buffer.
----@param target LImageData The image to draw into.
-function LAreaChart:drawToImage(target) end
-
---- Enables or disables the layer legend for this area chart.
----@param value boolean True to show the legend.
-function LAreaChart:setShowLegend(value) end
-
---- Sets the X-axis label for this area chart.
----@param label string Axis label text.
-function LAreaChart:setXLabel(label) end
-
---- Sets the number of X-axis tick labels for this area chart.
----@param count number Tick count, minimum 2.
-function LAreaChart:setXTickCount(count) end
-
---- Sets the Y-axis label for this area chart.
----@param label string Axis label text.
-function LAreaChart:setYLabel(label) end
-
---- Sets the maximum Y-axis value for this area chart.
----@param v number The Y-axis maximum.
-function LAreaChart:setYMax(v) end
-
---- Sets the number of Y-axis tick labels for this area chart.
----@param count number Tick count, minimum 2.
-function LAreaChart:setYTickCount(count) end
-
---- Returns the type name of this object.
----@return string Always "LAreaChart".
-function LAreaChart:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check.
----@return boolean True if the name matches this userdata type.
-function LAreaChart:typeOf(name) end
-
 --- Returns the current notification count of this badge.
 ---@return number The badge count.
 function LBadge:getCount() end
@@ -30311,59 +30379,6 @@ function LBadge:getDisplayText() end
 --- Sets the notification count displayed by this badge.
 ---@param count number The notification count.
 function LBadge:setCount(count) end
-
---- Adds bar categories from dataframe rows, using zero for missing or non-numeric value cells.
----@param df LDataFrame Source dataframe.
----@param label_col string Column name for category labels.
----@param value_cols string[] Value columns matching registered series order.
----@param opts? table Optional table with maxRows integer.
----@return number Number of categories added.
-function LBarChart:addCategoriesFromDataFrame(df, label_col, value_cols, opts) end
-
---- Adds a category with values for each series.
----@param label string The category label.
----@param vals_tbl table Array of values, one per series.
-function LBarChart:addCategory(label, vals_tbl) end
-
---- Adds a named series to this bar chart.
----@param name string The series name.
----@param r number Red color component.
----@param g number Green color component.
----@param b number Blue color component.
-function LBarChart:addSeries(name, r, g, b) end
-
---- Renders this bar chart to an image buffer.
----@param target LImageData The image to draw into.
-function LBarChart:drawToImage(target) end
-
---- Enables or disables the series legend for this bar chart.
----@param value boolean True to show the legend.
-function LBarChart:setShowLegend(value) end
-
---- Sets the X-axis label for this bar chart.
----@param label string Axis label text.
-function LBarChart:setXLabel(label) end
-
---- Sets the number of X-axis tick labels for this bar chart.
----@param count number Tick count, minimum 2.
-function LBarChart:setXTickCount(count) end
-
---- Sets the Y-axis label for this bar chart.
----@param label string Axis label text.
-function LBarChart:setYLabel(label) end
-
---- Sets the number of Y-axis tick labels for this bar chart.
----@param count number Tick count, minimum 2.
-function LBarChart:setYTickCount(count) end
-
---- Returns the type name of this object.
----@return string Always "LBarChart".
-function LBarChart:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check.
----@return boolean True if the name matches this userdata type.
-function LBarChart:typeOf(name) end
 
 --- Returns the current display text of this button.
 ---@return string The button label.
@@ -30799,67 +30814,6 @@ function LLayout:setSpacing(spacing) end
 ---@param wrap boolean True to enable wrapping.
 function LLayout:setWrap(wrap) end
 
---- Adds a named series of points to this line chart.
----@param name string The series name.
----@param pts_tbl table Array of `{x, y}` point tables.
----@param r number Red color component.
----@param g number Green color component.
----@param b number Blue color component.
-function LLineChart:addSeries(name, pts_tbl, r, g, b) end
-
---- Adds a named series from dataframe columns, skipping rows with non-numeric x or y cells.
----@param name string The series name.
----@param df LDataFrame Source dataframe.
----@param x_col string Column name for X values.
----@param y_col string Column name for Y values.
----@param r number Red color component.
----@param g number Green color component.
----@param b number Blue color component.
----@param opts? table Optional table with maxRows integer.
----@return number Number of accepted points added to the series.
-function LLineChart:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts) end
-
---- Renders this line chart to an image buffer.
----@param target LImageData The image to draw into.
-function LLineChart:drawToImage(target) end
-
---- Enables or disables the series legend for this line chart.
----@param value boolean True to show the legend.
-function LLineChart:setShowLegend(value) end
-
---- Sets the X-axis label for this line chart.
----@param label string Axis label text.
-function LLineChart:setXLabel(label) end
-
---- Sets the maximum X-axis value for this line chart.
----@param v number The X-axis maximum.
-function LLineChart:setXMax(v) end
-
---- Sets the number of X-axis tick labels for this line chart.
----@param count number Tick count, minimum 2.
-function LLineChart:setXTickCount(count) end
-
---- Sets the Y-axis label for this line chart.
----@param label string Axis label text.
-function LLineChart:setYLabel(label) end
-
---- Sets the maximum Y-axis value for this line chart.
----@param v number The Y-axis maximum.
-function LLineChart:setYMax(v) end
-
---- Sets the number of Y-axis tick labels for this line chart.
----@param count number Tick count, minimum 2.
-function LLineChart:setYTickCount(count) end
-
---- Returns the type name of this object.
----@return string Always "LLineChart".
-function LLineChart:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check.
----@return boolean True if the name matches this userdata type.
-function LLineChart:typeOf(name) end
-
 --- Appends a new text item to this list box.
 ---@param text string The item text to add.
 function LListBox:addItem(text) end
@@ -30985,39 +30939,6 @@ function LPanel:setScrollable(scrollable) end
 ---@param title string The panel title.
 function LPanel:setTitle(title) end
 
---- Adds a labeled segment to this pie chart widget.
----@param label string The segment label.
----@param value number The segment value.
----@param r number Red color component.
----@param g number Green color component.
----@param b number Blue color component.
-function LPieChart:addSegment(label, value, r, g, b) end
-
---- Adds pie segments from dataframe rows with a built-in color palette, skipping non-positive or non-numeric values.
----@param df LDataFrame Source dataframe.
----@param label_col string Column name for segment labels.
----@param value_col string Column name for segment values.
----@param opts? table Optional table with maxRows integer.
----@return number Number of segments added.
-function LPieChart:addSegmentsFromDataFrame(df, label_col, value_col, opts) end
-
---- Renders this pie chart to an image buffer.
----@param target LImageData The image to draw into.
-function LPieChart:drawToImage(target) end
-
---- Enables or disables the segment legend for this pie chart.
----@param value boolean True to show the legend.
-function LPieChart:setShowLegend(value) end
-
---- Returns the type name of this object.
----@return string Always "LPieChart".
-function LPieChart:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check.
----@return boolean True if the name matches this userdata type.
-function LPieChart:typeOf(name) end
-
 --- Returns the maximum value of this progress bar's range.
 ---@return number The maximum value.
 function LProgressBar:getMax() end
@@ -31070,69 +30991,6 @@ function LRadioButton:setSelected(v) end
 --- Sets the label text of this radio button.
 ---@param text string The radio button label.
 function LRadioButton:setText(text) end
-
---- Adds a data series to this scatter plot.
----@param name string The series name.
----@param pts_tbl table Array of {x, y} point tables.
----@param r number Red color component.
----@param g number Green color component.
----@param b number Blue color component.
-function LScatterPlot:addSeries(name, pts_tbl, r, g, b) end
-
---- Adds a data series from dataframe columns, skipping rows with non-numeric x or y cells.
----@param name string The series name.
----@param df LDataFrame Source dataframe.
----@param x_col string Column name for X values.
----@param y_col string Column name for Y values.
----@param r number Red color component.
----@param g number Green color component.
----@param b number Blue color component.
----@param opts? table Optional table with maxRows integer.
----@return number Number of accepted points added to the series.
-function LScatterPlot:addSeriesFromDataFrame(name, df, x_col, y_col, r, g, b, opts) end
-
---- Renders this scatter plot to an image buffer.
----@param target LImageData The image to draw into.
-function LScatterPlot:drawToImage(target) end
-
---- Enables or disables the series legend for this scatter plot.
----@param value boolean True to show the legend.
-function LScatterPlot:setShowLegend(value) end
-
---- Sets the X-axis label for this scatter plot.
----@param label string Axis label text.
-function LScatterPlot:setXLabel(label) end
-
---- Sets the X-axis range for this scatter plot.
----@param mn number Minimum X value.
----@param mx number Maximum X value.
-function LScatterPlot:setXRange(mn, mx) end
-
---- Sets the number of X-axis tick labels for this scatter plot.
----@param count number Tick count, minimum 2.
-function LScatterPlot:setXTickCount(count) end
-
---- Sets the Y-axis label for this scatter plot.
----@param label string Axis label text.
-function LScatterPlot:setYLabel(label) end
-
---- Sets the Y-axis range for this scatter plot.
----@param mn number Minimum Y value.
----@param mx number Maximum Y value.
-function LScatterPlot:setYRange(mn, mx) end
-
---- Sets the number of Y-axis tick labels for this scatter plot.
----@param count number Tick count, minimum 2.
-function LScatterPlot:setYTickCount(count) end
-
---- Returns the type name of this object.
----@return string Always "LScatterPlot".
-function LScatterPlot:type() end
-
---- Checks whether this object matches the given type name.
----@param name string Type name to check.
----@return boolean True if the name matches this userdata type.
-function LScatterPlot:typeOf(name) end
 
 --- Returns the total content size tracked by this scroll bar.
 ---@return number The content size.
@@ -32113,20 +31971,10 @@ lurek.ui.mousereleased = function(x, y, btn) end
 ---@return LAccordion The new accordion widget table.
 lurek.ui.newAccordion = function() end
 
---- Creates a new area chart for data visualization.
----@param opts table Table with width, height, and optional title.
----@return LAreaChart The new area chart userdata.
-lurek.ui.newAreaChart = function(opts) end
-
 --- Creates a new badge widget for displaying counts.
 ---@param count? number Initial count (default 0).
 ---@return LBadge The new badge widget table.
 lurek.ui.newBadge = function(count) end
-
---- Creates a new bar chart for data visualization.
----@param opts table Table with width, height, and optional title.
----@return LBarChart The new bar chart userdata.
-lurek.ui.newBarChart = function(opts) end
 
 --- Creates a new button widget with optional label text.
 ---@param text? string The button label text.
@@ -32174,11 +32022,6 @@ lurek.ui.newLabel = function(text) end
 ---@return LLayout The new layout widget table.
 lurek.ui.newLayout = function(direction) end
 
---- Creates a new line chart for data visualization.
----@param opts table Table with width, height, and optional title.
----@return LLineChart The new line chart userdata.
-lurek.ui.newLineChart = function(opts) end
-
 --- Creates a new list box widget for item selection.
 ---@return LListBox The new list box widget table.
 lurek.ui.newList = function() end
@@ -32200,11 +32043,6 @@ lurek.ui.newNinePatch = function() end
 ---@return LPanel The new panel widget table.
 lurek.ui.newPanel = function() end
 
---- Creates a new pie chart for data visualization.
----@param opts table Table with width, height, and optional title.
----@return LPieChart The new pie chart userdata.
-lurek.ui.newPieChart = function(opts) end
-
 --- Creates a new progress bar widget with min and max.
 ---@param min? number Minimum value (default 0).
 ---@param max? number Maximum value (default 100).
@@ -32216,11 +32054,6 @@ lurek.ui.newProgressBar = function(min, max) end
 ---@param group? string The radio group name.
 ---@return LRadioButton The new radio button widget table.
 lurek.ui.newRadioButton = function(text, group) end
-
---- Creates a new scatter plot for data visualization.
----@param opts table Table with width, height, and optional title.
----@return LScatterPlot The new scatter plot userdata.
-lurek.ui.newScatterPlot = function(opts) end
 
 --- Creates a new scroll bar widget for content scrolling.
 ---@param vertical? boolean True for vertical (default true).
@@ -32592,7 +32425,7 @@ lurek.window.close = function() end
 --- Flashes the window briefly to attract the user's attention.
 lurek.window.flash = function() end
 
---- Requests keyboard focus for the window. No-op if already focused.
+--- Requests keyboard focus for the window. The request is applied by the app loop on the next frame.
 lurek.window.focus = function() end
 
 --- Converts a value from physical pixel units to logical (DPI-independent) units using the current DPI scale.

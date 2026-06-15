@@ -212,6 +212,7 @@ lurek.learning.newConv2D(in_channels, out_channels, kernel_h, kernel_w, stride_h
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
     print("lurek.learning.newConv2D type", conv:type())
+    print("typeOf LObject = " .. tostring(conv:typeOf("LObject")))
 end
 ```
 
@@ -237,6 +238,7 @@ lurek.learning.newEngine()
 do
     local engine = lurek.learning.newEngine()
     print("lurek.learning.newEngine blocks", engine:blockCount())
+    print("lua type = " .. type(engine))
 end
 ```
 
@@ -309,6 +311,7 @@ lurek.learning.newGru(input_size, hidden_size)
 do
     local gru = lurek.learning.newGru(2, 3)
     print("lurek.learning.newGru type", gru:type())
+    print("typeOf LObject = " .. tostring(gru:typeOf("LObject")))
 end
 ```
 
@@ -341,6 +344,7 @@ lurek.learning.newLstm(input_size, hidden_size)
 do
     local lstm = lurek.learning.newLstm(2, 3)
     print("lurek.learning.newLstm type", lstm:type())
+    print("typeOf LObject = " .. tostring(lstm:typeOf("LObject")))
 end
 ```
 
@@ -375,6 +379,7 @@ lurek.learning.newMaxPool2D(kernel_h, kernel_w, stride_h, stride_w)
 do
     local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
     print("lurek.learning.newMaxPool2D type", pool:type())
+    print("typeOf LObject = " .. tostring(pool:typeOf("LObject")))
 end
 ```
 
@@ -407,6 +412,7 @@ lurek.learning.newMultiHeadAttention(d_model, num_heads)
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     print("lurek.learning.newMultiHeadAttention type", mha:type())
+    print("typeOf LObject = " .. tostring(mha:typeOf("LObject")))
 end
 ```
 
@@ -513,6 +519,7 @@ lurek.learning.newPositionalEncoding(d_model, max_len)
 do
     local pe = lurek.learning.newPositionalEncoding(4, 8)
     print("lurek.learning.newPositionalEncoding type", pe:type())
+    print("typeOf LObject = " .. tostring(pe:typeOf("LObject")))
 end
 ```
 
@@ -616,6 +623,7 @@ lurek.learning.newTransformerDecoder(d_model, num_heads, d_ff)
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
     print("lurek.learning.newTransformerDecoder type", dec:type())
+    print("typeOf LObject = " .. tostring(dec:typeOf("LObject")))
 end
 ```
 
@@ -649,6 +657,7 @@ lurek.learning.newTransformerEncoder(d_model, num_heads, d_ff)
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
     print("lurek.learning.newTransformerEncoder type", enc:type())
+    print("typeOf LObject = " .. tostring(enc:typeOf("LObject")))
 end
 ```
 
@@ -1151,6 +1160,7 @@ LConv2D:paramCount()
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
     print("LConv2D:paramCount", conv:paramCount())
+    print("owner type = " .. tostring(conv:type()))
 end
 ```
 
@@ -1213,6 +1223,7 @@ LConv2D:type()
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
     print("LConv2D:type", conv:type())
+    print("typeOf LObject = " .. tostring(conv:typeOf("LObject")))
 end
 ```
 
@@ -1244,6 +1255,7 @@ LConv2D:typeOf(name)
 do
     local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
     print("LConv2D:typeOf", tostring(conv:typeOf("LObject")))
+    print("type = " .. tostring(conv:type()))
 end
 ```
 
@@ -1488,6 +1500,7 @@ LFrameStack:capacity()
 do
     local fs = lurek.learning.frameStack(5)
     print("LFrameStack:capacity", fs:capacity())
+    print("owner type = " .. tostring(fs:type()))
 end
 ```
 
@@ -1591,6 +1604,7 @@ LFrameStack:type()
 do
     local fs = lurek.learning.frameStack(3)
     print("LFrameStack:type", fs:type())
+    print("typeOf LObject = " .. tostring(fs:typeOf("LObject")))
 end
 ```
 
@@ -1714,6 +1728,7 @@ LGRU:paramCount()
 do
     local gru = lurek.learning.newGru(2, 2)
     print("LGRU:paramCount", gru:paramCount())
+    print("owner type = " .. tostring(gru:type()))
 end
 ```
 
@@ -1802,6 +1817,7 @@ LGRU:type()
 do
     local gru = lurek.learning.newGru(2, 2)
     print("LGRU:type", gru:type())
+    print("typeOf LObject = " .. tostring(gru:typeOf("LObject")))
 end
 ```
 
@@ -1833,6 +1849,7 @@ LGRU:typeOf(name)
 do
     local gru = lurek.learning.newGru(2, 2)
     print("LGRU:typeOf", tostring(gru:typeOf("LObject")))
+    print("type = " .. tostring(gru:type()))
 end
 ```
 
@@ -2171,6 +2188,7 @@ LLSTM:paramCount()
 do
     local lstm = lurek.learning.newLstm(2, 2)
     print("LLSTM:paramCount", lstm:paramCount())
+    print("owner type = " .. tostring(lstm:type()))
 end
 ```
 
@@ -2259,6 +2277,7 @@ LLSTM:type()
 do
     local lstm = lurek.learning.newLstm(2, 2)
     print("LLSTM:type", lstm:type())
+    print("typeOf LObject = " .. tostring(lstm:typeOf("LObject")))
 end
 ```
 
@@ -2290,6 +2309,7 @@ LLSTM:typeOf(name)
 do
     local lstm = lurek.learning.newLstm(2, 2)
     print("LLSTM:typeOf", tostring(lstm:typeOf("LObject")))
+    print("type = " .. tostring(lstm:type()))
 end
 ```
 
@@ -2361,6 +2381,7 @@ LMaxPool2D:type()
 do
     local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
     print("LMaxPool2D:type", pool:type())
+    print("typeOf LObject = " .. tostring(pool:typeOf("LObject")))
 end
 ```
 
@@ -2392,6 +2413,7 @@ LMaxPool2D:typeOf(name)
 do
     local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
     print("LMaxPool2D:typeOf", tostring(pool:typeOf("LObject")))
+    print("type = " .. tostring(pool:type()))
 end
 ```
 
@@ -2584,6 +2606,7 @@ LMultiHeadAttention:paramCount()
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     print("LMultiHeadAttention:paramCount", mha:paramCount())
+    print("owner type = " .. tostring(mha:type()))
 end
 ```
 
@@ -2646,6 +2669,7 @@ LMultiHeadAttention:type()
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     print("LMultiHeadAttention:type", mha:type())
+    print("typeOf LObject = " .. tostring(mha:typeOf("LObject")))
 end
 ```
 
@@ -2677,6 +2701,7 @@ LMultiHeadAttention:typeOf(name)
 do
     local mha = lurek.learning.newMultiHeadAttention(4, 2)
     print("LMultiHeadAttention:typeOf", tostring(mha:typeOf("LObject")))
+    print("type = " .. tostring(mha:type()))
 end
 ```
 
@@ -2936,6 +2961,7 @@ LNeuralEngine:type()
 do
     local engine = lurek.learning.newEngine()
     print("LNeuralEngine:type", engine:type())
+    print("typeOf LObject = " .. tostring(engine:typeOf("LObject")))
 end
 ```
 
@@ -2967,6 +2993,7 @@ LNeuralEngine:typeOf(name)
 do
     local engine = lurek.learning.newEngine()
     print("LNeuralEngine:typeOf", engine:typeOf("LNeuralEngine"))
+    print("type = " .. tostring(engine:type()))
 end
 ```
 
@@ -3601,9 +3628,9 @@ LOnnxModel:inputCount()
 
 ```lua
 do
-    -- local model = lurek.learning.loadOnnx("model.onnx")
-    -- print("LOnnxModel:inputCount", model:inputCount())
-    print("LOnnxModel:inputCount ok", true)
+    local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
+    print("LOnnxModel:inputCount", model:inputCount())
+    print("model type = " .. model:type())
 end
 ```
 
@@ -3627,9 +3654,9 @@ LOnnxModel:outputCount()
 
 ```lua
 do
-    -- local model = lurek.learning.loadOnnx("model.onnx")
-    -- print("LOnnxModel:outputCount", model:outputCount())
-    print("LOnnxModel:outputCount ok", true)
+    local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
+    print("LOnnxModel:outputCount", model:outputCount())
+    print("model type = " .. model:type())
 end
 ```
 
@@ -3659,7 +3686,7 @@ LOnnxModel:run(inputs)
 
 ```lua
 do
-    local model = lurek.learning.loadOnnx("tests/lua/fixtures/minimal_identity.onnx")
+    local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
     local input = lurek.learning.newTensor({1}, {42.0})
     local outputs = model:run({ input })
     print("LOnnxModel:run outputs", #outputs)
@@ -3687,9 +3714,9 @@ LOnnxModel:type()
 
 ```lua
 do
-    -- local model = lurek.learning.loadOnnx("model.onnx")
-    -- print("LOnnxModel:type", model:type())
-    print("LOnnxModel:type ok", true)
+    local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
+    print("LOnnxModel:type", model:type())
+    print("typeOf LOnnxModel = " .. tostring(model:typeOf("LOnnxModel")))
 end
 ```
 
@@ -3719,9 +3746,9 @@ LOnnxModel:typeOf(name)
 
 ```lua
 do
-    -- local model = lurek.learning.loadOnnx("model.onnx")
-    -- print("LOnnxModel:typeOf LOnnxModel", tostring(model:typeOf("LOnnxModel")))
-    print("LOnnxModel:typeOf ok", true)
+    local model = lurek.learning.loadOnnx("content/examples/assets/minimal_identity.onnx")
+    print("LOnnxModel:typeOf LOnnxModel", tostring(model:typeOf("LOnnxModel")))
+    print("LOnnxModel:type", model:type())
 end
 ```
 
@@ -3788,6 +3815,7 @@ LPositionalEncoding:type()
 do
     local pe = lurek.learning.newPositionalEncoding(4, 8)
     print("LPositionalEncoding:type", pe:type())
+    print("typeOf LObject = " .. tostring(pe:typeOf("LObject")))
 end
 ```
 
@@ -3819,6 +3847,7 @@ LPositionalEncoding:typeOf(name)
 do
     local pe = lurek.learning.newPositionalEncoding(4, 8)
     print("LPositionalEncoding:typeOf", tostring(pe:typeOf("LObject")))
+    print("type = " .. tostring(pe:type()))
 end
 ```
 
@@ -4557,6 +4586,7 @@ LTensor:len()
 do
     local t = lurek.learning.newTensor({4}, {1.0, 2.0, 3.0, 4.0})
     print("LTensor:len", t:len())
+    print("owner type = " .. tostring(t:type()))
 end
 ```
 
@@ -4609,6 +4639,7 @@ LTensor:type()
 do
     local t = lurek.learning.newTensor({1}, {0.0})
     print("LTensor:type", t:type())
+    print("typeOf LObject = " .. tostring(t:typeOf("LObject")))
 end
 ```
 
@@ -4735,6 +4766,7 @@ LTransformerDecoder:paramCount()
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
     print("LTransformerDecoder:paramCount", dec:paramCount())
+    print("owner type = " .. tostring(dec:type()))
 end
 ```
 
@@ -4797,6 +4829,7 @@ LTransformerDecoder:type()
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
     print("LTransformerDecoder:type", dec:type())
+    print("typeOf LObject = " .. tostring(dec:typeOf("LObject")))
 end
 ```
 
@@ -4828,6 +4861,7 @@ LTransformerDecoder:typeOf(name)
 do
     local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
     print("LTransformerDecoder:typeOf", tostring(dec:typeOf("LObject")))
+    print("type = " .. tostring(dec:type()))
 end
 ```
 
@@ -4920,6 +4954,7 @@ LTransformerEncoder:paramCount()
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
     print("LTransformerEncoder:paramCount", enc:paramCount())
+    print("owner type = " .. tostring(enc:type()))
 end
 ```
 
@@ -4982,6 +5017,7 @@ LTransformerEncoder:type()
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
     print("LTransformerEncoder:type", enc:type())
+    print("typeOf LObject = " .. tostring(enc:typeOf("LObject")))
 end
 ```
 
@@ -5013,6 +5049,7 @@ LTransformerEncoder:typeOf(name)
 do
     local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
     print("LTransformerEncoder:typeOf", tostring(enc:typeOf("LObject")))
+    print("type = " .. tostring(enc:type()))
 end
 ```
 

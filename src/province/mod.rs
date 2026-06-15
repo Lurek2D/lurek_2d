@@ -42,8 +42,14 @@ pub mod province_grid;
 pub use province_grid::{AdjacencyPair, ProvinceGrid, ProvinceShapeCacheEntry};
 
 pub use events::{ProvinceChange, ProvinceEvent};
-pub use import::{import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions, MarkerSanitizeSummary, ProvinceMetadataImportOptions, ProvinceMetadataImportSummary};
+pub use import::{
+    import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions, MarkerSanitizeSummary,
+    ProvinceMetadataImportOptions, ProvinceMetadataImportSummary,
+};
 pub use properties::ProvinceProperties;
 pub use registry::ProvinceRegistry;
-pub use types::{BorderPairFlags, BorderPairStyle, BorderType, BorderTypeConfig, ProvinceId, ProvinceSnapshot, ProvinceStyle};
+pub use types::{
+    BorderPairFlags, BorderPairStyle, BorderType, BorderTypeConfig, ProvinceId, ProvinceSnapshot,
+    ProvinceStyle,
+};
 pub use view_transform::{fit_camera_to_screen, map_to_cell, screen_to_map, zoom_camera_at};

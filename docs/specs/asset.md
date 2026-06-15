@@ -12,7 +12,7 @@
 - Namespace: `lurek.asset`
 - Lua API surface: `23` functions, `3` types, `2` methods
 - Rust test path(s): tests/rust/unit/asset_tests.rs
-- Lua test path(s): tests/lua/unit/test_asset_core_unit.lua
+- Lua test path(s): tests/lua/unit/test_asset_unit.lua
 
 ## Summary
 

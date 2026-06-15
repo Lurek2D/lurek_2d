@@ -12,7 +12,7 @@
 - Binding: `src/lua_api/serialize_api.rs`
 - Namespace: `lurek.serial`
 - Lua API surface: `15` functions, `0` types, `0` methods
-- Rust test path(s): None found in the workspace
+- Rust test path(s): tests/rust/unit/serial_tests.rs
 - Lua test path(s): tests/lua/unit/test_serialize_unit.lua
 
 ## Summary
@@ -21,6 +21,7 @@
 - It supports JSON, TOML, CSV, XML, INI, and MessagePack through a shared intermediate value model.
 - Automatic format detection helps ingest unknown text payloads in tool-style workflows.
 - Lua table bridging converts between script data and typed serialized structures.
+- Mixed Lua tables that combine array slots with named fields are preserved as maps instead of silently dropping named entries.
 - Codec adapters isolate format-specific quirks so callers can use consistent APIs.
 - Schema validation enforces structure and constraints before data reaches gameplay logic.
 - Default-merge helpers fill missing fields from schema definitions.

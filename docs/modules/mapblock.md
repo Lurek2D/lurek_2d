@@ -382,8 +382,7 @@ LMapBlock:getDimensions()
 
 ```lua
 do
-    local cfg = lurek.mapblock.newConfig()
-    local block = lurek.mapblock.newBlock(6, 4, 1, cfg)
+    local block = lurek.tilemap.newMapBlock(6, 4, 1, 1)
     local width, height = block:getDimensions()
     print("getDimensions=" .. tostring(width) .. "x" .. tostring(height))
 end
@@ -463,9 +462,7 @@ LMapBlock:getHeightInSegments()
 
 ```lua
 do
-    local cfg = lurek.mapblock.newConfig()
-    cfg:setDefaultSegmentSize(2)
-    local block = lurek.mapblock.newBlock(6, 4, 1, cfg)
+    local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
     print("getHeightInSegments=" .. tostring(block:getHeightInSegments()))
 end
 ```
@@ -543,9 +540,7 @@ LMapBlock:getSegmentSize()
 
 ```lua
 do
-    local cfg = lurek.mapblock.newConfig()
-    cfg:setDefaultSegmentSize(2)
-    local block = lurek.mapblock.newBlock(6, 4, 1, cfg)
+    local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
     print("getSegmentSize=" .. tostring(block:getSegmentSize()))
 end
 ```
@@ -577,8 +572,7 @@ LMapBlock:getSide(edge, segment)
 
 ```lua
 do
-    local cfg = lurek.mapblock.newConfig()
-    local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
+    local block = lurek.tilemap.newMapBlock(4, 4, 1, 1)
     block:setSide("east", 1, 11)
     print("getSide east1=" .. tostring(block:getSide("east", 1)))
 end
@@ -732,9 +726,7 @@ LMapBlock:getWidthInSegments()
 
 ```lua
 do
-    local cfg = lurek.mapblock.newConfig()
-    cfg:setDefaultSegmentSize(2)
-    local block = lurek.mapblock.newBlock(6, 4, 1, cfg)
+    local block = lurek.tilemap.newMapBlock(6, 4, 1, 2)
     print("getWidthInSegments=" .. tostring(block:getWidthInSegments()))
 end
 ```
@@ -962,8 +954,7 @@ LMapBlock:setSide(edge, segment, sideId)
 
 ```lua
 do
-    local cfg = lurek.mapblock.newConfig()
-    local block = lurek.mapblock.newBlock(4, 4, 1, cfg)
+    local block = lurek.tilemap.newMapBlock(4, 4, 1, 1)
     block:setSide("north", 1, 7)
     print("setSide north1=" .. tostring(block:getSide("north", 1)))
 end
@@ -1081,8 +1072,7 @@ LMapBlock:type()
 
 ```lua
 do
-    local cfg = lurek.mapblock.newConfig()
-    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    local block = lurek.tilemap.newMapBlock(2, 2, 1, 1)
     print("LMapBlock:type=" .. tostring(block:type()))
 end
 ```
@@ -1113,8 +1103,7 @@ LMapBlock:typeOf(name)
 
 ```lua
 do
-    local cfg = lurek.mapblock.newConfig()
-    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    local block = lurek.tilemap.newMapBlock(2, 2, 1, 1)
     print("LMapBlock:typeOf=" .. tostring(block:typeOf("LMapBlock")))
 end
 ```
@@ -2003,9 +1992,9 @@ LMapGroup:getScriptCount()
 
 ```lua
 do
-    local script = lurek.mapblock.newScript("rooms_pass")
-    script:addStep("fill_rect", { x = 0, y = 0, width = 1, height = 1, tile_id = 1, slot = 0, layer = 0 })
-    local group = lurek.mapblock.newGroup("rooms")
+    local script = lurek.tilemap.newMapScript()
+    script:addStep({ type = "fillArea", gid = 1, x = 0, y = 0, w = 1, h = 1 })
+    local group = lurek.tilemap.newMapGroup("rooms")
     group:addScript(script)
     print("getScriptCount=" .. tostring(group:getScriptCount()))
 end
@@ -2031,10 +2020,9 @@ LMapGroup:removeBlock(idx)
 
 ```lua
 do
-    local cfg = lurek.mapblock.newConfig()
-    local block_a = lurek.mapblock.newBlock(2, 2, 1, cfg)
-    local block_b = lurek.mapblock.newBlock(3, 3, 1, cfg)
-    local group = lurek.mapblock.newGroup("rooms")
+    local block_a = lurek.tilemap.newMapBlock(2, 2, 1, 1)
+    local block_b = lurek.tilemap.newMapBlock(3, 3, 1, 1)
+    local group = lurek.tilemap.newMapGroup("rooms")
     group:addBlock(block_a)
     group:addBlock(block_b)
     group:removeBlock(1)
@@ -2062,7 +2050,7 @@ LMapGroup:type()
 
 ```lua
 do
-    local group = lurek.mapblock.newGroup("rooms")
+    local group = lurek.tilemap.newMapGroup("rooms")
     print("LMapGroup:type=" .. tostring(group:type()))
 end
 ```
@@ -2093,7 +2081,7 @@ LMapGroup:typeOf(name)
 
 ```lua
 do
-    local group = lurek.mapblock.newGroup("rooms")
+    local group = lurek.tilemap.newMapGroup("rooms")
     print("LMapGroup:typeOf=" .. tostring(group:typeOf("LMapGroup")))
 end
 ```
@@ -2227,7 +2215,7 @@ LMapScript:type()
 
 ```lua
 do
-    local script = lurek.mapblock.newScript("multi_step")
+    local script = lurek.tilemap.newMapScript()
     print("LMapScript:type=" .. tostring(script:type()))
 end
 ```
@@ -2258,7 +2246,7 @@ LMapScript:typeOf(name)
 
 ```lua
 do
-    local script = lurek.mapblock.newScript("multi_step")
+    local script = lurek.tilemap.newMapScript()
     print("LMapScript:typeOf=" .. tostring(script:typeOf("LMapScript")))
 end
 ```

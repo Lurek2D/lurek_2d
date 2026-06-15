@@ -76,6 +76,7 @@ lurek.math.Vec2(x, y)
 do
     local v = lurek.math.Vec2(3, 4)
     print("vec2 = " .. v.x .. "," .. v.y)
+    print("lua type = " .. type(v))
 end
 ```
 
@@ -109,6 +110,7 @@ lurek.math.Vec3(x, y, z)
 do
     local v = lurek.math.Vec3(1, 2, 3)
     print("vec3 = " .. v.x .. "," .. v.y .. "," .. v.z)
+    print("lua type = " .. type(v))
 end
 ```
 
@@ -168,6 +170,7 @@ lurek.math.abs(x)
 do
     print("abs(-5) = " .. lurek.math.abs(-5))
     print("abs(3) = " .. lurek.math.abs(3))
+    print("lua type = " .. type(lurek.math.abs(3)))
 end
 ```
 
@@ -199,6 +202,7 @@ lurek.math.acos(x)
 do
     print("acos(1) = " .. lurek.math.acos(1))
     print("acos(0) = " .. lurek.math.acos(0))
+    print("lua type = " .. type(lurek.math.acos(0)))
 end
 ```
 
@@ -300,6 +304,7 @@ lurek.math.asin(x)
 do
     print("asin(1) = " .. lurek.math.asin(1))
     print("asin(0) = " .. lurek.math.asin(0))
+    print("lua type = " .. type(lurek.math.asin(0)))
 end
 ```
 
@@ -332,6 +337,7 @@ lurek.math.atan(y, x)
 do
     print("atan(1) = " .. lurek.math.atan(1))
     print("atan(1, 1) = " .. lurek.math.atan(1, 1))
+    print("lua type = " .. type(lurek.math.atan(1, 1)))
 end
 ```
 
@@ -364,6 +370,7 @@ lurek.math.atan2(y, x)
 do
     print("atan2(1, 0) = " .. lurek.math.atan2(1, 0))
     print("atan2(0, 1) = " .. lurek.math.atan2(0, 1))
+    print("lua type = " .. type(lurek.math.atan2(0, 1)))
 end
 ```
 
@@ -465,6 +472,7 @@ lurek.math.ceil(x)
 do
     print("ceil(2.3) = " .. lurek.math.ceil(2.3))
     print("ceil(-1.7) = " .. lurek.math.ceil(-1.7))
+    print("lua type = " .. type(lurek.math.ceil(-1.7)))
 end
 ```
 
@@ -500,6 +508,7 @@ lurek.math.circleContainsPoint(cx, cy, r, px, py)
 do
     local inside = lurek.math.circleContainsPoint(5, 5, 10, 6, 6)
     print("inside = " .. tostring(inside))
+    print("lua type = " .. type(inside))
 end
 ```
 
@@ -536,6 +545,7 @@ lurek.math.circleIntersectsCircle(x1, y1, r1, x2, y2, r2)
 do
     local hit = lurek.math.circleIntersectsCircle(0, 0, 5, 8, 0, 5)
     print("circles overlap = " .. tostring(hit))
+    print("lua type = " .. type(hit))
 end
 ```
 
@@ -694,6 +704,7 @@ lurek.math.closestPointOnSegment(px, py, x1, y1, x2, y2)
 do
     local cx, cy = lurek.math.closestPointOnSegment(5, 5, 0, 0, 10, 0)
     print("closest on segment = " .. cx .. "," .. cy)
+    print("value types = " .. type(cx) .. "," .. type(cy))
 end
 ```
 
@@ -757,6 +768,7 @@ lurek.math.cos(x)
 do
     print("cos(0) = " .. lurek.math.cos(0))
     print("cos(pi) = " .. lurek.math.cos(lurek.math.pi))
+    print("lua type = " .. type(lurek.math.cos(lurek.math.pi)))
 end
 ```
 
@@ -792,6 +804,7 @@ lurek.math.cubicBezier(p1x, p1y, p2x, p2y, t)
 do
     local y = lurek.math.cubicBezier(0.25, 0.1, 0.25, 1.0, 0.5)
     print("cubicBezier(0.5) = " .. y)
+    print("lua type = " .. type(y))
 end
 ```
 
@@ -823,6 +836,7 @@ lurek.math.deg(rad)
 do
     print("deg(pi) = " .. lurek.math.deg(lurek.math.pi))
     print("deg(pi/2) = " .. lurek.math.deg(lurek.math.pi / 2))
+    print("lua type = " .. type(lurek.math.deg(lurek.math.pi / 2)))
 end
 ```
 
@@ -889,6 +903,7 @@ lurek.math.distance(x1, y1, x2, y2)
 do
     local d = lurek.math.distance(0, 0, 3, 4)
     print("distance = " .. d)
+    print("lua type = " .. type(d))
 end
 ```
 
@@ -923,6 +938,7 @@ lurek.math.distanceSq(x1, y1, x2, y2)
 do
     local d2 = lurek.math.distanceSq(0, 0, 3, 4)
     print("distanceSq = " .. d2)
+    print("lua type = " .. type(d2))
 end
 ```
 
@@ -948,6 +964,7 @@ lurek.math.easingNames()
 do
     local names = lurek.math.easingNames()
     print("easing count = " .. #names)
+    print("lua type = " .. type(names))
 end
 ```
 
@@ -979,6 +996,7 @@ lurek.math.exp(x)
 do
     print("exp(1) = " .. lurek.math.exp(1))
     print("exp(0) = " .. lurek.math.exp(0))
+    print("lua type = " .. type(lurek.math.exp(0)))
 end
 ```
 
@@ -1010,6 +1028,7 @@ lurek.math.floor(x)
 do
     print("floor(2.9) = " .. lurek.math.floor(2.9))
     print("floor(-1.1) = " .. lurek.math.floor(-1.1))
+    print("lua type = " .. type(lurek.math.floor(-1.1)))
 end
 ```
 
@@ -1042,6 +1061,7 @@ lurek.math.fmod(x, y)
 do
     print("fmod(7, 3) = " .. lurek.math.fmod(7, 3))
     print("fmod(10.5, 3) = " .. lurek.math.fmod(10.5, 3))
+    print("lua type = " .. type(lurek.math.fmod(10.5, 3)))
 end
 ```
 
@@ -1116,6 +1136,7 @@ lurek.math.inBack(t)
 do
     print("t=0.25 = " .. lurek.math.inBack(0.25))
     print("t=0.75 = " .. lurek.math.inBack(0.75))
+    print("lua type = " .. type(lurek.math.inBack(0.75)))
 end
 ```
 
@@ -1147,6 +1168,7 @@ lurek.math.inBounce(t)
 do
     print("t=0.25 = " .. lurek.math.inBounce(0.25))
     print("t=0.75 = " .. lurek.math.inBounce(0.75))
+    print("lua type = " .. type(lurek.math.inBounce(0.75)))
 end
 ```
 
@@ -1178,6 +1200,7 @@ lurek.math.inCubic(t)
 do
     print("t=0.25 = " .. lurek.math.inCubic(0.25))
     print("t=0.75 = " .. lurek.math.inCubic(0.75))
+    print("lua type = " .. type(lurek.math.inCubic(0.75)))
 end
 ```
 
@@ -1209,6 +1232,7 @@ lurek.math.inElastic(t)
 do
     print("t=0.25 = " .. lurek.math.inElastic(0.25))
     print("t=0.75 = " .. lurek.math.inElastic(0.75))
+    print("lua type = " .. type(lurek.math.inElastic(0.75)))
 end
 ```
 
@@ -1240,6 +1264,7 @@ lurek.math.inExpo(t)
 do
     print("t=0.25 = " .. lurek.math.inExpo(0.25))
     print("t=0.75 = " .. lurek.math.inExpo(0.75))
+    print("lua type = " .. type(lurek.math.inExpo(0.75)))
 end
 ```
 
@@ -1271,6 +1296,7 @@ lurek.math.inOutBack(t)
 do
     print("t=0.25 = " .. lurek.math.inOutBack(0.25))
     print("t=0.75 = " .. lurek.math.inOutBack(0.75))
+    print("lua type = " .. type(lurek.math.inOutBack(0.75)))
 end
 ```
 
@@ -1302,6 +1328,7 @@ lurek.math.inOutBounce(t)
 do
     print("t=0.25 = " .. lurek.math.inOutBounce(0.25))
     print("t=0.75 = " .. lurek.math.inOutBounce(0.75))
+    print("lua type = " .. type(lurek.math.inOutBounce(0.75)))
 end
 ```
 
@@ -1333,6 +1360,7 @@ lurek.math.inOutCubic(t)
 do
     print("t=0.25 = " .. lurek.math.inOutCubic(0.25))
     print("t=0.75 = " .. lurek.math.inOutCubic(0.75))
+    print("lua type = " .. type(lurek.math.inOutCubic(0.75)))
 end
 ```
 
@@ -1364,6 +1392,7 @@ lurek.math.inOutElastic(t)
 do
     print("t=0.25 = " .. lurek.math.inOutElastic(0.25))
     print("t=0.75 = " .. lurek.math.inOutElastic(0.75))
+    print("lua type = " .. type(lurek.math.inOutElastic(0.75)))
 end
 ```
 
@@ -1395,6 +1424,7 @@ lurek.math.inOutExpo(t)
 do
     print("t=0.25 = " .. lurek.math.inOutExpo(0.25))
     print("t=0.75 = " .. lurek.math.inOutExpo(0.75))
+    print("lua type = " .. type(lurek.math.inOutExpo(0.75)))
 end
 ```
 
@@ -1426,6 +1456,7 @@ lurek.math.inOutQuad(t)
 do
     print("t=0.25 = " .. lurek.math.inOutQuad(0.25))
     print("t=0.75 = " .. lurek.math.inOutQuad(0.75))
+    print("lua type = " .. type(lurek.math.inOutQuad(0.75)))
 end
 ```
 
@@ -1457,6 +1488,7 @@ lurek.math.inOutQuart(t)
 do
     print("t=0.25 = " .. lurek.math.inOutQuart(0.25))
     print("t=0.75 = " .. lurek.math.inOutQuart(0.75))
+    print("lua type = " .. type(lurek.math.inOutQuart(0.75)))
 end
 ```
 
@@ -1488,6 +1520,7 @@ lurek.math.inOutSine(t)
 do
     print("t=0.25 = " .. lurek.math.inOutSine(0.25))
     print("t=0.75 = " .. lurek.math.inOutSine(0.75))
+    print("lua type = " .. type(lurek.math.inOutSine(0.75)))
 end
 ```
 
@@ -1519,6 +1552,7 @@ lurek.math.inQuad(t)
 do
     print("t=0.25 = " .. lurek.math.inQuad(0.25))
     print("t=0.75 = " .. lurek.math.inQuad(0.75))
+    print("lua type = " .. type(lurek.math.inQuad(0.75)))
 end
 ```
 
@@ -1550,6 +1584,7 @@ lurek.math.inQuart(t)
 do
     print("t=0.25 = " .. lurek.math.inQuart(0.25))
     print("t=0.75 = " .. lurek.math.inQuart(0.75))
+    print("lua type = " .. type(lurek.math.inQuart(0.75)))
 end
 ```
 
@@ -1581,6 +1616,7 @@ lurek.math.inSine(t)
 do
     print("t=0.25 = " .. lurek.math.inSine(0.25))
     print("t=0.75 = " .. lurek.math.inSine(0.75))
+    print("lua type = " .. type(lurek.math.inSine(0.75)))
 end
 ```
 
@@ -1614,6 +1650,7 @@ lurek.math.inverseLerp(a, b, v)
 do
     print("inverseLerp(0, 100, 50) = " .. lurek.math.inverseLerp(0, 100, 50))
     print("inverseLerp(10, 20, 15) = " .. lurek.math.inverseLerp(10, 20, 15))
+    print("lua type = " .. type(lurek.math.inverseLerp(10, 20, 15)))
 end
 ```
 
@@ -1680,6 +1717,7 @@ lurek.math.lerp(a, b, t)
 do
     print("lerp(0, 100, 0.5) = " .. lurek.math.lerp(0, 100, 0.5))
     print("lerp(10, 20, 0.25) = " .. lurek.math.lerp(10, 20, 0.25))
+    print("lua type = " .. type(lurek.math.lerp(10, 20, 0.25)))
 end
 ```
 
@@ -1719,6 +1757,7 @@ lurek.math.lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4)
 do
     local ix, iy = lurek.math.lineIntersect(0, 0, 10, 10, 0, 10, 10, 0)
     if ix then print("lines cross at " .. ix .. "," .. iy) else print("lines are parallel") end
+    print("value types = " .. type(ix) .. "," .. type(iy))
 end
 ```
 
@@ -1750,6 +1789,7 @@ lurek.math.linear(t)
 do
     print("t=0.25 = " .. lurek.math.linear(0.25))
     print("t=0.75 = " .. lurek.math.linear(0.75))
+    print("lua type = " .. type(lurek.math.linear(0.75)))
 end
 ```
 
@@ -1782,6 +1822,7 @@ lurek.math.log(x, b)
 do
     print("log(e) = " .. lurek.math.log(lurek.math.exp(1)))
     print("log(100, 10) = " .. lurek.math.log(100, 10))
+    print("lua type = " .. type(lurek.math.log(100, 10)))
 end
 ```
 
@@ -1847,6 +1888,7 @@ lurek.math.lootFromToml(path)
 do
     local tbl = lurek.math.lootFromToml("save/loot_table_unit_test.toml")
     print("lootFromToml entries = " .. tostring(tbl:entryCount()))
+    print("lua type = " .. type(tbl))
 end
 ```
 
@@ -1878,6 +1920,7 @@ lurek.math.max(...)
 do
     print("max(3, 7, 1, 9) = " .. lurek.math.max(3, 7, 1, 9))
     print("max(0, -5) = " .. lurek.math.max(0, -5))
+    print("lua type = " .. type(lurek.math.max(0, -5)))
 end
 ```
 
@@ -1909,6 +1952,7 @@ lurek.math.min(...)
 do
     print("min(3, 7, 1, 9) = " .. lurek.math.min(3, 7, 1, 9))
     print("min(0, -5) = " .. lurek.math.min(0, -5))
+    print("lua type = " .. type(lurek.math.min(0, -5)))
 end
 ```
 
@@ -1975,6 +2019,7 @@ lurek.math.newCircle(x, y, radius)
 do
     local c = lurek.math.newCircle(50, 50, 25)
     print("circle at " .. c:x() .. "," .. c:y() .. " r=" .. c:radius())
+    print("lua type = " .. type(c))
 end
 ```
 
@@ -2081,6 +2126,7 @@ lurek.math.newRandomGenerator(seed)
 do
     local rng = lurek.math.newRandomGenerator(42)
     print("seed = " .. rng:getSeed())
+    print("lua type = " .. type(rng))
 end
 ```
 
@@ -2253,6 +2299,7 @@ lurek.math.outBack(t)
 do
     print("t=0.25 = " .. lurek.math.outBack(0.25))
     print("t=0.75 = " .. lurek.math.outBack(0.75))
+    print("lua type = " .. type(lurek.math.outBack(0.75)))
 end
 ```
 
@@ -2284,6 +2331,7 @@ lurek.math.outBounce(t)
 do
     print("t=0.25 = " .. lurek.math.outBounce(0.25))
     print("t=0.75 = " .. lurek.math.outBounce(0.75))
+    print("lua type = " .. type(lurek.math.outBounce(0.75)))
 end
 ```
 
@@ -2315,6 +2363,7 @@ lurek.math.outCubic(t)
 do
     print("t=0.25 = " .. lurek.math.outCubic(0.25))
     print("t=0.75 = " .. lurek.math.outCubic(0.75))
+    print("lua type = " .. type(lurek.math.outCubic(0.75)))
 end
 ```
 
@@ -2346,6 +2395,7 @@ lurek.math.outElastic(t)
 do
     print("t=0.25 = " .. lurek.math.outElastic(0.25))
     print("t=0.75 = " .. lurek.math.outElastic(0.75))
+    print("lua type = " .. type(lurek.math.outElastic(0.75)))
 end
 ```
 
@@ -2377,6 +2427,7 @@ lurek.math.outExpo(t)
 do
     print("t=0.25 = " .. lurek.math.outExpo(0.25))
     print("t=0.75 = " .. lurek.math.outExpo(0.75))
+    print("lua type = " .. type(lurek.math.outExpo(0.75)))
 end
 ```
 
@@ -2408,6 +2459,7 @@ lurek.math.outQuad(t)
 do
     print("t=0.25 = " .. lurek.math.outQuad(0.25))
     print("t=0.75 = " .. lurek.math.outQuad(0.75))
+    print("lua type = " .. type(lurek.math.outQuad(0.75)))
 end
 ```
 
@@ -2439,6 +2491,7 @@ lurek.math.outQuart(t)
 do
     print("t=0.25 = " .. lurek.math.outQuart(0.25))
     print("t=0.75 = " .. lurek.math.outQuart(0.75))
+    print("lua type = " .. type(lurek.math.outQuart(0.75)))
 end
 ```
 
@@ -2470,6 +2523,7 @@ lurek.math.outSine(t)
 do
     print("t=0.25 = " .. lurek.math.outSine(0.25))
     print("t=0.75 = " .. lurek.math.outSine(0.75))
+    print("lua type = " .. type(lurek.math.outSine(0.75)))
 end
 ```
 
@@ -2739,6 +2793,7 @@ lurek.math.pow(x, y)
 do
     print("pow(2, 10) = " .. lurek.math.pow(2, 10))
     print("pow(3, 3) = " .. lurek.math.pow(3, 3))
+    print("lua type = " .. type(lurek.math.pow(3, 3)))
 end
 ```
 
@@ -2770,6 +2825,7 @@ lurek.math.rad(deg)
 do
     print("rad(180) = " .. lurek.math.rad(180))
     print("rad(90) = " .. lurek.math.rad(90))
+    print("lua type = " .. type(lurek.math.rad(90)))
 end
 ```
 
@@ -2836,6 +2892,7 @@ lurek.math.randomInt(lo, hi)
 do
     local r = lurek.math.randomInt(1, 6)
     print("randomInt(1,6) = " .. r)
+    print("lua type = " .. type(r))
 end
 ```
 
@@ -2873,6 +2930,7 @@ lurek.math.rectFromCenter(cx, cy, w, h)
 do
     local x, y, w, h = lurek.math.rectFromCenter(50, 50, 20, 10)
     print("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
+    print("value types = " .. type(x) .. "," .. type(y) .. "," .. type(w) .. "," .. type(h))
 end
 ```
 
@@ -2914,6 +2972,7 @@ lurek.math.rectUnion(x1, y1, w1, h1, x2, y2, w2, h2)
 do
     local x, y, w, h = lurek.math.rectUnion(0, 0, 10, 10, 5, 5, 10, 10)
     print("union rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
+    print("value types = " .. type(x) .. "," .. type(y) .. "," .. type(w) .. "," .. type(h))
 end
 ```
 
@@ -2949,6 +3008,7 @@ lurek.math.remap(v, in_min, in_max, out_min, out_max)
 do
     local v = lurek.math.remap(5, 0, 10, 0, 100)
     print("remap(5, 0-10 â†’ 0-100) = " .. v)
+    print("lua type = " .. type(v))
 end
 ```
 
@@ -2980,6 +3040,7 @@ lurek.math.round(x)
 do
     print("round(2.4) = " .. lurek.math.round(2.4))
     print("round(2.5) = " .. lurek.math.round(2.5))
+    print("lua type = " .. type(lurek.math.round(2.5)))
 end
 ```
 
@@ -3057,6 +3118,7 @@ lurek.math.segmentIntersectsSegment(x1, y1, x2, y2, x3, y3, x4, y4)
 do
     local hit, ix, iy = lurek.math.segmentIntersectsSegment( 0, 0, 10, 10, 0, 10, 10, 0 )
     if hit and ix then print("segments cross at " .. ix .. "," .. iy) else print("segments do not cross") end
+    print("value types = " .. type(hit) .. "," .. type(ix) .. "," .. type(iy))
 end
 ```
 
@@ -3120,6 +3182,7 @@ lurek.math.sin(x)
 do
     print("sin(0) = " .. lurek.math.sin(0))
     print("sin(pi/2) = " .. lurek.math.sin(lurek.math.pi / 2))
+    print("lua type = " .. type(lurek.math.sin(lurek.math.pi / 2)))
 end
 ```
 
@@ -3185,6 +3248,7 @@ lurek.math.sqrt(x)
 do
     print("sqrt(144) = " .. lurek.math.sqrt(144))
     print("sqrt(2) = " .. lurek.math.sqrt(2))
+    print("lua type = " .. type(lurek.math.sqrt(2)))
 end
 ```
 
@@ -3216,6 +3280,7 @@ lurek.math.tan(x)
 do
     print("tan(0) = " .. lurek.math.tan(0))
     print("tan(pi/4) = " .. lurek.math.tan(lurek.math.pi / 4))
+    print("lua type = " .. type(lurek.math.tan(lurek.math.pi / 4)))
 end
 ```
 
@@ -3280,6 +3345,7 @@ lurek.math.vec2(x, y)
 do
     local v = lurek.math.vec2(3, 4)
     print("vec2 = " .. v.x .. "," .. v.y)
+    print("lua type = " .. type(v))
 end
 ```
 
@@ -3313,6 +3379,7 @@ lurek.math.vec3(x, y, z)
 do
     local v = lurek.math.vec3(1, 2, 3)
     print("vec3 = " .. v.x .. "," .. v.y .. "," .. v.z)
+    print("lua type = " .. type(v))
 end
 ```
 
@@ -3458,6 +3525,7 @@ LAabbTree:isEmpty()
 do
     local tree = lurek.math.aabbTree()
     print("empty = " .. tostring(tree:isEmpty()))
+    print("owner type = " .. tostring(tree:type()))
 end
 ```
 
@@ -3616,6 +3684,7 @@ LAabbTree:type()
 do
     local tree = lurek.math.aabbTree()
     print(tree:type())
+    print("typeOf LObject = " .. tostring(tree:typeOf("LObject")))
 end
 ```
 
@@ -3647,6 +3716,7 @@ LAabbTree:typeOf(name)
 do
     local tree = lurek.math.aabbTree()
     print(tostring(tree:typeOf("LAabbTree")))
+    print("type = " .. tostring(tree:type()))
 end
 ```
 
@@ -3820,6 +3890,7 @@ LBezierCurve:getControlPointCount()
 do
     local curve = lurek.math.newBezierCurve({0, 0, 100, 50, 200, 0})
     print("count = " .. curve:getControlPointCount())
+    print("owner type = " .. tostring(curve:type()))
 end
 ```
 
@@ -3904,6 +3975,7 @@ LBezierCurve:length()
 do
     local curve = lurek.math.newBezierCurve({0, 0, 100, 0})
     print("length = " .. curve:length())
+    print("owner type = " .. tostring(curve:type()))
 end
 ```
 
@@ -4121,6 +4193,7 @@ LBezierCurve:type()
 do
     local curve = lurek.math.newBezierCurve({0, 0, 100, 50, 200, 0})
     print(curve:type())
+    print("typeOf LObject = " .. tostring(curve:typeOf("LObject")))
 end
 ```
 
@@ -4152,6 +4225,7 @@ LBezierCurve:typeOf(name)
 do
     local curve = lurek.math.newBezierCurve({0, 0, 100, 50, 200, 0})
     print(tostring(curve:typeOf("LBezierCurve")))
+    print("type = " .. tostring(curve:type()))
 end
 ```
 
@@ -4213,6 +4287,7 @@ LCatmullRom:len()
 do
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 100}, {x = 150, y = 100}, {x = 200, y = 0}})
     print("len = " .. spline:len())
+    print("owner type = " .. tostring(spline:type()))
 end
 ```
 
@@ -4339,6 +4414,7 @@ LCatmullRom:type()
 do
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 100}, {x = 150, y = 100}, {x = 200, y = 0}})
     print(spline:type())
+    print("typeOf LObject = " .. tostring(spline:typeOf("LObject")))
 end
 ```
 
@@ -4370,6 +4446,7 @@ LCatmullRom:typeOf(name)
 do
     local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 100}, {x = 150, y = 100}, {x = 200, y = 0}})
     print(tostring(spline:typeOf("LCatmullRom")))
+    print("type = " .. tostring(spline:type()))
 end
 ```
 
@@ -4432,6 +4509,7 @@ LCircle:area()
 do
     local c = lurek.math.newCircle(100, 100, 50)
     print("area = " .. c:area())
+    print("owner type = " .. tostring(c:type()))
 end
 ```
 
@@ -4464,6 +4542,7 @@ LCircle:contains(px, py)
 do
     local circle = lurek.math.newCircle(0, 0, 10)
     print("contains = " .. tostring(circle:contains(5, 5)))
+    print("owner type = " .. tostring(circle:type()))
 end
 ```
 
@@ -4521,6 +4600,7 @@ LCircle:perimeter()
 do
     local c = lurek.math.newCircle(100, 100, 50)
     print("perimeter = " .. c:perimeter())
+    print("owner type = " .. tostring(c:type()))
 end
 ```
 
@@ -4546,6 +4626,7 @@ LCircle:radius()
 do
     local c = lurek.math.newCircle(100, 100, 50)
     print("radius = " .. c:radius())
+    print("owner type = " .. tostring(c:type()))
 end
 ```
 
@@ -4571,6 +4652,7 @@ LCircle:type()
 do
     local c = lurek.math.newCircle(100, 100, 50)
     print(c:type())
+    print("typeOf LObject = " .. tostring(c:typeOf("LObject")))
 end
 ```
 
@@ -4602,6 +4684,7 @@ LCircle:typeOf(name)
 do
     local c = lurek.math.newCircle(100, 100, 50)
     print(tostring(c:typeOf("LCircle")))
+    print("type = " .. tostring(c:type()))
 end
 ```
 
@@ -4627,6 +4710,7 @@ LCircle:x()
 do
     local c = lurek.math.newCircle(100, 100, 50)
     print("x = " .. c:x())
+    print("owner type = " .. tostring(c:type()))
 end
 ```
 
@@ -4652,6 +4736,7 @@ LCircle:y()
 do
     local c = lurek.math.newCircle(100, 100, 50)
     print("y = " .. c:y())
+    print("owner type = " .. tostring(c:type()))
 end
 ```
 
@@ -4718,6 +4803,7 @@ LHermite:type()
 do
     local h = lurek.math.hermite(0, 0, 200, 0, 1, 2, -1, 2)
     print(h:type())
+    print("typeOf LObject = " .. tostring(h:typeOf("LObject")))
 end
 ```
 
@@ -4749,6 +4835,7 @@ LHermite:typeOf(name)
 do
     local h = lurek.math.hermite(0, 0, 200, 0, 1, 2, -1, 2)
     print(tostring(h:typeOf("LHermite")))
+    print("type = " .. tostring(h:type()))
 end
 ```
 
@@ -5135,6 +5222,7 @@ LLootTable:type()
 do
     local tbl = lurek.math.newLootTable(1)
     print("type = " .. tostring(tbl:type()))
+    print("typeOf LObject = " .. tostring(tbl:typeOf("LObject")))
 end
 ```
 
@@ -5166,6 +5254,7 @@ LLootTable:typeOf(name)
 do
     local tbl = lurek.math.newLootTable(1)
     print("typeOf = " .. tostring(tbl:typeOf("LLootTable")))
+    print("type = " .. tostring(tbl:type()))
 end
 ```
 
@@ -5199,6 +5288,7 @@ LPityTracker:counter()
 do
     local pity = lurek.math.newPityTracker("rare", 2)
     print("counter = " .. tostring(pity:counter()))
+    print("owner type = " .. tostring(pity:type()))
 end
 ```
 
@@ -5409,6 +5499,7 @@ LPityTracker:type()
 do
     local pity = lurek.math.newPityTracker("rare", 2)
     print("type = " .. tostring(pity:type()))
+    print("typeOf LObject = " .. tostring(pity:typeOf("LObject")))
 end
 ```
 
@@ -5440,6 +5531,7 @@ LPityTracker:typeOf(name)
 do
     local pity = lurek.math.newPityTracker("rare", 2)
     print("typeOf = " .. tostring(pity:typeOf("LPityTracker")))
+    print("type = " .. tostring(pity:type()))
 end
 ```
 
@@ -5539,6 +5631,7 @@ LRandomGenerator:getSeed()
 do
     local rng = lurek.math.newRandomGenerator(77)
     print("seed = " .. rng:getSeed())
+    print("owner type = " .. tostring(rng:type()))
 end
 ```
 
@@ -5564,6 +5657,7 @@ LRandomGenerator:getState()
 do
     local rng = lurek.math.newRandomGenerator(999)
     print("state = " .. rng:getState())
+    print("owner type = " .. tostring(rng:type()))
 end
 ```
 
@@ -5589,6 +5683,7 @@ LRandomGenerator:random()
 do
     local rng = lurek.math.newRandomGenerator(100)
     print("random = " .. rng:random())
+    print("owner type = " .. tostring(rng:type()))
 end
 ```
 
@@ -5621,6 +5716,7 @@ LRandomGenerator:randomFloat(min, max)
 do
     local rng = lurek.math.newRandomGenerator(100)
     print("float = " .. rng:randomFloat(1.0, 5.0))
+    print("owner type = " .. tostring(rng:type()))
 end
 ```
 
@@ -5653,6 +5749,7 @@ LRandomGenerator:randomInt(min, max)
 do
     local rng = lurek.math.newRandomGenerator(100)
     print("int = " .. rng:randomInt(1, 100))
+    print("owner type = " .. tostring(rng:type()))
 end
 ```
 
@@ -5685,6 +5782,7 @@ LRandomGenerator:randomNormal(stddev, mean)
 do
     local rng = lurek.math.newRandomGenerator(100)
     print("normal = " .. rng:randomNormal(1.0, 0.0))
+    print("owner type = " .. tostring(rng:type()))
 end
 ```
 
@@ -6030,6 +6128,7 @@ LRandomGenerator:type()
 do
     local rng = lurek.math.newRandomGenerator(77)
     print("type = " .. rng:type())
+    print("typeOf LObject = " .. tostring(rng:typeOf("LObject")))
 end
 ```
 
@@ -6061,6 +6160,7 @@ LRandomGenerator:typeOf(name)
 do
     local rng = lurek.math.newRandomGenerator(77)
     print("typeOf = " .. tostring(rng:typeOf("LRandomGenerator")))
+    print("type = " .. tostring(rng:type()))
 end
 ```
 
@@ -6232,6 +6332,7 @@ LSpatialHash:getCellSize()
 do
     local sh = lurek.math.newSpatialHash(32)
     print("cell size = " .. sh:getCellSize())
+    print("owner type = " .. tostring(sh:type()))
 end
 ```
 
@@ -6451,6 +6552,7 @@ LSpatialHash:type()
 do
     local sh = lurek.math.newSpatialHash(32)
     print(sh:type())
+    print("typeOf LObject = " .. tostring(sh:typeOf("LObject")))
 end
 ```
 
@@ -6482,6 +6584,7 @@ LSpatialHash:typeOf(name)
 do
     local sh = lurek.math.newSpatialHash(32)
     print(tostring(sh:typeOf("LSpatialHash")))
+    print("type = " .. tostring(sh:type()))
 end
 ```
 
@@ -6898,6 +7001,7 @@ LTransform:type()
 do
     local tf = lurek.math.newTransform()
     print(tf:type())
+    print("typeOf LObject = " .. tostring(tf:typeOf("LObject")))
 end
 ```
 
@@ -6929,6 +7033,7 @@ LTransform:typeOf(name)
 do
     local tf = lurek.math.newTransform()
     print(tostring(tf:typeOf("LTransform")))
+    print("type = " .. tostring(tf:type()))
 end
 ```
 
@@ -7614,6 +7719,7 @@ LVec2:angle()
 do
     local v = lurek.math.vec2(1, 1)
     print("angle = " .. v:angle())
+    print("owner type = " .. tostring(v:type()))
 end
 ```
 
@@ -7767,6 +7873,7 @@ LVec2:length()
 do
     local v = lurek.math.Vec2(3, 4)
     print("length = " .. v:length())
+    print("owner type = " .. tostring(v:type()))
 end
 ```
 
@@ -7792,6 +7899,7 @@ LVec2:lengthSquared()
 do
     local v = lurek.math.Vec2(3, 4)
     print("lengthSq = " .. v:lengthSquared())
+    print("owner type = " .. tostring(v:type()))
 end
 ```
 
@@ -7994,6 +8102,7 @@ LVec2:type()
 do
     local v = lurek.math.Vec2(3, 4)
     print(v:type())
+    print("typeOf LObject = " .. tostring(v:typeOf("LObject")))
 end
 ```
 
@@ -8025,6 +8134,7 @@ LVec2:typeOf(name)
 do
     local v = lurek.math.Vec2(3, 4)
     print(v:typeOf("LVec2"))
+    print("type = " .. tostring(v:type()))
 end
 ```
 
@@ -8050,6 +8160,7 @@ LVec2:x()
 do
     local v = lurek.math.Vec2(3, 4)
     print("x=" .. v.x)
+    print("owner type = " .. tostring(v:type()))
 end
 ```
 
@@ -8075,6 +8186,7 @@ LVec2:y()
 do
     local v = lurek.math.Vec2(3, 4)
     print("y=" .. v.y)
+    print("owner type = " .. tostring(v:type()))
 end
 ```
 
@@ -8242,6 +8354,7 @@ LVec3:length()
 do
     local v = lurek.math.Vec3(1, 2, 2)
     print("length = " .. v:length())
+    print("owner type = " .. tostring(v:type()))
 end
 ```
 
@@ -8267,6 +8380,7 @@ LVec3:lengthSquared()
 do
     local v = lurek.math.Vec3(1, 2, 2)
     print("lengthSq = " .. v:lengthSquared())
+    print("owner type = " .. tostring(v:type()))
 end
 ```
 
@@ -8449,6 +8563,7 @@ LVec3:type()
 do
     local v = lurek.math.Vec3(1, 2, 3)
     print(v:type())
+    print("typeOf LObject = " .. tostring(v:typeOf("LObject")))
 end
 ```
 
@@ -8480,6 +8595,7 @@ LVec3:typeOf(name)
 do
     local v = lurek.math.Vec3(1, 2, 3)
     print(tostring(v:typeOf("LVec3")))
+    print("type = " .. tostring(v:type()))
 end
 ```
 

@@ -141,9 +141,10 @@ pub fn complete_prefix(prefix: &str, lua: Option<&Lua>) -> Vec<String> {
     completions
 }
 
-/// Walk a Lua table at `path` and collect string keys that match `prefix`.
+/// Collect live Lua globals or table members that match `prefix`.
 fn collect_lua_completions(lua: &Lua, prefix: &str, completions: &mut Vec<String>) {
     let Some((table_path, member_prefix)) = prefix.rsplit_once('.') else {
+        collect_global_completions(lua, prefix, completions);
         return;
     };
     let Ok(table) = resolve_table(lua, table_path) else {
@@ -160,6 +161,23 @@ fn collect_lua_completions(lua: &Lua, prefix: &str, completions: &mut Vec<String
         };
         if key_text.starts_with(member_prefix) {
             completions.push(format!("{}.{}", table_path, key_text));
+        }
+    }
+}
+
+/// Walk the global environment and collect string keys that match `prefix`.
+fn collect_global_completions(lua: &Lua, prefix: &str, completions: &mut Vec<String>) {
+    for pair in lua.globals().pairs::<mlua::Value, mlua::Value>() {
+        let Ok((key, _)) = pair else {
+            continue;
+        };
+        let key_text = match key {
+            mlua::Value::String(text) => text.to_str().unwrap_or_default().to_string(),
+            mlua::Value::Integer(number) => number.to_string(),
+            _ => continue,
+        };
+        if key_text.starts_with(prefix) {
+            completions.push(key_text);
         }
     }
 }

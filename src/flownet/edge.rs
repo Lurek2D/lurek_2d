@@ -38,6 +38,8 @@ pub struct Edge {
     pub active: bool,
     /// Allowed item types, or empty for no restriction.
     pub allowed_types: HashSet<String>,
+    /// Transit capacity reservations keyed by planner or reservation tag.
+    pub(crate) capacity_reservations: std::collections::HashMap<String, u32>,
     /// Item ids currently moving along the edge.
     pub items_in_transit: Vec<u64>,
 }
@@ -59,6 +61,7 @@ impl Edge {
             bidirectional: false,
             active: true,
             allowed_types: HashSet::new(),
+            capacity_reservations: std::collections::HashMap::new(),
             items_in_transit: Vec::new(),
         }
     }
@@ -89,6 +92,57 @@ impl Edge {
     /// Remove all allowed item type filters.
     pub fn clear_allowed_types(&mut self) {
         self.allowed_types.clear();
+    }
+    /// Return the total reserved transit capacity on this edge.
+    pub fn get_reserved_capacity(&self) -> u32 {
+        self.capacity_reservations.values().copied().sum()
+    }
+    /// Return the currently available transit capacity after reservations, or -1 when unlimited.
+    pub fn get_available_capacity(&self) -> i32 {
+        if self.capacity < 0 {
+            -1
+        } else {
+            let occupied = self
+                .items_in_transit
+                .len()
+                .saturating_add(self.get_reserved_capacity() as usize);
+            (self.capacity as i64 - occupied as i64).max(0) as i32
+        }
+    }
+    /// Return true when the edge can reserve the requested number of transit slots.
+    pub fn can_reserve_capacity(&self, slots: u32) -> bool {
+        if self.capacity < 0 {
+            true
+        } else {
+            self.get_available_capacity() >= slots as i32
+        }
+    }
+    /// Reserve edge transit capacity under a caller-provided key.
+    pub fn reserve_capacity(&mut self, key: &str, slots: u32) -> bool {
+        if !self.can_reserve_capacity(slots) {
+            return false;
+        }
+        *self
+            .capacity_reservations
+            .entry(key.to_string())
+            .or_insert(0) += slots;
+        true
+    }
+    /// Release up to `slots` transit reservations for a key and return the amount removed.
+    pub fn release_capacity_reservation(&mut self, key: &str, slots: Option<u32>) -> u32 {
+        let Some(current) = self.capacity_reservations.get_mut(key) else {
+            return 0;
+        };
+        let removed = slots.unwrap_or(*current).min(*current);
+        *current -= removed;
+        if *current == 0 {
+            self.capacity_reservations.remove(key);
+        }
+        removed
+    }
+    /// Remove every transit capacity reservation from this edge.
+    pub fn clear_capacity_reservations(&mut self) {
+        self.capacity_reservations.clear();
     }
     /// Return true when the transit buffer is at or above capacity.
     pub fn is_transit_full(&self) -> bool {

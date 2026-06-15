@@ -11,7 +11,7 @@
 
 use super::core::Graph;
 use super::item::ItemPosition;
-use super::node::FlowMode;
+use super::node::{FlowMode, OverflowPolicy};
 use crate::log_msg;
 use crate::runtime::log_messages::{GR01, GR02};
 /// Simulation event emitted by graph updates.
@@ -141,17 +141,8 @@ impl Graph {
             })
             .collect();
         for id in dead_ids {
-            if let Some(item) = self.items.get_mut(&id) {
-                item.kill();
-            }
+            let _ = self.kill_item_and_detach(id);
             events.push(GraphEvent::ItemDecay { item_id: id });
-            for node in self.nodes.values_mut() {
-                node.items.retain(|&iid| iid != id);
-                node.queue.retain(|&iid| iid != id);
-            }
-            for edge in self.edges.values_mut() {
-                edge.items_in_transit.retain(|&iid| iid != id);
-            }
         }
         self.process_transit(dt, &mut events);
         self.process_cooldowns(dt);
@@ -181,14 +172,8 @@ impl Graph {
             }
         }
         for id in dead_ids {
+            let _ = self.kill_item_and_detach(id);
             events.push(GraphEvent::ItemDecay { item_id: id });
-            for node in self.nodes.values_mut() {
-                node.items.retain(|&iid| iid != id);
-                node.queue.retain(|&iid| iid != id);
-            }
-            for edge in self.edges.values_mut() {
-                edge.items_in_transit.retain(|&iid| iid != id);
-            }
         }
     }
     /// Advance edge transit progress and resolve arrivals.
@@ -234,51 +219,37 @@ impl Graph {
         }
         for (item_id, edge_id, dest_node) in arrivals {
             events.push(GraphEvent::EdgeLeave { item_id, edge_id });
-            if let Some(edge) = self.edges.get_mut(&edge_id) {
-                edge.items_in_transit.retain(|&id| id != item_id);
-            }
             if let Some(node) = self.nodes.get(&dest_node) {
                 if node.is_full() {
                     match node.overflow_policy {
-                        super::node::OverflowPolicy::Reject => {
-                            if let Some(item) = self.items.get_mut(&item_id) {
-                                item.position = ItemPosition::Unplaced;
-                            }
+                        OverflowPolicy::Reject => {
+                            let _ = self.move_item_to_unplaced(item_id);
                         }
-                        super::node::OverflowPolicy::Destroy => {
-                            if let Some(item) = self.items.get_mut(&item_id) {
-                                item.kill();
-                            }
+                        OverflowPolicy::Destroy => {
+                            let _ = self.kill_item_and_detach(item_id);
                             events.push(GraphEvent::ItemLost {
                                 item_id,
                                 node_id: dest_node,
                             });
                             continue;
                         }
-                        super::node::OverflowPolicy::Queue => {
-                            if let Some(node) = self.nodes.get_mut(&dest_node) {
-                                if node.enqueue(item_id) {
-                                    if let Some(item) = self.items.get_mut(&item_id) {
-                                        item.position = ItemPosition::AtNode(dest_node);
-                                    }
+                        OverflowPolicy::Queue => {
+                            match self.move_item_to_node_queue(item_id, dest_node) {
+                                Ok(true) => {
                                     events.push(GraphEvent::ItemQueued {
                                         item_id,
                                         node_id: dest_node,
                                     });
-                                } else if let Some(item) = self.items.get_mut(&item_id) {
-                                    item.position = ItemPosition::Unplaced;
+                                }
+                                Ok(false) | Err(_) => {
+                                    let _ = self.move_item_to_unplaced(item_id);
                                 }
                             }
                             continue;
                         }
                     }
                 } else {
-                    if let Some(node) = self.nodes.get_mut(&dest_node) {
-                        node.items.push(item_id);
-                    }
-                    if let Some(item) = self.items.get_mut(&item_id) {
-                        item.position = ItemPosition::AtNode(dest_node);
-                    }
+                    let _ = self.move_item_to_node_inventory(item_id, dest_node);
                     events.push(GraphEvent::ItemEnter {
                         item_id,
                         node_id: dest_node,
@@ -298,12 +269,14 @@ impl Graph {
     /// Push items from push-capable nodes onto outgoing edges.
     fn process_push_flow(&mut self, dt: f64, events: &mut Vec<GraphEvent>) {
         let push_nodes: Vec<u64> = self
-            .nodes
-            .values()
-            .filter(|n| {
-                n.active && (n.flow_mode == FlowMode::Push || n.flow_mode == FlowMode::Both)
+            .get_node_ids()
+            .into_iter()
+            .filter(|node_id| {
+                self.nodes.get(node_id).is_some_and(|node| {
+                    node.active
+                        && (node.flow_mode == FlowMode::Push || node.flow_mode == FlowMode::Both)
+                })
             })
-            .map(|n| n.id.0)
             .collect();
         for nid in push_nodes {
             let (push_rate, push_filter, items_snapshot) = {
@@ -346,29 +319,18 @@ impl Graph {
                             && !edge.is_transit_full()
                     };
                     if can_send {
-                        events.push(GraphEvent::ItemLeave {
-                            item_id: iid,
-                            node_id: nid,
-                        });
-                        events.push(GraphEvent::EdgeEnter {
-                            item_id: iid,
-                            edge_id: eid,
-                        });
-                        if let Some(node) = self.nodes.get_mut(&nid) {
-                            node.items.retain(|&id| id != iid);
-                        }
-                        if let Some(edge) = self.edges.get_mut(&eid) {
-                            edge.items_in_transit.push(iid);
-                            edge.cooldown_timer = edge.cooldown;
-                        }
-                        if let Some(item) = self.items.get_mut(&iid) {
-                            item.position = ItemPosition::InTransit {
+                        if let Ok(true) = self.send_item(iid, eid) {
+                            events.push(GraphEvent::ItemLeave {
+                                item_id: iid,
+                                node_id: nid,
+                            });
+                            events.push(GraphEvent::EdgeEnter {
+                                item_id: iid,
                                 edge_id: eid,
-                                progress: 0.0,
-                            };
+                            });
+                            sent += 1;
+                            break;
                         }
-                        sent += 1;
-                        break;
                     }
                 }
             }
@@ -377,12 +339,14 @@ impl Graph {
     /// Pull items into pull-capable nodes from incoming edges.
     fn process_pull_flow(&mut self, dt: f64, events: &mut Vec<GraphEvent>) {
         let pull_nodes: Vec<u64> = self
-            .nodes
-            .values()
-            .filter(|n| {
-                n.active && (n.flow_mode == FlowMode::Pull || n.flow_mode == FlowMode::Both)
+            .get_node_ids()
+            .into_iter()
+            .filter(|node_id| {
+                self.nodes.get(node_id).is_some_and(|node| {
+                    node.active
+                        && (node.flow_mode == FlowMode::Pull || node.flow_mode == FlowMode::Both)
+                })
             })
-            .map(|n| n.id.0)
             .collect();
         for nid in pull_nodes {
             let (pull_slots, pull_filter) = {
@@ -440,36 +404,25 @@ impl Graph {
                     if !allowed {
                         continue;
                     }
-                    events.push(GraphEvent::ItemLeave {
-                        item_id: iid,
-                        node_id: source_node_id,
-                    });
-                    events.push(GraphEvent::EdgeEnter {
-                        item_id: iid,
-                        edge_id: eid,
-                    });
-                    if let Some(src) = self.nodes.get_mut(&source_node_id) {
-                        src.items.retain(|&id| id != iid);
-                    }
-                    if let Some(edge) = self.edges.get_mut(&eid) {
-                        edge.items_in_transit.push(iid);
-                        edge.cooldown_timer = edge.cooldown;
-                    }
-                    if let Some(item) = self.items.get_mut(&iid) {
-                        item.position = ItemPosition::InTransit {
+                    if let Ok(true) = self.send_item(iid, eid) {
+                        events.push(GraphEvent::ItemLeave {
+                            item_id: iid,
+                            node_id: source_node_id,
+                        });
+                        events.push(GraphEvent::EdgeEnter {
+                            item_id: iid,
                             edge_id: eid,
-                            progress: 0.0,
-                        };
+                        });
+                        pulled += 1;
+                        break;
                     }
-                    pulled += 1;
-                    break;
                 }
             }
         }
     }
     /// Consume matching inputs and produce outputs for node conversion rules.
     fn process_conversions(&mut self, events: &mut Vec<GraphEvent>) {
-        let node_ids: Vec<u64> = self.nodes.keys().copied().collect();
+        let node_ids = self.get_node_ids();
         for nid in node_ids {
             let conversions: Vec<(String, String, u32, u32)> = match self.nodes.get(&nid) {
                 Some(node) if node.active && !node.conversions.is_empty() => node
@@ -510,22 +463,12 @@ impl Graph {
                     }
                     let consumed = matching;
                     for &iid in &consumed {
-                        if let Some(item) = self.items.get_mut(&iid) {
-                            item.kill();
-                        }
-                        if let Some(node) = self.nodes.get_mut(&nid) {
-                            node.items.retain(|&id| id != iid);
-                        }
+                        let _ = self.kill_item_and_detach(iid);
                     }
                     let mut produced = Vec::new();
                     for _ in 0..out_count {
                         let new_id = self.create_item(&out_type, -1.0);
-                        if let Some(item) = self.items.get_mut(&new_id) {
-                            item.position = ItemPosition::AtNode(nid);
-                        }
-                        if let Some(node) = self.nodes.get_mut(&nid) {
-                            node.items.push(new_id);
-                        }
+                        let _ = self.move_item_to_node_inventory(new_id, nid);
                         produced.push(new_id);
                     }
                     events.push(GraphEvent::ItemConvert {
@@ -539,7 +482,7 @@ impl Graph {
     }
     /// Move queued items into node inventories when processing time and capacity allow.
     fn process_queues(&mut self, dt: f64, events: &mut Vec<GraphEvent>) {
-        let node_ids: Vec<u64> = self.nodes.keys().copied().collect();
+        let node_ids = self.get_node_ids();
         for nid in node_ids {
             let should_dequeue = {
                 let node = match self.nodes.get_mut(&nid) {
@@ -561,18 +504,16 @@ impl Graph {
             };
             if should_dequeue {
                 let item_id = {
-                    let node = self.nodes.get_mut(&nid).unwrap();
+                    let node = match self.nodes.get_mut(&nid) {
+                        Some(node) => node,
+                        None => continue,
+                    };
                     match node.dequeue() {
                         Some(id) => id,
                         None => continue,
                     }
                 };
-                if let Some(node) = self.nodes.get_mut(&nid) {
-                    node.items.push(item_id);
-                }
-                if let Some(item) = self.items.get_mut(&item_id) {
-                    item.position = ItemPosition::AtNode(nid);
-                }
+                let _ = self.move_item_to_node_inventory(item_id, nid);
                 events.push(GraphEvent::ItemDequeued {
                     item_id,
                     node_id: nid,

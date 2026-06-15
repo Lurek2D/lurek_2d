@@ -44,6 +44,10 @@ _MODULE_ORDER = [
     "combat", "input",
 ]
 
+_LUA_NAMESPACE = {
+    "system": "runtime",
+}
+
 # Module descriptions used when the module doc from source is missing/thin
 _MODULE_FALLBACK_DESC: dict = {
     "render": "Immediate-mode 2D rendering: images, shapes, text, canvas, shaders, blend modes, transforms.",
@@ -181,8 +185,9 @@ def _cheatsheet_line(call: str, ret: str, desc: str, indent: int = 2) -> str:
 def _render_module_section(mod_name: str, mod_data: dict) -> list:
     """Render one complete module section for the wiki."""
     out = []
+    lua_ns = _LUA_NAMESPACE.get(mod_name, mod_name)
     anchor = mod_name.replace("_", "-")
-    out.append(f"## lurek.{mod_name} {{#{anchor}}}")
+    out.append(f"## lurek.{lua_ns} {{#{anchor}}}")
     out.append("")
 
     # Module description — prefer hand-written fallback when available (richer for wiki)
@@ -200,7 +205,7 @@ def _render_module_section(mod_name: str, mod_data: dict) -> list:
     if fn_list:
         out.append("```lua")
         for fn in sorted(fn_list, key=lambda f: f["name"]):
-            call = f"lurek.{mod_name}.{fn['name']}{_fmt_sig(fn)}"
+            call = f"lurek.{lua_ns}.{fn['name']}{_fmt_sig(fn)}"
             ret = _extract_return_type(fn.get("returns_doc", ""), fn.get("description", ""), fn["name"])
             fdesc = fn.get("description", "")
             out.append(_cheatsheet_line(call, ret, fdesc))

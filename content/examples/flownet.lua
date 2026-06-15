@@ -375,6 +375,48 @@ do
     print("capacity = " .. n:getCapacity())
 end
 
+--@api: LGraphNode:getReservedCapacity
+do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode("warehouse", 5)
+    n:reserveCapacity("planner-a", 2)
+    print("reserved capacity = " .. n:getReservedCapacity())
+end
+
+--@api: LGraphNode:getAvailableCapacity
+do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode("warehouse", 5)
+    n:reserveCapacity("planner-a", 2)
+    print("available capacity = " .. n:getAvailableCapacity())
+end
+
+--@api: LGraphNode:reserveCapacity
+do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode("warehouse", 5)
+    local ok = n:reserveCapacity("planner-a", 2)
+    print("reservation accepted = " .. tostring(ok))
+end
+
+--@api: LGraphNode:releaseCapacityReservation
+do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode("warehouse", 5)
+    n:reserveCapacity("planner-a", 2)
+    local released = n:releaseCapacityReservation("planner-a", 1)
+    print("released slots = " .. released)
+end
+
+--@api: LGraphNode:clearCapacityReservations
+do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode("warehouse", 5)
+    n:reserveCapacity("planner-a", 2)
+    n:clearCapacityReservations()
+    print("reserved capacity = " .. n:getReservedCapacity())
+end
+
 --@api: LGraphNode:isActive
 do
     local g = lurek.graph.newGraph()
@@ -822,6 +864,63 @@ do
     local e = g:addEdge(a, b)
     e:setCapacity(10)
     print("capacity = " .. e:getCapacity())
+end
+
+--@api: LGraphEdge:getReservedCapacity
+do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    local e = g:addEdge(a, b)
+    e:setCapacity(4)
+    e:reserveCapacity("planner-a", 2)
+    print("reserved capacity = " .. e:getReservedCapacity())
+end
+
+--@api: LGraphEdge:getAvailableCapacity
+do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    local e = g:addEdge(a, b)
+    e:setCapacity(4)
+    e:reserveCapacity("planner-a", 2)
+    print("available capacity = " .. e:getAvailableCapacity())
+end
+
+--@api: LGraphEdge:reserveCapacity
+do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    local e = g:addEdge(a, b)
+    e:setCapacity(4)
+    local ok = e:reserveCapacity("planner-a", 2)
+    print("reservation accepted = " .. tostring(ok))
+end
+
+--@api: LGraphEdge:releaseCapacityReservation
+do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    local e = g:addEdge(a, b)
+    e:setCapacity(4)
+    e:reserveCapacity("planner-a", 2)
+    local released = e:releaseCapacityReservation("planner-a", 1)
+    print("released slots = " .. released)
+end
+
+--@api: LGraphEdge:clearCapacityReservations
+do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    local e = g:addEdge(a, b)
+    e:setCapacity(4)
+    e:reserveCapacity("planner-a", 2)
+    e:clearCapacityReservations()
+    print("reserved capacity = " .. e:getReservedCapacity())
 end
 
 --@api: LGraphEdge:getSpeedModifier

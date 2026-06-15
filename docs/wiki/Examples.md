@@ -75,7 +75,6 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [spine.lua](../blob/main/content/examples/spine.lua) | `lurek.spine` | API example |
 | [sprite.lua](../blob/main/content/examples/sprite.lua) | `lurek.sprite` | API example |
 | [svg.lua](../blob/main/content/examples/svg.lua) | `lurek.svg` | API example |
-| [system.lua](../blob/main/content/examples/system.lua) | `lurek.system` | API example |
 | [terminal.lua](../blob/main/content/examples/terminal.lua) | `lurek.terminal` | API example |
 | [thread.lua](../blob/main/content/examples/thread.lua) | `lurek.thread` | API example |
 | [tilemap.lua](../blob/main/content/examples/tilemap.lua) | `lurek.tilemap` | API example |
