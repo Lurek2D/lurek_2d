@@ -78,6 +78,8 @@ pub struct ParticleSystem {
     pub bounce_bounds: Option<BounceBounds>,
     /// Child sub-systems spawned on particle death.
     pub sub_systems: Vec<ParticleSystem>,
+    /// Reusable child sub-systems retained after death-burst effects finish.
+    pub recycled_sub_systems: Vec<ParticleSystem>,
     /// Initial deterministic RNG state used to reset repeatable systems.
     pub rng_initial_state: u64,
     /// Current deterministic RNG state used for emission and per-frame noise.
@@ -106,6 +108,7 @@ impl ParticleSystem {
             attractors: Vec::new(),
             bounce_bounds: None,
             sub_systems: Vec::new(),
+            recycled_sub_systems: Vec::new(),
             rng_initial_state,
             rng_state: rng_initial_state,
             pending_custom_offsets: Vec::new(),
@@ -211,7 +214,8 @@ impl ParticleSystem {
             }
             p.life -= dt;
         }
-        let dead_data = self.collect_dead_particles();
+        let death_start = self.pending_deaths.len();
+        self.collect_dead_particles();
         if let Some(death_cfg) = self
             .config
             .death_emitter
@@ -219,22 +223,27 @@ impl ParticleSystem {
             .filter(|_| self.config.death_burst_count > 0)
         {
             let burst = self.config.death_burst_count;
-            for &(dx, dy, _, _) in &dead_data {
-                let mut sub = ParticleSystem::new((**death_cfg).clone());
-                sub.emitter_x = dx;
-                sub.emitter_y = dy;
+            for &(dx, dy, _, _) in &self.pending_deaths[death_start..] {
+                let mut sub = self
+                    .recycled_sub_systems
+                    .pop()
+                    .unwrap_or_else(|| ParticleSystem::new((**death_cfg).clone()));
+                sub.reset_for_reuse((**death_cfg).clone(), dx, dy);
                 sub.emit(burst);
                 sub.stop();
                 self.sub_systems.push(sub);
             }
         }
-        if !dead_data.is_empty() {
-            self.pending_deaths.extend(dead_data);
+        let mut sub_index = 0;
+        while sub_index < self.sub_systems.len() {
+            self.sub_systems[sub_index].update(dt);
+            if self.sub_systems[sub_index].is_empty() && !self.sub_systems[sub_index].is_active() {
+                let sub = self.sub_systems.swap_remove(sub_index);
+                self.recycled_sub_systems.push(sub);
+            } else {
+                sub_index += 1;
+            }
         }
-        self.sub_systems.retain_mut(|sub| {
-            sub.update(dt);
-            !sub.is_empty() || sub.is_active()
-        });
         if self.state == EmitterState::Active {
             self.emit_accumulator += self.config.emission_rate * dt;
             let to_emit = self.emit_accumulator as u32;
@@ -249,19 +258,18 @@ impl ParticleSystem {
         self.prev_emitter_x = self.emitter_x;
         self.prev_emitter_y = self.emitter_y;
     }
-    fn collect_dead_particles(&mut self) -> Vec<(f32, f32, f32, f32)> {
+    fn collect_dead_particles(&mut self) {
         let ex = self.emitter_x;
         let ey = self.emitter_y;
-        let mut dead_data = Vec::new();
+        let pending_deaths = &mut self.pending_deaths;
         self.particles.retain(|p| {
             if p.life <= 0.0 {
-                dead_data.push((ex + p.x, ey + p.y, p.vx, p.vy));
+                pending_deaths.push((ex + p.x, ey + p.y, p.vx, p.vy));
                 false
             } else {
                 true
             }
         });
-        dead_data
     }
     /// Spawn a single particle using the current config; inserts according to `insert_mode`.
     fn emit_one(&mut self) {
@@ -370,6 +378,10 @@ impl ParticleSystem {
         self.emit_accumulator = 0.0;
         self.emitter_age = 0.0;
         self.rng_state = self.rng_initial_state;
+        self.attractors.clear();
+        self.bounce_bounds = None;
+        self.sub_systems.clear();
+        self.recycled_sub_systems.clear();
         self.pending_custom_offsets.clear();
         self.pending_deaths.clear();
     }
@@ -593,6 +605,26 @@ impl ParticleSystem {
             has_bounds: self.bounce_bounds.is_some(),
             state: self.state.clone(),
         }
+    }
+    fn reset_for_reuse(&mut self, config: ParticleConfig, emitter_x: f32, emitter_y: f32) {
+        let config = config.normalized();
+        self.config = config;
+        self.particles.clear();
+        self.emitter_x = emitter_x;
+        self.emitter_y = emitter_y;
+        self.emit_accumulator = 0.0;
+        self.state = EmitterState::Active;
+        self.emitter_age = 0.0;
+        self.prev_emitter_x = emitter_x;
+        self.prev_emitter_y = emitter_y;
+        self.attractors.clear();
+        self.bounce_bounds = None;
+        self.sub_systems.clear();
+        self.recycled_sub_systems.clear();
+        self.rng_initial_state = self.config.seed.unwrap_or_else(|| fastrand::u64(..));
+        self.rng_state = self.rng_initial_state;
+        self.pending_custom_offsets.clear();
+        self.pending_deaths.clear();
     }
     fn total_live_particles(&self) -> usize {
         self.particles.len()

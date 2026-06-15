@@ -23,6 +23,8 @@ use crate::runtime::log_messages::{OV01, OV02, OV03};
 const MIN_EFFECT_DURATION: f32 = 1.0e-4;
 /// Upper cap used to prevent runaway weather particle growth from hostile script input.
 const MAX_WEATHER_PARTICLES: usize = 4_096;
+/// Per-update spawn cap used to bound work after large `dt` spikes.
+const MAX_WEATHER_SPAWNS_PER_UPDATE: usize = 512;
 
 /// Snapshot of overlay runtime state for telemetry, debugging, and dashboard surfaces.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -192,12 +194,18 @@ impl Overlay {
         let h = self.height as f32;
         self.weather.spawn_timer += dt;
         let spawn_interval = 1.0 / (self.weather_intensity() * 100.0 + 1.0);
+        let mut spawns_this_update = 0usize;
         while self.weather.spawn_timer >= spawn_interval
             && self.weather.particles.len() < max_particles
+            && spawns_this_update < MAX_WEATHER_SPAWNS_PER_UPDATE
         {
             self.weather.spawn_timer -= spawn_interval;
             let particle = self.spawn_particle(w);
             self.weather.particles.push(particle);
+            spawns_this_update += 1;
+        }
+        if spawns_this_update == MAX_WEATHER_SPAWNS_PER_UPDATE {
+            self.weather.spawn_timer = self.weather.spawn_timer.min(spawn_interval);
         }
         let wind_x = self.weather.wind_speed * self.weather.wind_direction.cos();
         let wind_y = self.weather.wind_speed * self.weather.wind_direction.sin();

@@ -21,10 +21,10 @@ use std::time::{SystemTime, UNIX_EPOCH};
 /// Minimum severity level for a sink; messages below this level are silently dropped.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum SinkLevel {
-    /// Verbose detail for development tracing.
-    Debug,
     /// Fine-grained execution trace, more verbose than Debug.
     Trace,
+    /// Verbose detail for development tracing.
+    Debug,
     /// Routine informational messages.
     Info,
     /// Non-fatal warnings.
@@ -33,11 +33,22 @@ pub enum SinkLevel {
     Error,
 }
 impl SinkLevel {
+    /// Return an ascending severity rank where more severe levels compare larger.
+    pub fn severity_rank(self) -> u8 {
+        match self {
+            Self::Trace => 0,
+            Self::Debug => 1,
+            Self::Info => 2,
+            Self::Warn => 3,
+            Self::Error => 4,
+        }
+    }
+
     /// Return the uppercase string label for this level.
     pub fn as_str(self) -> &'static str {
         match self {
-            Self::Debug => "DEBUG",
             Self::Trace => "TRACE",
+            Self::Debug => "DEBUG",
             Self::Info => "INFO",
             Self::Warn => "WARN",
             Self::Error => "ERROR",
@@ -220,6 +231,7 @@ impl RotatingFileSink {
     pub fn flush(&mut self) {
         if let Some(ref mut f) = self.file {
             let _ = f.flush();
+            let _ = f.sync_data();
         }
     }
     /// Rename the active file to `.1`, shift older backups, and open a fresh active file.
@@ -449,6 +461,10 @@ impl Sink {
             None => true,
         }
     }
+    /// Return `true` when `level` and `tag` both pass this sink's filters.
+    pub(crate) fn accepts(&self, level: SinkLevel, tag: &str) -> bool {
+        level.severity_rank() >= self.min_level.severity_rank() && self.allows_tag(tag)
+    }
     /// Append `text` to the internal coalescing buffer, flushing when `buffer_limit` is reached.
     fn buffered_file_write(&self, text: &str) {
         if let Ok(mut buffer) = self.buffer.lock() {
@@ -520,7 +536,7 @@ impl Sink {
     }
     /// Write an unstructured message if `level >= min_level` and tag is allowed.
     pub fn write(&self, level: SinkLevel, tag: &str, message: &str) {
-        if level < self.min_level || !self.allows_tag(tag) {
+        if !self.accepts(level, tag) {
             return;
         }
         match &self.kind {
@@ -565,7 +581,7 @@ impl Sink {
         message: &str,
         fields: &BTreeMap<String, String>,
     ) {
-        if level < self.min_level || !self.allows_tag(tag) {
+        if !self.accepts(level, tag) {
             return;
         }
         let plain = format_structured_message(message, fields);
@@ -645,7 +661,9 @@ impl Sink {
         self.flush_buffer();
         match &self.kind {
             SinkKind::File { file, .. } => {
-                if let Ok(guard) = file.lock() {
+                if let Ok(mut guard) = file.lock() {
+                    let _ = guard.flush();
+                    let _ = guard.sync_data();
                     drop(guard as MutexGuard<File>);
                 }
             }

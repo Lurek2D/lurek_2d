@@ -2,7 +2,7 @@
 //! Builds an index for fast repeated lookups while reading files on demand without full extraction.
 //! Enforces traversal-safe path handling before archive access to maintain sandbox guarantees.
 //! Supports listing and existence checks over mounted archive content through a unified interface.
-//! Delivers archive overlay functionality used by the virtual filesystem mount stack.
+//! Delivers standalone archive reads for Lua-facing ZIP mount handles without mutating GameFS.
 
 use std::collections::HashMap;
 use std::io::Read;
@@ -22,16 +22,16 @@ impl ZipMount {
     pub fn new<P: AsRef<Path>>(archive_path: P, prefix: &str) -> Result<Self, String> {
         let path = archive_path.as_ref().to_path_buf();
         let file = std::fs::File::open(&path)
-            .map_err(|e| format!("ZipMount: cannot open '{}': {}", path.display(), e))?;
+            .map_err(|e| format!("ZipMount: cannot open archive: {}", e))?;
         let archive = zip::ZipArchive::new(file)
-            .map_err(|e| format!("ZipMount: invalid ZIP '{}': {}", path.display(), e))?;
+            .map_err(|e| format!("ZipMount: invalid ZIP archive: {}", e))?;
         let clean_prefix = prefix.trim_matches('/').to_string();
         let mut index = HashMap::new();
         for i in 0..archive.len() {
             let file2 = std::fs::File::open(&path)
                 .map_err(|e| format!("ZipMount: re-open failed: {}", e))?;
             let mut arc2 = zip::ZipArchive::new(file2)
-                .map_err(|e| format!("ZipMount: re-open parse failed: {}", e))?;
+                .map_err(|e| format!("ZipMount: parse failed: {}", e))?;
             let entry = arc2
                 .by_index(i)
                 .map_err(|e| format!("ZipMount: index {}: {}", i, e))?;
@@ -71,7 +71,7 @@ impl ZipMount {
             zip::ZipArchive::new(file).map_err(|e| format!("ZipMount: parse error: {}", e))?;
         let mut entry = archive
             .by_name(&entry_name)
-            .map_err(|e| format!("ZipMount: entry '{}' not found: {}", entry_name, e))?;
+            .map_err(|e| format!("ZipMount: file not found: '{}': {}", virtual_path, e))?;
         let mut buf = Vec::with_capacity(entry.size() as usize);
         entry
             .read_to_end(&mut buf)

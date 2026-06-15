@@ -70,12 +70,9 @@ impl Catalog {
     pub fn locales(&self) -> Vec<&str> {
         self.tables.keys().map(String::as_str).collect()
     }
-    /// Return whether the active locale contains a key.
+    /// Return whether the active locale or any fallback locale contains a key.
     pub fn has_key(&self, key: &str) -> bool {
-        self.tables
-            .get(&self.locale)
-            .map(|t| t.contains_key(key))
-            .unwrap_or(false)
+        self.get(key).is_ok()
     }
     /// Return keys for the active locale.
     pub fn keys(&self) -> Vec<&str> {
@@ -227,11 +224,9 @@ impl Catalog {
         } else {
             format!("{}.other", key)
         };
-        if self.has_key(&plural_key) {
-            self.translate(&plural_key).to_string()
-        } else {
-            self.translate(key).to_string()
-        }
+        self.get(&plural_key)
+            .map(str::to_owned)
+            .unwrap_or_else(|_| self.translate(key).to_string())
     }
     /// Compute the intersection of multiple candidate key lists and return them sorted and optionally truncated.
     pub fn search_indexed_intersection(

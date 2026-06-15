@@ -19,7 +19,9 @@ fn repeated_loads_share_one_cache_entry_and_increment_refs() {
     assert_eq!(cache.loaded_count(), 1);
     assert_eq!(cache.ref_count(first), 2);
     assert_eq!(
-        cache.get(first).and_then(|entry| entry.text_content.as_deref()),
+        cache
+            .get(first)
+            .and_then(|entry| entry.text_content.as_deref()),
         Some("print('a')")
     );
 }

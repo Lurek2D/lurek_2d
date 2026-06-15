@@ -3,7 +3,8 @@
 // TODO(lua-first): public Rust API coverage in this file should live in tests/lua/unit/; keep only private/internal seams here.
 
 use lurek2d::app::app::{
-    classify_drop_startup_target, fit_contain_size, recompute_viewport, DropStartupTarget, LurekApp,
+    classify_drop_startup_target, fit_contain_size, recompute_viewport,
+    should_open_startup_picker_on_key, DropStartupTarget, LurekApp,
 };
 use lurek2d::app::debug_overlay::DebugOverlay;
 use lurek2d::app::error_screen::{format_traceback, wrap_text, ErrorScreen};
@@ -336,5 +337,14 @@ mod drop_startup_target_tests {
             classify_drop_startup_target(&file),
             DropStartupTarget::Unsupported
         );
+    }
+
+    #[test]
+    fn startup_picker_shortcuts_cover_enter_space_and_ctrl_o() {
+        assert!(should_open_startup_picker_on_key("enter", false));
+        assert!(should_open_startup_picker_on_key("space", false));
+        assert!(should_open_startup_picker_on_key("o", true));
+        assert!(!should_open_startup_picker_on_key("o", false));
+        assert!(!should_open_startup_picker_on_key("escape", true));
     }
 }

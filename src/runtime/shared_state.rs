@@ -637,7 +637,7 @@ impl SharedState {
             .async_loader
             .as_ref()
             .expect("async_loader initialized above")
-            .request_load(resolved);
+            .request_load(path.to_string(), resolved);
         Ok(handle.0)
     }
     /// Submit an asynchronous file write and return a poll handle.
@@ -654,7 +654,7 @@ impl SharedState {
             .async_loader
             .as_ref()
             .expect("async_loader initialized above")
-            .request_write(resolved, data);
+            .request_write(path.to_string(), resolved, data);
         Ok(handle.0)
     }
     fn builtin_default_font_key(&self, point_size: u32, bold: bool) -> Option<FontKey> {

@@ -88,6 +88,17 @@ describe("lurek.layout module", function()
         expect_equal("Only", snapped.nodes[1].label)
     end)
 
+    -- @covers lurek.layout.snapToGrid
+    it("snapToGrid preserves non-zero input coordinates before snapping", function()
+        local snapped = lurek.layout.snapToGrid({
+            nodes = {
+                { id = 1, x = 18, y = 34, width = 40, height = 20, label = "Only" },
+            },
+        }, 16)
+        expect_equal(16, snapped.nodes[1].x)
+        expect_equal(32, snapped.nodes[1].y)
+    end)
+
     -- @covers lurek.layout.centerInArea
     it("centerInArea centers a node inside the requested bounds", function()
         local centered = lurek.layout.centerInArea({
@@ -100,6 +111,17 @@ describe("lurek.layout module", function()
         expect_near(135, centered.nodes[1].y, 0.001)
         expect_equal(400, centered.width)
         expect_equal(300, centered.height)
+    end)
+
+    -- @covers lurek.layout.centerInArea
+    it("centerInArea preserves non-zero coordinates when re-centering", function()
+        local centered = lurek.layout.centerInArea({
+            nodes = {
+                { id = 1, x = 20, y = 30, width = 50, height = 30, label = "Only" },
+            },
+        }, 400, 300)
+        expect_near(175, centered.nodes[1].x, 0.001)
+        expect_near(135, centered.nodes[1].y, 0.001)
     end)
 end)
 

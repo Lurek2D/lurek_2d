@@ -1,11 +1,6 @@
-//! File: src/lua_api/light_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
+//! Lua bindings for `lurek.light` world controls, light handles, and occluder handles.
+//! Validates numeric ranges, enum-like strings, and options-table fields before mutating runtime light state.
+//! Keeps lighting behavior in `src/light` while exposing a thin, predictable `lurek.light` API surface.
 
 use super::SharedState;
 use crate::color::Color;
@@ -19,6 +14,117 @@ use crate::runtime::resource_keys::{LightKey, OccluderKey};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+fn finite_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    if value.is_finite() {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be finite"
+        )))
+    }
+}
+
+fn non_negative_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    let value = finite_f32(api, arg_name, value)?;
+    if value >= 0.0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be >= 0"
+        )))
+    }
+}
+
+fn positive_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    let value = finite_f32(api, arg_name, value)?;
+    if value > 0.0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be > 0"
+        )))
+    }
+}
+
+fn positive_u32(api: &str, arg_name: &str, value: u32) -> LuaResult<u32> {
+    if value > 0 {
+        Ok(value)
+    } else {
+        Err(LuaError::RuntimeError(format!(
+            "{api}: {arg_name} must be > 0"
+        )))
+    }
+}
+
+fn unit_f32(api: &str, arg_name: &str, value: f32) -> LuaResult<f32> {
+    Ok(finite_f32(api, arg_name, value)?.clamp(0.0, 1.0))
+}
+
+fn optional_f32_field(opts: &LuaTable, field: &str) -> LuaResult<Option<f32>> {
+    match opts.get::<_, LuaValue>(field)? {
+        LuaValue::Nil => Ok(None),
+        LuaValue::Number(value) => Ok(Some(value as f32)),
+        LuaValue::Integer(value) => Ok(Some(value as f32)),
+        value => Err(LuaError::RuntimeError(format!(
+            "expected number for '{}', got {}",
+            field,
+            value.type_name()
+        ))),
+    }
+}
+
+fn optional_u16_field(opts: &LuaTable, field: &str) -> LuaResult<Option<u16>> {
+    match opts.get::<_, LuaValue>(field)? {
+        LuaValue::Nil => Ok(None),
+        LuaValue::Integer(value) => u16::try_from(value).map(Some).map_err(|_| {
+            LuaError::RuntimeError(format!("expected 0..65535 integer for '{}'", field))
+        }),
+        value => Err(LuaError::RuntimeError(format!(
+            "expected integer for '{}', got {}",
+            field,
+            value.type_name()
+        ))),
+    }
+}
+
+fn optional_bool_field(opts: &LuaTable, field: &str) -> LuaResult<Option<bool>> {
+    match opts.get::<_, LuaValue>(field)? {
+        LuaValue::Nil => Ok(None),
+        LuaValue::Boolean(value) => Ok(Some(value)),
+        value => Err(LuaError::RuntimeError(format!(
+            "expected boolean for '{}', got {}",
+            field,
+            value.type_name()
+        ))),
+    }
+}
+
+fn optional_string_field(opts: &LuaTable, field: &str) -> LuaResult<Option<String>> {
+    match opts.get::<_, LuaValue>(field)? {
+        LuaValue::Nil => Ok(None),
+        LuaValue::String(value) => Ok(Some(value.to_str()?.to_string())),
+        value => Err(LuaError::RuntimeError(format!(
+            "expected string for '{}', got {}",
+            field,
+            value.type_name()
+        ))),
+    }
+}
+
+fn color_table_channel(tbl: &LuaTable, index: i32, field: &str) -> LuaResult<f32> {
+    match tbl.get::<_, LuaValue>(index)? {
+        LuaValue::Nil => Ok(1.0),
+        LuaValue::Number(value) => unit_f32("lurek.light color table", field, value as f32),
+        LuaValue::Integer(value) => unit_f32("lurek.light color table", field, value as f32),
+        value => Err(LuaError::RuntimeError(format!(
+            "expected numeric color channel for '{}[{}]', got {}",
+            field,
+            index,
+            value.type_name()
+        ))),
+    }
+}
 /// Parses a Lua blend mode string into a light blend mode.
 fn parse_blend_mode(s: &str) -> LuaResult<LightBlendMode> {
     match s {
@@ -118,10 +224,10 @@ fn parse_opt_color(opts: &LuaTable, field: &str) -> LuaResult<Option<Color>> {
     let val: LuaValue = opts.get(field)?;
     match val {
         LuaValue::Table(tbl) => {
-            let r: f32 = tbl.get(1i32).unwrap_or(1.0);
-            let g: f32 = tbl.get(2i32).unwrap_or(1.0);
-            let b: f32 = tbl.get(3i32).unwrap_or(1.0);
-            let a: f32 = tbl.get(4i32).unwrap_or(1.0);
+            let r = color_table_channel(&tbl, 1, field)?;
+            let g = color_table_channel(&tbl, 2, field)?;
+            let b = color_table_channel(&tbl, 3, field)?;
+            let a = color_table_channel(&tbl, 4, field)?;
             Ok(Some(Color::new(r, g, b, a)))
         }
         LuaValue::Nil => Ok(None),
@@ -144,105 +250,146 @@ fn light_options_patch(opts: &LuaTable) -> LuaResult<Light2DOptionsPatch> {
     parse_light_shadow_opts(&mut patch, opts)?;
     parse_light_shape_opts(&mut patch, opts)?;
     parse_light_effect_opts(&mut patch, opts)?;
-    parse_light_attenuation_opts(&mut patch, opts);
+    parse_light_attenuation_opts(&mut patch, opts)?;
     Ok(patch)
 }
 
 fn parse_light_basic_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) -> LuaResult<()> {
-    if let Ok(Some(c)) = parse_opt_color(opts, "color") {
+    if let Some(c) = parse_opt_color(opts, "color")? {
         patch.color = Some(c);
     }
-    if let Ok(v) = opts.get::<_, f32>("intensity") {
-        patch.intensity = Some(v);
+    if let Some(v) = optional_f32_field(opts, "intensity")? {
+        patch.intensity = Some(non_negative_f32(
+            "lurek.light.newLight",
+            "opts.intensity",
+            v,
+        )?);
     }
-    if let Ok(v) = opts.get::<_, f32>("energy") {
-        patch.energy = Some(v);
+    if let Some(v) = optional_f32_field(opts, "energy")? {
+        patch.energy = Some(non_negative_f32("lurek.light.newLight", "opts.energy", v)?);
     }
-    if let Ok(s) = opts.get::<_, String>("blend") {
+    if let Some(s) = optional_string_field(opts, "blend")? {
         patch.blend_mode = Some(parse_blend_mode(&s)?);
     }
-    if let Ok(s) = opts.get::<_, String>("falloff") {
+    if let Some(s) = optional_string_field(opts, "falloff")? {
         patch.falloff = Some(parse_falloff(&s)?);
     }
-    if let Ok(v) = opts.get::<_, bool>("enabled") {
+    if let Some(v) = optional_bool_field(opts, "enabled")? {
         patch.enabled = Some(v);
     }
     Ok(())
 }
 
 fn parse_light_shadow_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) -> LuaResult<()> {
-    if let Ok(v) = opts.get::<_, bool>("shadowEnabled") {
+    if let Some(v) = optional_bool_field(opts, "shadowEnabled")? {
         patch.shadow_enabled = Some(v);
     }
-    if let Ok(Some(c)) = parse_opt_color(opts, "shadowColor") {
+    if let Some(c) = parse_opt_color(opts, "shadowColor")? {
         patch.shadow_color = Some(c);
     }
-    if let Ok(s) = opts.get::<_, String>("shadowFilter") {
+    if let Some(s) = optional_string_field(opts, "shadowFilter")? {
         patch.shadow_filter = Some(parse_shadow_filter(&s)?);
     }
-    if let Ok(v) = opts.get::<_, f32>("shadowSmooth") {
-        patch.shadow_smooth = Some(v);
+    if let Some(v) = optional_f32_field(opts, "shadowSmooth")? {
+        patch.shadow_smooth = Some(non_negative_f32(
+            "lurek.light.newLight",
+            "opts.shadowSmooth",
+            v,
+        )?);
     }
-    if let Ok(v) = opts.get::<_, f32>("shadowSoftness") {
-        patch.shadow_softness = Some(v);
+    if let Some(v) = optional_f32_field(opts, "shadowSoftness")? {
+        patch.shadow_softness = Some(non_negative_f32(
+            "lurek.light.newLight",
+            "opts.shadowSoftness",
+            v,
+        )?);
     }
-    if let Ok(v) = opts.get::<_, u16>("lightMask") {
+    if let Some(v) = optional_u16_field(opts, "lightMask")? {
         patch.light_mask = Some(v);
     }
-    if let Ok(v) = opts.get::<_, u16>("shadowMask") {
+    if let Some(v) = optional_u16_field(opts, "shadowMask")? {
         patch.shadow_mask = Some(v);
     }
     Ok(())
 }
 
 fn parse_light_shape_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) -> LuaResult<()> {
-    if let Ok(s) = opts.get::<_, String>("type") {
+    if let Some(s) = optional_string_field(opts, "type")? {
         patch.light_type = Some(parse_light_type(&s)?);
     }
-    if let Ok(v) = opts.get::<_, f32>("direction") {
-        patch.direction = Some(v);
+    if let Some(v) = optional_f32_field(opts, "direction")? {
+        patch.direction = Some(finite_f32("lurek.light.newLight", "opts.direction", v)?);
     }
-    if let Ok(v) = opts.get::<_, f32>("innerAngle") {
-        patch.inner_angle = Some(v);
+    if let Some(v) = optional_f32_field(opts, "innerAngle")? {
+        patch.inner_angle = Some(non_negative_f32(
+            "lurek.light.newLight",
+            "opts.innerAngle",
+            v,
+        )?);
     }
-    if let Ok(v) = opts.get::<_, f32>("outerAngle") {
-        patch.outer_angle = Some(v);
+    if let Some(v) = optional_f32_field(opts, "outerAngle")? {
+        patch.outer_angle = Some(non_negative_f32(
+            "lurek.light.newLight",
+            "opts.outerAngle",
+            v,
+        )?);
     }
-    if let Ok(v) = opts.get::<_, u16>("groupId") {
+    if let Some(v) = optional_u16_field(opts, "groupId")? {
         patch.group_id = Some(v);
     }
-    if let Ok(v) = opts.get::<_, bool>("volumetric") {
+    if let Some(v) = optional_bool_field(opts, "volumetric")? {
         patch.volumetric = Some(v);
     }
     Ok(())
 }
 
 fn parse_light_effect_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) -> LuaResult<()> {
-    if let Ok(v) = opts.get::<_, f32>("flickerSpeed") {
-        patch.flicker_speed = Some(v);
+    if let Some(v) = optional_f32_field(opts, "flickerSpeed")? {
+        patch.flicker_speed = Some(non_negative_f32(
+            "lurek.light.newLight",
+            "opts.flickerSpeed",
+            v,
+        )?);
     }
-    if let Ok(v) = opts.get::<_, f32>("flickerStrength") {
-        patch.flicker_strength = Some(v);
+    if let Some(v) = optional_f32_field(opts, "flickerStrength")? {
+        patch.flicker_strength = Some(non_negative_f32(
+            "lurek.light.newLight",
+            "opts.flickerStrength",
+            v,
+        )?);
     }
-    if let Ok(path) = opts.get::<_, String>("normalMap") {
+    if let Some(path) = optional_string_field(opts, "normalMap")? {
         patch.normal_map_path = Some(path);
     }
-    if let Ok(v) = opts.get::<_, f32>("normalStrength") {
-        patch.normal_strength = Some(v);
+    if let Some(v) = optional_f32_field(opts, "normalStrength")? {
+        patch.normal_strength = Some(unit_f32("lurek.light.newLight", "opts.normalStrength", v)?);
     }
     Ok(())
 }
 
-fn parse_light_attenuation_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) {
-    if let Ok(v) = opts.get::<_, f32>("attConstant") {
-        patch.attenuation.constant = Some(v);
+fn parse_light_attenuation_opts(patch: &mut Light2DOptionsPatch, opts: &LuaTable) -> LuaResult<()> {
+    if let Some(v) = optional_f32_field(opts, "attConstant")? {
+        patch.attenuation.constant = Some(non_negative_f32(
+            "lurek.light.newLight",
+            "opts.attConstant",
+            v,
+        )?);
     }
-    if let Ok(v) = opts.get::<_, f32>("attLinear") {
-        patch.attenuation.linear = Some(v);
+    if let Some(v) = optional_f32_field(opts, "attLinear")? {
+        patch.attenuation.linear = Some(non_negative_f32(
+            "lurek.light.newLight",
+            "opts.attLinear",
+            v,
+        )?);
     }
-    if let Ok(v) = opts.get::<_, f32>("attQuadratic") {
-        patch.attenuation.quadratic = Some(v);
+    if let Some(v) = optional_f32_field(opts, "attQuadratic")? {
+        patch.attenuation.quadratic = Some(non_negative_f32(
+            "lurek.light.newLight",
+            "opts.attQuadratic",
+            v,
+        )?);
     }
+    Ok(())
 }
 /// Applies Lua occluder option fields to an occluder instance.
 fn apply_occluder_opts(occ: &mut Occluder, opts: &LuaTable) -> LuaResult<()> {
@@ -301,6 +448,7 @@ impl LuaUserData for LuaLight {
         /// Sets this light radius. This method is available to Lua scripts.
         /// @param | r | number | Radius value.
         methods.add_method("setRadius", |_, this, r: f32| {
+            let r = positive_f32("Light:setRadius", "r", r)?;
             let mut st = this.state.borrow_mut();
             let light = st
                 .light_world
@@ -329,12 +477,16 @@ impl LuaUserData for LuaLight {
         methods.add_method(
             "setColor",
             |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+                let r = unit_f32("Light:setColor", "r", r)?;
+                let g = unit_f32("Light:setColor", "g", g)?;
+                let b = unit_f32("Light:setColor", "b", b)?;
+                let a = unit_f32("Light:setColor", "a", a.unwrap_or(1.0))?;
                 let mut st = this.state.borrow_mut();
                 let light = st
                     .light_world
                     .get_light_mut(this.key)
                     .ok_or_else(|| invalid_light("Light:setColor"))?;
-                light.set_color(Color::new(r, g, b, a.unwrap_or(1.0)));
+                light.set_color(Color::new(r, g, b, a));
                 Ok(())
             },
         );
@@ -357,6 +509,7 @@ impl LuaUserData for LuaLight {
         /// Sets this light intensity. This method is available to Lua scripts.
         /// @param | i | number | Intensity value.
         methods.add_method("setIntensity", |_, this, i: f32| {
+            let i = non_negative_f32("Light:setIntensity", "i", i)?;
             let mut st = this.state.borrow_mut();
             let light = st
                 .light_world
@@ -554,6 +707,7 @@ impl LuaUserData for LuaLight {
         /// Sets this light shadow softness value.
         /// @param | softness | number | Shadow softness value.
         methods.add_method("setShadowSoftness", |_, this, softness: f32| {
+            let softness = non_negative_f32("Light:setShadowSoftness", "softness", softness)?;
             let mut st = this.state.borrow_mut();
             let light = st
                 .light_world
@@ -768,6 +922,8 @@ impl LuaUserData for LuaLight {
         /// @param | speed | number | Flicker speed.
         /// @param | strength | number | Flicker strength.
         methods.add_method("setFlicker", |_, this, (speed, strength): (f32, f32)| {
+            let speed = non_negative_f32("Light:setFlicker", "speed", speed)?;
+            let strength = non_negative_f32("Light:setFlicker", "strength", strength)?;
             let mut st = this.state.borrow_mut();
             {
                 let light = st
@@ -894,6 +1050,9 @@ impl LuaUserData for LuaLight {
         /// @param | max | number | Maximum flicker range value.
         /// @param | hz | number | Flicker frequency in hertz.
         methods.add_method("addFlicker", |_, this, (min, max, hz): (f32, f32, f32)| {
+            let min = finite_f32("Light:addFlicker", "min", min)?;
+            let max = finite_f32("Light:addFlicker", "max", max)?;
+            let hz = non_negative_f32("Light:addFlicker", "hz", hz)?;
             let strength = ((max - min) / 2.0).abs();
             let speed = hz * std::f32::consts::TAU;
             let mut st = this.state.borrow_mut();
@@ -914,6 +1073,7 @@ impl LuaUserData for LuaLight {
         methods.add_method(
             "transitionTo",
             |_, this, (target, duration): (LuaTable, f32)| {
+                let duration = positive_f32("Light:transitionTo", "duration", duration)?;
                 let st = this.state.borrow();
                 let light = st
                     .light_world
@@ -923,18 +1083,69 @@ impl LuaUserData for LuaLight {
                 let from_intensity = light.intensity;
                 let from_radius = light.radius;
                 drop(st);
-                let to_color: [f32; 4] = if let Ok(ct) = target.get::<_, LuaTable>("color") {
-                    [
-                        ct.get::<_, f32>(1).unwrap_or(from_color[0]),
-                        ct.get::<_, f32>(2).unwrap_or(from_color[1]),
-                        ct.get::<_, f32>(3).unwrap_or(from_color[2]),
-                        ct.get::<_, f32>(4).unwrap_or(from_color[3]),
-                    ]
-                } else {
-                    from_color
+                let to_color: [f32; 4] = match target.get::<_, LuaValue>("color")? {
+                    LuaValue::Nil => from_color,
+                    LuaValue::Table(ct) => {
+                        let channel_or = |index: i32, default: f32| -> LuaResult<f32> {
+                            match ct.get::<_, LuaValue>(index)? {
+                                LuaValue::Nil => Ok(default),
+                                LuaValue::Number(value) => {
+                                    unit_f32("Light:transitionTo", "target.color", value as f32)
+                                }
+                                LuaValue::Integer(value) => {
+                                    unit_f32("Light:transitionTo", "target.color", value as f32)
+                                }
+                                value => Err(LuaError::RuntimeError(format!(
+                                    "Light:transitionTo: target.color[{}] must be numeric, got {}",
+                                    index,
+                                    value.type_name()
+                                ))),
+                            }
+                        };
+                        [
+                            channel_or(1, from_color[0])?,
+                            channel_or(2, from_color[1])?,
+                            channel_or(3, from_color[2])?,
+                            channel_or(4, from_color[3])?,
+                        ]
+                    }
+                    value => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "Light:transitionTo: target.color must be a table, got {}",
+                            value.type_name()
+                        )))
+                    }
                 };
-                let to_intensity = target.get::<_, f32>("intensity").unwrap_or(from_intensity);
-                let to_radius = target.get::<_, f32>("radius").unwrap_or(from_radius);
+                let to_intensity = match target.get::<_, LuaValue>("intensity")? {
+                    LuaValue::Nil => from_intensity,
+                    LuaValue::Number(value) => {
+                        non_negative_f32("Light:transitionTo", "target.intensity", value as f32)?
+                    }
+                    LuaValue::Integer(value) => {
+                        non_negative_f32("Light:transitionTo", "target.intensity", value as f32)?
+                    }
+                    value => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "Light:transitionTo: target.intensity must be numeric, got {}",
+                            value.type_name()
+                        )))
+                    }
+                };
+                let to_radius = match target.get::<_, LuaValue>("radius")? {
+                    LuaValue::Nil => from_radius,
+                    LuaValue::Number(value) => {
+                        positive_f32("Light:transitionTo", "target.radius", value as f32)?
+                    }
+                    LuaValue::Integer(value) => {
+                        positive_f32("Light:transitionTo", "target.radius", value as f32)?
+                    }
+                    value => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "Light:transitionTo: target.radius must be numeric, got {}",
+                            value.type_name()
+                        )))
+                    }
+                };
                 *this.transition.borrow_mut() = Some(LightTransition::new(
                     from_color,
                     to_color,
@@ -1046,6 +1257,7 @@ impl LuaUserData for LuaLight {
         /// Sets this light's normal map strength.
         /// @param | strength | number | Normal map strength.
         methods.add_method("setNormalStrength", |_, this, strength: f32| {
+            let strength = unit_f32("Light:setNormalStrength", "strength", strength)?;
             let mut st = this.state.borrow_mut();
             let light = st
                 .light_world
@@ -1269,6 +1481,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "newLight",
         lua.create_function(
             move |_, (x, y, radius, opts): (f32, f32, f32, Option<LuaTable>)| {
+                let x = finite_f32("lurek.light.newLight", "x", x)?;
+                let y = finite_f32("lurek.light.newLight", "y", y)?;
+                let radius = positive_f32("lurek.light.newLight", "radius", radius)?;
                 let mut light = Light2D::new(x, y, radius);
                 if let Some(ref opts) = opts {
                     apply_light_opts(&mut light, opts)?;
@@ -1316,7 +1531,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "setAmbient",
         lua.create_function(move |_, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
-            s.borrow_mut().light_world.ambient = Color::new(r, g, b, a.unwrap_or(1.0));
+            s.borrow_mut().light_world.ambient = Color::new(
+                unit_f32("lurek.light.setAmbient", "r", r)?,
+                unit_f32("lurek.light.setAmbient", "g", g)?,
+                unit_f32("lurek.light.setAmbient", "b", b)?,
+                unit_f32("lurek.light.setAmbient", "a", a.unwrap_or(1.0))?,
+            );
             Ok(())
         })?,
     )?;
@@ -1420,6 +1640,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "setGroupIntensity",
         lua.create_function(move |_, (group_id, intensity): (u16, f32)| {
+            let intensity =
+                non_negative_f32("lurek.light.setGroupIntensity", "intensity", intensity)?;
             s.borrow_mut()
                 .light_world
                 .set_group_intensity(group_id, intensity);
@@ -1438,9 +1660,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "setGroupColor",
         lua.create_function(
             move |_, (group_id, r, g, b, a): (u16, f32, f32, f32, Option<f32>)| {
-                s.borrow_mut()
-                    .light_world
-                    .set_group_color(group_id, Color::new(r, g, b, a.unwrap_or(1.0)));
+                s.borrow_mut().light_world.set_group_color(
+                    group_id,
+                    Color::new(
+                        unit_f32("lurek.light.setGroupColor", "r", r)?,
+                        unit_f32("lurek.light.setGroupColor", "g", g)?,
+                        unit_f32("lurek.light.setGroupColor", "b", b)?,
+                        unit_f32("lurek.light.setGroupColor", "a", a.unwrap_or(1.0))?,
+                    ),
+                );
                 Ok(())
             },
         )?,
@@ -1463,6 +1691,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "advanceFlickers",
         lua.create_function(move |_, dt: f32| {
+            let dt = non_negative_f32("lurek.light.advanceFlickers", "dt", dt)?;
             s.borrow_mut().light_world.advance_flickers(dt);
             Ok(())
         })?,
@@ -1552,6 +1781,8 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "drawToImage",
         lua.create_function(move |lua, (width, height): (u32, u32)| {
+            let width = positive_u32("lurek.light.drawToImage", "width", width)?;
+            let height = positive_u32("lurek.light.drawToImage", "height", height)?;
             let img = s.borrow().light_world.draw_to_image(width, height);
             lua.create_userdata(img)
         })?,

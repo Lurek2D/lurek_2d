@@ -1,9 +1,9 @@
-//! File: src/lua_api/i18n_api.rs
-//! Module API documentation
+//! Lua bindings for `lurek.i18n`.
 //!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
+//! This module exposes translation catalogs, fallback-aware lookup, interpolation,
+//! plural helpers, locale metadata, and locale-aware number/date formatting to Lua.
+//! Bindings keep the public API thin while delegating lookup and formatting rules to
+//! `crate::i18n`.
 
 use crate::i18n::format::{format_date, format_number, locale_separators};
 use crate::i18n::{

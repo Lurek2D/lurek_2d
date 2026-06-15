@@ -112,17 +112,17 @@ Lurek fits best where a 2D desktop runtime, Lua scripting, and AI-assisted workf
 
 ## Ideas And Future Directions
 
-The [ideas tree](https://github.com/LurekDude/lurek_2d/tree/main/ideas) is where future directions, experiments, and longer-horizon plans already live.
+The [ideas tree](ideas/) is where future directions, experiments, and longer-horizon plans already live.
 
 | Area | Link | Why it matters |
 |---|---|---|
-| Ideas root | [ideas/](https://github.com/LurekDude/lurek_2d/tree/main/ideas) | Central backlog of experiments, architecture notes, and future directions. |
-| Runtime modes | [ideas/runtime-modes-plan.md](ideas/runtime-modes-plan.md) | Shows how runtime variants can evolve beyond the current flow. |
-| Province economy loop | [ideas/province-economy-loop.md](ideas/province-economy-loop.md) | Good example of systems-heavy game design direction inside the repo. |
-| Linux build and distribution | [ideas/linux-build-and-distribution-guide.md](ideas/linux-build-and-distribution-guide.md) | Platform packaging direction beyond the current default Windows flow. |
-| Rust ideas | [ideas/rust/](https://github.com/LurekDude/lurek_2d/tree/main/ideas/rust) | Engine-facing ideas and implementation notes. |
-| Simulation ideas | [ideas/simulation/](https://github.com/LurekDude/lurek_2d/tree/main/ideas/simulation) | Simulation-heavy directions and subsystem sketches. |
-| Plugin and extension ideas | [ideas/plugins/](https://github.com/LurekDude/lurek_2d/tree/main/ideas/plugins) · [ideas/extension/](https://github.com/LurekDude/lurek_2d/tree/main/ideas/extension) | Future plugin and editor/tooling directions. |
+| Ideas root | [ideas/](ideas/) | Central backlog of experiments, architecture notes, and future directions. |
+| Architecture consolidation | [ideas/ideas for final architecture.md](ideas/ideas%20for%20final%20architecture.md) | Tracks long-range documentation and architecture consolidation ideas. |
+| Use-case exploration | [ideas/ideas for usecases.md](ideas/ideas%20for%20usecases.md) | Captures product-direction and scenario ideas for where Lurek can fit. |
+| Cross-platform research | [ideas/rust/cross_platform_research.md](ideas/rust/cross_platform_research.md) | Current platform feasibility notes for Linux, macOS, mobile, and web directions. |
+| Rust ecosystem plan | [ideas/rust/](ideas/rust/) | Engine-facing ideas, dependency research, and implementation planning. |
+| Simulation ideas | [ideas/simulation/ARCHITECTURE.md](ideas/simulation/ARCHITECTURE.md) · [ideas/simulation/](ideas/simulation/) | Simulation-heavy directions, subsystem sketches, and digital-twin planning. |
+| Plugin architecture and tooling | [ideas/plugins/README.md](ideas/plugins/README.md) · [ideas/plugins/](ideas/plugins/) | Future plugin loading, integration modes, and packaging directions. |
 
 If you want to contribute to the future shape of Lurek, start from an idea, turn it into a spec, example, demo, test, or implementation slice, then follow [docs/handbook.md](docs/handbook.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 

@@ -93,6 +93,7 @@ impl LightWorld {
     }
     /// Return a mutable reference to the light at `key`, or `None` if not present.
     pub fn get_light_mut(&mut self, key: LightKey) -> Option<&mut Light2D> {
+        self.flicker_index_dirty = true;
         self.lights.get_mut(key)
     }
     /// Return a shared reference to the occluder at `key`, or `None` if not present.
@@ -187,25 +188,39 @@ impl LightWorld {
     pub fn draw_to_image(&self, width: u32, height: u32) -> crate::image::ImageData {
         let mut img = crate::image::ImageData::new(width, height);
         img.fill(10, 10, 15, 255);
-        let light_params: Vec<(f32, f32, f32, f32, f32, f32)> = self
+        let light_params: Vec<(f32, f32, f32, f32, f32, f32, f32)> = self
             .lights
             .values()
-            .map(|l| (l.x, l.y, l.radius, l.color.r, l.color.g, l.color.b))
+            .filter(|l| l.enabled && l.radius > 0.0 && l.intensity > 0.0 && l.energy > 0.0)
+            .map(|l| {
+                (
+                    l.x,
+                    l.y,
+                    l.radius,
+                    l.color.r,
+                    l.color.g,
+                    l.color.b,
+                    l.intensity * l.energy,
+                )
+            })
             .collect();
+        if light_params.is_empty() && self.occluders.is_empty() {
+            return img;
+        }
         for y in 0..height {
             for x in 0..width {
                 let mut fr = 10.0f32;
                 let mut fg = 10.0f32;
                 let mut fb = 15.0f32;
-                for &(lx, ly, radius, lr, lg, lb) in &light_params {
+                for &(lx, ly, radius, lr, lg, lb, brightness) in &light_params {
                     let dx = x as f32 - lx;
                     let dy = y as f32 - ly;
                     let dist = (dx * dx + dy * dy).sqrt();
                     let atten = (1.0 - dist / radius).max(0.0);
                     let atten = atten * atten;
-                    fr += lr * atten * 200.0;
-                    fg += lg * atten * 200.0;
-                    fb += lb * atten * 200.0;
+                    fr += lr * atten * brightness * 200.0;
+                    fg += lg * atten * brightness * 200.0;
+                    fb += lb * atten * brightness * 200.0;
                 }
                 img.set_pixel(
                     x,
@@ -243,7 +258,9 @@ impl LightWorld {
             }
         }
         for l in self.lights.values() {
-            img.draw_circle(l.x as i32, l.y as i32, 5, 255, 240, 100, 255);
+            if l.enabled {
+                img.draw_circle(l.x as i32, l.y as i32, 5, 255, 240, 100, 255);
+            }
         }
         img
     }

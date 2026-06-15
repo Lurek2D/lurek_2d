@@ -202,10 +202,13 @@ describe("light handle methods", function()
     end)
 
     -- @covers LLight:setRadius
-    it("setRadius updates the radius", function()
+    it("setRadius updates the radius and rejects non-positive values", function()
         local light = make_light()
         light:setRadius(80)
         expect_near(80, light:getRadius(), 0.001)
+        expect_error(function()
+            light:setRadius(0)
+        end)
     end)
 
     -- @covers LLight:getColor
@@ -230,10 +233,13 @@ describe("light handle methods", function()
     end)
 
     -- @covers LLight:setIntensity
-    it("setIntensity updates the light intensity", function()
+    it("setIntensity updates the light intensity and rejects negative values", function()
         local light = make_light()
         light:setIntensity(2.0)
         expect_near(2.0, light:getIntensity(), 0.001)
+        expect_error(function()
+            light:setIntensity(-1.0)
+        end)
     end)
 
     -- @covers LLight:getEnergy
@@ -560,10 +566,13 @@ describe("light handle methods", function()
     end)
 
     -- @covers LLight:setShadowSoftness
-    it("setShadowSoftness updates the softness", function()
+    it("setShadowSoftness updates the softness and rejects negative values", function()
         local light = make_light()
         light:setShadowSoftness(1.75)
         expect_near(1.75, light:getShadowSoftness(), 0.001)
+        expect_error(function()
+            light:setShadowSoftness(-0.5)
+        end)
     end)
 
     -- @covers LLight:getNormalMap
@@ -584,10 +593,12 @@ describe("light handle methods", function()
     end)
 
     -- @covers LLight:setNormalStrength
-    it("setNormalStrength updates the normal strength", function()
+    it("setNormalStrength updates the normal strength and clamps it into the supported range", function()
         local light = make_light()
         light:setNormalStrength(0.65)
         expect_near(0.65, light:getNormalStrength(), 0.001)
+        light:setNormalStrength(2.0)
+        expect_near(1.0, light:getNormalStrength(), 0.001)
     end)
 
     -- @covers LLight:clearNormalMap

@@ -24,11 +24,11 @@ pub fn expand_particle_commands(cmds: Vec<RenderCommand>) -> Vec<RenderCommand> 
     for cmd in cmds {
         if let RenderCommand::DrawParticleSystem { particles } = cmd {
             let mut untextured = Vec::new();
-            for p in &particles {
-                if let Some(tex_key) = p.texture_key {
-                    if let Some([qx, qy, qw, qh]) = p.quad {
-                        let (tex_w, tex_h) = p.quad_tex_dims.unwrap_or((qw, qh));
-                        let scale = if qw > 0.0 { p.size / qw } else { 1.0 };
+            for particle in particles {
+                if let Some(tex_key) = particle.texture_key {
+                    if let Some([qx, qy, qw, qh]) = particle.quad {
+                        let (tex_w, tex_h) = particle.quad_tex_dims.unwrap_or((qw, qh));
+                        let scale = if qw > 0.0 { particle.size / qw } else { 1.0 };
                         out.push(RenderCommand::DrawQuad {
                             texture_key: tex_key,
                             quad_x: qx,
@@ -37,30 +37,30 @@ pub fn expand_particle_commands(cmds: Vec<RenderCommand>) -> Vec<RenderCommand> 
                             quad_h: qh,
                             tex_w,
                             tex_h,
-                            x: p.x,
-                            y: p.y,
-                            rotation: p.rotation,
+                            x: particle.x,
+                            y: particle.y,
+                            rotation: particle.rotation,
                             sx: scale,
                             sy: scale,
-                            ox: p.size * 0.5,
-                            oy: p.size * 0.5,
+                            ox: particle.size * 0.5,
+                            oy: particle.size * 0.5,
                             effect: None,
                         });
                     } else {
                         out.push(RenderCommand::DrawImageEx {
                             texture_key: tex_key,
-                            x: p.x,
-                            y: p.y,
-                            rotation: p.rotation,
+                            x: particle.x,
+                            y: particle.y,
+                            rotation: particle.rotation,
                             sx: 1.0,
                             sy: 1.0,
-                            ox: p.size * 0.5,
-                            oy: p.size * 0.5,
+                            ox: particle.size * 0.5,
+                            oy: particle.size * 0.5,
                             effect: None,
                         });
                     }
                 } else {
-                    untextured.push(p.clone());
+                    untextured.push(particle);
                 }
             }
             if !untextured.is_empty() {

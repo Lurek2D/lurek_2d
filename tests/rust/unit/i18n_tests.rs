@@ -347,3 +347,58 @@ quit  = "Quit"
         assert!(idx2.contains_key("goodbye"));
     }
 }
+
+mod fallback_behavior_tests {
+    use super::*;
+
+    #[test]
+    fn has_key_checks_fallback_locales() {
+        let mut catalog = Catalog::new();
+        catalog.load(
+            "en",
+            HashMap::from([("ui.ok".to_string(), "OK".to_string())]),
+        );
+        catalog.load("pl", HashMap::new());
+        catalog.locale = "pl".to_string();
+        catalog.fallbacks = vec!["en".to_string()];
+
+        assert!(catalog.has_key("ui.ok"));
+        assert!(!catalog.has_key("ui.missing"));
+    }
+
+    #[test]
+    fn translate_plural_uses_fallback_plural_keys() {
+        let mut catalog = Catalog::new();
+        catalog.load(
+            "en",
+            HashMap::from([
+                ("items.one".to_string(), "{count} item".to_string()),
+                ("items.other".to_string(), "{count} items".to_string()),
+            ]),
+        );
+        catalog.load("pl", HashMap::new());
+        catalog.locale = "pl".to_string();
+        catalog.fallbacks = vec!["en".to_string()];
+
+        assert_eq!(catalog.translate_plural("items", 1.0), "{count} item");
+        assert_eq!(catalog.translate_plural("items", 3.0), "{count} items");
+    }
+}
+
+mod format_tests {
+    use lurek2d::i18n::format::format_date;
+
+    #[test]
+    fn format_date_long_uses_stable_asian_locale_patterns() {
+        assert_eq!(format_date(0, "long", "ja-JP"), "1970年1月1日");
+        assert_eq!(format_date(0, "long", "zh-CN"), "1970年1月1日");
+        assert_eq!(format_date(0, "long", "ko-KR"), "1970년 1월 1일");
+    }
+
+    #[test]
+    fn format_date_short_and_iso_remain_deterministic() {
+        assert_eq!(format_date(0, "iso", "en-US"), "1970-01-01");
+        assert_eq!(format_date(0, "short", "pl-PL"), "1 Jan 1970");
+        assert_eq!(format_date(0, "short", "ja-JP"), "1970/1/1");
+    }
+}

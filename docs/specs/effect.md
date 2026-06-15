@@ -13,7 +13,7 @@
 - Namespace: `lurek.effect`
 - Lua API surface: `10` functions, `3` types, `62` methods
 - Rust test path(s): tests/rust/unit/effect_tests.rs
-- Lua test path(s): tests/lua/unit/test_effect_core_unit.lua, tests/lua/integration/test_effect_camera.lua, tests/lua/integration/test_effect_light.lua, tests/lua/evidence/test_overlay_evidence.lua
+- Lua test path(s): tests/lua/unit/test_effect_unit.lua, tests/lua/integration/test_effect_camera_integration.lua, tests/lua/integration/test_effect_light_integration.lua, tests/lua/evidence/test_effect_evidence.lua
 
 ## Summary
 

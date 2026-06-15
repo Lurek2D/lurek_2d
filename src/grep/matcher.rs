@@ -1,8 +1,8 @@
-//! - Low-level pattern matcher: wraps all supported pattern kinds behind one trait.
-//! - `Matcher` implements literal, regex, glob, and fuzzy match against a `&str`.
+//! - Low-level pattern matcher: wraps the supported pattern kinds behind one helper.
+//! - `Matcher` implements literal, simplified regex/glob, fuzzy, and multi-literal search.
 //! - Returns a `Vec<(usize, usize)>` of byte-span matches within the target string.
-//! - Regex variant compiles once and is reused across all lines in a file.
-//! - Fuzzy variant uses edit-distance threshold configurable via `GrepConfig`.
+//! - Regex and glob support are lightweight custom matchers rather than full regex-crate semantics.
+//! - Fuzzy matching uses an edit-distance threshold per query.
 
 use super::pattern::PatternKind;
 

@@ -13,7 +13,7 @@
 - Namespace: `lurek.light`
 - Lua API surface: `20` functions, `4` types, `79` methods
 - Rust test path(s): tests/rust/unit/light_tests.rs
-- Lua test path(s): tests/lua/unit/test_light.lua, tests/lua/stress/test_light_stress.lua, tests/lua/integration/test_light_render.lua, tests/lua/evidence/test_evidence_light.lua
+- Lua test path(s): tests/lua/unit/test_light_unit.lua, tests/lua/stress/test_light_stress.lua, tests/lua/evidence/test_light_evidence.lua
 
 ## Summary
 

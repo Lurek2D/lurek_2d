@@ -51,6 +51,8 @@ enum AsyncRequest {
     Read {
         /// Request handle that receives the result.
         handle: LoadHandle,
+        /// Logical path used for caller-facing status and errors.
+        logical_path: String,
         /// Canonical path to read from.
         resolved_path: PathBuf,
     },
@@ -58,6 +60,8 @@ enum AsyncRequest {
     Write {
         /// Request handle that receives the result.
         handle: LoadHandle,
+        /// Logical path used for caller-facing status and errors.
+        logical_path: String,
         /// Canonical path to write to.
         resolved_path: PathBuf,
         /// Payload to write.
@@ -76,6 +80,8 @@ pub struct AsyncLoader {
     results: Arc<Mutex<HashMap<u64, LoadResult>>>,
     /// Completed write results keyed by request id.
     write_results: Arc<Mutex<HashMap<u64, WriteResult>>>,
+    /// Startup failure recorded when the worker thread could not be spawned.
+    spawn_error: Option<String>,
     /// Background worker thread handle.
     worker: Option<thread::JoinHandle<()>>,
 }
@@ -92,60 +98,97 @@ impl AsyncLoader {
             .name("lurek-async-loader".into())
             .spawn(move || {
                 Self::worker_loop(rx, results_clone, write_results_clone);
-            })
-            .expect("failed to spawn async-loader thread");
+            });
+        let (tx, spawn_error, worker) = match worker {
+            Ok(handle) => (Some(tx), None, Some(handle)),
+            Err(err) => (
+                None,
+                Some(format!("Async loader is unavailable: {}", err)),
+                None,
+            ),
+        };
         Self {
             next_id: AtomicU64::new(1),
-            tx: Some(tx),
+            tx,
             results,
             write_results,
-            worker: Some(worker),
+            spawn_error,
+            worker,
         }
     }
     /// Queue a read request and return its handle even when the queue is full.
-    pub fn request_load(&self, resolved_path: PathBuf) -> LoadHandle {
+    pub fn request_load(&self, logical_path: String, resolved_path: PathBuf) -> LoadHandle {
         let id = self.next_id.fetch_add(1, Ordering::Relaxed);
         let handle = LoadHandle(id);
         if let Some(ref tx) = self.tx {
             if tx
                 .try_send(AsyncRequest::Read {
                     handle,
-                    resolved_path: resolved_path.clone(),
+                    logical_path: logical_path.clone(),
+                    resolved_path,
                 })
                 .is_err()
             {
-                log::warn!(
-                    "Async load queue full; request dropped for '{}'",
-                    resolved_path.display()
-                );
                 if let Ok(mut map) = self.results.lock() {
-                    map.insert(id, LoadResult::Error("Async load queue is full".into()));
+                    map.insert(
+                        id,
+                        LoadResult::Error(format!(
+                            "Async load queue is full for '{}'",
+                            logical_path
+                        )),
+                    );
                 }
             }
+        } else if let Ok(mut map) = self.results.lock() {
+            map.insert(
+                id,
+                LoadResult::Error(
+                    self.spawn_error
+                        .clone()
+                        .unwrap_or_else(|| "Async loader is unavailable".to_string()),
+                ),
+            );
         }
         handle
     }
     /// Queue a write request and return its handle even when the queue is full.
-    pub fn request_write(&self, resolved_path: PathBuf, bytes: Vec<u8>) -> LoadHandle {
+    pub fn request_write(
+        &self,
+        logical_path: String,
+        resolved_path: PathBuf,
+        bytes: Vec<u8>,
+    ) -> LoadHandle {
         let id = self.next_id.fetch_add(1, Ordering::Relaxed);
         let handle = LoadHandle(id);
         if let Some(ref tx) = self.tx {
             if tx
                 .try_send(AsyncRequest::Write {
                     handle,
-                    resolved_path: resolved_path.clone(),
+                    logical_path: logical_path.clone(),
+                    resolved_path,
                     bytes,
                 })
                 .is_err()
             {
-                log::warn!(
-                    "Async write queue full; request dropped for '{}'",
-                    resolved_path.display()
-                );
                 if let Ok(mut map) = self.write_results.lock() {
-                    map.insert(id, WriteResult::Error("Async write queue is full".into()));
+                    map.insert(
+                        id,
+                        WriteResult::Error(format!(
+                            "Async write queue is full for '{}'",
+                            logical_path
+                        )),
+                    );
                 }
             }
+        } else if let Ok(mut map) = self.write_results.lock() {
+            map.insert(
+                id,
+                WriteResult::Error(
+                    self.spawn_error
+                        .clone()
+                        .unwrap_or_else(|| "Async loader is unavailable".to_string()),
+                ),
+            );
         }
         handle
     }
@@ -181,15 +224,14 @@ impl AsyncLoader {
             match req {
                 AsyncRequest::Read {
                     handle,
+                    logical_path,
                     resolved_path,
                 } => {
                     let result = match std::fs::read(&resolved_path) {
                         Ok(bytes) => LoadResult::Ready(bytes),
-                        Err(e) => LoadResult::Error(format!(
-                            "Failed to read '{}': {}",
-                            resolved_path.display(),
-                            e
-                        )),
+                        Err(e) => {
+                            LoadResult::Error(format!("Failed to read '{}': {}", logical_path, e))
+                        }
                     };
                     if let Ok(mut map) = results.lock() {
                         map.insert(handle.0, result);
@@ -197,6 +239,7 @@ impl AsyncLoader {
                 }
                 AsyncRequest::Write {
                     handle,
+                    logical_path,
                     resolved_path,
                     bytes,
                 } => {
@@ -206,20 +249,18 @@ impl AsyncLoader {
                                 Ok(()) => WriteResult::Written(bytes.len() as u64),
                                 Err(e) => WriteResult::Error(format!(
                                     "Failed to write '{}': {}",
-                                    resolved_path.display(),
-                                    e
+                                    logical_path, e
                                 )),
                             },
                             Err(e) => WriteResult::Error(format!(
-                                "Failed to create parent dir for '{}': {}",
-                                resolved_path.display(),
-                                e
+                                "Failed to prepare parent directory for '{}': {}",
+                                logical_path, e
                             )),
                         }
                     } else {
                         WriteResult::Error(format!(
                             "Failed to resolve parent directory for '{}'",
-                            resolved_path.display()
+                            logical_path
                         ))
                     };
                     if let Ok(mut map) = write_results.lock() {

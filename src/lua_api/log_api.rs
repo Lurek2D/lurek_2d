@@ -1,9 +1,8 @@
-//! File: src/lua_api/log_api.rs
-//! Module API documentation
+//! Lua bindings for `lurek.log`.
 //!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
+//! This module exposes severity helpers, sink management, structured fields, and
+//! callback/file/memory routing to Lua. Callback sinks follow the same level and tag
+//! filters as every other sink.
 
 use super::SharedState;
 use crate::log as log_domain;
@@ -25,6 +24,9 @@ fn dispatch(
     for sink in &reg.sinks {
         match &sink.kind {
             SinkKind::Callback { .. } => {
+                if !sink.accepts(level, tag) {
+                    continue;
+                }
                 if let Some(key) = callback_keys.borrow().get(&sink.id) {
                     if let Ok(func) = lua.registry_value::<LuaFunction>(key) {
                         if let Ok(record_table) = lua.create_table() {
@@ -55,6 +57,9 @@ fn dispatch_structured(
     for sink in &reg.sinks {
         match &sink.kind {
             SinkKind::Callback { .. } => {
+                if !sink.accepts(level, tag) {
+                    continue;
+                }
                 if let Some(key) = callback_keys.borrow().get(&sink.id) {
                     if let Ok(func) = lua.registry_value::<LuaFunction>(key) {
                         if let Ok(record_table) = lua.create_table() {

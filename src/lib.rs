@@ -76,8 +76,6 @@ pub mod grep;
 #[cfg(feature = "flownet")]
 /// Backward-compatible re-export so existing `crate::graph` imports continue to work.
 pub use flownet as graph;
-/// Exposes the director compatibility subsystem module.
-pub mod director;
 /// Exposes the HTML subsystem module.
 pub mod html;
 /// Exposes the internationalization subsystem module.
@@ -96,8 +94,6 @@ pub mod light;
 pub mod log;
 /// Exposes the Lua API bridge subsystem module.
 pub mod lua_api;
-/// Exposes the legacy map compatibility module.
-pub mod map;
 /// Exposes the map block generation subsystem module.
 pub mod mapblock;
 /// Exposes the math subsystem module.
@@ -155,8 +151,6 @@ pub mod terminal;
 /// Exposes the threading subsystem module.
 pub mod thread;
 
-/// Exposes the locomotion compatibility subsystem module.
-pub mod locomotion;
 /// Exposes the tilemap subsystem module.
 pub mod tilemap;
 /// Exposes the timer subsystem module.

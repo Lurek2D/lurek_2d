@@ -78,5 +78,7 @@ fn complete_includes_dynamic_top_level_globals() {
         .expect("set global");
 
     let completions = session.completions_for("custom_run", Some(&lua));
-    assert!(completions.iter().any(|item| item == "custom_runtime_symbol"));
+    assert!(completions
+        .iter()
+        .any(|item| item == "custom_runtime_symbol"));
 }

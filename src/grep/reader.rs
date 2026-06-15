@@ -1,8 +1,7 @@
-//! - File reading utilities: buffered I/O and memory-mapped access for large files.
-//! - Small files (< threshold) are read with `BufReader` and iterated line-by-line.
-//! - Large files use `memmap2` for zero-copy line scanning via byte search.
-//! - The threshold is configurable via `GrepConfig::mmap_threshold_bytes`.
-//! - On failure the reader falls back to buffered mode; mmap errors are non-fatal.
+//! - File reading utilities: buffered I/O with a simple size gate.
+//! - Files larger than the configured limit are skipped instead of partially streamed.
+//! - Callers can read line-by-line or whole-file UTF-8 content through the same helper.
+//! - There is no memory-mapped fast path in the current implementation.
 
 use std::fs;
 use std::io::{self, BufRead, BufReader};

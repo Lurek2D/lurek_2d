@@ -11,7 +11,7 @@
 - Binding: `src/lua_api/layout_api.rs`
 - Namespace: `lurek.layout`
 - Lua API surface: `5` functions, `0` types, `0` methods
-- Rust test path(s): None found in the workspace
+- Rust test path(s): tests/rust/unit/layout_tests.rs
 - Lua test path(s): tests/lua/unit/test_layout_unit.lua
 
 ## Summary
@@ -19,8 +19,9 @@
 - The layout module gives users automatic 2D node placement for graph-like and tree-like visuals.
 - It supports layered DAG layout, recursive tree layout, and force layout for organic relation maps.
 - Shared result formats make it easy to swap strategies without changing integration code.
-- Grid snapping and centering helpers polish raw coordinates for editor and HUD presentation.
+- Grid snapping and centering helpers polish raw coordinates for editor and HUD presentation without discarding existing coordinates.
 - The module is useful for tech trees, dialog graphs, dependency maps, and debug topology views.
+- Invalid DAG or tree inputs degrade deterministically instead of dropping nodes or recursing forever.
 - It replaces manual positioning with repeatable, scriptable layout computation.
 
 This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
@@ -105,4 +106,4 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ## Notes
 
-- No additional module-specific notes.
+- `dag` and `tree` keep every input node in the output, even when cycles or disconnected components make the graph invalid for ideal hierarchical layout.

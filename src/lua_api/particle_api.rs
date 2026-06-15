@@ -1,13 +1,6 @@
-//! File: src/lua_api/particle_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
-//! TODO: add doc note 6
-//! TODO: add doc note 7
+//! Lua bindings for `lurek.particle` system handles, trail handles, and visualization helpers.
+//! Validates particle dimensions, lifetimes, callback inputs, and physics bridge arguments before touching runtime state.
+//! Keeps emitter simulation, collision, and rendering logic in `src/particle` while exposing a thin Lua API layer.
 
 use super::callback_registry::CallbackRegistry;
 use super::physics_api::LuaWorld;
@@ -320,8 +313,7 @@ impl LuaUserData for LuaParticleSystem {
         /// @return | boolean | True after release.
         methods.add_method("release", |_, this, ()| {
             let mut st = this.state.borrow_mut();
-            st.particle_systems.remove(this.key);
-            Ok(true)
+            Ok(st.particle_systems.remove(this.key).is_some())
         });
         // -- getCount --
         /// Returns particle count and errors if the handle was released.
@@ -1105,6 +1097,8 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | h | integer | Image height.
         /// @return | LImageData | Image data containing the rendered particles.
         methods.add_method("drawToImage", |_, this, (w, h): (u32, u32)| {
+            let w = positive_u32("LParticleSystem:drawToImage", "w", w)?;
+            let h = positive_u32("LParticleSystem:drawToImage", "h", h)?;
             let st = this.state.borrow();
             let ps = st
                 .particle_systems
@@ -1119,6 +1113,8 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | h | integer | Image height.
         /// @return | LImageData | Image data containing the rendered particles.
         methods.add_method("toImage", |_, this, (w, h): (u32, u32)| {
+            let w = positive_u32("LParticleSystem:toImage", "w", w)?;
+            let h = positive_u32("LParticleSystem:toImage", "h", h)?;
             let st = this.state.borrow();
             let ps = st
                 .particle_systems
@@ -1133,6 +1129,8 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | h | integer | Image height.
         /// @return | LImageData | Image data containing the explosion preview.
         methods.add_method("drawExplosionToImage", |_, this, (w, h): (u32, u32)| {
+            let w = positive_u32("LParticleSystem:drawExplosionToImage", "w", w)?;
+            let h = positive_u32("LParticleSystem:drawExplosionToImage", "h", h)?;
             let st = this.state.borrow();
             let ps = st
                 .particle_systems
@@ -1146,6 +1144,8 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | h | integer | Image height.
         /// @return | LImageData | Image data containing the rain preview.
         methods.add_method("drawRainToImage", |_, this, (w, h): (u32, u32)| {
+            let w = positive_u32("LParticleSystem:drawRainToImage", "w", w)?;
+            let h = positive_u32("LParticleSystem:drawRainToImage", "h", h)?;
             let st = this.state.borrow();
             let ps = st
                 .particle_systems
@@ -1159,6 +1159,8 @@ impl LuaUserData for LuaParticleSystem {
         /// @param | h | integer | Image height.
         /// @return | LImageData | Image data containing the spark preview.
         methods.add_method("drawSparkTrailToImage", |_, this, (w, h): (u32, u32)| {
+            let w = positive_u32("LParticleSystem:drawSparkTrailToImage", "w", w)?;
+            let h = positive_u32("LParticleSystem:drawSparkTrailToImage", "h", h)?;
             let st = this.state.borrow();
             let ps = st
                 .particle_systems
@@ -1540,6 +1542,8 @@ impl LuaUserData for LuaTrail {
         /// @param | h | integer | Height of output image.
         /// @return | LImageData | Image data containing the rendered trail.
         methods.add_method("drawToImage", |_, this, (w, h): (u32, u32)| {
+            let w = positive_u32("LTrail:drawToImage", "w", w)?;
+            let h = positive_u32("LTrail:drawToImage", "h", h)?;
             let img = this.inner.draw_to_image(w, h);
             Ok(img)
         });

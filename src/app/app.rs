@@ -205,6 +205,11 @@ pub fn classify_drop_startup_target(path: &Path) -> DropStartupTarget {
 
     DropStartupTarget::Unsupported
 }
+
+/// Return `true` when the splash screen should open the startup picker for a key press.
+pub fn should_open_startup_picker_on_key(key_str: &str, ctrl_held: bool) -> bool {
+    matches!(key_str, "enter" | "space") || (ctrl_held && key_str == "o")
+}
 /// Central app runtime state shared by winit callbacks and frame update/render flow.
 pub struct LurekApp {
     /// Loaded game configuration from conf.toml.
@@ -429,6 +434,50 @@ impl LurekApp {
     /// Return the configured Lua callback timeout in milliseconds.
     fn callback_timeout_ms(&self) -> Option<f32> {
         self.config.performance.lua_callback_timeout_ms
+    }
+    /// Open the native startup folder picker and try to load the selected game directory.
+    fn browse_for_startup_game_dir(&mut self) {
+        let Some(path) = rfd::FileDialog::new()
+            .set_title("Select a Lurek2D game folder")
+            .pick_folder()
+        else {
+            return;
+        };
+        self.load_startup_target_path(&path);
+    }
+    /// Load a startup target selected via drag-and-drop or the splash picker.
+    fn load_startup_target_path(&mut self, path: &Path) {
+        match classify_drop_startup_target(path) {
+            DropStartupTarget::Archive => {
+                log_msg!(info, L083_DROP_ARCHIVE, "{}", path.display());
+                match LurekApp::extract_lurek_archive(path) {
+                    Ok((dir, td)) => {
+                        self.lurek_temp_dir = Some(td);
+                        self.game_dir = dir;
+                        self.explicit_game_dir = true;
+                        self.restart_game();
+                    }
+                    Err(e) => {
+                        log_msg!(warn, L084_DROP_ARCHIVE_FAIL, "{}: {}", path.display(), e);
+                    }
+                }
+            }
+            DropStartupTarget::GameDir(dir) => {
+                if dir == path {
+                    log_msg!(info, L044_DROP_GAME, "{}", path.display());
+                } else {
+                    log_msg!(info, L044_DROP_GAME, "parent folder: {}", dir.display());
+                }
+                self.game_dir = dir;
+                self.explicit_game_dir = true;
+                self.restart_game();
+            }
+            DropStartupTarget::Unsupported => {
+                if path.is_dir() {
+                    log_msg!(warn, L007_NO_MAIN_LUA, "no main.lua in: {}", path.display());
+                }
+            }
+        }
     }
     /// Rebuild content file watchers after a game directory change.
     fn refresh_content_watchers(&mut self) {
@@ -2503,6 +2552,12 @@ impl ApplicationHandler for LurekApp {
                     }
                     match event.state {
                         ElementState::Pressed => {
+                            if !self.has_game
+                                && should_open_startup_picker_on_key(&key_str, self.ctrl_held)
+                            {
+                                self.browse_for_startup_game_dir();
+                                return;
+                            }
                             if key_str == "f12" {
                                 self.debug_overlay.enabled = !self.debug_overlay.enabled;
                                 if let Some(state) = &self.state {
@@ -2735,6 +2790,10 @@ impl ApplicationHandler for LurekApp {
                 };
                 if let Some(i) = idx {
                     let pressed = btn_state == ElementState::Pressed;
+                    if !self.has_game && i == 0 && pressed {
+                        self.browse_for_startup_game_dir();
+                        return;
+                    }
                     if let Some(state) = &self.state {
                         state.borrow_mut().mouse.set_button(i, pressed);
                     }
@@ -3025,48 +3084,7 @@ impl ApplicationHandler for LurekApp {
                     }
                 }
                 if !self.has_game {
-                    match classify_drop_startup_target(&path) {
-                        DropStartupTarget::Archive => {
-                            log_msg!(info, L083_DROP_ARCHIVE, "{}", path.display());
-                            match LurekApp::extract_lurek_archive(&path) {
-                                Ok((dir, td)) => {
-                                    self.lurek_temp_dir = Some(td);
-                                    self.game_dir = dir;
-                                    self.explicit_game_dir = true;
-                                    self.restart_game();
-                                }
-                                Err(e) => {
-                                    log_msg!(
-                                        warn,
-                                        L084_DROP_ARCHIVE_FAIL,
-                                        "{}: {}",
-                                        path.display(),
-                                        e
-                                    );
-                                }
-                            }
-                        }
-                        DropStartupTarget::GameDir(dir) => {
-                            if dir == path {
-                                log_msg!(info, L044_DROP_GAME, "{}", path.display());
-                            } else {
-                                log_msg!(info, L044_DROP_GAME, "parent folder: {}", dir.display());
-                            }
-                            self.game_dir = dir;
-                            self.explicit_game_dir = true;
-                            self.restart_game();
-                        }
-                        DropStartupTarget::Unsupported => {
-                            if path.is_dir() {
-                                log_msg!(
-                                    warn,
-                                    L007_NO_MAIN_LUA,
-                                    "no main.lua in: {}",
-                                    path.display()
-                                );
-                            }
-                        }
-                    }
+                    self.load_startup_target_path(&path);
                 } else {
                     log_msg!(debug, L079_DRAG_DROP_IGNORED);
                 }

@@ -70,6 +70,127 @@ pub struct GameFS {
     mounts: Vec<MountLayer>,
 }
 impl GameFS {
+    /// Normalize a caller-supplied logical path to slash-separated relative segments.
+    fn normalize_logical_path(path: &str) -> String {
+        path.replace('\\', "/")
+            .split('/')
+            .filter(|segment| !segment.is_empty() && *segment != ".")
+            .collect::<Vec<_>>()
+            .join("/")
+    }
+    /// Return the suffix of `path` that lives inside `mountpoint`, if any.
+    fn relative_inside_mount<'a>(path: &'a str, mountpoint: &str) -> Option<&'a str> {
+        if mountpoint.is_empty() {
+            return Some(path);
+        }
+        if path == mountpoint {
+            return Some("");
+        }
+        path.strip_prefix(mountpoint)?.strip_prefix('/')
+    }
+    /// Return the mountpoint-relative suffix when `mountpoint` is nested below `path`.
+    fn mount_suffix_below_path<'a>(path: &str, mountpoint: &'a str) -> Option<&'a str> {
+        if mountpoint.is_empty() || path == mountpoint {
+            return None;
+        }
+        if path.is_empty() {
+            return Some(mountpoint);
+        }
+        mountpoint.strip_prefix(path)?.strip_prefix('/')
+    }
+    /// Return true when a virtual directory is implied by a mounted subtree.
+    fn is_virtual_mount_directory(&self, normalized_path: &str) -> bool {
+        self.mounts.iter().any(|layer| {
+            layer.mountpoint == normalized_path
+                || Self::mount_suffix_below_path(normalized_path, &layer.mountpoint).is_some()
+        })
+    }
+    /// Resolve a mounted read path before falling back to the base filesystem.
+    fn resolve_mount_read_path(&self, normalized_path: &str) -> EngineResult<Option<PathBuf>> {
+        for layer in self.mounts.iter().rev() {
+            let Some(relative) =
+                Self::relative_inside_mount(normalized_path, layer.mountpoint.as_str())
+            else {
+                continue;
+            };
+            let candidate = if relative.is_empty() {
+                layer.source.clone()
+            } else {
+                layer.source.join(relative)
+            };
+            if !candidate.exists() {
+                continue;
+            }
+            let canonical = candidate.canonicalize().map_err(|e| {
+                EngineError::FileSystemError(format!(
+                    "Cannot resolve mounted path '{}': {}",
+                    normalized_path, e
+                ))
+            })?;
+            if canonical.starts_with(&layer.source) {
+                return Ok(Some(canonical));
+            }
+            return Err(EngineError::FileSystemError(
+                "Access denied: mounted path escaped its source".into(),
+            ));
+        }
+        Ok(None)
+    }
+    /// Collect recursive entries from `dir`, prefixing them with `virtual_prefix`.
+    fn collect_recursive_prefixed(
+        base: &Path,
+        dir: &Path,
+        virtual_prefix: &str,
+        out: &mut std::collections::HashSet<String>,
+    ) -> EngineResult<()> {
+        let rd = std::fs::read_dir(dir).map_err(|e| {
+            EngineError::FileSystemError(format!(
+                "Failed to read directory '{}': {}",
+                dir.display(),
+                e
+            ))
+        })?;
+        for entry in rd {
+            let entry = entry.map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to read entry: {}", e))
+            })?;
+            let entry_path = entry.path();
+            if let Ok(rel) = entry_path.strip_prefix(base) {
+                let rel_str = rel.to_string_lossy().replace('\\', "/");
+                let logical = if virtual_prefix.is_empty() {
+                    rel_str
+                } else if rel_str.is_empty() {
+                    virtual_prefix.to_string()
+                } else {
+                    format!("{}/{}", virtual_prefix, rel_str)
+                };
+                out.insert(logical);
+            }
+            if entry_path.is_dir() {
+                Self::collect_recursive_prefixed(base, &entry_path, virtual_prefix, out)?;
+            }
+        }
+        Ok(())
+    }
+    /// Add synthetic virtual directories implied by a mounted subtree.
+    fn add_virtual_mount_prefixes(
+        relative_mount: &str,
+        out: &mut std::collections::HashSet<String>,
+    ) {
+        let mut current = String::new();
+        for segment in relative_mount
+            .split('/')
+            .filter(|segment| !segment.is_empty())
+        {
+            if current.is_empty() {
+                current.push_str(segment);
+            } else {
+                current.push('/');
+                current.push_str(segment);
+            }
+            out.insert(current.clone());
+        }
+    }
     /// Create a new filesystem rooted at the supplied base directory.
     pub fn new(base_dir: impl Into<PathBuf>) -> Self {
         log_msg!(debug, FS01_GAMEFS_INIT);
@@ -153,7 +274,7 @@ impl GameFS {
     }
     /// Return true when the base filesystem path exists.
     pub fn exists(&self, path: &str) -> bool {
-        self.base_dir.join(path).exists()
+        self.is_file(path) || self.is_directory(path)
     }
     /// List entries in a directory without recursion.
     pub fn list(&self, path: &str) -> EngineResult<Vec<String>> {
@@ -173,52 +294,52 @@ impl GameFS {
     }
     /// List directory entries recursively under the resolved read path.
     pub fn list_recursive(&self, path: &str) -> EngineResult<Vec<String>> {
-        let resolved = self.resolve_read_path(path)?;
-        let mut results = Vec::new();
-        Self::collect_recursive(&resolved, &resolved, &mut results)?;
-        results.sort();
-        Ok(results)
-    }
-    /// Collect recursive directory entries relative to the supplied base.
-    fn collect_recursive(
-        base: &std::path::Path,
-        dir: &std::path::Path,
-        out: &mut Vec<String>,
-    ) -> EngineResult<()> {
-        let rd = std::fs::read_dir(dir).map_err(|e| {
-            EngineError::FileSystemError(format!(
-                "Failed to read directory '{}': {}",
-                dir.display(),
-                e
-            ))
-        })?;
-        for entry in rd {
-            let entry = entry.map_err(|e| {
-                EngineError::FileSystemError(format!("Failed to read entry: {}", e))
-            })?;
-            let entry_path = entry.path();
-            if let Ok(rel) = entry_path.strip_prefix(base) {
-                let rel_str = rel.to_string_lossy().replace('\\', "/");
-                out.push(rel_str);
+        let normalized = Self::normalize_logical_path(path);
+        let mut results = std::collections::HashSet::new();
+
+        let base_dir = if normalized.is_empty() {
+            self.base_dir.clone()
+        } else {
+            self.base_dir.join(&normalized)
+        };
+        if base_dir.is_dir() {
+            Self::collect_recursive_prefixed(&base_dir, &base_dir, "", &mut results)?;
+        }
+
+        for layer in &self.mounts {
+            if let Some(relative) =
+                Self::relative_inside_mount(normalized.as_str(), layer.mountpoint.as_str())
+            {
+                let dir = if relative.is_empty() {
+                    layer.source.clone()
+                } else {
+                    layer.source.join(relative)
+                };
+                if dir.is_dir() {
+                    Self::collect_recursive_prefixed(&dir, &dir, "", &mut results)?;
+                }
+                continue;
             }
-            if entry_path.is_dir() {
-                Self::collect_recursive(base, &entry_path, out)?;
+            if let Some(relative_mount) =
+                Self::mount_suffix_below_path(normalized.as_str(), layer.mountpoint.as_str())
+            {
+                Self::add_virtual_mount_prefixes(relative_mount, &mut results);
+                Self::collect_recursive_prefixed(
+                    &layer.source,
+                    &layer.source,
+                    relative_mount,
+                    &mut results,
+                )?;
             }
         }
-        Ok(())
+
+        let mut ordered: Vec<String> = results.into_iter().collect();
+        ordered.sort();
+        Ok(ordered)
     }
     /// Return sorted directory entries from the resolved read path.
     pub fn get_directory_items(&self, path: &str) -> EngineResult<Vec<String>> {
-        let resolved = self.resolve_read_path(path)?;
-        let rd = std::fs::read_dir(&resolved).map_err(|e| {
-            EngineError::FileSystemError(format!("Cannot read directory '{}': {}", path, e))
-        })?;
-        let mut items: Vec<String> = rd
-            .filter_map(|e| e.ok())
-            .filter_map(|e| e.file_name().to_str().map(|s| s.to_string()))
-            .collect();
-        items.sort();
-        Ok(items)
+        self.get_directory_items_merged(path)
     }
     /// Return true when the resolved path points to a file.
     pub fn is_file(&self, path: &str) -> bool {
@@ -228,9 +349,10 @@ impl GameFS {
     }
     /// Return true when the resolved path points to a directory.
     pub fn is_directory(&self, path: &str) -> bool {
+        let normalized = Self::normalize_logical_path(path);
         self.resolve_read_path(path)
             .map(|p| p.is_dir())
-            .unwrap_or(false)
+            .unwrap_or_else(|_| self.is_virtual_mount_directory(normalized.as_str()))
     }
     /// Create a directory tree in the save filesystem or return a filesystem error.
     pub fn create_directory(&self, path: &str) -> EngineResult<()> {
@@ -374,7 +496,7 @@ impl GameFS {
         log_msg!(info, FS05_VFS_MOUNT, "{} -> {}", source_path, mountpoint);
         self.mounts.push(MountLayer {
             source: canonical,
-            mountpoint: mountpoint.to_string(),
+            mountpoint: Self::normalize_logical_path(mountpoint),
         });
         Ok(())
     }
@@ -391,7 +513,7 @@ impl GameFS {
         })?;
         self.mounts.push(MountLayer {
             source: canonical,
-            mountpoint: mountpoint.to_string(),
+            mountpoint: Self::normalize_logical_path(mountpoint),
         });
         Ok(())
     }
@@ -406,28 +528,36 @@ impl GameFS {
     }
     /// Read a chunk path from the newest matching mount layer or from the base filesystem.
     pub fn load_chunk(&self, path: &str) -> EngineResult<Vec<u8>> {
-        for layer in self.mounts.iter().rev() {
-            if let Some(rel) = path.strip_prefix(&layer.mountpoint) {
-                let candidate = layer.source.join(rel.trim_start_matches('/'));
-                if candidate.is_file() {
-                    return std::fs::read(&candidate).map_err(|e| {
-                        EngineError::FileSystemError(format!("Failed to read '{}': {}", path, e))
-                    });
-                }
-            }
-        }
         self.read_bytes(path)
     }
     /// Merge directory entries from the base path and any mounted overlays.
     pub fn get_directory_items_merged(&self, path: &str) -> EngineResult<Vec<String>> {
         let mut items: std::collections::HashSet<String> = std::collections::HashSet::new();
-        if let Ok(base_items) = self.get_directory_items(path) {
-            items.extend(base_items);
+        let normalized = Self::normalize_logical_path(path);
+        let base_dir = if normalized.is_empty() {
+            self.base_dir.clone()
+        } else {
+            self.base_dir.join(&normalized)
+        };
+        if base_dir.is_dir() {
+            let rd = std::fs::read_dir(&base_dir).map_err(|e| {
+                EngineError::FileSystemError(format!("Cannot read directory '{}': {}", path, e))
+            })?;
+            for entry in rd.flatten() {
+                if let Some(name) = entry.file_name().to_str() {
+                    items.insert(name.to_string());
+                }
+            }
         }
         for layer in &self.mounts {
-            if path.starts_with(&layer.mountpoint) || layer.mountpoint == path {
-                let rel = path.strip_prefix(&layer.mountpoint).unwrap_or(path);
-                let dir = layer.source.join(rel.trim_start_matches('/'));
+            if let Some(relative) =
+                Self::relative_inside_mount(normalized.as_str(), layer.mountpoint.as_str())
+            {
+                let dir = if relative.is_empty() {
+                    layer.source.clone()
+                } else {
+                    layer.source.join(relative)
+                };
                 if dir.is_dir() {
                     if let Ok(rd) = std::fs::read_dir(&dir) {
                         for entry in rd.flatten() {
@@ -437,6 +567,14 @@ impl GameFS {
                         }
                     }
                 }
+                continue;
+            }
+            if let Some(relative_mount) =
+                Self::mount_suffix_below_path(normalized.as_str(), layer.mountpoint.as_str())
+            {
+                if let Some(first_segment) = relative_mount.split('/').next() {
+                    items.insert(first_segment.to_string());
+                }
             }
         }
         let mut result: Vec<String> = items.into_iter().collect();
@@ -445,7 +583,16 @@ impl GameFS {
     }
     /// Resolve a readable path into a canonical host path or return a filesystem error.
     pub fn resolve_read_path(&self, path: &str) -> EngineResult<PathBuf> {
-        let full = self.base_dir.join(path);
+        let normalized = Self::normalize_logical_path(path);
+        Self::reject_traversal(normalized.as_str())?;
+        if let Some(resolved) = self.resolve_mount_read_path(normalized.as_str())? {
+            return Ok(resolved);
+        }
+        let full = if normalized.is_empty() {
+            self.base_dir.clone()
+        } else {
+            self.base_dir.join(&normalized)
+        };
         let canonical = full.canonicalize().map_err(|e| {
             EngineError::FileSystemError(format!("Cannot resolve '{}': {}", path, e))
         })?;
@@ -527,25 +674,13 @@ impl GameFS {
             Some(idx) => (&pattern[..idx], &pattern[idx + 1..]),
             None => (".", pattern),
         };
-        let search_dir = if dir_part == "." {
-            self.base_dir.clone()
-        } else {
-            self.resolve_read_path(dir_part)?
-        };
-        if !search_dir.is_dir() {
-            return Ok(Vec::new());
-        }
         let mut matches: Vec<String> = Vec::new();
-        let entries = std::fs::read_dir(&search_dir)
-            .map_err(|e| EngineError::FileSystemError(format!("glob read_dir: {}", e)))?;
-        for entry in entries.flatten() {
-            let name = entry.file_name();
-            let name_str = name.to_string_lossy();
-            if glob_match(file_pattern, &name_str) {
+        for name in self.get_directory_items(dir_part)? {
+            if glob_match(file_pattern, &name) {
                 let rel = if dir_part == "." {
-                    name_str.into_owned()
+                    name
                 } else {
-                    format!("{}/{}", dir_part, name_str)
+                    format!("{}/{}", dir_part, name)
                 };
                 matches.push(rel);
             }

@@ -7,10 +7,7 @@
 use super::types::*;
 use std::collections::{HashMap, HashSet, VecDeque};
 
-/// Lays out a directed acyclic graph using a layered approach.
-///
-/// Nodes are assigned to layers based on longest path from sources,
-/// then positioned within each layer to minimize crossings.
+/// Lay out a directed graph using a layered approach with deterministic fallback for invalid graphs.
 pub fn layout_dag(
     nodes: &[LayoutNode],
     edges: &[LayoutEdge],
@@ -27,25 +24,34 @@ pub fn layout_dag(
     LayoutResult::new(positioned)
 }
 
-/// Assigns layers based on longest path from source nodes.
+/// Assign layers from source nodes and keep cyclic/unresolved nodes in a deterministic fallback layer.
 fn assign_layers(nodes: &[LayoutNode], edges: &[LayoutEdge]) -> Vec<Vec<NodeId>> {
-    let node_ids: HashSet<NodeId> = nodes.iter().map(|n| n.id).collect();
+    let mut node_ids: Vec<NodeId> = nodes.iter().map(|n| n.id).collect();
+    node_ids.sort_unstable();
+    node_ids.dedup();
+
+    let node_set: HashSet<NodeId> = node_ids.iter().copied().collect();
     let mut in_degree: HashMap<NodeId, usize> = node_ids.iter().map(|&id| (id, 0)).collect();
     let mut adj: HashMap<NodeId, Vec<NodeId>> =
         node_ids.iter().map(|&id| (id, Vec::new())).collect();
 
     for edge in edges {
-        if node_ids.contains(&edge.from) && node_ids.contains(&edge.to) {
+        if node_set.contains(&edge.from) && node_set.contains(&edge.to) {
             adj.entry(edge.from).or_default().push(edge.to);
             *in_degree.entry(edge.to).or_insert(0) += 1;
         }
     }
 
+    for neighbors in adj.values_mut() {
+        neighbors.sort_unstable();
+        neighbors.dedup();
+    }
+
     let mut layer_of: HashMap<NodeId, usize> = HashMap::new();
-    let mut queue: VecDeque<NodeId> = in_degree
+    let mut queue: VecDeque<NodeId> = node_ids
         .iter()
-        .filter(|(_, &deg)| deg == 0)
-        .map(|(&id, _)| id)
+        .copied()
+        .filter(|id| in_degree.get(id).copied().unwrap_or(0) == 0)
         .collect();
 
     for &id in &queue {
@@ -53,7 +59,7 @@ fn assign_layers(nodes: &[LayoutNode], edges: &[LayoutEdge]) -> Vec<Vec<NodeId>>
     }
 
     while let Some(node) = queue.pop_front() {
-        let current_layer = layer_of[&node];
+        let current_layer = layer_of.get(&node).copied().unwrap_or(0);
         let neighbors = adj.get(&node).cloned().unwrap_or_default();
         for next in neighbors {
             let new_layer = current_layer + 1;
@@ -61,23 +67,31 @@ fn assign_layers(nodes: &[LayoutNode], edges: &[LayoutEdge]) -> Vec<Vec<NodeId>>
             if new_layer > *entry {
                 *entry = new_layer;
             }
-            let deg = in_degree.get_mut(&next).unwrap();
-            *deg -= 1;
-            if *deg == 0 {
-                queue.push_back(next);
+            if let Some(deg) = in_degree.get_mut(&next) {
+                *deg = deg.saturating_sub(1);
+                if *deg == 0 {
+                    queue.push_back(next);
+                }
             }
         }
     }
 
+    let fallback_layer = layer_of.values().copied().max().unwrap_or(0) + 1;
+    for id in &node_ids {
+        layer_of.entry(*id).or_insert(fallback_layer);
+    }
+
     let max_layer = layer_of.values().copied().max().unwrap_or(0);
     let mut layers: Vec<Vec<NodeId>> = vec![Vec::new(); max_layer + 1];
-    for (&id, &layer) in &layer_of {
-        layers[layer].push(id);
+    for id in node_ids {
+        if let Some(layer) = layer_of.get(&id).copied() {
+            layers[layer].push(id);
+        }
     }
     layers
 }
 
-/// Reduces crossings using barycenter heuristic (single pass).
+/// Reduce crossings using a single barycenter pass while preserving stable order for ties.
 fn reduce_crossings(layers: &[Vec<NodeId>], edges: &[LayoutEdge]) -> Vec<Vec<NodeId>> {
     let mut result = layers.to_vec();
 
@@ -112,7 +126,7 @@ fn reduce_crossings(layers: &[Vec<NodeId>], edges: &[LayoutEdge]) -> Vec<Vec<Nod
     result
 }
 
-/// Assigns x/y coordinates to nodes based on their layer and position.
+/// Assign coordinates to nodes based on their layer and slot position.
 fn assign_coordinates(
     nodes: &[LayoutNode],
     layers: &[Vec<NodeId>],

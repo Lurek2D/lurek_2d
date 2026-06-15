@@ -156,6 +156,22 @@ describe("lurek.i18n.t basic lookup", function()
         lurek.i18n.setLanguage("fr")
         expect_equal("Bonjour", lurek.i18n.t("greeting"))
     end)
+
+    -- @covers lurek.i18n.t
+    it("t uses fallback plural variants when the active locale lacks them", function()
+        lurek.i18n.loadTable("en", {
+            items = {
+                one = "{count} item",
+                other = "{count} items",
+            },
+        })
+        lurek.i18n.loadTable("pl", {})
+        lurek.i18n.setLanguage("pl")
+        lurek.i18n.setFallbacks({ "en" })
+
+        expect_equal("1 item", lurek.i18n.t("items", { count = "1" }, 1))
+        expect_equal("3 items", lurek.i18n.t("items", { count = "3" }, 3))
+    end)
 end)
 
 -- @describe lurek.i18n.hasKey / getKeys / setKey
@@ -165,6 +181,17 @@ describe("lurek.i18n.hasKey / getKeys / setKey", function()
         setup_en_fr()
         expect_true(lurek.i18n.hasKey("greeting"))
         expect_false(lurek.i18n.hasKey("nonexistent_key_xyz"))
+    end)
+
+    -- @covers lurek.i18n.hasKey
+    it("hasKey honors fallback locales", function()
+        lurek.i18n.loadTable("en", { fallback_only = "Hello" })
+        lurek.i18n.loadTable("pl", {})
+        lurek.i18n.setLanguage("pl")
+        lurek.i18n.setFallbacks({ "en" })
+
+        expect_true(lurek.i18n.hasKey("fallback_only"))
+        expect_false(lurek.i18n.hasKey("missing_key_xyz"))
     end)
 
     -- @covers lurek.i18n.getKeys

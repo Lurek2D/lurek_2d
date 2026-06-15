@@ -122,7 +122,9 @@ mod lua_table_tests {
         match back {
             SerialValue::Map(map) => {
                 assert!(matches!(map.get("1"), Some(SerialValue::Str(value)) if value == "sword"));
-                assert!(matches!(map.get("equip"), Some(SerialValue::Str(value)) if value == "shield"));
+                assert!(
+                    matches!(map.get("equip"), Some(SerialValue::Str(value)) if value == "shield")
+                );
             }
             other => panic!("expected Map, got {:?}", other),
         }

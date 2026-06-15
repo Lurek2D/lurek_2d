@@ -118,7 +118,7 @@ pub fn make_splash_commands(
     let hint_text = if drag_hover {
         "Release to load game"
     } else {
-        "Drop a game folder here to load it"
+        "Drop a game folder here or click to browse"
     };
     let hint_w = fonts
         .get_mut(small_key)

@@ -1,9 +1,9 @@
-//! - Text search engine for game content files.
-//! - Literal, regex, glob, and multi-pattern search.
-//! - Memory-mapped file reading for large files.
-//! - Parallel file search with rayon-style thread distribution.
+//! - Text search engine for game and tooling content files.
+//! - Literal-first matching with simplified regex/glob/fuzzy helpers and multi-pattern search.
+//! - Buffered file reading with a configurable size cap.
+//! - Deterministic std-thread parallel file search for directory scans.
 //! - Specialized JSON path search and log file parsing.
-//! - Streaming mode with callbacks for real-time results.
+//! - No streaming callbacks or memory-mapped reader in the current implementation.
 
 /// Grep configuration: thread count, file size limits, and encoding settings.
 pub mod config;
@@ -21,7 +21,7 @@ pub mod matcher;
 pub mod parallel;
 /// Pattern kinds: literal, regex, glob, fuzzy, and multi-literal.
 pub mod pattern;
-/// File reading utilities: buffered I/O and memory-mapped file access.
+/// File reading utilities: buffered I/O with size gating.
 pub mod reader;
 /// Search result types: per-line matches, per-file matches, and totals.
 pub mod result;

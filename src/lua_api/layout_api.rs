@@ -1,8 +1,8 @@
-//! File: src/lua_api/layout_api.rs
-//! Module API documentation
+//! Lua bindings for `lurek.layout`.
 //!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
+//! This module exposes tree, DAG, force-directed, and post-processing layout helpers
+//! to Lua. Bindings preserve node geometry and coordinates when results are passed back
+//! into `snapToGrid` and `centerInArea`.
 
 use super::SharedState;
 use crate::layout::{
@@ -21,6 +21,12 @@ fn parse_nodes(tbl: &LuaTable) -> LuaResult<Vec<LayoutNode>> {
         let t = pair?;
         let id: NodeId = t.get("id")?;
         let mut node = LayoutNode::new(id);
+        if let Ok(x) = t.get::<_, f64>("x") {
+            node.x = x;
+        }
+        if let Ok(y) = t.get::<_, f64>("y") {
+            node.y = y;
+        }
         if let Ok(w) = t.get::<_, f64>("width") {
             node.width = w;
         }

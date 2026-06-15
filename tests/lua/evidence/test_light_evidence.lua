@@ -1,23 +1,7 @@
 -- test_light_evidence.lua
 -- Evidence tests: lurek.light scenarios
 -- Canonical evidence file for lurek.light visual outputs.
--- @covers lurek.filesystem.write
--- @covers lurek.image.newImageData
--- @covers lurek.image.saveGIF
--- @covers lurek.image.savePNG
--- @covers lurek.light.advanceFlickers
--- @covers lurek.light.clear
--- @covers lurek.light.drawToImage
--- @covers lurek.light.getAmbient
--- @covers lurek.light.getGodRayHints
--- @covers lurek.light.getNormalMapHints
--- @covers lurek.light.newLight
--- @covers lurek.light.newOccluder
--- @covers lurek.light.setAmbient
--- @covers lurek.light.setGroupColor
--- @covers lurek.light.setGroupEnabled
--- @covers lurek.light.setGroupIntensity
--- @covers lurek.light.syncAmbient
+-- This file intentionally avoids file-level @covers markers; evidence ownership is described per artifact block.
 
 
 local OUT = evidence_output_dir("light")

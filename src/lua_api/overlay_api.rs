@@ -1,11 +1,6 @@
-//! File: src/lua_api/overlay_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
+//! Lua bindings for `lurek.overlay` controllers, transitions, and screen-space telemetry.
+//! Validates overlay dimensions, color channels, durations, and weather parameters at the API edge.
+//! Keeps long-lived atmosphere, flash, fade, and weather behavior in `src/overlay` rather than in Lua glue.
 
 use super::SharedState;
 use crate::overlay::{Overlay, ScreenTransition, TransitionKind, WeatherType};
@@ -638,6 +633,8 @@ impl LuaUserData for LuaOverlay {
         /// @param | h | integer | Target image height in pixels.
         /// @return | Image | Image containing the overlay draw state.
         methods.add_method("drawToImage", |_, this, (w, h): (u32, u32)| {
+            let w = positive_u32("LOverlay:drawToImage", "w", w)?;
+            let h = positive_u32("LOverlay:drawToImage", "h", h)?;
             let img = this.inner.draw_state_to_image(w, h);
             Ok(img)
         });

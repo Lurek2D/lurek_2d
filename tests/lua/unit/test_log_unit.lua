@@ -96,6 +96,29 @@ describe("lurek.log.addSink", function()
         expect_type("number", id)
         expect_true(id > 0, "sink id should be positive")
     end)
+
+    -- @covers lurek.log.addSink
+    it("callback sinks honor level and tag filters", function()
+        local seen = {}
+        local id = lurek.log.addSink({
+            type = "callback",
+            level = "warn",
+            tags = { "Gameplay" },
+            callback = function(entry)
+                table.insert(seen, entry)
+            end,
+        })
+
+        expect_true(id > 0, "callback sink id should be positive")
+        lurek.log.info("skip-info", "Gameplay")
+        lurek.log.warn("skip-tag", "UI")
+        lurek.log.warn("keep-warn", "Gameplay")
+
+        expect_equal(1, #seen)
+        expect_equal("warn", seen[1].level)
+        expect_equal("Gameplay", seen[1].tag)
+        expect_equal("keep-warn", seen[1].message)
+    end)
 end)
 
 -- @describe lurek.log.removeSink

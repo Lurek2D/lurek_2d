@@ -66,7 +66,10 @@ mod save_manager_tests {
     #[test]
     fn serialize_nil_and_bool() {
         assert_eq!(serialize_value(&SaveValue::Nil, 0).expect("nil"), "nil");
-        assert_eq!(serialize_value(&SaveValue::Bool(true), 0).expect("bool"), "true");
+        assert_eq!(
+            serialize_value(&SaveValue::Bool(true), 0).expect("bool"),
+            "true"
+        );
         assert_eq!(
             serialize_value(&SaveValue::Bool(false), 0).expect("bool"),
             "false"

@@ -1,9 +1,6 @@
-//! File: src/lua_api/effect_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
+//! Lua bindings for `lurek.effect` constructors, post-effect userdata, and capture control.
+//! Validates Lua-facing effect names, stack arguments, and image-effect chain specs at the API edge.
+//! Keeps renderer submission and mutable post-effect state in Rust engine modules rather than in Lua glue.
 
 use super::SharedState;
 use crate::effect::{
@@ -16,6 +13,10 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicU64, Ordering};
 static NEXT_STACK_ID: AtomicU64 = AtomicU64::new(1);
+
+fn effect_type_name(effect: &PostFxEffect) -> &str {
+    effect.get_type_name()
+}
 /// Lua-side handle for a single post-processing effect instance.
 pub struct LuaPostFxEffect {
     /// Shared effect state so image effects and stacks can reference the same effect.
@@ -40,7 +41,7 @@ impl LuaUserData for LuaPostFxEffect {
         /// Returns the built-in or custom effect type name.
         /// @return | string | Effect type name used by the renderer.
         methods.add_method("getTypeName", |_, this, ()| {
-            Ok(this.inner.borrow().get_type_name().to_string())
+            Ok(effect_type_name(&this.inner.borrow()).to_string())
         });
         // -- isBuiltIn --
         /// Returns whether this effect uses one of the engine built-in effect types.
@@ -98,13 +99,13 @@ impl LuaUserData for LuaPostFxEffect {
         /// Returns the renderer effect type name.
         /// @return | string | Effect type name used by the renderer.
         methods.add_method("getEffectType", |_, this, ()| {
-            Ok(this.inner.borrow().get_type_name())
+            Ok(effect_type_name(&this.inner.borrow()).to_string())
         });
         // -- getType --
         /// Returns the renderer effect type name.
         /// @return | string | Effect type name used by the renderer.
         methods.add_method("getType", |_, this, ()| {
-            Ok(this.inner.borrow().get_type_name())
+            Ok(effect_type_name(&this.inner.borrow()).to_string())
         });
         // -- type --
         /// Returns the Lua-visible type name for this post-processing effect handle.
@@ -215,6 +216,33 @@ pub struct LuaPostFxStack {
     /// Feedback blend factor clamped to the range 0.0..=1.0.
     feedback_factor: f32,
 }
+
+impl LuaPostFxStack {
+    fn sync_slots(&mut self, enabled: Vec<bool>) {
+        self.inner.effects = (0..self.effects.len()).collect();
+        self.inner.enabled = enabled;
+    }
+
+    fn effect_passes(&self) -> Vec<PostFxPass> {
+        self.effects
+            .iter()
+            .enumerate()
+            .filter(|(index, effect_rc)| {
+                self.inner.enabled.get(*index).copied().unwrap_or(true)
+                    && effect_rc.borrow().enabled
+            })
+            .map(|(_, effect_rc)| {
+                let effect = effect_rc.borrow();
+                PostFxPass {
+                    effect_name: effect_type_name(&effect).to_string(),
+                    params: effect.params.clone(),
+                    shader_id: effect.shader_id,
+                    auto_uniforms: effect.auto_uniforms,
+                }
+            })
+            .collect()
+    }
+}
 /// Provides Lua methods for editing post-processing stack order, capture, and renderer submission.
 impl LuaUserData for LuaPostFxStack {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -224,8 +252,9 @@ impl LuaUserData for LuaPostFxStack {
         methods.add_method_mut("add", |_, this, effect_ud: LuaAnyUserData| {
             let effect = effect_ud.borrow::<LuaPostFxEffect>()?;
             this.effects.push(Rc::clone(&effect.inner));
-            let idx = this.effects.len() - 1;
-            this.inner.add(idx);
+            let mut enabled = this.inner.enabled.clone();
+            enabled.push(true);
+            this.sync_slots(enabled);
             Ok(())
         });
         // -- remove --
@@ -237,10 +266,11 @@ impl LuaUserData for LuaPostFxStack {
             let ptr = Rc::as_ptr(&effect.inner);
             if let Some(pos) = this.effects.iter().position(|e| Rc::as_ptr(e) == ptr) {
                 this.effects.remove(pos);
-                if pos < this.inner.effects.len() {
-                    this.inner.effects.remove(pos);
-                    this.inner.enabled.remove(pos);
+                let mut enabled = this.inner.enabled.clone();
+                if pos < enabled.len() {
+                    enabled.remove(pos);
                 }
+                this.sync_slots(enabled);
                 Ok(true)
             } else {
                 Ok(false)
@@ -256,8 +286,9 @@ impl LuaUserData for LuaPostFxStack {
                 let effect = effect_ud.borrow::<LuaPostFxEffect>()?;
                 let idx = (position.saturating_sub(1)).min(this.effects.len());
                 this.effects.insert(idx, Rc::clone(&effect.inner));
-                this.inner.effects.insert(idx, idx);
-                this.inner.enabled.insert(idx, true);
+                let mut enabled = this.inner.enabled.clone();
+                enabled.insert(idx, true);
+                this.sync_slots(enabled);
                 Ok(())
             },
         );
@@ -307,7 +338,7 @@ impl LuaUserData for LuaPostFxStack {
             let t = lua.create_table()?;
             let mut count = 1;
             for (i, rc) in this.effects.iter().enumerate() {
-                if this.inner.enabled.get(i).copied().unwrap_or(true) {
+                if this.inner.enabled.get(i).copied().unwrap_or(true) && rc.borrow().enabled {
                     t.set(
                         count,
                         lua.create_userdata(LuaPostFxEffect::from_rc(Rc::clone(rc)))?,
@@ -352,7 +383,7 @@ impl LuaUserData for LuaPostFxStack {
         /// Removes all effects and pass state from this stack.
         methods.add_method_mut("clear", |_, this, ()| {
             this.effects.clear();
-            this.inner.clear();
+            this.sync_slots(Vec::new());
             Ok(())
         });
         // -- dedup --
@@ -409,21 +440,7 @@ impl LuaUserData for LuaPostFxStack {
         // -- apply --
         /// Queues this stack's enabled post-effect passes for renderer application.
         methods.add_method("apply", |_, this, ()| {
-            let passes: Vec<PostFxPass> = this
-                .effects
-                .iter()
-                .zip(this.inner.enabled.iter())
-                .filter(|(_, &enabled)| enabled)
-                .map(|(effect_rc, _)| {
-                    let e = effect_rc.borrow();
-                    PostFxPass {
-                        effect_name: e.get_type_name().to_string(),
-                        params: e.params.clone(),
-                        shader_id: e.shader_id,
-                        auto_uniforms: e.auto_uniforms,
-                    }
-                })
-                .collect();
+            let passes = this.effect_passes();
             this.state
                 .borrow_mut()
                 .render_commands
@@ -657,8 +674,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     .into_iter()
                     .map(|e| Rc::new(RefCell::new(e)))
                     .collect();
+                let mut stack = preset.stack;
+                stack.effects = (0..effects.len()).collect();
+                stack.enabled.resize(effects.len(), true);
                 lua.create_userdata(LuaPostFxStack {
-                    inner: preset.stack,
+                    inner: stack,
                     effects,
                     stack_id: NEXT_STACK_ID.fetch_add(1, Ordering::Relaxed),
                     state: Rc::clone(&s),

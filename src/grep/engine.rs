@@ -1,7 +1,7 @@
 //! - High-level search engine: wires configuration, file filter, and pattern matcher.
-//! - `GrepEngine::run(root, pattern)` returns a `GrepResult` across all matching files.
-//! - Delegates file discovery to `FileFilter` and matching to `Matcher`.
-//! - Work is split across a Rayon thread pool sized from `GrepConfig::thread_count`.
+//! - Delegates file discovery to `FileFilter` and matching to the lightweight `Matcher`.
+//! - Work is split across a small std-thread worker set sized from `GrepConfig::thread_count`.
+//! - Returned results are deterministically sorted and capped by `GrepConfig::max_results`.
 //! - Used by `lurek.grep.*` Lua API; the Lua binding owns the config lifecycle.
 
 use super::config::GrepConfig;
@@ -19,6 +19,11 @@ pub struct GrepEngine {
 }
 
 impl GrepEngine {
+    /// Apply the configured result cap to a collected search result.
+    fn cap_result(&self, result: SearchResult) -> SearchResult {
+        result.limit_total_matches(self.config.max_results)
+    }
+
     /// Create a new `GrepEngine` using the provided configuration.
     pub fn new(config: GrepConfig) -> Self {
         let parallel = ParallelSearch::new(config.thread_count, config.max_file_size);
@@ -32,7 +37,7 @@ impl GrepEngine {
             self.config.case_sensitive,
             self.config.whole_word,
         );
-        self.parallel.search(root, &matcher, filter)
+        self.cap_result(self.parallel.search(root, &matcher, filter))
     }
 
     /// Search a directory with a regex pattern.
@@ -42,7 +47,7 @@ impl GrepEngine {
             self.config.case_sensitive,
             self.config.whole_word,
         );
-        self.parallel.search(root, &matcher, filter)
+        self.cap_result(self.parallel.search(root, &matcher, filter))
     }
 
     /// Search a directory with multiple literal patterns.
@@ -57,7 +62,7 @@ impl GrepEngine {
             self.config.case_sensitive,
             self.config.whole_word,
         );
-        self.parallel.search(root, &matcher, filter)
+        self.cap_result(self.parallel.search(root, &matcher, filter))
     }
 
     /// Search a specific list of files for matches.
@@ -67,7 +72,7 @@ impl GrepEngine {
             self.config.case_sensitive,
             self.config.whole_word,
         );
-        self.parallel.search_files(files, &matcher)
+        self.cap_result(self.parallel.search_files(files, &matcher))
     }
 
     /// Count matches without collecting line details.

@@ -2,6 +2,7 @@
 name = "lurek2d"
 version = "1.1.0"
 edition = "2021"
+default-run = "lurek2d"
 description = "Lurek2D — A cross-platform 2D game engine powered by Rust and Lua"
 license = "MIT"
 authors = ["Lurek2D Team"]
@@ -351,6 +352,10 @@ name = "filesystem_tests"
 path = "tests/rust/unit/filesystem_tests.rs"
 
 [[test]]
+name = "grep_tests"
+path = "tests/rust/unit/grep_tests.rs"
+
+[[test]]
 name = "flownet_tests"
 path = "tests/rust/unit/flownet_tests.rs"
 
@@ -361,6 +366,10 @@ path = "tests/rust/unit/html_tests.rs"
 [[test]]
 name = "i18n_tests"
 path = "tests/rust/unit/i18n_tests.rs"
+
+[[test]]
+name = "layout_tests"
+path = "tests/rust/unit/layout_tests.rs"
 
 [[test]]
 name = "image_tests"

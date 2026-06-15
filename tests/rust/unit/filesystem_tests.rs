@@ -179,6 +179,80 @@ mod vfs_tests {
 
         let _ = std::fs::remove_dir_all(&dir);
     }
+
+    #[test]
+    fn mounted_file_reads_prefer_newest_overlay() {
+        let dir = make_temp_game("mount_precedence");
+        std::fs::create_dir_all(dir.join("assets")).unwrap();
+        std::fs::create_dir_all(dir.join("mods/older")).unwrap();
+        std::fs::create_dir_all(dir.join("mods/newer")).unwrap();
+        std::fs::write(dir.join("assets/data.txt"), "base").unwrap();
+        std::fs::write(dir.join("mods/older/data.txt"), "older").unwrap();
+        std::fs::write(dir.join("mods/newer/data.txt"), "newer").unwrap();
+
+        let mut fs = GameFS::new(&dir);
+        fs.mount("mods/older", "assets").unwrap();
+        fs.mount("mods/newer", "assets").unwrap();
+
+        assert_eq!(fs.read_string("assets/data.txt").unwrap(), "newer");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn mounted_paths_affect_exists_file_directory_and_handle_reads() {
+        let dir = make_temp_game("mount_readside");
+        std::fs::create_dir_all(dir.join("mods/ui/sub")).unwrap();
+        std::fs::write(dir.join("mods/ui/menu.txt"), "menu").unwrap();
+        std::fs::write(dir.join("mods/ui/sub/panel.txt"), "panel").unwrap();
+
+        let mut fs = GameFS::new(&dir);
+        fs.mount("mods/ui", "content/ui").unwrap();
+
+        assert!(fs.exists("content/ui"));
+        assert!(fs.is_directory("content/ui"));
+        assert!(fs.exists("content/ui/menu.txt"));
+        assert!(fs.is_file("content/ui/menu.txt"));
+
+        let mut handle = fs.open_file("content/ui/menu.txt", "r").unwrap();
+        assert_eq!(
+            String::from_utf8(handle.read(None).unwrap()).unwrap(),
+            "menu"
+        );
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn get_directory_items_list_recursive_and_glob_merge_mount_views() {
+        let dir = make_temp_game("mount_listings");
+        std::fs::create_dir_all(dir.join("content")).unwrap();
+        std::fs::create_dir_all(dir.join("mods/ui/sub")).unwrap();
+        std::fs::write(dir.join("content/base.txt"), "base").unwrap();
+        std::fs::write(dir.join("mods/ui/menu.lua"), "print('menu')").unwrap();
+        std::fs::write(dir.join("mods/ui/sub/panel.lua"), "print('panel')").unwrap();
+
+        let mut fs = GameFS::new(&dir);
+        fs.mount("mods/ui", "content/ui").unwrap();
+
+        let root_items = fs.get_directory_items("content").unwrap();
+        assert!(root_items.contains(&"base.txt".to_string()));
+        assert!(root_items.contains(&"ui".to_string()));
+
+        let ui_items = fs.get_directory_items("content/ui").unwrap();
+        assert!(ui_items.contains(&"menu.lua".to_string()));
+        assert!(ui_items.contains(&"sub".to_string()));
+
+        let recursive = fs.list_recursive("content").unwrap();
+        assert!(recursive.contains(&"base.txt".to_string()));
+        assert!(recursive.contains(&"ui".to_string()));
+        assert!(recursive.contains(&"ui/menu.lua".to_string()));
+        assert!(recursive.contains(&"ui/sub".to_string()));
+        assert!(recursive.contains(&"ui/sub/panel.lua".to_string()));
+
+        let globbed = fs.glob("content/ui/*.lua").unwrap();
+        assert_eq!(globbed, vec!["content/ui/menu.lua".to_string()]);
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
 }
 
 // â”€â”€ file_handle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -308,7 +382,7 @@ mod async_loader_tests {
         drop(f);
 
         let loader = AsyncLoader::new();
-        let handle = loader.request_load(file.clone());
+        let handle = loader.request_load("save/hello.txt".to_string(), file.clone());
 
         // Spin-poll with a cap to avoid hanging tests.
         for _ in 0..1000 {
@@ -330,12 +404,17 @@ mod async_loader_tests {
     #[test]
     fn load_missing_file() {
         let loader = AsyncLoader::new();
-        let handle = loader.request_load(PathBuf::from("/nonexistent/file.txt"));
+        let missing = PathBuf::from("/nonexistent/file.txt");
+        let handle = loader.request_load("save/missing.txt".to_string(), missing.clone());
 
         for _ in 0..1000 {
             if let LoadStatus::Done(result) = loader.poll(handle) {
                 match result {
-                    LoadResult::Error(_) => return, // expected
+                    LoadResult::Error(message) => {
+                        assert!(message.contains("save/missing.txt"));
+                        assert!(!message.contains(&missing.to_string_lossy().to_string()));
+                        return;
+                    }
                     LoadResult::Ready(_) => panic!("should have failed"),
                 }
             }
@@ -352,7 +431,7 @@ mod async_loader_tests {
         std::fs::write(&file, b"data").unwrap();
 
         let loader = AsyncLoader::new();
-        let handle = loader.request_load(file);
+        let handle = loader.request_load("save/once.txt".to_string(), file);
 
         // Wait for completion
         loop {
@@ -378,7 +457,11 @@ mod async_loader_tests {
         let file = dir.join("write.txt");
 
         let loader = AsyncLoader::new();
-        let handle = loader.request_write(file.clone(), b"async write".to_vec());
+        let handle = loader.request_write(
+            "save/write.txt".to_string(),
+            file.clone(),
+            b"async write".to_vec(),
+        );
 
         for _ in 0..1000 {
             if let WriteStatus::Done(result) = loader.poll_write(handle) {
@@ -404,6 +487,7 @@ mod async_loader_tests {
 
 mod zip_mount_tests {
     use lurek2d::filesystem::zip_mount::*;
+    use std::path::PathBuf;
 
     #[test]
     fn normalise_collapses_slashes() {
@@ -418,5 +502,13 @@ mod zip_mount_tests {
     #[test]
     fn is_traversal_allows_normal_path() {
         assert!(!is_traversal("assets/images/hero.png"));
+    }
+
+    #[test]
+    fn new_error_does_not_expose_host_path() {
+        let missing = PathBuf::from("C:/very/secret/archive.zip");
+        let err = ZipMount::new(&missing, "mods").unwrap_err();
+        assert!(err.contains("cannot open archive"));
+        assert!(!err.contains(&missing.to_string_lossy().to_string()));
     }
 }

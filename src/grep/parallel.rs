@@ -1,15 +1,13 @@
-//! - Parallel file search: distributes work across a Rayon thread pool.
-//! - `validate_parallel` is the primary entry point; returns a flat `Vec<Violation>`.
-//! - `collect_lua_files` / `collect_files_with_ext` enumerate files before dispatch.
-//! - Each worker receives a slice of paths; results are merged after the pool drains.
-//! - Thread count comes from `GrepConfig`; 0 forces synchronous single-threaded mode.
+//! - Parallel file search: distributes work across a small std-thread worker set.
+//! - Files are collected eagerly, chunked deterministically, and merged after workers finish.
+//! - Thread count comes from `GrepConfig`; `0` is clamped to a single worker.
+//! - Matching remains literal-first and filesystem-oriented rather than a streaming validator engine.
 
 use super::filter::FileFilter;
 use super::matcher::Matcher;
 use super::reader::FileReader;
 use super::result::{FileMatch, LineMatch, SearchResult};
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
 /// Parallel search across multiple files.
@@ -34,80 +32,73 @@ impl ParallelSearch {
         let total_files = files.len();
 
         if files.is_empty() {
-            return SearchResult {
-                matches: Vec::new(),
-                files_searched: 0,
-                files_matched: 0,
-                total_matches: 0,
-                duration_ms: start.elapsed().as_millis() as u64,
-            };
+            return SearchResult::empty();
         }
 
-        let results = Arc::new(Mutex::new(Vec::new()));
-        let chunk_size = (files.len() / self.thread_count).max(1);
-        let chunks: Vec<&[PathBuf]> = files.chunks(chunk_size).collect();
-
-        std::thread::scope(|s| {
-            for chunk in chunks {
-                let results = Arc::clone(&results);
-                let reader = &self.reader;
-                s.spawn(move || {
-                    for path in chunk {
-                        if let Some(file_match) = search_file(path, matcher, reader) {
-                            results.lock().unwrap().push(file_match);
-                        }
-                    }
-                });
-            }
-        });
-
-        let matches = Arc::try_unwrap(results).unwrap().into_inner().unwrap();
-        let files_matched = matches.len();
-        let total_matches: usize = matches.iter().map(|m| m.total_matches).sum();
-
-        SearchResult {
-            matches,
-            files_searched: total_files,
-            files_matched,
-            total_matches,
-            duration_ms: start.elapsed().as_millis() as u64,
-        }
+        let matches = search_chunks(&files, self.thread_count, &self.reader, matcher);
+        build_result(start, total_files, matches)
     }
 
     /// Search a flat list of file paths.
     pub fn search_files(&self, files: &[PathBuf], matcher: &Matcher) -> SearchResult {
         let start = Instant::now();
         let total_files = files.len();
-        let results = Arc::new(Mutex::new(Vec::new()));
-        let chunk_size = (files.len() / self.thread_count).max(1);
-        let chunks: Vec<&[PathBuf]> = files.chunks(chunk_size).collect();
-
-        std::thread::scope(|s| {
-            for chunk in chunks {
-                let results = Arc::clone(&results);
-                let reader = &self.reader;
-                s.spawn(move || {
-                    for path in chunk {
-                        if let Some(file_match) = search_file(path, matcher, reader) {
-                            results.lock().unwrap().push(file_match);
-                        }
-                    }
-                });
-            }
-        });
-
-        let matches = Arc::try_unwrap(results).unwrap().into_inner().unwrap();
-        let files_matched = matches.len();
-        let total_matches: usize = matches.iter().map(|m| m.total_matches).sum();
-
-        SearchResult {
-            matches,
-            files_searched: total_files,
-            files_matched,
-            total_matches,
-            duration_ms: start.elapsed().as_millis() as u64,
-        }
+        let matches = search_chunks(files, self.thread_count, &self.reader, matcher);
+        build_result(start, total_files, matches)
     }
+}
+
+fn build_result(start: Instant, total_files: usize, mut matches: Vec<FileMatch>) -> SearchResult {
+    matches.sort_by(|a, b| a.path.cmp(&b.path));
+    for file_match in &mut matches {
+        file_match
+            .lines
+            .sort_by(|a, b| a.line_number.cmp(&b.line_number));
+    }
+    let files_matched = matches.len();
+    let total_matches: usize = matches.iter().map(|m| m.total_matches).sum();
+    SearchResult {
+        matches,
+        files_searched: total_files,
+        files_matched,
+        total_matches,
+        duration_ms: start.elapsed().as_millis() as u64,
+    }
+}
+
+fn search_chunks(
+    files: &[PathBuf],
+    thread_count: usize,
+    reader: &FileReader,
+    matcher: &Matcher,
+) -> Vec<FileMatch> {
+    if files.is_empty() {
+        return Vec::new();
+    }
+
+    let chunk_size = (files.len() / thread_count.max(1)).max(1);
+    std::thread::scope(|scope| {
+        let mut workers = Vec::new();
+        for chunk in files.chunks(chunk_size) {
+            workers.push(scope.spawn(move || {
+                let mut local_matches = Vec::new();
+                for path in chunk {
+                    if let Some(file_match) = search_file(path, matcher, reader) {
+                        local_matches.push(file_match);
+                    }
+                }
+                local_matches
+            }));
+        }
+
+        let mut merged = Vec::new();
+        for worker in workers {
+            if let Ok(local_matches) = worker.join() {
+                merged.extend(local_matches);
+            }
+        }
+        merged
+    })
 }
 
 fn search_file(path: &Path, matcher: &Matcher, reader: &FileReader) -> Option<FileMatch> {

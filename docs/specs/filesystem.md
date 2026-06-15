@@ -19,9 +19,9 @@
 
 - This module gives users a sandboxed file service that keeps script I/O inside controlled game paths.
 - Path normalization and traversal checks help keep behavior consistent and safe across desktop platforms.
-- Virtual mount support lets teams overlay directories and ZIP content under logical prefixes.
+- Virtual mount support lets teams overlay directories under logical prefixes, while ZIP mounts remain standalone handle-based archive views.
 - This is useful for mods, DLC-style content packs, and environment-specific asset overrides.
-- Archive mounting reads files on demand, avoiding full extraction overhead.
+- ZIP archive handles read files on demand without promising full GameFS overlay integration.
 - Sync file handles support common stream patterns such as read, write, append, seek, and line iteration.
 - Async read/write operations move heavy transfer work off the main thread.
 - Poll-based watcher features enable hot-reload loops for assets and config updates.
@@ -97,8 +97,8 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 - Provides ZIP-backed virtual mount behavior that maps normalized virtual paths to archive entries.
 - Builds an index for fast repeated lookups while reading files on demand without full extraction.
 - Enforces traversal-safe path handling before archive access to maintain sandbox guarantees.
-- Supports listing and existence checks over mounted archive content through a unified interface.
-- Delivers archive overlay functionality used by the virtual filesystem mount stack.
+- Supports listing and existence checks over the handle's indexed archive content.
+- Delivers standalone archive access for Lua callers without mutating the main GameFS mount stack in this phase.
 
 
 
@@ -126,7 +126,7 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 - `lurek.filesystem.load(path) -> function`: Loads a Lua chunk from GameFS and returns it as a Lua function.
 - `lurek.filesystem.mkdir(path) -> nil`: Creates a directory under the GameFS base directory.
 - `lurek.filesystem.mount(src, mp) -> boolean`: Mounts an external source path at a GameFS mount point.
-- `lurek.filesystem.mountZip(archive_path, prefix) -> LZipMount`: Opens a ZIP archive and exposes it through a virtual prefix.
+- `lurek.filesystem.mountZip(archive_path, prefix) -> LZipMount`: Opens a ZIP archive and returns a standalone archive handle rooted at the given virtual prefix.
 - `lurek.filesystem.move(src, dst) -> nil`: Moves or renames one GameFS file to another path.
 - `lurek.filesystem.newFileData(path) -> LFileData`: Loads a file into an immutable file data handle.
 - `lurek.filesystem.openFile(path, mode) -> LFileHandle`: Opens a GameFS file handle in a requested mode.
@@ -253,4 +253,4 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 
 ## Notes
 
-- No additional module-specific notes.
+- `mountZip` currently returns a standalone `LZipMount` handle. Directory `mount(...)` participates in GameFS reads and listings; `mountZip(...)` does not.

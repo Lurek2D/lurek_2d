@@ -43,7 +43,9 @@ fn replacing_font_name_updates_lookup_without_stale_entries() {
     assert_eq!(listed[0].size, 20);
     assert_eq!(listed[1].name, "body");
 
-    let ui = registry.get_by_name("ui").expect("replacement should be present");
+    let ui = registry
+        .get_by_name("ui")
+        .expect("replacement should be present");
     assert_eq!(ui.point_size(), 20);
     assert!(ui.is_bold());
 }
