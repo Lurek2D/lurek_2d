@@ -4,9 +4,9 @@
 
 - This module gives users a sandboxed file service that keeps script I/O inside controlled game paths.
 - Path normalization and traversal checks help keep behavior consistent and safe across desktop platforms.
-- Virtual mount support lets teams overlay directories and ZIP content under logical prefixes.
+- Virtual mount support lets teams overlay directories under logical prefixes, while ZIP mounts remain standalone handle-based archive views.
 - This is useful for mods, DLC-style content packs, and environment-specific asset overrides.
-- Archive mounting reads files on demand, avoiding full extraction overhead.
+- ZIP archive handles read files on demand without promising full GameFS overlay integration.
 - Sync file handles support common stream patterns such as read, write, append, seek, and line iteration.
 - Async read/write operations move heavy transfer work off the main thread.
 - Poll-based watcher features enable hot-reload loops for assets and config updates.

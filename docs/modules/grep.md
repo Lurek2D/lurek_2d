@@ -2,25 +2,20 @@
 
 ## Summary
 
-- This module gives users fast text and content search across project files from one scriptable API.
-- It supports literal, regex, glob, fuzzy, and multi-pattern matching for different search needs.
-- File filters and extension controls help narrow scope before scanning begins.
-- Parallel execution improves throughput on large code and content trees.
-- Large-file handling with mmap paths keeps heavy searches practical.
-- JSON-path and structured-log search helpers support data-oriented workflows beyond plain text.
-- Configurable limits and flags keep scans predictable and safer for mixed asset repositories.
-- Result objects include match context suitable for tooling, diagnostics, and automated audits.
-- For users, this module turns ad-hoc grep logic into a reusable, high-performance search subsystem.
-- It is useful for validation scripts, content checks, migration tools, and runtime diagnostics.
-- The practical value is faster discovery and less custom search boilerplate.
-
-This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+- This module exposes scriptable text search across project files from one Lua-facing API.
+- Literal and multi-literal search are the strongest paths today.
+- Regex, glob, and fuzzy modes remain lightweight helpers, not full external-engine equivalents.
+- Directory scans use buffered file reads, size caps, and small std-thread worker pools.
+- Result ordering is deterministic after parallel merge.
+- `GrepConfig.max_results` caps returned matches after collection.
+- File filters handle extensions, path substring exclusions, and hidden-file policy.
+- JSON and structured-log helpers support data-oriented searches beside plain text.
 
 ## Functions
 
 ### `lurek.grep.jsonSearch`
 
-Searches a JSON file for all values associated with a given key name at any depth.
+Search a JSON file for every matching key name.
 
 ```lua
 lurek.grep.jsonSearch(file, key)
@@ -30,14 +25,14 @@ lurek.grep.jsonSearch(file, key)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `file` | string | Path to the JSON file to search. |
-| `key` | string | Key name to search for in the JSON structure. |
+| `file` | string | JSON file path. |
+| `key` | string | Key name to search for. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| table | Array of tables with fields: path (string), value (string). |
+| table | Array of matches with path and value. |
 
 **Example**
 
@@ -52,7 +47,7 @@ end
 
 ### `lurek.grep.logSearch`
 
-Searches a structured log file by log level and regex pattern, returning matched entries.
+Search a structured log file by level and literal message pattern.
 
 ```lua
 lurek.grep.logSearch(file, level, pattern)
@@ -62,15 +57,15 @@ lurek.grep.logSearch(file, level, pattern)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `file` | string | Path to the log file to search. |
-| `level` | string | Log level filter (e.g. "ERROR", "WARN"); empty string matches all. |
-| `pattern` | string | Regex pattern to match against log messages; empty string matches all. |
+| `file` | string | Log file path. |
+| `level` | string | Log level filter (INFO, WARN, ERROR, etc.) or empty. |
+| `pattern` | string | Literal message pattern or empty. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| table | Array of tables with fields: line (integer), message (string), timestamp (string?), level (string?). |
+| table | Array of matching log entries. |
 
 **Example**
 
@@ -87,7 +82,7 @@ end
 
 ### `lurek.grep.luaFilter`
 
-Creates a file filter preset that matches only Lua source files (.lua extension).
+Create a filter for Lua files only.
 
 ```lua
 lurek.grep.luaFilter()
@@ -97,7 +92,7 @@ lurek.grep.luaFilter()
 
 | Type | Description |
 |------|-------------|
-| [LFileFilter](#lfilefilter) | A file filter configured for Lua files only. |
+| [LFileFilter](#lfilefilter) | Pre-configured Lua filter. |
 
 **Example**
 
@@ -112,7 +107,7 @@ end
 
 ### `lurek.grep.newEngine`
 
-Creates a new grep engine with default configuration settings.
+Create a new grep engine with default settings.
 
 ```lua
 lurek.grep.newEngine()
@@ -122,7 +117,7 @@ lurek.grep.newEngine()
 
 | Type | Description |
 |------|-------------|
-| [LGrepEngine](#lgrepengine) | A new grep engine instance. |
+| [LGrepEngine](#lgrepengine) | Grep engine instance. |
 
 **Example**
 
@@ -137,7 +132,7 @@ end
 
 ### `lurek.grep.newEngineOpts`
 
-Creates a new grep engine with custom search configuration options.
+Create a grep engine with custom options.
 
 ```lua
 lurek.grep.newEngineOpts(opts)
@@ -147,13 +142,13 @@ lurek.grep.newEngineOpts(opts)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `opts` | table | Options table with fields: threads (integer), case_sensitive (boolean), whole_word (boolean), max_file_size (integer). |
+| `opts` | table | Options: threads (integer), case_sensitive (boolean), whole_word (boolean), max_file_size (integer). |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| [LGrepEngine](#lgrepengine) | A new configured grep engine instance. |
+| [LGrepEngine](#lgrepengine) | Grep engine instance. |
 
 **Example**
 
@@ -169,7 +164,7 @@ end
 
 ### `lurek.grep.newFilter`
 
-Creates a new empty file filter that can be configured to match specific file patterns.
+Create an empty file filter.
 
 ```lua
 lurek.grep.newFilter()
@@ -179,7 +174,7 @@ lurek.grep.newFilter()
 
 | Type | Description |
 |------|-------------|
-| [LFileFilter](#lfilefilter) | A new empty file filter instance. |
+| [LFileFilter](#lfilefilter) | File filter instance. |
 
 **Example**
 
@@ -195,7 +190,7 @@ end
 
 ### `lurek.grep.search`
 
-Searches a directory tree for files containing an exact literal pattern string.
+Search a directory for a literal pattern in game content files.
 
 ```lua
 lurek.grep.search(path, pattern)
@@ -205,14 +200,14 @@ lurek.grep.search(path, pattern)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `path` | string | Root directory path to search in. |
-| `pattern` | string | Literal text pattern to search for. |
+| `path` | string | Directory path. |
+| `pattern` | string | Text to search for. |
 
 **Returns**
 
 | Type | Description |
 |------|-------------|
-| table | Array of tables with fields: file (string), line (integer), text (string). |
+| table | Search result. |
 
 **Example**
 
@@ -253,7 +248,7 @@ end
 
 #### `LFileFilter:addExtension`
 
-Add allowed file extensions â€” Lua userdata object exposed by the engine.
+Add an allowed file extension to this filter.
 
 ```lua
 LFileFilter:addExtension(ext)
@@ -280,7 +275,7 @@ end
 
 #### `LFileFilter:excludeExtension`
 
-Add excluded file extension for this object.
+Add an excluded file extension to this filter.
 
 ```lua
 LFileFilter:excludeExtension(ext)
@@ -306,7 +301,7 @@ end
 
 #### `LFileFilter:excludePattern`
 
-Add path pattern to exclude for this object.
+Add a path substring exclusion rule to this filter.
 
 ```lua
 LFileFilter:excludePattern(pattern)
@@ -366,7 +361,7 @@ end
 
 #### `LGrepEngine:count`
 
-Count total matches without returning line details.
+Count total literal matches without returning line details.
 
 ```lua
 LGrepEngine:count(path, pattern)
@@ -399,7 +394,7 @@ end
 
 #### `LGrepEngine:multiSearch`
 
-Search with multiple patterns simultaneously.
+Search with multiple literal patterns simultaneously.
 
 ```lua
 LGrepEngine:multiSearch(path, patterns)
@@ -471,7 +466,7 @@ end
 
 #### `LGrepEngine:searchExt`
 
-Search with file extension filter.
+Search with a file extension filter.
 
 ```lua
 LGrepEngine:searchExt(path, pattern, extensions)
@@ -483,7 +478,7 @@ LGrepEngine:searchExt(path, pattern, extensions)
 |------|------|-------------|
 | `path` | string | Directory to search. |
 | `pattern` | string | Text pattern. |
-| `extensions` | table | Array of file extensions (e.g., {"lua", "toml"}). |
+| `extensions` | table | Array of file extensions (for example {"lua", "toml"}). |
 
 **Returns**
 

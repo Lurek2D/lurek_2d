@@ -226,6 +226,7 @@ CANONICAL_OWNER_MODULE: dict[str, str] = {
     'LMapBlock': 'mapblock',
     'LMapGroup': 'mapblock',
     'LMapScript': 'mapblock',
+    'LRelationshipManager': 'ecs',
 }
 
 

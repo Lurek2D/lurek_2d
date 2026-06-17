@@ -1233,12 +1233,8 @@ describe("math geometry utilities", function()
     end)
 
     -- @covers lurek.math.newSpatialHash
-    it("newSpatialHash creates userdata", function()
+    it("newSpatialHash creates userdata and rejects non-positive cell sizes", function()
         expect_type("userdata", spatial_hash(16))
-    end)
-
-    -- @covers lurek.math.newSpatialHash
-    it("newSpatialHash rejects non-positive cell sizes", function()
         expect_error(function()
             lurek.math.newSpatialHash(0)
         end)

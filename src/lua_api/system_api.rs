@@ -313,27 +313,25 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @field | code | string | Error code.
     /// @field | category | string | Error category.
     /// @field | hint | string? | Optional hint for resolution.
-    {
-        let s = state_for_error.clone();
-        system.set(
-            "getLastError",
-            lua.create_function(move |lua, ()| {
-                let state = s.borrow();
-                if let Some(ref err_info) = state.last_error {
-                    let tbl = lua.create_table()?;
-                    tbl.set("message", err_info.message.as_str())?;
-                    tbl.set("code", err_info.code.as_str())?;
-                    tbl.set("category", err_info.category.as_str())?;
-                    if let Some(ref hint) = err_info.hint {
-                        tbl.set("hint", hint.as_str())?;
-                    }
-                    Ok(mlua::Value::Table(tbl))
-                } else {
-                    Ok(mlua::Value::Nil)
+    let s = state_for_error.clone();
+    system.set(
+        "getLastError",
+        lua.create_function(move |lua, ()| {
+            let state = s.borrow();
+            if let Some(ref err_info) = state.last_error {
+                let tbl = lua.create_table()?;
+                tbl.set("message", err_info.message.as_str())?;
+                tbl.set("code", err_info.code.as_str())?;
+                tbl.set("category", err_info.category.as_str())?;
+                if let Some(ref hint) = err_info.hint {
+                    tbl.set("hint", hint.as_str())?;
                 }
-            })?,
-        )?;
-    }
+                Ok(mlua::Value::Table(tbl))
+            } else {
+                Ok(mlua::Value::Nil)
+            }
+        })?,
+    )?;
 
     // -- errorSnapshot --
     /// Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.

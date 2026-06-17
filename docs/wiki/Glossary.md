@@ -113,7 +113,7 @@ The glossary collects terms that appear across module and API pages.
 - `LEventBus` ([lurek.patterns](Module-patterns)) - Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
 - `LFactory` ([lurek.patterns](Module-patterns)) - Lua-facing factory pattern for creating typed game objects from registered constructor functions.
 - `LFileData` ([lurek.filesystem](Module-filesystem))
-- `LFileFilter` ([lurek.grep](Module-grep)) - Lua userdata that controls which files are scanned by a LGrepEngine instance.
+- `LFileFilter` ([lurek.grep](Module-grep)) - Lua userdata that controls which files are scanned by a `LuaGrepEngine`.
 - `LFileHandle` ([lurek.filesystem](Module-filesystem)) - Lua-side handle for a mutable file stream opened through GameFS.
 - `LFileWatcher` ([lurek.devtools](Module-devtools)) - Lua-side file watcher with an optional change callback.
 - `LFlowField` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a flow field over a navigation grid.
@@ -131,7 +131,7 @@ The glossary collects terms that appear across module and API pages.
 - `LGraphEdge` ([lurek.flownet](Module-flownet)) - Lua-side edge handle referencing one edge id inside a graph.
 - `LGraphItem` ([lurek.flownet](Module-flownet)) - Lua-side item handle referencing one item id inside a graph.
 - `LGraphNode` ([lurek.flownet](Module-flownet)) - Lua-side node handle referencing one node id inside a graph.
-- `LGrepEngine` ([lurek.grep](Module-grep)) - Lua userdata that performs pattern-based search across game content files.
+- `LGrepEngine` ([lurek.grep](Module-grep)) - Lua userdata that performs search operations across game content files.
 - `LGroupedFrame` ([lurek.dataframe](Module-dataframe)) - Lua-side grouped dataframe object containing group keys and subframes.
 - `LGRU` ([lurek.learning](Module-learning)) - Stateful Lua wrapper over `GruLayer` with a mutable recurrent hidden-state buffer.
 - `LGuiTable` ([lurek.ui](Module-ui)) - Adds GUI-table-specific methods to a table widget.

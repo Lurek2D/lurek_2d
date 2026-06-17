@@ -55,6 +55,7 @@ local function poll_async_until(predicate, max_steps)
         if predicate(seen) then
             return seen
         end
+        lurek.timer.sleep(0.001)
     end
     return seen
 end
@@ -95,12 +96,8 @@ describe("pathfind module functions", function()
     end)
 
     -- @covers lurek.pathfind.newPathGrid
-    it("newPathGrid creates userdata", function()
+    it("newPathGrid creates userdata and rejects a non-positive cell size", function()
         expect_type("userdata", new_path_grid())
-    end)
-
-    -- @covers lurek.pathfind.newPathGrid
-    it("newPathGrid rejects a non-positive cell size", function()
         expect_error(function()
             lurek.pathfind.newPathGrid(4, 4, 0)
         end)
@@ -125,7 +122,7 @@ describe("pathfind module functions", function()
     end)
 
     -- @covers lurek.pathfind.submitAsyncPath
-    it("submitAsyncPath returns a numeric request id", function()
+    it("submitAsyncPath returns ids and supersedes older owner versions", function()
         lurek.pathfind.clearAsyncPaths()
         local grid = new_nav_grid(24, 24)
         local request_id = lurek.pathfind.submitAsyncPath(grid, {
@@ -136,6 +133,54 @@ describe("pathfind module functions", function()
             stream_budget = 4,
         })
         expect_type("number", request_id)
+        lurek.pathfind.setThreadCount(1)
+        lurek.pathfind.clearAsyncPaths()
+        local grid = new_nav_grid(512, 512)
+        local first_id = lurek.pathfind.submitAsyncPath(grid, {
+            start_x = 1,
+            start_y = 1,
+            goal_x = 512,
+            goal_y = 512,
+            owner_id = 9001,
+            version = 1,
+            stream_budget = 1,
+        })
+        local second_id = lurek.pathfind.submitAsyncPath(grid, {
+            start_x = 1,
+            start_y = 1,
+            goal_x = 512,
+            goal_y = 512,
+            owner_id = 9001,
+            version = 2,
+            priority = 1,
+            stream_budget = 1,
+        })
+        local events = poll_async_until(function(seen)
+            local first_done = false
+            local second_done = false
+            for i = 1, #seen do
+                if seen[i].id == first_id and seen[i].status == "superseded" and seen[i].final then
+                    first_done = true
+                end
+                if seen[i].id == second_id and seen[i].status == "complete" and seen[i].final then
+                    second_done = true
+                end
+            end
+            return first_done and second_done
+        end, 1024)
+
+        local first_done = false
+        local second_done = false
+        for i = 1, #events do
+            if events[i].id == first_id and events[i].status == "superseded" and events[i].final then
+                first_done = true
+            end
+            if events[i].id == second_id and events[i].status == "complete" and events[i].final then
+                second_done = true
+            end
+        end
+        expect_true(first_done)
+        expect_true(second_done)
     end)
 
     -- @covers lurek.pathfind.pollAsyncPaths
@@ -211,57 +256,6 @@ describe("pathfind module functions", function()
     it("getAsyncPendingCount returns a number", function()
         lurek.pathfind.clearAsyncPaths()
         expect_type("number", lurek.pathfind.getAsyncPendingCount())
-    end)
-
-    -- @covers lurek.pathfind.submitAsyncPath
-    it("submitAsyncPath supersedes older versions for the same owner", function()
-        lurek.pathfind.clearAsyncPaths()
-        local grid = new_nav_grid(32, 32)
-        local first_id = lurek.pathfind.submitAsyncPath(grid, {
-            start_x = 1,
-            start_y = 1,
-            goal_x = 32,
-            goal_y = 32,
-            owner_id = 9001,
-            version = 1,
-            stream_budget = 4,
-        })
-        local second_id = lurek.pathfind.submitAsyncPath(grid, {
-            start_x = 1,
-            start_y = 1,
-            goal_x = 32,
-            goal_y = 32,
-            owner_id = 9001,
-            version = 2,
-            priority = 1,
-            stream_budget = 4,
-        })
-        local events = poll_async_until(function(seen)
-            local first_done = false
-            local second_done = false
-            for i = 1, #seen do
-                if seen[i].id == first_id and seen[i].status == "superseded" and seen[i].final then
-                    first_done = true
-                end
-                if seen[i].id == second_id and seen[i].status == "complete" and seen[i].final then
-                    second_done = true
-                end
-            end
-            return first_done and second_done
-        end)
-
-        local first_done = false
-        local second_done = false
-        for i = 1, #events do
-            if events[i].id == first_id and events[i].status == "superseded" and events[i].final then
-                first_done = true
-            end
-            if events[i].id == second_id and events[i].status == "complete" and events[i].final then
-                second_done = true
-            end
-        end
-        expect_true(first_done)
-        expect_true(second_done)
     end)
 
     -- @covers lurek.pathfind.clearAsyncPaths
@@ -340,15 +334,10 @@ describe("nav grid", function()
     end)
 
     -- @covers LNavGrid:setCost
-    it("setCost updates the cell traversal cost", function()
+    it("setCost updates the cell traversal cost and rejects zero-based coordinates", function()
         local grid = new_nav_grid()
         grid:setCost(3, 3, 7)
         expect_equal(7, grid:getCost(3, 3))
-    end)
-
-    -- @covers LNavGrid:setCost
-    it("setCost rejects zero-based coordinates at the Lua boundary", function()
-        local grid = new_nav_grid()
         expect_error(function()
             grid:setCost(0, 1, 7)
         end)
@@ -693,15 +682,10 @@ describe("path grid", function()
     end)
 
     -- @covers LPathGrid:setWalkable
-    it("setWalkable flips walkability", function()
+    it("setWalkable flips walkability and rejects zero-based coordinates", function()
         local grid = new_path_grid()
         grid:setWalkable(2, 2, false)
         expect_false(grid:isWalkable(2, 2))
-    end)
-
-    -- @covers LPathGrid:setWalkable
-    it("setWalkable rejects zero-based coordinates at the Lua boundary", function()
-        local grid = new_path_grid()
         expect_error(function()
             grid:setWalkable(0, 2, false)
         end)

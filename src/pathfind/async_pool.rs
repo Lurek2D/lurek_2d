@@ -9,6 +9,9 @@ use std::sync::atomic::{AtomicU64, Ordering as AtomicOrdering};
 use std::sync::{mpsc, Arc, Condvar, Mutex};
 use std::thread;
 
+type OwnerRequestMap = HashMap<u64, Vec<(u64, u64)>>;
+type SharedOwnerRequests = Arc<Mutex<OwnerRequestMap>>;
+
 /// Legacy completed result returned from the compatibility `poll()` API.
 pub type PathResult = (u64, Option<Vec<(u32, u32)>>);
 
@@ -134,6 +137,7 @@ impl AsyncPathRequest {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum CancelReason {
     Cancelled,
+    Superseded,
 }
 
 #[derive(Debug)]
@@ -230,6 +234,8 @@ pub struct PathThreadPool {
     cancelled: Arc<Mutex<HashMap<u64, CancelReason>>>,
     /// Latest accepted version per owner for stale-result suppression.
     latest_versions: Arc<Mutex<HashMap<u64, u64>>>,
+    /// Live request ids tracked per owner so newer versions can supersede older work deterministically.
+    owner_requests: SharedOwnerRequests,
     /// Configured worker-thread count.
     thread_count: usize,
     /// Owned worker join handles.
@@ -248,6 +254,7 @@ impl PathThreadPool {
         let queue = Arc::new(WorkQueue::default());
         let cancelled = Arc::new(Mutex::new(HashMap::new()));
         let latest_versions = Arc::new(Mutex::new(HashMap::new()));
+        let owner_requests = Arc::new(Mutex::new(HashMap::new()));
         let pending = Arc::new(Mutex::new(0));
         let mut handles = Vec::with_capacity(count);
         for _ in 0..count {
@@ -256,6 +263,7 @@ impl PathThreadPool {
                 result_tx.clone(),
                 Arc::clone(&cancelled),
                 Arc::clone(&latest_versions),
+                Arc::clone(&owner_requests),
                 Arc::clone(&pending),
             ));
         }
@@ -265,6 +273,7 @@ impl PathThreadPool {
             result_tx,
             cancelled,
             latest_versions,
+            owner_requests,
             thread_count: count,
             handles,
             pending,
@@ -277,13 +286,14 @@ impl PathThreadPool {
         tx: mpsc::Sender<AsyncPathEvent>,
         cancelled: Arc<Mutex<HashMap<u64, CancelReason>>>,
         latest_versions: Arc<Mutex<HashMap<u64, u64>>>,
+        owner_requests: SharedOwnerRequests,
         pending: Arc<Mutex<u32>>,
     ) -> thread::JoinHandle<()> {
         thread::spawn(move || {
             while let Some(request) = queue.next() {
                 if let Some(event) = Self::terminal_state(&request, &cancelled, &latest_versions, 0)
                 {
-                    Self::finish_request(&tx, &pending, event);
+                    Self::finish_request(&tx, &pending, &owner_requests, event);
                     continue;
                 }
 
@@ -312,7 +322,7 @@ impl PathThreadPool {
                     if let Some(event) =
                         Self::terminal_state(&request, &cancelled, &latest_versions, step)
                     {
-                        Self::finish_request(&tx, &pending, event);
+                        Self::finish_request(&tx, &pending, &owner_requests, event);
                         break;
                     }
 
@@ -329,6 +339,7 @@ impl PathThreadPool {
                     let final_event = event.final_event;
                     let _ = tx.send(event);
                     if final_event {
+                        Self::remove_live_request(&owner_requests, request.owner_id, request.id);
                         if let Ok(mut pending_count) = pending.lock() {
                             *pending_count = pending_count.saturating_sub(1);
                         }
@@ -349,11 +360,26 @@ impl PathThreadPool {
     fn finish_request(
         tx: &mpsc::Sender<AsyncPathEvent>,
         pending: &Arc<Mutex<u32>>,
+        owner_requests: &SharedOwnerRequests,
         event: AsyncPathEvent,
     ) {
+        let owner_id = event.owner_id;
+        let request_id = event.id;
         let _ = tx.send(event);
+        Self::remove_live_request(owner_requests, owner_id, request_id);
         if let Ok(mut pending_count) = pending.lock() {
             *pending_count = pending_count.saturating_sub(1);
+        }
+    }
+
+    fn remove_live_request(owner_requests: &SharedOwnerRequests, owner_id: u64, request_id: u64) {
+        if let Ok(mut live) = owner_requests.lock() {
+            if let Some(entries) = live.get_mut(&owner_id) {
+                entries.retain(|(id, _)| *id != request_id);
+                if entries.is_empty() {
+                    live.remove(&owner_id);
+                }
+            }
         }
     }
 
@@ -365,13 +391,12 @@ impl PathThreadPool {
     ) -> Option<AsyncPathEvent> {
         {
             let mut cancelled_ids = cancelled.lock().unwrap_or_else(|e| e.into_inner());
-            if cancelled_ids.remove(&request.id).is_some() {
-                return Some(AsyncPathEvent::terminal(
-                    request,
-                    step,
-                    PathEventStatus::Cancelled,
-                    None,
-                ));
+            if let Some(reason) = cancelled_ids.remove(&request.id) {
+                let status = match reason {
+                    CancelReason::Cancelled => PathEventStatus::Cancelled,
+                    CancelReason::Superseded => PathEventStatus::Superseded,
+                };
+                return Some(AsyncPathEvent::terminal(request, step, status, None));
             }
         }
 
@@ -417,6 +442,29 @@ impl PathThreadPool {
 
         if let Ok(mut cancelled_ids) = self.cancelled.lock() {
             cancelled_ids.remove(&request.id);
+        }
+
+        if request.tracks_version() {
+            let mut stale_ids = Vec::new();
+            if let Ok(mut live) = self.owner_requests.lock() {
+                let entries = live.entry(request.owner_id).or_default();
+                entries.retain(|(id, version)| {
+                    if *version < request.version {
+                        stale_ids.push(*id);
+                        false
+                    } else {
+                        true
+                    }
+                });
+                entries.push((request.id, request.version));
+            }
+            if !stale_ids.is_empty() {
+                if let Ok(mut cancelled_ids) = self.cancelled.lock() {
+                    for stale_id in stale_ids {
+                        cancelled_ids.insert(stale_id, CancelReason::Superseded);
+                    }
+                }
+            }
         }
 
         if let Ok(mut pending_count) = self.pending.lock() {
@@ -505,6 +553,7 @@ impl PathThreadPool {
                     self.result_tx.clone(),
                     Arc::clone(&self.cancelled),
                     Arc::clone(&self.latest_versions),
+                    Arc::clone(&self.owner_requests),
                     Arc::clone(&self.pending),
                 ));
             }

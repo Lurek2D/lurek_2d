@@ -69,7 +69,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [charts](Module-charts) | `lurek.charts` | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers. |
 | [dialog](Module-dialog) | `lurek.dialog` | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry. |
 | [ecs](Module-ecs) | `lurek.ecs` | Entity-Component-System: identity / data / behaviour separation for runtime composition. |
-| [grep](Module-grep) | `lurek.grep` | Text search engine for game content: literal, regex, glob, fuzzy, parallel file search. |
+| [grep](Module-grep) | `lurek.grep` | Literal-first text search engine for game content with lightweight regex/glob/fuzzy helpers. |
 | [i18n](Module-i18n) | `lurek.i18n` | Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*). |
 | [learning](Module-learning) | `lurek.learning` | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits. |
 | [mapblock](Module-mapblock) | `lurek.mapblock` | Procedural map block generation: configurable tiles, constraints, multi-level, scripted pipelines. |

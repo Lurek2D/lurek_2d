@@ -22,11 +22,19 @@ local function save_png(img, path)
 end
 
 local function draw_marker(img, x, y, r, g, b)
+    local width = img:getWidth()
+    local height = img:getHeight()
     for dy = -2, 2 do
-        img:setPixel(x, y + dy, r, g, b, 255)
+        local py = y + dy
+        if x >= 0 and x < width and py >= 0 and py < height then
+            img:setPixel(x, py, r, g, b, 255)
+        end
     end
     for dx = -2, 2 do
-        img:setPixel(x + dx, y, r, g, b, 255)
+        local px = x + dx
+        if px >= 0 and px < width and y >= 0 and y < height then
+            img:setPixel(px, y, r, g, b, 255)
+        end
     end
 end
 

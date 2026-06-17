@@ -1261,6 +1261,93 @@ do
     print("thread_count = " .. lurek.pathfind.getThreadCount())
 end
 
+--@api: lurek.pathfind.submitAsyncPath
+do
+    lurek.pathfind.clearAsyncPaths()
+    local nav = lurek.pathfind.newNavGrid(24, 24)
+    local request_id = lurek.pathfind.submitAsyncPath(nav, {
+        start_x = 1,
+        start_y = 1,
+        goal_x = 24,
+        goal_y = 24,
+        stream_budget = 4,
+    })
+    print("request_id = " .. tostring(request_id))
+end
+
+--@api: lurek.pathfind.pollAsyncPaths
+do
+    lurek.pathfind.clearAsyncPaths()
+    local nav = lurek.pathfind.newNavGrid(24, 24)
+    local request_id = lurek.pathfind.submitAsyncPath(nav, {
+        start_x = 1,
+        start_y = 1,
+        goal_x = 24,
+        goal_y = 24,
+        stream_budget = 4,
+    })
+    local seen = {}
+    for _ = 1, 64 do
+        local events = lurek.pathfind.pollAsyncPaths()
+        for i = 1, #events do
+            seen[#seen + 1] = events[i]
+        end
+        if #seen > 0 then
+            break
+        end
+        lurek.timer.sleep(0.001)
+    end
+    print("request = " .. tostring(request_id))
+    print("events = " .. tostring(#seen))
+end
+
+--@api: lurek.pathfind.cancelAsyncPath
+do
+    lurek.pathfind.clearAsyncPaths()
+    local nav = lurek.pathfind.newNavGrid(24, 24)
+    local request_id = lurek.pathfind.submitAsyncPath(nav, {
+        start_x = 1,
+        start_y = 1,
+        goal_x = 24,
+        goal_y = 24,
+        stream_budget = 4,
+    })
+    print("cancelled = " .. tostring(lurek.pathfind.cancelAsyncPath(request_id)))
+end
+
+--@api: lurek.pathfind.getAsyncPendingCount
+do
+    lurek.pathfind.clearAsyncPaths()
+    local before = lurek.pathfind.getAsyncPendingCount()
+    local nav = lurek.pathfind.newNavGrid(12, 12)
+    lurek.pathfind.submitAsyncPath(nav, {
+        start_x = 1,
+        start_y = 1,
+        goal_x = 12,
+        goal_y = 12,
+        stream_budget = 2,
+    })
+    local after = lurek.pathfind.getAsyncPendingCount()
+    print("pending_before = " .. tostring(before))
+    print("pending_after = " .. tostring(after))
+    lurek.pathfind.clearAsyncPaths()
+end
+
+--@api: lurek.pathfind.clearAsyncPaths
+do
+    lurek.pathfind.clearAsyncPaths()
+    local nav = lurek.pathfind.newNavGrid(12, 12)
+    lurek.pathfind.submitAsyncPath(nav, {
+        start_x = 1,
+        start_y = 1,
+        goal_x = 12,
+        goal_y = 12,
+        stream_budget = 2,
+    })
+    lurek.pathfind.clearAsyncPaths()
+    print("pending = " .. tostring(lurek.pathfind.getAsyncPendingCount()))
+end
+
 --@api: lurek.pathfind.newGoalMap
 do
     local gm = lurek.pathfind.newGoalMap(16, 16)

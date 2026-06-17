@@ -146,19 +146,6 @@ describe("lurek.i18n.t basic lookup", function()
         expect_equal("Welcome, Luna!", lurek.i18n.t("welcome", { name = "Luna" }))
         expect_equal("1 item", lurek.i18n.t("items", { count = "1" }, 1))
         expect_equal("5 items", lurek.i18n.t("items", { count = "5" }, 5))
-    end)
-
-    -- @covers lurek.i18n.setLanguage
-    it("setLanguage switches the active locale used by t", function()
-        setup_en_fr()
-        lurek.i18n.setLanguage("en")
-        expect_equal("Hello", lurek.i18n.t("greeting"))
-        lurek.i18n.setLanguage("fr")
-        expect_equal("Bonjour", lurek.i18n.t("greeting"))
-    end)
-
-    -- @covers lurek.i18n.t
-    it("t uses fallback plural variants when the active locale lacks them", function()
         lurek.i18n.loadTable("en", {
             items = {
                 one = "{count} item",
@@ -172,6 +159,15 @@ describe("lurek.i18n.t basic lookup", function()
         expect_equal("1 item", lurek.i18n.t("items", { count = "1" }, 1))
         expect_equal("3 items", lurek.i18n.t("items", { count = "3" }, 3))
     end)
+
+    -- @covers lurek.i18n.setLanguage
+    it("setLanguage switches the active locale used by t", function()
+        setup_en_fr()
+        lurek.i18n.setLanguage("en")
+        expect_equal("Hello", lurek.i18n.t("greeting"))
+        lurek.i18n.setLanguage("fr")
+        expect_equal("Bonjour", lurek.i18n.t("greeting"))
+    end)
 end)
 
 -- @describe lurek.i18n.hasKey / getKeys / setKey
@@ -181,10 +177,6 @@ describe("lurek.i18n.hasKey / getKeys / setKey", function()
         setup_en_fr()
         expect_true(lurek.i18n.hasKey("greeting"))
         expect_false(lurek.i18n.hasKey("nonexistent_key_xyz"))
-    end)
-
-    -- @covers lurek.i18n.hasKey
-    it("hasKey honors fallback locales", function()
         lurek.i18n.loadTable("en", { fallback_only = "Hello" })
         lurek.i18n.loadTable("pl", {})
         lurek.i18n.setLanguage("pl")

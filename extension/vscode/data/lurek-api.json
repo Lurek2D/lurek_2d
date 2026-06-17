@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-15",
+  "generated": "2026-06-16",
   "modules": [
     {
       "name": "agent",
@@ -8505,7 +8505,7 @@
     },
     {
       "name": "effect",
-      "description": "File: src/lua_api/effect_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Lua bindings for `lurek.effect` constructors, post-effect userdata, and capture control.\nValidates Lua-facing effect names, stack arguments, and image-effect chain specs at the API edge.\nKeeps renderer submission and mutable post-effect state in Rust engine modules rather than in Lua glue.",
       "functions": [
         {
           "name": "newEffect",
@@ -9120,7 +9120,7 @@
     },
     {
       "name": "filesystem",
-      "description": "File: src/lua_api/filesystem_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "File: src/lua_api/filesystem_api.rs\nRegisters the `lurek.filesystem` Lua namespace over the sandboxed GameFS service.\nExposes safe save writes, mount-aware reads, async helpers, watcher polling, and ZIP handles.\nKeeps ZIP archives standalone through `LZipMount` rather than mutating the shared GameFS mount table.",
       "functions": [
         {
           "name": "mountZip",
@@ -10607,13 +10607,13 @@
     },
     {
       "name": "grep",
-      "description": "File: src/lua_api/grep_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2",
+      "description": "Lua bindings for `lurek.grep`.\n\nThis module exposes the repo's literal-first search engine, simple file filters,\nand JSON/log helpers to Lua. Directory scans use buffered file reads plus a small\nworker pool, while regex and glob support stay on the lightweight matcher path.",
       "functions": [
         {
           "name": "newEngine",
           "fullPath": "lurek.grep.newEngine",
           "signature": "()",
-          "description": "Creates a new grep engine with default configuration settings.",
+          "description": "Create a new grep engine with default settings.",
           "parameters": [],
           "returns": "LGrepEngine",
           "returnType": "LGrepEngine",
@@ -10624,12 +10624,12 @@
           "name": "newEngineOpts",
           "fullPath": "lurek.grep.newEngineOpts",
           "signature": "(opts)",
-          "description": "Creates a new grep engine with custom search configuration options.",
+          "description": "Create a grep engine with custom options.",
           "parameters": [
             {
               "name": "opts",
               "type": "table",
-              "description": "Options table with fields: threads (integer), case_sensitive (boolean), whole_word (boolean), max_file_size (integer).",
+              "description": "Options: threads (integer), case_sensitive (boolean), whole_word (boolean), max_file_size (integer).",
               "optional": false
             }
           ],
@@ -10642,7 +10642,7 @@
           "name": "newFilter",
           "fullPath": "lurek.grep.newFilter",
           "signature": "()",
-          "description": "Creates a new empty file filter that can be configured to match specific file patterns.",
+          "description": "Create an empty file filter.",
           "parameters": [],
           "returns": "LFileFilter",
           "returnType": "LFileFilter",
@@ -10653,7 +10653,7 @@
           "name": "luaFilter",
           "fullPath": "lurek.grep.luaFilter",
           "signature": "()",
-          "description": "Creates a file filter preset that matches only Lua source files (.lua extension).",
+          "description": "Create a filter for Lua files only.",
           "parameters": [],
           "returns": "LFileFilter",
           "returnType": "LFileFilter",
@@ -10664,18 +10664,18 @@
           "name": "search",
           "fullPath": "lurek.grep.search",
           "signature": "(path, pattern)",
-          "description": "Searches a directory tree for files containing an exact literal pattern string.",
+          "description": "Search a directory for a literal pattern in game content files.",
           "parameters": [
             {
               "name": "path",
               "type": "string",
-              "description": "Root directory path to search in.",
+              "description": "Directory path.",
               "optional": false
             },
             {
               "name": "pattern",
               "type": "string",
-              "description": "Literal text pattern to search for.",
+              "description": "Text to search for.",
               "optional": false
             }
           ],
@@ -10688,18 +10688,18 @@
           "name": "jsonSearch",
           "fullPath": "lurek.grep.jsonSearch",
           "signature": "(file, key)",
-          "description": "Searches a JSON file for all values associated with a given key name at any depth.",
+          "description": "Search a JSON file for every matching key name.",
           "parameters": [
             {
               "name": "file",
               "type": "string",
-              "description": "Path to the JSON file to search.",
+              "description": "JSON file path.",
               "optional": false
             },
             {
               "name": "key",
               "type": "string",
-              "description": "Key name to search for in the JSON structure.",
+              "description": "Key name to search for.",
               "optional": false
             }
           ],
@@ -10712,24 +10712,24 @@
           "name": "logSearch",
           "fullPath": "lurek.grep.logSearch",
           "signature": "(file, level, pattern)",
-          "description": "Searches a structured log file by log level and regex pattern, returning matched entries.",
+          "description": "Search a structured log file by level and literal message pattern.",
           "parameters": [
             {
               "name": "file",
               "type": "string",
-              "description": "Path to the log file to search.",
+              "description": "Log file path.",
               "optional": false
             },
             {
               "name": "level",
               "type": "string",
-              "description": "Log level filter (e.g. \"ERROR\", \"WARN\"); empty string matches all.",
+              "description": "Log level filter (INFO, WARN, ERROR, etc.) or empty.",
               "optional": false
             },
             {
               "name": "pattern",
               "type": "string",
-              "description": "Regex pattern to match against log messages; empty string matches all.",
+              "description": "Literal message pattern or empty.",
               "optional": false
             }
           ],
@@ -10849,7 +10849,7 @@
     },
     {
       "name": "i18n",
-      "description": "File: src/lua_api/i18n_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Lua bindings for `lurek.i18n`.\n\nThis module exposes translation catalogs, fallback-aware lookup, interpolation,\nplural helpers, locale metadata, and locale-aware number/date formatting to Lua.\nBindings keep the public API thin while delegating lookup and formatting rules to\n`crate::i18n`.",
       "functions": [
         {
           "name": "loadTable",
@@ -13332,7 +13332,7 @@
     },
     {
       "name": "layout",
-      "description": "File: src/lua_api/layout_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2",
+      "description": "Lua bindings for `lurek.layout`.\n\nThis module exposes tree, DAG, force-directed, and post-processing layout helpers\nto Lua. Bindings preserve node geometry and coordinates when results are passed back\ninto `snapToGrid` and `centerInArea`.",
       "functions": [
         {
           "name": "tree",
@@ -14040,7 +14040,7 @@
     },
     {
       "name": "light",
-      "description": "File: src/lua_api/light_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Lua bindings for `lurek.light` world controls, light handles, and occluder handles.\nValidates numeric ranges, enum-like strings, and options-table fields before mutating runtime light state.\nKeeps lighting behavior in `src/light` while exposing a thin, predictable `lurek.light` API surface.",
       "functions": [
         {
           "name": "newLight",
@@ -14428,7 +14428,7 @@
     },
     {
       "name": "log",
-      "description": "File: src/lua_api/log_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Lua bindings for `lurek.log`.\n\nThis module exposes severity helpers, sink management, structured fields, and\ncallback/file/memory routing to Lua. Callback sinks follow the same level and tag\nfilters as every other sink.",
       "functions": [
         {
           "name": "debug",
@@ -18398,7 +18398,7 @@
     },
     {
       "name": "overlay",
-      "description": "File: src/lua_api/overlay_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Lua bindings for `lurek.overlay` controllers, transitions, and screen-space telemetry.\nValidates overlay dimensions, color channels, durations, and weather parameters at the API edge.\nKeeps long-lived atmosphere, flash, fade, and weather behavior in `src/overlay` rather than in Lua glue.",
       "functions": [
         {
           "name": "new",
@@ -18526,7 +18526,7 @@
     },
     {
       "name": "particle",
-      "description": "File: src/lua_api/particle_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Lua bindings for `lurek.particle` system handles, trail handles, and visualization helpers.\nValidates particle dimensions, lifetimes, callback inputs, and physics bridge arguments before touching runtime state.\nKeeps emitter simulation, collision, and rendering logic in `src/particle` while exposing a thin Lua API layer.",
       "functions": [
         {
           "name": "newSystem",
@@ -26153,6 +26153,24 @@
           "objectType": null
         },
         {
+          "name": "encodeMsgPack",
+          "fullPath": "lurek.serial.encodeMsgPack",
+          "signature": "lurek.serial.encodeMsgPack(value)",
+          "description": "Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "table",
+              "description": "The Lua table to encode. Must be a table (not a primitive).",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
           "name": "decodeMsgPack",
           "fullPath": "lurek.serial.decodeMsgPack",
           "signature": "lurek.serial.decodeMsgPack(bytes)",
@@ -26921,10 +26939,10 @@
           "name": "getLastError",
           "fullPath": "lurek.runtime.getLastError",
           "signature": "()",
-          "description": "",
+          "description": "Returns the most recent engine error as a table, or `nil` if no error has occurred.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -61944,13 +61962,13 @@
     },
     {
       "name": "LFileFilter",
-      "description": "Lua userdata that controls which files are scanned by a LGrepEngine instance.",
+      "description": "Lua userdata that controls which files are scanned by a `LuaGrepEngine`.",
       "methods": [
         {
           "name": "addExtension",
           "fullPath": "LFileFilter:addExtension",
           "signature": "(ext)",
-          "description": "Add allowed file extensions â€” Lua userdata object exposed by the engine.",
+          "description": "Add an allowed file extension to this filter.",
           "parameters": [
             {
               "name": "ext",
@@ -61968,7 +61986,7 @@
           "name": "excludeExtension",
           "fullPath": "LFileFilter:excludeExtension",
           "signature": "(ext)",
-          "description": "Add excluded file extension for this object.",
+          "description": "Add an excluded file extension to this filter.",
           "parameters": [
             {
               "name": "ext",
@@ -61986,7 +62004,7 @@
           "name": "excludePattern",
           "fullPath": "LFileFilter:excludePattern",
           "signature": "(pattern)",
-          "description": "Add path pattern to exclude for this object.",
+          "description": "Add a path substring exclusion rule to this filter.",
           "parameters": [
             {
               "name": "pattern",
@@ -69522,7 +69540,7 @@
     },
     {
       "name": "LGrepEngine",
-      "description": "Lua userdata that performs pattern-based search across game content files.",
+      "description": "Lua userdata that performs search operations across game content files.",
       "methods": [
         {
           "name": "search",
@@ -69552,7 +69570,7 @@
           "name": "searchExt",
           "fullPath": "LGrepEngine:searchExt",
           "signature": "(path, pattern, exts)",
-          "description": "Search with file extension filter.",
+          "description": "Search with a file extension filter.",
           "parameters": [
             {
               "name": "path",
@@ -69569,7 +69587,7 @@
             {
               "name": "extensions",
               "type": "table",
-              "description": "Array of file extensions (e.g., {\"lua\", \"toml\"}).",
+              "description": "Array of file extensions (for example {\"lua\", \"toml\"}).",
               "optional": false
             }
           ],
@@ -69582,7 +69600,7 @@
           "name": "multiSearch",
           "fullPath": "LGrepEngine:multiSearch",
           "signature": "(path, patterns)",
-          "description": "Search with multiple patterns simultaneously.",
+          "description": "Search with multiple literal patterns simultaneously.",
           "parameters": [
             {
               "name": "path",
@@ -69606,7 +69624,7 @@
           "name": "count",
           "fullPath": "LGrepEngine:count",
           "signature": "(path, pattern)",
-          "description": "Count total matches without returning line details.",
+          "description": "Count total literal matches without returning line details.",
           "parameters": [
             {
               "name": "path",
@@ -116649,10 +116667,10 @@
           "name": "type",
           "fullPath": "LRelationshipManager:type",
           "signature": "()",
-          "description": "",
+          "description": "Returns the Lua-visible type name for this relationship manager handle.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": true,
           "objectType": "LRelationshipManager"
         },
@@ -116660,17 +116678,17 @@
           "name": "typeOf",
           "fullPath": "LRelationshipManager:typeOf",
           "signature": "(name)",
-          "description": "",
+          "description": "Returns whether this relationship manager handle matches a supported type name.",
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Type name to compare against `LRelationshipManager` and `LObject`.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LRelationshipManager"
         },
@@ -116708,12 +116726,12 @@
           "name": "removeType",
           "fullPath": "LRelationshipManager:removeType",
           "signature": "(name)",
-          "description": "",
+          "description": "Removes a named relationship type definition.",
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Relationship type name to delete.",
               "optional": false
             }
           ],
@@ -116726,10 +116744,10 @@
           "name": "typeNames",
           "fullPath": "LRelationshipManager:typeNames",
           "signature": "()",
-          "description": "",
+          "description": "Returns the defined relationship type names.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string[]",
+          "returnType": "string[]",
           "isMethod": true,
           "objectType": "LRelationshipManager"
         },
@@ -116737,24 +116755,24 @@
           "name": "setValue",
           "fullPath": "LRelationshipManager:setValue",
           "signature": "(a, b, value)",
-          "description": "",
+          "description": "Sets the numeric relationship value between two entity ids.",
           "parameters": [
             {
               "name": "a",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Source entity id.",
               "optional": false
             },
             {
               "name": "b",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Target entity id.",
               "optional": false
             },
             {
               "name": "value",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Numeric value stored for the pair.",
               "optional": false
             }
           ],
@@ -116767,23 +116785,23 @@
           "name": "getValue",
           "fullPath": "LRelationshipManager:getValue",
           "signature": "(a, b)",
-          "description": "",
+          "description": "Returns the numeric relationship value between two entity ids.",
           "parameters": [
             {
               "name": "a",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Source entity id.",
               "optional": false
             },
             {
               "name": "b",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Target entity id.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "number",
+          "returnType": "number",
           "isMethod": true,
           "objectType": "LRelationshipManager"
         },
@@ -116791,24 +116809,24 @@
           "name": "adjustValue",
           "fullPath": "LRelationshipManager:adjustValue",
           "signature": "(a, b, delta)",
-          "description": "",
+          "description": "Adds a delta to the numeric relationship value between two entity ids.",
           "parameters": [
             {
               "name": "a",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Source entity id.",
               "optional": false
             },
             {
               "name": "b",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Target entity id.",
               "optional": false
             },
             {
               "name": "delta",
-              "type": "any",
-              "description": "",
+              "type": "number",
+              "description": "Signed amount added to the current pair value.",
               "optional": false
             }
           ],
@@ -116887,18 +116905,18 @@
           "name": "removePair",
           "fullPath": "LRelationshipManager:removePair",
           "signature": "(a, b)",
-          "description": "",
+          "description": "Removes all tracked relationship data between two entity ids.",
           "parameters": [
             {
               "name": "a",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Source entity id.",
               "optional": false
             },
             {
               "name": "b",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Target entity id.",
               "optional": false
             }
           ],
@@ -116911,10 +116929,10 @@
           "name": "pairCount",
           "fullPath": "LRelationshipManager:pairCount",
           "signature": "()",
-          "description": "",
+          "description": "Returns how many entity-id pairs currently have tracked relationship data.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "integer",
+          "returnType": "integer",
           "isMethod": true,
           "objectType": "LRelationshipManager"
         },

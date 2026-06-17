@@ -27,18 +27,17 @@ pub fn layout_tree(
     let mut positions: HashMap<NodeId, (f64, f64)> = HashMap::new();
     let mut x_offset = config.margin;
     let mut visiting = HashSet::new();
+    let mut state = TreeLayoutState {
+        x_offset: &mut x_offset,
+        children,
+        widths: &widths,
+        config,
+        positions: &mut positions,
+        visiting: &mut visiting,
+    };
 
     for node_id in traversal_roots {
-        assign_positions(
-            node_id,
-            0,
-            &mut x_offset,
-            children,
-            &widths,
-            config,
-            &mut positions,
-            &mut visiting,
-        );
+        state.assign_positions(node_id, 0);
     }
 
     let result_nodes: Vec<LayoutNode> = nodes
@@ -58,79 +57,65 @@ pub fn layout_tree(
     LayoutResult::new(result_nodes)
 }
 
-/// Recursively assign positions, treating cycle edges as deterministic leaf fallbacks.
-fn assign_positions(
-    node_id: NodeId,
-    depth: usize,
-    x_offset: &mut f64,
-    children: &HashMap<NodeId, Vec<NodeId>>,
-    widths: &HashMap<NodeId, f64>,
-    config: &LayoutConfig,
-    positions: &mut HashMap<NodeId, (f64, f64)>,
-    visiting: &mut HashSet<NodeId>,
-) -> f64 {
-    if let Some((x, _)) = positions.get(&node_id).copied() {
-        return x;
-    }
-
-    let y = config.margin + depth as f64 * config.v_spacing;
-    if !visiting.insert(node_id) {
-        return place_leaf(node_id, y, x_offset, widths, config, positions);
-    }
-
-    let mut kids = children.get(&node_id).cloned().unwrap_or_default();
-    kids.retain(|child| *child != node_id);
-    kids.sort_unstable();
-    kids.dedup();
-
-    let x = if kids.is_empty() {
-        place_leaf(node_id, y, x_offset, widths, config, positions)
-    } else {
-        let child_positions: Vec<f64> = kids
-            .into_iter()
-            .map(|child| {
-                assign_positions(
-                    child,
-                    depth + 1,
-                    x_offset,
-                    children,
-                    widths,
-                    config,
-                    positions,
-                    visiting,
-                )
-            })
-            .collect();
-
-        if child_positions.is_empty() {
-            place_leaf(node_id, y, x_offset, widths, config, positions)
-        } else {
-            let center_x = (child_positions[0] + child_positions[child_positions.len() - 1]) / 2.0;
-            positions.insert(node_id, (center_x, y));
-            center_x
-        }
-    };
-
-    visiting.remove(&node_id);
-    x
+/// Shared mutable state for deterministic tree placement.
+struct TreeLayoutState<'a> {
+    x_offset: &'a mut f64,
+    children: &'a HashMap<NodeId, Vec<NodeId>>,
+    widths: &'a HashMap<NodeId, f64>,
+    config: &'a LayoutConfig,
+    positions: &'a mut HashMap<NodeId, (f64, f64)>,
+    visiting: &'a mut HashSet<NodeId>,
 }
 
-/// Place one node as a leaf and advance the horizontal cursor.
-fn place_leaf(
-    node_id: NodeId,
-    y: f64,
-    x_offset: &mut f64,
-    widths: &HashMap<NodeId, f64>,
-    config: &LayoutConfig,
-    positions: &mut HashMap<NodeId, (f64, f64)>,
-) -> f64 {
-    if let Some((x, _)) = positions.get(&node_id).copied() {
-        return x;
+impl TreeLayoutState<'_> {
+    /// Recursively assign positions, treating cycle edges as deterministic leaf fallbacks.
+    fn assign_positions(&mut self, node_id: NodeId, depth: usize) -> f64 {
+        if let Some((x, _)) = self.positions.get(&node_id).copied() {
+            return x;
+        }
+
+        let y = self.config.margin + depth as f64 * self.config.v_spacing;
+        if !self.visiting.insert(node_id) {
+            return self.place_leaf(node_id, y);
+        }
+
+        let mut kids = self.children.get(&node_id).cloned().unwrap_or_default();
+        kids.retain(|child| *child != node_id);
+        kids.sort_unstable();
+        kids.dedup();
+
+        let x = if kids.is_empty() {
+            self.place_leaf(node_id, y)
+        } else {
+            let mut child_positions = Vec::with_capacity(kids.len());
+            for child in kids {
+                child_positions.push(self.assign_positions(child, depth + 1));
+            }
+
+            if child_positions.is_empty() {
+                self.place_leaf(node_id, y)
+            } else {
+                let center_x =
+                    (child_positions[0] + child_positions[child_positions.len() - 1]) / 2.0;
+                self.positions.insert(node_id, (center_x, y));
+                center_x
+            }
+        };
+
+        self.visiting.remove(&node_id);
+        x
     }
 
-    let node_width = widths.get(&node_id).copied().unwrap_or(1.0);
-    let x = *x_offset;
-    positions.insert(node_id, (x, y));
-    *x_offset += node_width + config.h_spacing;
-    x
+    /// Place one node as a leaf and advance the horizontal cursor.
+    fn place_leaf(&mut self, node_id: NodeId, y: f64) -> f64 {
+        if let Some((x, _)) = self.positions.get(&node_id).copied() {
+            return x;
+        }
+
+        let node_width = self.widths.get(&node_id).copied().unwrap_or(1.0);
+        let x = *self.x_offset;
+        self.positions.insert(node_id, (x, y));
+        *self.x_offset += node_width + self.config.h_spacing;
+        x
+    }
 }

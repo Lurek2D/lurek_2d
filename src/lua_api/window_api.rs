@@ -40,7 +40,9 @@ fn validate_icon_path(state: &SharedState, path: &str) -> LuaResult<()> {
     Ok(())
 }
 
-fn parse_mode_flags(flags: Option<&LuaTable>) -> LuaResult<(Option<bool>, Option<String>, Option<i32>)> {
+fn parse_mode_flags(
+    flags: Option<&LuaTable>,
+) -> LuaResult<(Option<bool>, Option<String>, Option<i32>)> {
     let fullscreen = flags
         .map(|table| table.get::<_, bool>("fullscreen"))
         .transpose()?;
@@ -56,7 +58,10 @@ fn parse_mode_flags(flags: Option<&LuaTable>) -> LuaResult<(Option<bool>, Option
 fn parse_window_config_request(opts: &LuaTable) -> LuaResult<WindowConfigRequest> {
     Ok(WindowConfigRequest {
         title: opts.get::<_, String>("title").ok(),
-        size: match (opts.get::<_, u32>("width").ok(), opts.get::<_, u32>("height").ok()) {
+        size: match (
+            opts.get::<_, u32>("width").ok(),
+            opts.get::<_, u32>("height").ok(),
+        ) {
             (Some(width), Some(height)) => Some((width, height)),
             _ => None,
         },
@@ -90,7 +95,11 @@ fn parse_file_dialog_options(opts: Option<LuaTable>) -> LuaResult<FileDialogOpti
             let extensions = filter
                 .get::<_, LuaTable>("extensions")
                 .ok()
-                .map(|exts| exts.sequence_values::<String>().filter_map(Result::ok).collect())
+                .map(|exts| {
+                    exts.sequence_values::<String>()
+                        .filter_map(Result::ok)
+                        .collect()
+                })
                 .unwrap_or_default();
             filters.push(FileDialogFilter { name, extensions });
         }
@@ -166,10 +175,7 @@ fn make_fullscreen_modes_table<'lua>(
     Ok(table)
 }
 
-fn string_list_table<'lua>(
-    lua: &'lua Lua,
-    values: &[String],
-) -> LuaResult<LuaTable<'lua>> {
+fn string_list_table<'lua>(lua: &'lua Lua, values: &[String]) -> LuaResult<LuaTable<'lua>> {
     let table = lua.create_table()?;
     for (idx, value) in values.iter().enumerate() {
         table.set(idx + 1, value.as_str())?;
@@ -580,7 +586,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |lua, ()| {
             let st = s.borrow();
             let info = window::get_mode(&st.window_state);
-            Ok((st.window_width, st.window_height, make_mode_flags_table(lua, info)?))
+            Ok((
+                st.window_width,
+                st.window_height,
+                make_mode_flags_table(lua, info)?,
+            ))
         })?,
     )?;
     let s = state.clone();
@@ -731,7 +741,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "getDisplayOrientation",
         lua.create_function(move |_, ()| {
             let st = s.borrow();
-            Ok(window::display_orientation(st.window_width, st.window_height))
+            Ok(window::display_orientation(
+                st.window_width,
+                st.window_height,
+            ))
         })?,
     )?;
     let s = state.clone();
@@ -849,7 +862,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @param | func | function | Callback receiving the new DPI scale as a number.
     tbl.set(
         "onDpiChange",
-        lua.create_function(move |lua, func: LuaFunction| replace_registry_callback(lua, &dc, func))?,
+        lua.create_function(move |lua, func: LuaFunction| {
+            replace_registry_callback(lua, &dc, func)
+        })?,
     )?;
     let dc = dpi_callback;
     let pd = prev_dpi;
@@ -859,9 +874,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     /// @return | number | The current DPI scale factor.
     tbl.set(
         "pollDpiChange",
-        lua.create_function(move |lua, ()| {
-            poll_dpi_change_callback(lua, &s.borrow(), &pd, &dc)
-        })?,
+        lua.create_function(move |lua, ()| poll_dpi_change_callback(lua, &s.borrow(), &pd, &dc))?,
     )?;
     // -- openFileDialog --
     /// Opens a native file picker dialog and returns the selected file paths. Blocks until the user picks file(s) or cancels.

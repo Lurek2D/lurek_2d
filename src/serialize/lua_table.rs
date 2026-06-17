@@ -129,18 +129,16 @@ pub fn from_lua(val: &LuaValue) -> LuaResult<SerialValue> {
                     }
                 }
 
-                if is_seq
-                    && total_entries == raw_len
-                    && seq_values.iter().all(Option::is_some)
-                {
-                    let sequence = seq_values.into_iter().collect::<Option<Vec<_>>>().ok_or_else(
-                        || {
+                if is_seq && total_entries == raw_len && seq_values.iter().all(Option::is_some) {
+                    let sequence = seq_values
+                        .into_iter()
+                        .collect::<Option<Vec<_>>>()
+                        .ok_or_else(|| {
                             mlua::Error::RuntimeError(
                                 "serial: sequence table validation drifted during conversion"
                                     .to_string(),
                             )
-                        },
-                    )?;
+                        })?;
                     return Ok(SerialValue::Seq(sequence));
                 }
                 return Ok(SerialValue::Map(map));

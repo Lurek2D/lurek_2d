@@ -295,9 +295,17 @@ end
 
 ### `lurek.runtime.getLastError`
 
+Returns the most recent engine error as a table, or `nil` if no error has occurred.
+
 ```lua
 lurek.runtime.getLastError()
 ```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| LRuntimeGetLastErrorResult | Table with fields: `message` (string), `code` (string), `category` (string), and optional `hint` (string). Returns `nil` when no error is recorded. |
 
 **Example**
 

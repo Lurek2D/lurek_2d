@@ -492,7 +492,9 @@ impl<'a> SaveParser<'a> {
         match self.next_char() {
             Some(actual) if actual == expected => Ok(()),
             Some(actual) => Err(format!("expected '{expected}' but found '{actual}'")),
-            None => Err(format!("expected '{expected}' but reached end of save content")),
+            None => Err(format!(
+                "expected '{expected}' but reached end of save content"
+            )),
         }
     }
 

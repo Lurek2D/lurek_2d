@@ -606,7 +606,7 @@ describe("effect explicit owner coverage", function()
     end)
 
     -- @covers LPostFxStack:getEnabledEffects
-    it("returns only enabled effects from the stack", function()
+    it("returns only stack-enabled and effect-enabled objects", function()
         local stack = new_stack_local()
         stack:add(new_effect_local("bloom"))
         stack:add(new_effect_local("blur"))
@@ -614,20 +614,15 @@ describe("effect explicit owner coverage", function()
         local enabled = stack:getEnabledEffects()
         expect_equal(1, #enabled)
         expect_equal("bloom", enabled[1]:getType())
-    end)
-
-    -- @covers LPostFxEffect:setEnabled
-    -- @covers LPostFxStack:getEnabledEffects
-    it("excludes effect objects disabled at the effect level", function()
-        local stack = new_stack_local()
+        local stack2 = new_stack_local()
         local bloom = new_effect_local("bloom")
         local blur = new_effect_local("blur")
-        stack:add(bloom)
-        stack:add(blur)
+        stack2:add(bloom)
+        stack2:add(blur)
         blur:setEnabled(false)
-        local enabled = stack:getEnabledEffects()
-        expect_equal(1, #enabled)
-        expect_equal("bloom", enabled[1]:getType())
+        local enabled2 = stack2:getEnabledEffects()
+        expect_equal(1, #enabled2)
+        expect_equal("bloom", enabled2[1]:getType())
     end)
 
     -- @covers LPostFxStack:getWidth

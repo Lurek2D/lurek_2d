@@ -392,21 +392,21 @@ impl LuaUserData for LuaPostFxStack {
         methods.add_method_mut("dedup", |_, this, ()| {
             let mut seen_ptrs: Vec<*const ()> = Vec::new();
             let mut new_lua = Vec::with_capacity(this.effects.len());
-            let mut new_inner_effects = Vec::with_capacity(this.effects.len());
-            let mut new_inner_enabled = Vec::with_capacity(this.effects.len());
-            for (i, rc) in this.effects.iter().enumerate() {
+            for rc in &this.effects {
                 let ptr = Rc::as_ptr(rc) as *const ();
                 if !seen_ptrs.contains(&ptr) {
                     seen_ptrs.push(ptr);
                     new_lua.push(Rc::clone(rc));
-                    new_inner_effects.push(new_lua.len() - 1);
-                    new_inner_enabled.push(this.inner.enabled.get(i).copied().unwrap_or(true));
                 }
             }
             let removed = this.effects.len() - new_lua.len();
+            let mut new_inner_enabled = this.inner.enabled.clone();
+            new_inner_enabled.truncate(new_lua.len());
+            if new_inner_enabled.len() < new_lua.len() {
+                new_inner_enabled.resize(new_lua.len(), true);
+            }
             this.effects = new_lua;
-            this.inner.effects = new_inner_effects;
-            this.inner.enabled = new_inner_enabled;
+            this.sync_slots(new_inner_enabled);
             Ok(removed as i64)
         });
         // -- isCapturing --

@@ -91,14 +91,10 @@ describe("lurek.log.addSink", function()
     after_each(reset_log)
 
     -- @covers lurek.log.addSink
-    it("registers a memory sink and returns a positive id", function()
+    it("registers callback and memory sinks with filtering support", function()
         local id = new_memory_sink()
         expect_type("number", id)
         expect_true(id > 0, "sink id should be positive")
-    end)
-
-    -- @covers lurek.log.addSink
-    it("callback sinks honor level and tag filters", function()
         local seen = {}
         local id = lurek.log.addSink({
             type = "callback",

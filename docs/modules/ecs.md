@@ -116,6 +116,18 @@ LQueryView:ids()
 |------|-------------|
 | number[] | Array table of matching entity ids. |
 
+**Example**
+
+```lua
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    local view = uni:newQueryView({"pos"})
+    print("cached ids = " .. #view:ids())
+end
+```
+
 ---
 
 #### `LQueryView:lastTick`
@@ -132,6 +144,18 @@ LQueryView:lastTick()
 |------|-------------|
 | number | Query-change tick for the cached result set. |
 
+**Example**
+
+```lua
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    local view = uni:newQueryView({"pos"})
+    print("view tick = " .. tostring(view:lastTick()))
+end
+```
+
 ---
 
 #### `LQueryView:type`
@@ -147,6 +171,18 @@ LQueryView:type()
 | Type | Description |
 |------|-------------|
 | string | The string `[LQueryView](#lqueryview)`. |
+
+**Example**
+
+```lua
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    local view = uni:newQueryView({"pos"})
+    print("query view type = " .. view:type())
+end
+```
 
 ---
 
@@ -178,11 +214,7 @@ do
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
     local view = uni:newQueryView({"pos"})
-    print("query tick = " .. tostring(uni:getQueryChangeTick()))
-    print("query view type = " .. view:type())
     print("is query view = " .. tostring(view:typeOf("LQueryView")))
-    print("cached ids = " .. #view:ids())
-    print("view tick = " .. tostring(view:lastTick()))
 end
 ```
 
@@ -198,6 +230,8 @@ end
 
 #### `LRelationshipManager:adjustValue`
 
+Adds a delta to the numeric relationship value between two entity ids.
+
 ```lua
 LRelationshipManager:adjustValue(a, b, delta)
 ```
@@ -206,9 +240,21 @@ LRelationshipManager:adjustValue(a, b, delta)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | any |  |
-| `b` | any |  |
-| `delta` | any |  |
+| `a` | number | Source entity id. |
+| `b` | number | Target entity id. |
+| `delta` | number | Signed amount added to the current pair value. |
+
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:setValue(1, 2, 50)
+    rm:adjustValue(1, 2, 10)
+    print("1->2 = " .. rm:getValue(1, 2))
+    print("pairs = " .. rm:pairCount())
+end
+```
 
 ---
 
@@ -226,6 +272,16 @@ LRelationshipManager:defineType(name, levels, default_level)
 | `levels` | any |  |
 | `default_level?` | any |  |
 
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    print("types = " .. #rm:typeNames())
+end
+```
+
 ---
 
 #### `LRelationshipManager:getLevel`
@@ -242,9 +298,23 @@ LRelationshipManager:getLevel(a, b, type_name)
 | `b` | any |  |
 | `type_name` | any |  |
 
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:setLevel(1, 2, "friendship", "friendly")
+    print("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
+    print("types = " .. #rm:typeNames())
+end
+```
+
 ---
 
 #### `LRelationshipManager:getValue`
+
+Returns the numeric relationship value between two entity ids.
 
 ```lua
 LRelationshipManager:getValue(a, b)
@@ -254,20 +324,61 @@ LRelationshipManager:getValue(a, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | any |  |
-| `b` | any |  |
+| `a` | number | Source entity id. |
+| `b` | number | Target entity id. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Numeric value stored for the pair, or zero when unset. |
+
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:setValue(1, 2, 50)
+    rm:setValue(1, 3, -20)
+    print("1->2 = " .. rm:getValue(1, 2))
+    print("1->3 = " .. rm:getValue(1, 3))
+end
+```
 
 ---
 
 #### `LRelationshipManager:pairCount`
 
+Returns how many entity-id pairs currently have tracked relationship data.
+
 ```lua
 LRelationshipManager:pairCount()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| number | Count of stored relationship pairs. |
+
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:setLevel(1, 2, "friendship", "friendly")
+    rm:setLevel(1, 3, "friendship", "hostile")
+    print("pairs = " .. rm:pairCount())
+    print("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
+end
 ```
 
 ---
 
 #### `LRelationshipManager:removePair`
+
+Removes all tracked relationship data between two entity ids.
 
 ```lua
 LRelationshipManager:removePair(a, b)
@@ -277,12 +388,28 @@ LRelationshipManager:removePair(a, b)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | any |  |
-| `b` | any |  |
+| `a` | number | Source entity id. |
+| `b` | number | Target entity id. |
+
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:setLevel(1, 2, "friendship", "friendly")
+    rm:setLevel(1, 3, "friendship", "hostile")
+    print("before = " .. rm:pairCount())
+    rm:removePair(1, 3)
+    print("after = " .. rm:pairCount())
+end
+```
 
 ---
 
 #### `LRelationshipManager:removeType`
+
+Removes a named relationship type definition.
 
 ```lua
 LRelationshipManager:removeType(name)
@@ -292,7 +419,20 @@ LRelationshipManager:removeType(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Relationship type name to delete. |
+
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:defineType("trust", {"low", "medium", "high"}, "medium")
+    print("before = " .. #rm:typeNames())
+    rm:removeType("friendship")
+    print("after = " .. #rm:typeNames())
+end
+```
 
 ---
 
@@ -311,9 +451,23 @@ LRelationshipManager:setLevel(a, b, type_name, level)
 | `type_name` | any |  |
 | `level` | any |  |
 
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:setLevel(1, 2, "friendship", "friendly")
+    print("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
+    print("pairs = " .. rm:pairCount())
+end
+```
+
 ---
 
 #### `LRelationshipManager:setValue`
+
+Sets the numeric relationship value between two entity ids.
 
 ```lua
 LRelationshipManager:setValue(a, b, value)
@@ -323,29 +477,81 @@ LRelationshipManager:setValue(a, b, value)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | any |  |
-| `b` | any |  |
-| `value` | any |  |
+| `a` | number | Source entity id. |
+| `b` | number | Target entity id. |
+| `value` | number | Numeric value stored for the pair. |
+
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:setValue(1, 2, 50)
+    rm:setValue(1, 3, -20)
+    print("1->2 = " .. rm:getValue(1, 2))
+    print("1->3 = " .. rm:getValue(1, 3))
+end
+```
 
 ---
 
 #### `LRelationshipManager:type`
 
+Returns the Lua-visible type name for this relationship manager handle.
+
 ```lua
 LRelationshipManager:type()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string | The string `[LRelationshipManager](#lrelationshipmanager)`. |
+
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    print("type = " .. rm:type())
+end
 ```
 
 ---
 
 #### `LRelationshipManager:typeNames`
 
+Returns the defined relationship type names.
+
 ```lua
 LRelationshipManager:typeNames()
+```
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string[] | Array table of registered relationship type names. |
+
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:defineType("trust", {"low", "medium", "high"}, "medium")
+    local types = rm:typeNames()
+    print("types = " .. #types)
+    print("first = " .. tostring(types[1]))
+end
 ```
 
 ---
 
 #### `LRelationshipManager:typeOf`
+
+Returns whether this relationship manager handle matches a supported type name.
 
 ```lua
 LRelationshipManager:typeOf(name)
@@ -355,7 +561,23 @@ LRelationshipManager:typeOf(name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
+| `name` | string | Type name to compare against `[LRelationshipManager](#lrelationshipmanager)` and `LObject`. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the supplied type name matches this handle. |
+
+**Example**
+
+```lua
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    print("is_relationship_manager = " .. tostring(rm:typeOf("LRelationshipManager")))
+    print("is_object = " .. tostring(rm:typeOf("LObject")))
+end
+```
 
 ---
 
@@ -1235,6 +1457,18 @@ LUniverse:getQueryChangeTick()
 |------|-------------|
 | number | Monotonic world query-change tick. |
 
+**Example**
+
+```lua
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    uni:newQueryView({"pos"})
+    print("query tick = " .. tostring(uni:getQueryChangeTick()))
+end
+```
+
 ---
 
 #### `LUniverse:getRelated`
@@ -1644,6 +1878,18 @@ LUniverse:newQueryView(with_table, without_table)
 | Type | Description |
 |------|-------------|
 | [LQueryView](#lqueryview) | Cached query-view handle bound to this universe. |
+
+**Example**
+
+```lua
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    local view = uni:newQueryView({"pos"})
+    print("view created = " .. tostring(view ~= nil))
+end
+```
 
 ---
 

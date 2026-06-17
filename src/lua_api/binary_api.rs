@@ -884,7 +884,9 @@ impl mlua::UserData for ByteData {
         // -- getString --
         /// Returns the byte buffer as a string.
         /// @return | string | Raw byte buffer contents as a Lua string without UTF-8 validation.
-        methods.add_method("getString", |lua, this, ()| lua.create_string(this.as_bytes()));
+        methods.add_method("getString", |lua, this, ()| {
+            lua.create_string(this.as_bytes())
+        });
         // -- getByte --
         /// Reads one byte at a zero-based offset.
         /// @param | offset | integer | Zero-based byte offset.

@@ -104,6 +104,9 @@ describe("lurek.window state queries", function()
     -- @covers lurek.window.hasMouseFocus
     it("hasMouseFocus returns boolean", function()
         expect_type("boolean", lurek.window.hasMouseFocus())
+        expect_type("table", lurek.window.cursor)
+        expect_type("function", lurek.window.cursor.hasFocus)
+        expect_equal(lurek.window.hasMouseFocus(), lurek.window.cursor.hasFocus())
     end)
 
     -- @covers lurek.window.isMinimized
@@ -335,16 +338,6 @@ describe("lurek.window missing surface (Phase 17)", function()
     end)
 end)
 
--- @describe lurek.window cursor helpers
-describe("lurek.window cursor helpers", function()
-    -- @covers lurek.window.cursor.hasFocus
-    it("cursor.hasFocus mirrors the mouse focus query", function()
-        expect_type("table", lurek.window.cursor)
-        expect_type("function", lurek.window.cursor.hasFocus)
-        expect_equal(lurek.window.hasMouseFocus(), lurek.window.cursor.hasFocus())
-    end)
-end)
-
 -- @describe lurek.window DPI and dialog
 describe("lurek.window DPI and dialog", function()
   -- @covers lurek.window.onDpiChange
@@ -543,7 +536,7 @@ end)
 -- @describe windowConfig helper
 describe("windowConfig helper", function()
     -- @covers lurek.window.windowConfig
-    it("windowConfig applies title and mode fields", function()
+    it("windowConfig applies full and partial config updates", function()
         local apply = lurek.window["windowConfig"]
         apply({
             title = "Window Config Test",
@@ -558,10 +551,6 @@ describe("windowConfig helper", function()
         expect_equal(800, w)
         expect_equal(600, h)
         expect_equal(false, flags.fullscreen)
-    end)
-
-    -- @covers lurek.window.windowConfig
-    it("windowConfig applies only provided fields", function()
         local title_before = lurek.window.getTitle()
         local width_before, height_before = lurek.window.getDimensions()
 

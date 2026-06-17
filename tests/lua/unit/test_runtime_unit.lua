@@ -331,6 +331,45 @@ describe("lurek.runtime.getConfig", function()
         expect_true(cfg.config_reload_revision >= 0)
     end)
 end)
+
+-- @describe lurek.runtime.runBatch
+describe("lurek.runtime.runBatch", function()
+    -- @covers lurek.runtime.runBatch
+    it("records per-task pass and fail states", function()
+        local results = lurek.runtime.runBatch({
+            ok = function()
+                return true
+            end,
+            nope = function()
+                error("boom")
+            end,
+        })
+
+        expect_type("table", results)
+        expect_equal("passed", results.ok.status)
+        expect_equal("failed", results.nope.status)
+        expect_type("number", results.ok.time)
+        expect_type("number", results.nope.time)
+        expect_type("string", results.nope.error)
+    end)
+end)
+
+-- @describe lurek.runtime.getBatchResults
+describe("lurek.runtime.getBatchResults", function()
+    -- @covers lurek.runtime.getBatchResults
+    it("summarises passed failed and skipped task counts", function()
+        local results = {
+            ok = { status = "passed", time = 0.01 },
+            nope = { status = "failed", time = 0.02, error = "nope" },
+            later = { status = "skipped", time = 0.0 },
+        }
+
+        local passed, failed, skipped = lurek.runtime.getBatchResults(results)
+        expect_equal(1, passed)
+        expect_equal(1, failed)
+        expect_equal(1, skipped)
+    end)
+end)
 end
 -- END test_runtime_core_unit.lua
 

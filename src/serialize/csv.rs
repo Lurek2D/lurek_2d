@@ -95,9 +95,7 @@ pub fn to_csv(val: &SerialValue, opts: CsvOptions) -> Result<String, String> {
                                 let values: Vec<String> = headers
                                     .iter()
                                     .map(|header| {
-                                        map.get(header)
-                                            .map(ToString::to_string)
-                                            .unwrap_or_default()
+                                        map.get(header).map(ToString::to_string).unwrap_or_default()
                                     })
                                     .collect();
                                 writer
@@ -105,10 +103,8 @@ pub fn to_csv(val: &SerialValue, opts: CsvOptions) -> Result<String, String> {
                                     .map_err(|e| format!("CSV encode error: {e}"))?;
                             }
                             _ => {
-                                return Err(
-                                    "to_csv: rows must be maps when has_headers is true"
-                                        .to_string(),
-                                )
+                                return Err("to_csv: rows must be maps when has_headers is true"
+                                    .to_string())
                             }
                         }
                     }
@@ -116,8 +112,7 @@ pub fn to_csv(val: &SerialValue, opts: CsvOptions) -> Result<String, String> {
                         .flush()
                         .map_err(|e| format!("CSV encode error: {e}"))?;
                     drop(writer);
-                    return String::from_utf8(out)
-                        .map_err(|e| format!("CSV encode error: {e}"));
+                    return String::from_utf8(out).map_err(|e| format!("CSV encode error: {e}"));
                 }
                 _ => return Err("to_csv: rows must be maps when has_headers is true".to_string()),
             }

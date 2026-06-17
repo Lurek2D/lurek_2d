@@ -1187,6 +1187,13 @@ LRuntimeGetConfigResult = {}
 ---@field version string Engine version string.
 LRuntimeGetInfoResult = {}
 
+---@class LRuntimeGetLastErrorResult
+---@field category string Error category.
+---@field code string Error code.
+---@field hint string? Optional hint for resolution.
+---@field message string Error message.
+LRuntimeGetLastErrorResult = {}
+
 ---@class LRuntimeParseArgsResult
 ---@field flags table Boolean flags indexed by name.
 ---@field options table String options indexed by name.
@@ -2241,11 +2248,11 @@ LGlobe = {}
 ---@class LGlobeRegistry
 LGlobeRegistry = {}
 
---- Lua userdata that controls which files are scanned by a LGrepEngine instance.
+--- Lua userdata that controls which files are scanned by a `LuaGrepEngine`.
 ---@class LFileFilter
 LFileFilter = {}
 
---- Lua userdata that performs pattern-based search across game content files.
+--- Lua userdata that performs search operations across game content files.
 ---@class LGrepEngine
 LGrepEngine = {}
 
@@ -11113,9 +11120,10 @@ function LQueryView:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LQueryView:typeOf(name) end
 
----@param a any
----@param b any
----@param delta any
+--- Adds a delta to the numeric relationship value between two entity ids.
+---@param a number Source entity id.
+---@param b number Target entity id.
+---@param delta number Signed amount added to the current pair value.
 function LRelationshipManager:adjustValue(a, b, delta) end
 
 ---@param name any
@@ -11128,17 +11136,23 @@ function LRelationshipManager:defineType(name, levels, default_level) end
 ---@param type_name any
 function LRelationshipManager:getLevel(a, b, type_name) end
 
----@param a any
----@param b any
+--- Returns the numeric relationship value between two entity ids.
+---@param a number Source entity id.
+---@param b number Target entity id.
+---@return number Numeric value stored for the pair, or zero when unset.
 function LRelationshipManager:getValue(a, b) end
 
+--- Returns how many entity-id pairs currently have tracked relationship data.
+---@return number Count of stored relationship pairs.
 function LRelationshipManager:pairCount() end
 
----@param a any
----@param b any
+--- Removes all tracked relationship data between two entity ids.
+---@param a number Source entity id.
+---@param b number Target entity id.
 function LRelationshipManager:removePair(a, b) end
 
----@param name any
+--- Removes a named relationship type definition.
+---@param name string Relationship type name to delete.
 function LRelationshipManager:removeType(name) end
 
 ---@param a any
@@ -11147,16 +11161,23 @@ function LRelationshipManager:removeType(name) end
 ---@param level any
 function LRelationshipManager:setLevel(a, b, type_name, level) end
 
----@param a any
----@param b any
----@param value any
+--- Sets the numeric relationship value between two entity ids.
+---@param a number Source entity id.
+---@param b number Target entity id.
+---@param value number Numeric value stored for the pair.
 function LRelationshipManager:setValue(a, b, value) end
 
+--- Returns the Lua-visible type name for this relationship manager handle.
+---@return string The string `LRelationshipManager`.
 function LRelationshipManager:type() end
 
+--- Returns the defined relationship type names.
+---@return string[] Array table of registered relationship type names.
 function LRelationshipManager:typeNames() end
 
----@param name any
+--- Returns whether this relationship manager handle matches a supported type name.
+---@param name string Type name to compare against `LRelationshipManager` and `LObject`.
+---@return boolean True when the supplied type name matches this handle.
 function LRelationshipManager:typeOf(name) end
 
 --- Adds a named directed relation from one entity to another.
@@ -13648,15 +13669,15 @@ lurek.globe.raySphereIntersect = function(ox, oy, oz, dx, dy, dz, radius) end
 ---@return boolean True when a globe was removed.
 lurek.globe.remove = function(name) end
 
---- Add allowed file extensions â€” Lua userdata object exposed by the engine.
+--- Add an allowed file extension to this filter.
 ---@param ext string Extension (without dot).
 function LFileFilter:addExtension(ext) end
 
---- Add excluded file extension for this object.
+--- Add an excluded file extension to this filter.
 ---@param ext string Extension to exclude.
 function LFileFilter:excludeExtension(ext) end
 
---- Add path pattern to exclude for this object.
+--- Add a path substring exclusion rule to this filter.
 ---@param pattern string Substring to exclude in file paths.
 function LFileFilter:excludePattern(pattern) end
 
@@ -13664,13 +13685,13 @@ function LFileFilter:excludePattern(pattern) end
 ---@param include boolean Include hidden files.
 function LFileFilter:setIncludeHidden(include) end
 
---- Count total matches without returning line details.
+--- Count total literal matches without returning line details.
 ---@param path string Directory to search.
 ---@param pattern string Text pattern.
 ---@return number Total match count.
 function LGrepEngine:count(path, pattern) end
 
---- Search with multiple patterns simultaneously.
+--- Search with multiple literal patterns simultaneously.
 ---@param path string Directory to search.
 ---@param patterns table Array of literal patterns.
 ---@return table Search result.
@@ -13682,10 +13703,10 @@ function LGrepEngine:multiSearch(path, patterns) end
 ---@return table Search result with matches, files_searched, total_matches, duration_ms.
 function LGrepEngine:search(path, pattern) end
 
---- Search with file extension filter.
+--- Search with a file extension filter.
 ---@param path string Directory to search.
 ---@param pattern string Text pattern.
----@param extensions table Array of file extensions (e.g., {"lua", "toml"}).
+---@param extensions table Array of file extensions (for example {"lua", "toml"}).
 ---@return table Search result.
 function LGrepEngine:searchExt(path, pattern, extensions) end
 
@@ -13695,40 +13716,40 @@ function LGrepEngine:searchExt(path, pattern, extensions) end
 ---@return table Search result.
 function LGrepEngine:searchFiles(files, pattern) end
 
---- Searches a JSON file for all values associated with a given key name at any depth.
----@param file string Path to the JSON file to search.
----@param key string Key name to search for in the JSON structure.
----@return table Array of tables with fields: path (string), value (string).
+--- Search a JSON file for every matching key name.
+---@param file string JSON file path.
+---@param key string Key name to search for.
+---@return table Array of matches with path and value.
 lurek.grep.jsonSearch = function(file, key) end
 
---- Searches a structured log file by log level and regex pattern, returning matched entries.
----@param file string Path to the log file to search.
----@param level string Log level filter (e.g. "ERROR", "WARN"); empty string matches all.
----@param pattern string Regex pattern to match against log messages; empty string matches all.
----@return table Array of tables with fields: line (integer), message (string), timestamp (string?), level (string?).
+--- Search a structured log file by level and literal message pattern.
+---@param file string Log file path.
+---@param level string Log level filter (INFO, WARN, ERROR, etc.) or empty.
+---@param pattern string Literal message pattern or empty.
+---@return table Array of matching log entries.
 lurek.grep.logSearch = function(file, level, pattern) end
 
---- Creates a file filter preset that matches only Lua source files (.lua extension).
----@return LFileFilter A file filter configured for Lua files only.
+--- Create a filter for Lua files only.
+---@return LFileFilter Pre-configured Lua filter.
 lurek.grep.luaFilter = function() end
 
---- Creates a new grep engine with default configuration settings.
----@return LGrepEngine A new grep engine instance.
+--- Create a new grep engine with default settings.
+---@return LGrepEngine Grep engine instance.
 lurek.grep.newEngine = function() end
 
---- Creates a new grep engine with custom search configuration options.
----@param opts table Options table with fields: threads (integer), case_sensitive (boolean), whole_word (boolean), max_file_size (integer).
----@return LGrepEngine A new configured grep engine instance.
+--- Create a grep engine with custom options.
+---@param opts table Options: threads (integer), case_sensitive (boolean), whole_word (boolean), max_file_size (integer).
+---@return LGrepEngine Grep engine instance.
 lurek.grep.newEngineOpts = function(opts) end
 
---- Creates a new empty file filter that can be configured to match specific file patterns.
----@return LFileFilter A new empty file filter instance.
+--- Create an empty file filter.
+---@return LFileFilter File filter instance.
 lurek.grep.newFilter = function() end
 
---- Searches a directory tree for files containing an exact literal pattern string.
----@param path string Root directory path to search in.
----@param pattern string Literal text pattern to search for.
----@return table Array of tables with fields: file (string), line (integer), text (string).
+--- Search a directory for a literal pattern in game content files.
+---@param path string Directory path.
+---@param pattern string Text to search for.
+---@return table Search result.
 lurek.grep.search = function(path, pattern) end
 
 --- Appends CSS source text to the document stylesheet.
@@ -27203,6 +27224,11 @@ lurek.serial.encode = function(value, format, opts) end
 ---@return string A binary string containing the MessagePack-encoded data.
 lurek.serial.encodeMsgPack = function(value) end
 
+--- Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
+---@param value table The Lua table to encode. Must be a table (not a primitive).
+---@return string A binary string containing the MessagePack-encoded data.
+lurek.serial.encodeMsgPack = function(value) end
+
 --- Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.
 ---@param text string The CSV content to parse.
 ---@param delimiter? string Single-character field delimiter. Defaults to comma (",").
@@ -27908,6 +27934,8 @@ lurek.runtime.getEnv = function(name) end
 ---@return LRuntimeGetInfoResult Table with fields: `engine` (string), `version` (string), `lua_version` (string), `renderer` (string), `os` (string), `processors` (number), `memory` (number).
 lurek.runtime.getInfo = function() end
 
+--- Returns the most recent engine error as a table, or `nil` if no error has occurred.
+---@return LRuntimeGetLastErrorResult Table with fields: `message` (string), `code` (string), `category` (string), and optional `hint` (string). Returns `nil` when no error is recorded.
 lurek.runtime.getLastError = function() end
 
 --- Returns the current engine log verbosity level as a string.

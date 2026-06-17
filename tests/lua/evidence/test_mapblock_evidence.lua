@@ -38,6 +38,33 @@ local function level_gid_histogram(world, level)
     return histogram
 end
 
+local function copy_cell_records(cells)
+    local out = {}
+    for i = 1, #cells do
+        local cell = cells[i]
+        out[i] = { x = cell.x, y = cell.y }
+    end
+    return out
+end
+
+local function copy_placements(placements)
+    local out = {}
+    for i = 1, #placements do
+        local placement = placements[i]
+        out[i] = {
+            block_name = placement.block_name,
+            group_name = placement.group_name,
+            grid_x = placement.grid_x,
+            grid_y = placement.grid_y,
+            rotation = placement.rotation,
+            mirrored = placement.mirrored,
+            level = placement.level or 0,
+            cells = copy_cell_records(placement.cells or {}),
+        }
+    end
+    return out
+end
+
 local function manifest_payload(world)
     return {
         seed = world.seed,
@@ -64,14 +91,17 @@ local function manifest_payload(world)
             upper_count = world.detail.upper_count,
             size_labels = world.detail.size_labels,
             block_sizes = world.detail.block_sizes,
-            level_counts = world.detail.level_counts,
+            level_counts = {
+                level0 = world.detail.level_counts[0] or 0,
+                level1 = world.detail.level_counts[1] or 0,
+            },
             gid_histograms = {
                 level0 = level_gid_histogram(world, 0),
                 level1 = level_gid_histogram(world, 1),
             },
         },
-        macro_placements = world.macro.placements,
-        detail_placements = world.detail.placements,
+        macro_placements = copy_placements(world.macro.placements),
+        detail_placements = copy_placements(world.detail.placements),
     }
 end
 

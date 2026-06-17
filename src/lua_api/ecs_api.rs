@@ -43,7 +43,14 @@ pub struct LuaQueryView {
 
 impl LuaUserData for LuaRelationshipManager {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- type --
+        /// Returns the Lua-visible type name for this relationship manager handle.
+        /// @return | string | The string `LRelationshipManager`.
         methods.add_method("type", |_, _, ()| Ok("LRelationshipManager"));
+        // -- typeOf --
+        /// Returns whether this relationship manager handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LRelationshipManager` and `LObject`.
+        /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LRelationshipManager" || name == "LObject")
         });
@@ -61,20 +68,41 @@ impl LuaUserData for LuaRelationshipManager {
                 Ok(())
             },
         );
+        // -- removeType --
+        /// Removes a named relationship type definition.
+        /// @param | name | string | Relationship type name to delete.
         methods.add_method("removeType", |_, this, name: String| {
             this.inner.borrow_mut().remove_type(&name);
             Ok(())
         });
+        // -- typeNames --
+        /// Returns the defined relationship type names.
+        /// @return | string[] | Array table of registered relationship type names.
         methods.add_method("typeNames", |_, this, ()| {
             Ok(this.inner.borrow().type_names())
         });
+        // -- setValue --
+        /// Sets the numeric relationship value between two entity ids.
+        /// @param | a | integer | Source entity id.
+        /// @param | b | integer | Target entity id.
+        /// @param | value | number | Numeric value stored for the pair.
         methods.add_method("setValue", |_, this, (a, b, value): (u32, u32, f64)| {
             this.inner.borrow_mut().set_value(a, b, value);
             Ok(())
         });
+        // -- getValue --
+        /// Returns the numeric relationship value between two entity ids.
+        /// @param | a | integer | Source entity id.
+        /// @param | b | integer | Target entity id.
+        /// @return | number | Numeric value stored for the pair, or zero when unset.
         methods.add_method("getValue", |_, this, (a, b): (u32, u32)| {
             Ok(this.inner.borrow().get_value(a, b))
         });
+        // -- adjustValue --
+        /// Adds a delta to the numeric relationship value between two entity ids.
+        /// @param | a | integer | Source entity id.
+        /// @param | b | integer | Target entity id.
+        /// @param | delta | number | Signed amount added to the current pair value.
         methods.add_method("adjustValue", |_, this, (a, b, delta): (u32, u32, f64)| {
             this.inner.borrow_mut().adjust_value(a, b, delta);
             Ok(())
@@ -91,10 +119,17 @@ impl LuaUserData for LuaRelationshipManager {
                 Ok(this.inner.borrow().get_level(a, b, &type_name))
             },
         );
+        // -- removePair --
+        /// Removes all tracked relationship data between two entity ids.
+        /// @param | a | integer | Source entity id.
+        /// @param | b | integer | Target entity id.
         methods.add_method("removePair", |_, this, (a, b): (u32, u32)| {
             this.inner.borrow_mut().remove_relation(a, b);
             Ok(())
         });
+        // -- pairCount --
+        /// Returns how many entity-id pairs currently have tracked relationship data.
+        /// @return | integer | Count of stored relationship pairs.
         methods.add_method("pairCount", |_, this, ()| {
             Ok(this.inner.borrow().relation_count())
         });

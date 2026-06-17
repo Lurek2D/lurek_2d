@@ -32,7 +32,7 @@ end)
 -- @describe lurek.font.list
 describe("lurek.font.list", function()
     -- @covers lurek.font.list
-    it("returns font entries with name size and style fields", function()
+    it("returns built-in entries and includes runtime-loaded fonts", function()
         local fonts = lurek.font.list()
         expect_true(type(fonts) == "table", "should be a table")
         expect_true(#fonts > 0, "should have at least one font")
@@ -41,9 +41,6 @@ describe("lurek.font.list", function()
         expect_true(type(entry.name) == "string", "name is string")
         expect_true(type(entry.size) == "number", "size is number")
         expect_true(type(entry.style) == "string", "style is string")
-    end)
-
-    it("includes runtime-loaded fonts in the public list", function()
         local before = lurek.font.list()
         local loaded = lurek.font.load("content/examples/assets/fonts/sample_font.ttf", 14)
         expect_equal("userdata", type(loaded))

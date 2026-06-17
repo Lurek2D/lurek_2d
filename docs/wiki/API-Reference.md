@@ -2696,18 +2696,18 @@ LQueryView:typeOf(name: string) -> boolean -- Returns whether this cached query-
 ### LRelationshipManager
 
 ```lua
-LRelationshipManager:adjustValue(a: any, b: any, delta: any)
+LRelationshipManager:adjustValue(a: integer, b: integer, delta: number) -- Adds a delta to the numeric relationship value between two entity ids.
 LRelationshipManager:defineType(name: any, levels: any, [default_level]: any)
 LRelationshipManager:getLevel(a: any, b: any, type_name: any)
-LRelationshipManager:getValue(a: any, b: any)
-LRelationshipManager:pairCount()
-LRelationshipManager:removePair(a: any, b: any)
-LRelationshipManager:removeType(name: any)
+LRelationshipManager:getValue(a: integer, b: integer) -> number -- Returns the numeric relationship value between two entity ids.
+LRelationshipManager:pairCount() -> integer -- Returns how many entity-id pairs currently have tracked relationship data.
+LRelationshipManager:removePair(a: integer, b: integer) -- Removes all tracked relationship data between two entity ids.
+LRelationshipManager:removeType(name: string) -- Removes a named relationship type definition.
 LRelationshipManager:setLevel(a: any, b: any, type_name: any, level: any)
-LRelationshipManager:setValue(a: any, b: any, value: any)
-LRelationshipManager:type()
-LRelationshipManager:typeNames()
-LRelationshipManager:typeOf(name: any)
+LRelationshipManager:setValue(a: integer, b: integer, value: number) -- Sets the numeric relationship value between two entity ids.
+LRelationshipManager:type() -> string -- Returns the Lua-visible type name for this relationship manager handle.
+LRelationshipManager:typeNames() -> string[] -- Returns the defined relationship type names.
+LRelationshipManager:typeOf(name: string) -> boolean -- Returns whether this relationship manager handle matches a supported type name.
 ```
 
 ### LUniverse
@@ -3353,31 +3353,31 @@ LGlobeRegistry:typeOf(name: string) -> boolean -- Returns whether this registry 
 [Module page](Module-grep)
 
 ```lua
-lurek.grep.jsonSearch(file: string, key: string) -> table -- Searches a JSON file for all values associated with a given key name at any depth.
-lurek.grep.logSearch(file: string, level: string, pattern: string) -> table -- Searches a structured log file by log level and regex pattern, returning matched entries.
-lurek.grep.luaFilter() -> LFileFilter -- Creates a file filter preset that matches only Lua source files (.lua extension).
-lurek.grep.newEngine() -> LGrepEngine -- Creates a new grep engine with default configuration settings.
-lurek.grep.newEngineOpts(opts: table) -> LGrepEngine -- Creates a new grep engine with custom search configuration options.
-lurek.grep.newFilter() -> LFileFilter -- Creates a new empty file filter that can be configured to match specific file patterns.
-lurek.grep.search(path: string, pattern: string) -> table -- Searches a directory tree for files containing an exact literal pattern string.
+lurek.grep.jsonSearch(file: string, key: string) -> table -- Search a JSON file for every matching key name.
+lurek.grep.logSearch(file: string, level: string, pattern: string) -> table -- Search a structured log file by level and literal message pattern.
+lurek.grep.luaFilter() -> LFileFilter -- Create a filter for Lua files only.
+lurek.grep.newEngine() -> LGrepEngine -- Create a new grep engine with default settings.
+lurek.grep.newEngineOpts(opts: table) -> LGrepEngine -- Create a grep engine with custom options.
+lurek.grep.newFilter() -> LFileFilter -- Create an empty file filter.
+lurek.grep.search(path: string, pattern: string) -> table -- Search a directory for a literal pattern in game content files.
 ```
 
 ### LFileFilter
 
 ```lua
-LFileFilter:addExtension(ext: string) -- Add allowed file extensions â€” Lua userdata object exposed by the engine.
-LFileFilter:excludeExtension(ext: string) -- Add excluded file extension for this object.
-LFileFilter:excludePattern(pattern: string) -- Add path pattern to exclude for this object.
+LFileFilter:addExtension(ext: string) -- Add an allowed file extension to this filter.
+LFileFilter:excludeExtension(ext: string) -- Add an excluded file extension to this filter.
+LFileFilter:excludePattern(pattern: string) -- Add a path substring exclusion rule to this filter.
 LFileFilter:setIncludeHidden(include: boolean) -- Set whether hidden files are included.
 ```
 
 ### LGrepEngine
 
 ```lua
-LGrepEngine:count(path: string, pattern: string) -> integer -- Count total matches without returning line details.
-LGrepEngine:multiSearch(path: string, patterns: table) -> table -- Search with multiple patterns simultaneously.
+LGrepEngine:count(path: string, pattern: string) -> integer -- Count total literal matches without returning line details.
+LGrepEngine:multiSearch(path: string, patterns: table) -> table -- Search with multiple literal patterns simultaneously.
 LGrepEngine:search(path: string, pattern: string) -> table -- Search a directory for a literal pattern.
-LGrepEngine:searchExt(path: string, pattern: string, extensions: table) -> table -- Search with file extension filter.
+LGrepEngine:searchExt(path: string, pattern: string, extensions: table) -> table -- Search with a file extension filter.
 LGrepEngine:searchFiles(files: table, pattern: string) -> table -- Search a specific provided list of files for text matches.
 ```
 
@@ -7104,7 +7104,7 @@ lurek.runtime.getConfig() -> table -- Returns a table containing the current eng
 lurek.runtime.getDebugOverlay() -> boolean -- Returns whether the on-screen debug overlay is currently enabled.
 lurek.runtime.getEnv(name: string) -> string -- Reads an environment variable by name. Returns `nil` if the variable is not set.
 lurek.runtime.getInfo() -> table -- Returns a table with comprehensive engine and host information.
-lurek.runtime.getLastError()
+lurek.runtime.getLastError() -> table -- Returns the most recent engine error as a table, or `nil` if no error has occurred.
 lurek.runtime.getLogLevel() -> string -- Returns the current engine log verbosity level as a string.
 lurek.runtime.getMemorySize() -> number -- Returns the total physical memory of the host system in megabytes.
 lurek.runtime.getMessage(id: string) -> string -- Resolves a message string by its identifier from the engine message catalog.

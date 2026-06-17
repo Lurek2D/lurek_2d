@@ -18,6 +18,112 @@ do
     print("stance 1->2 = " .. tostring(rm:getLevel(1, 2, "stance")))
 end
 
+--@api: LRelationshipManager:type
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    print("type = " .. rm:type())
+end
+
+--@api: LRelationshipManager:typeOf
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    print("is_relationship_manager = " .. tostring(rm:typeOf("LRelationshipManager")))
+    print("is_object = " .. tostring(rm:typeOf("LObject")))
+end
+
+--@api: LRelationshipManager:defineType
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    print("types = " .. #rm:typeNames())
+end
+
+--@api: LRelationshipManager:removeType
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:defineType("trust", {"low", "medium", "high"}, "medium")
+    print("before = " .. #rm:typeNames())
+    rm:removeType("friendship")
+    print("after = " .. #rm:typeNames())
+end
+
+--@api: LRelationshipManager:typeNames
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:defineType("trust", {"low", "medium", "high"}, "medium")
+    local types = rm:typeNames()
+    print("types = " .. #types)
+    print("first = " .. tostring(types[1]))
+end
+
+--@api: LRelationshipManager:setValue
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:setValue(1, 2, 50)
+    rm:setValue(1, 3, -20)
+    print("1->2 = " .. rm:getValue(1, 2))
+    print("1->3 = " .. rm:getValue(1, 3))
+end
+
+--@api: LRelationshipManager:getValue
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:setValue(1, 2, 50)
+    rm:setValue(1, 3, -20)
+    print("1->2 = " .. rm:getValue(1, 2))
+    print("1->3 = " .. rm:getValue(1, 3))
+end
+
+--@api: LRelationshipManager:adjustValue
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:setValue(1, 2, 50)
+    rm:adjustValue(1, 2, 10)
+    print("1->2 = " .. rm:getValue(1, 2))
+    print("pairs = " .. rm:pairCount())
+end
+
+--@api: LRelationshipManager:setLevel
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:setLevel(1, 2, "friendship", "friendly")
+    print("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
+    print("pairs = " .. rm:pairCount())
+end
+
+--@api: LRelationshipManager:getLevel
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:setLevel(1, 2, "friendship", "friendly")
+    print("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
+    print("types = " .. #rm:typeNames())
+end
+
+--@api: LRelationshipManager:removePair
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:setLevel(1, 2, "friendship", "friendly")
+    rm:setLevel(1, 3, "friendship", "hostile")
+    print("before = " .. rm:pairCount())
+    rm:removePair(1, 3)
+    print("after = " .. rm:pairCount())
+end
+
+--@api: LRelationshipManager:pairCount
+do
+    local rm = lurek.ecs.newRelationshipManager()
+    rm:defineType("friendship", {"hostile", "neutral", "friendly"}, "neutral")
+    rm:setLevel(1, 2, "friendship", "friendly")
+    rm:setLevel(1, 3, "friendship", "hostile")
+    print("pairs = " .. rm:pairCount())
+    print("level = " .. tostring(rm:getLevel(1, 2, "friendship")))
+end
+
 --@api: LUniverse:spawn
 do
     local uni = lurek.ecs.newUniverse()
@@ -96,21 +202,57 @@ do
 end
 
 --@api: LUniverse:getQueryChangeTick
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    uni:newQueryView({"pos"})
+    print("query tick = " .. tostring(uni:getQueryChangeTick()))
+end
+
 --@api: LUniverse:newQueryView
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    local view = uni:newQueryView({"pos"})
+    print("view created = " .. tostring(view ~= nil))
+end
+
 --@api: LQueryView:ids
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    local view = uni:newQueryView({"pos"})
+    print("cached ids = " .. #view:ids())
+end
+
 --@api: LQueryView:lastTick
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    local view = uni:newQueryView({"pos"})
+    print("view tick = " .. tostring(view:lastTick()))
+end
+
 --@api: LQueryView:type
+do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, "pos", {x = 3, y = 4})
+    local view = uni:newQueryView({"pos"})
+    print("query view type = " .. view:type())
+end
+
 --@api: LQueryView:typeOf
 do
     local uni = lurek.ecs.newUniverse()
     local id = uni:spawn()
     uni:set(id, "pos", {x = 3, y = 4})
     local view = uni:newQueryView({"pos"})
-    print("query tick = " .. tostring(uni:getQueryChangeTick()))
-    print("query view type = " .. view:type())
     print("is query view = " .. tostring(view:typeOf("LQueryView")))
-    print("cached ids = " .. #view:ids())
-    print("view tick = " .. tostring(view:lastTick()))
 end
 
 --@api: LUniverse:each

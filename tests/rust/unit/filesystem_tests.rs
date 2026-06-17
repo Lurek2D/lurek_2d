@@ -507,7 +507,10 @@ mod zip_mount_tests {
     #[test]
     fn new_error_does_not_expose_host_path() {
         let missing = PathBuf::from("C:/very/secret/archive.zip");
-        let err = ZipMount::new(&missing, "mods").unwrap_err();
+        let err = match ZipMount::new(&missing, "mods") {
+            Ok(_) => panic!("expected missing archive to fail"),
+            Err(err) => err,
+        };
         assert!(err.contains("cannot open archive"));
         assert!(!err.contains(&missing.to_string_lossy().to_string()));
     }

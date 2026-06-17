@@ -590,16 +590,12 @@ describe("camera explicit owner coverage", function()
     end)
 
     -- @covers LCamera:toScreen
-    it("converts world coordinates into screen coordinates", function()
+    it("converts coordinates between world and screen space", function()
         local cam = new_camera_local()
         local sx, sy = cam:toScreen(0, 0)
         local wx, wy = cam:toWorld(sx, sy)
         expect_near(0.0, wx, 0.001)
         expect_near(0.0, wy, 0.001)
-    end)
-
-    it("round-trips coordinates with viewport offsets", function()
-        local cam = new_camera_local()
         cam:setViewport(80, 40, 320, 240)
         cam:setPosition(25, -10)
         cam:setZoom(2.0)

@@ -93,16 +93,10 @@ end)
 -- @describe lurek.asset.refcount
 describe("lurek.asset.refcount", function()
     -- @covers lurek.asset.refcount
-    it("starts at one after initial load", function()
-        reset_assets()
-        local handle = lurek.asset.load(PATH_JSON, "text")
-        expect_equal(1, lurek.asset.refcount(handle))
-        lurek.asset.unload(handle)
-    end)
-
-    it("reuses one cache entry for repeated loads of the same path and type", function()
+    it("tracks the first and repeated loads of the same cached asset", function()
         reset_assets()
         local first = lurek.asset.load(PATH_JSON, "text")
+        expect_equal(1, lurek.asset.refcount(first))
         local second = lurek.asset.load(PATH_JSON, "text")
         expect_equal(2, lurek.asset.refcount(first))
         expect_equal(2, lurek.asset.refcount(second))

@@ -117,7 +117,11 @@ pub fn display_snapshots(
             return displays;
         }
     }
-    vec![fallback_display_info(fallback_width, fallback_height, dpi_scale)]
+    vec![fallback_display_info(
+        fallback_width,
+        fallback_height,
+        dpi_scale,
+    )]
 }
 /// Return the enumeration index of the monitor `window` currently occupies, or `None` if unavailable.
 pub fn current_display_index(window: &Window) -> Option<usize> {

@@ -89,16 +89,12 @@ describe("cursor manager methods", function()
     end)
 
     -- @covers LCursorManager:removeRule
-    it("removeRule accepts a registered context name", function()
+    it("removeRule clears a registered context rule and falls back cleanly", function()
         local manager = new_manager()
         manager:addRule("ui_button", "hand")
         expect_no_error(function()
             manager:removeRule("ui_button")
         end)
-    end)
-
-    it("falls back to the explicit default cursor when a context has no rule", function()
-        local manager = new_manager()
         manager:setSystem("hand")
         manager:addRule("ui_button", "crosshair")
         manager:setContext("ui_button")

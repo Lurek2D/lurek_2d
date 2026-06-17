@@ -32,9 +32,10 @@
     },
     "layer_count": 2,
     "level_count": 2,
-    "level_counts": [
-      2
-    ],
+    "level_counts": {
+      "level0": 37,
+      "level1": 2
+    },
     "segment_tiles": 5,
     "size_labels": [
       "10x10",
@@ -49,119 +50,6 @@
   },
   "detail_placements": [
     {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 0,
-          "y": 5
-        }
-      ],
-      "grid_x": 0,
-      "grid_y": 5,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 5,
-          "y": 0
-        }
-      ],
-      "grid_x": 5,
-      "grid_y": 0,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 8,
-          "y": 2
-        }
-      ],
-      "grid_x": 8,
-      "grid_y": 2,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 6,
-          "y": 5
-        }
-      ],
-      "grid_x": 6,
-      "grid_y": 5,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 1,
-          "y": 0
-        }
-      ],
-      "grid_x": 1,
-      "grid_y": 0,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 2,
-          "y": 0
-        }
-      ],
-      "grid_x": 2,
-      "grid_y": 0,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 7,
-          "y": 0
-        }
-      ],
-      "grid_x": 7,
-      "grid_y": 0,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
@@ -177,47 +65,14 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
-          "x": 3,
-          "y": 6
-        }
-      ],
-      "grid_x": 3,
-      "grid_y": 6,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 8,
-          "y": 1
-        }
-      ],
-      "grid_x": 8,
-      "grid_y": 1,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 3,
+          "x": 7,
           "y": 0
         }
       ],
-      "grid_x": 3,
+      "grid_x": 7,
       "grid_y": 0,
       "group_name": "ground",
       "level": 0,
@@ -225,7 +80,96 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 0,
+          "y": 5
+        }
+      ],
+      "grid_x": 0,
+      "grid_y": 5,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 7,
+          "y": 5
+        }
+      ],
+      "grid_x": 7,
+      "grid_y": 5,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "grid_x": 0,
+      "grid_y": 0,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 2,
+          "y": 0
+        }
+      ],
+      "grid_x": 2,
+      "grid_y": 0,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 4,
+          "y": 0
+        }
+      ],
+      "grid_x": 4,
+      "grid_y": 0,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 0,
+          "y": 1
+        }
+      ],
+      "grid_x": 0,
+      "grid_y": 1,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
       "block_name": "coast",
       "cells": [
         {
@@ -241,31 +185,14 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
-          "x": -1,
-          "y": 3
-        }
-      ],
-      "grid_x": -1,
-      "grid_y": 3,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 6,
+          "x": 3,
           "y": 0
         }
       ],
-      "grid_x": 6,
+      "grid_x": 3,
       "grid_y": 0,
       "group_name": "ground",
       "level": 0,
@@ -273,111 +200,29 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 0,
-          "y": 1
-        }
-      ],
-      "grid_x": 0,
-      "grid_y": 1,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 7,
-          "y": 5
-        }
-      ],
-      "grid_x": 7,
-      "grid_y": 5,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 4,
-          "y": 6
-        }
-      ],
-      "grid_x": 4,
-      "grid_y": 6,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
           "x": 8,
-          "y": 3
+          "y": 2
         }
       ],
       "grid_x": 8,
-      "grid_y": 3,
+      "grid_y": 2,
       "group_name": "ground",
       "level": 0,
       "mirrored": false,
       "rotation": 0
     },
     {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
-          "x": 5,
-          "y": 5
-        }
-      ],
-      "grid_x": 5,
-      "grid_y": 5,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 0,
-          "y": 4
-        }
-      ],
-      "grid_x": 0,
-      "grid_y": 4,
-      "group_name": "ground",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 0,
+          "x": 1,
           "y": 0
         }
       ],
-      "grid_x": 0,
+      "grid_x": 1,
       "grid_y": 0,
       "group_name": "ground",
       "level": 0,
@@ -385,7 +230,6 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
@@ -401,23 +245,36 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
-          "x": 4,
-          "y": 0
+          "x": 0,
+          "y": 4
         }
       ],
-      "grid_x": 4,
-      "grid_y": 0,
+      "grid_x": 0,
+      "grid_y": 4,
       "group_name": "ground",
       "level": 0,
       "mirrored": false,
       "rotation": 0
     },
     {
-      "block_index": 0,
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 4,
+          "y": 6
+        }
+      ],
+      "grid_x": 4,
+      "grid_y": 6,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
       "block_name": "coast",
       "cells": [
         {
@@ -433,7 +290,126 @@
       "rotation": 0
     },
     {
-      "block_index": 1,
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 8,
+          "y": 1
+        }
+      ],
+      "grid_x": 8,
+      "grid_y": 1,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 5,
+          "y": 0
+        }
+      ],
+      "grid_x": 5,
+      "grid_y": 0,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 5,
+          "y": 5
+        }
+      ],
+      "grid_x": 5,
+      "grid_y": 5,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 6,
+          "y": 5
+        }
+      ],
+      "grid_x": 6,
+      "grid_y": 5,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 8,
+          "y": 3
+        }
+      ],
+      "grid_x": 8,
+      "grid_y": 3,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": -1,
+          "y": 3
+        }
+      ],
+      "grid_x": -1,
+      "grid_y": 3,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 6,
+          "y": 0
+        }
+      ],
+      "grid_x": 6,
+      "grid_y": 0,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 3,
+          "y": 6
+        }
+      ],
+      "grid_x": 3,
+      "grid_y": 6,
+      "group_name": "ground",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
       "block_name": "citadel",
       "cells": [
         {
@@ -469,7 +445,6 @@
       "rotation": 0
     },
     {
-      "block_index": 2,
       "block_name": "academy",
       "cells": [
         {
@@ -493,7 +468,6 @@
       "rotation": 0
     },
     {
-      "block_index": 3,
       "block_name": "arcade",
       "cells": [
         {
@@ -537,7 +511,6 @@
       "rotation": 0
     },
     {
-      "block_index": 7,
       "block_name": "plaza",
       "cells": [
         {
@@ -553,7 +526,6 @@
       "rotation": 2
     },
     {
-      "block_index": 6,
       "block_name": "hall",
       "cells": [
         {
@@ -573,7 +545,6 @@
       "rotation": 0
     },
     {
-      "block_index": 7,
       "block_name": "plaza",
       "cells": [
         {
@@ -589,7 +560,6 @@
       "rotation": 3
     },
     {
-      "block_index": 6,
       "block_name": "hall",
       "cells": [
         {
@@ -609,7 +579,6 @@
       "rotation": 2
     },
     {
-      "block_index": 7,
       "block_name": "plaza",
       "cells": [
         {
@@ -625,7 +594,6 @@
       "rotation": 1
     },
     {
-      "block_index": 6,
       "block_name": "hall",
       "cells": [
         {
@@ -645,7 +613,6 @@
       "rotation": 3
     },
     {
-      "block_index": 6,
       "block_name": "hall",
       "cells": [
         {
@@ -665,7 +632,6 @@
       "rotation": 2
     },
     {
-      "block_index": 7,
       "block_name": "plaza",
       "cells": [
         {
@@ -681,7 +647,6 @@
       "rotation": 1
     },
     {
-      "block_index": 7,
       "block_name": "plaza",
       "cells": [
         {
@@ -697,7 +662,6 @@
       "rotation": 2
     },
     {
-      "block_index": 7,
       "block_name": "plaza",
       "cells": [
         {
@@ -713,7 +677,6 @@
       "rotation": 3
     },
     {
-      "block_index": 0,
       "block_name": "citadel_upper",
       "cells": [
         {
@@ -749,7 +712,6 @@
       "rotation": 0
     },
     {
-      "block_index": 1,
       "block_name": "academy_upper",
       "cells": [
         {
@@ -775,119 +737,6 @@
   ],
   "macro_placements": [
     {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 0,
-          "y": 5
-        }
-      ],
-      "grid_x": 0,
-      "grid_y": 5,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 5,
-          "y": 0
-        }
-      ],
-      "grid_x": 5,
-      "grid_y": 0,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 8,
-          "y": 2
-        }
-      ],
-      "grid_x": 8,
-      "grid_y": 2,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 6,
-          "y": 5
-        }
-      ],
-      "grid_x": 6,
-      "grid_y": 5,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 1,
-          "y": 0
-        }
-      ],
-      "grid_x": 1,
-      "grid_y": 0,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 2,
-          "y": 0
-        }
-      ],
-      "grid_x": 2,
-      "grid_y": 0,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 7,
-          "y": 0
-        }
-      ],
-      "grid_x": 7,
-      "grid_y": 0,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
@@ -903,47 +752,14 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
-          "x": 3,
-          "y": 6
-        }
-      ],
-      "grid_x": 3,
-      "grid_y": 6,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 8,
-          "y": 1
-        }
-      ],
-      "grid_x": 8,
-      "grid_y": 1,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 3,
+          "x": 7,
           "y": 0
         }
       ],
-      "grid_x": 3,
+      "grid_x": 7,
       "grid_y": 0,
       "group_name": "coast",
       "level": 0,
@@ -951,7 +767,96 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 0,
+          "y": 5
+        }
+      ],
+      "grid_x": 0,
+      "grid_y": 5,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 7,
+          "y": 5
+        }
+      ],
+      "grid_x": 7,
+      "grid_y": 5,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "grid_x": 0,
+      "grid_y": 0,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 2,
+          "y": 0
+        }
+      ],
+      "grid_x": 2,
+      "grid_y": 0,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 4,
+          "y": 0
+        }
+      ],
+      "grid_x": 4,
+      "grid_y": 0,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 0,
+          "y": 1
+        }
+      ],
+      "grid_x": 0,
+      "grid_y": 1,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
       "block_name": "coast",
       "cells": [
         {
@@ -967,31 +872,14 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
-          "x": -1,
-          "y": 3
-        }
-      ],
-      "grid_x": -1,
-      "grid_y": 3,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 6,
+          "x": 3,
           "y": 0
         }
       ],
-      "grid_x": 6,
+      "grid_x": 3,
       "grid_y": 0,
       "group_name": "coast",
       "level": 0,
@@ -999,111 +887,29 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 0,
-          "y": 1
-        }
-      ],
-      "grid_x": 0,
-      "grid_y": 1,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 7,
-          "y": 5
-        }
-      ],
-      "grid_x": 7,
-      "grid_y": 5,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 4,
-          "y": 6
-        }
-      ],
-      "grid_x": 4,
-      "grid_y": 6,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
           "x": 8,
-          "y": 3
+          "y": 2
         }
       ],
       "grid_x": 8,
-      "grid_y": 3,
+      "grid_y": 2,
       "group_name": "coast",
       "level": 0,
       "mirrored": false,
       "rotation": 0
     },
     {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
-          "x": 5,
-          "y": 5
-        }
-      ],
-      "grid_x": 5,
-      "grid_y": 5,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 0,
-          "y": 4
-        }
-      ],
-      "grid_x": 0,
-      "grid_y": 4,
-      "group_name": "coast",
-      "level": 0,
-      "mirrored": false,
-      "rotation": 0
-    },
-    {
-      "block_index": 0,
-      "block_name": "coast",
-      "cells": [
-        {
-          "x": 0,
+          "x": 1,
           "y": 0
         }
       ],
-      "grid_x": 0,
+      "grid_x": 1,
       "grid_y": 0,
       "group_name": "coast",
       "level": 0,
@@ -1111,7 +917,6 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
@@ -1127,23 +932,36 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
       "block_name": "coast",
       "cells": [
         {
-          "x": 4,
-          "y": 0
+          "x": 0,
+          "y": 4
         }
       ],
-      "grid_x": 4,
-      "grid_y": 0,
+      "grid_x": 0,
+      "grid_y": 4,
       "group_name": "coast",
       "level": 0,
       "mirrored": false,
       "rotation": 0
     },
     {
-      "block_index": 0,
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 4,
+          "y": 6
+        }
+      ],
+      "grid_x": 4,
+      "grid_y": 6,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
       "block_name": "coast",
       "cells": [
         {
@@ -1159,7 +977,126 @@
       "rotation": 0
     },
     {
-      "block_index": 0,
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 8,
+          "y": 1
+        }
+      ],
+      "grid_x": 8,
+      "grid_y": 1,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 5,
+          "y": 0
+        }
+      ],
+      "grid_x": 5,
+      "grid_y": 0,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 5,
+          "y": 5
+        }
+      ],
+      "grid_x": 5,
+      "grid_y": 5,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 6,
+          "y": 5
+        }
+      ],
+      "grid_x": 6,
+      "grid_y": 5,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 8,
+          "y": 3
+        }
+      ],
+      "grid_x": 8,
+      "grid_y": 3,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": -1,
+          "y": 3
+        }
+      ],
+      "grid_x": -1,
+      "grid_y": 3,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 6,
+          "y": 0
+        }
+      ],
+      "grid_x": 6,
+      "grid_y": 0,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
+      "block_name": "coast",
+      "cells": [
+        {
+          "x": 3,
+          "y": 6
+        }
+      ],
+      "grid_x": 3,
+      "grid_y": 6,
+      "group_name": "coast",
+      "level": 0,
+      "mirrored": false,
+      "rotation": 0
+    },
+    {
       "block_name": "citadel",
       "cells": [
         {
@@ -1195,7 +1132,6 @@
       "rotation": 0
     },
     {
-      "block_index": 1,
       "block_name": "academy",
       "cells": [
         {
@@ -1219,7 +1155,6 @@
       "rotation": 0
     },
     {
-      "block_index": 2,
       "block_name": "arcade",
       "cells": [
         {
@@ -1263,7 +1198,6 @@
       "rotation": 0
     },
     {
-      "block_index": 1,
       "block_name": "plaza",
       "cells": [
         {
@@ -1279,7 +1213,6 @@
       "rotation": 2
     },
     {
-      "block_index": 0,
       "block_name": "hall",
       "cells": [
         {
@@ -1299,7 +1232,6 @@
       "rotation": 0
     },
     {
-      "block_index": 1,
       "block_name": "plaza",
       "cells": [
         {
@@ -1315,7 +1247,6 @@
       "rotation": 3
     },
     {
-      "block_index": 0,
       "block_name": "hall",
       "cells": [
         {
@@ -1335,7 +1266,6 @@
       "rotation": 2
     },
     {
-      "block_index": 1,
       "block_name": "plaza",
       "cells": [
         {
@@ -1351,7 +1281,6 @@
       "rotation": 1
     },
     {
-      "block_index": 0,
       "block_name": "hall",
       "cells": [
         {
@@ -1371,7 +1300,6 @@
       "rotation": 3
     },
     {
-      "block_index": 0,
       "block_name": "hall",
       "cells": [
         {
@@ -1391,7 +1319,6 @@
       "rotation": 2
     },
     {
-      "block_index": 1,
       "block_name": "plaza",
       "cells": [
         {
@@ -1407,7 +1334,6 @@
       "rotation": 1
     },
     {
-      "block_index": 1,
       "block_name": "plaza",
       "cells": [
         {
@@ -1423,7 +1349,6 @@
       "rotation": 2
     },
     {
-      "block_index": 1,
       "block_name": "plaza",
       "cells": [
         {
