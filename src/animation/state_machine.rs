@@ -1,9 +1,8 @@
-//! Implements animation finite-state control with typed parameters and condition-driven transitions.
-//! Evaluates transition rules each frame to move between clip-bound states deterministically.
-//! Parses authored condition expressions into executable checks used during state progression.
-//! Activates destination clips immediately on state change to keep visual intent synchronized.
-//! Provides parameterized graph control for expressive authored animation behavior.
-//! Serves as the transition-governance layer above raw clip playback execution.
+//! Implements animation finite-state control with typed parameters and condition-driven transitions. `animation/state_machine` delivers the state machine implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Evaluates transition rules each frame to move between clip-bound states deterministically. The file owns or coordinates data contracts including `AnimParamValue`, `ConditionOp`, `ConditionValue`, `TransitionCondition`, `AnimTransition`, and 2 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Parses authored condition expressions into executable checks used during state progression. Public callable behavior is centered on `compare_nums`, `parse_condition`, while method-level behavior such as `new`, `add_state`, `add_transition`, `set_param_float`, `set_param_bool`, `set_param_int`, and 6 more stays attached to the local data model and invariants.
+//! Activates destination clips immediately on state change to keep visual intent synchronized. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Provides parameterized graph control for expressive authored animation behavior. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use super::controller::Animation;
 use std::collections::HashMap;

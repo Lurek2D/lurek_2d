@@ -1,6 +1,4 @@
-//! Defines compositing modes that control how each light contribution merges into accumulated lighting.
-//! Encodes additive, subtractive, and mixed behaviors for different artistic lighting goals.
-//! Provides compact blend-mode discriminants shared across lighting evaluation and rendering paths.
+//! Defines compositing modes that control how each light contribution merges into accumulated lighting. `light/blend_mode` delivers the blend mode implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Blend mode for how a light's contribution is combined with the light accumulation buffer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

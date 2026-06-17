@@ -1,10 +1,9 @@
-//! Runtime configuration for particle emitters and their tunable behavior.
-//! Carries spawn distribution, insertion order, state, and coordinate mode settings.
-//! Describes emission shapes from point and circle to cone, star, spiral, and custom callbacks.
-//! Includes attractor and bounce helper types for motion control.
-//! Covers world-space versus emitter-attached spawning rules.
-//! Packs every serializable knob into one config object for scripts and data files.
-//! Serves as the authored contract for building particle systems.
+//! Runtime configuration for particle emitters and their tunable behavior. `particle/config` delivers the configuration schema and defaults for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Carries spawn distribution, insertion order, state, and coordinate mode settings. The file owns or coordinates data contracts including `AreaDistribution`, `InsertMode`, `EmitterState`, `EmissionShape`, `RelativeMode`, and 3 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Describes emission shapes from point and circle to cone, star, spiral, and custom callbacks. Public callable behavior is centered on no named public items, while method-level behavior such as `sanitize`, `normalized`, `from_toml_str` stays attached to the local data model and invariants.
+//! Includes attractor and bounce helper types for motion control. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Covers world-space versus emitter-attached spawning rules. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Packs every serializable knob into one config object for scripts and data files. The file boundary separates particle implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::shapes::ParticleShape;
 use crate::runtime::resource_keys::TextureKey;

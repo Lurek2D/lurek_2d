@@ -1,19 +1,9 @@
-//! - Manages 1D shadow map rendering, dynamic light lists, and compute dispatches.
-//! - Gathers occluder edge geometry and transforms it into GPU edge storage buffers.
-//! - Dispatches shadow compute shaders per light source to map distances into the shadow atlas.
-//! - Performs viewport culling on light sources before queuing commands.
-//! - Binds and manages GPU buffers, bind groups, and pipelines for light passes.
-//! - Filters occluding shapes by light bitmasks and culls lines outside light radii.
-//! - Allocates static compute pipelines, uniforms, and sampler structures.
-//! - Resolves shadows on screen using an additive light accumulation render pass.
-//! - Limits light quads capacity to ensure predictable frame render times.
-//! - Supports dynamic light placement, color, attenuation, and radius adjustments.
-//! - Transforms light positions to NDC coordinate space.
-//! - Renders geometry with shadows blending transparently into backgrounds.
-//! - Avoids duplicate shadow calculations by caching static edge buffers.
-//! - Exposes methods to build shadow render passes and dispatch compute queues.
-//! - Cooperates with the central GPU renderer to map pipeline configurations.
-//! - Enables retro 2D dynamic shadowing effects using hardware distance field shaders.
+//! Manages 1D shadow map rendering, dynamic light lists, and compute dispatches. `render/gpu_shadows` delivers the gpu shadows implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Gathers occluder edge geometry and transforms it into GPU edge storage buffers. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Dispatches shadow compute shaders per light source to map distances into the shadow atlas. Public callable behavior is centered on `collect_shadow_edges`, while method-level behavior such as `ensure_light_resources`, `ensure_shadow_edge_capacity`, `dispatch_shadow_map_gpu`, `aabb_visible_2d` stays attached to the local data model and invariants.
+//! Performs viewport culling on light sources before queuing commands. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `light`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Binds and manages GPU buffers, bind groups, and pipelines for light passes. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Filters occluding shapes by light bitmasks and culls lines outside light radii. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::math::Mat3;
 use crate::render::gpu_light::MAX_SHADOW_LIGHTS;

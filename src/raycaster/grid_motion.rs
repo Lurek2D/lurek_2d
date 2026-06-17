@@ -1,7 +1,6 @@
 //! This file provides grid-locked locomotion rules for games that want raycaster movement to snap cleanly from tile to tile.
 //! Facing direction is reduced to stable cardinal deltas so movement input stays predictable for dungeon crawlers and similar designs.
 //! Collision checks are delegated through a caller-provided blocking rule, which lets map logic stay external while motion rules stay reusable.
-//! The emphasis is on deterministic tile traversal rather than smooth analog movement, matching classic first-person grid exploration.
 
 /// Discrete movement intent for a single step on the grid.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

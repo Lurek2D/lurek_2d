@@ -1,7 +1,7 @@
-//! Provides runtime post-effect instances that couple effect kind with mutable parameter state.
-//! Supports built-in and custom shader-backed variants under one unified runtime shape.
-//! Exposes parameter and enable controls for live effect tuning without pipeline rebuilds.
-//! Delivers the per-effect state object consumed by stack management and rendering stages.
+//! Provides runtime post-effect instances that couple effect kind with mutable parameter state. `effect/effect` delivers the effect implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports built-in and custom shader-backed variants under one unified runtime shape. The file owns or coordinates data contracts including `PostFxEffect`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Exposes parameter and enable controls for live effect tuning without pipeline rebuilds. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `new_custom`, `set_parameter`, `get_parameter`, `has_parameter`, `get_parameter_names`, and 5 more stays attached to the local data model and invariants.
+//! Delivers the per-effect state object consumed by stack management and rendering stages. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::effect_type::PostFxEffectType;
 use crate::log_msg;

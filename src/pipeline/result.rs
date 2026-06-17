@@ -1,7 +1,6 @@
 //! Pipeline outcome model for turning many individual step endings into one readable picture of how a workflow actually finished.
 //! The file records lifecycle state, per-step timing, errors, and completion data so callers can inspect success, failure, skips, and duration after a run.
 //! Convenience queries keep common result questions cheap and direct instead of forcing every user to re-interpret raw status fields.
-//! Functionally this delivers the post-run memory and reporting surface for pipeline execution.
 
 /// Lifecycle state of a pipeline run.
 #[derive(Debug, Clone, PartialEq, Eq)]

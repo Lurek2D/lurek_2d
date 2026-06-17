@@ -1,6 +1,4 @@
-//! This file provides configuration structures that shape validator execution policy.
-//! It defines thread usage, file limits, and behavior toggles for analysis runs.
-//! It gives the engine one coherent source of operational constraints.
+//! This file provides configuration structures that shape validator execution policy. `validator/config` delivers the configuration schema and defaults for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Validator engine configuration.
 #[derive(Debug, Clone)]

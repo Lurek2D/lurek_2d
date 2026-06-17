@@ -1,8 +1,7 @@
-//! Delivers force-based layout for arbitrary connectivity where organic grouping matters more than strict hierarchy.
-//! Balances repulsion and edge tension over iterative cooling to separate clusters while preserving relation cues.
-//! Exposes tunable simulation intensity, area bounds, and convergence rhythm for different graph densities.
-//! Produces coordinate fields that remain compatible with shared layout result types and downstream alignment passes.
-//! Fits exploratory maps, relation webs, and editor views that need natural spacing without hard rank constraints.
+//! Delivers force-based layout for arbitrary connectivity where organic grouping matters more than strict hierarchy. `layout/force` delivers the force implementation for the layout subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Balances repulsion and edge tension over iterative cooling to separate clusters while preserving relation cues. The file owns or coordinates data contracts including `ForceConfig`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Exposes tunable simulation intensity, area bounds, and convergence rhythm for different graph densities. Public callable behavior is centered on `layout_force`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Produces coordinate fields that remain compatible with shared layout result types and downstream alignment passes. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::types::*;
 use std::collections::HashMap;

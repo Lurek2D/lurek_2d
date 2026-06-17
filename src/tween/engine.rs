@@ -1,8 +1,7 @@
-//! This file provides the active tween engine that updates all running animation handles.
-//! It tracks tweens, sequences, parallels, and springs through one coordinated update surface.
-//! It resolves easing behavior and value writes directly onto Lua-owned target tables.
-//! It manages lifecycle cleanup so completed animations exit without stale runtime state.
-//! It keeps tween progression synchronous with frame updates for deterministic visual output.
+//! This file provides the active tween engine that updates all running animation handles. `tween/engine` delivers the engine implementation for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It tracks tweens, sequences, parallels, and springs through one coordinated update surface. The file owns or coordinates data contracts including `TweenEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It resolves easing behavior and value writes directly onto Lua-owned target tables. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `cancel_all`, `active_count` stays attached to the local data model and invariants.
+//! It manages lifecycle cleanup so completed animations exit without stale runtime state. Runtime integration reaches sibling engine areas through crate modules `tween`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::tween::handle::{LuaTween, LuaTweenParallel, LuaTweenSequence};
 use mlua::prelude::*;

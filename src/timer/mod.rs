@@ -1,6 +1,5 @@
-//! This module delivers the runtime time backbone for clocks, accumulation, sleeping, and scheduling.
-//! It keeps frame progression measurable and controllable across gameplay and engine services.
-//! It unifies timing primitives so deferred logic behaves consistently under load.
+//! This module delivers the runtime time backbone for clocks, accumulation, sleeping, and scheduling. `timer/mod` is the timer module index, declaring `clock`, `scheduler`, `sleep` so agents can identify which files own each feature slice before opening implementation code.
+//! It keeps frame progression measurable and controllable across gameplay and engine services. `src/timer/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `clock::Clock`, `scheduler::Scheduler`, `sleep::sleep` centralized for the timer subsystem.
 
 /// Exposes the accumulator module.
 pub(crate) mod accumulator;

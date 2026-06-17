@@ -1,13 +1,9 @@
-//! Defines the central mutable RGBA buffer used across rendering, tooling, and image-side gameplay logic.
-//! Creates images from dimensions, files, encoded bytes, or direct raw pixel payloads.
-//! Provides pixel access, region copy, and whole-buffer transform flows in serial and parallel variants.
-//! Implements primitive raster drawing for lines, rectangles, circles, labels, and debug overlays.
-//! Supports blending and paste semantics that keep alpha composition behavior explicit and predictable.
-//! Carries width, height, and packed bytes in a compact row-major memory representation.
-//! Encodes images back to portable formats for persistence, export, and diagnostics.
-//! Includes comparison and utility helpers used by tests and content validation steps.
-//! Serves as the common interchange type between image operations and render-facing code paths.
-//! Keeps all mutation local to the instance to avoid hidden shared-state side effects.
+//! Defines the central mutable RGBA buffer used across rendering, tooling, and image-side gameplay logic. `image/image_data` delivers the image data implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Creates images from dimensions, files, encoded bytes, or direct raw pixel payloads. The file owns or coordinates data contracts including `ImageData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides pixel access, region copy, and whole-buffer transform flows in serial and parallel variants. Public callable behavior is centered on no named public items, while method-level behavior such as `rgba_byte_len`, `try_new`, `new`, `from_file`, `from_encoded_bytes`, `from_bytes`, and 18 more stays attached to the local data model and invariants.
+//! Implements primitive raster drawing for lines, rectangles, circles, labels, and debug overlays. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports blending and paste semantics that keep alpha composition behavior explicit and predictable. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Carries width, height, and packed bytes in a compact row-major memory representation. The file boundary separates image implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{IM01_IMAGE_LOADED, IM02_IMAGE_MISMATCH};

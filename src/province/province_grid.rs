@@ -4,10 +4,6 @@
 //! Span extraction turns irregular filled regions into horizontal runs that are much cheaper to render and analyze than full per-pixel scans.
 //! Border segment generation and polygon tracing add shape-aware outputs suitable for outlines, hit testing, and geometry-oriented tooling.
 //! Simplification keeps traced contours readable and compact instead of mirroring every staircase artifact from the raster source.
-//! Binary persistence support makes those derived structures reusable across loads, which matters for large province maps.
-//! This file therefore serves as the structural decoder that turns painted cartographic data into engine-native region geometry.
-//! It is lower-level than the registry but richer than a raw image loader because it extracts the real spatial relationships embedded in the province map.
-//! Functionally this file delivers the pixel-to-province geometry foundation for the entire province subsystem.
 
 use crate::image::ImageData;
 use std::collections::{HashMap, HashSet};

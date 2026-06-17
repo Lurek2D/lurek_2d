@@ -1,13 +1,9 @@
-//! This file provides TMX import that converts Tiled XML maps into engine-native map structures.
-//! It supports major TMX orientation modes so authored content can target varied 2D projections.
-//! It decodes tile data from csv, xml, and compressed base64 payloads into stable gid streams.
-//! It ingests tileset geometry and metadata needed for atlas lookup and collision interpretation.
-//! It parses object layers to retain placement, sizing, and semantic type annotations.
-//! It strips flip flags from raw gids so stored tile identity stays clean and comparable.
-//! It infers solid tiles from embedded markers and custom properties used by authoring tools.
-//! It reports parse failures with contextual messages to speed debugging of malformed assets.
-//! It reads TMX color encodings so visual defaults are preserved during map import.
-//! It delivers a predictable bridge between external level authoring and runtime world assembly.
+//! This file provides TMX import that converts Tiled XML maps into engine-native map structures. `tilemap/tmx` delivers the tmx implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It supports major TMX orientation modes so authored content can target varied 2D projections. The file owns or coordinates data contracts including `TmxImportError`, `TmxOrientation`, `TmxStaggerAxis`, `TmxTileset`, `TmxTileLayer`, and 4 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It decodes tile data from csv, xml, and compressed base64 payloads into stable gid streams. Public callable behavior is centered on `load_tmx`, while method-level behavior such as `tile_layers`, `object_layers` stays attached to the local data model and invariants.
+//! It ingests tileset geometry and metadata needed for atlas lookup and collision interpretation. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It parses object layers to retain placement, sizing, and semantic type annotations. External integration uses `base64`, `flate2`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! It strips flip flags from raw gids so stored tile identity stays clean and comparable. The file boundary separates tilemap implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{TL01, TL02};

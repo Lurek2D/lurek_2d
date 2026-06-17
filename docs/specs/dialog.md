@@ -40,54 +40,47 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### condition.rs
 
-- Provides reusable gate rules that decide whether dialog options are eligible under the current runtime context.
-- Encodes state and threshold checks as portable data so narrative gating stays configurable and data-first.
-- Supports composable all-or-any logic for layered progression constraints across branching conversations.
-- Delivers a deterministic condition engine that keeps availability checks consistent between systems and scripts.
+- Provides reusable gate rules that decide whether dialog options are eligible under the current runtime context. `dialog/condition` delivers the condition implementation for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Encodes state and threshold checks as portable data so narrative gating stays configurable and data-first. The file owns or coordinates data contracts including `GateContext`, `DialogueCondition`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports composable all-or-any logic for layered progression constraints across branching conversations. Public callable behavior is centered on no named public items, while method-level behavior such as `evaluate` stays attached to the local data model and invariants.
 
 ### events.rs
 
-- Defines the dialogue event vocabulary used to publish lifecycle milestones and selection outcomes.
-- Carries typed payloads so UI, scripting, and telemetry can react without digging into internal state.
-- Delivers a clean event contract that keeps conversation flow observable across integration points.
+- Defines the dialogue event vocabulary used to publish lifecycle milestones and selection outcomes. `dialog/events` delivers the event data and dispatch contracts for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### mod.rs
 
-- Provides the high-level dialog module surface that unifies authored conversation flow with runtime progression state.
-- Connects speaker identity, gating logic, selection models, and lifecycle events into one coherent interaction layer.
-- Delivers a stable module boundary that scripts and systems consume as the canonical dialogue orchestration entry point.
+- Provides the high-level dialog module surface that unifies authored conversation flow with runtime progression state. `dialog/mod` is the dialog module index, declaring `condition`, `events`, `sequencer`, `speaker`, `state`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
+- Connects speaker identity, gating logic, selection models, and lifecycle events into one coherent interaction layer. `src/dialog/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `condition::{DialogueCondition, GateContext}`, `events::DialogueEvent`, `sequencer::{DialogNode as SequencerNode, DialogSequencer, SequencerState}`, `speaker::{Speaker, SpeakerRegistry}`, and 2 more centralized for the dialog subsystem.
 
 ### sequencer.rs
 
-- Cinematic dialog sequencer with typewriter reveal effect.
-- Provides node-based dialog playback with:
-- Typewriter character-by-character reveal
-- Choice branching with option selection
-- Lifecycle callbacks (line, choice, end, custom events)
-- Playback state tracking and control (play, pause, seek, skip)
+- Cinematic dialog sequencer with typewriter reveal effect. `dialog/sequencer` delivers the sequencer implementation for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides node-based dialog playback with:. The file owns or coordinates data contracts including `DialogNode`, `SequencerState`, `DialogSequencer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Typewriter character-by-character reveal. Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `new`, `load`, `start`, `update`, `advance`, and 12 more stays attached to the local data model and invariants.
+- Choice branching with option selection. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Lifecycle callbacks (line, choice, end, custom events). External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### speaker.rs
 
-- Provides canonical speaker identity records used by dialogue flow to resolve who is talking at each step.
-- Centralizes speaker lookup in a stable registry keyed by durable identifiers shared across a session.
-- Keeps narrative content decoupled from presentation metadata like portraits, voices, and character tags.
-- Delivers a single reference layer that makes speaker data consistent for tree logic and runtime state.
+- Provides canonical speaker identity records used by dialogue flow to resolve who is talking at each step. `dialog/speaker` delivers the speaker implementation for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Centralizes speaker lookup in a stable registry keyed by durable identifiers shared across a session. The file owns or coordinates data contracts including `Speaker`, `SpeakerRegistry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Keeps narrative content decoupled from presentation metadata like portraits, voices, and character tags. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `get`, `remove`, `count`, `contains`, and 1 more stays attached to the local data model and invariants.
 
 ### state.rs
 
-- Provides mutable dialogue runtime state that tracks active position, visit history, and per-run variables.
-- Supports conversation lifecycle transitions for start, advance, end, and subsequent re-entry handling.
-- Preserves continuity data in a compact snapshot that dependent systems can query every frame.
-- Delivers the authoritative progression record used to keep branching dialogue behavior coherent over time.
+- Provides mutable dialogue runtime state that tracks active position, visit history, and per-run variables. `dialog/state` delivers the state container and transition helpers for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports conversation lifecycle transitions for start, advance, end, and subsequent re-entry handling. The file owns or coordinates data contracts including `DialogueState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Preserves continuity data in a compact snapshot that dependent systems can query every frame. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `start`, `advance`, `end`, `current`, `has_visited`, and 5 more stays attached to the local data model and invariants.
+- Delivers the authoritative progression record used to keep branching dialogue behavior coherent over time. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### tree.rs
 
-- Provides the core dialogue graph model for authored topics, branches, nodes, and selectable progression paths.
-- Applies runtime gate filtering so only context-compatible narrative candidates remain available.
-- Combines base weights with utility-driven influence to rank candidates and pick strong conversation outcomes.
-- Keeps decision flow transparent by storing gating and scoring inputs directly with authored records.
-- Serves as the planning backbone executed by dialogue state, scripting hooks, and event publication.
-- Delivers data-first branching behavior that stays testable, tunable, and stable across gameplay sessions.
+- Provides the core dialogue graph model for authored topics, branches, nodes, and selectable progression paths. `dialog/tree` delivers the tree implementation for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Applies runtime gate filtering so only context-compatible narrative candidates remain available. The file owns or coordinates data contracts including `DialogueBranch`, `DialogueTopic`, `DialogueNode`, `DialogueAI`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Combines base weights with utility-driven influence to rank candidates and pick strong conversation outcomes. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_fsm_state`, `set_bt_status`, `set_utility_score`, `clear_utility_scores`, `add_topic`, and 4 more stays attached to the local data model and invariants.
+- Keeps decision flow transparent by storing gating and scoring inputs directly with authored records. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Serves as the planning backbone executed by dialogue state, scripting hooks, and event publication. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 
 

@@ -48,45 +48,40 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ### catalog.rs
 
-- Provides the in-memory documentation catalog used to collect and organize normalized API entries.
-- Preserves insertion order while supporting grouping, filtering, and lookup across module boundaries.
-- Enables merge and dedup workflows for combining multiple documentation sources into one view.
-- Delivers the central container that feeds both export generation and quality analysis stages.
+- Provides the in-memory documentation catalog used to collect and organize normalized API entries. `docs/catalog` delivers the catalog implementation for the docs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Preserves insertion order while supporting grouping, filtering, and lookup across module boundaries. The file owns or coordinates data contracts including `Catalog`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Enables merge and dedup workflows for combining multiple documentation sources into one view. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_entries`, `add`, `modules`, `all_entries`, `entries_for_module`, and 6 more stays attached to the local data model and invariants.
+- Delivers the central container that feeds both export generation and quality analysis stages. Runtime integration reaches sibling engine areas through crate modules `docs`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### entry.rs
 
-- Provides normalized documentation record types that represent public API symbols and their metadata.
-- Models parameter and return descriptors so downstream export and reporting stages share one data shape.
-- Includes completeness checks that help quality tooling detect thin or malformed documentation entries.
-- Delivers the common in-memory contract used across collection, transformation, and reporting flows.
+- Provides normalized documentation record types that represent public API symbols and their metadata. `docs/entry` delivers the entry implementation for the docs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Models parameter and return descriptors so downstream export and reporting stages share one data shape. The file owns or coordinates data contracts including `ParamInfo`, `ReturnInfo`, `DocEntry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Includes completeness checks that help quality tooling detect thin or malformed documentation entries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_complete`, `missing_fields` stays attached to the local data model and invariants.
+- Delivers the common in-memory contract used across collection, transformation, and reporting flows. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### export.rs
 
-- Provides export builders that transform normalized doc entries into IDE-oriented JSON payloads.
-- Produces completion, hover, and signature datasets in shapes tailored to extension and tooling consumers.
-- Supports compact or rich payload modes to match different integration and footprint constraints.
-- Writes single or bundled artifacts through stable serialization paths for predictable output handling.
-- Delivers the final packaging stage that turns in-memory documentation into distributable files.
+- Provides export builders that transform normalized doc entries into IDE-oriented JSON payloads. `docs/export` delivers the export implementation for the docs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Produces completion, hover, and signature datasets in shapes tailored to extension and tooling consumers. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports compact or rich payload modes to match different integration and footprint constraints. Public callable behavior is centered on `export_completions`, `export_hover`, `export_signatures`, `export_all`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Writes single or bundled artifacts through stable serialization paths for predictable output handling. Runtime integration reaches sibling engine areas through crate modules `docs`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
-- Provides the top-level documentation module surface that connects collection, schema, export, and reporting stages.
-- Centralizes re-exports so tooling callers can consume doc pipeline capabilities from one stable integration point.
-- Delivers a coherent module boundary for transforming source metadata into validated documentation artifacts.
+- Provides the top-level documentation module surface that connects collection, schema, export, and reporting stages. `docs/mod` is the docs module index, declaring `catalog`, `entry`, `export`, `report`, `schema` so agents can identify which files own each feature slice before opening implementation code.
+- Centralizes re-exports so tooling callers can consume doc pipeline capabilities from one stable integration point. `src/docs/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `catalog::Catalog`, `entry::{DocEntry, ParamInfo, ReturnInfo}`, `export::{export_all, export_completions, export_hover, export_signatures}`, `report::{quality_grade, quality_score, QualityReport, ValidationReport}`, and 1 more centralized for the docs subsystem.
 
 ### report.rs
 
-- Provides documentation quality evaluation logic that scores completeness and classifies report grades.
-- Validates catalog integrity by tracking missing, phantom, and incomplete documentation records.
-- Aggregates per-entry and per-module metrics into actionable quality snapshots for maintainers.
-- Supports both full-catalog analysis and direct entry-based reporting for flexible pipeline usage.
-- Delivers consistent quality signals that guide doc cleanup and release readiness checks.
+- Provides documentation quality evaluation logic that scores completeness and classifies report grades. `docs/report` delivers the report implementation for the docs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Validates catalog integrity by tracking missing, phantom, and incomplete documentation records. The file owns or coordinates data contracts including `ValidationReport`, `QualityReport`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Aggregates per-entry and per-module metrics into actionable quality snapshots for maintainers. Public callable behavior is centered on `quality_score`, `quality_grade`, while method-level behavior such as `new`, `is_clean`, `total_issues`, `compute`, `module_grade`, `from_entries` stays attached to the local data model and invariants.
+- Supports both full-catalog analysis and direct entry-based reporting for flexible pipeline usage. Runtime integration reaches sibling engine areas through crate modules `docs`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### schema.rs
 
-- Provides the schema bridge that exposes shared validation contracts used by the docs pipeline.
-- Connects documentation tooling with canonical field and type rules defined in the schema crate.
-- Delivers one access point that keeps schema usage consistent across docs modules.
+- Provides the schema bridge that exposes shared validation contracts used by the docs pipeline. `docs/schema` delivers the schema implementation for the docs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 
 

@@ -1,6 +1,4 @@
-//! File: src/lua_api/system_api.rs
-//! Registers the public `lurek.runtime` namespace for host, process, and runtime utility helpers.
-//! Keeps environment queries, clipboard helpers, logging controls, and batch utilities in one runtime-facing surface.
+//! Registers the public `lurek.runtime` namespace for host, process, and runtime utility helpers. `src/lua_api/system_api.rs` registers the `lurek.system` Lua boundary for system behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::log_msg;

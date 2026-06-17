@@ -1,6 +1,5 @@
-//! Provides the high-level filesystem module boundary for virtual mounts, async loading, and file handle access.
-//! Connects path resolution, buffered I/O, watch support, and archive overlays into one storage surface.
-//! Delivers the core file-service layer used by runtime systems and script-facing persistence flows.
+//! Provides the high-level filesystem module boundary for virtual mounts, async loading, and file handle access. `filesystem/mod` is the filesystem module index, declaring `async_loader`, `file_data`, `file_handle`, `vfs`, `watcher`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
+//! Connects path resolution, buffered I/O, watch support, and archive overlays into one storage surface. `src/filesystem/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `async_loader::{AsyncLoader, LoadHandle, LoadResult, LoadStatus, WriteResult, WriteStatus}`, `file_data::FileData`, `file_handle::{FileHandle, FileMode}`, `vfs::{FileInfo, FileType, GameFS, MountLayer}` centralized for the filesystem subsystem.
 
 /// Async file request queue and result tracking.
 pub mod async_loader;

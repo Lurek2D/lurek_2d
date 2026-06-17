@@ -1,7 +1,6 @@
 //! Mediator registry for coordinating communication through named channels when systems should meet through a broker rather than pointing at each other directly.
 //! The file assigns durable handler identities per channel so registration, removal, counting, and inspection all speak the same compact vocabulary.
 //! By storing channel membership centrally it becomes easy to clear one lane of traffic or reset the whole routing surface without leaking per-subscriber bookkeeping into callers.
-//! Functionally this delivers a message rendezvous layer for decoupled gameplay features, scripted services, and hub-style coordination flows.
 
 use std::collections::HashMap;
 #[derive(Debug, Default, Clone)]

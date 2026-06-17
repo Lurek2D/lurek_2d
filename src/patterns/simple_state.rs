@@ -1,7 +1,6 @@
 //! Minimal named-state tracker for systems that only need one active mode at a time without the heavier transition model of a full state machine.
 //! The file focuses on managing the known state set and the current selection, which keeps switching semantics explicit and validation cheap.
 //! Enumeration and counting support make the registry easy to inspect from scripts and tooling that want to reason about available modes.
-//! Functionally this delivers the lightweight mode switch core for menus, AI phases, control states, and other simple single-state flows.
 
 use std::collections::HashSet;
 

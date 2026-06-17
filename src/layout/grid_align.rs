@@ -1,7 +1,6 @@
-//! Provides finishing transforms that regularize raw layout coordinates before visual presentation.
-//! Snaps node positions to consistent grid rhythm to improve scanability and manual editing behavior.
-//! Recenters complete layouts into target areas without changing graph topology or sibling ordering.
-//! Acts as the last geometry polish stage shared by multiple upstream layout strategies.
+//! Provides finishing transforms that regularize raw layout coordinates before visual presentation. `layout/grid_align` delivers the grid align implementation for the layout subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Snaps node positions to consistent grid rhythm to improve scanability and manual editing behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Recenters complete layouts into target areas without changing graph topology or sibling ordering. Public callable behavior is centered on `snap_to_grid`, `center_in_area`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 use super::types::*;
 

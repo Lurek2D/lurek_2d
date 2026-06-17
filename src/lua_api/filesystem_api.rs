@@ -1,7 +1,4 @@
-//! File: src/lua_api/filesystem_api.rs
-//! Registers the `lurek.filesystem` Lua namespace over the sandboxed GameFS service.
-//! Exposes safe save writes, mount-aware reads, async helpers, watcher polling, and ZIP handles.
-//! Keeps ZIP archives standalone through `LZipMount` rather than mutating the shared GameFS mount table.
+//! Registers the `lurek.filesystem` Lua namespace over the sandboxed GameFS service. `src/lua_api/filesystem_api.rs` registers the `lurek.filesystem` Lua boundary for filesystem behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::filesystem::watcher::FileWatcher;

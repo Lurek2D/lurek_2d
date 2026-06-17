@@ -1,6 +1,4 @@
-//! This file bridges the current scene stack state into renderer-facing output and scene snapshots.
-//! It focuses on whatever scene is presently render-active, turning stack state into concrete visual results or captures.
-//! The file is therefore the narrow handoff between scene orchestration and image or command generation.
+//! This file bridges the current scene stack state into renderer-facing output and scene snapshots. `scene/render` delivers the rendering adapter and draw-command integration for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use super::stack::SceneStack;
 use crate::image::ImageData;

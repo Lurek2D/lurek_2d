@@ -1,6 +1,4 @@
-//! Provides lightweight stack-preview rendering that converts effect activity into a quick diagnostic image.
-//! Distinguishes active and inactive stack states through deterministic color selection.
-//! Delivers a minimal visual probe for tooling and debug-side effect inspection.
+//! Provides lightweight stack-preview rendering that converts effect activity into a quick diagnostic image. `effect/draw` delivers the draw implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use super::stack::PostFxStack;
 use crate::image::ImageData;

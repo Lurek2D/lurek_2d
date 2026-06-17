@@ -1,9 +1,9 @@
-//! Implements heatmap rasterization for matrix-style ML and dashboard views.
-//! Maps matrix values to a configurable color ramp and annotates row/column labels.
-//! Supports direct matrix updates, per-cell streaming changes, and dataframe pivot ingestion.
-//! Module API documentation
-//!
-//! TODO: add doc note 1
+//! Implements heatmap rasterization for matrix-style ML and dashboard views. `charts/heatmap` delivers the heatmap implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Maps matrix values to a configurable color ramp and annotates row/column labels. The file owns or coordinates data contracts including `HeatmapChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports direct matrix updates, per-cell streaming changes, and dataframe pivot ingestion. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `resize`, `set_matrix`, `set_matrix_from_dataframe`, `set_cell`, `clear`, and 8 more stays attached to the local data model and invariants.
+//! `charts/heatmap` delivers the heatmap implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! The file owns or coordinates data contracts including `HeatmapChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `resize`, `set_matrix`, `set_matrix_from_dataframe`, `set_cell`, `clear`, and 8 more stays attached to the local data model and invariants.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions};
 use crate::charts::render_utils::{draw_line, draw_rect_filled, fill_buffer, set_pixel};

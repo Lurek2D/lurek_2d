@@ -1,6 +1,5 @@
-//! Defines the compute module boundary for array math, analytics, transforms, and spatial processing.
-//! Groups core numeric submodules under one cohesive surface with shared data contracts.
-//! Serves as the composition entry for engine-side compute and numeric utility workflows.
+//! Defines the compute module boundary for array math, analytics, transforms, and spatial processing. `compute/mod` is the compute module index, declaring `analytics`, `array`, `fft`, `linalg`, `ops`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
+//! Groups core numeric submodules under one cohesive surface with shared data contracts. `src/compute/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `array::{DataType, NdArray}`, `fft::{fft, fft_magnitude, ifft}`, `ops::{get_par_threshold, set_par_threshold}` centralized for the compute subsystem.
 
 /// Exposes analytics helpers for cumulative and statistical operations.
 pub mod analytics;

@@ -62,98 +62,85 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - Provides O(V+E) traversals and ordering computations used by planning systems, diagnostics workflows, and topology validation on large flownet models.
 - Operates directly on shared graph adjacency state without duplicating node or edge data, ensuring efficient memory usage and performance.
 - Enables inspection and tuning of flownet topology behavior through bipartite detection, reachability checks, and deterministic node ordering guarantees.
-- Supports both directed and undirected graph semantics through flexible edge enumeration and neighbor iteration strategies.
 
 ### core.rs
 
-- Provides the central flownet graph container that owns nodes, edges, items, and adjacency indexes.
-- Manages full CRUD lifecycles with cascading cleanup to keep topology and item state coherent.
-- Tracks outgoing and incoming connectivity for efficient route and neighborhood queries.
-- Coordinates item creation, placement, transit, and removal under node and edge constraints.
-- Supports subgraph extraction and aggregate statistics for analysis and tooling pipelines.
-- Exposes directional query helpers that simplify traversal and simulation planning logic.
-- Includes debug-friendly serialization and preview output for inspection and persistence workflows.
-- Keeps id allocation and storage ownership centralized for deterministic graph mutation behavior.
-- Integrates overflow-aware placement paths that align with node policy semantics.
-- Delivers the authoritative data backbone consumed by algorithms, pathfinding, and simulation updates.
+- Provides the central flownet graph container that owns nodes, edges, items, and adjacency indexes. `flownet/core` delivers the core implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Manages full CRUD lifecycles with cascading cleanup to keep topology and item state coherent. The file owns or coordinates data contracts including `GraphStats`, `Graph`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Tracks outgoing and incoming connectivity for efficient route and neighborhood queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `move_item_to_unplaced`, `move_item_to_node_inventory`, `move_item_to_node_queue`, `move_item_to_edge_transit`, `kill_item_and_detach`, and 29 more stays attached to the local data model and invariants.
+- Coordinates item creation, placement, transit, and removal under node and edge constraints. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Supports subgraph extraction and aggregate statistics for analysis and tooling pipelines. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Exposes directional query helpers that simplify traversal and simulation planning logic. The file boundary separates flownet implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Includes debug-friendly serialization and preview output for inspection and persistence workflows. State changes, validation paths, and helper routines in `src/flownet/core.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+- Keeps id allocation and storage ownership centralized for deterministic graph mutation behavior. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
 
 ### edge.rs
 
-- Provides flownet edge state that links nodes with transit limits, timing, and routing metadata.
-- Encodes capacity, throughput, cooldown, and filtering constraints that govern movement eligibility.
-- Supports directional and bidirectional semantics with pathfinding weight and speed modifiers.
-- Delivers the per-connection transport contract used by simulation and routing systems.
-- Keeps edge behavior explicit so tuning and diagnostics remain consistent across network updates.
+- Provides flownet edge state that links nodes with transit limits, timing, and routing metadata. `flownet/edge` delivers the edge implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Encodes capacity, throughput, cooldown, and filtering constraints that govern movement eligibility. The file owns or coordinates data contracts including `Edge`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports directional and bidirectional semantics with pathfinding weight and speed modifiers. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_type`, `set_type`, `is_on_cooldown`, `is_item_type_allowed`, `add_allowed_type`, and 9 more stays attached to the local data model and invariants.
+- Delivers the per-connection transport contract used by simulation and routing systems. Runtime integration reaches sibling engine areas through crate modules `flownet`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### item.rs
 
-- Provides flownet item records that carry typed payload identity through nodes and transit edges.
-- Tracks location state as node-bound, in-transit, or unplaced to drive simulation decisions.
-- Stores decay lifetime, priority, and alive status for scheduling and cleanup behavior.
-- Delivers the movable unit model consumed by demand, conversion, and transport mechanics.
-- Keeps item lifecycle state centralized for deterministic flow simulation and event emission.
+- Provides flownet item records that carry typed payload identity through nodes and transit edges. `flownet/item` delivers the item implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Tracks location state as node-bound, in-transit, or unplaced to drive simulation decisions. The file owns or coordinates data contracts including `ItemPosition`, `GraphItem`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Stores decay lifetime, priority, and alive status for scheduling and cleanup behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `kill`, `is_alive`, `get_type`, `set_type`, `get_decay_time`, and 7 more stays attached to the local data model and invariants.
+- Delivers the movable unit model consumed by demand, conversion, and transport mechanics. Runtime integration reaches sibling engine areas through crate modules `flownet`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
-- Provides the high-level flownet module boundary for graph flow modeling, simulation, and rendering support.
-- Connects nodes, edges, items, demand logic, routing, and update events into one runtime network surface.
-- Delivers a complete directed-flow toolkit for gameplay systems that model transport and transformation.
+- Provides the high-level flownet module boundary for graph flow modeling, simulation, and rendering support. `flownet/mod` is the flownet module index, declaring `algorithms`, `core`, `edge`, `item`, `node`, and 5 more so agents can identify which files own each feature slice before opening implementation code.
+- Connects nodes, edges, items, demand logic, routing, and update events into one runtime network surface. `src/flownet/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `core::{Graph, GraphStats}`, `edge::Edge`, `item::{GraphItem, ItemPosition}`, `node::{ConversionRule, Demand, FlowMode, Node, OverflowPolicy, Supply}`, and 2 more centralized for the flownet subsystem.
+- Delivers a complete directed-flow toolkit for gameplay systems that model transport and transformation. The file documents how flownet submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- `flownet/mod` is the flownet module index, declaring `algorithms`, `core`, `edge`, `item`, `node`, and 5 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/flownet/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `core::{Graph, GraphStats}`, `edge::Edge`, `item::{GraphItem, ItemPosition}`, `node::{ConversionRule, Demand, FlowMode, Node, OverflowPolicy, Supply}`, and 2 more centralized for the flownet subsystem.
+- The file documents how flownet submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 ### node.rs
 
-- Provides flownet node modeling with capacity, inventory, policy, and flow-direction configuration.
-- Defines overflow behavior modes that govern how nodes handle arrivals beyond available space.
-- Encodes push and pull flow semantics used by simulation to move items across the graph.
-- Stores conversion, supply, and demand records for transformation and economic-style mechanics.
-- Exposes node-level queue and tag operations needed for runtime orchestration.
-- Parses textual policy and flow values into typed enums for resilient script integration.
-- Delivers the per-node behavior contract that anchors transport and conversion decisions.
+- Provides flownet node modeling with capacity, inventory, policy, and flow-direction configuration. `flownet/node` delivers the node implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Defines overflow behavior modes that govern how nodes handle arrivals beyond available space. The file owns or coordinates data contracts including `OverflowPolicy`, `FlowMode`, `ConversionRule`, `Supply`, `Demand`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Encodes push and pull flow semantics used by simulation to move items across the graph. Public callable behavior is centered on no named public items, while method-level behavior such as `to_str`, `new`, `get_type`, `set_type`, `get_capacity`, `set_capacity`, and 27 more stays attached to the local data model and invariants.
+- Stores conversion, supply, and demand records for transformation and economic-style mechanics. Runtime integration reaches sibling engine areas through crate modules `flownet`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Exposes node-level queue and tag operations needed for runtime orchestration. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### pathfinding.rs
 
-- Provides flownet pathfinding operations that compute cheapest routes across weighted directed edges.
-- Respects edge activity, cooldown, and type filters so route output matches simulation constraints.
-- Supports distance and reachability queries for planning and demand-matching workflows.
-- Builds predecessor maps and reconstructs ordered node and edge paths for execution.
-- Uses priority-queue traversal for efficient shortest-path expansion under dynamic graph state.
-- Integrates neighbor discovery across directional and bidirectional connectivity patterns.
-- Delivers the routing layer used by supply movement and logistics decision systems.
+- Provides flownet pathfinding operations that compute cheapest routes across weighted directed edges. `flownet/pathfinding` delivers the pathfinding implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Respects edge activity, cooldown, and type filters so route output matches simulation constraints. The file owns or coordinates data contracts including `PathResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports distance and reachability queries for planning and demand-matching workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `find_path`, `find_path_for_item`, `get_distance`, `get_reachable`, `get_neighbors` stays attached to the local data model and invariants.
+- Builds predecessor maps and reconstructs ordered node and edge paths for execution. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Uses priority-queue traversal for efficient shortest-path expansion under dynamic graph state. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### render.rs
 
-- Provides debug render-command generation that visualizes flownet topology as node-edge diagrams.
-- Lays out nodes on a circular frame and draws links with deterministic mapping.
-- Colors nodes by type to expose structural roles at a glance during inspection.
-- Delivers a self-contained preview command stream consumable by the renderer.
+- Provides debug render-command generation that visualizes flownet topology as node-edge diagrams. `flownet/render` delivers the rendering adapter and draw-command integration for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Lays out nodes on a circular frame and draws links with deterministic mapping. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Colors nodes by type to expose structural roles at a glance during inspection. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
 
 ### simulation.rs
 
-- Provides the flownet simulation engine that advances transport, decay, conversion, and queue behavior per tick.
-- Processes item lifetimes and removes expired entities while preserving graph consistency guarantees.
-- Moves transit items along edges and resolves arrivals using each node's overflow policy.
-- Executes push and pull flow mechanics with rate-limited logic tied to node configuration.
-- Applies conversion rules that consume inputs and emit transformed output items at nodes.
-- Handles queued backpressure by promoting waiting items when capacity becomes available.
-- Emits structured simulation events for observable state transitions consumed by scripts.
-- Supports optional parallel stepping paths for larger network workloads under feature gating.
-- Coordinates sub-steps in deterministic order to keep outcomes reproducible across runs.
-- Delivers the runtime progression core for logistics-style gameplay simulation.
+- Provides the flownet simulation engine that advances transport, decay, conversion, and queue behavior per tick. `flownet/simulation` delivers the simulation implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Processes item lifetimes and removes expired entities while preserving graph consistency guarantees. The file owns or coordinates data contracts including `GraphEvent`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Moves transit items along edges and resolves arrivals using each node's overflow policy. Public callable behavior is centered on no named public items, while method-level behavior such as `update`, `step`, `update_parallel` stays attached to the local data model and invariants.
+- Executes push and pull flow mechanics with rate-limited logic tied to node configuration. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Applies conversion rules that consume inputs and emit transformed output items at nodes. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Handles queued backpressure by promoting waiting items when capacity becomes available. The file boundary separates flownet implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### supply_demand.rs
 
-- Provides demand-processing logic that matches prioritized needs against available network supply.
-- Uses pathfinding to route produced items from supplier nodes toward consumer destinations.
-- Tracks fulfillment progress and decrements source supply quantities during transfer.
-- Emits simulation events that expose depletion and fulfillment transitions to observers.
-- Delivers the balancing layer that drives directed resource flow through the graph.
+- Provides demand-processing logic that matches prioritized needs against available network supply. `flownet/supply_demand` delivers the supply demand implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Uses pathfinding to route produced items from supplier nodes toward consumer destinations. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Tracks fulfillment progress and decrements source supply quantities during transfer. Public callable behavior is centered on no named public items, while method-level behavior such as `process_demand` stays attached to the local data model and invariants.
+- Emits simulation events that expose depletion and fulfillment transitions to observers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### types.rs
 
-- Provides shared flownet identifier wrappers used to type node, edge, and item handles.
-- Encapsulates raw numeric ids in lightweight newtypes for clearer API contracts.
-- Supports conversion and display behavior needed across simulation and tooling call paths.
-- Delivers the common identity foundation for graph storage and cross-module interoperability.
-- Keeps handle semantics consistent so id usage remains safe and readable throughout flownet code.
+- Provides shared flownet identifier wrappers used to type node, edge, and item handles. `flownet/types` delivers the shared type definitions and data contracts for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Encapsulates raw numeric ids in lightweight newtypes for clearer API contracts. The file owns or coordinates data contracts including `NodeId`, `EdgeId`, `ItemId`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports conversion and display behavior needed across simulation and tooling call paths. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `raw` stays attached to the local data model and invariants.
+- Delivers the common identity foundation for graph storage and cross-module interoperability. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

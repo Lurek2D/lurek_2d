@@ -1,4 +1,4 @@
-//! This file computes a radial visibility fan from a source point against segment obstacles in the plane.
+//! This file computes a radial visibility fan from a source point against segment obstacles in the plane. `raycaster/visibility` delivers the visibility implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! Rays are aimed around segment endpoints with slight angular offsets so the resulting contour closes gaps that naive sampling would miss.
 //! The output is shaped for immediate drawing or further masking work wherever a 2D field of view needs explicit polygon points.
 

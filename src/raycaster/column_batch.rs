@@ -1,8 +1,7 @@
-//! This file stores the compact per-column output that the raycaster produces before any richer scene assembly begins.
+//! This file stores the compact per-column output that the raycaster produces before any richer scene assembly begins. `raycaster/column_batch` delivers the column batch implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! It keeps wall slice projection, depth, and screen span data in a shape that is cheap to fill for an entire frame at once.
 //! Frame-level metadata for colors and dimensions rides next to the columns so downstream code can treat one batch as a complete column pass.
 //! Packed ray input is unpacked here into stable per-column records that preserve shading and visibility decisions from the DDA stage.
-//! The result is a narrow transport format between hit collection and later wall, floor, or sprite composition work.
 
 use crate::color::Color;
 use crate::log_msg;

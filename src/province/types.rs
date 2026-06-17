@@ -2,7 +2,6 @@
 //! The file gives province ids stronger meaning than plain integers while also defining the compact style and border structures that other province layers share.
 //! Snapshot forms matter because callers often need a stable read-only view of province state without borrowing the full mutable registry.
 //! By concentrating these definitions here, the module keeps shared province vocabulary consistent across import, rendering, routing, and Lua exposure.
-//! Functionally this file delivers the common type language that holds the province subsystem together.
 
 use std::collections::HashMap;
 

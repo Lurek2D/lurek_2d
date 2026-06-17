@@ -1,9 +1,8 @@
-//! Implements multi-codec compression and decompression for buffer and stream style workflows.
-//! Supports deflate, gzip, zlib, and lz4 variants through one unified format selection surface.
-//! Provides full-buffer and chunked processing paths for different memory and throughput constraints.
-//! Applies bounded compression-level normalization to keep codec settings within valid operating ranges.
-//! Adapts chunk lists into stream readers for incremental processing integration.
-//! Returns codec-contextual error results that preserve failure source clarity.
+//! Implements multi-codec compression and decompression for buffer and stream style workflows. `binary/compress` delivers the compress implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports deflate, gzip, zlib, and lz4 variants through one unified format selection surface. The file owns or coordinates data contracts including `CompressFormat`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides full-buffer and chunked processing paths for different memory and throughput constraints. Public callable behavior is centered on `compress`, `decompress`, `compress_chunks`, `decompress_chunks`, `compress_stream`, and 1 more, while method-level behavior such as `parse_str` stays attached to the local data model and invariants.
+//! Applies bounded compression-level normalization to keep codec settings within valid operating ranges. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Adapts chunk lists into stream readers for incremental processing integration. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::io::{Cursor, Read, Write};
 #[derive(Debug, Clone, Copy, PartialEq)]

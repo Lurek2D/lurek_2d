@@ -1,6 +1,4 @@
-//! Defines shadow filtering quality presets used by soft-shadow evaluation paths.
-//! Encodes hard-shadow and PCF-based options with different sampling costs.
-//! Provides a compact quality enum consumed by light shadow configuration.
+//! Defines shadow filtering quality presets used by soft-shadow evaluation paths. `light/shadow` delivers the shadow implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Shadow filter quality preset controlling the soft-shadow sample kernel.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

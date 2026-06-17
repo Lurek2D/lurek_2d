@@ -1,6 +1,4 @@
-//! Provides Lua table deep-copy behavior for ECS operations that require independent state snapshots.
-//! Recursively clones nested table structures so template and runtime data can diverge safely.
-//! Delivers a shared cloning primitive used by serialization, blueprints, and diff-friendly workflows.
+//! Provides Lua table deep-copy behavior for ECS operations that require independent state snapshots. `ecs/lua_table` delivers the lua table implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use mlua::{Lua, Result as LuaResult, Table, Value as LuaValue};
 

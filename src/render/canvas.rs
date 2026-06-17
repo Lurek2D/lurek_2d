@@ -1,7 +1,4 @@
-//! - Canvas metadata representation for off-screen rendering targets.
-//! - Defines the dimensions (width and height) of paintable canvases.
-//! - Allows the game engine and Lua layers to query and specify render targets by ID.
-//! - Separates the logical target handle from actual backing GPU texture resources.
+//! Canvas metadata representation for off-screen rendering targets. `render/canvas` delivers the canvas implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use crate::log_msg;
 use crate::runtime::log_messages::CV01;

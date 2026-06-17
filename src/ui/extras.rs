@@ -1,15 +1,11 @@
-//! This file provides the extended widget set that goes beyond baseline UI control primitives.
-//! It defines overlays, trees, menus, toolbars, dialogs, grids, and feedback-oriented elements.
-//! It supports rich interaction patterns such as accordions, tooltips, and modal UI workflows.
-//! It includes color and data-oriented widgets for editor-like and analytics-heavy interfaces.
-//! It models hierarchical trees and menu structures in forms suitable for retained updates.
-//! It supplies status and notification components that communicate system state to players.
-//! It keeps advanced widgets aligned with shared base style and layout semantics.
-//! It provides custom widget shells for script-driven rendering and bespoke interactions.
-//! It enables dense information surfaces without leaving the core retained UI ecosystem.
-//! It expands UI expressiveness while keeping integration with context and renderer coherent.
-//! It supports practical tool-building needs alongside in-game menu and HUD requirements.
-//! It rounds out the module with specialized pieces required for full product interfaces.
+//! This file provides the extended widget set that goes beyond baseline UI control primitives. `ui/extras` delivers the extras implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It defines overlays, trees, menus, toolbars, dialogs, grids, and feedback-oriented elements. The file owns or coordinates data contracts including `Toast`, `Separator`, `Spacer`, `TreeNode`, `TreeView`, and 18 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It supports rich interaction patterns such as accordions, tooltips, and modal UI workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `progress`, `is_expired`, `update`, `add_node`, `toggle_node`, and 30 more stays attached to the local data model and invariants.
+//! It includes color and data-oriented widgets for editor-like and analytics-heavy interfaces. Runtime integration reaches sibling engine areas through crate modules `dataframe`, `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It models hierarchical trees and menu structures in forms suitable for retained updates. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! It supplies status and notification components that communicate system state to players. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! It keeps advanced widgets aligned with shared base style and layout semantics. State changes, validation paths, and helper routines in `src/ui/extras.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+//! It provides custom widget shells for script-driven rendering and bespoke interactions. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
 
 use crate::dataframe::frame::{ColRef, DataFrame};
 use crate::ui::widget::{WidgetBase, WidgetType};

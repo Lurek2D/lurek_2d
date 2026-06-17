@@ -1,6 +1,4 @@
-//! This file provides event types emitted when visibility state transitions occur.
-//! It captures reveal, hide, and ownership-related changes as script-consumable signals.
-//! It enables frame-coherent reaction flows for fog effects and gameplay scripting hooks.
+//! This file provides event types emitted when visibility state transitions occur. `visibility/events` delivers the event data and dispatch contracts for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Events emitted by the visibility system when regions change state.
 #[derive(Debug, Clone, PartialEq)]

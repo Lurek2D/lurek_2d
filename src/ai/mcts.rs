@@ -1,9 +1,8 @@
-//! Implements Monte Carlo Tree Search as a reusable decision kernel for branching action spaces.
-//! Executes the full selection, expansion, rollout, and backpropagation rhythm under fixed budgets.
-//! Uses exploration pressure to balance known strong branches against uncertain alternatives.
-//! Stores tree state in compact node arenas for iterative simulation throughput.
-//! Returns action preference grounded in sampled outcomes rather than handcrafted deterministic rules.
-//! Supports game-specific state, transition, and scoring logic through generic integration hooks.
+//! Implements Monte Carlo Tree Search as a reusable decision kernel for branching action spaces. `ai/mcts` delivers the mcts implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Executes the full selection, expansion, rollout, and backpropagation rhythm under fixed budgets. The file owns or coordinates data contracts including `MCTSConfig`, `MCTSEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Uses exploration pressure to balance known strong branches against uncertain alternatives. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `config`, `search` stays attached to the local data model and invariants.
+//! Stores tree state in compact node arenas for iterative simulation throughput. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Returns action preference grounded in sampled outcomes rather than handcrafted deterministic rules. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 /// Configuration for one MCTS search run.
 pub struct MCTSConfig {

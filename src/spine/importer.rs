@@ -1,9 +1,9 @@
-//! Imports standard Spine and DragonBones JSON skeleton shapes into runtime Skeleton data.
-//! The importer focuses on common production fields for bones, slots, skins, and basic timelines.
-//! It intentionally rejects malformed or unsupported structures with explicit, stable errors.
-//! Module API documentation
-//!
-//! TODO: add doc note 1
+//! Imports standard Spine and DragonBones JSON skeleton shapes into runtime Skeleton data. `spine/importer` delivers the importer implementation for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! The importer focuses on common production fields for bones, slots, skins, and basic timelines. The file owns or coordinates data contracts including `SpineImportError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It intentionally rejects malformed or unsupported structures with explicit, stable errors. Public callable behavior is centered on `skeleton_from_json_str`, `skeleton_from_json_value`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! `spine/importer` delivers the importer implementation for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! The file owns or coordinates data contracts including `SpineImportError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Public callable behavior is centered on `skeleton_from_json_str`, `skeleton_from_json_value`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 use crate::spine::timeline::{BoneProperty, EasingType, SkeletonAnimation};
 use crate::spine::{BoneParams, Skeleton};

@@ -2,7 +2,6 @@
 //! The file keeps axiom, productions, and iteration depth explicit so generated strings remain deterministic and inspectable rather than hidden inside opaque helpers.
 //! Turtle interpretation turns those symbols into drawable line segments, giving the grammar an immediate geometric payoff.
 //! Stack-based branching support enables structures that fork and return, which is essential for tree-like and fractal forms.
-//! Functionally this file delivers a compact grammar-to-geometry pipeline for recursive content generation.
 
 use std::collections::HashMap;
 

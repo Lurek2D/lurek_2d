@@ -1,7 +1,7 @@
-//! Implements custom cursor images built from RGBA pixel buffers and hotspot metadata.
-//! Validates buffer dimensions at construction to prevent malformed cursor payload usage.
-//! Supports standalone custom cursors and animated-frame reuse through shared image structure.
-//! Serves as the pixel-defined cursor asset contract for script-driven cursor customization.
+//! Implements custom cursor images built from RGBA pixel buffers and hotspot metadata. `cursor/custom_cursor` delivers the custom cursor implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Validates buffer dimensions at construction to prevent malformed cursor payload usage. The file owns or coordinates data contracts including `CustomCursor`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports standalone custom cursors and animated-frame reuse through shared image structure. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_rgba`, `set_pixel`, `get_pixel`, `pixels`, `size` stays attached to the local data model and invariants.
+//! Serves as the pixel-defined cursor asset contract for script-driven cursor customization. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// A custom cursor from RGBA pixel data.
 #[derive(Debug, Clone)]

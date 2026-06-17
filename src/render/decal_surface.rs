@@ -1,8 +1,6 @@
-//! - Paint-target surface descriptor for persistent world decals.
-//! - Stores the durable dimensions (width and height) needed for later GPU texture allocation.
-//! - Represents canvas-like surfaces where impact marks, splats, and footprints can be drawn.
-//! - Minimizes overhead by keeping texture resource allocations managed by the central renderer.
-//! - Ensures decal targets are cleanly referenced and reused across frame lifecycles.
+//! Paint-target surface descriptor for persistent world decals. `render/decal_surface` delivers the decal surface implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores the durable dimensions (width and height) needed for later GPU texture allocation. The file owns or coordinates data contracts including `DecalSurface`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Represents canvas-like surfaces where impact marks, splats, and footprints can be drawn. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_dimensions`, `get_width`, `get_height` stays attached to the local data model and invariants.
 
 /// Paint-target surface for persistent world decals; holds pixel dimensions only.
 ///

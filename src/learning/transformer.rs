@@ -1,10 +1,9 @@
-//! Implements transformer-style blocks composed from attention, normalization, and feed-forward stages.
-//! Defines encoder and decoder building units operating over engine-native tensor structures.
-//! Applies residual pathways and normalization flows for stable sequence representation updates.
-//! Stores trainable parameters in flat vectors to align with evolutionary optimization tooling.
-//! Coordinates multi-stage forward execution across attention and projection subcomponents.
-//! Provides reusable transformer primitives for sequence learning and inference experiments.
-//! Integrates with the wider learning stack through common tensor and layer contracts.
+//! Implements transformer-style blocks composed from attention, normalization, and feed-forward stages. `learning/transformer` delivers the transformer implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Defines encoder and decoder building units operating over engine-native tensor structures. The file owns or coordinates data contracts including `LayerNorm`, `TransformerEncoderBlock`, `TransformerDecoderBlock`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Applies residual pathways and normalization flows for stable sequence representation updates. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `forward_vec`, `forward_tensor`, `forward` stays attached to the local data model and invariants.
+//! Stores trainable parameters in flat vectors to align with evolutionary optimization tooling. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Coordinates multi-stage forward execution across attention and projection subcomponents. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Provides reusable transformer primitives for sequence learning and inference experiments. The file boundary separates learning implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::learning::attention::MultiHeadAttention;
 use crate::learning::tensor::LurekTensor;

@@ -1,8 +1,7 @@
-//! Defines the common data contract that every layout algorithm in this module reads and writes.
-//! Encodes node identity, geometry hints, and mutable coordinates in a shape tuned for repeated transforms.
-//! Represents graph relations with lightweight edge records that support directional and weighted workflows.
-//! Packages algorithm outputs into a uniform result container for renderer and tooling consumption.
-//! Keeps configuration and result semantics stable so backends can evolve without breaking caller expectations.
+//! Defines the common data contract that every layout algorithm in this module reads and writes. `layout/types` delivers the shared type definitions and data contracts for the layout subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Encodes node identity, geometry hints, and mutable coordinates in a shape tuned for repeated transforms. The file owns or coordinates data contracts including `NodeId`, `LayoutNode`, `LayoutEdge`, `LayoutConfig`, `LayoutResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Represents graph relations with lightweight edge records that support directional and weighted workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_size`, `with_label`, `with_weight`, `get`, `count` stays attached to the local data model and invariants.
+//! Packages algorithm outputs into a uniform result container for renderer and tooling consumption. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// Unique node identifier (index-based for performance).
 pub type NodeId = usize;

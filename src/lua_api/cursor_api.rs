@@ -1,7 +1,4 @@
-//! Lua bindings for `lurek.cursor`.
-//!
-//! Exposes cursor managers, custom cursor pixel data, animated cursor frames,
-//! context rules, trails, and zoom helpers to Lua.
+//! Lua bindings for `lurek.cursor`. `src/lua_api/cursor_api.rs` registers the `lurek.cursor` Lua boundary for cursor behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::cursor::{

@@ -1,7 +1,6 @@
-//! Implements round-robin voice pooling for low-latency repeated playback of one sound asset.
-//! Cycles preloaded source keys to distribute trigger load across reusable playback voices.
-//! Stores per-pool gain and optional bus assignment for grouped routing behavior.
-//! Validates pool integrity so empty or invalid voice sets are rejected early.
+//! Implements round-robin voice pooling for low-latency repeated playback of one sound asset. `audio/pool` delivers the pool implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Cycles preloaded source keys to distribute trigger load across reusable playback voices. The file owns or coordinates data contracts including `SoundPool`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Stores per-pool gain and optional bus assignment for grouped routing behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `voice_count`, `file_path`, `volume`, `set_volume`, `bus_name`, and 5 more stays attached to the local data model and invariants.
 
 use crate::runtime::resource_keys::SoundKey;
 /// Round-robin pool of preloaded source keys representing voices for one sound asset.

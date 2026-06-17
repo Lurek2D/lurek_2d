@@ -1,18 +1,9 @@
-//! - Handles text asset rendering from bundled bitmap atlases to dynamic font rasterization.
-//! - Packs glyph metrics, atlas placement, and UV offset maps under a unified interface.
-//! - Bundles Courier New regular and bold bitmap fonts at multiple point sizes for default text.
-//! - Uses fontdue to dynamically rasterize custom TTF/OTF font bytes at runtime.
-//! - Supports automatic word wrapping, alignment calculations, and pen advance metrics.
-//! - Extends character mapping to support retro drawing symbols and C1 box characters.
-//! - Bridges the gap between raw font files and ready-to-render texture quad geometry.
-//! - Provides text width measurement functions that are consistent with final GPU layouts.
-//! - Manages PNG atlas loading and parses texture cells with uniform dimensions.
-//! - Implements nearest-size matching for dynamic font scaling depending on pixel heights.
-//! - Tracks atlas dirty states to schedule GPU uploads when text structures change.
-//! - Isolates CPU-side text measurement logic from immediate graphics commands.
-//! - Integrates with slotmap resources via font keys to allow resource sharing across frames.
-//! - Standardizes font parameters including ascent, descent, and line height multiplier.
-//! - Facilitates debug text rendering and UI terminal overlays without custom asset setups.
+//! Handles text asset rendering from bundled bitmap atlases to dynamic font rasterization. `render/font` delivers the font implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Packs glyph metrics, atlas placement, and UV offset maps under a unified interface. The file owns or coordinates data contracts including `GlyphInfo`, `Font`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Bundles Courier New regular and bold bitmap fonts at multiple point sizes for default text. Public callable behavior is centered on no named public items, while method-level behavior such as `builtin_slot_by_name`, `from_png_bytes`, `from_font_bytes`, `load_all_sizes`, `load_all_bold`, `nearest_size`, and 13 more stays attached to the local data model and invariants.
+//! Uses fontdue to dynamically rasterize custom TTF/OTF font bytes at runtime. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports automatic word wrapping, alignment calculations, and pen advance metrics. External integration uses `fontdue`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Extends character mapping to support retro drawing symbols and C1 box characters. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 /// Public re-exports of core font types for compatibility.
 pub use crate::font::GlyphMetrics as FontGlyphMetrics;

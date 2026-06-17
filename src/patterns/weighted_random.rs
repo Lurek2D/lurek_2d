@@ -2,7 +2,6 @@
 //! The file stores named weighted entries and supports structural mutation so drops, spawns, behaviors, or narrative beats can rebalance without rebuilding the container.
 //! It covers both single draws and multi-pick selection without replacement, which makes the same structure useful for one-off rolls and curated batches.
 //! Revision tracking gives outside code a reliable signal that probabilities or membership changed, helping caches and derived tables stay honest.
-//! Functionally this delivers the probability orchestration layer for loot tables, encounter variation, weighted choices, and repeat-aware random selection flows.
 
 /// A single candidate with a weight and debug label.
 #[derive(Debug, Clone)]

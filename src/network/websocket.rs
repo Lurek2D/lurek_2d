@@ -1,9 +1,8 @@
-//! Pool of active WebSocket connections keyed by caller-assigned id.
-//! Spawns background threads for TLS and TCP handshakes so connect never blocks the game loop.
-//! Polls live sockets for text, binary, and close frames without blocking.
-//! Sends text or binary frames and performs graceful close with drain semantics.
-//! Posts connection lifecycle events through an MPSC channel.
-//! Keeps WebSocket transport behaviour isolated from game-thread timing.
+//! Pool of active WebSocket connections keyed by caller-assigned id. `network/websocket` delivers the websocket implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Spawns background threads for TLS and TCP handshakes so connect never blocks the game loop. The file owns or coordinates data contracts including `WebSocketManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Polls live sockets for text, binary, and close frames without blocking. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_empty`, `connect`, `send`, `close`, `poll_all`, and 1 more stays attached to the local data model and invariants.
+//! Sends text or binary frames and performs graceful close with drain semantics. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Posts connection lifecycle events through an MPSC channel. External integration uses `super`, `log`, `std`, `tungstenite`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use super::net_thread::{NetworkResponse, WsEvent};
 use log::{debug, warn};

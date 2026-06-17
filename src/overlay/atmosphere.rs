@@ -1,8 +1,7 @@
-//! State structs for full-screen atmosphere overlays such as clouds, fog, haze, grain, and lightning.
-//! Carries per-effect enable flags plus density, intensity, color, and speed parameters.
-//! Keeps overlay features opt-in so scenes can select only the layers they need.
-//! Provides the data model for long-lived atmospheric presentation effects.
-//! Separates configuration from rendering so effect logic stays lightweight.
+//! State structs for full-screen atmosphere overlays such as clouds, fog, haze, grain, and lightning. `overlay/atmosphere` delivers the atmosphere implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Carries per-effect enable flags plus density, intensity, color, and speed parameters. The file owns or coordinates data contracts including `CloudState`, `FogState`, `HeatHazeState`, `VignetteState`, `FilmGrainState`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Keeps overlay features opt-in so scenes can select only the layers they need. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Provides the data model for long-lived atmospheric presentation effects. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 #[derive(Debug, Clone)]
 /// Configures animated cloud overlay generation.

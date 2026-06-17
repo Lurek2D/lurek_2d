@@ -1,8 +1,7 @@
-//! Ribbon trail built from a deque of aged world-space points.
-//! Retires points automatically when they exceed the configured lifetime.
-//! Tapers width and interpolates color from head to tail.
-//! Can render as triangle-strip commands or as a CPU-rasterized image.
-//! Provides a lightweight motion trail for fast effects and debug views.
+//! Ribbon trail built from a deque of aged world-space points. `particle/trail` delivers the trail implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Retires points automatically when they exceed the configured lifetime. The file owns or coordinates data contracts including `TrailPoint`, `Trail`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Tapers width and interpolates color from head to tail. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_point`, `update`, `set_width`, `set_lifetime`, `get_lifetime`, and 8 more stays attached to the local data model and invariants.
+//! Can render as triangle-strip commands or as a CPU-rasterized image. Runtime integration reaches sibling engine areas through crate modules `color`, `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::color::Color;
 use crate::render::renderer::{DrawMode, RenderCommand};

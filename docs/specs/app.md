@@ -57,70 +57,53 @@ This module primarily collaborates with `event`, `filesystem`, `image`, `input`,
 
 ### app.rs
 
-- Implements the primary desktop runtime loop that binds windowing, rendering, input, and Lua execution.
-- Owns application bootstrap from startup configuration through event-loop handoff and steady frame progression.
-- Manages graphics surface lifecycle, device provisioning, and resize-aware presentation reconfiguration.
-- Coordinates tick ordering so input, update callbacks, render callbacks, and presentation stay deterministic.
-- Routes platform events into runtime systems with consistent keyboard, mouse, touch, and controller handling.
-- Integrates gamepad polling and feedback signaling as part of per-frame platform service orchestration.
-- Maintains viewport scaling and letterbox behavior so visual output remains stable across window sizes.
-- Handles splash and fallback presentation paths before gameplay state is fully available.
-- Provides fatal-error rendering transition when execution cannot continue in normal game flow.
-- Controls screenshot timing and capture output as part of frame lifecycle responsibilities.
-- Drives Lua VM startup, script loading, and callback invocation as the script execution spine.
-- Applies guarded callback execution paths to keep runtime responsive under script-side anomalies.
-- Coordinates hot-reload triggers for content and script changes in active development sessions.
-- Preserves state continuity across reload boundaries where restart semantics allow safe recovery.
-- Maintains integration seams between render backend, runtime state, and high-level app orchestration.
-- Centralizes frame-profile collection points for observability and performance diagnostics.
-- Exposes utility operations used by auxiliary app submodules without duplicating orchestration logic.
-- Ensures one coherent ownership model for transient frame state and long-lived application resources.
-- Keeps platform interactions isolated so gameplay modules consume normalized runtime behavior.
-- Serves as the operational heartbeat that advances the engine from launch to shutdown.
-- Anchors the complete desktop execution lifecycle under one deterministic application control surface.
+- Implements the primary desktop runtime loop that binds windowing, rendering, input, and Lua execution. `app/app` delivers the app implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Owns application bootstrap from startup configuration through event-loop handoff and steady frame progression. The file owns or coordinates data contracts including `RunState`, `DropStartupTarget`, `LurekApp`, `App`, `AppRunOptions`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Manages graphics surface lifecycle, device provisioning, and resize-aware presentation reconfiguration. Public callable behavior is centered on `recompute_viewport`, `splash_window_title`, `fit_contain_size`, `classify_drop_startup_target`, `should_open_startup_picker_on_key`, while method-level behavior such as `new`, `resolve_present_mode`, `init_lua`, `run` stays attached to the local data model and invariants.
+- Coordinates tick ordering so input, update callbacks, render callbacks, and presentation stay deterministic. Runtime integration reaches sibling engine areas through crate modules `event`, `filesystem`, `input`, `log_msg`, `lua_api`, `render`, and 2 more, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Routes platform events into runtime systems with consistent keyboard, mouse, touch, and controller handling. External integration uses `super`, `gilrs`, `mlua`, `slotmap`, `std`, and 1 more, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Integrates gamepad polling and feedback signaling as part of per-frame platform service orchestration. The file boundary separates app implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Maintains viewport scaling and letterbox behavior so visual output remains stable across window sizes. State changes, validation paths, and helper routines in `src/app/app.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+- Handles splash and fallback presentation paths before gameplay state is fully available. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+- Provides fatal-error rendering transition when execution cannot continue in normal game flow. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
+- Controls screenshot timing and capture output as part of frame lifecycle responsibilities. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
 
 ### debug_overlay.rs
 
-- Implements a lightweight runtime HUD that visualizes key frame diagnostics during gameplay.
-- Renders compact counters for frame rate and draw workload as overlay command output.
-- Gates all overlay emission behind explicit enable state to avoid accidental rendering noise.
-- Serves as a low-cost observability surface for quick in-session performance inspection.
+- Implements a lightweight runtime HUD that visualizes key frame diagnostics during gameplay. `app/debug_overlay` delivers the debug overlay implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Renders compact counters for frame rate and draw workload as overlay command output. The file owns or coordinates data contracts including `DebugOverlay`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Gates all overlay emission behind explicit enable state to avoid accidental rendering noise. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `build_render_commands` stays attached to the local data model and invariants.
 
 ### error_screen.rs
 
-- Formats fatal runtime failures into a user-facing visual report that remains readable under stress.
-- Splits primary error content from traceback context and normalizes noisy text artifacts.
-- Wraps long lines into screen-friendly layout blocks for predictable in-window readability.
-- Builds full-screen render command payloads for title, detail body, traceback, and guidance text.
-- Provides clipboard-ready export text so failure details can be captured quickly.
-- Serves as the terminal failure presentation path when normal gameplay rendering cannot continue.
+- Formats fatal runtime failures into a user-facing visual report that remains readable under stress. `app/error_screen` delivers the error screen implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Splits primary error content from traceback context and normalizes noisy text artifacts. The file owns or coordinates data contracts including `ErrorScreen`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Wraps long lines into screen-friendly layout blocks for predictable in-window readability. Public callable behavior is centered on `wrap_text`, `format_traceback`, while method-level behavior such as `from_error`, `from_lua_error`, `from_engine_error`, `build_render_commands`, `as_text` stays attached to the local data model and invariants.
+- Builds full-screen render command payloads for title, detail body, traceback, and guidance text. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Provides clipboard-ready export text so failure details can be captured quickly. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### frame_profile.rs
 
-- Formats frame timing samples into compact textual summaries for trace and diagnostics output.
-- Reads tick, update, render, and callback metrics from the runtime profile snapshot.
-- Emits one stable line shape that supports quick frame-budget scanning in logs.
+- Formats frame timing samples into compact textual summaries for trace and diagnostics output. `app/frame_profile` delivers the frame profile implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### lua_callbacks.rs
 
-- Implements guarded invocation of named `lurek.*` callbacks from engine-side runtime flow.
-- Provides checked and logging variants so callers choose explicit error propagation behavior.
-- Supports optional timeout enforcement via instruction hooks to stop runaway callback execution.
-- Serves as the callback safety boundary between frame orchestration and Lua script handlers.
+- Implements guarded invocation of named `lurek.*` callbacks from engine-side runtime flow. `app/lua_callbacks` delivers the lua callbacks implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides checked and logging variants so callers choose explicit error propagation behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports optional timeout enforcement via instruction hooks to stop runaway callback execution. Public callable behavior is centered on `call_lua_callback`, `call_lua_callback_checked`, `has_lua_callback`, `call_lua_callback_with_timeout`, `call_lua_callback_checked_with_timeout`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Serves as the callback safety boundary between frame orchestration and Lua script handlers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
-- Defines the application module boundary for lifecycle orchestration from startup to shutdown.
-- Groups runtime loop control, visual fallback paths, callback guards, and profiling helpers.
-- Serves as the high-level composition root for app-level execution responsibilities.
+- Defines the application module boundary for lifecycle orchestration from startup to shutdown. `app/mod` is the app module index, declaring `app`, `debug_overlay`, `error_screen`, `frame_profile`, `lua_callbacks`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
+- Groups runtime loop control, visual fallback paths, callback guards, and profiling helpers. `src/app/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `app::{App, AppRunOptions}`, `debug_overlay::DebugOverlay`, `error_screen::ErrorScreen` centralized for the app subsystem.
 
 ### splash_screen.rs
 
-- Implements splash branding presentation before gameplay content is loaded into active runtime state.
-- Decodes embedded visual assets into temporary texture storage used by startup rendering.
-- Builds centered splash layout command sequences with icon, banner, and hint messaging elements.
-- Adapts hint styling based on drag-and-drop hover state for clearer startup interaction feedback.
-- Serves as the pre-game visual bridge between process launch and first playable scene.
+- Implements splash branding presentation before gameplay content is loaded into active runtime state. `app/splash_screen` delivers the splash screen implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Decodes embedded visual assets into temporary texture storage used by startup rendering. The file owns or coordinates data contracts including `SplashTexture`, `SplashBranding`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Builds centered splash layout command sequences with icon, banner, and hint messaging elements. Public callable behavior is centered on `load_splash_branding`, `make_splash_commands`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Adapts hint styling based on drag-and-drop hover state for clearer startup interaction feedback. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ## Callbacks
 

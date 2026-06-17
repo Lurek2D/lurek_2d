@@ -1,8 +1,7 @@
-//! Provides id-keyed globe label storage for map annotations positioned by latitude and longitude.
-//! Supports add, remove, update, and visibility operations for dynamic labeling workflows.
-//! Applies LOD-aware filtering so text density scales with camera detail level.
-//! Maintains stable iteration outputs used by rendering and debugging interfaces.
-//! Delivers the label-management layer for readable and controllable geographic annotation.
+//! Provides id-keyed globe label storage for map annotations positioned by latitude and longitude. `globe/label` delivers the label implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports add, remove, update, and visibility operations for dynamic labeling workflows. The file owns or coordinates data contracts including `LabelStore`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Applies LOD-aware filtering so text density scales with camera detail level. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `remove`, `get`, `get_mut`, `set_visible`, and 6 more stays attached to the local data model and invariants.
+//! Maintains stable iteration outputs used by rendering and debugging interfaces. Runtime integration reaches sibling engine areas through crate modules `globe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::globe::types::{Label, LabelStyle};
 use std::collections::HashMap;

@@ -51,46 +51,43 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 
 ### animator.rs
 
-- Stateful sprite-clip animator used by the Lua-facing `lurek.sprite` API.
-- This module owns playback state transitions and frame stepping rules. Lua
-- bindings should stay thin and delegate update logic to this type.
-- Module API documentation
+- Stateful sprite-clip animator used by the Lua-facing `lurek.sprite` API. `sprite/animator` delivers the animator implementation for the sprite subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This module owns playback state transitions and frame stepping rules. Lua. The file owns or coordinates data contracts including `SpriteClip`, `AnimatorEvent`, `SpriteAnimator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- bindings should stay thin and delegate update logic to this type. Public callable behavior is centered on no named public items, while method-level behavior such as `normalized`, `new`, `add_clip`, `play`, `pause`, `resume`, and 7 more stays attached to the local data model and invariants.
+- `sprite/animator` delivers the animator implementation for the sprite subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- The file owns or coordinates data contracts including `SpriteClip`, `AnimatorEvent`, `SpriteAnimator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 
 ### atlas.rs
 
 - This file handles named texture-atlas regions so packed art can be addressed by semantic names instead of raw pixel rectangles.
-- It stores atlas entries with the orientation and flip metadata needed to interpret packing-tool output correctly.
+- It stores atlas entries with the orientation and flip metadata needed to interpret packing-tool output correctly. The file owns or coordinates data contracts including `AtlasEntry`, `SpriteAtlas`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 - Parsers for common atlas JSON formats live here because importing packed textures is a content-pipeline concern rather than a render concern.
 - Lookup is structured for fast name access while still retaining ordered iteration when tools or UIs need to inspect atlas contents.
-- Conversion from runtime-built atlas data is also supported so authored and generated atlases can share one representation.
-- The file is the naming and region-mapping layer for packed sprite content.
 
 ### mod.rs
 
 - This module provides the engine's core 2D sprite asset and batching helpers around individual sprites, sheets, atlases, and scalable panels.
 - It covers both how textured regions are described and how many of them are organized for animation, UI, or efficient drawing.
-- At the highest level this is the feature layer that turns textures into reusable 2D presentation pieces.
 
 ### nine_slice.rs
 
 - This file defines nine-slice scaling logic for UI panels and framed elements that must resize without destroying border fidelity.
 - It splits one source region into corners, edges, and center pieces whose destination layout can adapt to arbitrary target sizes.
-- Corner preservation and controlled edge stretching are the core visual promises of this file.
-- It is the geometry helper behind scalable textured panels in the engine.
+- Corner preservation and controlled edge stretching are the core visual promises of this file. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `patches` stays attached to the local data model and invariants.
 
 ### sprite.rs
 
 - This file defines the lightweight single-sprite record used when one textured image instance needs position, transform, and tint data.
 - It is intentionally small because many systems want sprite-like draw data without carrying atlas, animation, or batching machinery.
-- Optional normal-map metadata lives here as sprite-owned lighting data even when the renderer path is handled elsewhere.
-- The type is the simplest textured presentation unit in the sprite subsystem.
+- Optional normal-map metadata lives here as sprite-owned lighting data even when the renderer path is handled elsewhere. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_position`, `set_scale`, `set_rotation`, `set_color`, `set_normal_map`, and 5 more stays attached to the local data model and invariants.
+- The type is the simplest textured presentation unit in the sprite subsystem. Runtime integration reaches sibling engine areas through crate modules `color`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### sprite_batch.rs
 
 - This file implements sprite batching for cases where many textured quads share one source texture and should travel together through rendering.
 - It accumulates per-instance transform and source-region data so callers can build dense draw groups without issuing one command per sprite.
 - Capacity limits are part of the design because some workloads want explicit control over how much batch data is retained per frame.
-- The file is the performance-oriented collection layer of the sprite subsystem.
+- The file is the performance-oriented collection layer of the sprite subsystem. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### sprite_sheet.rs
 
@@ -99,7 +96,6 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 - Directional layout helpers matter here because many character sheets encode facing and animation state as a regular grid convention.
 - Preset constructors keep common authoring patterns, such as RPG-style character sheets, easy to adopt without custom math in game code.
 - Debug visualization is included because sheet layout mistakes are easier to catch when the frame grid can be rendered and inspected directly.
-- The file is the animation-frame organization layer of the sprite module.
 
 
 

@@ -1,9 +1,8 @@
-//! Grid-based influence map with named floating-point layers over a uniform cell grid.
-//! Stamps radial influence with falloff, smooths through neighbours, and decays over time.
-//! Queries aggregated influence in rectangles or locates extrema positions.
-//! Blends multiple layers into a destination layer with weighted combination.
-//! Exposes debug visualisation into an RGBA image for inspection.
-//! Serves tactical scoring and spatial pressure systems.
+//! Grid-based influence map with named floating-point layers over a uniform cell grid. `pathfind/influence_map` delivers the influence map implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stamps radial influence with falloff, smooths through neighbours, and decays over time. The file owns or coordinates data contracts including `InfluenceMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Queries aggregated influence in rectangles or locates extrema positions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_layer`, `has_layer`, `set_influence`, `get_influence`, `get_width`, and 13 more stays attached to the local data model and invariants.
+//! Blends multiple layers into a destination layer with weighted combination. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Exposes debug visualisation into an RGBA image for inspection. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::runtime::log_messages::{IF01, IF02, IF03};
 

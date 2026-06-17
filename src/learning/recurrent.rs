@@ -1,9 +1,8 @@
-//! Provides recurrent sequence-learning layers including LSTM and GRU style stateful blocks.
-//! Stores gate parameters in flat row-major buffers suitable for CPU forward evaluation.
-//! Executes timestep iteration while carrying hidden-state context across sequence positions.
-//! Integrates with evolutionary parameter interfaces for genome-based optimization workflows.
-//! Offers compact recurrent primitives for temporal modeling without heavyweight dependencies.
-//! Serves as a reusable foundation for sequence tasks in higher-level learning engines.
+//! Provides recurrent sequence-learning layers including LSTM and GRU style stateful blocks. `learning/recurrent` delivers the recurrent implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores gate parameters in flat row-major buffers suitable for CPU forward evaluation. The file owns or coordinates data contracts including `LstmLayer`, `GruLayer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Executes timestep iteration while carrying hidden-state context across sequence positions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `step` stays attached to the local data model and invariants.
+//! Integrates with evolutionary parameter interfaces for genome-based optimization workflows. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Offers compact recurrent primitives for temporal modeling without heavyweight dependencies. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::learning::EvolutionaryLayer;
 

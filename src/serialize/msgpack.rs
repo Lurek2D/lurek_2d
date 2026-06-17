@@ -1,8 +1,7 @@
 //! This file handles the compact binary MessagePack path for serial values when text readability is less important than size and speed.
 //! It translates through an internal bridge representation that fits the expectations of the underlying MessagePack tooling.
 //! Buffer sizing and conversion details are handled here so callers can treat MessagePack as just another supported format.
-//! Compatibility with JSON-like value shapes is preserved where practical to keep cross-format workflows predictable.
-//! The file is the binary-leaning codec within a mostly document-oriented serialization family.
+//! Compatibility with JSON-like value shapes is preserved where practical to keep cross-format workflows predictable. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

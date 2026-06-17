@@ -1,9 +1,8 @@
-//! Implements shared state and queue structures for runtime-to-client debug bridge communication.
-//! Stores pending requests and responses exchanged between network server and runtime logic.
-//! Tracks rolling performance metrics and bounded print history for debugger-side inspection.
-//! Maintains session configuration and capability metadata used across active bridge connections.
-//! Provides broadcast event queues for fan-out delivery to all connected debug clients.
-//! Serves as the core synchronization layer under the debug bridge protocol subsystem.
+//! Implements shared state and queue structures for runtime-to-client debug bridge communication. `debugbridge/bridge` delivers the bridge implementation for the debugbridge subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores pending requests and responses exchanged between network server and runtime logic. The file owns or coordinates data contracts including `PendingRequest`, `PendingResponse`, `PrintEntry`, `BridgeShared`, `SharedBridge`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Tracks rolling performance metrics and bounded print history for debugger-side inspection. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `elapsed`, `get_performance`, `push_print`, `record_frame`, `set_max_print_history`, and 3 more stays attached to the local data model and invariants.
+//! Maintains session configuration and capability metadata used across active bridge connections. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Provides broadcast event queues for fan-out delivery to all connected debug clients. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};

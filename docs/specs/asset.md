@@ -35,19 +35,17 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 ### cache.rs
 
-- Implements a reference-counted asset registry for tracking media lifecycle across runtime systems.
-- Stores normalized metadata, optional text payloads, and ownership counters for shared access.
-- Separates cache bookkeeping from decoded resource ownership handled by feature-specific modules.
-- Supports acquisition, release, and eviction decisions through explicit handle lifecycle updates.
-- Provides metadata and tag-query surfaces for tooling, filtering, and runtime introspection.
-- Preserves deterministic cache semantics so repeated asset flow remains predictable.
-- Serves as the core state container behind the engine-facing `lurek.asset` behavior.
+- Implements a reference-counted asset registry for tracking media lifecycle across runtime systems. `asset/cache` delivers the cache implementation for the asset subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores normalized metadata, optional text payloads, and ownership counters for shared access. The file owns or coordinates data contracts including `AssetType`, `AssetEntry`, `AssetCache`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Separates cache bookkeeping from decoded resource ownership handled by feature-specific modules. Public callable behavior is centered on no named public items, while method-level behavior such as `from_type_str`, `is_text_like`, `as_str`, `new`, `register`, `inc_ref`, and 18 more stays attached to the local data model and invariants.
+- Supports acquisition, release, and eviction decisions through explicit handle lifecycle updates. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Provides metadata and tag-query surfaces for tooling, filtering, and runtime introspection. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Preserves deterministic cache semantics so repeated asset flow remains predictable. The file boundary separates asset implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### mod.rs
 
-- Defines the top-level asset module boundary for cache-backed media lifecycle management.
-- Exposes shared cache contracts while concentrating concrete registry behavior in the cache layer.
-- Serves as the composition entry for engine-side `lurek.asset` state and operations.
+- Defines the top-level asset module boundary for cache-backed media lifecycle management. `asset/mod` is the asset module index, declaring `cache` so agents can identify which files own each feature slice before opening implementation code.
+- Exposes shared cache contracts while concentrating concrete registry behavior in the cache layer. `src/asset/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `cache::{AssetCache, AssetEntry, AssetType}` centralized for the asset subsystem.
 
 
 

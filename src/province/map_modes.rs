@@ -2,7 +2,6 @@
 //! The file treats each mode as authored data registered at runtime, allowing game code to decide which province property should drive visible color and presentation.
 //! That indirection keeps the renderer generic while still letting projects define radically different strategic lenses over the same province set.
 //! Mode lookup and color resolution live here so rendering code can ask for final style intent instead of interpreting per-mode config itself.
-//! Functionally this file delivers the policy surface that tells the province renderer how to translate province state into view-specific color meaning.
 
 use std::collections::HashMap;
 

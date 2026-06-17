@@ -1,8 +1,7 @@
-//! This file provides tileset geometry and metadata that define how tile IDs map to atlas pixels.
-//! It computes source rectangles from local IDs so render code can sample the correct sprite area.
-//! It stores solidity metadata per tile to support collision and gameplay filtering decisions.
-//! It tracks frame-based tile animations so animated map cells advance with deterministic timing.
-//! It holds autotile rule tables that translate neighborhood masks into terrain transition IDs.
+//! This file provides tileset geometry and metadata that define how tile IDs map to atlas pixels. `tilemap/tileset` delivers the tileset implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It computes source rectangles from local IDs so render code can sample the correct sprite area. The file owns or coordinates data contracts including `TileAnimFrame`, `TileSet`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It stores solidity metadata per tile to support collision and gameplay filtering decisions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_first_gid`, `get_tile_count`, `get_columns`, `get_tile_width`, `get_tile_height`, and 12 more stays attached to the local data model and invariants.
+//! It tracks frame-based tile animations so animated map cells advance with deterministic timing. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::log_msg;
 use crate::math::Rect;

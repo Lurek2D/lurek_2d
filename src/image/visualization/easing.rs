@@ -1,9 +1,8 @@
-//! Renders easing and curve diagnostics as image charts for motion-tuning and teaching workflows.
-//! Produces labeled curve galleries arranged in grids for side-by-side behavior comparison.
-//! Draws overlay traces that contrast multiple easing functions on shared coordinate axes.
-//! Includes Bezier-focused views with control-point and segment cues for shape inspection.
-//! Supplies advanced Bezier visualization for derivative and edit-oriented debugging scenarios.
-//! Uses chart backgrounds and guides that preserve readability across dense trace overlays.
+//! Renders easing and curve diagnostics as image charts for motion-tuning and teaching workflows. `image/visualization/easing` delivers the easing implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Produces labeled curve galleries arranged in grids for side-by-side behavior comparison. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Draws overlay traces that contrast multiple easing functions on shared coordinate axes. Public callable behavior is centered on `easing_gallery_to_image`, `easing_comparison_to_image`, `bezier_curves_to_image`, `draw_bezier_advanced_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Includes Bezier-focused views with control-point and segment cues for shape inspection. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supplies advanced Bezier visualization for derivative and edit-oriented debugging scenarios. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::image::ImageData;
 /// Render a gallery of easing curves in a grid into an image.

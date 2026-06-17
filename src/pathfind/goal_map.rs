@@ -1,9 +1,8 @@
-//! Multi-source Dijkstra distance field for goal-oriented AI movement.
-//! Builds a cost-to-reach map from many weighted source cells.
-//! Returns downhill gradient, uphill flee direction, and flood-fill reachability.
-//! Supports custom blocker predicates during baking from Lua bindings.
-//! Serializes and restores the field as a compact binary blob.
-//! Gives AI code a reusable distance surface for steering and influence.
+//! Multi-source Dijkstra distance field for goal-oriented AI movement. `pathfind/goal_map` delivers the goal map implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Builds a cost-to-reach map from many weighted source cells. The file owns or coordinates data contracts including `GoalSource`, `GoalMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Returns downhill gradient, uphill flee direction, and flood-fill reachability. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `width`, `height`, `add_source`, `set_sources`, `clear_sources`, and 8 more stays attached to the local data model and invariants.
+//! Supports custom blocker predicates during baking from Lua bindings. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Serializes and restores the field as a compact binary blob. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;

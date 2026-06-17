@@ -1,8 +1,7 @@
-//! Serializable description of the engine API surface exposed to mods.
-//! Stores parameter types, return types, and short summaries for each entry.
-//! Loads from generated API metadata at startup.
-//! Supports version checks so mods can declare a minimum engine release.
-//! Gives the sandbox a typed contract to validate against.
+//! Serializable description of the engine API surface exposed to mods. `mods/api_schema` delivers the api schema implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores parameter types, return types, and short summaries for each entry. The file owns or coordinates data contracts including `FieldType`, `FieldDef`, `MethodDef`, `AssetRequirement`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Loads from generated API metadata at startup. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str`, `new`, `optional`, `with_default`, `with_description`, and 2 more stays attached to the local data model and invariants.
+//! Supports version checks so mods can declare a minimum engine release. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// Field type variant for an API schema.
 #[derive(Debug, Clone, PartialEq, Eq)]

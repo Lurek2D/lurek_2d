@@ -41,33 +41,31 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### event_loop.rs
 
-- This file provides event-loop side monitor and display helpers for window placement flow.
-- It enumerates displays and captures snapshot metadata used by window-facing APIs.
-- It selects startup and fallback monitors with deterministic preference ordering.
-- It supports centering and cross-display movement operations for runtime window control.
-- It anchors monitor-aware behavior required by multi-display desktop setups.
+- This file provides event-loop side monitor and display helpers for window placement flow. `window/event_loop` delivers the event loop implementation for the window subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It enumerates displays and captures snapshot metadata used by window-facing APIs. The file owns or coordinates data contracts including `DisplayInfo`, `FullscreenModeInfo`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It selects startup and fallback monitors with deterministic preference ordering. Public callable behavior is centered on `fallback_display_info`, `get_displays`, `display_snapshots`, `current_display_index`, `current_display_index_or_default`, and 9 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- It supports centering and cross-display movement operations for runtime window control. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- It anchors monitor-aware behavior required by multi-display desktop setups. External integration uses `winit`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### management.rs
 
-- This file provides deferred window management operations staged for safe event-loop apply.
-- It controls title, size, position, display target, and icon updates through queued state.
-- It manages fullscreen and vsync mode changes across desktop and exclusive variants.
-- It exposes minimize, maximize, restore, close, and attention requests for app lifecycle flow.
-- It provides focus, visibility, and pointer-presence queries for runtime interaction logic.
-- It includes DPI conversion and mode snapshot helpers used by Lua and engine integration.
+- This file provides deferred window management operations staged for safe event-loop apply. `window/management` delivers the management implementation for the window subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It controls title, size, position, display target, and icon updates through queued state. The file owns or coordinates data contracts including `ModeInfo`, `WindowConfigRequest`, `FileDialogFilter`, `FileDialogOptions`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It manages fullscreen and vsync mode changes across desktop and exclusive variants. Public callable behavior is centered on `set_title`, `focus`, `set_fullscreen`, `is_fullscreen`, `set_vsync`, and 31 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- It exposes minimize, maximize, restore, close, and attention requests for app lifecycle flow. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- It provides focus, visibility, and pointer-presence queries for runtime interaction logic. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod.rs
 
-- This module delivers the high-level desktop window subsystem for lifecycle and display control.
-- It unifies monitor handling, mode changes, viewport scaling, and state query surfaces.
-- It provides the runtime boundary between OS window behavior and script-facing APIs.
+- This module delivers the high-level desktop window subsystem for lifecycle and display control. `window/mod` is the window module index, declaring `event_loop`, `management`, `viewport` so agents can identify which files own each feature slice before opening implementation code.
+- It unifies monitor handling, mode changes, viewport scaling, and state query surfaces. `src/window/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `event_loop::{ current_display_index_or_default, desktop_dimensions_or_fallback, display_name_or_unknown, display_snapshots, fullscreen_mode_snapshots, get_displays, get_fullscreen_modes, DisplayInfo, FullscreenModeInfo, }`, `management::{ close, display_orientation, flash, focus, from_dpi_pixels, get_dpi_scale, get_fullscreen, get_fullscreen_type_str, get_mode, get_pixel_dimensions, get_position, get_vsync, has_focus, has_mouse_focus, is_fullscreen, is_maximized, is_minimized, is_visible, maximize, minimize, request_attention, restore, set_display, set_fullscreen, set_icon, set_mode, set_position, set_size, set_title, set_vsync, show_message_box, to_dpi_pixels, ModeInfo, }`, `viewport::{ from_pixels, get_height, get_scale_info, get_scale_mode, get_width, set_scale_mode, set_scale_mode_validated, to_pixels, ScaleInfo, }` centralized for the window subsystem.
 
 ### viewport.rs
 
-- This file provides viewport scaling helpers between logical game space and physical pixels.
-- It exposes logical dimensions and scale mode state used by rendering and input mapping.
-- It computes conversion factors and offsets so coordinate translation remains consistent.
-- It supports runtime staging of scale behavior without direct renderer coupling.
+- This file provides viewport scaling helpers between logical game space and physical pixels. `window/viewport` delivers the viewport implementation for the window subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It exposes logical dimensions and scale mode state used by rendering and input mapping. The file owns or coordinates data contracts including `ScaleInfo`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It computes conversion factors and offsets so coordinate translation remains consistent. Public callable behavior is centered on `get_width`, `get_height`, `get_scale_mode`, `set_scale_mode`, `to_pixels`, and 3 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- It supports runtime staging of scale behavior without direct renderer coupling. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

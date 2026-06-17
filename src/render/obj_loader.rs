@@ -1,23 +1,11 @@
-//! - Parses Wavefront OBJ and material MTL files for rendering projection.
-//! - Translates 3D geometric models into 2D canvas coordinates and meshes.
-//! - Projects vertices from world positions to viewport dimensions using virtual cameras.
-//! - Performs linear diffuse color mapping and resolves texture path assets.
-//! - Implements software-based CPU rasterization for thumbnail rendering and validation.
-//! - Normalizes OBJ face indices, resolving negative and 1-based index offsets.
-//! - Filters back-facing triangles to optimize rendering output.
-//! - Computes face normals to calculate light reflection and shading coefficients.
-//! - Handles scaling, translation, and Y-rotation parameters for custom model instances.
-//! - Evaluates barycentric coordinate edge functions to resolve CPU depth values.
-//! - Builds sorting buffers to render projected triangles back-to-front.
-//! - Restricts memory reallocations by processing geometries in flat vector buffers.
-//! - Culls triangle vertices lying behind the camera near clip plane.
-//! - Bridges external 3D assets to the engine's 2D game layout pipelines.
-//! - Reads text files in memory, tokenizing components like vertices, UVs, and normals.
-//! - Maps texture coordinates, reversing Y components to align with wgpu samplers.
-//! - Supports MTL diffuse texture overlays mapped to renderer texture keys.
-//! - Separates mathematical vector operations from direct GPU state modifications.
-//! - Minimizes import overhead by caching parsed materials across instances.
-//! - Serves as an asset loader adapter, converting 3D files to 2D draw commands.
+//! Parses Wavefront OBJ and material MTL files for rendering projection. `render/obj_loader` delivers the obj loader implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Translates 3D geometric models into 2D canvas coordinates and meshes. The file owns or coordinates data contracts including `ObjError`, `Vec3`, `Vec2`, `ObjFace`, `ObjMaterial`, and 3 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Projects vertices from world positions to viewport dimensions using virtual cameras. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `dot`, `len`, `normalise`, `sub`, `cross`, and 12 more stays attached to the local data model and invariants.
+//! Performs linear diffuse color mapping and resolves texture path assets. Runtime integration reaches sibling engine areas through crate modules `image`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Implements software-based CPU rasterization for thumbnail rendering and validation. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Normalizes OBJ face indices, resolving negative and 1-based index offsets. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Filters back-facing triangles to optimize rendering output. State changes, validation paths, and helper routines in `src/render/obj_loader.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+//! Computes face normals to calculate light reflection and shading coefficients. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
 
 use crate::image::ImageData;
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};

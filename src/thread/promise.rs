@@ -1,7 +1,7 @@
-//! This file provides a one-shot async result container for Lua work running off the main thread.
-//! It models pending, success, and error states so callers can poll progress without blocking frames.
-//! It delivers the resolved value through a dedicated channel for safe cross-thread handoff semantics.
-//! It makes deferred gameplay logic simple by letting results be consumed cleanly in later updates.
+//! This file provides a one-shot async result container for Lua work running off the main thread. `thread/promise` delivers the promise implementation for the thread subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It models pending, success, and error states so callers can poll progress without blocking frames. The file owns or coordinates data contracts including `PromiseState`, `Promise`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It delivers the resolved value through a dedicated channel for safe cross-thread handoff semantics. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_done`, `result`, `get_error` stays attached to the local data model and invariants.
+
 use crate::thread::channel::{Channel, ChannelValue};
 use crate::thread::worker::LuaThread;
 use std::collections::HashMap;

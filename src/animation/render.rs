@@ -1,7 +1,6 @@
-//! Converts active animation frame state into renderer-ready textured draw command payloads.
-//! Bundles atlas identity and transform inputs so frame sampling maps cleanly to render execution.
-//! Keeps rendering adaptation lightweight while preserving consistent frame-to-visual translation.
-//! Serves as the bridge between animation runtime output and command-stream based rendering.
+//! Converts active animation frame state into renderer-ready textured draw command payloads. `animation/render` delivers the rendering adapter and draw-command integration for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Bundles atlas identity and transform inputs so frame sampling maps cleanly to render execution. The file owns or coordinates data contracts including `AnimRenderParams`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Keeps rendering adaptation lightweight while preserving consistent frame-to-visual translation. Public callable behavior is centered on `quad_to_draw_command`, while method-level behavior such as `generate_render_command` stays attached to the local data model and invariants.
 
 use crate::animation::controller::Animation;
 use crate::math::Rect;

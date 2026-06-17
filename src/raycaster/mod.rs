@@ -2,6 +2,10 @@
 //! It combines DDA stepping, projection, scene building, visibility, lighting, and helper render paths so game code can ask for either gameplay queries or full presentation output.
 //! Support code for elevation, multilevel layouts, picking, depth, and debug visualization lives beside the core marcher so the subsystem keeps one camera model end to end.
 //! At the highest level, this is the part of the engine that gives Lua and Rust callers a classic grid-based 3D view without leaving the 2D runtime architecture.
+//! `raycaster/mod` is the raycaster module index, declaring `build_scene`, `column_batch`, `dda`, `depth_buffer`, `doors`, and 18 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/raycaster/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `build_scene::{DirectionalSpriteTextures, LevelSprite, SceneBuildParams, WorldSprite}`, `column_batch::{ColumnBatch, ColumnData}`, `dda::Raycaster2D`, `depth_buffer::DepthBuffer`, and 17 more centralized for the raycaster subsystem.
+//! The file documents how raycaster submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! Agents should read this index to choose the narrow owner file first, because it maps names such as `build_scene`, `column_batch`, `dda`, `depth_buffer`, `doors`, and 18 more to concrete implementation responsibilities.
 
 /// Raycaster scene construction from camera and world grid.
 pub mod build_scene;

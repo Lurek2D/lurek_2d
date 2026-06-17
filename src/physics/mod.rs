@@ -1,6 +1,9 @@
 //! Platform-level 2D physics module that unifies authored bodies, geometric shapes, simulation stepping, spatial queries, terrain sync, and trigger-style environmental effects.
 //! It exposes the major surfaces of the subsystem as one coherent toolbox, from lightweight helper tests through full world simulation and debug-oriented support structures.
 //! Functionally this file is the high-level entry point for physical interaction, movement constraints, collision reporting, and physics-backed world state in Lurek2D.
+//! `physics/mod` is the physics module index, declaring `body`, `collision`, `collision_helpers`, `render`, `shape`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/physics/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `types::BodyId`, `body::{Body, BodyShape, BodyType}`, `collision::CollisionInfo`, `collision_helpers::{test_aabb, test_circle_aabb, test_circles, test_point_aabb}`, and 5 more centralized for the physics subsystem.
+//! The file documents how physics submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 /// Rigid body management and handle types.
 pub mod body;

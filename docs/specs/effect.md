@@ -45,62 +45,59 @@ This module primarily collaborates with `image`, `overlay`, `render`, `runtime`.
 
 ### draw.rs
 
-- Provides lightweight stack-preview rendering that converts effect activity into a quick diagnostic image.
-- Distinguishes active and inactive stack states through deterministic color selection.
-- Delivers a minimal visual probe for tooling and debug-side effect inspection.
+- Provides lightweight stack-preview rendering that converts effect activity into a quick diagnostic image. `effect/draw` delivers the draw implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### effect.rs
 
-- Provides runtime post-effect instances that couple effect kind with mutable parameter state.
-- Supports built-in and custom shader-backed variants under one unified runtime shape.
-- Exposes parameter and enable controls for live effect tuning without pipeline rebuilds.
-- Delivers the per-effect state object consumed by stack management and rendering stages.
+- Provides runtime post-effect instances that couple effect kind with mutable parameter state. `effect/effect` delivers the effect implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports built-in and custom shader-backed variants under one unified runtime shape. The file owns or coordinates data contracts including `PostFxEffect`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Exposes parameter and enable controls for live effect tuning without pipeline rebuilds. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `new_custom`, `set_parameter`, `get_parameter`, `has_parameter`, `get_parameter_names`, and 5 more stays attached to the local data model and invariants.
+- Delivers the per-effect state object consumed by stack management and rendering stages. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### effect_type.rs
 
-- Provides the canonical post-effect type catalog that defines all built-in processing identities.
-- Maps stable Lua-facing names to typed variants for predictable script and engine interoperability.
-- Supplies debug labels and parsing helpers that normalize user input into supported effect forms.
-- Defines default parameter sets so each effect starts from consistent baseline behavior.
-- Separates built-in variants from custom-shader paths while preserving one shared lookup model.
-- Delivers the naming and typing backbone used by effect instances, stacks, and presets.
+- Provides the canonical post-effect type catalog that defines all built-in processing identities. `effect/effect_type` delivers the effect type implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Maps stable Lua-facing names to typed variants for predictable script and engine interoperability. The file owns or coordinates data contracts including `PostFxEffectType`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supplies debug labels and parsing helpers that normalize user input into supported effect forms. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `built_in_names`, `name`, `debug_label`, `default_params` stays attached to the local data model and invariants.
+- Defines default parameter sets so each effect starts from consistent baseline behavior. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Separates built-in variants from custom-shader paths while preserving one shared lookup model. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### image_effect.rs
 
-- Provides image-scoped post-effect pipelines that group shared and owned effects into ordered pass chains.
-- Supports add, remove, and lookup workflows so runtime code can manage effect sets incrementally.
-- Converts active effects into renderer-facing pass descriptors for downstream execution.
-- Delivers the per-target composition layer for reusable shader effect application.
+- Provides image-scoped post-effect pipelines that group shared and owned effects into ordered pass chains. `effect/image_effect` delivers the image effect implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports add, remove, and lookup workflows so runtime code can manage effect sets incrementally. The file owns or coordinates data contracts including `ImageEffect`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Converts active effects into renderer-facing pass descriptors for downstream execution. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_effect`, `add_effect_rc`, `get_effect_by_index`, `get_effect_by_name`, `remove_by_index`, and 4 more stays attached to the local data model and invariants.
+- Delivers the per-target composition layer for reusable shader effect application. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
-- Provides the high-level visual effects module boundary for post-processing composition and runtime control.
-- Connects effect instances, stacks, presets, and renderer integration into one coherent pipeline surface.
-- Delivers a data-driven effect orchestration layer that scripts and systems can configure predictably.
+- Provides the high-level visual effects module boundary for post-processing composition and runtime control. `effect/mod` is the effect module index, declaring `draw`, `effect`, `effect_type`, `image_effect`, `presets`, and 2 more so agents can identify which files own each feature slice before opening implementation code.
+- Connects effect instances, stacks, presets, and renderer integration into one coherent pipeline surface. `src/effect/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `effect::PostFxEffect`, `effect_type::PostFxEffectType`, `image_effect::ImageEffect`, `presets::{build_preset, preset_names, EffectPreset}`, and 2 more centralized for the effect subsystem.
+- Delivers a data-driven effect orchestration layer that scripts and systems can configure predictably. The file documents how effect submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- `effect/mod` is the effect module index, declaring `draw`, `effect`, `effect_type`, `image_effect`, `presets`, and 2 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/effect/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `effect::PostFxEffect`, `effect_type::PostFxEffectType`, `image_effect::ImageEffect`, `presets::{build_preset, preset_names, EffectPreset}`, and 2 more centralized for the effect subsystem.
+- The file documents how effect submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 ### presets.rs
 
-- Provides built-in post-effect presets that package curated visual moods into ready-to-use chains.
-- Builds effect sets with viewport-aware stack initialization for immediate runtime application.
-- Exposes canonical preset names so scripts can select consistent looks with stable identifiers.
-- Encapsulates preset assembly logic to keep stylistic recipes centralized and reusable.
-- Delivers one-call factories that return enabled stacks configured for direct deployment.
+- Provides built-in post-effect presets that package curated visual moods into ready-to-use chains. `effect/presets` delivers the presets implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Builds effect sets with viewport-aware stack initialization for immediate runtime application. The file owns or coordinates data contracts including `EffectPreset`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Exposes canonical preset names so scripts can select consistent looks with stable identifiers. Public callable behavior is centered on `preset_names`, `build_preset`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Encapsulates preset assembly logic to keep stylistic recipes centralized and reusable. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### render.rs
 
-- Provides render-command generation for post-effect capture and application flows.
-- Emits deterministic begin, end, and apply command sequences consumed by the renderer.
-- Delivers no-op behavior when stacks have no active effects to process.
+- Provides render-command generation for post-effect capture and application flows. `effect/render` delivers the rendering adapter and draw-command integration for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Emits deterministic begin, end, and apply command sequences consumed by the renderer. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Delivers no-op behavior when stacks have no active effects to process. Public callable behavior is centered on no named public items, while method-level behavior such as `begin_capture_command`, `end_capture_command`, `apply_command`, `generate_render_commands` stays attached to the local data model and invariants.
 
 ### stack.rs
 
-- Provides ordered post-effect stack management with per-entry enable state and target dimensions.
-- Stores effect references in application order while preserving synchronized activation flags.
-- Supports insertion, removal, reordering, and dedup operations for dynamic runtime composition.
-- Exposes query helpers that report active subsets and positional stack metadata.
-- Includes stack-introspection render helpers for debugging and visual tooling overlays.
-- Applies defensive index handling so invalid operations fail safely at runtime boundaries.
-- Delivers the sequencing core that determines how effect chains are executed frame to frame.
+- Provides ordered post-effect stack management with per-entry enable state and target dimensions. `effect/stack` delivers the stack implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores effect references in application order while preserving synchronized activation flags. The file owns or coordinates data contracts including `PostFxStack`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports insertion, removal, reordering, and dedup operations for dynamic runtime composition. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `remove`, `insert`, `set_enabled`, `is_enabled`, and 17 more stays attached to the local data model and invariants.
+- Exposes query helpers that report active subsets and positional stack metadata. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Includes stack-introspection render helpers for debugging and visual tooling overlays. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 
 

@@ -1,6 +1,4 @@
-//! Defines the dialogue event vocabulary used to publish lifecycle milestones and selection outcomes.
-//! Carries typed payloads so UI, scripting, and telemetry can react without digging into internal state.
-//! Delivers a clean event contract that keeps conversation flow observable across integration points.
+//! Defines the dialogue event vocabulary used to publish lifecycle milestones and selection outcomes. `dialog/events` delivers the event data and dispatch contracts for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Events emitted by the dialog system for script integration.
 #[derive(Debug, Clone)]

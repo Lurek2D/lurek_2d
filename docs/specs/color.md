@@ -33,33 +33,30 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 
 ### blend.rs
 
-- Implements color blending helpers for interpolation and compositing-style channel math.
-- Provides clamped linear interpolation between RGBA values for smooth visual transitions.
-- Keeps operations lightweight and deterministic for per-frame use in effects and tween flows.
-- Serves as the core blend-utility layer consumed by rendering-adjacent systems.
+- Implements color blending helpers for interpolation and compositing-style channel math. `color/blend` delivers the blend implementation for the color subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides clamped linear interpolation between RGBA values for smooth visual transitions. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Keeps operations lightweight and deterministic for per-frame use in effects and tween flows. Public callable behavior is centered on `lerp_color`, `multiply`, `screen`, `overlay`, `additive`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Serves as the core blend-utility layer consumed by rendering-adjacent systems. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### color_core.rs
 
-- Implements core color representation and conversion utilities across RGB, HSL, and HSV domains.
-- Parses hex color strings into structured channel values with support for common shorthand forms.
-- Serializes RGBA channel values back to canonical hexadecimal text for interchange and debugging.
-- Provides pure color-space transforms suitable for runtime use without hidden global state.
-- Exposes stable conversion behavior reused by palettes, blending, and Lua-visible color APIs.
-- Serves as the foundational color math and parsing layer for the full color module.
+- Implements core color representation and conversion utilities across RGB, HSL, and HSV domains. `color/color_core` delivers the color core implementation for the color subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Parses hex color strings into structured channel values with support for common shorthand forms. The file owns or coordinates data contracts including `Color`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Serializes RGBA channel values back to canonical hexadecimal text for interchange and debugging. Public callable behavior is centered on `hsv_to_rgb`, `gamma_to_linear`, `linear_to_gamma`, `hsl_to_rgb`, while method-level behavior such as `from_u8`, `from_hsl`, `from_hsv`, `from_hex`, `to_u8`, `to_rgb_u32`, and 6 more stays attached to the local data model and invariants.
+- Provides pure color-space transforms suitable for runtime use without hidden global state. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Exposes stable conversion behavior reused by palettes, blending, and Lua-visible color APIs. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod.rs
 
-- Defines the color module boundary for channel types, conversion logic, palettes, and blending helpers.
-- Groups core color math and curated palette sources into one reusable runtime surface.
-- Serves as the composition entry for engine-side and Lua-side color workflows.
+- Defines the color module boundary for channel types, conversion logic, palettes, and blending helpers. `color/mod` is the color module index, declaring `blend`, `color_core`, `palette` so agents can identify which files own each feature slice before opening implementation code.
+- Groups core color math and curated palette sources into one reusable runtime surface. `src/color/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `blend::{additive, alpha_blend, lerp_color, multiply, overlay, screen}`, `color_core::{gamma_to_linear, hsl_to_rgb, hsv_to_rgb, linear_to_gamma, Color}`, `palette::{css_named, retro, Palette}` centralized for the color subsystem.
 
 ### palette.rs
 
-- Implements named color-palette collections for retro, utility, and designer-oriented presets.
-- Stores curated palette definitions as static data for low-overhead runtime access.
-- Provides lookup and conversion helpers that map palette entries into structured color values.
-- Supports extension flows where new palette sets can be surfaced through higher API layers.
-- Serves as the canonical palette source used by rendering tools and script-facing color features.
+- Implements named color-palette collections for retro, utility, and designer-oriented presets. `color/palette` delivers the palette implementation for the color subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores curated palette definitions as static data for low-overhead runtime access. The file owns or coordinates data contracts including `Palette`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides lookup and conversion helpers that map palette entries into structured color values. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Supports extension flows where new palette sets can be surfaced through higher API layers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 
@@ -70,7 +67,7 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 - `lurek.color.additive(c1, c2) -> table`: Additive blend of two colors (clamped to 0â€“1 per channel).
 - `lurek.color.alphaBlend(fg, bg) -> table`: Alpha compositing (Porter-Duff "over") of foreground over background.
 - `lurek.color.brightness(r, g, b) -> number`: Computes perceived luminance (ITU-R BT.601) of an RGB color.
-- `lurek.color.fromHex(hex) -> table|nil`: Parses a hex color string ("#RGB", "#RGBA", "#RRGGBB", or "#RRGGBBAA") into a color table. Returns nil on invalid input.
+- `lurek.color.fromHex(hex) -> table|nil`: Parses a hex color string ("#RGB", "#RGBA", "#RRGGBB", or "#RRGGBBAA") into a color table.
 - `lurek.color.fromHsl(h, s, l) -> table`: Creates a color from HSL components. Returns an opaque color (alpha = 1).
 - `lurek.color.fromHsv(h, s, v) -> table`: Creates a color from HSV components. Returns an opaque color (alpha = 1).
 - `lurek.color.fromU8(r, g, b, a?) -> table`: Creates a color from 0â€“255 integer components. Alpha defaults to 255.

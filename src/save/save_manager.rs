@@ -3,7 +3,7 @@
 //! Dirty tracking and auto-save timing live here so disk writes happen when needed instead of on every frame or every small state change.
 //! Schema versioning and migration routing are also handled here, which lets older saves evolve forward as projects change over time.
 //! Serialization and compression are part of the same flow so slot files remain structured, compact, and easy to validate on load.
-//! The file is therefore the operational core of persistence for games built on the engine.
+//! The file is therefore the operational core of persistence for games built on the engine. The file boundary separates save implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::binary::compress::{compress, decompress, CompressFormat};
 use crate::log_msg;

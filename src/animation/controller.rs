@@ -1,13 +1,9 @@
-//! Implements the central frame-animation runtime that owns clips, frames, cursor state, and event flow.
-//! Advances playback through forward, reverse, ping-pong, looped, and paused progression modes.
-//! Applies speed scaling and transition blending so timing and clip handoff remain artistically controllable.
-//! Builds runtime clip libraries from grids, explicit frame data, and imported authoring metadata.
-//! Emits timeline events for frame changes and lifecycle boundaries to drive gameplay synchronization.
-//! Exposes current frame sampling for render-facing systems that require stable quad lookup each tick.
-//! Maintains deterministic update behavior so identical input timing yields identical playback state.
-//! Supports preview and inspection flows used by tools and debugging overlays.
-//! Keeps clip selection, event buffering, and cursor mutation within one cohesive control surface.
-//! Serves as the primary animation execution engine for sprite and timeline-driven characters.
+//! Implements the central frame-animation runtime that owns clips, frames, cursor state, and event flow. `animation/controller` delivers the controller implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Advances playback through forward, reverse, ping-pong, looped, and paused progression modes. The file owns or coordinates data contracts including `Animation`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Applies speed scaling and transition blending so timing and clip handoff remain artistically controllable. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_frame`, `add_frames_from_grid`, `add_frames_from_rects`, `add_clip`, `add_clip_with_mode`, and 26 more stays attached to the local data model and invariants.
+//! Builds runtime clip libraries from grids, explicit frame data, and imported authoring metadata. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Emits timeline events for frame changes and lifecycle boundaries to drive gameplay synchronization. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Exposes current frame sampling for render-facing systems that require stable quad lookup each tick. The file boundary separates animation implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::clip::{AnimClip, ClipPlaybackMode};
 use super::event::AnimEvent;

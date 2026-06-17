@@ -1,6 +1,6 @@
-//! Unified error type for all network subsystem failures.
-//! Covers socket I/O, ENet, HTTP, WebSocket, TCP, and threading faults.
-//! Integrates with thiserror for automatic Display and From implementations.
+//! Unified error type for all network subsystem failures. `network/error` delivers the error implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Covers socket I/O, ENet, HTTP, WebSocket, TCP, and threading faults. The file owns or coordinates data contracts including `NetworkError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Integrates with thiserror for automatic Display and From implementations. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 use thiserror::Error;
 

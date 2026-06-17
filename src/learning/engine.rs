@@ -1,8 +1,7 @@
-//! Defines a dynamic neural engine that chains heterogeneous learning blocks in one runtime graph.
-//! Hosts dense, convolutional, recurrent, and transformer-like components behind a unified interface.
-//! Packs and unpacks flat parameter buffers so composite models work with evolutionary optimizers.
-//! Executes staged forward passes through configured block sequences on shared tensor carriers.
-//! Serves as the composition hub for mixed-architecture experimentation in the learning module.
+//! Defines a dynamic neural engine that chains heterogeneous learning blocks in one runtime graph. `learning/engine` delivers the engine implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Hosts dense, convolutional, recurrent, and transformer-like components behind a unified interface. The file owns or coordinates data contracts including `NeuralBlock`, `LurekNeuralEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Packs and unpacks flat parameter buffers so composite models work with evolutionary optimizers. Public callable behavior is centered on no named public items, while method-level behavior such as `param_count`, `set_weights`, `get_weights`, `new`, `add_block`, `blocks`, and 2 more stays attached to the local data model and invariants.
+//! Executes staged forward passes through configured block sequences on shared tensor carriers. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::learning::{
     Conv2D, EvolutionaryLayer, GruLayer, LstmLayer, MaxPool2D, NeuralLayer,

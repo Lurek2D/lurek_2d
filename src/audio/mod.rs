@@ -1,6 +1,9 @@
-//! Defines the audio module boundary that groups playback, routing, decode, and source-data primitives.
-//! Exposes coherent core audio contracts while delegating specialized processing to adjacent modules.
-//! Serves as the composition entry for engine-side runtime audio behavior and shared types.
+//! Defines the audio module boundary that groups playback, routing, decode, and source-data primitives. `audio/mod` is the audio module index, declaring `bus`, `decoder`, `mixer`, `source`, `sound_data`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
+//! Exposes coherent core audio contracts while delegating specialized processing to adjacent modules. `src/audio/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bus::Bus`, `decoder::Decoder`, `mixer::Mixer`, `mixer::PlayState`, and 15 more centralized for the audio subsystem.
+//! Serves as the composition entry for engine-side runtime audio behavior and shared types. The file documents how audio submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! `audio/mod` is the audio module index, declaring `bus`, `decoder`, `mixer`, `source`, `sound_data`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/audio/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bus::Bus`, `decoder::Decoder`, `mixer::Mixer`, `mixer::PlayState`, and 15 more centralized for the audio subsystem.
+//! The file documents how audio submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 /// `Bus` struct: named per-channel volume/pitch routing with effect chain and duck target.
 pub mod bus;

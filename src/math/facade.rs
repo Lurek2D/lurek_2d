@@ -1,7 +1,6 @@
-//! Small scalar helper layer for interpolation and numeric remapping.
-//! Groups lerp, inverse lerp, remap, smoothstep, clamp, and sign behavior.
-//! Operates on f32 values only and stays side-effect free.
-//! Acts as the lightweight math front door for common numeric tasks.
+//! Small scalar helper layer for interpolation and numeric remapping. `math/facade` delivers the public facade over lower-level subsystem helpers for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Groups lerp, inverse lerp, remap, smoothstep, clamp, and sign behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Operates on f32 values only and stays side-effect free. Public callable behavior is centered on `lerp`, `remap`, `clamp`, `sign`, `smoothstep`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 /// Linearly interpolate from `a` to `b` by factor `t`; t=0 returns `a`, t=1 returns `b`.
 pub fn lerp(a: f32, b: f32, t: f32) -> f32 {

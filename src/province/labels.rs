@@ -1,6 +1,4 @@
 //! Label-anchor helper for finding meaningful province centers from span geometry rather than relying on arbitrary bounding-box guesses.
-//! The file accumulates pixel-weighted position data so each province can receive a center point tied to its actual occupied shape.
-//! Functionally this file delivers the geometric core used for stable province label placement.
 
 use std::collections::HashMap;
 

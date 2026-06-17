@@ -1,9 +1,6 @@
-//! - Stores deferred draw-layer callbacks sorted by depth (Z-order).
-//! - Enables gameplay code and UI components to enqueue layered draw commands cheaply.
-//! - Postpones immediate GPU commands to allow sorting before final render dispatch.
-//! - Centralizes sorting rules to ensure consistent layering of all drawn elements.
-//! - Serves as a scheduling buffer between frame-level draw requests and GPU emission.
-//! - Provides methods to queue, flush, clear, and inspect pending callbacks.
+//! Stores deferred draw-layer callbacks sorted by depth (Z-order). `render/draw_layer` delivers the draw layer implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Enables gameplay code and UI components to enqueue layered draw commands cheaply. The file owns or coordinates data contracts including `LayerEntry`, `DrawLayer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Postpones immediate GPU commands to allow sorting before final render dispatch. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `queue`, `flush`, `clear`, `get_count` stays attached to the local data model and invariants.
 
 /// A pending draw-callback slot queued in `DrawLayer`.
 ///

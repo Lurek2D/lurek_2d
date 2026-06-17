@@ -1,8 +1,8 @@
-//! This file provides sparse chunk storage for very large tile worlds that load data on demand.
-//! It decouples tile access from raw memory layout so map scale can grow without full allocation.
-//! It keeps world-to-chunk and local cell transforms precise for predictable addressing.
-//! It exposes range operations and visible-chunk selection to drive rendering and streaming paths.
-//! It stabilizes spatial boundaries so culling and update logic stay consistent under scale.
+//! This file provides sparse chunk storage for very large tile worlds that load data on demand. `tilemap/chunk` delivers the chunk implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It decouples tile access from raw memory layout so map scale can grow without full allocation. The file owns or coordinates data contracts including `ChunkMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It keeps world-to-chunk and local cell transforms precise for predictable addressing. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_chunk_size`, `get_tile`, `set_tile`, `clear_tile`, `fill_rect`, and 10 more stays attached to the local data model and invariants.
+//! It exposes range operations and visible-chunk selection to drive rendering and streaming paths. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+
 use crate::log_msg;
 use crate::math::Rect;
 use crate::runtime::log_messages::{CK01, CK02, CK03};

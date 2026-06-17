@@ -1,7 +1,4 @@
-//! File: src/lua_api/serialize_api.rs
-//! Registers the public `lurek.serial` API for multi-format encode, decode, and validation helpers.
-//! Keeps the Lua-facing layer thin by translating option tables and values into `src/serialize/` domain calls.
-//! Returns decoded Lua tables or encoded strings while delegating format-specific behavior to the serialization module.
+//! Registers the public `lurek.serial` API for multi-format encode, decode, and validation helpers. `src/lua_api/serialize_api.rs` registers the `lurek.serialize` Lua boundary for serialize behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::serialize::{

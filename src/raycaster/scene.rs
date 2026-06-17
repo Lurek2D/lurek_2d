@@ -1,8 +1,8 @@
-//! This file defines the transient geometry language that the raycaster uses between spatial reasoning and final drawing.
+//! This file defines the transient geometry language that the raycaster uses between spatial reasoning and final drawing. `raycaster/scene` delivers the scene implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! Walls, floors, ceilings, sprites, and injected meshes all share a quad-oriented representation so later stages can sort and emit them uniformly.
 //! Each record carries the texture routing, light tint, depth meaning, and UV state needed to survive the trip from world logic to renderer.
-//! The scene container groups one frame of these surfaces into a single package sized to the active viewport.
-//! In practice it is the raycaster's staging area for everything the camera can currently see.
+//! The scene container groups one frame of these surfaces into a single package sized to the active viewport. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! In practice it is the raycaster's staging area for everything the camera can currently see. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::math::Vec2;
 use crate::render::mesh::Mesh;

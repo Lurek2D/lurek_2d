@@ -1,8 +1,8 @@
-//! Flexible Bézier curve utility for smooth motion paths and procedural shaping.
-//! Supports dynamic control points, clamped evaluation, and partial-segment sampling.
-//! Provides tangent and derivative queries for orientation and velocity-aware effects.
-//! Can be transformed in place with translate, rotate, and scale operations.
-//! Designed for path authoring, easing-like shaping, and motion interpolation use cases.
+//! Flexible Bézier curve utility for smooth motion paths and procedural shaping. `math/bezier` delivers the bezier implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports dynamic control points, clamped evaluation, and partial-segment sampling. The file owns or coordinates data contracts including `BezierCurve`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides tangent and derivative queries for orientation and velocity-aware effects. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `evaluate`, `render`, `render_segment`, `get_derivative`, `get_control_point`, and 11 more stays attached to the local data model and invariants.
+//! Can be transformed in place with translate, rotate, and scale operations. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Designed for path authoring, easing-like shaping, and motion interpolation use cases. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::math::vec2::Vec2;
 

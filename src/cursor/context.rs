@@ -1,8 +1,8 @@
-//! Implements context-sensitive cursor switching by mapping named runtime contexts to cursor states.
-//! Supports system, custom, and animated cursor variants under one discriminated state model.
-//! Applies context changes immediately while preserving a deterministic default fallback path.
-//! Integrates optional trail and zoom behavior into active cursor presentation state.
-//! Serves as the policy layer for script-driven cursor-mode transitions.
+//! Implements context-sensitive cursor switching by mapping named runtime contexts to cursor states. `cursor/context` delivers the context implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports system, custom, and animated cursor variants under one discriminated state model. The file owns or coordinates data contracts including `CursorState`, `CursorContext`, `ContextRule`, `CursorManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Applies context changes immediately while preserving a deterministic default fallback path. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str`, `new`, `set_system`, `set_custom`, `set_animated`, and 16 more stays attached to the local data model and invariants.
+//! Integrates optional trail and zoom behavior into active cursor presentation state. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Serves as the policy layer for script-driven cursor-mode transitions. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use super::animated_cursor::AnimatedCursor;
 use super::custom_cursor::CustomCursor;

@@ -1,7 +1,6 @@
-//! Provides poll-based file watch behavior that detects mtime changes for registered paths.
-//! Maintains cached modification snapshots and reports deterministic change sets per poll cycle.
-//! Supports watch, unwatch, and forced invalidation workflows for runtime refresh control.
-//! Delivers a lightweight change-detection utility for assets and config reload pipelines.
+//! Provides poll-based file watch behavior that detects mtime changes for registered paths. `filesystem/watcher` delivers the watcher implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Maintains cached modification snapshots and reports deterministic change sets per poll cycle. The file owns or coordinates data contracts including `FileWatcher`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports watch, unwatch, and forced invalidation workflows for runtime refresh control. Public callable behavior is centered on `read_mtime`, while method-level behavior such as `new`, `watch`, `unwatch`, `is_watching`, `poll`, `len`, and 2 more stays attached to the local data model and invariants.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};

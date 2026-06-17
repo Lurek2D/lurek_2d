@@ -1,9 +1,8 @@
-//! Provides the canonical post-effect type catalog that defines all built-in processing identities.
-//! Maps stable Lua-facing names to typed variants for predictable script and engine interoperability.
-//! Supplies debug labels and parsing helpers that normalize user input into supported effect forms.
-//! Defines default parameter sets so each effect starts from consistent baseline behavior.
-//! Separates built-in variants from custom-shader paths while preserving one shared lookup model.
-//! Delivers the naming and typing backbone used by effect instances, stacks, and presets.
+//! Provides the canonical post-effect type catalog that defines all built-in processing identities. `effect/effect_type` delivers the effect type implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Maps stable Lua-facing names to typed variants for predictable script and engine interoperability. The file owns or coordinates data contracts including `PostFxEffectType`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supplies debug labels and parsing helpers that normalize user input into supported effect forms. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `built_in_names`, `name`, `debug_label`, `default_params` stays attached to the local data model and invariants.
+//! Defines default parameter sets so each effect starts from consistent baseline behavior. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Separates built-in variants from custom-shader paths while preserving one shared lookup model. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::HashMap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -1,8 +1,7 @@
-//! Parses Aseprite export data into engine-ready frame geometry, timing, and clip-tag metadata.
-//! Supports multiple JSON frame layout variants while enforcing deterministic playback ordering.
-//! Validates structural assumptions early so malformed exports fail before runtime animation usage.
-//! Extracts frame rectangles and durations into normalized data consumable by controller pipelines.
-//! Serves as the import boundary between external authoring output and internal animation contracts.
+//! Parses Aseprite export data into engine-ready frame geometry, timing, and clip-tag metadata. `animation/aseprite` delivers the aseprite implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports multiple JSON frame layout variants while enforcing deterministic playback ordering. The file owns or coordinates data contracts including `AsepriteFrameData`, `AsepriteDirection`, `AsepriteTagData`, `AsepriteParsed`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Validates structural assumptions early so malformed exports fail before runtime animation usage. Public callable behavior is centered on `load_aseprite_json`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Extracts frame rectangles and durations into normalized data consumable by controller pipelines. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use serde_json::Value;
 

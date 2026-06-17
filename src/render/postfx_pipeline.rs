@@ -1,25 +1,11 @@
-//! - Manages post-processing effects and screen-space shader rendering passes.
-//! - Connects offscreen canvas textures to full-screen fragment shader operations.
-//! - Groups effect parameters, texture bindings, and samplers dynamically.
-//! - Renders multi-pass post-fx chains like blur, CRT warp, and color correction.
-//! - Coalesces texture swap passes, minimizing frame allocation overhead.
-//! - Configures pipeline states, blend modes, and write masks for screen passes.
-//! - Compiles and stores default fallback post-processing WGSL shaders.
-//! - Reuses texture descriptors, adapting resources to window dimensions.
-//! - Supports custom shader key registers to inject user filter passes.
-//! - Maps uniform variables dynamically using uniform value layout builders.
-//! - Handles color space correction, mapping outputs to the swapchain format.
-//! - Restricts memory reallocations by reusing double-buffered texture targets.
-//! - Enables retro pixelation, scanline overlays, and vignette shaders.
-//! - Integrates with slotmap resource keys for canvases and target textures.
-//! - Provides methods to build pipelines, dispatch passes, and update variables.
-//! - Coordinates drawing execution by mapping shader layouts to screen quads.
-//! - Minimizes state mutations by caching texture bind groups across passes.
-//! - Tracks pipeline invalidation state, rebuilding targets on screen resize.
-//! - Integrates with wgpu render passes to bind buffers and samplers.
-//! - Validates uniform variables, warning on mismatched parameter inputs.
-//! - Manages target depth views to allow stencil tests in screen shaders.
-//! - Feeds performance timing data to the engine trace collector.
+//! Manages post-processing effects and screen-space shader rendering passes. `render/postfx_pipeline` delivers the postfx pipeline implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Connects offscreen canvas textures to full-screen fragment shader operations. The file owns or coordinates data contracts including `PostFxTexture`, `PostFxPipeline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Groups effect parameters, texture bindings, and samplers dynamically. Public callable behavior is centered on `params_to_uniform`, while method-level behavior such as `new`, `register_custom`, `apply` stays attached to the local data model and invariants.
+//! Renders multi-pass post-fx chains like blur, CRT warp, and color correction. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Coalesces texture swap passes, minimizing frame allocation overhead. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Configures pipeline states, blend modes, and write masks for screen passes. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Compiles and stores default fallback post-processing WGSL shaders. State changes, validation paths, and helper routines in `src/render/postfx_pipeline.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+//! Reuses texture descriptors, adapting resources to window dimensions. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
 
 use std::collections::HashMap;
 /// Shared fullscreen-triangle vertex shader used by every built-in and custom post-fx effect.

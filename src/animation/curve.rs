@@ -1,9 +1,8 @@
-//! Implements keyframed property timelines that interpolate numeric animation parameters over time.
-//! Supports stepped, linear, eased, and callback-defined transitions for authored motion behavior.
-//! Evaluates sparse named tracks into sampled property values at arbitrary timeline positions.
-//! Provides both single-property reads and full snapshot sampling for synchronized consumers.
-//! Keeps interpolation semantics explicit so authored curves remain predictable across runtime contexts.
-//! Serves as the parameter animation layer beneath higher-level state and clip orchestration.
+//! Implements keyframed property timelines that interpolate numeric animation parameters over time. `animation/curve` delivers the curve implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports stepped, linear, eased, and callback-defined transitions for authored motion behavior. The file owns or coordinates data contracts including `EasingKind`, `AnimCurve`, `AnimPropertyTimeline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Evaluates sparse named tracks into sampled property values at arbitrary timeline positions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_easing`, `add_keyframe`, `keyframe_count`, `clear`, `eval`, and 3 more stays attached to the local data model and invariants.
+//! Provides both single-property reads and full snapshot sampling for synchronized consumers. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Keeps interpolation semantics explicit so authored curves remain predictable across runtime contexts. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::math::easing;
 use std::collections::HashMap;

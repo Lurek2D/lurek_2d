@@ -1,8 +1,7 @@
-//! Row-major 3x3 matrix for 2D affine transforms and coordinate mapping.
-//! Builds identity, translation, rotation, scale, and shear matrices.
-//! Supports inversion and multiplication for transform composition.
-//! Maps points through a compact linear algebra core.
-//! Serves as the numeric backbone for higher-level 2D transform code.
+//! Row-major 3x3 matrix for 2D affine transforms and coordinate mapping. `math/mat3` delivers the mat3 implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Builds identity, translation, rotation, scale, and shear matrices. The file owns or coordinates data contracts including `Mat3`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports inversion and multiplication for transform composition. Public callable behavior is centered on no named public items, while method-level behavior such as `identity`, `from_row_major`, `from_translation`, `from_rotation`, `from_shear`, `from_scale`, and 2 more stays attached to the local data model and invariants.
+//! Maps points through a compact linear algebra core. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::vec2::Vec2;
 

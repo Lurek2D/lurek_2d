@@ -1,9 +1,8 @@
-//! Bidirectional A* search that expands from both start and goal at once.
-//! Meets in the middle when the closed sets overlap to cut explored nodes.
-//! Falls back to a partial forward path when the node budget runs out.
-//! Respects NavGrid diagonal mode and per-cell movement cost.
-//! Supports variable unit sizes for multi-tile pathfinding.
-//! Helps large open grids return useful routes with less search work.
+//! Bidirectional A* search that expands from both start and goal at once. `pathfind/bidir` delivers the bidir implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Meets in the middle when the closed sets overlap to cut explored nodes. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Falls back to a partial forward path when the node budget runs out. Public callable behavior is centered on `bidirectional_astar`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Respects NavGrid diagonal mode and per-cell movement cost. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `pathfind`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports variable unit sizes for multi-tile pathfinding. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::log_msg;
 use crate::pathfind::nav_grid::{DiagonalMode, NavGrid};

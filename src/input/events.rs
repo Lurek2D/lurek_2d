@@ -1,6 +1,4 @@
-//! Declares normalized input event names and payload types emitted from the platform event loop.
-//! Defines keyboard, mouse, wheel, text, and gamepad event variants for unified downstream handling.
-//! Serves as the shared event contract consumed by runtime queues and Lua-facing dispatch paths.
+//! Declares normalized input event names and payload types emitted from the platform event loop. `input/events` delivers the event data and dispatch contracts for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Lua event name emitted when a keyboard key transitions to pressed.
 pub const EVENT_KEY_PRESSED: &str = "keypressed";

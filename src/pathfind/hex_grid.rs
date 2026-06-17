@@ -1,10 +1,8 @@
-//! Hex grid with configurable flat-top or pointy-top offset layout.
-//! Stores blocked flags and movement costs for weighted pathfinding.
-//! Runs A* search for shortest paths between hex cells.
-//! Exposes line-of-sight, field-of-view, and movement-range queries.
-//! Uses cube-coordinate math for distance, interpolation, and rounding.
-//! Fits tactics and map systems that need hex adjacency instead of squares.
-//! Keeps hex navigation self-contained and script-friendly.
+//! Hex grid with configurable flat-top or pointy-top offset layout. `pathfind/hex_grid` delivers the hex grid implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores blocked flags and movement costs for weighted pathfinding. The file owns or coordinates data contracts including `HexLayout`, `HexGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Runs A* search for shortest paths between hex cells. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_blocked`, `set_cost`, `is_blocked`, `find_path`, `line_of_sight`, and 4 more stays attached to the local data model and invariants.
+//! Exposes line-of-sight, field-of-view, and movement-range queries. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Uses cube-coordinate math for distance, interpolation, and rounding. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

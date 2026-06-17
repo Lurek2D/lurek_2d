@@ -1,13 +1,9 @@
-//! Registry and coordination layer for live mods and their dependencies.
-//! Tracks enabled mods by id and capability for lookup and lifecycle control.
-//! Parses manifests and validates the required fields before registration.
-//! Resolves dependency order with topological sorting and priority ties.
-//! Detects missing dependencies and circular relationships early.
-//! Prevents asset path collisions across simultaneously loaded mods.
-//! Manages hot reload by marking dirty mods and re-registering them atomically.
-//! Scans folders on disk and batches valid entries into the registry.
-//! Carries typed config schema data from manifests into runtime UI.
-//! Serves as the central authority for mod registration and load sequencing.
+//! Registry and coordination layer for live mods and their dependencies. `mods/mod_manager` delivers the mod manager implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Tracks enabled mods by id and capability for lookup and lifecycle control. The file owns or coordinates data contracts including `ModInfo`, `ModManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Parses manifests and validates the required fields before registration. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_parts`, `check_api_version`, `register_mod`, `unregister_mod`, `get_mod`, and 16 more stays attached to the local data model and invariants.
+//! Resolves dependency order with topological sorting and priority ties. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Detects missing dependencies and circular relationships early. External integration uses `sha2`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Prevents asset path collisions across simultaneously loaded mods. The file boundary separates mods implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{MD01_MGR_INIT, MD02_MOD_REG, MD04_ORDER_OK};

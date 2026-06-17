@@ -1,7 +1,7 @@
 //! Province change and event vocabulary for describing what shifted in map state without forcing listeners to diff whole registry snapshots.
 //! The file models fine-grained mutation records and higher-level events so Lua and engine code can react to province updates in a deliberate typed way.
-//! It keeps visual state changes, style changes, and map-mode level notifications under one shared event language.
-//! Functionally this file delivers the signaling surface for incremental province sync and reactive map behavior.
+//! It keeps visual state changes, style changes, and map-mode level notifications under one shared event language. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Functionally this file delivers the signaling surface for incremental province sync and reactive map behavior. Runtime integration reaches sibling engine areas through crate modules `province`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::province::types::{BorderType, ProvinceId};
 

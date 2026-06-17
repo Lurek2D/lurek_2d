@@ -1,8 +1,7 @@
-//! Implements named color-palette collections for retro, utility, and designer-oriented presets.
-//! Stores curated palette definitions as static data for low-overhead runtime access.
-//! Provides lookup and conversion helpers that map palette entries into structured color values.
-//! Supports extension flows where new palette sets can be surfaced through higher API layers.
-//! Serves as the canonical palette source used by rendering tools and script-facing color features.
+//! Implements named color-palette collections for retro, utility, and designer-oriented presets. `color/palette` delivers the palette implementation for the color subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores curated palette definitions as static data for low-overhead runtime access. The file owns or coordinates data contracts including `Palette`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides lookup and conversion helpers that map palette entries into structured color values. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Supports extension flows where new palette sets can be surfaced through higher API layers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::color_core::Color;
 

@@ -1,11 +1,4 @@
-//! File: src/lua_api/ecs_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
+//! `src/lua_api/ecs_api.rs` registers the `lurek.ecs` Lua boundary for ecs behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::ecs::query_view::QueryView;
@@ -54,6 +47,11 @@ impl LuaUserData for LuaRelationshipManager {
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LRelationshipManager" || name == "LObject")
         });
+        // -- defineType --
+        /// Defines a named relationship type with ordered level labels and an optional default level for new pairs.
+        /// @param | name | string | Relationship type name used for later `setLevel` and `getLevel` calls.
+        /// @param | levels | string[] | Array table of allowed level labels in their semantic order.
+        /// @param | default_level | string? | Optional fallback level assigned when a pair has no explicit level for this type.
         methods.add_method(
             "defineType",
             |_, this, (name, levels, default_level): (String, LuaTable, Option<String>)| {
@@ -107,12 +105,25 @@ impl LuaUserData for LuaRelationshipManager {
             this.inner.borrow_mut().adjust_value(a, b, delta);
             Ok(())
         });
+        // -- setLevel --
+        /// Assigns a named level for one relationship type between two entity ids and reports whether the type-level pair was accepted.
+        /// @param | a | integer | Source entity id for the relationship pair.
+        /// @param | b | integer | Target entity id for the relationship pair.
+        /// @param | type_name | string | Registered relationship type name to mutate.
+        /// @param | level | string | Level label to store for the given type on this entity pair.
+        /// @return | boolean | True when the type exists and the supplied level is valid for that type.
         methods.add_method(
             "setLevel",
             |_, this, (a, b, type_name, level): (u32, u32, String, String)| {
                 Ok(this.inner.borrow_mut().set_level(a, b, &type_name, &level))
             },
         );
+        // -- getLevel --
+        /// Returns the effective named level for one relationship type on a pair, falling back to the type default when no explicit level exists.
+        /// @param | a | integer | Source entity id for the relationship pair.
+        /// @param | b | integer | Target entity id for the relationship pair.
+        /// @param | type_name | string | Registered relationship type name to query.
+        /// @return | string? | Stored level label or the type default when available, otherwise `nil` if the type is unknown.
         methods.add_method(
             "getLevel",
             |_, this, (a, b, type_name): (u32, u32, String)| {

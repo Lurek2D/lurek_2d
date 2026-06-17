@@ -1,19 +1,9 @@
-//! - Manages creation and caching of wgpu render pipeline objects to prevent redundancy.
-//! - Groups pipelines by geometry layout, blend mode, and stencil operation flags.
-//! - Selects default built-in shaders when custom overrides are absent from keys.
-//! - Pays pipeline compilation cost only once per unique rendering configuration.
-//! - Configures stencil operations, depth-stencil states, and stencil mode mapping.
-//! - Standardizes blend states for alpha, additive, multiplicative, and replace modes.
-//! - Defines key lookups for flat, textured, lit, and post-processing pipelines.
-//! - Sets up color channel write masks mapped to native wgpu descriptors.
-//! - Controls vertex layout descriptors for various vertex types (color, texture, light).
-//! - Resolves pipeline state changes efficiently using caching maps.
-//! - Supports custom shader programs dynamically queried at draw time.
-//! - Adjusts multisample states and rasterization options dynamically.
-//! - Configures render passes with matching depth buffers and stencil tests.
-//! - Separates pipeline settings from actual drawing execution commands.
-//! - Provides methods to build pipeline keys, configure blend functions, and map targets.
-//! - Handles post-process passes by matching shaders to screen quad topologies.
+//! Manages creation and caching of wgpu render pipeline objects to prevent redundancy. `render/gpu_pipeline` delivers the gpu pipeline implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Groups pipelines by geometry layout, blend mode, and stencil operation flags. The file owns or coordinates data contracts including `GeometryKind`, `GpuStencilMode`, `PipelineKey`, `PipelineSelectionKey`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Selects default built-in shaders when custom overrides are absent from keys. Public callable behavior is centered on `blend_state_for`, `uniform_wgsl_type`, `custom_uniform_declarations`, `custom_fragment_call_args`, `build_custom_color_shader_source`, and 6 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Pays pipeline compilation cost only once per unique rendering configuration. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Configures stencil operations, depth-stencil states, and stencil mode mapping. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Standardizes blend states for alpha, additive, multiplicative, and replace modes. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::render::gpu_shaders::ShaderUniformKind;
 use crate::render::gpu_tess::color_write_mask_from_bits;

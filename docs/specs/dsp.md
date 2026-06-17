@@ -42,63 +42,53 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 
 ### analysis.rs
 
-- Provides realtime signal analysis primitives for level tracking and spectral inspection of sample streams.
-- Maintains rolling RMS and peak state to expose stable loudness and clipping indicators during processing.
-- Computes bounded frequency summaries that keep analysis cost predictable for scripting and runtime tooling.
-- Supports both engine internals and Lua-facing diagnostics with consistent measurement semantics.
-- Delivers the inspection layer used to observe signal health before and during mix decisions.
+- Provides realtime signal analysis primitives for level tracking and spectral inspection of sample streams. `dsp/analysis` delivers the analysis implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Maintains rolling RMS and peak state to expose stable loudness and clipping indicators during processing. The file owns or coordinates data contracts including `LevelDetector`, `SpectrumAnalyzer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Computes bounded frequency summaries that keep analysis cost predictable for scripting and runtime tooling. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `process_sample`, `process_sound_data`, `get_rms`, `get_peak`, `is_clipping`, and 4 more stays attached to the local data model and invariants.
+- Supports both engine internals and Lua-facing diagnostics with consistent measurement semantics. Runtime integration reaches sibling engine areas through crate modules `audio`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### effects.rs
 
-- Provides the core DSP effect runtime that defines algorithms, parameters, and per-sample processing behavior.
-- Encodes the supported effect family as stable typed variants consumed by both engine and Lua surfaces.
-- Maintains shared parameter state with lock-free primitives to keep audio-thread reads predictable.
-- Builds active processing instances that hold delay lines, filters, modulation state, and dynamic buffers.
-- Executes effect transforms sample by sample with bounded parameter normalization and clamped control ranges.
-- Supplies graph-backed shared chains for coordinating writer-side updates with reader-side playback.
-- Wraps rodio sources in a dynamic processor that applies full chain processing during streaming.
-- Handles effect-internal sizing from sample-rate context so algorithms remain portable across devices.
-- Keeps filter and modulation math localized to one layer for consistent sonic behavior across call sites.
-- Delivers the central effect-processing backbone for real-time and script-driven DSP workflows.
+- Provides the core DSP effect runtime that defines algorithms, parameters, and per-sample processing behavior. `dsp/effects` delivers the effects implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Encodes the supported effect family as stable typed variants consumed by both engine and Lua surfaces. The file owns or coordinates data contracts including `AtomicParam`, `EffectType`, `EffectParams`, `ActiveEffect`, `SharedEffectGraph`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Maintains shared parameter state with lock-free primitives to keep audio-thread reads predictable. Public callable behavior is centered on `add_effect_to_shared_chain`, `remove_effect_from_shared_chain`, `set_shared_chain_effect_param`, while method-level behavior such as `new`, `get`, `set`, `set_param`, `process` stays attached to the local data model and invariants.
+- Builds active processing instances that hold delay lines, filters, modulation state, and dynamic buffers. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Executes effect transforms sample by sample with bounded parameter normalization and clamped control ranges. External integration uses `rodio`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Supplies graph-backed shared chains for coordinating writer-side updates with reader-side playback. The file boundary separates dsp implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### graph.rs
 
-- Provides a typed DSP graph model where nodes and edges describe ordered signal-processing flow.
-- Organizes processing units into deterministic traversal order for stable per-buffer execution.
-- Supports audio-rate and control-rate connectivity so routing and parameter signals share one structure.
-- Enables safe runtime mutation patterns that coordinate producer updates with callback-side consumption.
-- Delivers the structural layer used to compose complex effect pipelines from reusable nodes.
+- Provides a typed DSP graph model where nodes and edges describe ordered signal-processing flow. `dsp/graph` delivers the graph implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Organizes processing units into deterministic traversal order for stable per-buffer execution. The file owns or coordinates data contracts including `NodeId`, `DspNodeType`, `DspNode`, `DspGraph`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports audio-rate and control-rate connectivity so routing and parameter signals share one structure. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `as_str`, `new`, `set_param`, `get_param`, `node_type`, and 5 more stays attached to the local data model and invariants.
+- Enables safe runtime mutation patterns that coordinate producer updates with callback-side consumption. Runtime integration reaches sibling engine areas through crate modules `audio`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
 - Provides the high-level DSP module boundary that groups analysis, synthesis, effects, graphs, offline, and visualization flows.
 - Coordinates reusable signal-processing capabilities while keeping runtime execution and inspection concerns clearly separated.
-- Delivers one stable composition surface for audio-adjacent digital processing across engine integrations.
 
 ### offline.rs
 
-- Provides offline DSP processing that applies effect chains to stored audio without live playback.
-- Runs decode, transform, and encode stages in one pipeline for reproducible file-based processing.
-- Supports peak normalization and deterministic parameterized effects for batch rendering scenarios.
-- Uses a serializable effect description so external tooling can request stable offline transforms.
-- Delivers the non-realtime processing path for exports, precompute steps, and content baking.
+- Provides offline DSP processing that applies effect chains to stored audio without live playback. `dsp/offline` delivers the offline implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Runs decode, transform, and encode stages in one pipeline for reproducible file-based processing. The file owns or coordinates data contracts including `OfflineEffect`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports peak normalization and deterministic parameterized effects for batch rendering scenarios. Public callable behavior is centered on `process_offline`, `normalize_file`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Uses a serializable effect description so external tooling can request stable offline transforms. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### synthesis.rs
 
-- Provides procedural audio synthesis primitives for waveform generation and envelope-shaped note rendering.
-- Defines stable oscillator forms and parsing paths that map script choices to deterministic sample output.
-- Applies ADSR gain shaping so rendered notes include natural attack, sustain behavior, and release tails.
-- Combines oscillator and envelope models into renderable buffers ready for playback and further processing.
-- Delivers the synthesis layer used for generated sound effects and lightweight musical content.
-- Keeps synthesis behavior modular so higher-level systems can extend sound generation workflows safely.
+- Provides procedural audio synthesis primitives for waveform generation and envelope-shaped note rendering. `dsp/synthesis` delivers the synthesis implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Defines stable oscillator forms and parsing paths that map script choices to deterministic sample output. The file owns or coordinates data contracts including `Waveform`, `AdsrEnvelope`, `Synthesizer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Applies ADSR gain shaping so rendered notes include natural attack, sustain behavior, and release tails. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `as_str`, `render`, `new`, `trigger_on`, `trigger_off`, and 8 more stays attached to the local data model and invariants.
+- Combines oscillator and envelope models into renderable buffers ready for playback and further processing. Runtime integration reaches sibling engine areas through crate modules `audio`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Delivers the synthesis layer used for generated sound effects and lightweight musical content. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### visualizer.rs
 
-- Provides DSP visualization utilities that convert audio buffers into readable waveform and spectrogram images.
-- Extracts amplitude and frequency structure into pixel-space summaries for quick offline inspection.
-- Handles multi-channel input normalization so visual output stays coherent across source formats.
-- Maps signal magnitude to consistent color intensity for comparable visual diagnostics over time.
-- Delivers artifact generation used by tooling, debugging workflows, and content analysis pipelines.
+- Provides DSP visualization utilities that convert audio buffers into readable waveform and spectrogram images. `dsp/visualizer` delivers the visualizer implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Extracts amplitude and frequency structure into pixel-space summaries for quick offline inspection. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Handles multi-channel input normalization so visual output stays coherent across source formats. Public callable behavior is centered on `waveform_to_png`, `spectrogram_to_png`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Maps signal magnitude to consistent color intensity for comparable visual diagnostics over time. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

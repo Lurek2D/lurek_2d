@@ -62,203 +62,179 @@ This module primarily collaborates with `animation`, `camera`, `color`, `math`, 
 
 ### animated_gif.rs
 
-- Encodes frame sequences of `ImageData` into animated GIF files for evidence and export flows.
-- Validates frame dimensions and timing up front so Lua-facing callers get deterministic failures.
-- Uses per-frame quantization from RGBA buffers to keep the API simple for software-rendered captures.
-- Module API documentation
+- Encodes frame sequences of `ImageData` into animated GIF files for evidence and export flows. `image/animated_gif` delivers the animated gif implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Validates frame dimensions and timing up front so Lua-facing callers get deterministic failures. The file owns or coordinates data contracts including `AnimatedGifRepeat`, `AnimatedGifOptions`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Uses per-frame quantization from RGBA buffers to keep the API simple for software-rendered captures. Public callable behavior is centered on `encode_gif`, `save_gif`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- `image/animated_gif` delivers the animated gif implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### compressed.rs
 
-- Decodes DDS-style compressed textures into structured payloads used by higher-level image loading.
-- Validates headers and extracts dimensions, mip blocks, and metadata needed for downstream upload.
-- Detects desktop and mobile block-compression families from DXGI and legacy format descriptors.
-- Exposes file and byte entry points so callers can probe and decode assets from multiple pipelines.
-- Returns stable data carriers containing format tags and raw compressed mip chains.
+- Decodes DDS-style compressed textures into structured payloads used by higher-level image loading. `image/compressed` delivers the compressed implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Validates headers and extracts dimensions, mip blocks, and metadata needed for downstream upload. The file owns or coordinates data contracts including `CompressedFormat`, `CompressedImageData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Detects desktop and mobile block-compression families from DXGI and legacy format descriptors. Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `from_dds`, `get_dimensions`, `get_mipmap_count`, `get_format`, `is_dds_magic`, and 2 more stays attached to the local data model and invariants.
+- Exposes file and byte entry points so callers can probe and decode assets from multiple pipelines. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### effects.rs
 
-- Provides the main CPU image effect toolkit for color grading, filtering, resampling, and compositing.
-- Applies brightness, contrast, saturation, gamma, tint, threshold, and stylization transforms per pixel.
-- Supports deterministic noise injection and alpha-aware operations for repeatable visual post-processing.
-- Implements geometric edits like crop, flip, and rotation for texture preparation and UI workflows.
-- Includes nearest, bilinear, and Lanczos resize paths to balance speed and quality by caller choice.
-- Runs blur, sharpen, and generic kernel convolution with safe boundary handling on edge samples.
-- Offers alpha-blended blit and nine-slice stretching for practical sprite and panel assembly tasks.
-- Computes byte-level difference scores for test assertions and regression image comparisons.
-- Normalizes effect behavior around mutable `ImageData` buffers without hidden global state.
-- Exposes filter-selection enums parsed from textual inputs used at scripting boundaries.
+- Provides the main CPU image effect toolkit for color grading, filtering, resampling, and compositing. `image/effects` delivers the effects implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Applies brightness, contrast, saturation, gamma, tint, threshold, and stylization transforms per pixel. The file owns or coordinates data contracts including `ResizeFilter`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports deterministic noise injection and alpha-aware operations for repeatable visual post-processing. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `brightness`, `contrast`, `saturation`, `gamma`, `tint`, and 22 more stays attached to the local data model and invariants.
+- Implements geometric edits like crop, flip, and rotation for texture preparation and UI workflows. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Includes nearest, bilinear, and Lanczos resize paths to balance speed and quality by caller choice. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Runs blur, sharpen, and generic kernel convolution with safe boundary handling on edge samples. The file boundary separates image implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### image_data.rs
 
-- Defines the central mutable RGBA buffer used across rendering, tooling, and image-side gameplay logic.
-- Creates images from dimensions, files, encoded bytes, or direct raw pixel payloads.
-- Provides pixel access, region copy, and whole-buffer transform flows in serial and parallel variants.
-- Implements primitive raster drawing for lines, rectangles, circles, labels, and debug overlays.
-- Supports blending and paste semantics that keep alpha composition behavior explicit and predictable.
-- Carries width, height, and packed bytes in a compact row-major memory representation.
-- Encodes images back to portable formats for persistence, export, and diagnostics.
-- Includes comparison and utility helpers used by tests and content validation steps.
-- Serves as the common interchange type between image operations and render-facing code paths.
-- Keeps all mutation local to the instance to avoid hidden shared-state side effects.
+- Defines the central mutable RGBA buffer used across rendering, tooling, and image-side gameplay logic. `image/image_data` delivers the image data implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Creates images from dimensions, files, encoded bytes, or direct raw pixel payloads. The file owns or coordinates data contracts including `ImageData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides pixel access, region copy, and whole-buffer transform flows in serial and parallel variants. Public callable behavior is centered on no named public items, while method-level behavior such as `rgba_byte_len`, `try_new`, `new`, `from_file`, `from_encoded_bytes`, `from_bytes`, and 18 more stays attached to the local data model and invariants.
+- Implements primitive raster drawing for lines, rectangles, circles, labels, and debug overlays. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Supports blending and paste semantics that keep alpha composition behavior explicit and predictable. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Carries width, height, and packed bytes in a compact row-major memory representation. The file boundary separates image implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### layers.rs
 
-- Implements layered image editing with per-layer visibility, opacity, naming, and pixel ownership.
-- Maintains ordered stacks so compositing results stay deterministic during insert and reorder actions.
-- Supports add, remove, rename, swap, and move operations for non-destructive content workflows.
-- Merges the stack into flat output using alpha-over compositing compatible with engine image buffers.
-- Provides practical layer primitives for editors, tooling pipelines, and scripted content generation.
+- Implements layered image editing with per-layer visibility, opacity, naming, and pixel ownership. `image/layers` delivers the layers implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Maintains ordered stacks so compositing results stay deterministic during insert and reorder actions. The file owns or coordinates data contracts including `ImageLayer`, `LayeredImage`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports add, remove, rename, swap, and move operations for non-destructive content workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `width`, `height`, `layer_count`, `add_layer`, `remove_layer`, and 9 more stays attached to the local data model and invariants.
+- Merges the stack into flat output using alpha-over compositing compatible with engine image buffers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
-- High-level image module that unifies pixel buffers, effects, serialization, and atlas-oriented helpers.
-- Re-exports core image types and decoding utilities used across runtime systems and content pipelines.
-- Defines the integration boundary between CPU image manipulation and render-upload preparation.
+- High-level image module that unifies pixel buffers, effects, serialization, and atlas-oriented helpers. `image/mod` is the image module index, declaring `image_data`, `compressed`, `effects`, `palette_lut`, `layers`, and 7 more so agents can identify which files own each feature slice before opening implementation code.
+- Re-exports core image types and decoding utilities used across runtime systems and content pipelines. `src/image/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `image_data::ImageData`, `compressed::{CompressedFormat, CompressedImageData}`, `palette_lut::PaletteLUT`, `layers::{ImageLayer, LayeredImage}`, and 5 more centralized for the image subsystem.
+- Defines the integration boundary between CPU image manipulation and render-upload preparation. The file documents how image submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- `image/mod` is the image module index, declaring `image_data`, `compressed`, `effects`, `palette_lut`, `layers`, and 7 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/image/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `image_data::ImageData`, `compressed::{CompressedFormat, CompressedImageData}`, `palette_lut::PaletteLUT`, `layers::{ImageLayer, LayeredImage}`, and 5 more centralized for the image subsystem.
+- The file documents how image submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 ### palette_lut.rs
 
-- Provides palette lookup remapping that transforms source colors into target colors across images.
-- Stores parallel source and destination palettes to express deterministic recolor tables.
-- Applies in-place remap passes optimized by direct scan or hash-assisted lookup by palette size.
-- Supports rotation-style remap workflows for palette cycling and stylized animation effects.
-- Supplies reusable color-map primitives for procedural art and runtime theme variation.
+- Provides palette lookup remapping that transforms source colors into target colors across images. `image/palette_lut` delivers the palette lut implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores parallel source and destination palettes to express deterministic recolor tables. The file owns or coordinates data contracts including `PaletteLUT`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Applies in-place remap passes optimized by direct scan or hash-assisted lookup by palette size. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_color_count`, `set_color`, `get_from_color`, `get_to_color`, `clear`, and 2 more stays attached to the local data model and invariants.
+- Supports rotation-style remap workflows for palette cycling and stylized animation effects. Runtime integration reaches sibling engine areas through crate modules `color`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### rect_packing.rs
 
-- Implements shelf-based rectangle packing used to place sprites into compact atlas layouts.
-- Accepts caller-defined atlas bounds and padding to preserve sampling safety between regions.
-- Places rectangles in insertion order while tracking shelf growth and remaining horizontal space.
-- Returns deterministic packed coordinates that map back to source asset identities.
-- Reports occupancy metrics useful for tuning atlas size and packing efficiency.
+- Implements shelf-based rectangle packing used to place sprites into compact atlas layouts. `image/rect_packing` delivers the rect packing implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Accepts caller-defined atlas bounds and padding to preserve sampling safety between regions. The file owns or coordinates data contracts including `PackedRect`, `RectPacker`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Places rectangles in insertion order while tracking shelf growth and remaining horizontal space. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `pack`, `clear`, `packed_rects`, `occupancy`, `size`, and 1 more stays attached to the local data model and invariants.
+- Returns deterministic packed coordinates that map back to source asset identities. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### render.rs
 
 - Thin bridge layer converting ImageData buffers into render command payloads that reference texture resources and screen placement coordinates.
-- Generates DrawImage commands containing texture key, position, and optional effects for pipeline consumption without copying pixel data.
-- Provides snapshot utility creating standalone ImageData clones where value semantics are required by higher-level drawing systems.
 
 ### serial.rs
 
-- Implements LIMG binary serialization for flat and layered images with versioned format guards.
-- Encodes and decodes pixel payloads with compression to reduce storage and transfer overhead.
-- Validates magic headers, version bytes, and payload type tags before accepting input data.
-- Preserves layer metadata such as names, opacity, and visibility across save-load round trips.
-- Exposes both in-memory byte APIs and filesystem helpers for flexible integration contexts.
-- Keeps format handling deterministic so tooling and runtime produce consistent binary artifacts.
+- Implements LIMG binary serialization for flat and layered images with versioned format guards. `image/serial` delivers the serial implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Encodes and decodes pixel payloads with compression to reduce storage and transfer overhead. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Validates magic headers, version bytes, and payload type tags before accepting input data. Public callable behavior is centered on `save_image`, `load_image`, `load_image_from_bytes`, `save_layered`, `load_layered`, and 4 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Preserves layer metadata such as names, opacity, and visibility across save-load round trips. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Exposes both in-memory byte APIs and filesystem helpers for flexible integration contexts. External integration uses `super`, `flate2`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### texture.rs
 
-- Manages CPU texture ingestion and staging before GPU-side renderer upload and sampling.
-- Decodes files and raw buffers into validated RGBA payloads keyed in slot-map storage.
-- Applies premultiplied-alpha conversion paths to align blending behavior with render expectations.
-- Tracks texture color-space intent so pipelines can distinguish sRGB and linear content.
-- Supplies safe construction and validation helpers used by asset loading and runtime creation flows.
+- Manages CPU texture ingestion and staging before GPU-side renderer upload and sampling. `image/texture` delivers the texture implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Decodes files and raw buffers into validated RGBA payloads keyed in slot-map storage. The file owns or coordinates data contracts including `TextureColorSpace`, `Texture`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Applies premultiplied-alpha conversion paths to align blending behavior with render expectations. Public callable behavior is centered on `premultiply_alpha_rgba8_in_place`, while method-level behavior such as `parse_color_space`, `load`, `load_with_color_space`, `from_rgba`, `from_rgba_with_color_space` stays attached to the local data model and invariants.
+- Tracks texture color-space intent so pipelines can distinguish sRGB and linear content. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### texture_atlas.rs
 
-- Builds and maintains texture atlases that group many named regions inside one packed image.
-- Uses shelf-style placement to allocate rectangles while preserving padding and bounds guarantees.
-- Attaches optional nine-slice inset metadata so UI sprites can scale without corner distortion.
-- Supports name-based lookup, mutation, and reset operations for dynamic atlas management.
-- Exposes region geometry and atlas dimensions needed by render and layout call sites.
+- Builds and maintains texture atlases that group many named regions inside one packed image. `image/texture_atlas` delivers the texture atlas implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Uses shelf-style placement to allocate rectangles while preserving padding and bounds guarantees. The file owns or coordinates data contracts including `NineSliceInsets`, `AtlasRegion`, `TextureAtlas`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Attaches optional nine-slice inset metadata so UI sprites can scale without corner distortion. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `pack`, `pack_with_nine_slice`, `set_nine_slice`, `get_region`, `get_region_count`, and 3 more stays attached to the local data model and invariants.
+- Supports name-based lookup, mutation, and reset operations for dynamic atlas management. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### visualization/animation.rs
 
-- Renders animation timelines and frame grids into debug images for rapid visual inspection.
-- Highlights current playback position against surrounding frames to expose timing behavior.
-- Draws state-oriented overlays for running, paused, and resumed playback diagnostics.
-- Provides quick wrappers with sensible cell sizing for tool and test screenshot generation.
-- Uses consistent color accents so active and inactive frame regions are instantly readable.
+- Renders animation timelines and frame grids into debug images for rapid visual inspection. `image/visualization/animation` delivers the animation implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Highlights current playback position against surrounding frames to expose timing behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Draws state-oriented overlays for running, paused, and resumed playback diagnostics. Public callable behavior is centered on `draw_animation_frame_grid_to_image`, `draw_animation_playback_to_image`, `animation_playback_control_to_image`, `draw_animation_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Provides quick wrappers with sensible cell sizing for tool and test screenshot generation. Runtime integration reaches sibling engine areas through crate modules `animation`, `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### visualization/audio.rs
 
-- Converts audio sample streams into waveform images suitable for tooling and in-engine diagnostics.
-- Renders mono and stereo views with channel separation and baseline guides for quick interpretation.
-- Supports zoom-oriented sampling views to inspect transient detail in dense signal regions.
-- Adds labels and configurable color accents so waveform panels fit different UI styles.
-- Normalizes peak ranges to keep amplitude visualization stable across varying source loudness.
-- Shares column-based raster logic to keep waveform output deterministic and lightweight.
+- Converts audio sample streams into waveform images suitable for tooling and in-engine diagnostics. `image/visualization/audio` delivers the audio implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Renders mono and stereo views with channel separation and baseline guides for quick interpretation. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports zoom-oriented sampling views to inspect transient detail in dense signal regions. Public callable behavior is centered on `waveform_to_image`, `waveform_stereo_to_image`, `waveform_zoomed_to_image`, `draw_sound_waveform_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Adds labels and configurable color accents so waveform panels fit different UI styles. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Normalizes peak ranges to keep amplitude visualization stable across varying source loudness. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### visualization/camera.rs
 
-- Produces camera-debug imagery that visualizes framing, motion, and transform behavior in world space.
-- Draws viewport boxes, crosshairs, and coordinate guides for position and anchor verification.
-- Compares multiple zoom factors to reveal scale-dependent composition and clipping effects.
-- Renders rotation-aware grids that expose world-to-screen mapping under angular transforms.
-- Displays bounds and follow trails to inspect dead-zone tuning and target-tracking responses.
-- Visualizes shake offsets against center references for temporal stability checks.
-- Provides wrapper entry points for fast full-panel generation in tests and tooling flows.
-- Uses hue-based color differentiation to keep layered debug signals visually distinct.
+- Produces camera-debug imagery that visualizes framing, motion, and transform behavior in world space. `image/visualization/camera` delivers the camera implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Draws viewport boxes, crosshairs, and coordinate guides for position and anchor verification. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Compares multiple zoom factors to reveal scale-dependent composition and clipping effects. Public callable behavior is centered on `draw_camera_debug_to_image`, `draw_camera_zoom_comparison_to_image`, `camera_rotation_to_image`, `camera_bounds_to_image`, `camera_follow_to_image`, and 6 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Renders rotation-aware grids that expose world-to-screen mapping under angular transforms. Runtime integration reaches sibling engine areas through crate modules `camera`, `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Displays bounds and follow trails to inspect dead-zone tuning and target-tracking responses. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Visualizes shake offsets against center references for temporal stability checks. The file boundary separates image implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### visualization/easing.rs
 
-- Renders easing and curve diagnostics as image charts for motion-tuning and teaching workflows.
-- Produces labeled curve galleries arranged in grids for side-by-side behavior comparison.
-- Draws overlay traces that contrast multiple easing functions on shared coordinate axes.
-- Includes Bezier-focused views with control-point and segment cues for shape inspection.
-- Supplies advanced Bezier visualization for derivative and edit-oriented debugging scenarios.
-- Uses chart backgrounds and guides that preserve readability across dense trace overlays.
+- Renders easing and curve diagnostics as image charts for motion-tuning and teaching workflows. `image/visualization/easing` delivers the easing implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Produces labeled curve galleries arranged in grids for side-by-side behavior comparison. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Draws overlay traces that contrast multiple easing functions on shared coordinate axes. Public callable behavior is centered on `easing_gallery_to_image`, `easing_comparison_to_image`, `bezier_curves_to_image`, `draw_bezier_advanced_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Includes Bezier-focused views with control-point and segment cues for shape inspection. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Supplies advanced Bezier visualization for derivative and edit-oriented debugging scenarios. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### visualization/facade.rs
 
-- Provides shared visualization color conversion from HSV space into RGB byte tuples.
-- Centralizes hue-driven palette logic used by charts, graphs, and debug overlays.
-- Keeps color mapping behavior consistent across all image visualization submodules.
+- Provides shared visualization color conversion from HSV space into RGB byte tuples. `image/visualization/facade` delivers the public facade over lower-level subsystem helpers for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### visualization/geometry.rs
 
-- Generates geometry-focused debug images that visualize shape algorithms and spatial relationships.
-- Renders polygon galleries, primitive fills, and line rasterization examples for correctness checks.
-- Shows convex hull and centroid style outputs to inspect geometric post-processing behavior.
-- Illustrates intersection outcomes between segments, circles, and lines with clear overlays.
-- Draws spiral and ring patterns to stress sampling consistency and color-mapping utilities.
-- Provides rich visual evidence for math and geometry routines used by higher-level systems.
+- Generates geometry-focused debug images that visualize shape algorithms and spatial relationships. `image/visualization/geometry` delivers the geometry implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Renders polygon galleries, primitive fills, and line rasterization examples for correctness checks. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Shows convex hull and centroid style outputs to inspect geometric post-processing behavior. Public callable behavior is centered on `polygon_gallery_to_image`, `spiral_to_image`, `filled_primitives_to_image`, `draw_geometry_shapes_to_image`, `draw_geometry_intersections_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Illustrates intersection outcomes between segments, circles, and lines with clear overlays. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Draws spiral and ring patterns to stress sampling consistency and color-mapping utilities. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### visualization/graph.rs
 
-- Renders graph structures into diagnostic images with nodes, edges, labels, and status overlays.
-- Visualizes active and removed connections using distinct styling for topology change analysis.
-- Supports item-flow style arrows and annotation text for simulation and logic debugging.
-- Places titles and stats summaries to contextualize rendered graph snapshots.
-- Uses circle-node layouts and adjacency-driven links for readable relationship visualization.
+- Renders graph structures into diagnostic images with nodes, edges, labels, and status overlays. `image/visualization/graph` delivers the graph implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Visualizes active and removed connections using distinct styling for topology change analysis. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports item-flow style arrows and annotation text for simulation and logic debugging. Public callable behavior is centered on `draw_graph_operations_to_image`, `draw_graph_item_flow_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Places titles and stats summaries to contextualize rendered graph snapshots. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### visualization/image_ops.rs
 
-- Composes side-by-side image operation previews for fast visual comparison of processing outputs.
-- Builds slot-based layouts with scaling and padding so varied source sizes stay presentable.
-- Labels each panel to make transform deltas clear during review and regression analysis.
-- Includes color-wheel and transform showcase helpers for broad image-operation demonstrations.
-- Keeps composite rendering deterministic for repeatable screenshot-based validation.
+- Composes side-by-side image operation previews for fast visual comparison of processing outputs. `image/visualization/image_ops` delivers the image ops implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Builds slot-based layouts with scaling and padding so varied source sizes stay presentable. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Labels each panel to make transform deltas clear during review and regression analysis. Public callable behavior is centered on `draw_image_comparison_to_image`, `draw_pixel_transform_grid_to_image`, `draw_color_wheel_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Includes color-wheel and transform showcase helpers for broad image-operation demonstrations. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### visualization/mod.rs
 
-- High-level visualization module wiring that groups image-debug renderers by domain.
-- Re-exports category entry points to provide one flat surface for visualization consumers.
-- Shares internal facade utilities while keeping submodule responsibilities clearly separated.
+- High-level visualization module wiring that groups image-debug renderers by domain. `image/visualization/mod` is the image module index, declaring `animation`, `audio`, `camera`, `easing`, `facade`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
+- Re-exports category entry points to provide one flat surface for visualization consumers. `src/image/visualization/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `animation::*`, `audio::*`, `camera::*`, `easing::*`, and 6 more centralized for the image subsystem.
+- Shares internal facade utilities while keeping submodule responsibilities clearly separated. The file documents how image submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- `image/visualization/mod` is the image module index, declaring `animation`, `audio`, `camera`, `easing`, `facade`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/image/visualization/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `animation::*`, `audio::*`, `camera::*`, `easing::*`, and 6 more centralized for the image subsystem.
+- The file documents how image submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 ### visualization/noise.rs
 
-- Turns scalar noise functions into image outputs for terrain tuning and generator diagnostics.
-- Renders normalized and raw grayscale maps to compare contrast handling across noise sources.
-- Provides biome and elevation band coloring to inspect threshold-driven terrain classification.
-- Supports sliced and tiled comparison views for spotting artifacts across parameter variations.
-- Keeps sampling and raster paths deterministic for stable test and documentation visuals.
+- Turns scalar noise functions into image outputs for terrain tuning and generator diagnostics. `image/visualization/noise` delivers the noise implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Renders normalized and raw grayscale maps to compare contrast handling across noise sources. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides biome and elevation band coloring to inspect threshold-driven terrain classification. Public callable behavior is centered on `noise_to_image`, `noise_raw_to_image`, `noise_terrain_to_image`, `heightmap_to_image`, `terrain_elevation_to_image`, and 2 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Supports sliced and tiled comparison views for spotting artifacts across parameter variations. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### visualization/procgen.rs
 
-- Visualizes procedural-generation data structures as images for analysis and tuning loops.
-- Renders cellular grids, dungeon maps, and occupancy states with configurable color semantics.
-- Draws Voronoi and Delaunay style outputs to inspect spatial partition behavior.
-- Displays point samples and topology overlays for algorithm-step debugging.
-- Provides compact visual proof artifacts for procgen experimentation and regression checks.
+- Visualizes procedural-generation data structures as images for analysis and tuning loops. `image/visualization/procgen` delivers the procgen implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Renders cellular grids, dungeon maps, and occupancy states with configurable color semantics. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Draws Voronoi and Delaunay style outputs to inspect spatial partition behavior. Public callable behavior is centered on `cellular_grid_to_image`, `voronoi_to_image`, `points_to_image`, `dungeon_grid_to_image`, `colored_points_to_image`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Displays point samples and topology overlays for algorithm-step debugging. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### visualization/ui.rs
 
-- Renders UI-oriented mockups into images to preview panel composition and widget styling.
-- Draws settings-style panels with controls, sliders, and button affordances for layout checks.
-- Produces HUD bars and cooldown visuals used to validate gameplay HUD readability.
-- Includes swatches and progress widgets for color and status presentation experiments.
-- Supplies deterministic UI snapshots useful in examples, tests, and design iteration loops.
+- Renders UI-oriented mockups into images to preview panel composition and widget styling. `image/visualization/ui` delivers the ui implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Draws settings-style panels with controls, sliders, and button affordances for layout checks. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Produces HUD bars and cooldown visuals used to validate gameplay HUD readability. Public callable behavior is centered on `panel_layout_to_image`, `hud_bars_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Includes swatches and progress widgets for color and status presentation experiments. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

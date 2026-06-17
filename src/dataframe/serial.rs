@@ -1,13 +1,9 @@
-//! Implements serialization and parsing for dataframe and database payloads across multiple formats.
-//! Supports CSV decode and encode with quoting, escaping, and type-inference behavior.
-//! Provides JSON array-object conversion between textual payloads and dataframe structures.
-//! Handles nested JSON values and arrays during parser traversal and value coercion.
-//! Encodes and decodes compact LVDF binary format for efficient dataframe transport storage.
-//! Supplies text-table rendering helpers for debugging and readable frame inspection outputs.
-//! Serializes complete database table collections into JSON with stable named table mapping.
-//! Parses database-level JSON payloads back into structured table collections.
-//! Preserves explicit parse and conversion failure reporting across supported format paths.
-//! Serves as the format-conversion backbone for dataframe persistence and interchange.
+//! Implements serialization and parsing for dataframe and database payloads across multiple formats. `dataframe/serial` delivers the serial implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports CSV decode and encode with quoting, escaping, and type-inference behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides JSON array-object conversion between textual payloads and dataframe structures. Public callable behavior is centered on `from_csv`, `from_json`, `from_binary`, `database_from_json`, while method-level behavior such as `to_csv`, `to_json`, `to_binary`, `to_string_table` stays attached to the local data model and invariants.
+//! Handles nested JSON values and arrays during parser traversal and value coercion. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Encodes and decodes compact LVDF binary format for efficient dataframe transport storage. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Supplies text-table rendering helpers for debugging and readable frame inspection outputs. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::dataframe::frame::{CellValue, DataFrame};
 /// Parse CSV text and return DataFrame or validation error.

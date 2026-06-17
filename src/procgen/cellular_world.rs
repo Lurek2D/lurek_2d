@@ -2,9 +2,7 @@
 //! The file keeps material state on a fixed grid and advances that state through explicit interaction rules instead of a continuous physics solver.
 //! Alternating sweep direction helps the simulation avoid obvious left-right bias, which keeps repeated ticks from producing one-sided artifacts.
 //! Fill helpers make the grid directly paintable by gameplay code and tools, allowing immediate authoring of test setups, explosions, or scripted reactions.
-//! Byte serialization and image export let the same simulation serve runtime effects, save systems, and visual previews.
-//! Palette-aware rendering support keeps the cell model easy to project into textures without teaching the simulation about higher rendering layers.
-//! Functionally this file delivers a compact material sandbox for emergent grid-based motion and reactions.
+//! Byte serialization and image export let the same simulation serve runtime effects, save systems, and visual previews. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 /// Cell material type used in `CellularWorld`.
 #[repr(u8)]

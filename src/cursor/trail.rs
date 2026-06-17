@@ -1,8 +1,7 @@
-//! Implements cursor-trail effects with fading points, connected strokes, and particle-style variants.
-//! Tracks trail samples as timestamped points with alpha decay progression over update ticks.
-//! Maintains bounded point history through capped storage to control runtime memory pressure.
-//! Supports multiple trail render modes selected by explicit trail behavior configuration.
-//! Serves as the visual motion-feedback layer for cursor movement presentation.
+//! Implements cursor-trail effects with fading points, connected strokes, and particle-style variants. `cursor/trail` delivers the trail implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Tracks trail samples as timestamped points with alpha decay progression over update ticks. The file owns or coordinates data contracts including `TrailPoint`, `TrailMode`, `CursorTrail`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Maintains bounded point history through capped storage to control runtime memory pressure. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `get_points`, `clear`, `set_active`, `is_active`, and 3 more stays attached to the local data model and invariants.
+//! Supports multiple trail render modes selected by explicit trail behavior configuration. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::collections::VecDeque;
 

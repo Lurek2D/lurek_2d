@@ -1,6 +1,5 @@
 //! This module provides the in-engine terminal stack, combining a character grid, ANSI-aware text handling, interactive widgets, and renderer handoff.
-//! It supports both console-like workflows and text-heavy in-game interfaces built on a cell-based presentation model.
-//! At the highest level this is the subsystem that lets the engine host terminal behavior as a first-class UI surface.
+//! It supports both console-like workflows and text-heavy in-game interfaces built on a cell-based presentation model. `src/terminal/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `cell::TCell`, `terminal_state::Terminal`, `widget::{BorderStyle, Widget, WidgetBase, WidgetKind}` centralized for the terminal subsystem.
 
 /// ANSI escape-code parsing and attribute types.
 pub mod ansi;

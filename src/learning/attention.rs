@@ -1,9 +1,8 @@
-//! Implements attention primitives used by sequence-learning stacks in the learning subsystem.
-//! Provides positional encodings and multi-head attention flows over row-major tensor buffers.
-//! Computes query-key-value interactions and head projection paths for contextual token mixing.
-//! Integrates with shared evolutionary-layer contracts so parameters can be flattened and restored.
-//! Targets CPU inference and training-style experiments without external deep-learning runtimes.
-//! Supplies reusable building blocks consumed by transformer encoder and decoder compositions.
+//! Implements attention primitives used by sequence-learning stacks in the learning subsystem. `learning/attention` delivers the attention implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Provides positional encodings and multi-head attention flows over row-major tensor buffers. The file owns or coordinates data contracts including `PositionalEncoding`, `MultiHeadAttention`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Computes query-key-value interactions and head projection paths for contextual token mixing. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `apply`, `forward` stays attached to the local data model and invariants.
+//! Integrates with shared evolutionary-layer contracts so parameters can be flattened and restored. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Targets CPU inference and training-style experiments without external deep-learning runtimes. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::learning::tensor::LurekTensor;
 use crate::learning::EvolutionaryLayer;

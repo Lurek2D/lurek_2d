@@ -1,6 +1,5 @@
 //! Workflow orchestration module for building dependency-aware task graphs, advancing them over time, and collecting explicit run outcomes.
 //! It ties together graph structure, per-step policy, frame-driven scheduling, and result reporting into one coherent surface for asynchronous or staged work.
-//! Functionally this file is the high-level entry point for pipeline execution, dependency management, retry-aware progress, and summarized completion state.
 
 /// DAG, `Pipeline` struct, and `ErrorMode` for dependency-ordered step execution.
 pub mod dag;

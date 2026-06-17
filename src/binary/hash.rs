@@ -1,7 +1,6 @@
-//! Implements digest and checksum computation over byte payloads for integrity and fingerprint workflows.
-//! Supports MD5, SHA-1, SHA-256, and SHA-512 cryptographic hash algorithm variants.
-//! Provides CRC32 checksum generation for fast non-cryptographic validation scenarios.
-//! Returns all computed digests as stable hexadecimal text for interoperable output handling.
+//! Implements digest and checksum computation over byte payloads for integrity and fingerprint workflows. `binary/hash` delivers the hash implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports MD5, SHA-1, SHA-256, and SHA-512 cryptographic hash algorithm variants. The file owns or coordinates data contracts including `HashAlgorithm`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides CRC32 checksum generation for fast non-cryptographic validation scenarios. Public callable behavior is centered on `hash`, `crc32`, while method-level behavior such as `parse_str` stays attached to the local data model and invariants.
 
 use md5::Digest;
 use sha1;

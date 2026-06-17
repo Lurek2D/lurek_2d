@@ -1,21 +1,9 @@
-//! - Defines Lurek2D's front-end render command language and vocabulary.
-//! - Gathers draw operations, layout state structures, and drawing enum descriptors.
-//! - Encapsulates shapes, typography, sprites, and particle states into dynamic variants.
-//! - Declares enums for color blend modes, text alignment, and draw modes.
-//! - Specifies vertex colors, gradients, and custom outline thickness bounds.
-//! - Standardizes structures for texture repeat modes and sampler filters.
-//! - Integrates post-processing descriptors directly into the command queue.
-//! - Translates dynamic Lua drawing inputs into structured scene components.
-//! - Decouples gameplay modules from immediate wgpu graphics API operations.
-//! - Provides methods to construct circle segments and compute ellipse coordinates.
-//! - Standardizes font parameters including font size and bold weights.
-//! - Outlines layouts for particle render shapes, including circles, ellipses, and lines.
-//! - Manages mesh descriptors and texture coordinate maps uniformly.
-//! - Governs stencil buffer tests, compare options, and stencil action tags.
-//! - Handles scissor testing regions to mask sub-panels and GUI layout regions.
-//! - Facilitates offscreen canvas descriptors, keeping metadata clean.
-//! - Governs lighting inputs, containing parameters for position, color, and attenuation.
-//! - Serves as the central API vocabulary connecting all engine subsystems to rendering.
+//! Defines Lurek2D's front-end render command language and vocabulary. `render/renderer` delivers the renderer implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Gathers draw operations, layout state structures, and drawing enum descriptors. The file owns or coordinates data contracts including `CompareMode`, `StencilAction`, `StencilMode`, `DepthMode`, `TextAlign`, and 16 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Encapsulates shapes, typography, sprites, and particle states into dynamic variants. Public callable behavior is centered on `adaptive_circle_ellipse_segments`, while method-level behavior such as `new` stays attached to the local data model and invariants.
+//! Declares enums for color blend modes, text alignment, and draw modes. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Specifies vertex colors, gradients, and custom outline thickness bounds. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Standardizes structures for texture repeat modes and sampler filters. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::math::Vec2;
 use crate::render::image_effect::ShaderPassDescriptor;

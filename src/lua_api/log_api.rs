@@ -1,8 +1,4 @@
-//! Lua bindings for `lurek.log`.
-//!
-//! This module exposes severity helpers, sink management, structured fields, and
-//! callback/file/memory routing to Lua. Callback sinks follow the same level and tag
-//! filters as every other sink.
+//! Lua bindings for `lurek.log`. `src/lua_api/log_api.rs` registers the `lurek.log` Lua boundary for log behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::log as log_domain;

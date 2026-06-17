@@ -1,13 +1,9 @@
-//! This file provides the concrete interactive controls used by the retained-mode UI layer.
-//! It defines buttons, text inputs, toggles, selectors, and numeric widgets with shared behavior.
-//! It embeds common widget base state so style, layout, and interaction remain consistent.
-//! It validates and clamps editable values to enforce reliable control invariants.
-//! It normalizes selection behavior when list-like data mutates at runtime.
-//! It keeps control construction explicit so type identity is always unambiguous.
-//! It supports snapshot-friendly cloning for tooling, testing, and reversible operations.
-//! It packages core interaction primitives in one predictable and reusable control set.
-//! It establishes stable semantics for input-heavy interfaces across gameplay and tools.
-//! It forms the practical interaction surface most UI scripts build on top of.
+//! This file provides the concrete interactive controls used by the retained-mode UI layer. `ui/controls` delivers the controls implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It defines buttons, text inputs, toggles, selectors, and numeric widgets with shared behavior. The file owns or coordinates data contracts including `Button`, `Label`, `TextInput`, `CheckBox`, `Slider`, and 8 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It embeds common widget base state so style, layout, and interaction remain consistent. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_text`, `set_max_length`, `insert_text`, `backspace`, `move_cursor_left`, and 16 more stays attached to the local data model and invariants.
+//! It validates and clamps editable values to enforce reliable control invariants. Runtime integration reaches sibling engine areas through crate modules `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It normalizes selection behavior when list-like data mutates at runtime. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! It keeps control construction explicit so type identity is always unambiguous. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Clickable push button with a text label.

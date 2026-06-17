@@ -1,6 +1,5 @@
-//! Provides the high-level font module boundary for glyph data, layout shaping, and registry access.
-//! Connects bitmap atlas handling, metrics evaluation, and wrap logic into one typography service surface.
-//! Delivers stable text-measurement and font-resolution capabilities for rendering and UI systems.
+//! Provides the high-level font module boundary for glyph data, layout shaping, and registry access. `font/mod` is the font module index, declaring `bitmap_font`, `metrics`, `registry`, `shaping` so agents can identify which files own each feature slice before opening implementation code.
+//! Connects bitmap atlas handling, metrics evaluation, and wrap logic into one typography service surface. `src/font/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bitmap_font::{BitmapFont, BitmapFontAtlas, AVAILABLE_SIZES}`, `metrics::{GlyphMetrics, TextMetrics}`, `registry::{FontHandle, FontRegistry, FontStyle}`, `shaping::{shape_text, LineBreak, ShapedText, TextAlign, WordWrap}` centralized for the font subsystem.
 
 /// Bitmap font atlas data and glyph lookup.
 pub mod bitmap_font;

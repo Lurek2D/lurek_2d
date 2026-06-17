@@ -1,7 +1,7 @@
-//! Provides normalized documentation record types that represent public API symbols and their metadata.
-//! Models parameter and return descriptors so downstream export and reporting stages share one data shape.
-//! Includes completeness checks that help quality tooling detect thin or malformed documentation entries.
-//! Delivers the common in-memory contract used across collection, transformation, and reporting flows.
+//! Provides normalized documentation record types that represent public API symbols and their metadata. `docs/entry` delivers the entry implementation for the docs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Models parameter and return descriptors so downstream export and reporting stages share one data shape. The file owns or coordinates data contracts including `ParamInfo`, `ReturnInfo`, `DocEntry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Includes completeness checks that help quality tooling detect thin or malformed documentation entries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_complete`, `missing_fields` stays attached to the local data model and invariants.
+//! Delivers the common in-memory contract used across collection, transformation, and reporting flows. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::collections::HashMap;
 #[derive(Debug, Clone, Default)]

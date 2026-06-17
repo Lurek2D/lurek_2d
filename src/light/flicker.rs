@@ -1,7 +1,6 @@
-//! Defines sine-based flicker state that modulates light intensity across time.
-//! Tracks oscillation phase, speed, and strength for controllable temporal variation.
-//! Supports deterministic per-frame advancement with wrapped phase continuity.
-//! Enables torch, candle, and neon style animation without custom update code.
+//! Defines sine-based flicker state that modulates light intensity across time. `light/flicker` delivers the flicker implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Tracks oscillation phase, speed, and strength for controllable temporal variation. The file owns or coordinates data contracts including `FlickerConfig`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports deterministic per-frame advancement with wrapped phase continuity. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `multiplier`, `advance` stays attached to the local data model and invariants.
 
 /// Sine-based flicker config that modulates a light's intensity by a small oscillating factor.
 #[derive(Debug, Clone, Copy, PartialEq)]

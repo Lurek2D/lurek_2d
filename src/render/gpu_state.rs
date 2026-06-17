@@ -1,13 +1,8 @@
-//! - Implements the GPU resource registry to track persistent mesh and buffer lifetimes.
-//! - Stores texture, canvas, and font allocations within structured slotmaps.
-//! - Caches static draw geometry descriptors, avoiding frame allocations.
-//! - Manages depth-stencil buffer views matching current canvas dimensions.
-//! - Feeds dynamic instance buffers to the GPU for batch transformations.
-//! - Supplies empty default targets and textures for resource fallbacks.
-//! - Retains bind groups pairing textures with active filter samplers.
-//! - Holds depth-stencil states, target formats, and multi-sampling options.
-//! - Facilitates frame resource reuse, minimizing CPU-GPU synchronization overhead.
-//! - Maps texture IDs to raw wgpu texture handles securely.
+//! Implements the GPU resource registry to track persistent mesh and buffer lifetimes. `render/gpu_state` delivers the gpu state implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores texture, canvas, and font allocations within structured slotmaps. The file owns or coordinates data contracts including `GpuTexture`, `DepthStencilTarget`, `PendingSurfaceReadback`, `RenderStats`, `StaticGeometryCacheEntry`, and 2 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Caches static draw geometry descriptors, avoiding frame allocations. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Manages depth-stencil buffer views matching current canvas dimensions. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+
 use crate::runtime::resource_keys::{InstanceBufferKey, StaticGeometryKey};
 
 /// GPU texture with its bind group; held in slot-maps keyed by `TextureKey` / `CanvasKey` / `FontKey`.

@@ -1,7 +1,7 @@
-//! This file defines the small mode vocabulary that tells the engine which style of runtime entry path to follow.
-//! String conversion rules are kept close to the enum so configuration parsing and CLI parsing agree on accepted names.
+//! This file defines the small mode vocabulary that tells the engine which style of runtime entry path to follow. `runtime/mode` delivers the mode implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! String conversion rules are kept close to the enum so configuration parsing and CLI parsing agree on accepted names. The file owns or coordinates data contracts including `RuntimeMode`, `RuntimeModeParseError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 //! Parse errors remain explicit here because mode selection failures should be readable before the rest of startup proceeds.
-//! The file therefore turns user-facing startup labels into one typed branch point for the runtime.
+//! The file therefore turns user-facing startup labels into one typed branch point for the runtime. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use serde::{Deserialize, Serialize};
 use std::fmt;

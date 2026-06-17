@@ -1,7 +1,9 @@
-//! Provides the high-level globe module boundary for region topology, projection, and visual overlay orchestration.
-//! Connects rendering, fog state, markers, labels, layers, and picking into one map-runtime surface.
-//! Supports synchronization and loading flows so globe state can be updated from external game systems.
-//! Delivers a cohesive planetary-view feature set for strategic map presentation and interaction.
+//! Provides the high-level globe module boundary for region topology, projection, and visual overlay orchestration. `globe/mod` is the globe module index, declaring `composition`, `draw`, `export`, `fog`, `label`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
+//! Connects rendering, fog state, markers, labels, layers, and picking into one map-runtime surface. `src/globe/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `fog::{FogMask, FogStore}`, `picking::PickResult`, `projection::OrbitCamera`, `registry::{Globe, GlobeRegistry}`, and 7 more centralized for the globe subsystem.
+//! Supports synchronization and loading flows so globe state can be updated from external game systems. The file documents how globe submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! Delivers a cohesive planetary-view feature set for strategic map presentation and interaction. Agents should read this index to choose the narrow owner file first, because it maps names such as `composition`, `draw`, `export`, `fog`, `label`, and 12 more to concrete implementation responsibilities.
+//! `globe/mod` is the globe module index, declaring `composition`, `draw`, `export`, `fog`, `label`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/globe/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `fog::{FogMask, FogStore}`, `picking::PickResult`, `projection::OrbitCamera`, `registry::{Globe, GlobeRegistry}`, and 7 more centralized for the globe subsystem.
 
 /// Globe composition helpers. This module is publicly re-exported.
 pub mod composition;

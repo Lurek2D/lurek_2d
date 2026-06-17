@@ -1,8 +1,7 @@
-//! Provides realtime signal analysis primitives for level tracking and spectral inspection of sample streams.
-//! Maintains rolling RMS and peak state to expose stable loudness and clipping indicators during processing.
-//! Computes bounded frequency summaries that keep analysis cost predictable for scripting and runtime tooling.
-//! Supports both engine internals and Lua-facing diagnostics with consistent measurement semantics.
-//! Delivers the inspection layer used to observe signal health before and during mix decisions.
+//! Provides realtime signal analysis primitives for level tracking and spectral inspection of sample streams. `dsp/analysis` delivers the analysis implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Maintains rolling RMS and peak state to expose stable loudness and clipping indicators during processing. The file owns or coordinates data contracts including `LevelDetector`, `SpectrumAnalyzer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Computes bounded frequency summaries that keep analysis cost predictable for scripting and runtime tooling. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `process_sample`, `process_sound_data`, `get_rms`, `get_peak`, `is_clipping`, and 4 more stays attached to the local data model and invariants.
+//! Supports both engine internals and Lua-facing diagnostics with consistent measurement semantics. Runtime integration reaches sibling engine areas through crate modules `audio`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::audio::sound_data::SoundData;
 

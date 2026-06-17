@@ -1,6 +1,4 @@
-//! Defines the console-suppressed desktop launcher that delegates to the shared engine bootstrap.
-//! Reuses the main runtime startup path while controlling subsystem behavior on Windows.
-//! Serves as the minimal binary entrypoint for standard interactive game launch.
+//! Defines the console-suppressed desktop launcher that delegates to the shared engine bootstrap. `bin/lurekc` delivers the lurekc implementation for the bin subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 #![cfg_attr(windows, windows_subsystem = "windows")]
 use std::process::ExitCode;

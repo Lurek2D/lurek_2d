@@ -1,15 +1,8 @@
-//! - Provides the specialized GPU pipeline for drawing detailed province maps.
-//! - Binds map-specific data like region IDs, border structures, and height fields.
-//! - Renders fullscreen map views using custom fragments WGSL shader passes.
-//! - Configures pipeline layout options, mapping texture samplers and buffers.
-//! - Packs viewport ranges, map size, zoom factor, and animation times into uniforms.
-//! - Implements uniform buffer updates, writing data directly to GPU resources.
-//! - Combines multi-sampled border maps with texture views of region identity maps.
-//! - Standardizes buffer bindings, visibility stages, and shader layout groups.
-//! - Adapts map details dynamically to strategic zoom and tactical display zoom.
-//! - Avoids redundant resource rebuilds by reusing pipeline templates.
-//! - Controls blend state settings to compile alpha-blended transparent layers.
-//! - Separates general scene logic from custom administrative map synthesis.
+//! Provides the specialized GPU pipeline for drawing detailed province maps. `render/province_map_pipeline` delivers the province map pipeline implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Binds map-specific data like region IDs, border structures, and height fields. The file owns or coordinates data contracts including `ProvinceMapUniforms`, `ProvinceMapPipeline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Renders fullscreen map views using custom fragments WGSL shader passes. Public callable behavior is centered on no named public items, while method-level behavior such as `full_map`, `new`, `create_data_bind_group`, `update_uniforms` stays attached to the local data model and invariants.
+//! Configures pipeline layout options, mapping texture samplers and buffers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Packs viewport ranges, map size, zoom factor, and animation times into uniforms. External integration uses `bytemuck`, `wgpu`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use bytemuck::{Pod, Zeroable};
 use wgpu::util::DeviceExt;

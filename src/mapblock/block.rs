@@ -1,9 +1,9 @@
-//! Fundamental mapblock unit combining tile payloads, edge sockets, and metadata.
-//! Carries the data needed to match blocks during procedural placement.
-//! Stores selection weighting, naming, and tileset references for later output.
-//! Encodes the local shape and slot content that downstream stages consume.
-//! Keeps neighbor semantics alongside the block so validation stays data-driven.
-//! Acts as the atomic building piece for the entire mapblock pipeline.
+//! Fundamental mapblock unit combining tile payloads, edge sockets, and metadata. `mapblock/block` delivers the block implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Carries the data needed to match blocks during procedural placement. The file owns or coordinates data contracts including `Edge`, `MapBlock`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Stores selection weighting, naming, and tileset references for later output. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_legacy`, `get_width`, `get_height`, `get_layer_count`, `get_layer`, and 25 more stays attached to the local data model and invariants.
+//! Encodes the local shape and slot content that downstream stages consume. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Keeps neighbor semantics alongside the block so validation stays data-driven. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Acts as the atomic building piece for the entire mapblock pipeline. The file boundary separates mapblock implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::config::MapBlockConfig;
 use super::constraints::EdgeConstraint;

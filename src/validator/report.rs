@@ -1,8 +1,7 @@
-//! This file provides typed report models for storing and presenting validation outcomes.
-//! It defines violation records with severity, location, identity, and human-readable message.
-//! It supports filtering and summary views so large result sets remain actionable.
-//! It standardizes severity ordering for consistent thresholding and pipeline behavior.
-//! It anchors validator output contracts consumed by tools and user-facing diagnostics.
+//! This file provides typed report models for storing and presenting validation outcomes. `validator/report` delivers the report implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It defines violation records with severity, location, identity, and human-readable message. The file owns or coordinates data contracts including `Severity`, `Violation`, `ValidationReport`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It supports filtering and summary views so large result sets remain actionable. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str`, `new`, `with_line`, `with_column`, `with_suggestion`, and 7 more stays attached to the local data model and invariants.
+//! It standardizes severity ordering for consistent thresholding and pipeline behavior. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::path::PathBuf;
 

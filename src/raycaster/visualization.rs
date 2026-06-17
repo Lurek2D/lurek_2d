@@ -2,10 +2,8 @@
 //! It can paint overhead maps, first-person wall bands, line-of-sight traces, depth previews, and sweep atlases directly into image buffers.
 //! Procedural material coloring is embedded here so diagnostic or demo output can still look spatially rich without loading authored textures.
 //! The helpers are useful when tuning collision, sampling, map layout, or visibility because they make invisible intermediate state immediately legible.
-//! Outputs stay in plain image memory, which makes them easy to save, inspect in tools, or present inside UI overlays.
+//! Outputs stay in plain image memory, which makes them easy to save, inspect in tools, or present inside UI overlays. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 //! Several views deliberately trade physical correctness for fast explanation, prioritizing readable spatial evidence over final-game polish.
-//! This file therefore acts as the observability layer for the raycaster subsystem, not just a collection of screenshots.
-//! It is where engine authors can inspect the behavior of rays, walls, and depth as pictures instead of logs.
 
 use super::dda::Raycaster2D;
 impl Raycaster2D {

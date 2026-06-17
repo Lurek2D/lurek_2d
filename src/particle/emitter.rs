@@ -1,13 +1,9 @@
-//! Live particle emitter that owns the active particle pool, physics stepping, and sub-system list.
-//! Integrates gravity, drag, orbit, turbulence, and other per-frame forces.
-//! Spawns particles continuously or in bursts using fractional accumulation and ordered insertion modes.
-//! Applies attractors and axis-aligned bounce boundaries to active particles.
-//! Runs child emitters on particle death when sub-systems are configured.
-//! Tracks active, paused, and stopped states with lifetime-based auto-stop.
-//! Builds render commands from current particle state, shape mapping, and interpolation curves.
-//! Supports warm-up simulation so systems can start in a settled state.
-//! Exposes custom emission-shape callbacks through the Lua bridge without coupling spawn math to rendering.
-//! Provides the runtime core for all particle effects.
+//! Live particle emitter that owns the active particle pool, physics stepping, and sub-system list. `particle/emitter` delivers the emitter implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Integrates gravity, drag, orbit, turbulence, and other per-frame forces. The file owns or coordinates data contracts including `ParticleSystemStats`, `ParticleSystem`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Spawns particles continuously or in bursts using fractional accumulation and ordered insertion modes. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `emit`, `count`, `reset`, `start`, and 23 more stays attached to the local data model and invariants.
+//! Applies attractors and axis-aligned bounce boundaries to active particles. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `particle`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Runs child emitters on particle death when sub-systems are configured. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Tracks active, paused, and stopped states with lifetime-based auto-stop. The file boundary separates particle implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::config::{
     Attractor, BounceBounds, EmissionShape, EmitterState, InsertMode, ParticleConfig,

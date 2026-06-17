@@ -1,13 +1,7 @@
-//! - Defines reusable 2D mesh data for complex vector drawing and models.
-//! - Stores vertex coordinates, UV maps, colors, and topology information.
-//! - Bridges custom loaded model assets and procedural vector geometries.
-//! - Supports multiple drawing topologies including triangle lists and fans.
-//! - Retains optional diffuse texture keys mapping meshes to atlas resources.
-//! - Integrates slotmap mesh keys for persistent vertex cache storage on GPU.
-//! - Handles both indexed geometry index arrays and simple vertex lists.
-//! - Exposes helper methods to construct meshes from flat vector buffers.
-//! - Allows gameplay layers to specify color overlays and texture offsets.
-//! - Acts as the primary shape container passed to the renderer dispatch queue.
+//! Defines reusable 2D mesh data for complex vector drawing and models. `render/mesh` delivers the mesh implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores vertex coordinates, UV maps, colors, and topology information. The file owns or coordinates data contracts including `MeshDrawMode`, `MeshVertex`, `Mesh`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Bridges custom loaded model assets and procedural vector geometries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_vertices`, `from_vertex_rows`, `set_vertex`, `get_vertex`, `set_vertex_map`, and 4 more stays attached to the local data model and invariants.
+//! Supports multiple drawing topologies including triangle lists and fans. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::log_msg;
 use crate::runtime::log_messages::MS01;

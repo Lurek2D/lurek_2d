@@ -1,8 +1,7 @@
-//! Implements sequential binary writing over a growable buffer with explicit cursor control.
-//! Supports little-endian and big-endian emission for integers, floats, and string payloads.
-//! Allows seeking within the buffer to overwrite or append structured binary segments.
-//! Zero-fills gaps when seeking past current length to keep layout deterministic.
-//! Serves as the mutable write surface for format-driven serialization workflows.
+//! Implements sequential binary writing over a growable buffer with explicit cursor control. `binary/data_writer` delivers the data writer implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports little-endian and big-endian emission for integers, floats, and string payloads. The file owns or coordinates data contracts including `DataWriter`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Allows seeking within the buffer to overwrite or append structured binary segments. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_capacity`, `tell`, `len`, `is_empty`, `seek`, and 13 more stays attached to the local data model and invariants.
+//! Zero-fills gaps when seeking past current length to keep layout deterministic. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// Hold buffer and cursor for binary writes.
 ///

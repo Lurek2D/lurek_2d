@@ -1,6 +1,9 @@
-//! Particle emitter lifecycle for spawn, simulation, and pooled recycling.
-//! Collects emission, physics, trail, rendering, and preset helpers under one namespace.
-//! Keeps particle effects modular while exposing a single runtime surface.
+//! Particle emitter lifecycle for spawn, simulation, and pooled recycling. `particle/mod` is the particle module index, declaring `config`, `emission`, `emitter`, `math`, `particle`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
+//! Collects emission, physics, trail, rendering, and preset helpers under one namespace. `src/particle/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `config::{ AreaDistribution, EmissionShape, EmitterState, InsertMode, ParticleConfig, RelativeMode, }`, `emitter::ParticleSystem`, `math::{interpolate_alphas, interpolate_colors, interpolate_sizes, lerp}`, `particle::Particle`, and 2 more centralized for the particle subsystem.
+//! Keeps particle effects modular while exposing a single runtime surface. The file documents how particle submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! `particle/mod` is the particle module index, declaring `config`, `emission`, `emitter`, `math`, `particle`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/particle/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `config::{ AreaDistribution, EmissionShape, EmitterState, InsertMode, ParticleConfig, RelativeMode, }`, `emitter::ParticleSystem`, `math::{interpolate_alphas, interpolate_colors, interpolate_sizes, lerp}`, `particle::Particle`, and 2 more centralized for the particle subsystem.
+//! The file documents how particle submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 /// Particle emitter configuration: shape, rate, lifetime, and per-particle property ranges.
 pub mod config;

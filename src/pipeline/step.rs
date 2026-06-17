@@ -1,8 +1,7 @@
-//! Pipeline step model for expressing one unit of work together with the policy that controls when and how it should run.
+//! Pipeline step model for expressing one unit of work together with the policy that controls when and how it should run. `pipeline/step` delivers the step implementation for the pipeline subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! The file combines identity, dependencies, delays, retries, timeout-like settings, metadata, and callback hooks into a single authored execution record.
 //! Status tracking gives each step a visible lifecycle from pending through terminal outcomes, which keeps orchestration state legible during async progress.
 //! Error policy at step level lets important and optional work coexist inside the same pipeline without flattening all failures into one rule.
-//! Functionally this file delivers the configurable work atom from which larger dependency graphs are assembled.
 
 use std::collections::HashMap;
 

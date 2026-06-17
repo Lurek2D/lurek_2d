@@ -1,6 +1,4 @@
-//! Lua bindings for `lurek.particle` system handles, trail handles, and visualization helpers.
-//! Validates particle dimensions, lifetimes, callback inputs, and physics bridge arguments before touching runtime state.
-//! Keeps emitter simulation, collision, and rendering logic in `src/particle` while exposing a thin Lua API layer.
+//! Lua bindings for `lurek.particle` system handles, trail handles, and visualization helpers. `src/lua_api/particle_api.rs` registers the `lurek.particle` Lua boundary for particle behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::callback_registry::CallbackRegistry;
 use super::physics_api::LuaWorld;

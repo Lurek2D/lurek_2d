@@ -1,10 +1,8 @@
-//! Provides a dual-priority FIFO event queue that dispatches high-priority items before normal traffic.
-//! Defines portable event payload shapes that carry scalar and shallow table data across boundaries.
-//! Supports blocking wait semantics with timeout control for synchronized producer-consumer patterns.
-//! Converts queued payloads between Rust and Lua value domains using predictable marshalling rules.
-//! Preserves insertion order inside each priority lane to keep event flow behavior deterministic.
-//! Encapsulates push, poll, peek, and wait operations in one reusable runtime messaging primitive.
-//! Delivers the queue core used by event-driven systems that need ordered asynchronous signaling.
+//! Provides a dual-priority FIFO event queue that dispatches high-priority items before normal traffic. `event/event_queue` delivers the event queue implementation for the event subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Defines portable event payload shapes that carry scalar and shallow table data across boundaries. The file owns or coordinates data contracts including `EventPriority`, `EventTableKey`, `EventArg`, `Event`, `EventQueue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports blocking wait semantics with timeout control for synchronized producer-consumer patterns. Public callable behavior is centered on `event_arg_to_lua_value`, `event_to_lua_multi`, while method-level behavior such as `new`, `push`, `push_with_priority`, `push_event`, `push_event_with_priority`, `poll`, and 6 more stays attached to the local data model and invariants.
+//! Converts queued payloads between Rust and Lua value domains using predictable marshalling rules. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Preserves insertion order inside each priority lane to keep event flow behavior deterministic. External integration uses `std`, `mlua`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::VecDeque;
 use std::sync::{Condvar, Mutex};

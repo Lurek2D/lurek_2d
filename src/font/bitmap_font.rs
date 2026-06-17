@@ -1,7 +1,7 @@
-//! Provides bitmap-font loading and atlas-backed glyph lookup for pre-rasterized text rendering workflows.
-//! Parses descriptor data to build codepoint-to-glyph mappings with stable UV and metric records.
-//! Preserves kerning and sizing information needed for accurate spacing during layout and shaping.
-//! Delivers fixed-size sprite font support for pipelines that prefer atlas sampling over runtime rasterization.
+//! Provides bitmap-font loading and atlas-backed glyph lookup for pre-rasterized text rendering workflows. `font/bitmap_font` delivers the bitmap font implementation for the font subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Parses descriptor data to build codepoint-to-glyph mappings with stable UV and metric records. The file owns or coordinates data contracts including `BitmapFontAtlas`, `BitmapFont`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Preserves kerning and sizing information needed for accurate spacing during layout and shaping. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `glyph_info`, `contains_glyph`, `line_height`, `point_size`, `is_bold` stays attached to the local data model and invariants.
+//! Delivers fixed-size sprite font support for pipelines that prefer atlas sampling over runtime rasterization. Runtime integration reaches sibling engine areas through crate modules `font`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::font::metrics::GlyphMetrics;
 

@@ -1,9 +1,8 @@
-//! Implements multi-armed bandit optimization with per-arm reward history and posterior statistics.
-//! Supports epsilon-greedy, UCB-style, and Thompson-style selection strategies in one component.
-//! Tracks pull counts and cumulative rewards to adapt action choice under uncertain payoffs.
-//! Uses deterministic random helpers for reproducible sampling during probabilistic strategies.
-//! Exposes reward ingestion, arm selection, and reset operations for online learning loops.
-//! Fits lightweight decision problems where full planning frameworks are unnecessary.
+//! Implements multi-armed bandit optimization with per-arm reward history and posterior statistics. `learning/bandit` delivers the bandit implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports epsilon-greedy, UCB-style, and Thompson-style selection strategies in one component. The file owns or coordinates data contracts including `BanditArm`, `BanditStrategy`, `Bandit`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Tracks pull counts and cumulative rewards to adapt action choice under uncertain payoffs. Public callable behavior is centered on no named public items, while method-level behavior such as `mean_reward`, `new`, `arm_count`, `select`, `update`, `best_arm`, and 1 more stays attached to the local data model and invariants.
+//! Uses deterministic random helpers for reproducible sampling during probabilistic strategies. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Exposes reward ingestion, arm selection, and reset operations for online learning loops. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 /// A single bandit arm with accumulated reward statistics.
 #[derive(Clone)]

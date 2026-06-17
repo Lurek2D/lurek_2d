@@ -1,7 +1,7 @@
-//! This file provides Lua-backed custom rule adapters for extending validator coverage.
-//! It stores pattern and callback metadata that bridges script-defined checks into Rust flow.
-//! It converts callback outputs into typed violations compatible with native reporting.
-//! It lets teams add project-specific rules without recompiling engine validator code.
+//! This file provides Lua-backed custom rule adapters for extending validator coverage. `validator/rules_lua` delivers the rules lua implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It stores pattern and callback metadata that bridges script-defined checks into Rust flow. The file owns or coordinates data contracts including `LuaPatternRule`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It converts callback outputs into typed violations compatible with native reporting. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_invert` stays attached to the local data model and invariants.
+//! It lets teams add project-specific rules without recompiling engine validator code. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::report::{Severity, Violation};
 use super::rule::ValidationRule;

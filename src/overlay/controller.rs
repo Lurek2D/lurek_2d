@@ -1,13 +1,9 @@
-//! Central overlay controller owning every screen-space effect state block.
-//! Updates weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning each frame.
-//! Spawns and simulates weather particles for rain, snow, hail, dust, leaves, ash, and pollen.
-//! Triggers flash, shake, fade, and lightning events through a simple runtime API.
-//! Reports shake offset, flash alpha, lightning alpha, and active state to callers.
-//! Builds render commands for flash, fade, lightning, and vignette overlays.
-//! Resets every subsystem back to a clean inactive state when needed.
-//! Supports debug visualisation of internal timing and offset trails.
-//! Keeps presentation effects together so higher-level scene code stays thin.
-//! Acts as the single screen-space effect scheduler for the renderer.
+//! Central overlay controller owning every screen-space effect state block. `overlay/controller` delivers the controller implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Updates weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning each frame. The file owns or coordinates data contracts including `OverlayStats`, `Overlay`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Spawns and simulates weather particles for rain, snow, hail, dust, leaves, ash, and pollen. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `trigger_flash`, `trigger_shake`, `trigger_fade`, `trigger_lightning`, and 19 more stays attached to the local data model and invariants.
+//! Triggers flash, shake, fade, and lightning events through a simple runtime API. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Reports shake offset, flash alpha, lightning alpha, and active state to callers. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Builds render commands for flash, fade, lightning, and vignette overlays. The file boundary separates overlay implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::ambient::AmbientState;
 use super::atmosphere::{

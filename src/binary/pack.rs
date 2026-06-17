@@ -1,11 +1,9 @@
-//! Implements struct-style format packing and unpacking for compact binary schema workflows.
-//! Parses tokenized format strings covering numeric types, strings, and explicit padding markers.
-//! Supports endian switching through prefix directives for cross-platform wire compatibility.
-//! Handles both fixed and variable-width string representations during serialization and decode.
-//! Applies numeric widening and coercion rules so value variants map safely onto target tokens.
-//! Performs strict bounds checks on reads with token-aware failure context for truncated input.
-//! Computes static or dynamic packed size to aid allocation and validation steps.
-//! Produces owned byte outputs integrated with shared binary data container contracts.
+//! Implements struct-style format packing and unpacking for compact binary schema workflows. `binary/pack` delivers the pack implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Parses tokenized format strings covering numeric types, strings, and explicit padding markers. The file owns or coordinates data contracts including `PackValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports endian switching through prefix directives for cross-platform wire compatibility. Public callable behavior is centered on `pack`, `unpack`, `get_packed_size`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Handles both fixed and variable-width string representations during serialization and decode. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Applies numeric widening and coercion rules so value variants map safely onto target tokens. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Performs strict bounds checks on reads with token-aware failure context for truncated input. The file boundary separates binary implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::byte_data::ByteData;
 #[derive(Debug, Clone)]

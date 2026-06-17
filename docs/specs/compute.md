@@ -49,70 +49,56 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 ### analytics.rs
 
-- Implements analytical operations over arrays including cumulative, differential, and distribution metrics.
-- Provides histogram generation with configurable domains and binning resolution control.
-- Computes percentile estimates with interpolation for robust quantile-style inspection workflows.
-- Exposes pairwise statistics such as covariance and correlation for relationship analysis.
-- Includes normalization helpers for range scaling and standardized z-score transformations.
-- Serves as the statistical post-processing layer for compute arrays and derived results.
+- Implements analytical operations over arrays including cumulative, differential, and distribution metrics. `compute/analytics` delivers the analytics implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides histogram generation with configurable domains and binning resolution control. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Computes percentile estimates with interpolation for robust quantile-style inspection workflows. Public callable behavior is centered on `cumsum`, `diff`, `histogram`, `percentile`, `covariance`, and 5 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Exposes pairwise statistics such as covariance and correlation for relationship analysis. Runtime integration reaches sibling engine areas through crate modules `compute`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Includes normalization helpers for range scaling and standardized z-score transformations. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### array.rs
 
-- Implements the dense n-dimensional array container used by all compute submodules.
-- Stores typed scalar buffers with explicit shape metadata and deterministic stride computation.
-- Validates dimensions and element counts to protect allocation and indexing safety boundaries.
-- Provides constructors for common initialization flows including zeros, ones, ranges, and slices.
-- Supports flat and coordinate-based access paths for algorithmic and ergonomic usage patterns.
-- Exposes utility mapping, filling, and iteration helpers for transformation pipelines.
-- Serves as the foundational data model for operations, analytics, spatial, and linalg layers.
+- Implements the dense n-dimensional array container used by all compute submodules. `compute/array` delivers the array implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores typed scalar buffers with explicit shape metadata and deterministic stride computation. The file owns or coordinates data contracts including `DataType`, `NdArray`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Validates dimensions and element counts to protect allocation and indexing safety boundaries. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `byte_size`, `name`, `new`, `zeros`, `ones`, and 23 more stays attached to the local data model and invariants.
+- Provides constructors for common initialization flows including zeros, ones, ranges, and slices. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Supports flat and coordinate-based access paths for algorithmic and ergonomic usage patterns. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### fft.rs
 
-- Implements radix-2 fast Fourier transform and inverse transform over power-of-two signal lengths.
-- Supports forward real-to-complex conversion with automatic padding for nonconforming input sizes.
-- Provides inverse reconstruction paths from complex spectra back to real-domain samples.
-- Exposes magnitude extraction helpers for frequency-domain inspection and feature analysis.
-- Serves as the spectral-analysis primitive layer for compute-side signal processing tasks.
+- Implements radix-2 fast Fourier transform and inverse transform over power-of-two signal lengths. `compute/fft` delivers the fft implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports forward real-to-complex conversion with automatic padding for nonconforming input sizes. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides inverse reconstruction paths from complex spectra back to real-domain samples. Public callable behavior is centered on `next_power_of_two`, `fft`, `ifft`, `fft_magnitude`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Exposes magnitude extraction helpers for frequency-domain inspection and feature analysis. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### linalg.rs
 
-- Implements linear-algebra and geometric helper operations over compute array structures.
-- Provides vector normalization, cross-style products, and matrix-oriented transformation utilities.
-- Includes kernel builders and edge-oriented operators for signal and image-adjacent workflows.
-- Solves linear systems with Gaussian elimination using pivoting for improved numerical stability.
-- Computes LU decomposition with permutation tracking to support determinant-aware factorization.
-- Exposes dominant eigenpair estimation through iterative power-method style evaluation.
-- Serves as the algebraic backbone for higher-level analytical and spatial compute tasks.
+- Implements linear-algebra and geometric helper operations over compute array structures. `compute/linalg` delivers the linalg implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides vector normalization, cross-style products, and matrix-oriented transformation utilities. The file owns or coordinates data contracts including `LuDecomp`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Includes kernel builders and edge-oriented operators for signal and image-adjacent workflows. Public callable behavior is centered on `normalize_vec`, `cross2d`, `outer`, `rotate2d_matrix`, `affine2d`, and 6 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Solves linear systems with Gaussian elimination using pivoting for improved numerical stability. Runtime integration reaches sibling engine areas through crate modules `compute`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Computes LU decomposition with permutation tracking to support determinant-aware factorization. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod.rs
 
-- Defines the compute module boundary for array math, analytics, transforms, and spatial processing.
-- Groups core numeric submodules under one cohesive surface with shared data contracts.
-- Serves as the composition entry for engine-side compute and numeric utility workflows.
+- Defines the compute module boundary for array math, analytics, transforms, and spatial processing. `compute/mod` is the compute module index, declaring `analytics`, `array`, `fft`, `linalg`, `ops`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
+- Groups core numeric submodules under one cohesive surface with shared data contracts. `src/compute/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `array::{DataType, NdArray}`, `fft::{fft, fft_magnitude, ifft}`, `ops::{get_par_threshold, set_par_threshold}` centralized for the compute subsystem.
 
 ### ops.rs
 
-- Implements the primary array-operations engine for arithmetic, comparison, logic, and reduction flows.
-- Supports scalar-array and array-array binary operations with bounded broadcast compatibility.
-- Provides global and axis-based reductions including sum, mean, min, max, and related aggregates.
-- Exposes in-place mutation variants for additive, subtractive, multiplicative, and divisive updates.
-- Includes reshape, transpose, cloning, thresholding, and conditional selection utilities.
-- Handles integer and floating operation variants through dtype-aware dispatch behavior.
-- Integrates configurable parallel execution thresholds for rayon-backed large-array workloads.
-- Returns deterministic error messages on shape mismatch, invalid axis, or unsupported operation cases.
-- Provides positional and logical queries such as argmin, argmax, nonzero count, any, and all.
-- Preserves predictable semantics across contiguous and non-trivial shape transformations.
-- Serves as the high-throughput compute workhorse used by analytics and algorithmic systems.
-- Anchors most data-manipulation behavior on top of the shared NdArray contract.
+- Implements the primary array-operations engine for arithmetic, comparison, logic, and reduction flows. `compute/ops` delivers the ops implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports scalar-array and array-array binary operations with bounded broadcast compatibility. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides global and axis-based reductions including sum, mean, min, max, and related aggregates. Public callable behavior is centered on `get_par_threshold`, `set_par_threshold`, `add`, `add_scalar`, `sub`, and 51 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Exposes in-place mutation variants for additive, subtractive, multiplicative, and divisive updates. Runtime integration reaches sibling engine areas through crate modules `compute`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Includes reshape, transpose, cloning, thresholding, and conditional selection utilities. External integration uses `rayon`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Handles integer and floating operation variants through dtype-aware dispatch behavior. The file boundary separates compute implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### spatial.rs
 
-- Implements spatial and neighborhood operations over array-based 1D and 2D data surfaces.
-- Provides zero-padded convolution for kernel filtering across image-like matrix inputs.
-- Includes binary morphology operators such as dilation and erosion with radius-based neighborhoods.
-- Supports flood-fill propagation and region extraction or insertion for localized data editing.
-- Exposes matrix multiplication and dot-product helpers for core spatial-numeric composition.
-- Serves as the spatial-processing utility layer built on top of NdArray primitives.
+- Implements spatial and neighborhood operations over array-based 1D and 2D data surfaces. `compute/spatial` delivers the spatial implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides zero-padded convolution for kernel filtering across image-like matrix inputs. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Includes binary morphology operators such as dilation and erosion with radius-based neighborhoods. Public callable behavior is centered on `convolve2d`, `dilate`, `erode`, `flood_fill`, `get_region`, and 3 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Supports flood-fill propagation and region extraction or insertion for localized data editing. Runtime integration reaches sibling engine areas through crate modules `compute`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Exposes matrix multiplication and dot-product helpers for core spatial-numeric composition. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 
 

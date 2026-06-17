@@ -1,6 +1,4 @@
-//! This file defines the hit record that carries everything a marched ray learned when it touched visible map geometry.
-//! It preserves both geometric contact details and render-facing details such as sampled side, distance flavor, opacity, and tile identity.
-//! The struct is the shared currency between stepping, scene building, shading, and any caller that needs precise impact information.
+//! This file defines the hit record that carries everything a marched ray learned when it touched visible map geometry. `raycaster/ray_hit` delivers the ray hit implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Result record for one DDA ray; produced by `Raycaster2D::cast_ray`.
 #[derive(Debug, Clone)]

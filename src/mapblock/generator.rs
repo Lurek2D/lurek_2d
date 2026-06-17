@@ -1,11 +1,9 @@
-//! Operational core for scripted mapblock assembly over a block grid.
-//! Owns block registries, multi-level placement state, and RNG progression.
-//! Executes fill, targeted placement, random placement, and repeat steps.
-//! Applies neighbor constraints to keep layouts structurally coherent.
-//! Threads orientation and config context through the build process.
-//! Converts intermediate placements into renderer-ready output structures.
-//! Supports deterministic runs through seeded randomness and explicit step ordering.
-//! Serves as the main execution engine behind mapblock authoring tools.
+//! Operational core for scripted mapblock assembly over a block grid. `mapblock/generator` delivers the generator implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Owns block registries, multi-level placement state, and RNG progression. The file owns or coordinates data contracts including `MapBlockGenerator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Executes fill, targeted placement, random placement, and repeat steps. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_rect_shape`, `set_shape`, `set_grid`, `set_orientation`, `set_max_levels`, and 9 more stays attached to the local data model and invariants.
+//! Applies neighbor constraints to keep layouts structurally coherent. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Threads orientation and config context through the build process. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Converts intermediate placements into renderer-ready output structures. The file boundary separates mapblock implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::config::MapBlockConfig;
 use super::constraints::NeighborRules;

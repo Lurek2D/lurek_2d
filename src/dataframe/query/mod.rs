@@ -1,6 +1,5 @@
-//! Defines the dataframe query module boundary for filtering, grouping, processing, analytics, and window logic.
-//! Groups query submodules under one cohesive extension surface over core frame structures.
-//! Serves as the composition entry for staged dataframe query operations.
+//! Defines the dataframe query module boundary for filtering, grouping, processing, analytics, and window logic. `dataframe/query/mod` is the dataframe module index, declaring `analytics`, `filter`, `grouping`, `processing`, `window` so agents can identify which files own each feature slice before opening implementation code.
+//! Groups query submodules under one cohesive extension surface over core frame structures. `src/dataframe/query/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `analytics::percentile` centralized for the dataframe subsystem.
 
 /// Statistical and distribution-oriented query helpers.
 pub mod analytics;

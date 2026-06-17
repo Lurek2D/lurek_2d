@@ -1,6 +1,4 @@
 //! Projection mathematics converting ray-cast distance values into screen-space wall column heights and vertical draw bounds for 3D raycaster rendering.
-//! Implements distance-based perspective projection computing wall_height from camera FOV and ray distance, then clamps draw coordinates to screen bounds.
-//! Computes distance falloff multipliers enabling progressive darkening of farther geometry creating atmospheric depth and preventing visual pops.
 
 /// Project a wall column at `distance` using `fov` and `screen_height`;.
 /// return `(wall_height, draw_start_y, draw_end_y)` in screen pixels.

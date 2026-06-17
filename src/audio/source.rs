@@ -1,7 +1,6 @@
-//! Defines source-level audio metadata and spatial attributes used by mixer-side playback control.
-//! Encapsulates position, velocity, and orientation state for positional and motion-aware rendering.
-//! Stores identity and basic playback defaults that classify each loaded runtime source.
-//! Serves as the foundational source contract shared across routing, playback, and spatialization paths.
+//! Defines source-level audio metadata and spatial attributes used by mixer-side playback control. `audio/source` delivers the source implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Encapsulates position, velocity, and orientation state for positional and motion-aware rendering. The file owns or coordinates data contracts including `SpatialState`, `AudioSource`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Stores identity and basic playback defaults that classify each loaded runtime source. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
 
 use crate::log_msg;
 use crate::runtime::log_messages::AS01;

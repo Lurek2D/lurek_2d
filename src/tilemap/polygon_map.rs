@@ -3,7 +3,6 @@
 //! Implements efficient point-in-polygon queries using ray-casting algorithm supporting selection, trigger detection, and ownership checks per frame.
 //! Computes region centroids and bounding boxes enabling camera framing, layout decisions, and spatial analysis for AI and gameplay systems.
 //! Provides dynamic lifecycle operations (add, remove, update) allowing runtime zone modification without map reload or editor access.
-//! Exposes highlight state tracking for UI feedback showing selected or active regions with override fill color during player interaction.
 
 use crate::color::Color;
 use std::collections::HashMap;

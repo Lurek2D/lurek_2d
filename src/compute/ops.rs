@@ -1,15 +1,9 @@
-//! Implements the primary array-operations engine for arithmetic, comparison, logic, and reduction flows.
-//! Supports scalar-array and array-array binary operations with bounded broadcast compatibility.
-//! Provides global and axis-based reductions including sum, mean, min, max, and related aggregates.
-//! Exposes in-place mutation variants for additive, subtractive, multiplicative, and divisive updates.
-//! Includes reshape, transpose, cloning, thresholding, and conditional selection utilities.
-//! Handles integer and floating operation variants through dtype-aware dispatch behavior.
-//! Integrates configurable parallel execution thresholds for rayon-backed large-array workloads.
-//! Returns deterministic error messages on shape mismatch, invalid axis, or unsupported operation cases.
-//! Provides positional and logical queries such as argmin, argmax, nonzero count, any, and all.
-//! Preserves predictable semantics across contiguous and non-trivial shape transformations.
-//! Serves as the high-throughput compute workhorse used by analytics and algorithmic systems.
-//! Anchors most data-manipulation behavior on top of the shared NdArray contract.
+//! Implements the primary array-operations engine for arithmetic, comparison, logic, and reduction flows. `compute/ops` delivers the ops implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports scalar-array and array-array binary operations with bounded broadcast compatibility. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides global and axis-based reductions including sum, mean, min, max, and related aggregates. Public callable behavior is centered on `get_par_threshold`, `set_par_threshold`, `add`, `add_scalar`, `sub`, and 51 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Exposes in-place mutation variants for additive, subtractive, multiplicative, and divisive updates. Runtime integration reaches sibling engine areas through crate modules `compute`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Includes reshape, transpose, cloning, thresholding, and conditional selection utilities. External integration uses `rayon`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Handles integer and floating operation variants through dtype-aware dispatch behavior. The file boundary separates compute implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::compute::array::{DataType, NdArray};
 use rayon::prelude::*;

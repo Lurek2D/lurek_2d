@@ -1,9 +1,8 @@
-//! Provides debug-visualization translation from live AI state into drawable diagnostic artifacts.
-//! Turns control-graph structure into spatial layouts that remain readable during runtime inspection.
-//! Encodes execution status into visual signals so behavior flow can be understood at a glance.
-//! Supports both command-stream overlays and image snapshots for tooling and reporting paths.
-//! Keeps rendering concerns decoupled from decision logic while preserving faithful state representation.
-//! Acts as the observability lens for active finite-state and tree-based decision dynamics.
+//! Provides debug-visualization translation from live AI state into drawable diagnostic artifacts. `ai/render` delivers the rendering adapter and draw-command integration for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Turns control-graph structure into spatial layouts that remain readable during runtime inspection. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Encodes execution status into visual signals so behavior flow can be understood at a glance. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands`, `draw_to_image` stays attached to the local data model and invariants.
+//! Supports both command-stream overlays and image snapshots for tooling and reporting paths. Runtime integration reaches sibling engine areas through crate modules `ai`, `image`, `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Keeps rendering concerns decoupled from decision logic while preserving faithful state representation. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::ai::behavior_tree::{BTNode, BTStatus, BehaviorTree};
 use crate::ai::fsm::StateMachine;

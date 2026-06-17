@@ -1,9 +1,8 @@
-//! Converts minimap state into an ordered render command stream.
-//! Draws terrain, fog, overlays, objects, pings, markers, and viewport guides.
-//! Projects grid coordinates through the minimap transform into screen space.
-//! Keeps the drawing order stable so HUD elements stack predictably.
-//! Supports zoom-dependent and animated presentation without mutating the world model.
-//! Acts as the generic renderer path for the minimap subsystem.
+//! Converts minimap state into an ordered render command stream. `minimap/render` delivers the rendering adapter and draw-command integration for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Draws terrain, fog, overlays, objects, pings, markers, and viewport guides. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Projects grid coordinates through the minimap transform into screen space. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
+//! Keeps the drawing order stable so HUD elements stack predictably. Runtime integration reaches sibling engine areas through crate modules `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports zoom-dependent and animated presentation without mutating the world model. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use super::minimap::Minimap;
 use super::types::{FogLevel, OverlayShape};

@@ -1,9 +1,9 @@
-//! This file provides declarative UI loading from TOML definitions into live widget trees.
-//! It maps textual widget kinds onto concrete context constructors with consistent defaults.
-//! It applies generic and type-specific properties so authored layouts become runtime-ready.
-//! It supports recursive child structures that mirror retained parent-child composition.
-//! It offers headless image rendering for snapshot checks and offline layout verification.
-//! It enables fast iteration on UI structure without hardcoding full trees in Lua scripts.
+//! This file provides declarative UI loading from TOML definitions into live widget trees. `ui/layout_loader` delivers the layout loader implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It maps textual widget kinds onto concrete context constructors with consistent defaults. The file owns or coordinates data contracts including `DialogActionDef`, `WidgetDef`, `LayoutDef`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It applies generic and type-specific properties so authored layouts become runtime-ready. Public callable behavior is centered on `load_layout_def`, `load_layout_toml`, `render_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! It supports recursive child structures that mirror retained parent-child composition. Runtime integration reaches sibling engine areas through crate modules `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It offers headless image rendering for snapshot checks and offline layout verification. External integration uses `serde`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! It enables fast iteration on UI structure without hardcoding full trees in Lua scripts. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::ui::context::{GuiContext, WidgetKind};
 use crate::ui::extras::{DialogAction, DialogActionRole};

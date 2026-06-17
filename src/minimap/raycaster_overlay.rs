@@ -1,9 +1,8 @@
-//! Raycaster-specific minimap overlay renderer for tile-based visibility views.
-//! Builds a pixel-grid minimap from wall, floor, and lighting information.
-//! Uses line-of-sight and Bresenham traversal to reveal reachable cells.
-//! Fills raw RGBA buffers for fast image output and preview rendering.
-//! Draws the player indicator as a compact orientation cue on top of the map.
-//! Serves as the specialised bridge between raycasting state and minimap output.
+//! Raycaster-specific minimap overlay renderer for tile-based visibility views. `minimap/raycaster_overlay` delivers the raycaster overlay implementation for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Builds a pixel-grid minimap from wall, floor, and lighting information. The file owns or coordinates data contracts including `MinimapTileSample`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Uses line-of-sight and Bresenham traversal to reveal reachable cells. Public callable behavior is centered on `compute_tile_light`, `build_minimap_tile_window`, `reveal_cells_from_rays`, `extract_minimap`, `draw_player_arrow`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Fills raw RGBA buffers for fast image output and preview rendering. Runtime integration reaches sibling engine areas through crate modules `raycaster`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Draws the player indicator as a compact orientation cue on top of the map. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::raycaster::dda::Raycaster2D;
 use crate::raycaster::lighting::{compute_lighting, PointLight};

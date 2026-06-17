@@ -3,7 +3,6 @@
 //! Provides O(V+E) traversals and ordering computations used by planning systems, diagnostics workflows, and topology validation on large flownet models.
 //! Operates directly on shared graph adjacency state without duplicating node or edge data, ensuring efficient memory usage and performance.
 //! Enables inspection and tuning of flownet topology behavior through bipartite detection, reachability checks, and deterministic node ordering guarantees.
-//! Supports both directed and undirected graph semantics through flexible edge enumeration and neighbor iteration strategies.
 
 use super::core::Graph;
 use std::collections::{HashMap, HashSet, VecDeque};

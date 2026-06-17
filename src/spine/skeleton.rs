@@ -4,8 +4,6 @@
 //! Constraint solving and skin switching are also coordinated here so procedural adjustments and visual variants act on the same live structure.
 //! World transforms are recomputed in hierarchy order, which keeps every downstream query grounded in one authoritative pose.
 //! Debug drawing support is included because skeletal systems are much easier to tune when their invisible structure can be inspected directly.
-//! The file is therefore the runtime brain of the spine subsystem rather than a passive data container.
-//! It is where skeletal state becomes animated pose over time.
 
 use super::bone::Bone;
 use super::ik::IKConstraint;

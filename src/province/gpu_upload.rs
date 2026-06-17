@@ -3,7 +3,6 @@
 //! Packing helpers keep byte layout rules centralized, which reduces the chance of subtle mismatches between generation code, upload code, and tests.
 //! This is not generic rendering infrastructure but province-specific transfer logic shaped around the module's data products.
 //! Keeping the upload details here lets registry and renderer code stay focused on map meaning instead of texture plumbing.
-//! Functionally this file delivers the last CPU-to-GPU step for province id maps, border textures, and distance data.
 
 /// GPU texture bundle used by the province map renderer.
 pub struct ProvinceGpuTextures {

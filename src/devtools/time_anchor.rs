@@ -1,6 +1,4 @@
-//! Implements a monotonic timing anchor used to compute elapsed seconds on demand.
-//! Provides shared timestamp base behavior for logger and profiler instrumentation.
-//! Serves as a lightweight time-reference primitive for devtools subsystems.
+//! Implements a monotonic timing anchor used to compute elapsed seconds on demand. `devtools/time_anchor` delivers the time anchor implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use std::time::Instant;
 #[derive(Debug, Clone)]

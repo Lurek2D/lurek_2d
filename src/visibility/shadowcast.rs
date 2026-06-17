@@ -1,10 +1,8 @@
-//! This file provides recursive shadowcasting field-of-view for tile-grid visibility queries.
-//! It computes current sight masks while preserving explored history across update frames.
-//! It accepts blocker predicates at compute time for flexible integration with world state.
-//! It serializes visible and explored masks so FOV state can persist across save boundaries.
-//! It supports deterministic octant traversal suitable for stealth and roguelike mechanics.
-//! It gives visibility systems a fast geometric core for line-of-sight decisions.
-//! It keeps FOV computation stable enough for repeated per-frame use in tactical scenarios.
+//! This file provides recursive shadowcasting field-of-view for tile-grid visibility queries. `visibility/shadowcast` delivers the shadowcast implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It computes current sight masks while preserving explored history across update frames. The file owns or coordinates data contracts including `TileFov`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It accepts blocker predicates at compute time for flexible integration with world state. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `width`, `height`, `range`, `set_range`, `compute`, and 7 more stays attached to the local data model and invariants.
+//! It serializes visible and explored masks so FOV state can persist across save boundaries. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It supports deterministic octant traversal suitable for stealth and roguelike mechanics. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 /// Per-cell visibility state for a single observer on a tile grid.
 pub struct TileFov {

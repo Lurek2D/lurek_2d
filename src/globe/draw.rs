@@ -1,10 +1,9 @@
-//! Provides full globe frame emission that converts world map state into ordered render commands.
-//! Draws projected regions with fog, lighting, overlays, and optional texture contribution.
-//! Renders borders, atmosphere, and arcs to preserve geographic structure and visual depth cues.
-//! Integrates marker and label drawing with animation and LOD-aware visibility rules.
-//! Applies camera projection and world parameters consistently across all rendered primitives.
-//! Supports layered heat and style effects so thematic map signals remain legible.
-//! Delivers the end-to-end draw pipeline for globe visualization in runtime frames.
+//! Provides full globe frame emission that converts world map state into ordered render commands. `globe/draw` delivers the draw implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Draws projected regions with fog, lighting, overlays, and optional texture contribution. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Renders borders, atmosphere, and arcs to preserve geographic structure and visual depth cues. Public callable behavior is centered on `emit_globe_frame`, `project_arc`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Integrates marker and label drawing with animation and LOD-aware visibility rules. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Applies camera projection and world parameters consistently across all rendered primitives. External integration uses `super`, `slotmap`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Supports layered heat and style effects so thematic map signals remain legible. The file boundary separates globe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::sphere::great_circle_path;
 use crate::globe::fog::FogStore;

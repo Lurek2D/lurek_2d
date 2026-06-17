@@ -41,63 +41,53 @@ This module primarily collaborates with `color`. Its responsibility should stay 
 
 ### color.rs
 
-- Turns raw CSS color text into normalized RGBA values ready for render-side blending.
-- Accepts hex codes, rgb/rgba, hsl/hsla forms, and named web colors used by authored styles.
-- Normalizes hue units and percentage channels so mixed input formats resolve to one stable shape.
-- Applies alpha parsing with clamping semantics that keep transparent and opaque intent predictable.
-- Returns compact `[f32; 4]` color vectors in 0..1 space for direct engine consumption.
+- Turns raw CSS color text into normalized RGBA values ready for render-side blending. `html/color` delivers the color implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Accepts hex codes, rgb/rgba, hsl/hsla forms, and named web colors used by authored styles. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Normalizes hue units and percentage channels so mixed input formats resolve to one stable shape. Public callable behavior is centered on `parse_css_color_rgba`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Applies alpha parsing with clamping semantics that keep transparent and opaque intent predictable. Runtime integration reaches sibling engine areas through crate modules `color`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### document.rs
 
-- Orchestrates the full HTML document lifecycle from source text to interactive, drawable UI state.
-- Builds and rebuilds element trees while preserving viewport constraints and accumulated stylesheet inputs.
-- Resolves selector-driven style cascades into computed per-element visual properties for later layout.
-- Runs block-style layout passes with dirty tracking so structural and style edits trigger fresh geometry.
-- Supports focused and hovered interaction state used by pointer routing, keyboard input, and text editing.
-- Exposes traversal and lookup paths for id, selector, ancestry, and document-order element queries.
-- Applies DOM mutations like attribute edits, class toggles, text replacement, and inner fragment insertion.
-- Serializes inner and outer HTML snapshots so runtime edits can be observed or persisted deterministically.
-- Generates draw command streams carrying rectangles, text, and color intent for render-side execution.
-- Collects parse and style warnings so caller code can surface authoring issues without aborting runtime flow.
+- Orchestrates the full HTML document lifecycle from source text to interactive, drawable UI state. `html/document` delivers the document implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Builds and rebuilds element trees while preserving viewport constraints and accumulated stylesheet inputs. The file owns or coordinates data contracts including `HtmlDocumentOptions`, `HtmlDrawCommand`, `HtmlDocument`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Resolves selector-driven style cascades into computed per-element visual properties for later layout. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_options`, `supports`, `generation`, `root`, `element`, and 39 more stays attached to the local data model and invariants.
+- Runs block-style layout passes with dirty tracking so structural and style edits trigger fresh geometry. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Supports focused and hovered interaction state used by pointer routing, keyboard input, and text editing. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Exposes traversal and lookup paths for id, selector, ancestry, and document-order element queries. The file boundary separates html implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### element.rs
 
-- Defines the core DOM node shape used to store structure, attributes, text, and layout geometry.
-- Keeps normalized attribute and inline-style maps in sync so style edits remain coherent with HTML state.
-- Provides class token mutation paths that preserve deterministic ordering and membership checks.
-- Tracks parent-child linkage and removal flags to support stable traversal without index churn.
-- Carries axis-aligned rectangles for hit testing, layout output, and pointer targeting in UI flow.
-- Supplies normalization and void-element classification rules that guide parsing and tree mutations.
+- Defines the core DOM node shape used to store structure, attributes, text, and layout geometry. `html/element` delivers the element implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Keeps normalized attribute and inline-style maps in sync so style edits remain coherent with HTML state. The file owns or coordinates data contracts including `HtmlElementId`, `HtmlRect`, `HtmlElement`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides class token mutation paths that preserve deterministic ordering and membership checks. Public callable behavior is centered on `normalise_name`, while method-level behavior such as `contains`, `new`, `id`, `tag_name`, `parent`, `children`, and 14 more stays attached to the local data model and invariants.
+- Tracks parent-child linkage and removal flags to support stable traversal without index churn. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Carries axis-aligned rectangles for hit testing, layout output, and pointer targeting in UI flow. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod.rs
 
-- High-level HTML module surface that composes parsing, styling, selection, and document orchestration.
-- Re-exports stable document and element types used by runtime code interacting with HTML-driven UI.
-- Binds color, parser, selector, and style helpers into one cohesive entry point for the subsystem.
+- High-level HTML module surface that composes parsing, styling, selection, and document orchestration. `html/mod` is the html module index, declaring `color`, `document`, `element`, `parser`, `selector`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
+- Re-exports stable document and element types used by runtime code interacting with HTML-driven UI. `src/html/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `color::parse_css_color_rgba`, `document::{HtmlDocument, HtmlDocumentOptions, HtmlDrawCommand}`, `element::{HtmlElement, HtmlElementId, HtmlRect}` centralized for the html subsystem.
 
 ### parser.rs
 
-- Converts raw HTML text into document nodes with stable parent-child links and normalized attributes.
-- Handles open, close, self-closing, void, and comment forms so authored markup maps to valid tree state.
-- Parses attribute key-value pairs with quote-aware scanning and consistent lowercase key normalization.
-- Encodes and decodes common HTML entities to preserve readable text while keeping stored values canonical.
-- Collapses insignificant whitespace in text nodes to keep rendered output predictable across content styles.
+- Converts raw HTML text into document nodes with stable parent-child links and normalized attributes. `html/parser` delivers the text parsing and structured conversion for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Handles open, close, self-closing, void, and comment forms so authored markup maps to valid tree state. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Parses attribute key-value pairs with quote-aware scanning and consistent lowercase key normalization. Public callable behavior is centered on `parse_into`, `escape_text`, `escape_attribute`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Encodes and decodes common HTML entities to preserve readable text while keeping stored values canonical. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### selector.rs
 
-- Implements selector matching logic that maps CSS-like queries onto the live HTML element tree.
-- Parses selector text into tag, id, class, and combinator fragments with deterministic chain ordering.
-- Supports descendant and direct-child relationships for ancestry-aware filtering semantics.
-- Walks parent links to evaluate multi-part selector chains against runtime element topology.
-- Provides the core predicate shared by style cascade resolution and document query operations.
+- Implements selector matching logic that maps CSS-like queries onto the live HTML element tree. `html/selector` delivers the selector implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Parses selector text into tag, id, class, and combinator fragments with deterministic chain ordering. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports descendant and direct-child relationships for ancestry-aware filtering semantics. Public callable behavior is centered on `matches_selector`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Walks parent links to evaluate multi-part selector chains against runtime element topology. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### style.rs
 
-- Parses stylesheet sources into ordered selector rules and normalized declaration maps for HTML layout.
-- Validates supported properties while collecting non-fatal warnings for unknown or malformed inputs.
-- Normalizes declaration keys and values so later cascade merges operate on stable property naming.
-- Resolves pixel, percent, and unitless length text into float values against caller-provided bases.
-- Supplies compact parse outputs consumed by document rebuild, style recompute, and layout phases.
+- Parses stylesheet sources into ordered selector rules and normalized declaration maps for HTML layout. `html/style` delivers the style implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Validates supported properties while collecting non-fatal warnings for unknown or malformed inputs. The file owns or coordinates data contracts including `CssRule`, `CssParseResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Normalizes declaration keys and values so later cascade merges operate on stable property naming. Public callable behavior is centered on `parse_stylesheets`, `parse_declarations`, `parse_length`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Resolves pixel, percent, and unitless length text into float values against caller-provided bases. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

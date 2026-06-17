@@ -1,15 +1,11 @@
-//! Implements the core DataFrame and Database runtime models with typed cell-value representation.
-//! Stores table data in named column structures with stable row-wise access semantics.
-//! Supports column resolution by name or index for flexible scripting and API integration paths.
-//! Provides row and column lifecycle operations including add, remove, rename, and mutation workflows.
-//! Exposes slicing, cloning, iteration, and structural transformation helpers for table processing.
-//! Maintains multi-table database containers that group frames under stable logical identifiers.
-//! Includes random-data generation and expression-evaluation helpers for synthetic and derived columns.
-//! Supports pivot-style reshaping with configurable aggregation behavior across grouping dimensions.
-//! Implements rolling and rank-oriented analytics over sequential data windows.
-//! Defines aggregation enum contracts and parsing behavior for consistent operation selection.
-//! Preserves deterministic data-shape handling and explicit error reporting on invalid operations.
-//! Serves as the foundational dataframe domain layer consumed by SQL, lazy, and vectorized modules.
+//! Implements the core DataFrame and Database runtime models with typed cell-value representation. `dataframe/frame` delivers the frame implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores table data in named column structures with stable row-wise access semantics. The file owns or coordinates data contracts including `CellValue`, `ColRef`, `ColumnSchema`, `DataFrame`, `DataFrameRowIter`, and 2 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports column resolution by name or index for flexible scripting and API integration paths. Public callable behavior is centered on no named public items, while method-level behavior such as `is_nil`, `as_number`, `as_text`, `as_bool`, `cmp_for_sort`, `new`, and 39 more stays attached to the local data model and invariants.
+//! Provides row and column lifecycle operations including add, remove, rename, and mutation workflows. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Exposes slicing, cloning, iteration, and structural transformation helpers for table processing. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Maintains multi-table database containers that group frames under stable logical identifiers. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Includes random-data generation and expression-evaluation helpers for synthetic and derived columns. State changes, validation paths, and helper routines in `src/dataframe/frame.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+//! Supports pivot-style reshaping with configurable aggregation behavior across grouping dimensions. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
 
 use crate::dataframe::rng::Xorshift64;
 use std::cmp::Ordering;

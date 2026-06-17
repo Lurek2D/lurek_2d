@@ -1,9 +1,8 @@
-//! Provides the core dialogue graph model for authored topics, branches, nodes, and selectable progression paths.
-//! Applies runtime gate filtering so only context-compatible narrative candidates remain available.
-//! Combines base weights with utility-driven influence to rank candidates and pick strong conversation outcomes.
-//! Keeps decision flow transparent by storing gating and scoring inputs directly with authored records.
-//! Serves as the planning backbone executed by dialogue state, scripting hooks, and event publication.
-//! Delivers data-first branching behavior that stays testable, tunable, and stable across gameplay sessions.
+//! Provides the core dialogue graph model for authored topics, branches, nodes, and selectable progression paths. `dialog/tree` delivers the tree implementation for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Applies runtime gate filtering so only context-compatible narrative candidates remain available. The file owns or coordinates data contracts including `DialogueBranch`, `DialogueTopic`, `DialogueNode`, `DialogueAI`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Combines base weights with utility-driven influence to rank candidates and pick strong conversation outcomes. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_fsm_state`, `set_bt_status`, `set_utility_score`, `clear_utility_scores`, `add_topic`, and 4 more stays attached to the local data model and invariants.
+//! Keeps decision flow transparent by storing gating and scoring inputs directly with authored records. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Serves as the planning backbone executed by dialogue state, scripting hooks, and event publication. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::HashMap;
 

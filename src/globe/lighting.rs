@@ -1,7 +1,6 @@
-//! Provides globe lighting helpers that derive sun direction and regional light intensity over time.
-//! Computes diffuse contribution with ambient floors to keep night-side visuals readable.
-//! Supports batch intensity and terminator blending calculations for smooth day-night transitions.
-//! Delivers reusable illumination math consumed by globe rendering passes.
+//! Provides globe lighting helpers that derive sun direction and regional light intensity over time. `globe/lighting` delivers the lighting implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Computes diffuse contribution with ambient floors to keep night-side visuals readable. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports batch intensity and terminator blending calculations for smooth day-night transitions. Public callable behavior is centered on `sun_direction`, `province_intensity`, `compute_intensities`, `terminator_alpha`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 use super::sphere::{lat_lon_to_unit, rot_y};
 use crate::globe::types::GlobeSpec;

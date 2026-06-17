@@ -1,8 +1,8 @@
-//! LAN lobby discovery via timed UDP broadcast on a fixed port.
-//! Encodes and parses lobby advertisements in a compact key-value wire format.
-//! Maintains an in-process room registry for create, join, leave, and list flows.
-//! Sends one broadcast datagram across all interfaces when scanning starts.
-//! Deduplicates discovered lobbies by host and port during the scan window.
+//! LAN lobby discovery via timed UDP broadcast on a fixed port. `network/lobby` delivers the lobby implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Encodes and parses lobby advertisements in a compact key-value wire format. The file owns or coordinates data contracts including `LobbyInfo`, `RoomInfo`, `PlayerState`, `RoomState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Maintains an in-process room registry for create, join, leave, and list flows. Public callable behavior is centered on `broadcast_lobby`, `discover_lobbies`, `create_room`, `list_rooms`, `join_room`, and 5 more, while method-level behavior such as `to_wire`, `from_wire` stays attached to the local data model and invariants.
+//! Sends one broadcast datagram across all interfaces when scanning starts. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Deduplicates discovered lobbies by host and port during the scan window. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::net::{Ipv4Addr, SocketAddr, UdpSocket};
 use std::sync::{Mutex, OnceLock};

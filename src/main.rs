@@ -1,6 +1,6 @@
-//! Lurek2D engine binary entry point that initializes the Rust runtime, applies platform-specific timer optimizations, and delegates control to the core engine loop.
-//! Sets Windows timer resolution on Windows targets to enable precise frame timing on operating systems that require explicit high-resolution timer setup.
-//! Hands off to `lurek_run()` to orchestrate Lua VM bootstrap, renderer initialization, physics world creation, and the main game loop cycle.
+//! `src/main.rs` is the native executable entrypoint and keeps boot logic thin by forwarding control into `lurek2d`.
+//! On Windows it raises timer resolution before startup so frame pacing and input timing stay consistent at launch.
+//! Beyond that hook, the file delegates to `lurek_run()`, leaving runtime policy and argument handling in the library.
 
 use std::process::ExitCode;
 

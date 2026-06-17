@@ -1,8 +1,7 @@
-//! Renders UI-oriented mockups into images to preview panel composition and widget styling.
-//! Draws settings-style panels with controls, sliders, and button affordances for layout checks.
-//! Produces HUD bars and cooldown visuals used to validate gameplay HUD readability.
-//! Includes swatches and progress widgets for color and status presentation experiments.
-//! Supplies deterministic UI snapshots useful in examples, tests, and design iteration loops.
+//! Renders UI-oriented mockups into images to preview panel composition and widget styling. `image/visualization/ui` delivers the ui implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Draws settings-style panels with controls, sliders, and button affordances for layout checks. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Produces HUD bars and cooldown visuals used to validate gameplay HUD readability. Public callable behavior is centered on `panel_layout_to_image`, `hud_bars_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Includes swatches and progress widgets for color and status presentation experiments. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::image::ImageData;
 /// Render a panel layout with borders, labels, and content areas into an image.

@@ -1,19 +1,9 @@
-//! - Implements procedural geometry generation and tessellation for all primitive 2D shapes.
-//! - Generates vertex/index lists for arcs, circles, ellipses, sectors, and rounded rectangles.
-//! - Translates abstract blending modes requested by Lua into explicit wgpu descriptors.
-//! - Handles thick-line calculations by expanding stroke segments to screen-aligned quads.
-//! - Uses adaptive step sizes for curved geometry to trade off segment count vs visual smoothness.
-//! - Implements custom geometry builders for solid shapes, hollow wireframes, and textured sprites.
-//! - Calculates optimal layouts (like triangle lists and fans) to minimize GPU vertex buffer size.
-//! - Manages mathematical fallbacks for degenerate geometry, preventing panic on zero-sized shapes.
-//! - Retains isolated, pure functions for vector math, shape intersection, and coordinate projections.
-//! - Provides utility structures for color mapping, color interpolation, and vertex transformations.
-//! - Feeds geometry data into the graphics pipeline without maintaining direct GPU state handles.
-//! - Supports multiple shading layouts, including flat colors, texture mapping, and vertex gradients.
-//! - Standardizes font character drawing by converting glyph boxes into independent texture quads.
-//! - Enforces bounds-checking and coordinate constraints for scissor rectangles and viewports.
-//! - Serves as the math engine under the scene builder before final GPU buffer writeback.
-//! - Enables fast rendering of grid arrays, particle layouts, and complex vector drawing chains.
+//! Implements procedural geometry generation and tessellation for all primitive 2D shapes. `render/extracted_blocks` delivers the extracted blocks implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Generates vertex/index lists for arcs, circles, ellipses, sectors, and rounded rectangles. The file owns or coordinates data contracts including `GpuTexture`, `RenderStats`, `GpuShader`, `LightGpuState`, `GpuRenderer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Translates abstract blending modes requested by Lua into explicit wgpu descriptors. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Handles thick-line calculations by expanding stroke segments to screen-aligned quads. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Uses adaptive step sizes for curved geometry to trade off segment count vs visual smoothness. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Implements custom geometry builders for solid shapes, hollow wireframes, and textured sprites. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 /// Flat-shaded vertex with `position` and per-vertex `color`.
 #[repr(C)]

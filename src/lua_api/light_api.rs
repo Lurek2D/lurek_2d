@@ -1,6 +1,4 @@
-//! Lua bindings for `lurek.light` world controls, light handles, and occluder handles.
-//! Validates numeric ranges, enum-like strings, and options-table fields before mutating runtime light state.
-//! Keeps lighting behavior in `src/light` while exposing a thin, predictable `lurek.light` API surface.
+//! Lua bindings for `lurek.light` world controls, light handles, and occluder handles. `src/lua_api/light_api.rs` registers the `lurek.light` Lua boundary for light behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::color::Color;

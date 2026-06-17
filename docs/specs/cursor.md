@@ -38,59 +38,53 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### animated_cursor.rs
 
-- Implements animated cursor state using frame sequences and time-based frame advancement.
-- Supports optional pulse scaling driven by oscillation parameters independent of frame stepping.
-- Maintains deterministic timing behavior through per-frame duration tracking.
-- Integrates as an active cursor-state variant within context-aware cursor orchestration.
-- Serves as the runtime animation layer for custom cursors with motion feedback.
+- Implements animated cursor state using frame sequences and time-based frame advancement. `cursor/animated_cursor` delivers the animated cursor implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports optional pulse scaling driven by oscillation parameters independent of frame stepping. The file owns or coordinates data contracts including `PulseConfig`, `CursorFrame`, `AnimatedCursor`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Maintains deterministic timing behavior through per-frame duration tracking. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_frame`, `update`, `current_frame`, `current_scale`, `set_pulse`, and 4 more stays attached to the local data model and invariants.
+- Integrates as an active cursor-state variant within context-aware cursor orchestration. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### config.rs
 
-- Defines cursor-system configuration values loaded from project settings and startup defaults.
-- Controls feature toggles and behavior for trail effects, zoom lens, contexts, and idle visibility.
-- Serves as the shared config contract consumed by cursor runtime orchestration.
+- Defines cursor-system configuration values loaded from project settings and startup defaults. `cursor/config` delivers the configuration schema and defaults for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### context.rs
 
-- Implements context-sensitive cursor switching by mapping named runtime contexts to cursor states.
-- Supports system, custom, and animated cursor variants under one discriminated state model.
-- Applies context changes immediately while preserving a deterministic default fallback path.
-- Integrates optional trail and zoom behavior into active cursor presentation state.
-- Serves as the policy layer for script-driven cursor-mode transitions.
+- Implements context-sensitive cursor switching by mapping named runtime contexts to cursor states. `cursor/context` delivers the context implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports system, custom, and animated cursor variants under one discriminated state model. The file owns or coordinates data contracts including `CursorState`, `CursorContext`, `ContextRule`, `CursorManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Applies context changes immediately while preserving a deterministic default fallback path. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str`, `new`, `set_system`, `set_custom`, `set_animated`, and 16 more stays attached to the local data model and invariants.
+- Integrates optional trail and zoom behavior into active cursor presentation state. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Serves as the policy layer for script-driven cursor-mode transitions. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### custom_cursor.rs
 
-- Implements custom cursor images built from RGBA pixel buffers and hotspot metadata.
-- Validates buffer dimensions at construction to prevent malformed cursor payload usage.
-- Supports standalone custom cursors and animated-frame reuse through shared image structure.
-- Serves as the pixel-defined cursor asset contract for script-driven cursor customization.
+- Implements custom cursor images built from RGBA pixel buffers and hotspot metadata. `cursor/custom_cursor` delivers the custom cursor implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Validates buffer dimensions at construction to prevent malformed cursor payload usage. The file owns or coordinates data contracts including `CustomCursor`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports standalone custom cursors and animated-frame reuse through shared image structure. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_rgba`, `set_pixel`, `get_pixel`, `pixels`, `size` stays attached to the local data model and invariants.
+- Serves as the pixel-defined cursor asset contract for script-driven cursor customization. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
-- Defines the cursor module boundary for system, custom, animated, contextual, and effect-driven cursor behavior.
-- Groups cursor state types, visual effects, and configuration contracts into one cohesive runtime surface.
-- Serves as the composition entry for engine and script-side cursor control workflows.
+- Defines the cursor module boundary for system, custom, animated, contextual, and effect-driven cursor behavior. `cursor/mod` is the cursor module index, declaring `animated_cursor`, `config`, `context`, `custom_cursor`, `system_cursor`, and 2 more so agents can identify which files own each feature slice before opening implementation code.
+- Groups cursor state types, visual effects, and configuration contracts into one cohesive runtime surface. `src/cursor/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `animated_cursor::{AnimatedCursor, PulseConfig}`, `config::CursorConfig`, `context::{CursorContext, CursorManager}`, `custom_cursor::CustomCursor`, and 3 more centralized for the cursor subsystem.
 
 ### system_cursor.rs
 
-- Defines cross-platform system cursor shape variants used by runtime cursor state.
-- Maps engine-facing cursor variants to platform-native icon representations.
-- Supports case-insensitive string parsing for config and script-driven selection.
-- Serves as the canonical enum contract for system cursor mode requests.
+- Defines cross-platform system cursor shape variants used by runtime cursor state. `cursor/system_cursor` delivers the system cursor implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Maps engine-facing cursor variants to platform-native icon representations. The file owns or coordinates data contracts including `SystemCursor`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports case-insensitive string parsing for config and script-driven selection. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str` stays attached to the local data model and invariants.
 
 ### trail.rs
 
-- Implements cursor-trail effects with fading points, connected strokes, and particle-style variants.
-- Tracks trail samples as timestamped points with alpha decay progression over update ticks.
-- Maintains bounded point history through capped storage to control runtime memory pressure.
-- Supports multiple trail render modes selected by explicit trail behavior configuration.
-- Serves as the visual motion-feedback layer for cursor movement presentation.
+- Implements cursor-trail effects with fading points, connected strokes, and particle-style variants. `cursor/trail` delivers the trail implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Tracks trail samples as timestamped points with alpha decay progression over update ticks. The file owns or coordinates data contracts including `TrailPoint`, `TrailMode`, `CursorTrail`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Maintains bounded point history through capped storage to control runtime memory pressure. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `get_points`, `clear`, `set_active`, `is_active`, and 3 more stays attached to the local data model and invariants.
+- Supports multiple trail render modes selected by explicit trail behavior configuration. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### zoom.rs
 
-- Implements cursor-following zoom-lens state for magnified local inspection around pointer position.
-- Stores radius, magnification, and border settings used by post-process cursor-lens rendering.
-- Serves as the magnifier feature contract controlled through cursor config and scripting paths.
+- Implements cursor-following zoom-lens state for magnified local inspection around pointer position. `cursor/zoom` delivers the zoom implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores radius, magnification, and border settings used by post-process cursor-lens rendering. The file owns or coordinates data contracts including `CursorZoom`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Serves as the magnifier feature contract controlled through cursor config and scripting paths. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_magnification`, `set_radius`, `toggle` stays attached to the local data model and invariants.
 
 
 

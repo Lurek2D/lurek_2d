@@ -1,13 +1,9 @@
-//! Provides the core virtual filesystem implementation rooted at a game directory and save space.
-//! Resolves read and write paths through mount overlays and base-root fallback rules.
-//! Enforces traversal rejection and write confinement to preserve sandboxed filesystem behavior.
-//! Exposes metadata, glob, list, copy, move, and removal operations under one coherent API.
-//! Supports layered directory and archive mounts with deterministic conflict resolution order.
-//! Builds file-handle and async-loader integration points over canonical resolved paths.
-//! Includes JSON helpers and temporary file utilities for common content and tooling workflows.
-//! Normalizes separators and path shapes to keep behavior stable across desktop platforms.
-//! Keeps mount metadata explicit so runtime systems can inspect and reason about storage topology.
-//! Delivers the authoritative storage-routing layer consumed by higher-level filesystem services.
+//! Provides the core virtual filesystem implementation rooted at a game directory and save space. `filesystem/vfs` delivers the vfs implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Resolves read and write paths through mount overlays and base-root fallback rules. The file owns or coordinates data contracts including `FileInfo`, `FileType`, `MountLayer`, `GameFS`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Enforces traversal rejection and write confinement to preserve sandboxed filesystem behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `new`, `base_dir`, `read_string`, `read_bytes`, `write_string`, and 35 more stays attached to the local data model and invariants.
+//! Exposes metadata, glob, list, copy, move, and removal operations under one coherent API. Runtime integration reaches sibling engine areas through crate modules `dataframe`, `filesystem`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports layered directory and archive mounts with deterministic conflict resolution order. External integration uses `serde_json`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Builds file-handle and async-loader integration points over canonical resolved paths. The file boundary separates filesystem implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::dataframe::file_io::DataFrameFileStore;
 use crate::filesystem::file_handle::{FileHandle, FileMode};

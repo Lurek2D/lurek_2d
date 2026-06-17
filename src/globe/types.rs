@@ -1,11 +1,9 @@
-//! Provides the shared globe data model defining regions, overlays, markers, labels, arcs, and view artifacts.
-//! Encodes geographic geometry with centroids, adjacency, edge tags, and per-region render attributes.
-//! Defines globe specification parameters that drive atmosphere, lighting, rotation, and border behavior.
-//! Supplies layer and heat-overlay structures used to blend thematic map information at runtime.
-//! Models marker and label style data with visibility, pulse, and level-of-detail controls.
-//! Includes projection result types for screen-space rendering and interaction pipelines.
-//! Declares subsystem error variants for loading, lookup, and path-related failure handling.
-//! Delivers the canonical type contract consumed by all globe modules and integration surfaces.
+//! Provides the shared globe data model defining regions, overlays, markers, labels, arcs, and view artifacts. `globe/types` delivers the shared type definitions and data contracts for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Encodes geographic geometry with centroids, adjacency, edge tags, and per-region render attributes. The file owns or coordinates data contracts including `RegionId`, `RegionPart`, `Region`, `FogState`, `HeatLayer`, and 14 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Defines globe specification parameters that drive atmosphere, lighting, rotation, and border behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `raw`, `with_data`, `with_parts_data`, `from_parts`, `primary_vertices`, and 2 more stays attached to the local data model and invariants.
+//! Supplies layer and heat-overlay structures used to blend thematic map information at runtime. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Models marker and label style data with visibility, pulse, and level-of-detail controls. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Includes projection result types for screen-space rendering and interaction pipelines. The file boundary separates globe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::globe::sphere::{lat_lon_to_unit, unit_to_lat_lon};
 use crate::math::{Vec2, Vec3};

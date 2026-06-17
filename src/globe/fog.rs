@@ -3,7 +3,6 @@
 //! Provides reveal(), hide(), explore(), and toggle() operations for direct gameplay events plus batch reveal for efficient region updates.
 //! Encodes fog state as base64-packed two-bit values enabling compact save-file persistence and safe transmission across network boundaries.
 //! Exposes visibility and explored subset queries returning region IDs for UI rendering, camera targeting, and game logic decision systems.
-//! Forms the backbone of fog-of-war rendering and strategic visibility constraints across globe rendering and campaign gameplay mechanics.
 
 use crate::globe::types::{FogState, RegionId, MAX_REGIONS};
 use base64::Engine;

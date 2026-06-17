@@ -1,10 +1,8 @@
-//! Implements the non-blocking TCP server loop for debugbridge client connectivity and dispatch.
-//! Accepts client sessions and parses JSON-RPC messages into runtime and built-in command handlers.
-//! Delivers queued responses and broadcast events across connected debugger endpoints.
-//! Handles handshake, protocol version checks, and nonce-based authentication workflows.
-//! Supports eval, ping, performance, print-history, and screenshot-oriented protocol requests.
-//! Serves as the network transport execution layer for the debugbridge subsystem.
-//! Preserves deterministic request lifecycle behavior across concurrent debugger client sessions.
+//! Implements the non-blocking TCP server loop for debugbridge client connectivity and dispatch. `debugbridge/server` delivers the server implementation for the debugbridge subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Accepts client sessions and parses JSON-RPC messages into runtime and built-in command handlers. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Delivers queued responses and broadcast events across connected debugger endpoints. Public callable behavior is centered on `server_thread`, `handle_client_message`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Handles handshake, protocol version checks, and nonce-based authentication workflows. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports eval, ping, performance, print-history, and screenshot-oriented protocol requests. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use super::bridge::{BridgeShared, PendingRequest, PendingResponse};
 use std::io::{BufRead, BufReader, Write};

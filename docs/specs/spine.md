@@ -43,39 +43,36 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ### bone.rs
 
-- This file defines the skeletal bone unit that carries local pose data and resolved world transform state.
-- Parent linkage is part of the model so chains of motion can propagate naturally through a hierarchy.
-- The type exists as the core transform-bearing element for the rest of the spine animation system.
-- It is where local intent becomes world-space pose context for attached visuals and constraints.
+- This file defines the skeletal bone unit that carries local pose data and resolved world transform state. `spine/bone` delivers the bone implementation for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Parent linkage is part of the model so chains of motion can propagate naturally through a hierarchy. The file owns or coordinates data contracts including `Bone`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- The type exists as the core transform-bearing element for the rest of the spine animation system. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_parent` stays attached to the local data model and invariants.
 
 ### ik.rs
 
 - This file implements the focused inverse-kinematics solver used when a short bone chain should reach toward a target automatically.
-- It computes joint angles from geometric constraints instead of relying only on keyed animation values.
-- Bend direction is part of the constraint so mirrored or elbow-up versus elbow-down poses can be chosen intentionally.
-- The file adds procedural responsiveness to otherwise keyframed skeletal motion.
-- It is the module's compact answer to target-seeking limb behavior.
+- It computes joint angles from geometric constraints instead of relying only on keyed animation values. The file owns or coordinates data contracts including `IKConstraint`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Bend direction is part of the constraint so mirrored or elbow-up versus elbow-down poses can be chosen intentionally. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_target`, `solve` stays attached to the local data model and invariants.
+- The file adds procedural responsiveness to otherwise keyframed skeletal motion. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### importer.rs
 
-- Imports standard Spine and DragonBones JSON skeleton shapes into runtime Skeleton data.
-- The importer focuses on common production fields for bones, slots, skins, and basic timelines.
-- It intentionally rejects malformed or unsupported structures with explicit, stable errors.
-- Module API documentation
-- TODO: add doc note 1
+- Imports standard Spine and DragonBones JSON skeleton shapes into runtime Skeleton data. `spine/importer` delivers the importer implementation for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- The importer focuses on common production fields for bones, slots, skins, and basic timelines. The file owns or coordinates data contracts including `SpineImportError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It intentionally rejects malformed or unsupported structures with explicit, stable errors. Public callable behavior is centered on `skeleton_from_json_str`, `skeleton_from_json_value`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- `spine/importer` delivers the importer implementation for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- The file owns or coordinates data contracts including `SpineImportError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Public callable behavior is centered on `skeleton_from_json_str`, `skeleton_from_json_value`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 ### mod.rs
 
 - This module provides the engine's skeletal animation runtime built around bones, slots, timelines, constraints, and posed rendering support.
-- It turns hierarchical transform animation into a reusable feature system for articulated 2D characters and props.
-- At the highest level this is the subsystem that gives the engine pose-driven animation instead of only frame-swapped sprites.
+- It turns hierarchical transform animation into a reusable feature system for articulated 2D characters and props. `src/spine/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bone::Bone`, `ik::IKConstraint`, `importer::{skeleton_from_json_str, skeleton_from_json_value, SpineImportError}`, `skeleton::{BoneParams, Skeleton}`, and 2 more centralized for the spine subsystem.
 
 ### render.rs
 
-- This file converts a posed skeleton into renderer-facing commands for debug or simplified skeletal visualization.
+- This file converts a posed skeleton into renderer-facing commands for debug or simplified skeletal visualization. `spine/render` delivers the rendering adapter and draw-command integration for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 - Bone and slot state are flattened here into ordinary draw operations so the rest of the renderer does not need skeleton awareness.
-- The output emphasizes readable structure over full attachment rendering complexity.
-- It is the handoff layer from skeletal pose data to generic draw command streams.
+- The output emphasizes readable structure over full attachment rendering complexity. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
 
 ### skeleton.rs
 
@@ -85,24 +82,20 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 - Constraint solving and skin switching are also coordinated here so procedural adjustments and visual variants act on the same live structure.
 - World transforms are recomputed in hierarchy order, which keeps every downstream query grounded in one authoritative pose.
 - Debug drawing support is included because skeletal systems are much easier to tune when their invisible structure can be inspected directly.
-- The file is therefore the runtime brain of the spine subsystem rather than a passive data container.
-- It is where skeletal state becomes animated pose over time.
 
 ### slot.rs
 
 - This file defines the slot concept that binds visible attachments to bones without making the bone itself a rendering record.
 - Slots carry appearance and ordering intent so one skeleton can swap visuals or reorder layers without changing its transform hierarchy.
-- The type is the visual attachment bridge between pose evaluation and rendered character parts.
+- The type is the visual attachment bridge between pose evaluation and rendered character parts. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
 
 ### timeline.rs
 
 - This file defines the animation timeline machinery that turns keyed values over time into sampled pose changes for a skeleton.
-- Interpolation curves live here so motion can feel stepped, smooth, weighted, or otherwise shaped between authored keys.
+- Interpolation curves live here so motion can feel stepped, smooth, weighted, or otherwise shaped between authored keys. The file owns or coordinates data contracts including `EasingType`, `BoneProperty`, `Keyframe`, `BoneTimeline`, `EventKeyframe`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 - Bone-property timelines are stored and evaluated here because timing semantics should remain consistent across all clips.
 - Event keyframes share the same temporal framework, which lets animation playback trigger gameplay or audio markers at controlled moments.
 - Full animation clips are assembled from many timelines and can be sampled, blended, reversed, or parsed from serialized sources.
-- The file is therefore the temporal logic center of the spine subsystem.
-- It explains how authored motion unfolds, not just what a static pose looks like.
 
 
 

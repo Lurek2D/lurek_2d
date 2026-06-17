@@ -1,8 +1,7 @@
-//! Implements selector matching logic that maps CSS-like queries onto the live HTML element tree.
-//! Parses selector text into tag, id, class, and combinator fragments with deterministic chain ordering.
-//! Supports descendant and direct-child relationships for ancestry-aware filtering semantics.
-//! Walks parent links to evaluate multi-part selector chains against runtime element topology.
-//! Provides the core predicate shared by style cascade resolution and document query operations.
+//! Implements selector matching logic that maps CSS-like queries onto the live HTML element tree. `html/selector` delivers the selector implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Parses selector text into tag, id, class, and combinator fragments with deterministic chain ordering. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports descendant and direct-child relationships for ancestry-aware filtering semantics. Public callable behavior is centered on `matches_selector`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Walks parent links to evaluate multi-part selector chains against runtime element topology. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::html::element::{HtmlElement, HtmlElementId};
 /// Selector relationship used between adjacent selector parts.

@@ -1,13 +1,9 @@
-//! Provides the core DSP effect runtime that defines algorithms, parameters, and per-sample processing behavior.
-//! Encodes the supported effect family as stable typed variants consumed by both engine and Lua surfaces.
-//! Maintains shared parameter state with lock-free primitives to keep audio-thread reads predictable.
-//! Builds active processing instances that hold delay lines, filters, modulation state, and dynamic buffers.
-//! Executes effect transforms sample by sample with bounded parameter normalization and clamped control ranges.
-//! Supplies graph-backed shared chains for coordinating writer-side updates with reader-side playback.
-//! Wraps rodio sources in a dynamic processor that applies full chain processing during streaming.
-//! Handles effect-internal sizing from sample-rate context so algorithms remain portable across devices.
-//! Keeps filter and modulation math localized to one layer for consistent sonic behavior across call sites.
-//! Delivers the central effect-processing backbone for real-time and script-driven DSP workflows.
+//! Provides the core DSP effect runtime that defines algorithms, parameters, and per-sample processing behavior. `dsp/effects` delivers the effects implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Encodes the supported effect family as stable typed variants consumed by both engine and Lua surfaces. The file owns or coordinates data contracts including `AtomicParam`, `EffectType`, `EffectParams`, `ActiveEffect`, `SharedEffectGraph`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Maintains shared parameter state with lock-free primitives to keep audio-thread reads predictable. Public callable behavior is centered on `add_effect_to_shared_chain`, `remove_effect_from_shared_chain`, `set_shared_chain_effect_param`, while method-level behavior such as `new`, `get`, `set`, `set_param`, `process` stays attached to the local data model and invariants.
+//! Builds active processing instances that hold delay lines, filters, modulation state, and dynamic buffers. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Executes effect transforms sample by sample with bounded parameter normalization and clamped control ranges. External integration uses `rodio`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Supplies graph-backed shared chains for coordinating writer-side updates with reader-side playback. The file boundary separates dsp implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{DP01, DP02, DP03};

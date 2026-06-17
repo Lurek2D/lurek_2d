@@ -1,8 +1,7 @@
-//! Implements tabular Q-learning over discrete state-action spaces with configurable hyperparameters.
-//! Stores Q-values in a flat table for fast index-based update and query operations.
-//! Applies epsilon-greedy action choice and Bellman updates during reinforcement cycles.
-//! Tracks episode and training metadata useful for monitoring learner progression.
-//! Supports persistence helpers for saving and reloading learned policy tables.
+//! Implements tabular Q-learning over discrete state-action spaces with configurable hyperparameters. `learning/qlearner` delivers the qlearner implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores Q-values in a flat table for fast index-based update and query operations. The file owns or coordinates data contracts including `QLearner`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Applies epsilon-greedy action choice and Bellman updates during reinforcement cycles. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `choose_action`, `best_action`, `learn`, `end_episode`, `get_q`, and 3 more stays attached to the local data model and invariants.
+//! Tracks episode and training metadata useful for monitoring learner progression. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// Q-learning agent with a flat `state × action` value table.
 pub struct QLearner {

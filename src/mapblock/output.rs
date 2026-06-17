@@ -1,8 +1,8 @@
-//! Final mapblock conversion layer that turns placements into tile data outputs.
-//! Translates layered slot payloads into ordered tile layers and resolved tileset ids.
-//! Applies orientation and level handling so exports match runtime presentation.
-//! Produces owned result structures detached from mutable generator state.
-//! Serves as the last step in the mapblock build pipeline.
+//! Final mapblock conversion layer that turns placements into tile data outputs. `mapblock/output` delivers the output implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Translates layered slot payloads into ordered tile layers and resolved tileset ids. The file owns or coordinates data contracts including `PaintRectOp`, `PlacementRecord`, `MapBlockResultBuild`, `MapBlockResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Applies orientation and level handling so exports match runtime presentation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_tile`, `get_gid`, `is_empty`, `placements` stays attached to the local data model and invariants.
+//! Produces owned result structures detached from mutable generator state. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Serves as the last step in the mapblock build pipeline. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use super::config::MapBlockConfig;
 use super::group::MapGroup;

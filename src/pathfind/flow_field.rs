@@ -1,9 +1,8 @@
-//! Dijkstra-based flow field seeded from one or more goal cells over a NavGrid.
-//! Stores normalized direction vectors toward the nearest goal beside accumulated cost.
-//! Supports variable unit sizes for clearance-aware pathfinding.
-//! Converts world-space positions into tile lookups and steering velocities.
-//! Includes debug visualisation for directions and obstacles.
-//! Provides the group-movement layer above raw path search.
+//! Dijkstra-based flow field seeded from one or more goal cells over a NavGrid. `pathfind/flow_field` delivers the flow field implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores normalized direction vectors toward the nearest goal beside accumulated cost. The file owns or coordinates data contracts including `FlowField`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports variable unit sizes for clearance-aware pathfinding. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `calculate`, `calculate_multi`, `get_direction`, `get_direction_angle`, `get_cost_to_target`, and 6 more stays attached to the local data model and invariants.
+//! Converts world-space positions into tile lookups and steering velocities. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Includes debug visualisation for directions and obstacles. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::runtime::log_messages::{FF01, FF02, FF03};
 

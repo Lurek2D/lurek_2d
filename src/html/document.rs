@@ -1,13 +1,9 @@
-//! Orchestrates the full HTML document lifecycle from source text to interactive, drawable UI state.
-//! Builds and rebuilds element trees while preserving viewport constraints and accumulated stylesheet inputs.
-//! Resolves selector-driven style cascades into computed per-element visual properties for later layout.
-//! Runs block-style layout passes with dirty tracking so structural and style edits trigger fresh geometry.
-//! Supports focused and hovered interaction state used by pointer routing, keyboard input, and text editing.
-//! Exposes traversal and lookup paths for id, selector, ancestry, and document-order element queries.
-//! Applies DOM mutations like attribute edits, class toggles, text replacement, and inner fragment insertion.
-//! Serializes inner and outer HTML snapshots so runtime edits can be observed or persisted deterministically.
-//! Generates draw command streams carrying rectangles, text, and color intent for render-side execution.
-//! Collects parse and style warnings so caller code can surface authoring issues without aborting runtime flow.
+//! Orchestrates the full HTML document lifecycle from source text to interactive, drawable UI state. `html/document` delivers the document implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Builds and rebuilds element trees while preserving viewport constraints and accumulated stylesheet inputs. The file owns or coordinates data contracts including `HtmlDocumentOptions`, `HtmlDrawCommand`, `HtmlDocument`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Resolves selector-driven style cascades into computed per-element visual properties for later layout. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_options`, `supports`, `generation`, `root`, `element`, and 39 more stays attached to the local data model and invariants.
+//! Runs block-style layout passes with dirty tracking so structural and style edits trigger fresh geometry. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports focused and hovered interaction state used by pointer routing, keyboard input, and text editing. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Exposes traversal and lookup paths for id, selector, ancestry, and document-order element queries. The file boundary separates html implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::html::element::{normalise_name, HtmlElement, HtmlElementId, HtmlRect};
 use crate::html::parser::{escape_attribute, escape_text, parse_into};

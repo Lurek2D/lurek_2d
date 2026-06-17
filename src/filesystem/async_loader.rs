@@ -1,9 +1,8 @@
-//! Provides background file I/O through a dedicated worker thread and bounded request channel.
-//! Supports non-blocking read and write scheduling with opaque handles for later status polling.
-//! Stores results in thread-safe maps so callers can retrieve outcomes without blocking producers.
-//! Enforces queue capacity limits to keep memory and scheduling pressure under control.
-//! Handles worker lifecycle shutdown cleanly when the loader is dropped.
-//! Delivers asynchronous file transfer behavior for systems that must avoid main-thread stalls.
+//! Provides background file I/O through a dedicated worker thread and bounded request channel. `filesystem/async_loader` delivers the async loader implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports non-blocking read and write scheduling with opaque handles for later status polling. The file owns or coordinates data contracts including `LoadHandle`, `LoadResult`, `LoadStatus`, `WriteResult`, `WriteStatus`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Stores results in thread-safe maps so callers can retrieve outcomes without blocking producers. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `request_load`, `request_write`, `poll`, `pending_results`, `poll_write` stays attached to the local data model and invariants.
+//! Enforces queue capacity limits to keep memory and scheduling pressure under control. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Handles worker lifecycle shutdown cleanly when the loader is dropped. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::HashMap;
 use std::path::PathBuf;

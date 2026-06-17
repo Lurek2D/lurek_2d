@@ -1,13 +1,9 @@
-//! This file defines the typed runtime configuration model that turns human-edited TOML into engine startup policy.
-//! It gathers window, renderer, module, performance, and environment-facing options into one coherent structure.
+//! This file defines the typed runtime configuration model that turns human-edited TOML into engine startup policy. `runtime/config` delivers the configuration schema and defaults for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It gathers window, renderer, module, performance, and environment-facing options into one coherent structure. The file owns or coordinates data contracts including `Config`, `RuntimeConfig`, `RenderConfig`, `WindowConfig`, `TuiConfig`, and 4 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 //! Default values and user overrides meet here, which lets the engine begin from a known baseline and then absorb project-specific changes.
-//! Module toggles are not merely flags in this file.
-//! They also participate in dependency validation so invalid feature combinations degrade into a supported runtime shape.
+//! Module toggles are not merely flags in this file. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! They also participate in dependency validation so invalid feature combinations degrade into a supported runtime shape. External integration uses `serde`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 //! Serialization support matters here because configuration is both loaded from disk and, in some workflows, written back or inspected programmatically.
-//! The design is intentionally declarative so callers can reason about engine behavior before subsystems are even initialized.
-//! This file therefore acts as the contract between external project configuration and internal runtime setup.
-//! Many startup decisions appear later in code, but their authoritative knobs are described here.
-//! In practice this is the runtime's policy schema expressed as Rust data.
 
 #[allow(unused_imports)]
 use crate::log_msg;

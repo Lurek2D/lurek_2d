@@ -1,8 +1,7 @@
-//! Provides offline DSP processing that applies effect chains to stored audio without live playback.
-//! Runs decode, transform, and encode stages in one pipeline for reproducible file-based processing.
-//! Supports peak normalization and deterministic parameterized effects for batch rendering scenarios.
-//! Uses a serializable effect description so external tooling can request stable offline transforms.
-//! Delivers the non-realtime processing path for exports, precompute steps, and content baking.
+//! Provides offline DSP processing that applies effect chains to stored audio without live playback. `dsp/offline` delivers the offline implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Runs decode, transform, and encode stages in one pipeline for reproducible file-based processing. The file owns or coordinates data contracts including `OfflineEffect`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports peak normalization and deterministic parameterized effects for batch rendering scenarios. Public callable behavior is centered on `process_offline`, `normalize_file`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Uses a serializable effect description so external tooling can request stable offline transforms. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::effects::{ActiveEffect, AtomicParam, EffectParams, EffectType};
 use rodio::{Decoder, Source};

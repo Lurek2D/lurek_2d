@@ -1,6 +1,5 @@
-//! Provides the high-level ECS module boundary for entities, components, relationships, and lifecycle management.
-//! Connects identity, storage, query, and hierarchy capabilities into one composable runtime data model.
-//! Delivers a stable integration surface for systems that need structured world state and deterministic access.
+//! Provides the high-level ECS module boundary for entities, components, relationships, and lifecycle management. `ecs/mod` is the ecs module index, declaring `generational_id`, `lua_table`, `relationships`, `types`, `universe` so agents can identify which files own each feature slice before opening implementation code.
+//! Connects identity, storage, query, and hierarchy capabilities into one composable runtime data model. `src/ecs/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `generational_id::GenerationalId`, `lua_table::deep_copy_table`, `relationships::{RelationType, Relationship, RelationshipManager}`, `types::EntityId`, and 1 more centralized for the ecs subsystem.
 
 /// Entity id packing and unpacking helpers.
 pub mod generational_id;

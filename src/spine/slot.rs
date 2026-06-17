@@ -1,6 +1,6 @@
 //! This file defines the slot concept that binds visible attachments to bones without making the bone itself a rendering record.
 //! Slots carry appearance and ordering intent so one skeleton can swap visuals or reorder layers without changing its transform hierarchy.
-//! The type is the visual attachment bridge between pose evaluation and rendered character parts.
+//! The type is the visual attachment bridge between pose evaluation and rendered character parts. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
 
 /// Attachment point on a bone with colour tint and optional texture attachment name.
 #[derive(Debug, Clone)]

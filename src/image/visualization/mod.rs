@@ -1,6 +1,9 @@
-//! High-level visualization module wiring that groups image-debug renderers by domain.
-//! Re-exports category entry points to provide one flat surface for visualization consumers.
-//! Shares internal facade utilities while keeping submodule responsibilities clearly separated.
+//! High-level visualization module wiring that groups image-debug renderers by domain. `image/visualization/mod` is the image module index, declaring `animation`, `audio`, `camera`, `easing`, `facade`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
+//! Re-exports category entry points to provide one flat surface for visualization consumers. `src/image/visualization/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `animation::*`, `audio::*`, `camera::*`, `easing::*`, and 6 more centralized for the image subsystem.
+//! Shares internal facade utilities while keeping submodule responsibilities clearly separated. The file documents how image submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! `image/visualization/mod` is the image module index, declaring `animation`, `audio`, `camera`, `easing`, `facade`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/image/visualization/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `animation::*`, `audio::*`, `camera::*`, `easing::*`, and 6 more centralized for the image subsystem.
+//! The file documents how image submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 /// Animation visualizations. This module is publicly re-exported.
 pub mod animation;

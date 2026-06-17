@@ -6,13 +6,6 @@
 //! Keyboard, text, and mouse input are dispatched here because only this layer understands both raw terminal coordinates and focused widgets.
 //! Border and panel behaviors are also coordinated here, giving text-mode interfaces a richer structure than plain character dumps.
 //! Cell-level writing helpers remain part of this file because direct text painting and higher-level widgets must coexist on the same surface.
-//! Render preparation starts here as well, with the composited foreground and background state turned toward later visual export.
-//! The file is intentionally large because it is not one helper.
-//! It is the living behavior model of the entire terminal subsystem.
-//! Most user-visible terminal semantics, from typing to focus to scrollback, are defined here.
-//! Without this file the module would have isolated utilities but no unified terminal behavior.
-//! In practice this is the runtime home of text-mode interaction inside the engine.
-//! It is where a passive grid becomes a usable terminal environment.
 
 use super::cell::{TCell, DEFAULT_FG};
 use super::text_utils::{byte_index, char_count, truncate_chars};

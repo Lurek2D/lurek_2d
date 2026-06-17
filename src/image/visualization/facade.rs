@@ -1,6 +1,4 @@
-//! Provides shared visualization color conversion from HSV space into RGB byte tuples.
-//! Centralizes hue-driven palette logic used by charts, graphs, and debug overlays.
-//! Keeps color mapping behavior consistent across all image visualization submodules.
+//! Provides shared visualization color conversion from HSV space into RGB byte tuples. `image/visualization/facade` delivers the public facade over lower-level subsystem helpers for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Convert HSV values to an RGB tuple for visualization images.
 pub(crate) fn hsv_to_rgb_viz(h: u16, s: f32, v: f32) -> (u8, u8, u8) {

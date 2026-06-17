@@ -2,6 +2,8 @@
 //! The module supplies behavior trees, simple and guarded state machines, observer and event distribution layers, mediator routing, factories, service lookup, and undo-oriented command history.
 //! It also delivers practical supporting structures such as graphs, tries, rings, priority ordering, bidirectional lookup, weighted picks, throttling windows, buffered funnels, and object reuse pools.
 //! At module level this is the high-level kit for assembling decoupled game logic systems in Lua and Rust without re-implementing common orchestration patterns for each feature.
+//! `patterns/mod` is the patterns module index, declaring `behavior_tree`, `bimap`, `blackboard`, `collections`, `command_stack`, and 16 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/patterns/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `behavior_tree::{BehaviorTree, BtNode, BtRunState, BtStatus, NodeId, NodeKind}`, `bimap::BiMap`, `blackboard::{Blackboard, BlackboardValue}`, `collections::{QueueMeta, StackMeta}`, and 17 more centralized for the patterns subsystem.
 
 /// Behavior tree execution engine with composite and leaf nodes.
 pub mod behavior_tree;

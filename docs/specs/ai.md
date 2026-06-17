@@ -86,192 +86,172 @@ This module primarily collaborates with `dialog`, `image`, `learning`, `patterns
 
 ### agent.rs
 
-- Defines the full runtime shape of one AI actor as a single cohesive control unit.
-- Blends identity, movement, tactical priority, and decision style into one state heartbeat.
-- Keeps planner-facing memory, sensing, affect, motives, traits, and squad semantics aligned.
-- Preserves stable cross-system handoff so world updates read one consistent behavioral snapshot.
-- Serves as the anchor object that orchestration layers drive without leaking subsystem coupling.
+- Defines the full runtime shape of one AI actor as a single cohesive control unit. `ai/agent` delivers the agent implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Blends identity, movement, tactical priority, and decision style into one state heartbeat. The file owns or coordinates data contracts including `DecisionModel`, `Agent`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Keeps planner-facing memory, sensing, affect, motives, traits, and squad semantics aligned. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `as_str`, `new` stays attached to the local data model and invariants.
+- Preserves stable cross-system handoff so world updates read one consistent behavioral snapshot. Runtime integration reaches sibling engine areas through crate modules `ai`, `patterns`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### behavior_tree.rs
 
-- Implements a behavior orchestration lattice that evaluates intent through composable control flow.
-- Carries running status across ticks so long actions keep temporal continuity instead of restarting.
-- Balances branching policies to prefer resilient progress under mixed success and failure outcomes.
-- Threads guard logic and decorator shaping into each decision pulse without breaking determinism.
-- Emits inspectable execution state that tools can render as readable runtime decision rhythm.
-- Provides a stable bridge for Lua-driven leaves while preserving engine-owned traversal guarantees.
+- Implements a behavior orchestration lattice that evaluates intent through composable control flow. `ai/behavior_tree` delivers the behavior tree implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Carries running status across ticks so long actions keep temporal continuity instead of restarting. The file owns or coordinates data contracts including `BTStatus`, `ParallelPolicy`, `BTNode`, `BehaviorTree`, `BtDebugState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Balances branching policies to prefer resilient progress under mixed success and failure outcomes. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `as_str`, `reset`, `child_count`, `new`, `debug_state` stays attached to the local data model and invariants.
+- Threads guard logic and decorator shaping into each decision pulse without breaking determinism. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Emits inspectable execution state that tools can render as readable runtime decision rhythm. External integration uses `mlua`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### command_queue.rs
 
-- Provides a staged action stream that turns chosen intent into executable command cadence.
-- Maintains ordering, urgency, and interruption semantics so control pressure stays predictable.
-- Couples command payloads with completion hooks to close the loop between plan and outcome.
-- Offers controlled dequeue flow that supports reactive overrides without timeline fragmentation.
-- Serves as the pacing buffer between high-level deliberation and low-level execution dispatch.
+- Provides a staged action stream that turns chosen intent into executable command cadence. `ai/command_queue` delivers the command queue implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Maintains ordering, urgency, and interruption semantics so control pressure stays predictable. The file owns or coordinates data contracts including `Command`, `CommandQueue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Couples command payloads with completion hooks to close the loop between plan and outcome. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `enqueue`, `push_front`, `replace`, `cancel_current`, `clear`, and 8 more stays attached to the local data model and invariants.
+- Offers controlled dequeue flow that supports reactive overrides without timeline fragmentation. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### context_steering.rs
 
-- Implements slot-based directional reasoning that scores where motion should be pulled or resisted.
-- Projects multiple influences into angular context so local movement stays responsive and legible.
-- Mixes attraction, avoidance, drift, and boundary pressure as one continuous heading composition.
-- Resolves conflict by weighing directional appetite against threat, then extracting the safest momentum lane.
-- Preserves smooth steering continuity by keeping representation compact and frame-friendly.
-- Outputs a movement-ready vector that downstream motion systems can apply with minimal translation.
-- Acts as a tactical micro-navigation layer beneath planners and above raw kinematic integration.
+- Implements slot-based directional reasoning that scores where motion should be pulled or resisted. `ai/context_steering` delivers the context steering implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Projects multiple influences into angular context so local movement stays responsive and legible. The file owns or coordinates data contracts including `ContextBehaviorKind`, `ContextBehavior`, `ContextSteering`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Mixes attraction, avoidance, drift, and boundary pressure as one continuous heading composition. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `slot_count`, `add_interest`, `add_danger`, `add_seek_target`, `add_wander`, and 8 more stays attached to the local data model and invariants.
+- Resolves conflict by weighing directional appetite against threat, then extracting the safest momentum lane. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Preserves smooth steering continuity by keeping representation compact and frame-friendly. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### director.rs
 
-- Models encounter tempo as a cyclic pressure waveform that alternates escalation and release.
-- Converts accumulated tension into phase shifts that shape danger, reward, and ambient load.
-- Keeps pacing legible by using bounded transitions instead of abrupt binary difficulty jumps.
-- Exposes intensity signals that other systems can follow to stay synchronized with scenario mood.
-- Preserves long-session flow by balancing peaks against recovery windows in deterministic cadence.
-- Functions as the global dramaturgy spine for AI pressure management during runtime.
+- Models encounter tempo as a cyclic pressure waveform that alternates escalation and release. `ai/director` delivers the director implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Converts accumulated tension into phase shifts that shape danger, reward, and ambient load. The file owns or coordinates data contracts including `DirectorPhase`, `DirectorConfig`, `AIDirector`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Keeps pacing legible by using bounded transitions instead of abrupt binary difficulty jumps. Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `new`, `with_config`, `tension`, `phase`, `phase_str`, and 9 more stays attached to the local data model and invariants.
+- Exposes intensity signals that other systems can follow to stay synchronized with scenario mood. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Preserves long-session flow by balancing peaks against recovery windows in deterministic cadence. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### emotion.rs
 
-- Tracks affective channels as bounded signals that rise on events and relax toward personal baselines.
-- Translates short-term emotional pressure into a clean modulation stream for decision weighting.
-- Preserves stability with clamped values and predictable decay so mood changes remain interpretable.
-- Resolves dominant feeling state as a compact summary other AI layers can consume cheaply.
-- Supplies a lightweight emotional color layer without locking behavior to one planner architecture.
+- Tracks affective channels as bounded signals that rise on events and relax toward personal baselines. `ai/emotion` delivers the emotion implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Translates short-term emotional pressure into a clean modulation stream for decision weighting. The file owns or coordinates data contracts including `Emotion`, `EmotionModel`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Preserves stability with clamped values and predictable decay so mood changes remain interpretable. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_active`, `trigger`, `set`, `update`, `add`, and 5 more stays attached to the local data model and invariants.
+- Resolves dominant feeling state as a compact summary other AI layers can consume cheaply. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### fsm.rs
 
-- Provides explicit mode-based control where behavior advances through named states over time.
-- Evaluates guarded transitions in deterministic priority order to keep switching reproducible.
-- Coordinates lifecycle callbacks around entry, steady update, and exit handoff boundaries.
-- Tracks dwell time to support time-aware logic without external bookkeeping overhead.
-- Serves agents that need clear phase changes rather than fully continuous utility arbitration.
+- Provides explicit mode-based control where behavior advances through named states over time. `ai/fsm` delivers the fsm implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Evaluates guarded transitions in deterministic priority order to keep switching reproducible. The file owns or coordinates data contracts including `StateCallbacks`, `Transition`, `StateMachine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Coordinates lifecycle callbacks around entry, steady update, and exit handoff boundaries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_transition`, `current_state`, `time_in_state`, `add_state_raw`, `add_transition_raw`, and 1 more stays attached to the local data model and invariants.
+- Tracks dwell time to support time-aware logic without external bookkeeping overhead. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### goap.rs
 
-- Delivers deliberative planning over symbolic world facts, actionable effects, and prioritized intentions.
-- Searches plan space with bounded best-first expansion to stay tractable under live-frame budgets.
-- Reconstructs coherent action chains from explored nodes into executable intent trajectories.
-- Balances optimality pressure against hard iteration ceilings so runtime cost remains predictable.
-- Integrates Lua-side execution hooks while preserving engine-owned planning invariants.
-- Acts as the intentional reasoning core for long-horizon task choice and sequencing.
+- Delivers deliberative planning over symbolic world facts, actionable effects, and prioritized intentions. `ai/goap` delivers the goap implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Searches plan space with bounded best-first expansion to stay tractable under live-frame budgets. The file owns or coordinates data contracts including `GOAPAction`, `GOAPGoal`, `GOAPPlanner`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Reconstructs coherent action chains from explored nodes into executable intent trajectories. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `plan`, `plan_for_goal_idx`, `add_action`, `add_precondition`, `add_effect`, and 4 more stays attached to the local data model and invariants.
+- Balances optimality pressure against hard iteration ceilings so runtime cost remains predictable. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Integrates Lua-side execution hooks while preserving engine-owned planning invariants. External integration uses `mlua`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### htn.rs
 
-- Provides hierarchical task decomposition that transforms abstract goals into executable primitive flow.
-- Expands authored methods through recursive branching while honoring world-state numeric constraints.
-- Preserves plan structure and intent traceability across each decomposition depth step.
-- Limits expansion depth to protect runtime from runaway combinatorial growth.
-- Supports domain-authored behavioral style where sequencing logic is explicit and inspectable.
-- Serves as a long-horizon planning backbone for structured narrative or tactical routines.
+- Provides hierarchical task decomposition that transforms abstract goals into executable primitive flow. `ai/htn` delivers the htn implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Expands authored methods through recursive branching while honoring world-state numeric constraints. The file owns or coordinates data contracts including `WorldState`, `HTNTask`, `HTNMethod`, `HTNDomain`, `HTNPlanner`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Preserves plan structure and intent traceability across each decomposition depth step. Public callable behavior is centered on no named public items, while method-level behavior such as `name`, `is_primitive`, `preconditions_met`, `apply_effects`, `always`, `with_preconditions`, and 8 more stays attached to the local data model and invariants.
+- Limits expansion depth to protect runtime from runaway combinatorial growth. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Supports domain-authored behavioral style where sequencing logic is explicit and inspectable. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### lod.rs
 
-- Defines distance-tiered AI update policy so compute effort follows player-relevant proximity.
-- Assigns cadence bands that throttle far entities while keeping near interactions immediate.
-- Stabilizes frame budget by converting spatial spread into predictable scheduling pressure.
-- Provides a compact scalability dial for large-population scenes with bounded responsiveness loss.
+- Defines distance-tiered AI update policy so compute effort follows player-relevant proximity. `ai/lod` delivers the lod implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Assigns cadence bands that throttle far entities while keeping near interactions immediate. The file owns or coordinates data contracts including `LodTier`, `AILod`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Stabilizes frame budget by converting spatial spread into predictable scheduling pressure. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `tier`, `tier_count`, `tier_for`, `assign_tiers`, `should_update` stays attached to the local data model and invariants.
+- Provides a compact scalability dial for large-population scenes with bounded responsiveness loss. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mcts.rs
 
-- Implements Monte Carlo Tree Search as a reusable decision kernel for branching action spaces.
-- Executes the full selection, expansion, rollout, and backpropagation rhythm under fixed budgets.
-- Uses exploration pressure to balance known strong branches against uncertain alternatives.
-- Stores tree state in compact node arenas for iterative simulation throughput.
-- Returns action preference grounded in sampled outcomes rather than handcrafted deterministic rules.
-- Supports game-specific state, transition, and scoring logic through generic integration hooks.
+- Implements Monte Carlo Tree Search as a reusable decision kernel for branching action spaces. `ai/mcts` delivers the mcts implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Executes the full selection, expansion, rollout, and backpropagation rhythm under fixed budgets. The file owns or coordinates data contracts including `MCTSConfig`, `MCTSEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Uses exploration pressure to balance known strong branches against uncertain alternatives. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `config`, `search` stays attached to the local data model and invariants.
+- Stores tree state in compact node arenas for iterative simulation throughput. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Returns action preference grounded in sampled outcomes rather than handcrafted deterministic rules. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod.rs
 
-- Groups the full AI runtime surface into one coherent module boundary for decision and control.
-- Exposes complementary layers for actor state, sensing, planning, steering, coordination, and tooling.
-- Keeps integration predictable by publishing shared types through a single composition entry point.
-- Aligns tactical and strategic subsystems under consistent data flow and update expectations.
-- Defines the high-level contract of engine-side intelligence capabilities available to the rest of runtime.
+- Groups the full AI runtime surface into one coherent module boundary for decision and control. `ai/mod` is the ai module index, declaring `agent`, `behavior_tree`, `command_queue`, `fsm`, `goap`, and 16 more so agents can identify which files own each feature slice before opening implementation code.
+- Exposes complementary layers for actor state, sensing, planning, steering, coordination, and tooling. `src/ai/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `crate::learning::QLearner`, `crate::patterns::{Blackboard, BlackboardValue}`, `agent::{Agent, DecisionModel}`, `behavior_tree::{BTNode, BTStatus, BehaviorTree, ParallelPolicy}`, and 23 more centralized for the ai subsystem.
+- Keeps integration predictable by publishing shared types through a single composition entry point. The file documents how ai submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- Aligns tactical and strategic subsystems under consistent data flow and update expectations. Agents should read this index to choose the narrow owner file first, because it maps names such as `agent`, `behavior_tree`, `command_queue`, `fsm`, `goap`, and 16 more to concrete implementation responsibilities.
+- Defines the high-level contract of engine-side intelligence capabilities available to the rest of runtime. Re-export decisions in this file define the stable Rust boundary consumed by sibling modules, Lua bindings, generated specs, and examples that mention ai features.
+- `ai/mod` is the ai module index, declaring `agent`, `behavior_tree`, `command_queue`, `fsm`, `goap`, and 16 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/ai/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `crate::learning::QLearner`, `crate::patterns::{Blackboard, BlackboardValue}`, `agent::{Agent, DecisionModel}`, `behavior_tree::{BTNode, BTStatus, BehaviorTree, ParallelPolicy}`, and 23 more centralized for the ai subsystem.
+- The file documents how ai submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 ### needs.rs
 
-- Models internal drives as normalized pressures that decay, recover, and compete for attention.
-- Converts need intensity into urgency signals that higher decision layers can compare directly.
-- Scores available satisfiers against context so fulfillment choice remains situational and explainable.
-- Maintains cooldown-aware motivation flow to avoid oscillation between equivalent opportunities.
-- Supplies a behavioral hunger layer that gives planners a dynamic reason to act.
+- Models internal drives as normalized pressures that decay, recover, and compete for attention. `ai/needs` delivers the needs implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Converts need intensity into urgency signals that higher decision layers can compare directly. The file owns or coordinates data contracts including `Need`, `NeedAdvertisement`, `NeedSystem`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Scores available satisfiers against context so fulfillment choice remains situational and explainable. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_urgent`, `urgency_score`, `satisfy`, `deprive`, `update`, and 10 more stays attached to the local data model and invariants.
+- Maintains cooldown-aware motivation flow to avoid oscillation between equivalent opportunities. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### orca.rs
 
-- Implements local collision avoidance by projecting preferred motion into safe velocity space.
-- Builds pairwise movement constraints that encode short-horizon separation commitments between agents.
-- Resolves feasible velocity choices while preserving as much intent direction as safety allows.
-- Keeps radius and speed bounds explicit so output remains physically plausible for runtime integration.
-- Serves as the crowd-scale micro-avoidance layer under higher-level navigation goals.
+- Implements local collision avoidance by projecting preferred motion into safe velocity space. `ai/orca` delivers the orca implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Builds pairwise movement constraints that encode short-horizon separation commitments between agents. The file owns or coordinates data contracts including `ORCAAgent`, `ORCASolver`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Resolves feasible velocity choices while preserving as much intent direction as safety allows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_agent`, `remove_agent`, `agent_count`, `compute` stays attached to the local data model and invariants.
+- Keeps radius and speed bounds explicit so output remains physically plausible for runtime integration. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### perception.rs
 
-- Implements sensory intake as a multi-channel stream of world cues with persistent awareness state.
-- Captures visual, auditory, and custom signals in a unified format suitable for agent reasoning.
-- Applies range and confidence dynamics so perception strength evolves instead of flipping abruptly.
-- Maintains temporal awareness memory that can fade, refresh, or intensify based on new evidence.
-- Separates sensing configuration from stimulus flow to keep tuning independent from event production.
-- Bridges raw world events into decision-ready perceptual context consumed by planning layers.
-- Acts as the attentional gate that determines what information reaches behavior systems and when.
+- Implements sensory intake as a multi-channel stream of world cues with persistent awareness state. `ai/perception` delivers the perception implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Captures visual, auditory, and custom signals in a unified format suitable for agent reasoning. The file owns or coordinates data contracts including `StimulusType`, `Stimulus`, `DetectedStimulus`, `StimulusWorld`, `Sensor`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Applies range and confidence dynamics so perception strength evolves instead of flipping abruptly. Public callable behavior is centered on no named public items, while method-level behavior such as `from_str`, `as_str`, `new`, `add`, `add_visual`, `add_auditory`, and 12 more stays attached to the local data model and invariants.
+- Maintains temporal awareness memory that can fade, refresh, or intensify based on new evidence. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Separates sensing configuration from stimulus flow to keep tuning independent from event production. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### render.rs
 
-- Provides debug-visualization translation from live AI state into drawable diagnostic artifacts.
-- Turns control-graph structure into spatial layouts that remain readable during runtime inspection.
-- Encodes execution status into visual signals so behavior flow can be understood at a glance.
-- Supports both command-stream overlays and image snapshots for tooling and reporting paths.
-- Keeps rendering concerns decoupled from decision logic while preserving faithful state representation.
-- Acts as the observability lens for active finite-state and tree-based decision dynamics.
+- Provides debug-visualization translation from live AI state into drawable diagnostic artifacts. `ai/render` delivers the rendering adapter and draw-command integration for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Turns control-graph structure into spatial layouts that remain readable during runtime inspection. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Encodes execution status into visual signals so behavior flow can be understood at a glance. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands`, `draw_to_image` stays attached to the local data model and invariants.
+- Supports both command-stream overlays and image snapshots for tooling and reporting paths. Runtime integration reaches sibling engine areas through crate modules `ai`, `image`, `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Keeps rendering concerns decoupled from decision logic while preserving faithful state representation. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### squad.rs
 
-- Defines group-level coordination state that binds members around shared intent and leadership.
-- Maintains formation semantics as geometric offsets that stay coherent during leader motion.
-- Carries shared tactical context so squad behavior can react as one unit instead of isolated actors.
-- Produces placement guidance for synchronized movement patterns across common formation styles.
-- Serves as the structural layer for multi-agent cohesion above individual steering behaviors.
+- Defines group-level coordination state that binds members around shared intent and leadership. `ai/squad` delivers the squad implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Maintains formation semantics as geometric offsets that stay coherent during leader motion. The file owns or coordinates data contracts including `FormationType`, `Squad`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Carries shared tactical context so squad behavior can react as one unit instead of isolated actors. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `as_str`, `new`, `get_formation_position` stays attached to the local data model and invariants.
+- Produces placement guidance for synchronized movement patterns across common formation styles. Runtime integration reaches sibling engine areas through crate modules `patterns`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### steering.rs
 
-- Provides continuous movement intent synthesis for agents that steer instead of teleporting state.
-- Combines concurrent influences into one force signal while preserving controllable blending semantics.
-- Supports reactive pursuit, evasion, spacing, and exploratory drift as composable motion textures.
-- Integrates waypoint progression so authored path flow and emergent steering can coexist smoothly.
-- Applies bounded output shaping to keep acceleration pressure stable for frame-to-frame integration.
-- Treats path following as a first-class influence that can lead or defer to behavior priorities.
-- Preserves deterministic fallback when no active influence produces meaningful directional intent.
-- Exposes configurable weighting that lets designers tune expressive movement character per actor role.
-- Maintains lightweight state for runtime-safe updates under dense multi-agent simulation loads.
-- Serves as the tactical locomotion bridge between decision outputs and physics-facing motion updates.
+- Provides continuous movement intent synthesis for agents that steer instead of teleporting state. `ai/steering` delivers the steering implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Combines concurrent influences into one force signal while preserving controllable blending semantics. The file owns or coordinates data contracts including `Force`, `SteeringEntity`, `CombineMode`, `SteeringBase`, `SteeringBehaviorType`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports reactive pursuit, evasion, spacing, and exploratory drift as composable motion textures. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `as_str`, `base`, `base_mut`, `kind`, `calculate`, and 20 more stays attached to the local data model and invariants.
+- Integrates waypoint progression so authored path flow and emergent steering can coexist smoothly. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Applies bounded output shaping to keep acceleration pressure stable for frame-to-frame integration. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Treats path following as a first-class influence that can lead or defer to behavior priorities. The file boundary separates ai implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### strategy.rs
 
-- Implements high-level intent arbitration that ranks strategic goals against current world context.
-- Blends static priority and dynamic scoring pressure into a single comparable decision signal.
-- Evaluates on a controlled cadence to avoid noisy goal thrashing between adjacent frames.
-- Retains active intent continuity so tactical layers receive stable direction over time.
-- Serves as the top strategic filter above lower-level planners and executors.
+- Implements high-level intent arbitration that ranks strategic goals against current world context. `ai/strategy` delivers the strategy implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Blends static priority and dynamic scoring pressure into a single comparable decision signal. The file owns or coordinates data contracts including `StrategicGoal`, `StrategyAI`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Evaluates on a controlled cadence to avoid noisy goal thrashing between adjacent frames. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `require_tag`, `is_eligible`, `add_goal`, `add_goal_named`, `set_tags`, and 7 more stays attached to the local data model and invariants.
+- Retains active intent continuity so tactical layers receive stable direction over time. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### traits.rs
 
-- Defines long-lived personality dimensions that shape how agents weight and express decisions.
-- Combines base profile values with temporary modifiers to model evolving behavioral flavor.
-- Updates modifier lifecycles over time so transient influences fade in a controlled manner.
-- Supports archetypal presets and deterministic variation for reproducible character differentiation.
-- Supplies stable temperament context consumed by planners, scorers, and tactical selectors.
+- Defines long-lived personality dimensions that shape how agents weight and express decisions. `ai/traits` delivers the traits implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Combines base profile values with temporary modifiers to model evolving behavioral flavor. The file owns or coordinates data contracts including `TraitModifier`, `TraitProfile`, `TraitArchetypes`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Updates modifier lifecycles over time so transient influences fade in a controlled manner. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_expired`, `tick`, `from_archetype`, `set`, `get`, and 12 more stays attached to the local data model and invariants.
+- Supports archetypal presets and deterministic variation for reproducible character differentiation. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Supplies stable temperament context consumed by planners, scorers, and tactical selectors. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### utility_ai.rs
 
-- Implements continuous utility-based action choice through layered consideration scoring pipelines.
-- Shapes raw inputs with configurable response curves to express nonlinear decision preference.
-- Blends historical momentum with fresh evidence so action selection avoids abrupt instability.
-- Captures per-action score snapshots each tick for introspection and downstream decision context.
-- Serves agents that benefit from smooth preference arbitration instead of hard state jumps.
+- Implements continuous utility-based action choice through layered consideration scoring pipelines. `ai/utility_ai` delivers the utility ai implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Shapes raw inputs with configurable response curves to express nonlinear decision preference. The file owns or coordinates data contracts including `ResponseCurve`, `Consideration`, `UAAction`, `UtilityAI`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Blends historical momentum with fresh evidence so action selection avoids abrupt instability. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `apply`, `new`, `add_action`, `add_consideration`, `last_action_name`, and 1 more stays attached to the local data model and invariants.
+- Captures per-action score snapshots each tick for introspection and downstream decision context. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### world.rs
 
-- Provides the global AI registry that owns agents, lookup indices, and shared world context.
-- Keeps identity-to-storage mapping synchronized so retrieval remains stable across lifecycle changes.
-- Centralizes broad update progression to advance many actors through one coherent world pulse.
-- Serves as the integration hub where individual agent logic becomes population-level simulation flow.
+- Provides the global AI registry that owns agents, lookup indices, and shared world context. `ai/world` delivers the authoritative runtime world state for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Keeps identity-to-storage mapping synchronized so retrieval remains stable across lifecycle changes. The file owns or coordinates data contracts including `AIWorld`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Centralizes broad update progression to advance many actors through one coherent world pulse. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_agent`, `remove_agent`, `get_agent_index`, `agent`, `agent_mut`, and 4 more stays attached to the local data model and invariants.
+- Serves as the integration hub where individual agent logic becomes population-level simulation flow. Runtime integration reaches sibling engine areas through crate modules `ai`, `patterns`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

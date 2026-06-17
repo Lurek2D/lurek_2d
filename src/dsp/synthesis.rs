@@ -1,9 +1,8 @@
-//! Provides procedural audio synthesis primitives for waveform generation and envelope-shaped note rendering.
-//! Defines stable oscillator forms and parsing paths that map script choices to deterministic sample output.
-//! Applies ADSR gain shaping so rendered notes include natural attack, sustain behavior, and release tails.
-//! Combines oscillator and envelope models into renderable buffers ready for playback and further processing.
-//! Delivers the synthesis layer used for generated sound effects and lightweight musical content.
-//! Keeps synthesis behavior modular so higher-level systems can extend sound generation workflows safely.
+//! Provides procedural audio synthesis primitives for waveform generation and envelope-shaped note rendering. `dsp/synthesis` delivers the synthesis implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Defines stable oscillator forms and parsing paths that map script choices to deterministic sample output. The file owns or coordinates data contracts including `Waveform`, `AdsrEnvelope`, `Synthesizer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Applies ADSR gain shaping so rendered notes include natural attack, sustain behavior, and release tails. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `as_str`, `render`, `new`, `trigger_on`, `trigger_off`, and 8 more stays attached to the local data model and invariants.
+//! Combines oscillator and envelope models into renderable buffers ready for playback and further processing. Runtime integration reaches sibling engine areas through crate modules `audio`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Delivers the synthesis layer used for generated sound effects and lightweight musical content. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::audio::sound_data::SoundData;
 

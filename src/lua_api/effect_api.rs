@@ -1,6 +1,4 @@
-//! Lua bindings for `lurek.effect` constructors, post-effect userdata, and capture control.
-//! Validates Lua-facing effect names, stack arguments, and image-effect chain specs at the API edge.
-//! Keeps renderer submission and mutable post-effect state in Rust engine modules rather than in Lua glue.
+//! Lua bindings for `lurek.effect` constructors, post-effect userdata, and capture control. `src/lua_api/effect_api.rs` registers the `lurek.effect` Lua boundary for effect behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::effect::{

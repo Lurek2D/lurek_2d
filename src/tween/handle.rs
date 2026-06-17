@@ -1,11 +1,9 @@
-//! This file provides Lua-facing tween handle types that expose animation control to scripts.
-//! It defines single tweens, sequences, and parallel groups with a consistent lifecycle contract.
-//! It stores progression state, target bindings, and callback hooks close to each animation unit.
-//! It writes interpolated values to Lua tables each frame through explicit field mappings.
-//! It supports repeat, yoyo, relative targets, and custom easing for expressive motion design.
-//! It coordinates sequence boundaries with carry-over delta to avoid timing gaps between steps.
-//! It advances parallel lanes together and resolves completion only when all lanes settle.
-//! It resumes waiting coroutines on completion so asynchronous script flow stays ergonomic.
+//! This file provides Lua-facing tween handle types that expose animation control to scripts. `tween/handle` delivers the handle implementation for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It defines single tweens, sequences, and parallel groups with a consistent lifecycle contract. The file owns or coordinates data contracts including `LuaTween`, `SequenceStep`, `LuaTweenSequence`, `ParallelEntry`, `LuaTweenParallel`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It stores progression state, target bindings, and callback hooks close to each animation unit. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `tick_with`, `fire_on_complete`, `set_relative`, `add_waiter`, `resume_waiters`, and 4 more stays attached to the local data model and invariants.
+//! It writes interpolated values to Lua tables each frame through explicit field mappings. Runtime integration reaches sibling engine areas through crate modules `tween`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It supports repeat, yoyo, relative targets, and custom easing for expressive motion design. External integration uses `mlua`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! It coordinates sequence boundaries with carry-over delta to avoid timing gaps between steps. The file boundary separates tween implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::tween::TweenState;
 use mlua::prelude::*;

@@ -1,13 +1,4 @@
-//! Registers the `lurek.charts` Lua API and keeps chart userdata wrappers thin.
-//! Parses chart config/data inputs at the Lua boundary, delegates rendering to `src/charts`,
-//! and bridges CPU-generated chart images into the engine's texture-backed draw queue.
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
+//! Registers the `lurek.charts` Lua API and keeps chart userdata wrappers thin. `src/lua_api/charts_api.rs` registers the `lurek.charts` Lua boundary for charts behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::dataframe_api::LuaDataFrame;
 use super::SharedState;

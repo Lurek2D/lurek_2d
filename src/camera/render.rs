@@ -1,7 +1,7 @@
-//! Converts camera transform state into renderer command sequences for scene-space projection.
-//! Emits ordered push, translate, rotate, scale, and pop operations for deterministic visual mapping.
-//! Splits begin and end phases so callers can bracket arbitrary scene draw commands safely.
-//! Serves as the render-bridge layer between camera math state and command-stream execution.
+//! Converts camera transform state into renderer command sequences for scene-space projection. `camera/render` delivers the rendering adapter and draw-command integration for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Emits ordered push, translate, rotate, scale, and pop operations for deterministic visual mapping. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Splits begin and end phases so callers can bracket arbitrary scene draw commands safely. Public callable behavior is centered on no named public items, while method-level behavior such as `append_begin_render_commands`, `begin_render_commands`, `end_render_command`, `generate_render_commands` stays attached to the local data model and invariants.
+//! Serves as the render-bridge layer between camera math state and command-stream execution. Runtime integration reaches sibling engine areas through crate modules `camera`, `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::camera::types::{Camera, Camera2D};
 use crate::render::renderer::RenderCommand;

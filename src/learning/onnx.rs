@@ -1,7 +1,7 @@
-//! Provides ONNX model loading and inference by bridging `LurekTensor` data into tract runtimes.
-//! Builds optimized runnable plans from ONNX files for CPU execution paths.
-//! Converts input and output tensors between engine-native and tract-native representations.
-//! Exposes deterministic inference entry points used by learning APIs without game-loop coupling.
+//! Provides ONNX model loading and inference by bridging `LurekTensor` data into tract runtimes. `learning/onnx` delivers the onnx implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Builds optimized runnable plans from ONNX files for CPU execution paths. The file owns or coordinates data contracts including `OnnxModel`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Converts input and output tensors between engine-native and tract-native representations. Public callable behavior is centered on no named public items, while method-level behavior such as `load`, `run`, `input_count`, `output_count` stays attached to the local data model and invariants.
+//! Exposes deterministic inference entry points used by learning APIs without game-loop coupling. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::learning::tensor::LurekTensor;
 use tract_onnx::prelude::*;

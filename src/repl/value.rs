@@ -1,6 +1,4 @@
-//! This file turns raw Lua values into stable human-readable text for REPL output and other headless inspection paths.
-//! It gives every major Lua value kind a display strategy, including opaque runtime objects that cannot sensibly print their full internals.
-//! The formatter is tuned for readable interactive feedback rather than lossless serialization of Lua state.
+//! This file turns raw Lua values into stable human-readable text for REPL output and other headless inspection paths. `repl/value` delivers the value implementation for the repl subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Convert one Lua value to display text and return a stable fallback for opaque values.
 pub fn value_to_string(value: &mlua::Value) -> String {

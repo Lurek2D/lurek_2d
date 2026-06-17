@@ -43,54 +43,46 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### api_registry.rs
 
-- Registry of which lurek namespaces and functions a mod may use.
-- Maps API names to permitted callable identifiers for sandbox checks.
-- Loads from the built-in API schema and any engine plugins at startup.
-- Lets mods declare required API surface in manifest data.
-- Rejects unknown API requests before they can reach mod scripts.
+- Registry of which lurek namespaces and functions a mod may use. `mods/api_registry` delivers the api registry implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Maps API names to permitted callable identifiers for sandbox checks. The file owns or coordinates data contracts including `TypeSchema`, `GameApiRegistry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Loads from the built-in API schema and any engine plugins at startup. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_field`, `add_method`, `add_asset_requirement`, `required_fields`, `optional_fields`, and 6 more stays attached to the local data model and invariants.
+- Lets mods declare required API surface in manifest data. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### api_schema.rs
 
-- Serializable description of the engine API surface exposed to mods.
-- Stores parameter types, return types, and short summaries for each entry.
-- Loads from generated API metadata at startup.
-- Supports version checks so mods can declare a minimum engine release.
-- Gives the sandbox a typed contract to validate against.
+- Serializable description of the engine API surface exposed to mods. `mods/api_schema` delivers the api schema implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores parameter types, return types, and short summaries for each entry. The file owns or coordinates data contracts including `FieldType`, `FieldDef`, `MethodDef`, `AssetRequirement`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Loads from generated API metadata at startup. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str`, `new`, `optional`, `with_default`, `with_description`, and 2 more stays attached to the local data model and invariants.
+- Supports version checks so mods can declare a minimum engine release. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
-- Entry point for the mod system and its lifecycle management.
-- Groups discovery, enable/disable flow, sandboxing, and Lua integration.
-- Keeps the mod runtime surface compact and centralised.
+- Entry point for the mod system and its lifecycle management. `mods/mod` is the mods module index, declaring `api_registry`, `api_schema`, `mod_loader`, `mod_manager`, `mod_sandbox` so agents can identify which files own each feature slice before opening implementation code.
+- Groups discovery, enable/disable flow, sandboxing, and Lua integration. `src/mods/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `api_registry::{GameApiRegistry, TypeSchema}`, `api_schema::{FieldDef, FieldType, MethodDef}`, `mod_loader::{FieldValue, ModInstance}`, `mod_manager::*`, and 1 more centralized for the mods subsystem.
 
 ### mod_loader.rs
 
-- Discovers, validates, and loads mod packages from disk.
-- Scans manifests, builds instances, and applies deterministic load order.
-- Verifies API requirements before any Lua code starts running.
-- Supports priority-based override and atomic reload of changed packages.
-- Provides the bootstrap path from content folders into live mod instances.
+- Discovers, validates, and loads mod packages from disk. `mods/mod_loader` delivers the mod loader implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Scans manifests, builds instances, and applies deterministic load order. The file owns or coordinates data contracts including `FieldValue`, `ModInstance`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Verifies API requirements before any Lua code starts running. Public callable behavior is centered on `load_instances_from_toml`, while method-level behavior such as `as_string`, `as_integer`, `as_float`, `as_bool`, `new`, `set_field`, and 2 more stays attached to the local data model and invariants.
+- Supports priority-based override and atomic reload of changed packages. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Provides the bootstrap path from content folders into live mod instances. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod_manager.rs
 
-- Registry and coordination layer for live mods and their dependencies.
-- Tracks enabled mods by id and capability for lookup and lifecycle control.
-- Parses manifests and validates the required fields before registration.
-- Resolves dependency order with topological sorting and priority ties.
-- Detects missing dependencies and circular relationships early.
-- Prevents asset path collisions across simultaneously loaded mods.
-- Manages hot reload by marking dirty mods and re-registering them atomically.
-- Scans folders on disk and batches valid entries into the registry.
-- Carries typed config schema data from manifests into runtime UI.
-- Serves as the central authority for mod registration and load sequencing.
+- Registry and coordination layer for live mods and their dependencies. `mods/mod_manager` delivers the mod manager implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Tracks enabled mods by id and capability for lookup and lifecycle control. The file owns or coordinates data contracts including `ModInfo`, `ModManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Parses manifests and validates the required fields before registration. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_parts`, `check_api_version`, `register_mod`, `unregister_mod`, `get_mod`, and 16 more stays attached to the local data model and invariants.
+- Resolves dependency order with topological sorting and priority ties. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Detects missing dependencies and circular relationships early. External integration uses `sha2`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Prevents asset path collisions across simultaneously loaded mods. The file boundary separates mods implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### mod_sandbox.rs
 
-- Sandbox wrapper that restricts mod Lua access to declared capabilities.
-- Applies per-mod permission filtering over the shared lurek namespace.
-- Converts undeclared API calls into Lua errors instead of crashes.
-- Limits file-system access to each mod's own content directory.
-- Reapplies the sandbox after reload so capabilities never expand at runtime.
+- Sandbox wrapper that restricts mod Lua access to declared capabilities. `mods/mod_sandbox` delivers the mod sandbox implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Applies per-mod permission filtering over the shared lurek namespace. The file owns or coordinates data contracts including `HookPoint`, `ModSandbox`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Converts undeclared API calls into Lua errors instead of crashes. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str`, `new`, `permissive`, `allow_api`, `block_op`, and 5 more stays attached to the local data model and invariants.
+- Limits file-system access to each mod's own content directory. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

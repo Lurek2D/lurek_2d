@@ -1,8 +1,8 @@
-//! Discovers, validates, and loads mod packages from disk.
-//! Scans manifests, builds instances, and applies deterministic load order.
-//! Verifies API requirements before any Lua code starts running.
-//! Supports priority-based override and atomic reload of changed packages.
-//! Provides the bootstrap path from content folders into live mod instances.
+//! Discovers, validates, and loads mod packages from disk. `mods/mod_loader` delivers the mod loader implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Scans manifests, builds instances, and applies deterministic load order. The file owns or coordinates data contracts including `FieldValue`, `ModInstance`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Verifies API requirements before any Lua code starts running. Public callable behavior is centered on `load_instances_from_toml`, while method-level behavior such as `as_string`, `as_integer`, `as_float`, `as_bool`, `new`, `set_field`, and 2 more stays attached to the local data model and invariants.
+//! Supports priority-based override and atomic reload of changed packages. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Provides the bootstrap path from content folders into live mod instances. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};

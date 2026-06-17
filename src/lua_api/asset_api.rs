@@ -1,7 +1,4 @@
-//! Lua bindings for the `lurek.asset` cache module.
-//!
-//! Exposes ref-counted asset loading, metadata queries, batch preload, and
-//! search helpers over the shared runtime asset cache.
+//! Lua bindings for the `lurek.asset` cache module. `src/lua_api/asset_api.rs` registers the `lurek.asset` Lua boundary for asset behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use crate::asset::{AssetCache, AssetType};
 use crate::runtime::SharedState;

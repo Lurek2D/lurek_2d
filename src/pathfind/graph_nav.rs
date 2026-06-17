@@ -1,8 +1,7 @@
-//! A* shortest-path search over weighted directed or bidirectional graphs.
-//! Supports cost-bounded range queries for reachable nodes.
-//! Falls back to Dijkstra when no heuristic is provided.
-//! Reconstructs paths from predecessor maps for caller consumption.
-//! Serves graph-based navigation where grid adjacency is not enough.
+//! A* shortest-path search over weighted directed or bidirectional graphs. `pathfind/graph_nav` delivers the graph nav implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports cost-bounded range queries for reachable nodes. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Falls back to Dijkstra when no heuristic is provided. Public callable behavior is centered on `graph_astar`, `graph_range`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Reconstructs paths from predecessor maps for caller consumption. Runtime integration reaches sibling engine areas through crate modules `flownet`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::flownet::core::Graph;
 use std::cmp::Ordering;

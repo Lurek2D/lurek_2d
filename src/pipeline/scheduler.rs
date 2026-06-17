@@ -1,8 +1,7 @@
-//! Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies.
+//! Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies. `pipeline/scheduler` delivers the scheduler implementation for the pipeline subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! The file counts down configured delays, tracks overall runtime progress, and reports which waiting steps are now allowed to begin.
 //! Waiting membership is tracked explicitly in scheduler-owned timers, so async readiness does not depend on mutating pipeline definition structs at runtime.
 //! Keeping this timing logic separate from the graph keeps execution pacing explicit without diluting structural dependency rules.
-//! Functionally this delivers the temporal gatekeeper for delayed and frame-advanced pipeline work.
 
 use crate::pipeline::dag::Pipeline;
 use crate::pipeline::step::StepStatus;

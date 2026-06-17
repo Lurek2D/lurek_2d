@@ -1,7 +1,4 @@
-//! File: src/lua_api/mod.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
+//! `src/lua_api/mod.rs` registers the `lurek` Lua boundary for root behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 pub use crate::runtime::{ErrorInfo, FullscreenType, SharedState, WindowState};
 /// Exposes the `lurek.agent` binding module.

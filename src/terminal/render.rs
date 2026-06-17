@@ -1,7 +1,7 @@
 //! This file converts the composed terminal surface into visual output for both renderer command streams and software image snapshots.
 //! Grid cells and overlaid widgets are flattened together here so the rest of the engine sees one finished terminal presentation.
-//! Color mapping and glyph placement are resolved at this stage rather than scattered across terminal state management.
-//! The file is therefore the terminal subsystem's final visual export layer.
+//! Color mapping and glyph placement are resolved at this stage rather than scattered across terminal state management. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands`, `draw_to_image` stays attached to the local data model and invariants.
+//! The file is therefore the terminal subsystem's final visual export layer. Runtime integration reaches sibling engine areas through crate modules `image`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::terminal_state::Terminal;
 use crate::image::ImageData;

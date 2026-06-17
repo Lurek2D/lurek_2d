@@ -1,8 +1,7 @@
-//! Multilevel container for placed blocks across vertical storeys.
-//! Tracks level metadata and block placements with bounds-safe access patterns.
-//! Supports mutation and query by level and grid coordinate during generation.
-//! Preserves structure needed for serialization and output transformation.
-//! Bridges layered placement logic with final map export.
+//! Multilevel container for placed blocks across vertical storeys. `mapblock/multilevel` delivers the multilevel implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Tracks level metadata and block placements with bounds-safe access patterns. The file owns or coordinates data contracts including `MultiLevelMap`, `LevelData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports mutation and query by level and grid coordinate during generation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `level_count`, `get_level`, `get_level_mut`, `add_block_to_level`, `total_block_count`, and 5 more stays attached to the local data model and invariants.
+//! Preserves structure needed for serialization and output transformation. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::placement::PlacedBlock;
 

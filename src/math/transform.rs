@@ -1,8 +1,7 @@
-//! Mutable 2D affine transform that accumulates position, rotation, scale, and shear.
-//! Wraps a 3x3 matrix so chained edits stay compact and composable.
-//! Exposes forward and inverse point mapping for world and local space conversion.
-//! Includes SRT decomposition for systems that need readable transform components.
-//! Bridges low-level matrix math with runtime spatial manipulation.
+//! Mutable 2D affine transform that accumulates position, rotation, scale, and shear. `math/transform` delivers the transform implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Wraps a 3x3 matrix so chained edits stay compact and composable. The file owns or coordinates data contracts including `Transform`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Exposes forward and inverse point mapping for world and local space conversion. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_components`, `translate`, `rotate`, `scale`, `shear`, and 7 more stays attached to the local data model and invariants.
+//! Includes SRT decomposition for systems that need readable transform components. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::math::mat3::Mat3;
 use crate::math::vec2::Vec2;

@@ -1,13 +1,9 @@
-//! This file provides core widget primitives that define shared UI node state and semantics.
-//! It models layout metrics, style linkage, identity, and interaction flags per widget instance.
-//! It represents the tree unit that context, layout, and renderer pipelines operate on.
-//! It supports state transitions that drive hover, focus, press, and animated visual behavior.
-//! It keeps parent-child composition explicit so traversal and ownership rules remain stable.
-//! It anchors type and state enums used across all concrete control and container variants.
-//! It enables consistent text alignment and font override behavior at the widget boundary.
-//! It provides reusable base data that reduces duplication across the larger UI catalog.
-//! It ensures widget-level contracts remain predictable for script and engine integrations.
-//! It defines the structural vocabulary that the retained UI subsystem builds upon.
+//! This file provides core widget primitives that define shared UI node state and semantics. `ui/widget` delivers the widget implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It models layout metrics, style linkage, identity, and interaction flags per widget instance. The file owns or coordinates data contracts including `TextVAlign`, `WidgetState`, `MouseFilter`, `WidgetType`, `EasingFunction`, and 3 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It represents the tree unit that context, layout, and renderer pipelines operate on. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `as_str`, `default_size`, `eval`, `alpha`, `position`, and 7 more stays attached to the local data model and invariants.
+//! It supports state transitions that drive hover, focus, press, and animated visual behavior. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It keeps parent-child composition explicit so traversal and ownership rules remain stable. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! It anchors type and state enums used across all concrete control and container variants. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::runtime::resource_keys::FontKey;
 

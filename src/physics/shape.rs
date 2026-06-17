@@ -3,7 +3,6 @@
 //! Parsing and regular-polygon construction make the surface practical for scripts, tools, and data-driven content that describe shape intent rather than raw engine objects.
 //! Standalone shapes carry material and sensor settings alongside geometry, which lets authored collision pieces travel with the properties that affect how they behave in the world.
 //! Local bounding logic keeps each shape queryable without needing a live body, which is useful for previews, authoring tools, and lightweight reasoning.
-//! Functionally this file delivers the reusable geometry vocabulary that both bodies and higher-level physics workflows build upon.
 
 use crate::math::Vec2;
 use rapier2d::prelude::*;

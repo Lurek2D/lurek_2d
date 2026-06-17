@@ -1,7 +1,7 @@
-//! This file provides the terminal's lightweight completion engine for command-like text entry.
-//! It manages a candidate set that can be queried by prefix or cycled interactively as the user repeats completion input.
-//! Dynamic updates are supported because terminal commands and symbols may change while the application is running.
-//! The file is the discoverability helper for typed terminal interaction.
+//! This file provides the terminal's lightweight completion engine for command-like text entry. `terminal/completion` delivers the completion implementation for the terminal subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It manages a candidate set that can be queried by prefix or cycled interactively as the user repeats completion input. The file owns or coordinates data contracts including `CompletionEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Dynamic updates are supported because terminal commands and symbols may change while the application is running. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_candidate`, `remove_candidate`, `clear`, `len`, `is_empty`, and 3 more stays attached to the local data model and invariants.
+//! The file is the discoverability helper for typed terminal interaction. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// Sorted candidate store with prefix-based cycling for terminal Tab completion.
 pub struct CompletionEngine {

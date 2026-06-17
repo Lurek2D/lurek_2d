@@ -1,6 +1,4 @@
-//! Defines cursor-system configuration values loaded from project settings and startup defaults.
-//! Controls feature toggles and behavior for trail effects, zoom lens, contexts, and idle visibility.
-//! Serves as the shared config contract consumed by cursor runtime orchestration.
+//! Defines cursor-system configuration values loaded from project settings and startup defaults. `cursor/config` delivers the configuration schema and defaults for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Global cursor system configuration.
 #[derive(Debug, Clone)]

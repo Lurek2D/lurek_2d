@@ -1,6 +1,5 @@
 //! This module provides the engine's core 2D sprite asset and batching helpers around individual sprites, sheets, atlases, and scalable panels.
 //! It covers both how textured regions are described and how many of them are organized for animation, UI, or efficient drawing.
-//! At the highest level this is the feature layer that turns textures into reusable 2D presentation pieces.
 
 /// Stateful clip animator used by the `lurek.sprite` API.
 pub mod animator;

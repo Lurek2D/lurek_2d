@@ -1,6 +1,9 @@
-//! Multiplayer networking across TCP, WebSocket, relay, and HTTP helpers.
-//! Hosts the host/client model, lobby flow, peer management, and game-state sync.
-//! Runs the background async runtime for non-blocking socket I/O.
+//! Multiplayer networking across TCP, WebSocket, relay, and HTTP helpers. `network/mod` is the network module index, declaring `constants`, `error`, `host`, `http`, `lobby`, and 9 more so agents can identify which files own each feature slice before opening implementation code.
+//! Hosts the host/client model, lobby flow, peer management, and game-state sync. `src/network/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `sse::{SseEvent, SseStream}` centralized for the network subsystem.
+//! Runs the background async runtime for non-blocking socket I/O. The file documents how network submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! `network/mod` is the network module index, declaring `constants`, `error`, `host`, `http`, `lobby`, and 9 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/network/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `sse::{SseEvent, SseStream}` centralized for the network subsystem.
+//! The file documents how network submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 /// Shared numeric limits and protocol constants used across all network layers.
 pub mod constants;

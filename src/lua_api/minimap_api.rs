@@ -1,11 +1,4 @@
-//! File: src/lua_api/minimap_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
+//! `src/lua_api/minimap_api.rs` registers the `lurek.minimap` Lua boundary for minimap behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::camera_api::LuaCamera2D;
 use super::render_api::LuaImage;

@@ -1,6 +1,5 @@
 //! Provides the high-level DSP module boundary that groups analysis, synthesis, effects, graphs, offline, and visualization flows.
 //! Coordinates reusable signal-processing capabilities while keeping runtime execution and inspection concerns clearly separated.
-//! Delivers one stable composition surface for audio-adjacent digital processing across engine integrations.
 
 /// Level and spectrum analysis helpers.
 pub mod analysis;

@@ -1,10 +1,8 @@
-//! Cinematic dialog sequencer with typewriter reveal effect.
-//!
-//! Provides node-based dialog playback with:
-//! - Typewriter character-by-character reveal
-//! - Choice branching with option selection
-//! - Lifecycle callbacks (line, choice, end, custom events)
-//! - Playback state tracking and control (play, pause, seek, skip)
+//! Cinematic dialog sequencer with typewriter reveal effect. `dialog/sequencer` delivers the sequencer implementation for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Provides node-based dialog playback with:. The file owns or coordinates data contracts including `DialogNode`, `SequencerState`, `DialogSequencer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Typewriter character-by-character reveal. Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `new`, `load`, `start`, `update`, `advance`, and 12 more stays attached to the local data model and invariants.
+//! Choice branching with option selection. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Lifecycle callbacks (line, choice, end, custom events). External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::HashMap;
 

@@ -2,6 +2,8 @@
 //! Supports multiple navigation surface types (rectangular grids, hexagonal, isometric, navmeshes, province graphs) enabling diverse game world representations.
 //! Provides async path-request dispatch through thread pool enabling long-running queries without blocking game loop or frame timing.
 //! Includes debug rendering utilities for visualizing pathfinding structures, computed distances, flow fields, and path results during development.
+//! `pathfind/mod` is the pathfind module index, declaring `ai_flow_field`, `astar`, `async_pool`, `bidir`, `flow_field`, and 15 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/pathfind/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `ai_flow_field::FlowField as SimpleFlowField`, `astar::{astar, line_of_sight, smooth_path}`, `async_pool::{AsyncPathEvent, AsyncPathRequest, PathEventStatus, PathThreadPool}`, `bidir::bidirectional_astar`, and 15 more centralized for the pathfind subsystem.
 
 /// AI-oriented flow field with steering integration.
 pub mod ai_flow_field;

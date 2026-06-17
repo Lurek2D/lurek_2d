@@ -1,5 +1,5 @@
-//! This file loads and resolves the embedded message catalog that backs structured runtime text.
-//! Lookup behavior is lazy so the engine pays setup cost only when message resolution is actually needed.
+//! This file loads and resolves the embedded message catalog that backs structured runtime text. `runtime/messages` delivers the messages implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Lookup behavior is lazy so the engine pays setup cost only when message resolution is actually needed. The file owns or coordinates data contracts including `MessageCatalog`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 //! Nested catalog data is flattened through recursive extraction so callers can ask for stable identifiers without knowing storage shape.
 //! Fallback behavior is defined here as well, ensuring missing catalog entries degrade into readable raw keys instead of silent blanks.
 

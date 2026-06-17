@@ -1,8 +1,7 @@
-//! Provides a typed DSP graph model where nodes and edges describe ordered signal-processing flow.
-//! Organizes processing units into deterministic traversal order for stable per-buffer execution.
-//! Supports audio-rate and control-rate connectivity so routing and parameter signals share one structure.
-//! Enables safe runtime mutation patterns that coordinate producer updates with callback-side consumption.
-//! Delivers the structural layer used to compose complex effect pipelines from reusable nodes.
+//! Provides a typed DSP graph model where nodes and edges describe ordered signal-processing flow. `dsp/graph` delivers the graph implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Organizes processing units into deterministic traversal order for stable per-buffer execution. The file owns or coordinates data contracts including `NodeId`, `DspNodeType`, `DspNode`, `DspGraph`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports audio-rate and control-rate connectivity so routing and parameter signals share one structure. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `as_str`, `new`, `set_param`, `get_param`, `node_type`, and 5 more stays attached to the local data model and invariants.
+//! Enables safe runtime mutation patterns that coordinate producer updates with callback-side consumption. Runtime integration reaches sibling engine areas through crate modules `audio`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::audio::sound_data::SoundData;
 

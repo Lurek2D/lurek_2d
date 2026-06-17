@@ -1,8 +1,7 @@
-//! This file translates between tabular CSV text and the engine's generic serial value tree.
-//! It supports row-oriented data that may be keyed by headers or treated as plain positional sequences.
+//! This file translates between tabular CSV text and the engine's generic serial value tree. `serialize/csv` delivers the csv implementation for the serialize subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It supports row-oriented data that may be keyed by headers or treated as plain positional sequences. The file owns or coordinates data contracts including `CsvOptions`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 //! Delimiters, quoting behavior, and output shape are handled here so spreadsheet-style data stays usable without special caller code.
-//! Encoding and decoding live together because CSV round-trips depend on consistent assumptions about row structure.
-//! The file is the serialization layer for flat table data rather than nested document-like formats.
+//! Encoding and decoding live together because CSV round-trips depend on consistent assumptions about row structure. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::lua_table::SerialValue;
 use indexmap::IndexMap;

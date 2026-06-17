@@ -1,13 +1,4 @@
-//! File: src/lua_api/render_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
-//! TODO: add doc note 6
-//! TODO: add doc note 7
+//! `src/lua_api/render_api.rs` registers the `lurek.render` Lua boundary for render behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::scene_api::LuaDepthSorter;
 use super::SharedState;

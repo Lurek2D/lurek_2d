@@ -1,6 +1,5 @@
-//! Defines the devtools module boundary for profiling, logging, REPL, and file-watch diagnostics.
-//! Groups developer instrumentation utilities into one cohesive runtime helper surface.
-//! Serves as the composition entry for non-production debugging and observability workflows.
+//! Defines the devtools module boundary for profiling, logging, REPL, and file-watch diagnostics. `devtools/mod` is the devtools module index, declaring `frame_stats`, `logger`, `lua_display`, `profiler`, `repl`, and 2 more so agents can identify which files own each feature slice before opening implementation code.
+//! Groups developer instrumentation utilities into one cohesive runtime helper surface. `src/devtools/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `frame_stats::{FrameSnapshot, FrameStats}`, `logger::{LogEntry, LogLevel, Logger}`, `profiler::{ProfileZone, Profiler}`, `repl::ReplConsole`, and 1 more centralized for the devtools subsystem.
 
 /// Expose frame-time history collection and aggregate snapshot helpers.
 pub mod frame_stats;

@@ -1,10 +1,9 @@
-//! Provides globe region-loading workflows from TOML, raster grids, and generated Voronoi seed sources.
-//! Parses lightweight structured input into normalized region records with geometry and adjacency data.
-//! Converts intermediate builder state into shared globe region types used across the subsystem.
-//! Extracts bounds and neighbor hints from image-driven province maps for quick content bootstrapping.
-//! Handles primitive parsing and validation to keep load-time failures explicit and actionable.
-//! Supports both in-memory string input and file-based ingestion paths for tooling flexibility.
-//! Delivers the map-ingestion layer that seeds topology and rendering state for globe runtime use.
+//! Provides globe region-loading workflows from TOML, raster grids, and generated Voronoi seed sources. `globe/loader` delivers the asset or data loading path for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Parses lightweight structured input into normalized region records with geometry and adjacency data. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Converts intermediate builder state into shared globe region types used across the subsystem. Public callable behavior is centered on `load_from_toml_str`, `load_from_toml_file`, `load_from_png_file`, `load_from_province_grid`, `generate_voronoi_provinces`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Extracts bounds and neighbor hints from image-driven province maps for quick content bootstrapping. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, `province`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Handles primitive parsing and validation to keep load-time failures explicit and actionable. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Supports both in-memory string input and file-based ingestion paths for tooling flexibility. The file boundary separates globe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::globe::types::{Region, RegionId, RegionPart};
 use crate::math::voronoi::voronoi_from_points;

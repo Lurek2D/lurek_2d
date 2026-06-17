@@ -1,6 +1,6 @@
-//! Provides render-command generation for post-effect capture and application flows.
-//! Emits deterministic begin, end, and apply command sequences consumed by the renderer.
-//! Delivers no-op behavior when stacks have no active effects to process.
+//! Provides render-command generation for post-effect capture and application flows. `effect/render` delivers the rendering adapter and draw-command integration for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Emits deterministic begin, end, and apply command sequences consumed by the renderer. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Delivers no-op behavior when stacks have no active effects to process. Public callable behavior is centered on no named public items, while method-level behavior such as `begin_capture_command`, `end_capture_command`, `apply_command`, `generate_render_commands` stays attached to the local data model and invariants.
 
 use crate::effect::stack::PostFxStack;
 use crate::render::renderer::RenderCommand;

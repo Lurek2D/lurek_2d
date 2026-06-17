@@ -1,8 +1,8 @@
-//! Defines long-lived personality dimensions that shape how agents weight and express decisions.
-//! Combines base profile values with temporary modifiers to model evolving behavioral flavor.
-//! Updates modifier lifecycles over time so transient influences fade in a controlled manner.
-//! Supports archetypal presets and deterministic variation for reproducible character differentiation.
-//! Supplies stable temperament context consumed by planners, scorers, and tactical selectors.
+//! Defines long-lived personality dimensions that shape how agents weight and express decisions. `ai/traits` delivers the traits implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Combines base profile values with temporary modifiers to model evolving behavioral flavor. The file owns or coordinates data contracts including `TraitModifier`, `TraitProfile`, `TraitArchetypes`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Updates modifier lifecycles over time so transient influences fade in a controlled manner. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_expired`, `tick`, `from_archetype`, `set`, `get`, and 12 more stays attached to the local data model and invariants.
+//! Supports archetypal presets and deterministic variation for reproducible character differentiation. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supplies stable temperament context consumed by planners, scorers, and tactical selectors. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::HashMap;
 

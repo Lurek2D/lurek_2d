@@ -1,7 +1,6 @@
-//! Defines cross-platform system cursor shape variants used by runtime cursor state.
-//! Maps engine-facing cursor variants to platform-native icon representations.
-//! Supports case-insensitive string parsing for config and script-driven selection.
-//! Serves as the canonical enum contract for system cursor mode requests.
+//! Defines cross-platform system cursor shape variants used by runtime cursor state. `cursor/system_cursor` delivers the system cursor implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Maps engine-facing cursor variants to platform-native icon representations. The file owns or coordinates data contracts including `SystemCursor`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports case-insensitive string parsing for config and script-driven selection. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str` stays attached to the local data model and invariants.
 
 /// System cursor shapes available on all platforms.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

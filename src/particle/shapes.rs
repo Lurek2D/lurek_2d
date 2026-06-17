@@ -1,6 +1,6 @@
-//! Geometric shape primitives that control how individual particles are rendered.
-//! Covers fills, directional shapes, and composite outlines with inline parameters.
-//! Gives emitters a compact vocabulary for particle silhouette design.
+//! Geometric shape primitives that control how individual particles are rendered. `particle/shapes` delivers the shapes implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Covers fills, directional shapes, and composite outlines with inline parameters. The file owns or coordinates data contracts including `ParticleShape`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Gives emitters a compact vocabulary for particle silhouette design. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 /// Geometric primitive used to draw a single particle.
 #[derive(Clone, Debug, Default, PartialEq, serde::Serialize, serde::Deserialize)]

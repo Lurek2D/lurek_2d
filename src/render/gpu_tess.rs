@@ -2,10 +2,8 @@
 //! Implements dynamic segment-count adaptation for circles and ellipses based on screen-space radius ensuring smooth curves at any zoom level.
 //! Tessellates stroked lines as screen-aligned rectangular quads with configurable line width supporting dashed borders and outline styles.
 //! Packs ColorVertex and TexVertex buffers with positions, UV coordinates, tint colors, and transform data for unified pipeline ingestion.
-//! Applies 3x3 model-view transformations per vertex enabling local coordinate systems and nested transform hierarchies.
+//! Applies 3x3 model-view transformations per vertex enabling local coordinate systems and nested transform hierarchies. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 //! Computes scissor rectangles and culls geometry outside viewport bounds reducing GPU workload and preventing render artifacts.
-//! Supports rounded rectangles through adaptive arc segment tessellation, linear gradients through proportional vertex color interpolation.
-//! Generates flattened index lists and primitive batches ready for direct graphics API consumption without additional GPU processing.
 
 use super::GpuRenderer;
 use crate::math::{Mat3, Vec2};

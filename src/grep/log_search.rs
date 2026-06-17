@@ -1,8 +1,7 @@
-//! - Structured log file search with level, time-range, and text pattern filters.
-//! - `parse_log_lines` parses lines of the form `[LEVEL TIMESTAMP] MESSAGE`.
-//! - `search_logs` filters `Vec<LogEntry>` by level, time bounds, and text pattern.
-//! - `LogSearchOpts` drives the filter; all fields are optional (zero = no filter).
-//! - Used by `lurek.grep.logs` to let game scripts query the engine's runtime log.
+//! Structured log file search with level, time-range, and text pattern filters. `grep/log_search` delivers the log search implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `parse_log_lines` parses lines of the form `[LEVEL TIMESTAMP] MESSAGE`. The file owns or coordinates data contracts including `LogEntry`, `LogSearchOpts`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! `search_logs` filters `Vec<LogEntry>` by level, time bounds, and text pattern. Public callable behavior is centered on `parse_log_lines`, `search_logs`, while method-level behavior such as `new` stays attached to the local data model and invariants.
+//! `LogSearchOpts` drives the filter; all fields are optional (zero = no filter). Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// A single parsed log entry with line number, timestamp, level, and message.
 #[derive(Debug, Clone)]

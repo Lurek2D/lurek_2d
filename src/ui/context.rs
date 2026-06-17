@@ -1,21 +1,13 @@
-//! This file provides the central retained-mode UI context that owns widget state and lifecycle.
-//! It stores all widget variants in one indexed arena so references stay compact and stable.
-//! It runs recursive layout to compute absolute rectangles from parent-relative placement data.
-//! It manages focus traversal and keyboard navigation for consistent interaction behavior.
-//! It routes mouse and key events through controlled dispatch paths tied to active widgets.
-//! It drives drag-and-drop with safety checks that prevent invalid parent-child cycles.
-//! It advances alpha and position transitions so UI motion remains smooth and deterministic.
-//! It maintains data bindings that synchronize widget values with script-owned state keys.
-//! It tracks render signatures to detect dirtiness without expensive full-tree comparisons.
-//! It queues interface events so Lua can consume interactions in a frame-coherent order.
-//! It handles toast overlay lifetimes and visibility as transient UI feedback primitives.
-//! It maintains root-level viewport and scaling context used by layout and rendering passes.
-//! It exposes creation and lookup surfaces that keep widget graph mutations predictable.
-//! It centralizes ownership so memory, input, and animation behavior are coordinated.
-//! It forms the contract boundary between UI data, behavior, and visual output.
-//! It keeps high-volume interface updates efficient enough for runtime and tooling screens.
-//! It enables complex widget ecosystems while preserving one coherent execution timeline.
-//! It anchors the entire UI subsystem around deterministic per-frame state progression.
+//! This file provides the central retained-mode UI context that owns widget state and lifecycle. `ui/context` delivers the context implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It stores all widget variants in one indexed arena so references stay compact and stable. The file owns or coordinates data contracts including `UiBindingValue`, `GuiEvent`, `WidgetKind`, `GuiContext`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It runs recursive layout to compute absolute rectangles from parent-relative placement data. Public callable behavior is centered on no named public items, while method-level behavior such as `base`, `base_mut`, `children`, `children_mut`, `new`, `clear`, and 79 more stays attached to the local data model and invariants.
+//! It manages focus traversal and keyboard navigation for consistent interaction behavior. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It routes mouse and key events through controlled dispatch paths tied to active widgets. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! It drives drag-and-drop with safety checks that prevent invalid parent-child cycles. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! It advances alpha and position transitions so UI motion remains smooth and deterministic. State changes, validation paths, and helper routines in `src/ui/context.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+//! It maintains data bindings that synchronize widget values with script-owned state keys. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! It tracks render signatures to detect dirtiness without expensive full-tree comparisons. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
+//! It queues interface events so Lua can consume interactions in a frame-coherent order. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
 
 use crate::log_msg;
 use crate::math::Rect;

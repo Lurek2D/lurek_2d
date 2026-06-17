@@ -1,7 +1,8 @@
-//! This file provides a fixed worker pool that executes Lua jobs in parallel with stable throughput.
-//! It binds shared input and output channels so tasks and results travel on a predictable pipeline.
-//! It exposes a practical lifecycle of submit, collect, and join for frame-safe orchestration.
-//! It keeps named channel wiring consistent across engine and script boundaries during pooled execution.
+//! This file provides a fixed worker pool that executes Lua jobs in parallel with stable throughput. `thread/pool` delivers the pool implementation for the thread subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It binds shared input and output channels so tasks and results travel on a predictable pipeline. The file owns or coordinates data contracts including `ThreadPool`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It exposes a practical lifecycle of submit, collect, and join for frame-safe orchestration. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `submit`, `collect`, `join`, `join_with_timeout`, `size` stays attached to the local data model and invariants.
+//! It keeps named channel wiring consistent across engine and script boundaries during pooled execution. Runtime integration reaches sibling engine areas through crate modules `thread`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+
 use crate::thread::channel::{Channel, ChannelValue};
 use crate::thread::worker::LuaThread;
 use std::collections::HashMap;

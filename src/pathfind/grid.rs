@@ -3,7 +3,6 @@
 //! Supports Dijkstra and BFS variants for weighted multi-target distance fields and uniform-cost search enabling flow field and range queries.
 //! Provides efficient indexing, neighbor enumeration, and reconstruction helpers supporting O(log N) priority-queue based pathfinding.
 //! Integrates cell walkability validation preventing path generation through obstacles while respecting per-cell terrain movement costs.
-//! Serves as the fundamental navigation surface for grid-based game AI, unit movement, and tactical route planning across tile maps.
 
 use crate::runtime::log_messages::{PF01_GRID_INIT, PF03_NO_PATH};
 

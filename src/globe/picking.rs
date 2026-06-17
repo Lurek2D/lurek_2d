@@ -1,7 +1,7 @@
-//! Provides globe picking helpers that translate screen-space clicks into front-hemisphere surface hits.
-//! Converts pointer coordinates into spherical latitude and longitude using the current orbit camera.
-//! Applies geographic point-in-polygon tests so province and region queries share one hit surface.
-//! Exposes marker and region selection results consumed by rendering, UI, and gameplay layers.
+//! Provides globe picking helpers that translate screen-space clicks into front-hemisphere surface hits. `globe/picking` delivers the picking implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Converts pointer coordinates into spherical latitude and longitude using the current orbit camera. The file owns or coordinates data contracts including `SurfaceHit`, `PickResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Applies geographic point-in-polygon tests so province and region queries share one hit surface. Public callable behavior is centered on `point_in_geo_polygon`, `point_in_geo_region`, `screen_to_surface`, `pick`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Exposes marker and region selection results consumed by rendering, UI, and gameplay layers. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::sphere::{lat_lon_to_unit, unit_to_lat_lon};
 use crate::globe::projection::{build_view_matrix, OrbitCamera};

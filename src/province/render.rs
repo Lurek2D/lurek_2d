@@ -4,8 +4,6 @@
 //! Fill generation based on span geometry gives irregular regions a raster-efficient rendering path that still respects per-province styling.
 //! Border drawing layers additional meaning through type configs and pair-specific overrides, making the edges between provinces visually informative rather than decorative only.
 //! Capitals and labels add orientation and identity, keeping the renderer tied to map readability as well as raw color fill.
-//! Interaction-oriented highlights ensure the same rendering path can surface hover and selection feedback for tools or gameplay UI.
-//! Functionally this file delivers the visible province map assembled from registry state, view transforms, and style policy.
 
 use std::collections::HashMap;
 

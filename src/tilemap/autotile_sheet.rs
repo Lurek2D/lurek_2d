@@ -1,10 +1,9 @@
-//! This file provides the autotile sheet model that turns neighborhood context into final tile picks.
-//! It keeps multiple atlas layouts coherent so different terrain styles share one usage contract.
-//! It centralizes bitmask interpretation and rule matching in a single graphics selection layer.
-//! It resolves corner relationships carefully so terrain seams stay clean across transitions.
-//! It supports quarter-tile composition when rendering needs sub-tile assembly for smooth blends.
-//! It connects sheet logic to tileset data so runtime autotiling remains deterministic.
-//! It forms a stable foundation for roads, biomes, and organic borders in grid-based worlds.
+//! This file provides the autotile sheet model that turns neighborhood context into final tile picks. `tilemap/autotile_sheet` delivers the autotile sheet implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It keeps multiple atlas layouts coherent so different terrain styles share one usage contract. The file owns or coordinates data contracts including `AutoTileLayout`, `AutoTileSheet`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It centralizes bitmask interpretation and rule matching in a single graphics selection layer. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_layout`, `get_tile_count`, `get_tile_width`, `get_tile_height`, `apply_to_tileset`, and 7 more stays attached to the local data model and invariants.
+//! It resolves corner relationships carefully so terrain seams stay clean across transitions. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It supports quarter-tile composition when rendering needs sub-tile assembly for smooth blends. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+
 use super::tileset::TileSet;
 use crate::math::Rect;
 use std::collections::HashMap;

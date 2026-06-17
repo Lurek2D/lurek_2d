@@ -1,6 +1,4 @@
-//! Lua bindings for `lurek.overlay` controllers, transitions, and screen-space telemetry.
-//! Validates overlay dimensions, color channels, durations, and weather parameters at the API edge.
-//! Keeps long-lived atmosphere, flash, fade, and weather behavior in `src/overlay` rather than in Lua glue.
+//! Lua bindings for `lurek.overlay` controllers, transitions, and screen-space telemetry. `src/lua_api/overlay_api.rs` registers the `lurek.overlay` Lua boundary for overlay behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::overlay::{Overlay, ScreenTransition, TransitionKind, WeatherType};

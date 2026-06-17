@@ -1,10 +1,8 @@
-//! Provides flownet node modeling with capacity, inventory, policy, and flow-direction configuration.
-//! Defines overflow behavior modes that govern how nodes handle arrivals beyond available space.
-//! Encodes push and pull flow semantics used by simulation to move items across the graph.
-//! Stores conversion, supply, and demand records for transformation and economic-style mechanics.
-//! Exposes node-level queue and tag operations needed for runtime orchestration.
-//! Parses textual policy and flow values into typed enums for resilient script integration.
-//! Delivers the per-node behavior contract that anchors transport and conversion decisions.
+//! Provides flownet node modeling with capacity, inventory, policy, and flow-direction configuration. `flownet/node` delivers the node implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Defines overflow behavior modes that govern how nodes handle arrivals beyond available space. The file owns or coordinates data contracts including `OverflowPolicy`, `FlowMode`, `ConversionRule`, `Supply`, `Demand`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Encodes push and pull flow semantics used by simulation to move items across the graph. Public callable behavior is centered on no named public items, while method-level behavior such as `to_str`, `new`, `get_type`, `set_type`, `get_capacity`, `set_capacity`, and 27 more stays attached to the local data model and invariants.
+//! Stores conversion, supply, and demand records for transformation and economic-style mechanics. Runtime integration reaches sibling engine areas through crate modules `flownet`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Exposes node-level queue and tag operations needed for runtime orchestration. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::str::FromStr;

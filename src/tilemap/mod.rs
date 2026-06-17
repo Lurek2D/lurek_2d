@@ -1,7 +1,9 @@
-//! This module delivers the high-level tile world stack for storage, generation, import, and rendering.
-//! It unifies layered map data for orthogonal and isometric play spaces under one runtime contract.
-//! It connects authored formats, procedural tools, autotiling, and region geometry into one pipeline.
-//! It provides the structural backbone for large interactive 2D worlds in Lurek2D.
+//! This module delivers the high-level tile world stack for storage, generation, import, and rendering. `tilemap/mod` is the tilemap module index, declaring `autotile_sheet`, `chunk`, `coords`, `isomap`, `large_map_renderer`, and 11 more so agents can identify which files own each feature slice before opening implementation code.
+//! It unifies layered map data for orthogonal and isometric play spaces under one runtime contract. `src/tilemap/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `autotile_sheet::{AutoTileLayout, AutoTileSheet}`, `chunk::ChunkMap`, `coords::*`, `isomap::{IsoDrawItem, IsoLevel, IsoMap, IsoTile, IsoTilePart}`, and 7 more centralized for the tilemap subsystem.
+//! It connects authored formats, procedural tools, autotiling, and region geometry into one pipeline. The file documents how tilemap submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! It provides the structural backbone for large interactive 2D worlds in Lurek2D. Agents should read this index to choose the narrow owner file first, because it maps names such as `autotile_sheet`, `chunk`, `coords`, `isomap`, `large_map_renderer`, and 11 more to concrete implementation responsibilities.
+//! `tilemap/mod` is the tilemap module index, declaring `autotile_sheet`, `chunk`, `coords`, `isomap`, `large_map_renderer`, and 11 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/tilemap/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `autotile_sheet::{AutoTileLayout, AutoTileSheet}`, `chunk::ChunkMap`, `coords::*`, `isomap::{IsoDrawItem, IsoLevel, IsoMap, IsoTile, IsoTilePart}`, and 7 more centralized for the tilemap subsystem.
 
 /// Autotile sprite-sheet layout and rule matching.
 pub mod autotile_sheet;

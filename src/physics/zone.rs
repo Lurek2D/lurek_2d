@@ -1,9 +1,8 @@
 //! Physics zone system for spatial rule overrides that should apply because a body is somewhere, not because it touched a solid object.
 //! The file defines bounded areas that can replace normal gravity with directional pull, attraction, repulsion, or weightless behavior.
-//! Priority and mask filtering let multiple zones coexist without turning area-based effects into ambiguous global state.
+//! Priority and mask filtering let multiple zones coexist without turning area-based effects into ambiguous global state. Public callable behavior is centered on no named public items, while method-level behavior such as `contains`, `new_rect`, `set_circle`, `set_gravity_directional`, `set_gravity_point`, `set_gravity_repulsor`, and 5 more stays attached to the local data model and invariants.
 //! Damping overrides make zones useful for liquids, mud, low-friction fields, or other environmental modifiers that change motion feel.
 //! Enter and leave tracking turns zones into event sources as well as force fields, which is important for scripting and gameplay transitions.
-//! Functionally this file delivers area-driven physics behavior for environmental control, special spaces, and location-sensitive simulation rules.
 
 use std::collections::{HashMap, HashSet};
 

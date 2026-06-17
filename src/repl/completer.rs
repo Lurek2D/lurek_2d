@@ -2,7 +2,6 @@
 //! Suggestions come from both a static knowledge base of Lua and engine names and the live global environment of the current VM.
 //! Dot-path completion is resolved step by step, which makes nested tables and engine namespaces feel navigable from the prompt.
 //! Candidate output is normalized and deduplicated so the REPL can present stable suggestions instead of noisy raw table keys.
-//! The file therefore acts as the discoverability layer of the REPL, helping users explore available runtime symbols while typing.
 
 use mlua::prelude::*;
 

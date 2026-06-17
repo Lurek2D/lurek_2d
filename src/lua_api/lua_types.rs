@@ -1,4 +1,4 @@
-//! File: src/lua_api/lua_types.rs
+//! `src/lua_api/lua_types.rs` registers the `lurek.lua_types` Lua boundary for lua_types behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use mlua::prelude::*;
 /// Defines the lurek type behavior required by this module.

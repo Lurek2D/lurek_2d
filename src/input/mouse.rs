@@ -1,9 +1,8 @@
-//! Tracks mouse position, button transitions, and scroll deltas with frame-local reset semantics.
-//! Stores held, pressed, and released button sets for deterministic polling across gameplay systems.
-//! Supports system cursor variants and custom cursor image metadata with hotspot offsets.
-//! Exposes cursor visibility, grab, relative mode, and warp requests for runtime window integration.
-//! Preserves smooth pointer-control behavior while separating transient and persistent state.
-//! Serves as the central mouse state source for UI interaction and gameplay input checks.
+//! Tracks mouse position, button transitions, and scroll deltas with frame-local reset semantics. `input/mouse` delivers the mouse implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores held, pressed, and released button sets for deterministic polling across gameplay systems. The file owns or coordinates data contracts including `SystemCursor`, `MouseState`, `CursorKind`, `CursorHandle`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports system cursor variants and custom cursor image metadata with hotspot offsets. Public callable behavior is centered on `is_cursor_supported`, while method-level behavior such as `from_name`, `as_str`, `new`, `begin_frame`, `update_position`, `request_position`, and 14 more stays attached to the local data model and invariants.
+//! Exposes cursor visibility, grab, relative mode, and warp requests for runtime window integration. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Preserves smooth pointer-control behavior while separating transient and persistent state. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 /// OS-provided cursor shape variants available through `lurek.input.setCursor`.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]

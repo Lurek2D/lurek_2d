@@ -1,7 +1,5 @@
-//! Lua bindings for `lurek.camera`.
-//!
-//! Exposes camera construction, viewport transforms, rigs, path helpers, and
-//! tile-walker camera control over the runtime camera subsystem.
+//! Lua bindings for `lurek.camera`. `src/lua_api/camera_api.rs` registers the `lurek.camera` Lua boundary for camera behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+
 use super::SharedState;
 use crate::camera::{Camera2D, CameraEasing, CameraPath, CameraRig2D, CameraWalker, ZoomTween};
 use crate::render::renderer::RenderCommand;

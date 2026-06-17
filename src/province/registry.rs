@@ -4,8 +4,6 @@
 //! Adjacency ownership is stored as first-class topology rather than recomputed on demand, which keeps neighborhood and border reasoning efficient and consistent.
 //! Capital markers, label baselines, and province text live alongside style so visual presentation remains attached to the same province identity that game logic uses.
 //! Monotonic revisions and ordered change logs make the registry incrementally observable, which is important for sync, UI refresh, and Lua-facing event delivery.
-//! Pair-specific border overrides give the map a place to express relationship semantics like coast, alliance, or war at the edge between provinces instead of only per province.
-//! Functionally this file delivers the central province runtime database that every other province feature reads from or writes to.
 
 use crate::image::ProvinceGrid;
 use crate::province::events::ProvinceChange;

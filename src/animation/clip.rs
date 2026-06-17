@@ -1,6 +1,4 @@
-//! Defines reusable animation clip metadata over frame spans, playback direction, and loop policy.
-//! Carries baseline timing settings that playback systems use when frame durations are unspecified.
-//! Serves as a compact contract shared by controller, state-machine, and blend-layer orchestration.
+//! Defines reusable animation clip metadata over frame spans, playback direction, and loop policy. `animation/clip` delivers the clip implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Supported clip playback modes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

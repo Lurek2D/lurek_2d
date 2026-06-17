@@ -1,8 +1,7 @@
-//! Registry of which lurek namespaces and functions a mod may use.
-//! Maps API names to permitted callable identifiers for sandbox checks.
-//! Loads from the built-in API schema and any engine plugins at startup.
-//! Lets mods declare required API surface in manifest data.
-//! Rejects unknown API requests before they can reach mod scripts.
+//! Registry of which lurek namespaces and functions a mod may use. `mods/api_registry` delivers the api registry implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Maps API names to permitted callable identifiers for sandbox checks. The file owns or coordinates data contracts including `TypeSchema`, `GameApiRegistry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Loads from the built-in API schema and any engine plugins at startup. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_field`, `add_method`, `add_asset_requirement`, `required_fields`, `optional_fields`, and 6 more stays attached to the local data model and invariants.
+//! Lets mods declare required API surface in manifest data. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::api_schema::{AssetRequirement, FieldDef, MethodDef};
 use std::collections::HashMap;

@@ -3,7 +3,6 @@
 //! Configuration controls the personality of the result through size, depth, padding, and seed rather than scattering generation policy across unrelated helpers.
 //! Prefab stamping extends the base dungeon with authored patterns that can be placed into qualifying rooms without sacrificing determinism.
 //! The implementation stays algorithmic and headless, which makes it suitable for offline generation, tests, and data-driven tooling.
-//! Functionally this file delivers a reproducible room-and-corridor dungeon backbone shaped by binary spatial subdivision.
 
 use crate::procgen::lcg::Lcg;
 

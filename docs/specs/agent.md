@@ -52,67 +52,61 @@ This module primarily collaborates with `network`. Its responsibility should sta
 
 ### chat.rs
 
-- Implements the direct synchronous conversation surface for immediate model-backed agent interactions.
-- Builds deterministic request envelopes for plain text, structured JSON, and embedding-oriented calls.
-- Preserves reusable global provider configuration so repeated invocations share one operational baseline.
-- Maintains multi-turn message history for session continuity and contextual follow-up reasoning.
-- Applies lightweight prompt templating to inject runtime variables without changing call contracts.
-- Normalizes backend responses into stable Lua-facing shapes with predictable field semantics.
+- Implements the direct synchronous conversation surface for immediate model-backed agent interactions. `agent/chat` delivers the chat implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Builds deterministic request envelopes for plain text, structured JSON, and embedding-oriented calls. The file owns or coordinates data contracts including `GlobalLlmConfig`, `LlmTemplate`, `ChatMessage`, `LlmChat`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Preserves reusable global provider configuration so repeated invocations share one operational baseline. Public callable behavior is centered on `read_global_config`, `write_global_config`, `ollama_generate`, `ollama_generate_json`, `ollama_embed`, and 2 more, while method-level behavior such as `new`, `render`, `set_system_prompt`, `system_prompt`, `add_message`, `clear`, and 2 more stays attached to the local data model and invariants.
+- Maintains multi-turn message history for session continuity and contextual follow-up reasoning. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Applies lightweight prompt templating to inject runtime variables without changing call contracts. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### client.rs
 
-- Provides asynchronous prompt transport that moves network latency off the main update path.
-- Tracks in-flight requests and pending completions so polling remains deterministic and frame-safe.
-- Supports callback-scoped cancellation to discard stale results after gameplay state has changed.
-- Retries transient transport failures with bounded backoff to improve completion reliability.
-- Bridges worker-thread execution and runtime polling with consistent response delivery semantics.
+- Provides asynchronous prompt transport that moves network latency off the main update path. `agent/client` delivers the client implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Tracks in-flight requests and pending completions so polling remains deterministic and frame-safe. The file owns or coordinates data contracts including `AgentClient`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports callback-scoped cancellation to discard stale results after gameplay state has changed. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `send_prompt`, `cancel`, `in_flight_count`, `poll` stays attached to the local data model and invariants.
+- Retries transient transport failures with bounded backoff to improve completion reliability. Runtime integration reaches sibling engine areas through crate modules `agent`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### memory.rs
 
-- Implements layered agent memory with short-term context, episodic recall, and durable semantic knowledge.
-- Applies distinct retention strategies so each memory tier fits a different reasoning horizon.
-- Supports bounded working slots for prompt context while preserving ordered recency behavior.
-- Records timestamped episodes for searchable event history and narrative continuity.
-- Stores semantic facts as named durable entries that survive immediate conversational churn.
-- Provides aggregate save and load flows for cross-session continuity of memory state.
+- Implements layered agent memory with short-term context, episodic recall, and durable semantic knowledge. `agent/memory` delivers the memory implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Applies distinct retention strategies so each memory tier fits a different reasoning horizon. The file owns or coordinates data contracts including `WorkingMemory`, `Episode`, `EpisodicMemory`, `SemanticMemory`, `AgentMemory`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports bounded working slots for prompt context while preserving ordered recency behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `capacity`, `len`, `is_empty`, `push`, `get`, and 9 more stays attached to the local data model and invariants.
+- Records timestamped episodes for searchable event history and narrative continuity. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Stores semantic facts as named durable entries that survive immediate conversational churn. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod.rs
 
-- Defines the `agent` domain module boundary for LLM-backed behavior.
-- Contains transport, state, memory, orchestration logic, and Ollama lifecycle components.
-- Keeps Lua binding/runtime details out of this layer so `src/lua_api/` stays the integration boundary.
+- Defines the `agent` domain module boundary for LLM-backed behavior. `agent/mod` is the agent module index, declaring `chat`, `client`, `memory`, `ollama`, `orchestration`, and 2 more so agents can identify which files own each feature slice before opening implementation code.
+- Contains transport, state, memory, orchestration logic, and Ollama lifecycle components. `src/agent/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `chat::{read_global_config, write_global_config, GlobalLlmConfig, LlmChat, LlmTemplate}`, `client::AgentClient`, `memory::{AgentMemory, EpisodicMemory, SemanticMemory, WorkingMemory}`, `ollama::{ModelInfo, OllamaManager, OllamaPullResult}`, and 3 more centralized for the agent subsystem.
 
 ### ollama.rs
 
-- Provides backend infrastructure control for local Ollama service lifecycle and operational health checks.
-- Handles start, stop, restart, and version discovery to keep runtime integration state observable.
-- Exposes model inventory queries and availability checks for capability-aware script decisions.
-- Supports model deletion and asynchronous pull workflows with pollable completion tracking.
-- Isolates backend process management from prompt orchestration to keep runtime layering clean.
-- Normalizes infrastructure outcomes into stable results consumed by higher agent control surfaces.
+- Provides backend infrastructure control for local Ollama service lifecycle and operational health checks. `agent/ollama` delivers the ollama implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Handles start, stop, restart, and version discovery to keep runtime integration state observable. The file owns or coordinates data contracts including `ModelInfo`, `OllamaPullResult`, `OllamaManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Exposes model inventory queries and availability checks for capability-aware script decisions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `base_url`, `model_names`, `is_running`, `version`, `list_models`, and 8 more stays attached to the local data model and invariants.
+- Supports model deletion and asynchronous pull workflows with pollable completion tracking. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Isolates backend process management from prompt orchestration to keep runtime layering clean. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### orchestration.rs
 
-- Agent orchestration logic extracted from Lua runtime glue.
-- Owns batch-task data contracts, callback ID packing, and system-context assembly.
-- This module is runtime-agnostic and intentionally free of `mlua` types.
-- Module API documentation
+- Agent orchestration logic extracted from Lua runtime glue. `agent/orchestration` delivers the orchestration implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Owns batch-task data contracts, callback ID packing, and system-context assembly. The file owns or coordinates data contracts including `AgentBatchTask`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- This module is runtime-agnostic and intentionally free of `mlua` types. Public callable behavior is centered on `pack_batch_callback_id`, `unpack_batch_callback_id`, `build_system_context`, `make_system_task`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- `agent/orchestration` delivers the orchestration implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### state.rs
 
-- Defines runtime state contracts that shape outbound agent requests from script-facing configuration.
-- Aggregates endpoint, model, prompt policy, timeout, and retry controls into deterministic payload inputs.
-- Builds direct and system-routed request variants with consistent field and option mapping.
-- Composes AI-system context from instructions and skill fragments matched to prompt intent signals.
-- Keeps mutable control state separate from transport execution to preserve predictable behavior boundaries.
-- Bridges Lua runtime controls to transport-ready request structures without duplicating orchestration logic.
+- Defines runtime state contracts that shape outbound agent requests from script-facing configuration. `agent/state` delivers the state container and transition helpers for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Aggregates endpoint, model, prompt policy, timeout, and retry controls into deterministic payload inputs. The file owns or coordinates data contracts including `AgentState`, `SystemSkill`, `AISystemState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Builds direct and system-routed request variants with consistent field and option mapping. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_name`, `set_description`, `set_max_retries`, `set_timeout`, `set_option`, and 21 more stays attached to the local data model and invariants.
+- Composes AI-system context from instructions and skill fragments matched to prompt intent signals. Runtime integration reaches sibling engine areas through crate modules `agent`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Keeps mutable control state separate from transport execution to preserve predictable behavior boundaries. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### types.rs
 
-- Defines shared data contracts for agent requests, responses, and cross-layer failure representation.
-- Aligns state construction, async transport, and callback dispatch on one stable payload vocabulary.
-- Encodes retry semantics and error categories so runtime behavior is consistent across entry points.
-- Serves as the canonical contract layer that keeps agent submodules interoperable and predictable.
+- Defines shared data contracts for agent requests, responses, and cross-layer failure representation. `agent/types` delivers the shared type definitions and data contracts for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Aligns state construction, async transport, and callback dispatch on one stable payload vocabulary. The file owns or coordinates data contracts including `AgentError`, `AgentRequest`, `AgentResponse`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Encodes retry semantics and error categories so runtime behavior is consistent across entry points. Public callable behavior is centered on no named public items, while method-level behavior such as `code`, `is_transient`, `message`, `is_ok`, `text` stays attached to the local data model and invariants.
+- Serves as the canonical contract layer that keeps agent submodules interoperable and predictable. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

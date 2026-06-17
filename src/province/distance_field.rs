@@ -1,8 +1,7 @@
 //! Border-distance precompute for province pixels so later rendering and analysis code can reason about how deep a location sits inside its owning region.
 //! The file starts from boundary cells and spreads inward with a multi-source traversal, producing a compact measure of interior distance without per-frame recomputation.
-//! Keeping the result as a small field makes it practical for shading, stylization, and level-of-detail style logic.
-//! The computation is map-wide and structural, which means it belongs here rather than in ad hoc rendering code.
-//! Functionally this file delivers the inward-depth signal used for province-edge-aware visuals and spatial heuristics.
+//! Keeping the result as a small field makes it practical for shading, stylization, and level-of-detail style logic. Public callable behavior is centered on `compute_distance_field`, `compute_distance_field_from_registry`, while method-level behavior such as `at` stays attached to the local data model and invariants.
+//! The computation is map-wide and structural, which means it belongs here rather than in ad hoc rendering code. Runtime integration reaches sibling engine areas through crate modules `province`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::province::registry::ProvinceRegistry;
 

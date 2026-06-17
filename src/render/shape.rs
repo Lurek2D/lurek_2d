@@ -1,13 +1,7 @@
-//! - Stores reusable vector shape definitions as replayable command sequences.
-//! - Packages stroke and fill operations into named assets for UI reuse.
-//! - Retains color and outline thickness attributes along with path commands.
-//! - Minimizes scene building overhead by avoiding dynamic shape rebuilding.
-//! - Implements retain-mode drawings inside the immediate-mode renderer.
-//! - Defines shape commands for circles, arcs, lines, rectangles, and polygons.
-//! - Handles rounded corners using bevels and adaptive curvature step counts.
-//! - Resolves complex shapes into lists of primitive rasterization items.
-//! - Restricts memory reallocations using flat vector coordinates.
-//! - Integrates with compound shape registries for simple frame-level lookups.
+//! Stores reusable vector shape definitions as replayable command sequences. `render/shape` delivers the shape implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Packages stroke and fill operations into named assets for UI reuse. The file owns or coordinates data contracts including `ShapeCommand`, `CompoundShape`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Retains color and outline thickness attributes along with path commands. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_command`, `clear`, `command_count` stays attached to the local data model and invariants.
+//! Minimizes scene building overhead by avoiding dynamic shape rebuilding. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::renderer::DrawMode;
 /// One drawing operation stored inside a `CompoundShape`.

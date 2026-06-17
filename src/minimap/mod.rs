@@ -1,6 +1,5 @@
-//! Minimap subsystem for terrain layers, fog, markers, overlays, and export rendering.
-//! Connects the grid model with renderer output, province data, and raycaster-specific views.
-//! Keeps all minimap-facing state under one runtime namespace.
+//! Minimap subsystem for terrain layers, fog, markers, overlays, and export rendering. `minimap/mod` is the minimap module index, declaring `minimap`, `province_adapter`, `raycaster_overlay`, `render`, `types` so agents can identify which files own each feature slice before opening implementation code.
+//! Connects the grid model with renderer output, province data, and raycaster-specific views. `src/minimap/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `minimap::Minimap`, `raycaster_overlay::{ build_minimap_tile_window, compute_tile_light, draw_player_arrow, extract_minimap, reveal_cells_from_rays, MinimapTileSample, }`, `types::{ ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapMarker, MinimapObject, MinimapObjectType, MinimapPing, OverlayPath, OverlayShape, }` centralized for the minimap subsystem.
 
 #[allow(clippy::module_inception)]
 /// Core minimap state and update logic.

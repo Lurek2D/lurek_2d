@@ -1,8 +1,8 @@
-//! Entity snapshot capture and wire serialization for networked state.
-//! Supports linear dead-reckoning prediction between ticks.
-//! Handles server-authoritative reconciliation with a configurable blend factor.
-//! Gives the multiplayer stack a compact sync model for replicated actors.
-//! Module API documentation
+//! Entity snapshot capture and wire serialization for networked state. `network/net_sync` delivers the net sync implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports linear dead-reckoning prediction between ticks. The file owns or coordinates data contracts including `EntitySnapshot`, `SyncSnapshot`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Handles server-authoritative reconciliation with a configurable blend factor. Public callable behavior is centered on `predict_linear`, `reconcile`, `reconcile_with_policy`, while method-level behavior such as `to_netvalue`, `from_netvalue` stays attached to the local data model and invariants.
+//! Gives the multiplayer stack a compact sync model for replicated actors. Runtime integration reaches sibling engine areas through crate modules `network`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `network/net_sync` delivers the net sync implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use crate::network::message::NetValue;
 /// Point-in-time position and velocity snapshot for one networked entity.

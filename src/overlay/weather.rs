@@ -1,8 +1,7 @@
-//! Weather particle simulation state and management for screen-space overlays.
-//! Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
-//! Tracks particle pools, wind parameters, and an internal PRNG.
-//! Keeps weather spawning and motion separated from the main scene model.
-//! Provides reusable state for long-lived atmospheric weather effects.
+//! Weather particle simulation state and management for screen-space overlays. `overlay/weather` delivers the weather implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors. The file owns or coordinates data contracts including `WeatherType`, `WeatherParticle`, `WeatherState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Tracks particle pools, wind parameters, and an internal PRNG. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `name`, `next_unit` stays attached to the local data model and invariants.
+//! Keeps weather spawning and motion separated from the main scene model. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// Enumerates supported weather particle behaviors.

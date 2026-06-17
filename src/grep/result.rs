@@ -1,8 +1,7 @@
-//! - Search result types: per-line matches, per-file matches, and totals.
-//! - `LineMatch` carries `line_number`, `content` string, and `positions` spans.
-//! - `FileMatch` groups `Vec<LineMatch>` under a `PathBuf` source path.
-//! - `GrepResult` is the top-level return: `matches`, `files_searched`, `total_matches`.
-//! - All types are `Debug + Clone`; `GrepResult` implements `Display` for summary output.
+//! Search result types: per-line matches, per-file matches, and totals. `grep/result` delivers the result implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `LineMatch` carries `line_number`, `content` string, and `positions` spans. The file owns or coordinates data contracts including `LineMatch`, `FileMatch`, `SearchResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! `FileMatch` groups `Vec<LineMatch>` under a `PathBuf` source path. Public callable behavior is centered on no named public items, while method-level behavior such as `empty`, `is_empty`, `limit_total_matches` stays attached to the local data model and invariants.
+//! `GrepResult` is the top-level return: `matches`, `files_searched`, `total_matches`. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::path::PathBuf;
 

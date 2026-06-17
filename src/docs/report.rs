@@ -1,8 +1,7 @@
-//! Provides documentation quality evaluation logic that scores completeness and classifies report grades.
-//! Validates catalog integrity by tracking missing, phantom, and incomplete documentation records.
-//! Aggregates per-entry and per-module metrics into actionable quality snapshots for maintainers.
-//! Supports both full-catalog analysis and direct entry-based reporting for flexible pipeline usage.
-//! Delivers consistent quality signals that guide doc cleanup and release readiness checks.
+//! Provides documentation quality evaluation logic that scores completeness and classifies report grades. `docs/report` delivers the report implementation for the docs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Validates catalog integrity by tracking missing, phantom, and incomplete documentation records. The file owns or coordinates data contracts including `ValidationReport`, `QualityReport`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Aggregates per-entry and per-module metrics into actionable quality snapshots for maintainers. Public callable behavior is centered on `quality_score`, `quality_grade`, while method-level behavior such as `new`, `is_clean`, `total_issues`, `compute`, `module_grade`, `from_entries` stays attached to the local data model and invariants.
+//! Supports both full-catalog analysis and direct entry-based reporting for flexible pipeline usage. Runtime integration reaches sibling engine areas through crate modules `docs`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::docs::catalog::Catalog;
 use crate::docs::entry::DocEntry;

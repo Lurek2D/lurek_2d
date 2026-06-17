@@ -4,8 +4,6 @@
 //! Transition queuing is integrated into the stack because movement between scenes often has both control-flow and visual timing aspects.
 //! Shared scene data also lives at this layer, giving separate scenes a structured way to pass values without global sprawl.
 //! Layer and overlay handling let multiple scenes coexist when needed while still preserving a clear notion of current stack order.
-//! The file is therefore the operational controller for game-state progression across menus, levels, popups, and intermediate screens.
-//! It is the place where scene flow becomes a managed runtime system rather than a pile of manual table swaps.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{

@@ -1,8 +1,7 @@
-//! Implements bounded rolling frame-timing history used for live performance telemetry.
-//! Computes aggregate metrics including FPS, mean, min, max, and percentile summaries.
-//! Produces immutable snapshot views for diagnostics overlays and developer reporting paths.
-//! Serves as the frame-statistics data source for devtools performance introspection.
-//! Keeps sample retention bounded to maintain predictable memory usage in long sessions.
+//! Implements bounded rolling frame-timing history used for live performance telemetry. `devtools/frame_stats` delivers the frame stats implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Computes aggregate metrics including FPS, mean, min, max, and percentile summaries. The file owns or coordinates data contracts including `FrameStats`, `FrameSnapshot`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Produces immutable snapshot views for diagnostics overlays and developer reporting paths. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `record`, `set_capacity`, `snapshot` stays attached to the local data model and invariants.
+//! Serves as the frame-statistics data source for devtools performance introspection. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::collections::VecDeque;
 #[derive(Debug)]

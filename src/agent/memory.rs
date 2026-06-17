@@ -1,9 +1,8 @@
-//! Implements layered agent memory with short-term context, episodic recall, and durable semantic knowledge.
-//! Applies distinct retention strategies so each memory tier fits a different reasoning horizon.
-//! Supports bounded working slots for prompt context while preserving ordered recency behavior.
-//! Records timestamped episodes for searchable event history and narrative continuity.
-//! Stores semantic facts as named durable entries that survive immediate conversational churn.
-//! Provides aggregate save and load flows for cross-session continuity of memory state.
+//! Implements layered agent memory with short-term context, episodic recall, and durable semantic knowledge. `agent/memory` delivers the memory implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Applies distinct retention strategies so each memory tier fits a different reasoning horizon. The file owns or coordinates data contracts including `WorkingMemory`, `Episode`, `EpisodicMemory`, `SemanticMemory`, `AgentMemory`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports bounded working slots for prompt context while preserving ordered recency behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `capacity`, `len`, `is_empty`, `push`, `get`, and 9 more stays attached to the local data model and invariants.
+//! Records timestamped episodes for searchable event history and narrative continuity. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Stores semantic facts as named durable entries that survive immediate conversational churn. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::{HashMap, VecDeque};
 

@@ -1,11 +1,7 @@
-//! - Defines raw binary structures and types representing compiled user WGSL shaders.
-//! - Maps uniform value types to their corresponding GPU buffer layout variants.
-//! - Caches compiled wgpu pipelines within shader structures to prevent reconstruction.
-//! - Key-indexes compiled shaders in the central registry for zero-cost search lookups.
-//! - Enforces static layout verification to validate uniform layouts at draw dispatch.
-//! - Defines uniform value mappings for scalars, vectors, matrices, and arrays.
-//! - Provides conversion helpers to bridge dynamic uniforms to byte arrays.
-//! - Translates compile errors into standard Lurek2D diagnostic logs.
+//! Defines raw binary structures and types representing compiled user WGSL shaders. `render/gpu_shaders` delivers the gpu shaders implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Maps uniform value types to their corresponding GPU buffer layout variants. The file owns or coordinates data contracts including `ShaderUniformKind`, `GpuShader`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Caches compiled wgpu pipelines within shader structures to prevent reconstruction. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+
 use crate::render::gpu_pipeline::PipelineKey;
 use crate::runtime::resource_keys::ShaderKey;
 use std::collections::HashMap;

@@ -48,7 +48,7 @@ Single registry for all durable tooling under `tools/`.
 - `audit/lua_nonunit_test_coverage.py` [audit; durable; mcp:no] - lua_nonunit_test_coverage.py - Audit canonical non-unit Lua tests in tests/lua.
 - `audit/lua_spec_coverage.py` [audit; durable; mcp:candidate] - lua_spec_coverage.py — Measure how completely docs/specs/<module>.md covers the lurek.* Lua API.
 - `audit/lua_test_structure_audit.py` [audit; durable; mcp:no] - Audit and normalize Lua BDD test structure under tests/lua.
-- `audit/module_docstring_audit.py` [audit; durable; mcp:no] - module_docstring_audit.py -- Audit Rust source files for adequate module-level //! docstrings.
+- `audit/module_docstring_audit.py` [audit; durable; mcp:candidate] - Audit Rust file-level //! coverage with exact LOC tiers, 90-120 character bodies, mod.rs doubling, and lua_api exceptions.
 - `audit/mutation_report.py` [audit; durable; mcp:no] - mutation_report.py — run cargo-mutants for selected priority modules.
 - `audit/parse_test_log.py` [audit; durable; mcp:no] - tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary.
 - `audit/perf_regression_gate.py` [audit; durable; mcp:no] - perf_regression_gate.py — lightweight perf/stress regression gate for CI.
@@ -125,7 +125,7 @@ Single registry for all durable tooling under `tools/`.
 - `fix/format_examples.py` [maintenance; targeted-maintenance; mcp:no] - tools/fix/format_examples.py
 - `fix/improve_examples.py` [maintenance; targeted-maintenance; mcp:no] - tools/fix/improve_examples.py
 - `fix/improve_lua_docstrings.py` [maintenance; targeted-maintenance; mcp:no] - improve_lua_docstrings.py — Rewrites existing thin/incorrect /// docstrings in
-- `fix/module_docstring_fix.py` [maintenance; targeted-maintenance; mcp:no] - module_docstring_fix.py -- Expand/repair module-level //! docstrings in Rust source files.
+- `fix/module_docstring_fix.py` [maintenance; targeted-maintenance; mcp:no] - Apply manually authored Rust file-level //! docs from a JSON manifest after policy validation.
 - `fix/spec_docstring_apply.py` [maintenance; targeted-maintenance; mcp:no] - spec_docstring_apply.py -- Apply Source Documentation from specs to Rust //! docstrings.
 - `fix/strip_garbage_doc_lines.py` [maintenance; targeted-maintenance; mcp:no] - strip_garbage_doc_lines.py -- Remove auto-generated garbage lines from //! docstrings.
 
@@ -148,6 +148,7 @@ Single registry for all durable tooling under `tools/`.
 - `rag/contract.py` [query; durable; mcp:no] - Shared RAG contract constants and defaults for query/read/context tooling.
 - `rag/context.py` [query; durable; mcp:no] - Build an agent-friendly context bundle from the local Lurek2D RAG index.
 - `rag/eval.py` [query; durable; mcp:no] - Evaluate local RAG recall against a prompt baseline for agent workflows.
+- `rag/insights.py` [query; durable; mcp:no] - Run SQL insights and audits over the local DuckDB RAG index.
 - `rag/query.py` [query; durable; mcp:candidate] - Query and read the local SQLite FTS5 RAG index for Lurek2D.
 - `rag/read.py` [query; durable; mcp:no] - Read full chunks from the local Lurek2D RAG index by chunk id.
 
@@ -185,6 +186,6 @@ Single registry for all durable tooling under `tools/`.
 - `validate/validate_lua_binding_reports.py` [validate; durable; mcp:candidate] - Validate docstring bindings against code-derived Lua registration snapshots.
 - `validate/validate_module_coverage.py` [validate; durable; mcp:candidate] - Validate top-level module/spec coverage.
 - `validate/validate_param_types.py` [validate; durable; mcp:candidate] - validate_param_types.py — Verify that @param type tags match Rust closure type inference.
-- `validate/validate_rust_file_docs.py` [validate; durable; mcp:no] - validate_rust_file_docs.py — Check that every Rust source file in src/
+- `validate/validate_rust_file_docs.py` [validate; durable; mcp:no] - Validate Rust file-level //! docs with the repository docstring coverage policy.
 - `validate/validate_rust_source_docs.py` [validate; durable; mcp:no] - Validate file-level and public-item Rust docs-general under src/.
 - `validate/validate_snippets.py` [validate; durable; mcp:candidate] - Validate content/snippets marker structure and VS Code snippet output freshness.

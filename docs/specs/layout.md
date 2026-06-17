@@ -34,47 +34,42 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### dag.rs
 
-- Provides staged layered layout for directed graphs where flow direction and rank readability are primary goals.
+- Provides staged layered layout for directed graphs where flow direction and rank readability are primary goals. `layout/dag` delivers the dag implementation for the layout subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 - Organizes nodes into bands, reorders local neighborhoods to reduce crossings, and then assigns stable screen coordinates.
-- Applies spacing and margin policy from shared layout config so outputs align with other module strategies.
-- Prefers deterministic structure over visual drift to keep dependency and progression maps legible across updates.
-- Serves graph-like UI flows that need clear upstream-downstream interpretation without manual node placement.
+- Applies spacing and margin policy from shared layout config so outputs align with other module strategies. Public callable behavior is centered on `layout_dag`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Prefers deterministic structure over visual drift to keep dependency and progression maps legible across updates. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### force.rs
 
-- Delivers force-based layout for arbitrary connectivity where organic grouping matters more than strict hierarchy.
-- Balances repulsion and edge tension over iterative cooling to separate clusters while preserving relation cues.
-- Exposes tunable simulation intensity, area bounds, and convergence rhythm for different graph densities.
-- Produces coordinate fields that remain compatible with shared layout result types and downstream alignment passes.
-- Fits exploratory maps, relation webs, and editor views that need natural spacing without hard rank constraints.
+- Delivers force-based layout for arbitrary connectivity where organic grouping matters more than strict hierarchy. `layout/force` delivers the force implementation for the layout subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Balances repulsion and edge tension over iterative cooling to separate clusters while preserving relation cues. The file owns or coordinates data contracts including `ForceConfig`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Exposes tunable simulation intensity, area bounds, and convergence rhythm for different graph densities. Public callable behavior is centered on `layout_force`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Produces coordinate fields that remain compatible with shared layout result types and downstream alignment passes. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### grid_align.rs
 
-- Provides finishing transforms that regularize raw layout coordinates before visual presentation.
-- Snaps node positions to consistent grid rhythm to improve scanability and manual editing behavior.
-- Recenters complete layouts into target areas without changing graph topology or sibling ordering.
-- Acts as the last geometry polish stage shared by multiple upstream layout strategies.
+- Provides finishing transforms that regularize raw layout coordinates before visual presentation. `layout/grid_align` delivers the grid align implementation for the layout subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Snaps node positions to consistent grid rhythm to improve scanability and manual editing behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Recenters complete layouts into target areas without changing graph topology or sibling ordering. Public callable behavior is centered on `snap_to_grid`, `center_in_area`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 ### mod.rs
 
-- Aggregates graph and tree layout strategies into one coherent coordinate service for runtime visuals.
-- Unifies result and config contracts so callers can switch placement style without changing integration code.
-- Exposes high-level re-exports that keep dependent systems decoupled from per-algorithm file structure.
+- Aggregates graph and tree layout strategies into one coherent coordinate service for runtime visuals. `layout/mod` is the layout module index, declaring `dag`, `force`, `grid_align`, `tree`, `types` so agents can identify which files own each feature slice before opening implementation code.
+- Unifies result and config contracts so callers can switch placement style without changing integration code. `src/layout/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `dag::layout_dag`, `force::{layout_force, ForceConfig}`, `grid_align::{center_in_area, snap_to_grid}`, `tree::layout_tree`, and 1 more centralized for the layout subsystem.
 
 ### tree.rs
 
-- Implements rooted hierarchy placement that keeps parent-child reading order clear and branch spacing compact.
-- Walks subtrees recursively to allocate horizontal extent before anchoring parent coordinates in stable positions.
-- Applies shared spacing controls to balance density and readability for branching structures of uneven depth.
-- Targets dialog flows and progression trees that require explicit structure with minimal manual cleanup.
+- Implements rooted hierarchy placement that keeps parent-child reading order clear and branch spacing compact. `layout/tree` delivers the tree implementation for the layout subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Walks subtrees recursively to allocate horizontal extent before anchoring parent coordinates in stable positions. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Applies shared spacing controls to balance density and readability for branching structures of uneven depth. Public callable behavior is centered on `layout_tree`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Targets dialog flows and progression trees that require explicit structure with minimal manual cleanup. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### types.rs
 
-- Defines the common data contract that every layout algorithm in this module reads and writes.
-- Encodes node identity, geometry hints, and mutable coordinates in a shape tuned for repeated transforms.
-- Represents graph relations with lightweight edge records that support directional and weighted workflows.
-- Packages algorithm outputs into a uniform result container for renderer and tooling consumption.
-- Keeps configuration and result semantics stable so backends can evolve without breaking caller expectations.
+- Defines the common data contract that every layout algorithm in this module reads and writes. `layout/types` delivers the shared type definitions and data contracts for the layout subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Encodes node identity, geometry hints, and mutable coordinates in a shape tuned for repeated transforms. The file owns or coordinates data contracts including `NodeId`, `LayoutNode`, `LayoutEdge`, `LayoutConfig`, `LayoutResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Represents graph relations with lightweight edge records that support directional and weighted workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_size`, `with_label`, `with_weight`, `get`, `count` stays attached to the local data model and invariants.
+- Packages algorithm outputs into a uniform result container for renderer and tooling consumption. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

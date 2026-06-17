@@ -1,15 +1,11 @@
-//! Implements typed vectorized column storage for high-throughput dataframe-style numeric processing.
-//! Supports float, integer, boolean, and text columns with optional validity-mask semantics.
-//! Provides scalar element-wise transforms across arithmetic and unary operation families.
-//! Executes binary column operations with dtype-aware coercion and compatibility checks.
-//! Computes reductions including sum, mean, min, max, variance, and related aggregate metrics.
-//! Generates comparison masks for predicate-style filtering over typed column values.
-//! Supports bidirectional conversion between vectorized frames and generic dataframe representations.
-//! Applies parallelized multi-column operations and reductions via rayon-backed execution paths.
-//! Handles explicit column casting between numeric and textual type domains.
-//! Preserves boolean-mask filtering behavior consistently across all supported column types.
-//! Balances performance-oriented storage layout with conversion interoperability requirements.
-//! Serves as the vectorized acceleration layer above core dataframe contracts.
+//! Implements typed vectorized column storage for high-throughput dataframe-style numeric processing. `dataframe/vectorized` delivers the vectorized implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports float, integer, boolean, and text columns with optional validity-mask semantics. The file owns or coordinates data contracts including `ColumnStore`, `ScalarOp`, `BinaryOp`, `ReduceOp`, `CmpOp`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides scalar element-wise transforms across arithmetic and unary operation families. Public callable behavior is centered on no named public items, while method-level behavior such as `dtype_name`, `len`, `is_empty`, `is_valid`, `valid_f64s`, `filter`, and 18 more stays attached to the local data model and invariants.
+//! Executes binary column operations with dtype-aware coercion and compatibility checks. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Computes reductions including sum, mean, min, max, variance, and related aggregate metrics. External integration uses `rayon`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Generates comparison masks for predicate-style filtering over typed column values. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Supports bidirectional conversion between vectorized frames and generic dataframe representations. State changes, validation paths, and helper routines in `src/dataframe/vectorized.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+//! Applies parallelized multi-column operations and reductions via rayon-backed execution paths. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 use rayon::prelude::*;

@@ -1,6 +1,5 @@
-//! Provides the high-level dialog module surface that unifies authored conversation flow with runtime progression state.
-//! Connects speaker identity, gating logic, selection models, and lifecycle events into one coherent interaction layer.
-//! Delivers a stable module boundary that scripts and systems consume as the canonical dialogue orchestration entry point.
+//! Provides the high-level dialog module surface that unifies authored conversation flow with runtime progression state. `dialog/mod` is the dialog module index, declaring `condition`, `events`, `sequencer`, `speaker`, `state`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
+//! Connects speaker identity, gating logic, selection models, and lifecycle events into one coherent interaction layer. `src/dialog/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `condition::{DialogueCondition, GateContext}`, `events::DialogueEvent`, `sequencer::{DialogNode as SequencerNode, DialogSequencer, SequencerState}`, `speaker::{Speaker, SpeakerRegistry}`, and 2 more centralized for the dialog subsystem.
 
 /// Gate conditions that guard dialog branch and topic selection.
 pub mod condition;

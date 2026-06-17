@@ -1,7 +1,7 @@
-//! Defines distance-tiered AI update policy so compute effort follows player-relevant proximity.
-//! Assigns cadence bands that throttle far entities while keeping near interactions immediate.
-//! Stabilizes frame budget by converting spatial spread into predictable scheduling pressure.
-//! Provides a compact scalability dial for large-population scenes with bounded responsiveness loss.
+//! Defines distance-tiered AI update policy so compute effort follows player-relevant proximity. `ai/lod` delivers the lod implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Assigns cadence bands that throttle far entities while keeping near interactions immediate. The file owns or coordinates data contracts including `LodTier`, `AILod`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Stabilizes frame budget by converting spatial spread into predictable scheduling pressure. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `tier`, `tier_count`, `tier_for`, `assign_tiers`, `should_update` stays attached to the local data model and invariants.
+//! Provides a compact scalability dial for large-population scenes with bounded responsiveness loss. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// One LOD bucket for AI work. This item is part of the public API.
 #[derive(Clone)]

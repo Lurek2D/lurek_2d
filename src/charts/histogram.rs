@@ -1,8 +1,8 @@
-//! Implements histogram rasterization for distribution analysis and dashboard telemetry.
-//! Buckets numeric samples into configurable bins and renders grouped bars for one or more series.
-//! Supports streaming sample windows, dataframe ingestion, explicit ranges, and density mode.
-//! Module API documentation
-//!
+//! Implements histogram rasterization for distribution analysis and dashboard telemetry. `charts/histogram` delivers the histogram implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Buckets numeric samples into configurable bins and renders grouped bars for one or more series. The file owns or coordinates data contracts including `HistogramSeries`, `HistogramChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports streaming sample windows, dataframe ingestion, explicit ranges, and density mode. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_series`, `add_series_from_dataframe`, `replace_series`, `append_value`, `clear`, and 8 more stays attached to the local data model and invariants.
+//! `charts/histogram` delivers the histogram implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! The file owns or coordinates data contracts including `HistogramSeries`, `HistogramChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions};
 use crate::charts::render_utils::{

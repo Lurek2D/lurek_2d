@@ -1,8 +1,8 @@
-//! Stateful sprite-clip animator used by the Lua-facing `lurek.sprite` API.
-//!
-//! This module owns playback state transitions and frame stepping rules. Lua
-//! bindings should stay thin and delegate update logic to this type.
-//! Module API documentation
+//! Stateful sprite-clip animator used by the Lua-facing `lurek.sprite` API. `sprite/animator` delivers the animator implementation for the sprite subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This module owns playback state transitions and frame stepping rules. Lua. The file owns or coordinates data contracts including `SpriteClip`, `AnimatorEvent`, `SpriteAnimator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! bindings should stay thin and delegate update logic to this type. Public callable behavior is centered on no named public items, while method-level behavior such as `normalized`, `new`, `add_clip`, `play`, `pause`, `resume`, and 7 more stays attached to the local data model and invariants.
+//! `sprite/animator` delivers the animator implementation for the sprite subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! The file owns or coordinates data contracts including `SpriteClip`, `AnimatorEvent`, `SpriteAnimator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 
 use std::collections::HashMap;
 

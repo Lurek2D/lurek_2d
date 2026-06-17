@@ -1,6 +1,6 @@
-//! Relay ticket encoding and decoding for room and peer identification.
-//! Builds UDP hole-punch probe payloads with a magic prefix.
-//! Provides lightweight helpers for relay-based NAT traversal signalling.
+//! Relay ticket encoding and decoding for room and peer identification. `network/relay` delivers the relay implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Builds UDP hole-punch probe payloads with a magic prefix. The file owns or coordinates data contracts including `RelayTicket`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides lightweight helpers for relay-based NAT traversal signalling. Public callable behavior is centered on `encode_ticket`, `decode_ticket`, `make_punch_probe`, `parse_punch_probe`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 /// Relay session ticket identifying a room and the connecting peer.
 #[derive(Debug, Clone, PartialEq, Eq)]

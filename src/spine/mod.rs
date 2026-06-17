@@ -1,6 +1,5 @@
 //! This module provides the engine's skeletal animation runtime built around bones, slots, timelines, constraints, and posed rendering support.
-//! It turns hierarchical transform animation into a reusable feature system for articulated 2D characters and props.
-//! At the highest level this is the subsystem that gives the engine pose-driven animation instead of only frame-swapped sprites.
+//! It turns hierarchical transform animation into a reusable feature system for articulated 2D characters and props. `src/spine/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bone::Bone`, `ik::IKConstraint`, `importer::{skeleton_from_json_str, skeleton_from_json_value, SpineImportError}`, `skeleton::{BoneParams, Skeleton}`, and 2 more centralized for the spine subsystem.
 
 /// Bone transform hierarchy and parent-relative pose computation.
 pub mod bone;

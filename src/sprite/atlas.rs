@@ -1,9 +1,7 @@
 //! This file handles named texture-atlas regions so packed art can be addressed by semantic names instead of raw pixel rectangles.
-//! It stores atlas entries with the orientation and flip metadata needed to interpret packing-tool output correctly.
+//! It stores atlas entries with the orientation and flip metadata needed to interpret packing-tool output correctly. The file owns or coordinates data contracts including `AtlasEntry`, `SpriteAtlas`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 //! Parsers for common atlas JSON formats live here because importing packed textures is a content-pipeline concern rather than a render concern.
 //! Lookup is structured for fast name access while still retaining ordered iteration when tools or UIs need to inspect atlas contents.
-//! Conversion from runtime-built atlas data is also supported so authored and generated atlases can share one representation.
-//! The file is the naming and region-mapping layer for packed sprite content.
 
 use crate::animation::aseprite::load_aseprite_json;
 use std::collections::HashMap;

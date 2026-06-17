@@ -1,6 +1,9 @@
-//! Defines the charts module boundary for CPU-rasterized data-visualization rendering.
-//! Groups chart types, shared config contracts, and utility drawing primitives into one surface.
-//! Serves as the composition entry for runtime chart image generation from raw series or DataFrames.
+//! Defines the charts module boundary for CPU-rasterized data-visualization rendering. `charts/mod` is the charts module index, declaring `area`, `bar`, `config`, `heatmap`, `histogram`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
+//! Groups chart types, shared config contracts, and utility drawing primitives into one surface. `src/charts/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `area::AreaChart`, `bar::BarChart`, `config::{ChartConfig, ChartDataFrameOptions, ChartMargin, ChartSeries}`, `heatmap::HeatmapChart`, and 4 more centralized for the charts subsystem.
+//! Serves as the composition entry for runtime chart image generation from raw series or DataFrames. The file documents how charts submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! `charts/mod` is the charts module index, declaring `area`, `bar`, `config`, `heatmap`, `histogram`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/charts/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `area::AreaChart`, `bar::BarChart`, `config::{ChartConfig, ChartDataFrameOptions, ChartMargin, ChartSeries}`, `heatmap::HeatmapChart`, and 4 more centralized for the charts subsystem.
+//! The file documents how charts submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 /// Area chart: filled regions below line series for cumulative value display.
 pub mod area;

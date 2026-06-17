@@ -1,6 +1,5 @@
 //! This module provides scene-stack flow control, scene rendering helpers, transition behavior, and depth ordering support for multi-state games.
-//! It gives the engine a structured way to move between menus, gameplay, overlays, and other major runtime states.
-//! At the highest level this is the feature layer that organizes game flow over time rather than individual world entities.
+//! It gives the engine a structured way to move between menus, gameplay, overlays, and other major runtime states. `src/scene/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `depth_sorter::DepthSorter`, `stack::{SceneId, SceneStack}`, `transition::{ActiveTransition, EasingType, TransitionType}` centralized for the scene subsystem.
 
 /// Depth-sorted entity ordering for scene draw calls.
 pub mod depth_sorter;

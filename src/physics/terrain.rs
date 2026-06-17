@@ -3,8 +3,6 @@
 //! Fill tools support live terrain authoring and destruction patterns such as circles, rectangles, blanket writes, and other broad modifications during play.
 //! Row merging keeps the generated static-body footprint compact, which matters when large tile fields must remain interactive without exploding collider counts.
 //! Serialization and image output make the terrain usable for save systems, tooling, previews, and data exchange outside the immediate simulation step.
-//! Debris spawning and collapse helpers push the system beyond passive walls into active destructible-environment behavior.
-//! Functionally this file delivers the editable ground model that connects tile logic, destruction effects, and efficient static collision rebuilds.
 
 use super::body::{Body, BodyType};
 use super::world::World;

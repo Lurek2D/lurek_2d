@@ -3,7 +3,6 @@
 //! A* and bounded Dijkstra cover shortest routes and local travel envelopes, which makes the graph useful for quests, logistics, and map progression.
 //! Minimum spanning tree support gives generation and analysis code a way to reason about essential connectivity independent of redundant routes.
 //! Random graph construction turns the same structure into a content generator, placing regions spatially and wiring them into plausible networks.
-//! Functionally this file delivers the connected overworld skeleton for route planning, regional structure, and graph-shaped world content.
 
 use crate::procgen::lcg::Lcg;
 use std::cmp::Ordering;

@@ -1,9 +1,8 @@
-//! Uniform-grid spatial hash for broad-phase collision and proximity search.
-//! Buckets moving bounds into cells so query cost follows local density, not world size.
-//! Supports insert, remove, update, and deduplicated multi-shape queries.
-//! Handles rectangle, circle, and segment probes with shared cell traversal logic.
-//! Uses slab-style segment tests for fast box intersection checks.
-//! Works best when many objects stay sparse across a large playfield.
+//! Uniform-grid spatial hash for broad-phase collision and proximity search. `math/spatial_hash` delivers the spatial hash implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Buckets moving bounds into cells so query cost follows local density, not world size. The file owns or coordinates data contracts including `SpatialItem`, `SpatialHash`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports insert, remove, update, and deduplicated multi-shape queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `cell_size`, `item_count`, `insert`, `remove`, `update`, and 4 more stays attached to the local data model and invariants.
+//! Handles rectangle, circle, and segment probes with shared cell traversal logic. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Uses slab-style segment tests for fast box intersection checks. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::{HashMap, HashSet};
 

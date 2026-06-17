@@ -1,6 +1,6 @@
-//! Defines action-binding data shapes used to map logical actions onto multiple physical inputs.
-//! Stores ordered binding strings and optional category grouping for tooling and menu presentation.
-//! Provides serializable action-map structures for loading, saving, and sharing binding presets.
+//! Defines action-binding data shapes used to map logical actions onto multiple physical inputs. `input/action_def` delivers the action def implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores ordered binding strings and optional category grouping for tooling and menu presentation. The file owns or coordinates data contracts including `ActionDef`, `ActionMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides serializable action-map structures for loading, saving, and sharing binding presets. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

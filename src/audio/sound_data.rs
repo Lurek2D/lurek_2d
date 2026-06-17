@@ -1,11 +1,9 @@
-//! Implements in-memory interleaved PCM storage with metadata-aware sample access and mutation.
-//! Supports decode from file and direct buffer creation for generated or procedural audio content.
-//! Provides waveform synthesis helpers for common tonal and noise signal generation workflows.
-//! Applies lightweight in-place transforms such as filtering, gain, and buffer mixing operations.
-//! Exposes encode paths for export-ready WAV byte output from runtime sample data.
-//! Supplies duration and shape queries for tools, previews, and script-side audio reasoning.
-//! Bridges sample data to visual workflows through waveform drawing integration points.
-//! Serves as the core raw sound-data container for playback and preprocessing pipelines.
+//! Implements in-memory interleaved PCM storage with metadata-aware sample access and mutation. `audio/sound_data` delivers the sound data implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports decode from file and direct buffer creation for generated or procedural audio content. The file owns or coordinates data contracts including `SoundData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides waveform synthesis helpers for common tonal and noise signal generation workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_samples`, `from_lua_args`, `from_file`, `get_sample`, `samples`, and 23 more stays attached to the local data model and invariants.
+//! Applies lightweight in-place transforms such as filtering, gain, and buffer mixing operations. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Exposes encode paths for export-ready WAV byte output from runtime sample data. External integration uses `rodio`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Supplies duration and shape queries for tools, previews, and script-side audio reasoning. The file boundary separates audio implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use rodio::Source;
 #[derive(Debug, Clone)]

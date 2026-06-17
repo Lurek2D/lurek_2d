@@ -1,10 +1,8 @@
-//! Integer-cost walkability grid for tile-based pathfinding.
-//! Stores per-cell movement weight where zero means blocked and higher values cost more.
-//! Exposes cardinal and diagonal neighbour queries with corner-cut policies.
-//! Tracks dirty rectangles for deferred HPA hierarchy invalidation.
-//! Supports bulk fill, rect fill, byte import/export, and snapshot cloning.
-//! Renders the grid and path overlay into ImageData for debug use.
-//! Forms the base grid model used by higher-level navigation layers.
+//! Integer-cost walkability grid for tile-based pathfinding. `pathfind/nav_grid` delivers the nav grid implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores per-cell movement weight where zero means blocked and higher values cost more. The file owns or coordinates data contracts including `DiagonalMode`, `NavGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Exposes cardinal and diagonal neighbour queries with corner-cut policies. Public callable behavior is centered on no named public items, while method-level behavior such as `from_lua_str`, `to_lua_str`, `new`, `from_costs`, `get_width`, `get_height`, and 20 more stays attached to the local data model and invariants.
+//! Tracks dirty rectangles for deferred HPA hierarchy invalidation. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports bulk fill, rect fill, byte import/export, and snapshot cloning. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{NG01, NG02, NG03};

@@ -1,8 +1,4 @@
-//! Lua bindings for `lurek.layout`.
-//!
-//! This module exposes tree, DAG, force-directed, and post-processing layout helpers
-//! to Lua. Bindings preserve node geometry and coordinates when results are passed back
-//! into `snapToGrid` and `centerInArea`.
+//! Lua bindings for `lurek.layout`. `src/lua_api/layout_api.rs` registers the `lurek.layout` Lua boundary for layout behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::layout::{

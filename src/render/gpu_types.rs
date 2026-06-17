@@ -1,15 +1,9 @@
-//! - Defines raw binary structures representing GPU vertex layouts.
-//! - Packs memory layouts tightly using bytemuck to ensure copy compliance.
-//! - Groups properties like position, texture coordinates, color tints, and normals.
-//! - Encapsulates command batching metadata for coalescing draw dispatches.
-//! - Tracks instance transformation data for hardware instancing buffers.
-//! - Defines data structures for flat-shaded, textured, and lit vertices.
-//! - Represents compute shader parameter layouts for shadow mapping passes.
-//! - Provides index type aliases and scissor viewport structures.
-//! - Integrates with slotmap resource keys for canvas, font, and texture IDs.
-//! - Standardizes buffer bindings, pipeline options, and draw batch tags.
-//! - Limits padding bytes to comply with GPU uniform block alignment rules.
-//! - Declares struct attributes suitable for standard graphics api input.
+//! Defines raw binary structures representing GPU vertex layouts. `render/gpu_types` delivers the gpu types implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Packs memory layouts tightly using bytemuck to ensure copy compliance. The file owns or coordinates data contracts including `ColorVertex`, `TexVertex`, `LightVertex`, `ShadowEdgeGpu`, `ShadowComputeParams`, and 7 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Groups properties like position, texture coordinates, color tints, and normals. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Encapsulates command batching metadata for coalescing draw dispatches. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Tracks instance transformation data for hardware instancing buffers. External integration uses `bytemuck`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+
 use crate::render::gpu_pipeline::GeometryKind;
 use crate::render::renderer::BlendMode;
 use crate::runtime::resource_keys::{CanvasKey, FontKey, ShaderKey, TextureKey};

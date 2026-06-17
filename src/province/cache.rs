@@ -1,7 +1,7 @@
 //! Geometry cache for province maps that would otherwise need expensive pixel rescans every time spans and border segments are needed again.
 //! The file captures a registry snapshot into a portable binary form so precomputed geometry can survive reloads and avoid repeating extraction work.
-//! Versioned encoding keeps the cache format explicit and safe to evolve alongside the runtime representation.
-//! Functionally this file delivers fast reloadable province geometry persistence for large map workflows.
+//! Versioned encoding keeps the cache format explicit and safe to evolve alongside the runtime representation. Public callable behavior is centered on no named public items, while method-level behavior such as `from_registry`, `encode`, `decode` stays attached to the local data model and invariants.
+//! Functionally this file delivers fast reloadable province geometry persistence for large map workflows. Runtime integration reaches sibling engine areas through crate modules `province`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::province::registry::ProvinceRegistry;
 

@@ -1,6 +1,6 @@
-//! Wire-format value type mirroring Lua's dynamic type system for peer messaging.
-//! Uses MessagePack serialization and deserialization for packed transport.
-//! Provides zero-allocation size estimation before a message is sent.
+//! Wire-format value type mirroring Lua's dynamic type system for peer messaging. `network/message` delivers the message implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Uses MessagePack serialization and deserialization for packed transport. The file owns or coordinates data contracts including `NetValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides zero-allocation size estimation before a message is sent. Public callable behavior is centered on `pack`, `unpack`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 use super::error::NetworkError;
 use serde::{Deserialize, Serialize};

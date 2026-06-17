@@ -1,13 +1,9 @@
-//! Implements token-driven binary pack and unpack flows over whitespace-delimited format descriptions.
-//! Supports endian-aware serialization of scalar values, strings, booleans, and raw byte payloads.
-//! Applies value coercion rules so heterogeneous input variants can be normalized at write time.
-//! Handles fixed-width and variable-width token semantics including prefixed and null-terminated strings.
-//! Provides padding support for alignment-sensitive binary structure construction.
-//! Performs bounds-checked reads and returns structured failures on truncated source buffers.
-//! Computes format size where possible to aid buffer planning and validation.
-//! Returns owned byte containers suitable for downstream binary pipeline integration.
-//! Keeps format parsing and conversion behavior deterministic for script-driven packing contracts.
-//! Serves as a high-level schema layer above low-level byte buffer primitives.
+//! Implements token-driven binary pack and unpack flows over whitespace-delimited format descriptions. `binary/bin_pack` delivers the bin pack implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports endian-aware serialization of scalar values, strings, booleans, and raw byte payloads. The file owns or coordinates data contracts including `BinValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Applies value coercion rules so heterogeneous input variants can be normalized at write time. Public callable behavior is centered on `write`, `read`, `measure_size`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Handles fixed-width and variable-width token semantics including prefixed and null-terminated strings. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Provides padding support for alignment-sensitive binary structure construction. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Performs bounds-checked reads and returns structured failures on truncated source buffers. The file boundary separates binary implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::byte_data::ByteData;
 #[derive(Debug, Clone)]

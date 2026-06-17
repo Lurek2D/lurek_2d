@@ -50,37 +50,31 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### depth_sorter.rs
 
-- This file implements the scene module's depth-ordering utility for draw work that must respect painter-style layering.
+- This file implements the scene module's depth-ordering utility for draw work that must respect painter-style layering. `scene/depth_sorter` delivers the depth sorter implementation for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 - It chooses among multiple sorting strategies so small and large batches can both be handled without one rigid algorithm for every case.
-- Entries carry enough information to sort callbacks and object-style drawables through the same pipeline.
+- Entries carry enough information to sort callbacks and object-style drawables through the same pipeline. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_stable`, `is_stable`, `add`, `add_object`, `sort`, and 5 more stays attached to the local data model and invariants.
 - Stable ordering can be preserved where visual flicker matters, while faster paths remain available when the batch shape allows it.
-- The file is the scene system's answer to getting layered draw order right without hardcoding one sorting cost profile.
 
 ### mod.rs
 
 - This module provides scene-stack flow control, scene rendering helpers, transition behavior, and depth ordering support for multi-state games.
-- It gives the engine a structured way to move between menus, gameplay, overlays, and other major runtime states.
-- At the highest level this is the feature layer that organizes game flow over time rather than individual world entities.
+- It gives the engine a structured way to move between menus, gameplay, overlays, and other major runtime states. `src/scene/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `depth_sorter::DepthSorter`, `stack::{SceneId, SceneStack}`, `transition::{ActiveTransition, EasingType, TransitionType}` centralized for the scene subsystem.
 
 ### object.rs
 
 - Simple 2D scene object entity storing position, sprite reference, and visibility state for basic game drawable management.
 - Provides mutation methods to update position, sprite name, and visibility flag during gameplay without reconstructing the object.
 - Integrates with Lua through `register()` to expose constructor and property setters so scripts can create and control scene objects.
-- Designed as a lightweight alternative to full entity-component systems for games needing basic positioned, sprite-based objects.
 
 ### object_container.rs
 
-- Provides `LSceneObjectContainer` userdata wrapping the pure-Lua scene-objects
-- library. Supports add/remove/clear operations, per-frame update and draw cycles,
-- and layer-based depth sorting for painter-style rendering, plus object query
-- helpers (`getByLayer`, `has`).
+- Provides `LSceneObjectContainer` userdata wrapping the pure-Lua scene-objects. `scene/object_container` delivers the object container implementation for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- library. Supports add/remove/clear operations, per-frame update and draw cycles,. The file owns or coordinates data contracts including `LSceneObjectContainer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- and layer-based depth sorting for painter-style rendering, plus object query. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_container` stays attached to the local data model and invariants.
 
 ### render.rs
 
-- This file bridges the current scene stack state into renderer-facing output and scene snapshots.
-- It focuses on whatever scene is presently render-active, turning stack state into concrete visual results or captures.
-- The file is therefore the narrow handoff between scene orchestration and image or command generation.
+- This file bridges the current scene stack state into renderer-facing output and scene snapshots. `scene/render` delivers the rendering adapter and draw-command integration for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### stack.rs
 
@@ -90,16 +84,13 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 - Transition queuing is integrated into the stack because movement between scenes often has both control-flow and visual timing aspects.
 - Shared scene data also lives at this layer, giving separate scenes a structured way to pass values without global sprawl.
 - Layer and overlay handling let multiple scenes coexist when needed while still preserving a clear notion of current stack order.
-- The file is therefore the operational controller for game-state progression across menus, levels, popups, and intermediate screens.
-- It is the place where scene flow becomes a managed runtime system rather than a pile of manual table swaps.
 
 ### transition.rs
 
-- This file defines the time-based visual language for moving from one scene state to another without abrupt swaps.
+- This file defines the time-based visual language for moving from one scene state to another without abrupt swaps. `scene/transition` delivers the transition implementation for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 - It combines transition kinds, easing behavior, and active progress tracking so scene changes can carry controlled visual momentum.
 - Parsing support is included here because scripts often describe transitions through compact names rather than direct Rust types.
-- The file turns those names and durations into concrete animated progress over time.
-- In practice it is the scene module's motion vocabulary for entering, leaving, and revealing states.
+- The file turns those names and durations into concrete animated progress over time. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

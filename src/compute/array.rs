@@ -1,10 +1,8 @@
-//! Implements the dense n-dimensional array container used by all compute submodules.
-//! Stores typed scalar buffers with explicit shape metadata and deterministic stride computation.
-//! Validates dimensions and element counts to protect allocation and indexing safety boundaries.
-//! Provides constructors for common initialization flows including zeros, ones, ranges, and slices.
-//! Supports flat and coordinate-based access paths for algorithmic and ergonomic usage patterns.
-//! Exposes utility mapping, filling, and iteration helpers for transformation pipelines.
-//! Serves as the foundational data model for operations, analytics, spatial, and linalg layers.
+//! Implements the dense n-dimensional array container used by all compute submodules. `compute/array` delivers the array implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores typed scalar buffers with explicit shape metadata and deterministic stride computation. The file owns or coordinates data contracts including `DataType`, `NdArray`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Validates dimensions and element counts to protect allocation and indexing safety boundaries. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `byte_size`, `name`, `new`, `zeros`, `ones`, and 23 more stays attached to the local data model and invariants.
+//! Provides constructors for common initialization flows including zeros, ones, ranges, and slices. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports flat and coordinate-based access paths for algorithmic and ergonomic usage patterns. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 /// Defines maximum allowed number of elements for safe allocations.
 const MAX_ELEMENTS: usize = 268_435_456;

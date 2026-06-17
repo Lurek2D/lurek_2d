@@ -100,42 +100,56 @@ def _analyze_rust_docs(data: dict) -> dict:
     }
 
 
+def _iter_lua_api_items(modules: dict) -> list[dict]:
+    """Flatten Lua API module functions and userdata methods into one list."""
+    items = []
+    for mod_name, mod_info in modules.items():
+        for fn in mod_info.get("functions", []):
+            items.append({**fn, "module": mod_name})
+        for class_name, class_info in mod_info.get("classes", {}).items():
+            for method in class_info.get("methods", []):
+                items.append({**method, "module": mod_name, "class_name": class_name})
+    return items
+
+
 def _analyze_lua_api(data: dict) -> dict:
     """Analyze Lua API docs-general coverage from gen_lua_api_data.py JSON."""
     # gen_lua_api_data.py nests everything under "lua_api"
     lua_api = data.get("lua_api", data)
-    summary = lua_api.get("summary", {})
     modules = lua_api.get("modules", {})
+    items = _iter_lua_api_items(modules)
 
-    # Flatten module functions into a single list for per-item analysis
-    functions = []
-    for mod_name, mod_info in modules.items():
-        for fn in mod_info.get("functions", []):
-            fn["module"] = mod_name
-            functions.append(fn)
-
-    total = summary.get("total_functions", len(functions))
-    documented = summary.get("documented", sum(1 for f in functions if f.get("description")))
+    total = len(items)
+    documented = sum(1 for item in items if str(item.get("description", "")).strip())
     missing = [
         {
-            "lua_name": f.get("lua_name", f.get("name", "?")),
-            "module": f.get("module", "?"),
-            "kind": f.get("kind", "function"),
-            "file": f.get("file", "?"),
-            "line": f.get("line", 0),
+            "lua_name": item.get("lua_name", item.get("name", "?")),
+            "module": item.get("module", "?"),
+            "kind": item.get("kind", "function"),
+            "file": item.get("file", "?"),
+            "line": item.get("line", 0),
         }
-        for f in functions
-        if not f.get("description")
+        for item in items
+        if not str(item.get("description", "")).strip()
     ]
 
     # Build per-module summary table
     by_module = {}
     for mod_name, mod_info in modules.items():
-        fns = mod_info.get("functions", [])
-        fn_count = sum(1 for f in fns if f.get("kind") != "method")
-        method_count = sum(1 for f in fns if f.get("kind") == "method")
-        mod_documented = sum(1 for f in fns if f.get("description"))
-        mod_total = len(fns)
+        module_functions = mod_info.get("functions", [])
+        module_methods = [
+            method
+            for class_info in mod_info.get("classes", {}).values()
+            for method in class_info.get("methods", [])
+        ]
+        fn_count = len(module_functions)
+        method_count = len(module_methods)
+        mod_total = fn_count + method_count
+        mod_documented = sum(
+            1
+            for entry in module_functions + module_methods
+            if str(entry.get("description", "")).strip()
+        )
         by_module[mod_name] = {
             "total": mod_total,
             "functions": fn_count,
@@ -164,7 +178,7 @@ def generate_report(rust_analysis: dict, lua_analysis: dict) -> str:
         f"| Metric | Count | Coverage |",
         f"|--------|-------|----------|",
         f"| Rust public items | {rust_analysis['total_items']} | {rust_analysis['coverage_pct']}% |",
-        f"| Lua API functions | {lua_analysis['total_functions']} | {lua_analysis['coverage_pct']}% |",
+        f"| Lua API callables | {lua_analysis['total_functions']} | {lua_analysis['coverage_pct']}% |",
         f"| Module-level docs | {rust_analysis['module_docs_count']} | — |",
         "",
     ]

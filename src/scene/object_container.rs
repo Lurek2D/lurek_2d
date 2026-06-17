@@ -1,7 +1,6 @@
-//! Provides `LSceneObjectContainer` userdata wrapping the pure-Lua scene-objects
-//! library. Supports add/remove/clear operations, per-frame update and draw cycles,
-//! and layer-based depth sorting for painter-style rendering, plus object query
-//! helpers (`getByLayer`, `has`).
+//! Provides `LSceneObjectContainer` userdata wrapping the pure-Lua scene-objects. `scene/object_container` delivers the object container implementation for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! library. Supports add/remove/clear operations, per-frame update and draw cycles,. The file owns or coordinates data contracts including `LSceneObjectContainer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! and layer-based depth sorting for painter-style rendering, plus object query. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_container` stays attached to the local data model and invariants.
 
 use mlua::prelude::*;
 

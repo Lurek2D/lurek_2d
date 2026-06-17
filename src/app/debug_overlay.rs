@@ -1,7 +1,6 @@
-//! Implements a lightweight runtime HUD that visualizes key frame diagnostics during gameplay.
-//! Renders compact counters for frame rate and draw workload as overlay command output.
-//! Gates all overlay emission behind explicit enable state to avoid accidental rendering noise.
-//! Serves as a low-cost observability surface for quick in-session performance inspection.
+//! Implements a lightweight runtime HUD that visualizes key frame diagnostics during gameplay. `app/debug_overlay` delivers the debug overlay implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Renders compact counters for frame rate and draw workload as overlay command output. The file owns or coordinates data contracts including `DebugOverlay`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Gates all overlay emission behind explicit enable state to avoid accidental rendering noise. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `build_render_commands` stays attached to the local data model and invariants.
 
 use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::runtime::resource_keys::FontKey;

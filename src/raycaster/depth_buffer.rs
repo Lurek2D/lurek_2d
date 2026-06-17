@@ -1,6 +1,6 @@
-//! This file keeps the narrow depth memory that tells the raycaster which wall distance currently owns each screen column.
+//! This file keeps the narrow depth memory that tells the raycaster which wall distance currently owns each screen column. `raycaster/depth_buffer` delivers the depth buffer implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! It exists so later sprite and overlay work can reject fragments that should remain hidden behind already projected geometry.
-//! The structure is intentionally simple because it is cleared, written, and read every frame on the hottest render path.
+//! The structure is intentionally simple because it is cleared, written, and read every frame on the hottest render path. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `clear`, `set`, `get`, `is_visible`, `width` stays attached to the local data model and invariants.
 
 /// Per-column wall-hit depth used to cull sprite pixels that fall behind a wall.
 pub struct DepthBuffer {

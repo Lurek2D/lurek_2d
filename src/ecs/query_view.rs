@@ -1,6 +1,6 @@
-//! Provides cached component-query views that reuse the last result set until the owning universe changes.
-//! Stores normalized include and exclude component lists so repeated view refreshes stay deterministic.
-//! Delivers coarse-grained query invalidation keyed off the universe change tick rather than per-call recomputation.
+//! Provides cached component-query views that reuse the last result set until the owning universe changes. `ecs/query_view` delivers the query view implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores normalized include and exclude component lists so repeated view refreshes stay deterministic. The file owns or coordinates data contracts including `QueryView`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Delivers coarse-grained query invalidation keyed off the universe change tick rather than per-call recomputation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `ids`, `refresh`, `last_change_tick` stays attached to the local data model and invariants.
 
 use crate::ecs::universe::Universe;
 use mlua::{Lua, Result as LuaResult};

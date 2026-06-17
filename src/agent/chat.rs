@@ -1,9 +1,8 @@
-//! Implements the direct synchronous conversation surface for immediate model-backed agent interactions.
-//! Builds deterministic request envelopes for plain text, structured JSON, and embedding-oriented calls.
-//! Preserves reusable global provider configuration so repeated invocations share one operational baseline.
-//! Maintains multi-turn message history for session continuity and contextual follow-up reasoning.
-//! Applies lightweight prompt templating to inject runtime variables without changing call contracts.
-//! Normalizes backend responses into stable Lua-facing shapes with predictable field semantics.
+//! Implements the direct synchronous conversation surface for immediate model-backed agent interactions. `agent/chat` delivers the chat implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Builds deterministic request envelopes for plain text, structured JSON, and embedding-oriented calls. The file owns or coordinates data contracts including `GlobalLlmConfig`, `LlmTemplate`, `ChatMessage`, `LlmChat`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Preserves reusable global provider configuration so repeated invocations share one operational baseline. Public callable behavior is centered on `read_global_config`, `write_global_config`, `ollama_generate`, `ollama_generate_json`, `ollama_embed`, and 2 more, while method-level behavior such as `new`, `render`, `set_system_prompt`, `system_prompt`, `add_message`, `clear`, and 2 more stays attached to the local data model and invariants.
+//! Maintains multi-turn message history for session continuity and contextual follow-up reasoning. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Applies lightweight prompt templating to inject runtime variables without changing call contracts. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::HashMap;
 use std::sync::{Mutex, OnceLock};

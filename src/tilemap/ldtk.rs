@@ -1,8 +1,7 @@
-//! This file provides LDtk JSON import into the engine-native tilemap representation.
-//! It parses levels and tile layers while rebuilding tileset geometry needed by runtime maps.
-//! It converts pixel-based LDtk placements into stable grid-cell coordinates for simulation.
-//! It keeps external level content aligned with the engine's layered tile data model.
-//! It enables deterministic content ingestion from LDtk authoring workflows.
+//! This file provides LDtk JSON import into the engine-native tilemap representation. `tilemap/ldtk` delivers the ldtk implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It parses levels and tile layers while rebuilding tileset geometry needed by runtime maps. The file owns or coordinates data contracts including `LdtkImportError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It converts pixel-based LDtk placements into stable grid-cell coordinates for simulation. Public callable behavior is centered on `load_ldtk`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! It keeps external level content aligned with the engine's layered tile data model. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::tilemap::TileMap;
 use super::tileset::TileSet;

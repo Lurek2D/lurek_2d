@@ -42,7 +42,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `audit/lua_nonunit_test_coverage.py` - lua_nonunit_test_coverage.py - Audit canonical non-unit Lua tests in tests/lua. [durable; mcp:no]
 - `audit/lua_spec_coverage.py` - lua_spec_coverage.py — Measure how completely docs/specs/<module>.md covers the lurek.* Lua API. [durable; mcp:candidate]
 - `audit/lua_test_structure_audit.py` - Audit and normalize Lua BDD test structure under tests/lua. [durable; mcp:no]
-- `audit/module_docstring_audit.py` - module_docstring_audit.py -- Audit Rust source files for adequate module-level //! docstrings. [durable; mcp:no]
+- `audit/module_docstring_audit.py` - Audit Rust file-level //! coverage with exact LOC tiers, 90-120 character bodies, mod.rs doubling, and lua_api exceptions. [durable; mcp:candidate]
 - `audit/mutation_report.py` - mutation_report.py — run cargo-mutants for selected priority modules. [durable; mcp:no]
 - `audit/parse_test_log.py` - tools/audit/parse_test_log.py — Parse `cargo test` output into a structured summary. [durable; mcp:no]
 - `audit/perf_regression_gate.py` - perf_regression_gate.py — lightweight perf/stress regression gate for CI. [durable; mcp:no]
@@ -114,7 +114,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `fix/format_examples.py` - tools/fix/format_examples.py [targeted-maintenance; mcp:no]
 - `fix/improve_examples.py` - tools/fix/improve_examples.py [targeted-maintenance; mcp:no]
 - `fix/improve_lua_docstrings.py` - improve_lua_docstrings.py — Rewrites existing thin/incorrect /// docstrings in [targeted-maintenance; mcp:no]
-- `fix/module_docstring_fix.py` - module_docstring_fix.py -- Expand/repair module-level //! docstrings in Rust source files. [targeted-maintenance; mcp:no]
+- `fix/module_docstring_fix.py` - Apply manually authored Rust file-level //! docs from a JSON manifest after policy validation. [targeted-maintenance; mcp:no]
 - `fix/spec_docstring_apply.py` - spec_docstring_apply.py -- Apply Source Documentation from specs to Rust //! docstrings. [targeted-maintenance; mcp:no]
 - `fix/strip_garbage_doc_lines.py` - strip_garbage_doc_lines.py -- Remove auto-generated garbage lines from //! docstrings. [targeted-maintenance; mcp:no]
 
@@ -133,6 +133,7 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `rag/contract.py` - Shared RAG contract constants and defaults for query/read/context tooling. [durable; mcp:no]
 - `rag/context.py` - Build an agent-friendly context bundle from the local Lurek2D RAG index. [durable; mcp:no]
 - `rag/eval.py` - Evaluate local RAG recall against a prompt baseline for agent workflows. [durable; mcp:no]
+- `rag/insights.py` - Run SQL insights and audits over the local DuckDB RAG index. [durable; mcp:no]
 - `rag/query.py` - Query and read the local SQLite FTS5 RAG index for Lurek2D. [durable; mcp:candidate]
 - `rag/read.py` - Read full chunks from the local Lurek2D RAG index by chunk id. [durable; mcp:no]
 
@@ -166,6 +167,6 @@ Quick entrypoint for repo tools. Start with `tools/python.cmd tools/<path>.py --
 - `validate/validate_lua_binding_reports.py` - Validate docstring bindings against code-derived Lua registration snapshots. [durable; mcp:candidate]
 - `validate/validate_module_coverage.py` - Validate top-level module/spec coverage. [durable; mcp:candidate]
 - `validate/validate_param_types.py` - validate_param_types.py — Verify that @param type tags match Rust closure type inference. [durable; mcp:candidate]
-- `validate/validate_rust_file_docs.py` - validate_rust_file_docs.py — Check that every Rust source file in src/ [durable; mcp:no]
+- `validate/validate_rust_file_docs.py` - Validate Rust file-level //! docs with the repository docstring coverage policy. [durable; mcp:no]
 - `validate/validate_rust_source_docs.py` - Validate file-level and public-item Rust docs-general under src/. [durable; mcp:no]
 - `validate/validate_snippets.py` - Validate content/snippets marker structure and VS Code snippet output freshness. [durable; mcp:candidate]

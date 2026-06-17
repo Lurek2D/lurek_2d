@@ -1,8 +1,7 @@
 //! Fixed-capacity ring buffer for rolling gameplay history where the newest samples matter most but recent context still needs to remain queryable in order.
 //! The file stores tagged entries in arrival order and automatically evicts the oldest data once capacity is reached, keeping the window fresh without manual trimming.
-//! Numeric and string payload support makes the structure useful for both measured telemetry and symbolic event trails.
+//! Numeric and string payload support makes the structure useful for both measured telemetry and symbolic event trails. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_number`, `push_string`, `iter`, `latest`, `oldest`, and 6 more stays attached to the local data model and invariants.
 //! Aggregate helpers and ordered iteration turn the buffer into a practical runtime history tool instead of a passive overwrite container.
-//! Functionally this delivers short-horizon memory for combo tracking, diagnostics, smoothing inputs, and any system that lives on a moving recent window.
 
 use std::collections::VecDeque;
 

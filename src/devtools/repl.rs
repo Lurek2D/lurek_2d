@@ -1,6 +1,6 @@
-//! Implements a compatibility wrapper around the release-safe REPL session core.
-//! Preserves devtools console API shape with bounded command-history behavior.
-//! Returns evaluation outcomes as success markers, value strings, or formatted errors.
+//! Implements a compatibility wrapper around the release-safe REPL session core. `devtools/repl` delivers the repl implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Preserves devtools console API shape with bounded command-history behavior. The file owns or coordinates data contracts including `ReplConsole`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Returns evaluation outcomes as success markers, value strings, or formatted errors. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `eval`, `history`, `clear`, `len`, `is_empty` stays attached to the local data model and invariants.
 
 use crate::repl::ReplSession;
 #[derive(Debug, Clone)]

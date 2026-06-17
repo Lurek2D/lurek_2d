@@ -1,6 +1,4 @@
-//! This file provides per-region discovery cost metadata used by reveal progression logic.
-//! It encodes adjacency prerequisites and progression thresholds for visibility expansion.
-//! It keeps reveal gating explicit so exploration pacing remains tunable and predictable.
+//! This file provides per-region discovery cost metadata used by reveal progression logic. `visibility/cost` delivers the cost implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Configuration for how expensive it is to discover a region.
 #[derive(Debug, Clone, Copy)]

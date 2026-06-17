@@ -1,6 +1,4 @@
-//! This file provides drift-safe microsecond accumulation for scaled runtime timekeeping.
-//! It preserves fractional carry between ticks so long sessions avoid rounding erosion.
-//! It clamps negative inputs to keep elapsed time monotonic and scheduler-safe.
+//! This file provides drift-safe microsecond accumulation for scaled runtime timekeeping. `timer/accumulator` delivers the accumulator implementation for the timer subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Advance `elapsed_micros` by `dt_seconds * scale`, accumulating fractional.
 /// microseconds in `carry_micros` to avoid drift; clamps negative inputs to zero.

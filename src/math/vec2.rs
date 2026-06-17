@@ -1,8 +1,8 @@
-//! Fundamental 2D float vector for position, velocity, direction, and offsets.
-//! Covers arithmetic, normalization, projection, and distance-style helpers.
-//! Adds rotation, reflection, and angle conversion support for gameplay math.
-//! Offers interpolation and unit-direction construction from radians.
-//! Serves as the common scalar pair used throughout the engine.
+//! Fundamental 2D float vector for position, velocity, direction, and offsets. `math/vec2` delivers the vec2 implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Covers arithmetic, normalization, projection, and distance-style helpers. The file owns or coordinates data contracts including `Vec2`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Adds rotation, reflection, and angle conversion support for gameplay math. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `zero`, `splat`, `dot`, `length`, `length_squared`, and 9 more stays attached to the local data model and invariants.
+//! Offers interpolation and unit-direction construction from radians. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Serves as the common scalar pair used throughout the engine. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Sub, SubAssign};
 

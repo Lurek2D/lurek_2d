@@ -1,13 +1,9 @@
-//! Provides the flownet simulation engine that advances transport, decay, conversion, and queue behavior per tick.
-//! Processes item lifetimes and removes expired entities while preserving graph consistency guarantees.
-//! Moves transit items along edges and resolves arrivals using each node's overflow policy.
-//! Executes push and pull flow mechanics with rate-limited logic tied to node configuration.
-//! Applies conversion rules that consume inputs and emit transformed output items at nodes.
-//! Handles queued backpressure by promoting waiting items when capacity becomes available.
-//! Emits structured simulation events for observable state transitions consumed by scripts.
-//! Supports optional parallel stepping paths for larger network workloads under feature gating.
-//! Coordinates sub-steps in deterministic order to keep outcomes reproducible across runs.
-//! Delivers the runtime progression core for logistics-style gameplay simulation.
+//! Provides the flownet simulation engine that advances transport, decay, conversion, and queue behavior per tick. `flownet/simulation` delivers the simulation implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Processes item lifetimes and removes expired entities while preserving graph consistency guarantees. The file owns or coordinates data contracts including `GraphEvent`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Moves transit items along edges and resolves arrivals using each node's overflow policy. Public callable behavior is centered on no named public items, while method-level behavior such as `update`, `step`, `update_parallel` stays attached to the local data model and invariants.
+//! Executes push and pull flow mechanics with rate-limited logic tied to node configuration. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Applies conversion rules that consume inputs and emit transformed output items at nodes. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Handles queued backpressure by promoting waiting items when capacity becomes available. The file boundary separates flownet implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::core::Graph;
 use super::item::ItemPosition;

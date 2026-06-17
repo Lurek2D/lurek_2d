@@ -1,6 +1,6 @@
-//! Provides split-view globe composition that merges multiple named views into one render batch.
-//! Applies per-entry viewport centers while preserving each globe's camera-relative projection behavior.
-//! Delivers multi-panel frame assembly for comparative or tactical map presentation.
+//! Provides split-view globe composition that merges multiple named views into one render batch. `globe/composition` delivers the composition implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Applies per-entry viewport centers while preserving each globe's camera-relative projection behavior. The file owns or coordinates data contracts including `SplitViewport`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Delivers multi-panel frame assembly for comparative or tactical map presentation. Public callable behavior is centered on `emit_split_frame`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 use crate::globe::draw::emit_globe_frame;
 use crate::globe::registry::GlobeRegistry;

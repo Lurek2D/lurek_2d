@@ -1,8 +1,7 @@
-//! Runtime configuration for mapblock generation shape, slots, and randomness.
-//! Holds grid dimensions, layer limits, and placement behavior flags.
-//! Stores seed and retry controls for deterministic or exploratory runs.
-//! Defines the slot schema that orders per-tile payload interpretation.
-//! Serves as the canonical loaded settings object for assembly routines.
+//! Runtime configuration for mapblock generation shape, slots, and randomness. `mapblock/config` delivers the configuration schema and defaults for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Holds grid dimensions, layer limits, and placement behavior flags. The file owns or coordinates data contracts including `MapBlockConfig`, `SlotDef`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Stores seed and retry controls for deterministic or exploratory runs. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `empty`, `add_slot`, `remove_slot`, `slot_index`, `slot_count`, and 2 more stays attached to the local data model and invariants.
+//! Defines the slot schema that orders per-tile payload interpretation. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// Configuration defining which tile slots exist in a map block system.
 ///

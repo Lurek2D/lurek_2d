@@ -36,10 +36,8 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 ### mod.rs
 
-- This module provides the save-system surface for collecting game state, storing it by slot, and restoring it later.
-- It combines persistence, compression, backup rotation, and migration support under one gameplay-facing feature stack.
-- At the highest level this is the engine subsystem that turns live Lua state into durable save slots.
-- Save payload serialization writes keys in stable sorted order so repeated saves stay reproducible for diffing, testing, and recovery tooling.
+- This module provides the save-system surface for collecting game state, storing it by slot, and restoring it later. `save/mod` is the save module index, declaring `save_manager` so agents can identify which files own each feature slice before opening implementation code.
+- It combines persistence, compression, backup rotation, and migration support under one gameplay-facing feature stack. `src/save/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `save_manager::{ compress_save_content, decompress_save_content, parse_save_table, serialize_table, serialize_value, SaveManager, SaveValue, SlotMeta, }` centralized for the save subsystem.
 
 ### save_manager.rs
 
@@ -48,7 +46,7 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 - Dirty tracking and auto-save timing live here so disk writes happen when needed instead of on every frame or every small state change.
 - Schema versioning and migration routing are also handled here, which lets older saves evolve forward as projects change over time.
 - Serialization and compression are part of the same flow so slot files remain structured, compact, and easy to validate on load.
-- The file is therefore the operational core of persistence for games built on the engine.
+- The file is therefore the operational core of persistence for games built on the engine. The file boundary separates save implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 
 

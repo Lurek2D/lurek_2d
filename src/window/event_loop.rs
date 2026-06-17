@@ -1,8 +1,8 @@
-//! This file provides event-loop side monitor and display helpers for window placement flow.
-//! It enumerates displays and captures snapshot metadata used by window-facing APIs.
-//! It selects startup and fallback monitors with deterministic preference ordering.
-//! It supports centering and cross-display movement operations for runtime window control.
-//! It anchors monitor-aware behavior required by multi-display desktop setups.
+//! This file provides event-loop side monitor and display helpers for window placement flow. `window/event_loop` delivers the event loop implementation for the window subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It enumerates displays and captures snapshot metadata used by window-facing APIs. The file owns or coordinates data contracts including `DisplayInfo`, `FullscreenModeInfo`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It selects startup and fallback monitors with deterministic preference ordering. Public callable behavior is centered on `fallback_display_info`, `get_displays`, `display_snapshots`, `current_display_index`, `current_display_index_or_default`, and 9 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! It supports centering and cross-display movement operations for runtime window control. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It anchors monitor-aware behavior required by multi-display desktop setups. External integration uses `winit`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use winit::event_loop::ActiveEventLoop;
 use winit::monitor::MonitorHandle;

@@ -1,9 +1,8 @@
-//! Implements window-style dataframe computations over ordered row sequences and bounded spans.
-//! Provides rolling mean, sum, min, and max evaluation with configurable window lengths.
-//! Computes dense-style ranking with stable tie handling across repeated numeric values.
-//! Supports row-over-row percent-change derivation for trend and momentum analysis.
-//! Builds cumulative running totals across ordered rows for progressive metric inspection.
-//! Serves as the window-function layer for time-like and sequence-aware dataframe analytics.
+//! Implements window-style dataframe computations over ordered row sequences and bounded spans. `dataframe/query/window` delivers the window implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Provides rolling mean, sum, min, and max evaluation with configurable window lengths. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Computes dense-style ranking with stable tie handling across repeated numeric values. Public callable behavior is centered on no named public items, while method-level behavior such as `with_rolling_mean`, `with_rolling_sum`, `with_rolling_min`, `with_rolling_max`, `with_rank`, `with_pct_change`, and 1 more stays attached to the local data model and invariants.
+//! Supports row-over-row percent-change derivation for trend and momentum analysis. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Builds cumulative running totals across ordered rows for progressive metric inspection. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 impl DataFrame {

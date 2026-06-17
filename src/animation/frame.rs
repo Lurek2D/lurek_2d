@@ -1,6 +1,4 @@
-//! Defines the minimal frame payload of source rectangle and optional per-frame timing override.
-//! Supports clip timing fallback by allowing zero-duration frames to inherit clip-level FPS behavior.
-//! Serves as the shared frame unit across import, playback, preview, and rendering pathways.
+//! Defines the minimal frame payload of source rectangle and optional per-frame timing override. `animation/frame` delivers the frame implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use crate::math::Rect;
 /// Frame rectangle and duration.

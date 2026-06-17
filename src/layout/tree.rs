@@ -1,7 +1,7 @@
-//! Implements rooted hierarchy placement that keeps parent-child reading order clear and branch spacing compact.
-//! Walks subtrees recursively to allocate horizontal extent before anchoring parent coordinates in stable positions.
-//! Applies shared spacing controls to balance density and readability for branching structures of uneven depth.
-//! Targets dialog flows and progression trees that require explicit structure with minimal manual cleanup.
+//! Implements rooted hierarchy placement that keeps parent-child reading order clear and branch spacing compact. `layout/tree` delivers the tree implementation for the layout subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Walks subtrees recursively to allocate horizontal extent before anchoring parent coordinates in stable positions. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Applies shared spacing controls to balance density and readability for branching structures of uneven depth. Public callable behavior is centered on `layout_tree`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Targets dialog flows and progression trees that require explicit structure with minimal manual cleanup. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::types::*;
 use std::collections::{HashMap, HashSet};

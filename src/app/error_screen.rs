@@ -1,9 +1,8 @@
-//! Formats fatal runtime failures into a user-facing visual report that remains readable under stress.
-//! Splits primary error content from traceback context and normalizes noisy text artifacts.
-//! Wraps long lines into screen-friendly layout blocks for predictable in-window readability.
-//! Builds full-screen render command payloads for title, detail body, traceback, and guidance text.
-//! Provides clipboard-ready export text so failure details can be captured quickly.
-//! Serves as the terminal failure presentation path when normal gameplay rendering cannot continue.
+//! Formats fatal runtime failures into a user-facing visual report that remains readable under stress. `app/error_screen` delivers the error screen implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Splits primary error content from traceback context and normalizes noisy text artifacts. The file owns or coordinates data contracts including `ErrorScreen`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Wraps long lines into screen-friendly layout blocks for predictable in-window readability. Public callable behavior is centered on `wrap_text`, `format_traceback`, while method-level behavior such as `from_error`, `from_lua_error`, `from_engine_error`, `build_render_commands`, `as_text` stays attached to the local data model and invariants.
+//! Builds full-screen render command payloads for title, detail body, traceback, and guidance text. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Provides clipboard-ready export text so failure details can be captured quickly. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::runtime::error::EngineError;

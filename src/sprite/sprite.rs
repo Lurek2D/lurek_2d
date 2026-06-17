@@ -1,7 +1,7 @@
 //! This file defines the lightweight single-sprite record used when one textured image instance needs position, transform, and tint data.
 //! It is intentionally small because many systems want sprite-like draw data without carrying atlas, animation, or batching machinery.
-//! Optional normal-map metadata lives here as sprite-owned lighting data even when the renderer path is handled elsewhere.
-//! The type is the simplest textured presentation unit in the sprite subsystem.
+//! Optional normal-map metadata lives here as sprite-owned lighting data even when the renderer path is handled elsewhere. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_position`, `set_scale`, `set_rotation`, `set_color`, `set_normal_map`, and 5 more stays attached to the local data model and invariants.
+//! The type is the simplest textured presentation unit in the sprite subsystem. Runtime integration reaches sibling engine areas through crate modules `color`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::color::Color;
 use crate::math::Vec2;

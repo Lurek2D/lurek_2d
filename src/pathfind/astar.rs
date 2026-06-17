@@ -1,9 +1,8 @@
-//! A* pathfinding on a NavGrid with diagonal modes and configurable unit sizes.
-//! Chooses octile or Manhattan heuristics to match the movement model.
-//! Stops early when a node budget is reached and falls back to a partial path.
-//! Uses Bresenham line-of-sight checks for path smoothing and validation.
-//! Removes redundant waypoints through string-pull smoothing.
-//! Serves as the standard single-unit shortest-path search for grid movement.
+//! A* pathfinding on a NavGrid with diagonal modes and configurable unit sizes. `pathfind/astar` delivers the astar implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Chooses octile or Manhattan heuristics to match the movement model. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Stops early when a node budget is reached and falls back to a partial path. Public callable behavior is centered on `astar`, `line_of_sight`, `smooth_path`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Uses Bresenham line-of-sight checks for path smoothing and validation. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Removes redundant waypoints through string-pull smoothing. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::runtime::log_messages::{AT01, AT02, AT03};
 

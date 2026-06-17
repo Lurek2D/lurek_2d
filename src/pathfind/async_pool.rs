@@ -1,6 +1,9 @@
-//! Prioritized async path-query service for off-thread A* execution.
-//! Supports cancellation, version-based stale-result suppression, and optional partial-path streaming.
-//! Keeps worker lifecycle and queue management isolated from Lua bindings and gameplay code.
+//! Prioritized async path-query service for off-thread A* execution. `pathfind/async_pool` delivers the async pool implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports cancellation, version-based stale-result suppression, and optional partial-path streaming. The file owns or coordinates data contracts including `PathResult`, `PathEventStatus`, `AsyncPathEvent`, `AsyncPathRequest`, `PathThreadPool`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Keeps worker lifecycle and queue management isolated from Lua bindings and gameplay code. Public callable behavior is centered on no named public items, while method-level behavior such as `legacy`, `new`, `submit_query`, `submit`, `poll_events`, `poll`, and 4 more stays attached to the local data model and invariants.
+//! `pathfind/async_pool` delivers the async pool implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! The file owns or coordinates data contracts including `PathResult`, `PathEventStatus`, `AsyncPathEvent`, `AsyncPathRequest`, `PathThreadPool`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Public callable behavior is centered on no named public items, while method-level behavior such as `legacy`, `new`, `submit_query`, `submit`, `poll_events`, `poll`, and 4 more stays attached to the local data model and invariants.
 
 use crate::pathfind::{astar, NavGrid};
 use std::cmp::Ordering;

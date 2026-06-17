@@ -1,6 +1,6 @@
-//! Provides the structured logging facade used to emit level-tagged messages with fields.
-//! Handles runtime level queries and updates while enforcing fast level gating before dispatch.
-//! Exposes compact log-entry helpers consumed by Lua and Rust call sites.
+//! Provides the structured logging facade used to emit level-tagged messages with fields. `log/facade` delivers the public facade over lower-level subsystem helpers for the log subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Handles runtime level queries and updates while enforcing fast level gating before dispatch. The file owns or coordinates data contracts including `LogFields`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Exposes compact log-entry helpers consumed by Lua and Rust call sites. Public callable behavior is centered on `log_structured`, `set_level`, `get_level`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 use crate::runtime::log_messages;
 use std::collections::BTreeMap;

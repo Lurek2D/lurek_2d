@@ -48,66 +48,57 @@ This module primarily collaborates with `color`, `image`, `render`, `runtime`. I
 
 ### ambient.rs
 
-- Global ambient tint state driven by a time-of-day curve.
-- Maps day phases into scene-wide color changes for lighting control.
-- Supplies the ambient baseline consumed by the overlay renderer.
+- Global ambient tint state driven by a time-of-day curve. `overlay/ambient` delivers the ambient implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Maps day phases into scene-wide color changes for lighting control. The file owns or coordinates data contracts including `AmbientState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supplies the ambient baseline consumed by the overlay renderer. Public callable behavior is centered on no named public items, while method-level behavior such as `compute_color_from_time` stays attached to the local data model and invariants.
 
 ### atmosphere.rs
 
-- State structs for full-screen atmosphere overlays such as clouds, fog, haze, grain, and lightning.
-- Carries per-effect enable flags plus density, intensity, color, and speed parameters.
-- Keeps overlay features opt-in so scenes can select only the layers they need.
-- Provides the data model for long-lived atmospheric presentation effects.
-- Separates configuration from rendering so effect logic stays lightweight.
+- State structs for full-screen atmosphere overlays such as clouds, fog, haze, grain, and lightning. `overlay/atmosphere` delivers the atmosphere implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Carries per-effect enable flags plus density, intensity, color, and speed parameters. The file owns or coordinates data contracts including `CloudState`, `FogState`, `HeatHazeState`, `VignetteState`, `FilmGrainState`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Keeps overlay features opt-in so scenes can select only the layers they need. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Provides the data model for long-lived atmospheric presentation effects. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### controller.rs
 
-- Central overlay controller owning every screen-space effect state block.
-- Updates weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning each frame.
-- Spawns and simulates weather particles for rain, snow, hail, dust, leaves, ash, and pollen.
-- Triggers flash, shake, fade, and lightning events through a simple runtime API.
-- Reports shake offset, flash alpha, lightning alpha, and active state to callers.
-- Builds render commands for flash, fade, lightning, and vignette overlays.
-- Resets every subsystem back to a clean inactive state when needed.
-- Supports debug visualisation of internal timing and offset trails.
-- Keeps presentation effects together so higher-level scene code stays thin.
-- Acts as the single screen-space effect scheduler for the renderer.
+- Central overlay controller owning every screen-space effect state block. `overlay/controller` delivers the controller implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Updates weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning each frame. The file owns or coordinates data contracts including `OverlayStats`, `Overlay`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Spawns and simulates weather particles for rain, snow, hail, dust, leaves, ash, and pollen. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `trigger_flash`, `trigger_shake`, `trigger_fade`, `trigger_lightning`, and 19 more stays attached to the local data model and invariants.
+- Triggers flash, shake, fade, and lightning events through a simple runtime API. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Reports shake offset, flash alpha, lightning alpha, and active state to callers. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Builds render commands for flash, fade, lightning, and vignette overlays. The file boundary separates overlay implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### mod.rs
 
-- Screen-space overlay subsystem for ambient lighting, atmosphere, and scene transitions.
-- Groups the state and render paths for weather, water, flash, fog, and fade effects.
-- Keeps screen-space presentation logic under one runtime namespace.
+- Screen-space overlay subsystem for ambient lighting, atmosphere, and scene transitions. `overlay/mod` is the overlay module index, declaring `ambient`, `atmosphere`, `controller`, `screen_effects`, `transition`, and 2 more so agents can identify which files own each feature slice before opening implementation code.
+- Groups the state and render paths for weather, water, flash, fog, and fade effects. `src/overlay/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `ambient::AmbientState`, `atmosphere::{ CloudState, FilmGrainState, FogState, HeatHazeState, LightningState, VignetteState, }`, `controller::Overlay`, `screen_effects::{FadeState, FlashState, ShakeState}`, and 3 more centralized for the overlay subsystem.
 
 ### screen_effects.rs
 
-- Full-screen effect state machines for flash, shake, and fade.
-- Keeps each state focused on timing, activation, and per-frame parameters.
-- Uses a deterministic PRNG for shake offsets without extra RNG plumbing.
-- Provides the short-lived effect core used by the overlay controller.
+- Full-screen effect state machines for flash, shake, and fade. `overlay/screen_effects` delivers the screen effects implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Keeps each state focused on timing, activation, and per-frame parameters. The file owns or coordinates data contracts including `FlashState`, `ShakeState`, `FadeState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Uses a deterministic PRNG for shake offsets without extra RNG plumbing. Public callable behavior is centered on no named public items, while method-level behavior such as `next_random` stays attached to the local data model and invariants.
+- Provides the short-lived effect core used by the overlay controller. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### transition.rs
 
-- Full-screen transition effects for fade, wipe, iris wipe, and dissolve.
-- Supports string-based kind parsing with canonical name round-tripping.
-- Runs with time-based forward and reverse playback modes.
-- Exposes normalized progress for renderer consumption.
-- Gives scene changes a compact state model with predictable timing.
+- Full-screen transition effects for fade, wipe, iris wipe, and dissolve. `overlay/transition` delivers the transition implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports string-based kind parsing with canonical name round-tripping. The file owns or coordinates data contracts including `TransitionKind`, `ScreenTransition`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Runs with time-based forward and reverse playback modes. Public callable behavior is centered on no named public items, while method-level behavior such as `from_str`, `name`, `new`, `play`, `reverse`, `update`, and 3 more stays attached to the local data model and invariants.
+- Exposes normalized progress for renderer consumption. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### water.rs
 
-- Animated water distortion overlay with configurable amplitude, frequency, and speed.
-- Adds shallow-water tint and depth-based color shift with independent blend strengths.
-- Advances the wave pattern through a time-accumulating update loop.
-- Serves as the water-specific screen-space effect for overlays.
+- Animated water distortion overlay with configurable amplitude, frequency, and speed. `overlay/water` delivers the water implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Adds shallow-water tint and depth-based color shift with independent blend strengths. The file owns or coordinates data contracts including `WaterOverlayState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Advances the wave pattern through a time-accumulating update loop. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `reset` stays attached to the local data model and invariants.
 
 ### weather.rs
 
-- Weather particle simulation state and management for screen-space overlays.
-- Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
-- Tracks particle pools, wind parameters, and an internal PRNG.
-- Keeps weather spawning and motion separated from the main scene model.
-- Provides reusable state for long-lived atmospheric weather effects.
+- Weather particle simulation state and management for screen-space overlays. `overlay/weather` delivers the weather implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors. The file owns or coordinates data contracts including `WeatherType`, `WeatherParticle`, `WeatherState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Tracks particle pools, wind parameters, and an internal PRNG. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `name`, `next_unit` stays attached to the local data model and invariants.
+- Keeps weather spawning and motion separated from the main scene model. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

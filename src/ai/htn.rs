@@ -1,9 +1,8 @@
-//! Provides hierarchical task decomposition that transforms abstract goals into executable primitive flow.
-//! Expands authored methods through recursive branching while honoring world-state numeric constraints.
-//! Preserves plan structure and intent traceability across each decomposition depth step.
-//! Limits expansion depth to protect runtime from runaway combinatorial growth.
-//! Supports domain-authored behavioral style where sequencing logic is explicit and inspectable.
-//! Serves as a long-horizon planning backbone for structured narrative or tactical routines.
+//! Provides hierarchical task decomposition that transforms abstract goals into executable primitive flow. `ai/htn` delivers the htn implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Expands authored methods through recursive branching while honoring world-state numeric constraints. The file owns or coordinates data contracts including `WorldState`, `HTNTask`, `HTNMethod`, `HTNDomain`, `HTNPlanner`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Preserves plan structure and intent traceability across each decomposition depth step. Public callable behavior is centered on no named public items, while method-level behavior such as `name`, `is_primitive`, `preconditions_met`, `apply_effects`, `always`, `with_preconditions`, and 8 more stays attached to the local data model and invariants.
+//! Limits expansion depth to protect runtime from runaway combinatorial growth. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports domain-authored behavioral style where sequencing logic is explicit and inspectable. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::collections::HashMap;
 /// Symbolic world state keyed by string names.

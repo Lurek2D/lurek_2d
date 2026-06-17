@@ -1,7 +1,4 @@
-//! Lua bindings for `lurek.font`.
-//!
-//! Exposes built-in and runtime-loaded font handles, measurement helpers,
-//! wrapping utilities, and shaping helpers backed by the render font store.
+//! Lua bindings for `lurek.font`. `src/lua_api/font_api.rs` registers the `lurek.font` Lua boundary for font behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::render::font::{Font, AVAILABLE_POINT_SIZES};

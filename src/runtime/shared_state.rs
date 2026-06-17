@@ -4,12 +4,6 @@
 //! Frame-local render state also accumulates here so gameplay code can enqueue visual intent without talking directly to the GPU backend.
 //! Input aggregation and timing data share the same structure because many systems consume them repeatedly throughout a frame.
 //! Memory budget enforcement belongs here as well, since eviction decisions depend on a global view of runtime-managed assets.
-//! Async filesystem operations are tracked here so polling and completion can integrate cleanly with the main loop.
-//! Several feature modules store their live handles or derived outputs in this container when they need to survive across calls and script boundaries.
-//! The file is intentionally broad because it is not modeling one feature.
-//! It is modeling the practical state surface of the whole running engine.
-//! Without this container, subsystems would duplicate ownership logic or pass oversized parameter sets through every call.
-//! In practice this is the mutable coordination nucleus of the runtime.
 
 use crate::audio::Mixer;
 use crate::camera::Camera;

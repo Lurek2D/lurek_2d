@@ -37,72 +37,63 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### adjacency.rs
 
-- This file provides the adjacency abstraction that supplies neighborhood topology to visibility.
-- It defines a geometry-agnostic contract so grids, graphs, and region maps share one interface.
-- It enables visibility algorithms to run without coupling to any single world representation.
-- It keeps neighbor queries and region cardinality explicit for deterministic reveal behavior.
+- This file provides the adjacency abstraction that supplies neighborhood topology to visibility. `visibility/adjacency` delivers the adjacency implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It defines a geometry-agnostic contract so grids, graphs, and region maps share one interface. The file owns or coordinates data contracts including `AdjacencyProvider`, `SimpleAdjacency`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It enables visibility algorithms to run without coupling to any single world representation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_neighbor`, `add_bidirectional` stays attached to the local data model and invariants.
 
 ### cost.rs
 
-- This file provides per-region discovery cost metadata used by reveal progression logic.
-- It encodes adjacency prerequisites and progression thresholds for visibility expansion.
-- It keeps reveal gating explicit so exploration pacing remains tunable and predictable.
+- This file provides per-region discovery cost metadata used by reveal progression logic. `visibility/cost` delivers the cost implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### events.rs
 
-- This file provides event types emitted when visibility state transitions occur.
-- It captures reveal, hide, and ownership-related changes as script-consumable signals.
-- It enables frame-coherent reaction flows for fog effects and gameplay scripting hooks.
+- This file provides event types emitted when visibility state transitions occur. `visibility/events` delivers the event data and dispatch contracts for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### flags.rs
 
-- This file provides bitflag storage for per-region visibility-related feature markers.
-- It encodes what information layers are present or unlocked for each map region.
-- It supports gated reveal logic by combining flag checks with discovery progression rules.
-- It keeps per-region capability state compact and efficient for frequent visibility queries.
+- This file provides bitflag storage for per-region visibility-related feature markers. `visibility/flags` delivers the flags implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It encodes what information layers are present or unlocked for each map region. The file owns or coordinates data contracts including `VisibilityFlags`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It supports gated reveal logic by combining flag checks with discovery progression rules. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set`, `has`, `union`, `intersect`, `count` stays attached to the local data model and invariants.
 
 ### fog_render.rs
 
-- This file provides fog rendering configuration that maps visibility state to visual intensity.
-- It defines opacity and transition behavior used by world compositing passes.
-- It keeps fog appearance tunable without altering visibility simulation internals.
+- This file provides fog rendering configuration that maps visibility state to visual intensity. `visibility/fog_render` delivers the fog render implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### grid.rs
 
-- This file provides the main visibility grid that stores region state across players and factions.
-- It tracks current and historical knowledge levels to separate visible and discovered outcomes.
-- It drives reveal and hide progression while emitting state-change events for script consumers.
-- It marks dirty regions so rendering and event systems process only meaningful transitions.
-- It supports compact serialization so long-campaign visibility history remains save-friendly.
+- This file provides the main visibility grid that stores region state across players and factions. `visibility/grid` delivers the grid implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It tracks current and historical knowledge levels to separate visible and discovered outcomes. The file owns or coordinates data contracts including `VisibilityGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It drives reveal and hide progression while emitting state-change events for script consumers. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `reveal`, `hide`, `get_state`, `get_fog_intensity`, `set_cost`, and 11 more stays attached to the local data model and invariants.
+- It marks dirty regions so rendering and event systems process only meaningful transitions. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
-- This module delivers the high-level fog, discovery, and line-of-sight system for region maps.
-- It stays geometry-agnostic so tile, province, and custom topologies can share the same model.
-- It unifies state storage, ownership sharing, reveal costs, events, and fog presentation paths.
+- This module delivers the high-level fog, discovery, and line-of-sight system for region maps. `visibility/mod` is the visibility module index, declaring `adjacency`, `cost`, `events`, `flags`, `fog_render`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
+- It stays geometry-agnostic so tile, province, and custom topologies can share the same model. `src/visibility/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `adjacency::AdjacencyProvider`, `cost::DiscoveryCost`, `events::VisibilityEvent`, `flags::VisibilityFlags`, and 5 more centralized for the visibility subsystem.
+- It unifies state storage, ownership sharing, reveal costs, events, and fog presentation paths. The file documents how visibility submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- `visibility/mod` is the visibility module index, declaring `adjacency`, `cost`, `events`, `flags`, `fog_render`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/visibility/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `adjacency::AdjacencyProvider`, `cost::DiscoveryCost`, `events::VisibilityEvent`, `flags::VisibilityFlags`, and 5 more centralized for the visibility subsystem.
+- The file documents how visibility submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 ### owner.rs
 
-- This file provides ownership and alliance mapping used for shared visibility semantics.
-- It tracks player grouping so allied entities can inherit reveal information coherently.
-- It answers hot-path sharing queries that visibility updates depend on each frame.
-- It ensures ownership changes can trigger consistent recalculation of affected states.
+- This file provides ownership and alliance mapping used for shared visibility semantics. `visibility/owner` delivers the owner implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It tracks player grouping so allied entities can inherit reveal information coherently. The file owns or coordinates data contracts including `PlayerOwnership`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It answers hot-path sharing queries that visibility updates depend on each frame. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_group`, `remove_from_group`, `allies_of`, `shares_visibility`, `player_count` stays attached to the local data model and invariants.
 
 ### shadowcast.rs
 
-- This file provides recursive shadowcasting field-of-view for tile-grid visibility queries.
-- It computes current sight masks while preserving explored history across update frames.
-- It accepts blocker predicates at compute time for flexible integration with world state.
-- It serializes visible and explored masks so FOV state can persist across save boundaries.
-- It supports deterministic octant traversal suitable for stealth and roguelike mechanics.
-- It gives visibility systems a fast geometric core for line-of-sight decisions.
-- It keeps FOV computation stable enough for repeated per-frame use in tactical scenarios.
+- This file provides recursive shadowcasting field-of-view for tile-grid visibility queries. `visibility/shadowcast` delivers the shadowcast implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It computes current sight masks while preserving explored history across update frames. The file owns or coordinates data contracts including `TileFov`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It accepts blocker predicates at compute time for flexible integration with world state. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `width`, `height`, `range`, `set_range`, `compute`, and 7 more stays attached to the local data model and invariants.
+- It serializes visible and explored masks so FOV state can persist across save boundaries. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- It supports deterministic octant traversal suitable for stealth and roguelike mechanics. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### state.rs
 
-- This file provides the visibility state model that describes player knowledge per region.
-- It encodes hidden, discovered, visible, and extensible custom levels in one ordered enum.
-- It standardizes information progression so reveal logic and fog rendering stay consistent.
+- This file provides the visibility state model that describes player knowledge per region. `visibility/state` delivers the state container and transition helpers for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It encodes hidden, discovered, visible, and extensible custom levels in one ordered enum. The file owns or coordinates data contracts including `VisibilityState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It standardizes information progression so reveal logic and fog rendering stay consistent. Public callable behavior is centered on no named public items, while method-level behavior such as `level`, `from_level`, `is_known`, `is_visible` stays attached to the local data model and invariants.
 
 
 

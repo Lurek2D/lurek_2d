@@ -1,8 +1,7 @@
-//! Axis-aligned rectangle helper for layout, bounds, and collision checks.
-//! Stores top-left position plus size under the engine's y-down convention.
-//! Supports containment, overlap, union, and bounding-box construction.
-//! Offers both corner-based and center-based creation paths.
-//! Acts as the basic 2D box type used across spatial code.
+//! Axis-aligned rectangle helper for layout, bounds, and collision checks. `math/rect` delivers the rect implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores top-left position plus size under the engine's y-down convention. The file owns or coordinates data contracts including `Rect`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports containment, overlap, union, and bounding-box construction. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `center`, `area`, `contains`, `intersects`, `intersect`, and 3 more stays attached to the local data model and invariants.
+//! Offers both corner-based and center-based creation paths. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::vec2::Vec2;
 

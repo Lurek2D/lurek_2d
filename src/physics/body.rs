@@ -3,7 +3,6 @@
 //! It also binds those roles to supported geometry forms, material defaults, collision filtering, and transform helpers so a body can be reasoned about as one coherent unit.
 //! Constructors emphasize ready-to-use authoring by filling in sensible density, friction, restitution, and motion settings rather than forcing every caller to spell out raw fields.
 //! Geometry utilities keep body space and world space connected, which matters for bounds queries, spawn setup, editor tooling, and shape-aware logic outside the solver.
-//! Functionally this file delivers the authored physical identity of an object before the broader world machinery turns it into live simulated behavior.
 
 use crate::log_msg;
 use crate::math::{Rect, Vec2};

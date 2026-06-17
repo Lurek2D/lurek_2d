@@ -1,9 +1,8 @@
-//! Province-level A* pathfinding across adjacency graphs with configurable move costs.
-//! Adds Dijkstra-based reachability flooding for budget-limited travel.
-//! Models blocked provinces and edge-tag costs in the search cost.
-//! Uses a min-heap priority queue node for standard BinaryHeap ordering.
-//! Applies a Euclidean centroid heuristic for admissible A* search.
-//! Fits strategic map travel where regions, not cells, are the navigation unit.
+//! Province-level A* pathfinding across adjacency graphs with configurable move costs. `pathfind/graph_path` delivers the graph path implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Adds Dijkstra-based reachability flooding for budget-limited travel. The file owns or coordinates data contracts including `ProvincePath`, `ProvinceCostFn`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Models blocked provinces and edge-tag costs in the search cost. Public callable behavior is centered on `find_province_path`, `province_reachable`, while method-level behavior such as `new` stays attached to the local data model and invariants.
+//! Uses a min-heap priority queue node for standard BinaryHeap ordering. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Applies a Euclidean centroid heuristic for admissible A* search. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};

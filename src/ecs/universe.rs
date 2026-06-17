@@ -1,15 +1,11 @@
-//! Provides the central ECS Universe storage that owns entity lifecycle, component rows, and indexing state.
-//! Manages spawn and deletion flows with generational identity to prevent stale-handle reuse errors.
-//! Stores component payloads in Lua-backed tables while exposing predictable set, get, and remove semantics.
-//! Maintains tag, layer, and hierarchy structures for efficient grouping and ordered runtime traversal.
-//! Tracks blueprint templates and mutation helpers so scripted spawning remains data-driven and reusable.
-//! Coordinates system metadata needed for later scheduling and phase-aware execution ordering.
-//! Captures snapshot-diff signals so external consumers can observe incremental state changes.
-//! Supports query acceleration and deterministic iteration patterns for stable gameplay behavior.
-//! Integrates relationship management to keep inter-entity link semantics adjacent to core storage.
-//! Provides reset and cleanup behavior that drains stores safely between scenario lifecycles.
-//! Keeps ECS responsibilities concentrated in one authoritative runtime world-state container.
-//! Delivers the foundational state layer consumed by simulation, rendering, scripting, and tooling.
+//! Provides the central ECS Universe storage that owns entity lifecycle, component rows, and indexing state. `ecs/universe` delivers the universe implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Manages spawn and deletion flows with generational identity to prevent stale-handle reuse errors. The file owns or coordinates data contracts including `SnapshotDiff`, `Universe`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Stores component payloads in Lua-backed tables while exposing predictable set, get, and remove semantics. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_system_store`, `pack_id`, `unpack_slot`, `unpack_gen`, `get_query_change_tick`, and 51 more stays attached to the local data model and invariants.
+//! Maintains tag, layer, and hierarchy structures for efficient grouping and ordered runtime traversal. Runtime integration reaches sibling engine areas through crate modules `ecs`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Tracks blueprint templates and mutation helpers so scripted spawning remains data-driven and reusable. External integration uses `super`, `mlua`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Coordinates system metadata needed for later scheduling and phase-aware execution ordering. The file boundary separates ecs implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Captures snapshot-diff signals so external consumers can observe incremental state changes. State changes, validation paths, and helper routines in `src/ecs/universe.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+//! Supports query acceleration and deterministic iteration patterns for stable gameplay behavior. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
 
 use super::relationships::RelationshipManager;
 use crate::ecs::generational_id::GenerationalId;

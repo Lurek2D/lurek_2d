@@ -1,8 +1,7 @@
-//! Implements shelf-based rectangle packing used to place sprites into compact atlas layouts.
-//! Accepts caller-defined atlas bounds and padding to preserve sampling safety between regions.
-//! Places rectangles in insertion order while tracking shelf growth and remaining horizontal space.
-//! Returns deterministic packed coordinates that map back to source asset identities.
-//! Reports occupancy metrics useful for tuning atlas size and packing efficiency.
+//! Implements shelf-based rectangle packing used to place sprites into compact atlas layouts. `image/rect_packing` delivers the rect packing implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Accepts caller-defined atlas bounds and padding to preserve sampling safety between regions. The file owns or coordinates data contracts including `PackedRect`, `RectPacker`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Places rectangles in insertion order while tracking shelf growth and remaining horizontal space. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `pack`, `clear`, `packed_rects`, `occupancy`, `size`, and 1 more stays attached to the local data model and invariants.
+//! Returns deterministic packed coordinates that map back to source asset identities. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// Placement result for a single packed rectangle.
 #[derive(Debug, Clone, PartialEq, Eq)]

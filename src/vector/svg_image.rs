@@ -1,9 +1,9 @@
-//! Implements the main SVG document parser, layout representation, and rendering bridge.
-//! Traverses the usvg tree, flattens it, and manages per-element runtime state.
-//! Provides hierarchy queries (parent, children, count), bounding box extraction,
-//! color/visibility/transform reads and resets, and GPU canvas caching for vector subtrees.
-//! All mutation methods follow the same error contract: return `Err` when the element ID is absent.
-//! Module API documentation
+//! Implements the main SVG document parser, layout representation, and rendering bridge. `vector/svg_image` delivers the svg image implementation for the vector subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Traverses the usvg tree, flattens it, and manages per-element runtime state. The file owns or coordinates data contracts including `SvgPath`, `SvgElement`, `SvgImage`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides hierarchy queries (parent, children, count), bounding box extraction,. Public callable behavior is centered on no named public items, while method-level behavior such as `from_bytes`, `render`, `get_element_accumulated_transform`, `get_element_points`, `get_adjacencies`, `cache_to_canvas`, and 10 more stays attached to the local data model and invariants.
+//! color/visibility/transform reads and resets, and GPU canvas caching for vector subtrees. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! All mutation methods follow the same error contract: return `Err` when the element ID is absent. External integration uses `std`, `usvg`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `vector/svg_image` delivers the svg image implementation for the vector subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use crate::math::Vec2;
 use crate::render::renderer::{DrawMode, PathSegment, RenderCommand};

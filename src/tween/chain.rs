@@ -1,9 +1,8 @@
-//! This file provides composable tween chains for staged motion and timing choreography.
-//! It supports sequential and grouped progression so animation beats can be orchestrated clearly.
-//! It carries optional step labels that let scripts react to completion boundaries.
-//! It advances with frame delta while preserving deterministic chain state transitions.
-//! It translates complex cinematic timing into a readable structure for runtime execution.
-//! It keeps multi-step animation flow explicit for tools, debugging, and script control.
+//! This file provides composable tween chains for staged motion and timing choreography. `tween/chain` delivers the chain implementation for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It supports sequential and grouped progression so animation beats can be orchestrated clearly. The file owns or coordinates data contracts including `ChainStep`, `ChainEvent`, `TweenChain`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It carries optional step labels that let scripts react to completion boundaries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `value`, `is_done`, `start`, `stop`, `pause`, and 15 more stays attached to the local data model and invariants.
+//! It advances with frame delta while preserving deterministic chain state transitions. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It translates complex cinematic timing into a readable structure for runtime execution. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::math::easing;
 

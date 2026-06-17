@@ -1,7 +1,7 @@
-//! This file provides import resolution checks for Lua require targets in project scripts.
-//! It scans textual require patterns and resolves module paths against configured lookup roots.
-//! It surfaces missing dependencies before runtime to reduce integration surprises.
-//! It keeps the check static and safe by avoiding script execution during analysis.
+//! This file provides import resolution checks for Lua require targets in project scripts. `validator/import_check` delivers the import check implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It scans textual require patterns and resolves module paths against configured lookup roots. The file owns or coordinates data contracts including `ImportResolutionRule`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It surfaces missing dependencies before runtime to reduce integration surprises. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
+//! It keeps the check static and safe by avoiding script execution during analysis. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::report::{Severity, Violation};
 use super::rule::ValidationRule;

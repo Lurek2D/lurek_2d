@@ -1,6 +1,4 @@
-//! Numeric limits for peer connections, channels, and buffer sizes.
-//! Provides default fallback values when game config omits network settings.
-//! Holds timeout durations for HTTP and transport-level operations.
+//! Numeric limits for peer connections, channels, and buffer sizes. `network/constants` delivers the constants implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Hard ceiling on simultaneous peer connections across all transports.
 pub const MAX_PEERS: usize = 4096;

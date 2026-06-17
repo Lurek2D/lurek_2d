@@ -1,8 +1,7 @@
-//! Builds and maintains texture atlases that group many named regions inside one packed image.
-//! Uses shelf-style placement to allocate rectangles while preserving padding and bounds guarantees.
-//! Attaches optional nine-slice inset metadata so UI sprites can scale without corner distortion.
-//! Supports name-based lookup, mutation, and reset operations for dynamic atlas management.
-//! Exposes region geometry and atlas dimensions needed by render and layout call sites.
+//! Builds and maintains texture atlases that group many named regions inside one packed image. `image/texture_atlas` delivers the texture atlas implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Uses shelf-style placement to allocate rectangles while preserving padding and bounds guarantees. The file owns or coordinates data contracts including `NineSliceInsets`, `AtlasRegion`, `TextureAtlas`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Attaches optional nine-slice inset metadata so UI sprites can scale without corner distortion. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `pack`, `pack_with_nine_slice`, `set_nine_slice`, `get_region`, `get_region_count`, and 3 more stays attached to the local data model and invariants.
+//! Supports name-based lookup, mutation, and reset operations for dynamic atlas management. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::collections::HashMap;
 /// Nine-slice border distances used to preserve corners and edges.

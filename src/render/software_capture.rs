@@ -1,9 +1,9 @@
-//! CPU-side screenshot fallback for queued 2D render commands.
-//! Replays a practical subset of `RenderCommand` values into `ImageData`.
-//! Exists to support evidence capture in headless/unit environments where GPU readback is unavailable.
-//! Module API documentation
-//!
-//! TODO: add doc note 1
+//! CPU-side screenshot fallback for queued 2D render commands. `render/software_capture` delivers the software capture implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Replays a practical subset of `RenderCommand` values into `ImageData`. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Exists to support evidence capture in headless/unit environments where GPU readback is unavailable. Public callable behavior is centered on `capture_commands_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! `render/software_capture` delivers the software capture implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Public callable behavior is centered on `capture_commands_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 use crate::image::ImageData;
 use crate::render::mesh::Mesh;

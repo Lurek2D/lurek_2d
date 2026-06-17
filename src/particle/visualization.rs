@@ -1,9 +1,8 @@
-//! Particle visualization helpers that render live ParticleSystem state to ImageData bitmaps.
-//! Includes a generic renderer plus themed presets for explosions, rain, and spark trails.
-//! Supports compositing particles over an existing background or painting in place.
-//! Adds a chart-style lifetime view for inspecting particle counts over time.
-//! Keeps render inspection separate from the particle simulation core.
-//! Helps debug effect tuning without touching the live emitter loop.
+//! Particle visualization helpers that render live ParticleSystem state to ImageData bitmaps. `particle/visualization` delivers the visualization implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Includes a generic renderer plus themed presets for explosions, rain, and spark trails. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports compositing particles over an existing background or painting in place. Public callable behavior is centered on `draw_to_image`, `draw_explosion_to_image`, `draw_rain_to_image`, `draw_spark_trail_to_image`, `draw_over_image`, and 2 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Adds a chart-style lifetime view for inspecting particle counts over time. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Keeps render inspection separate from the particle simulation core. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use super::emitter::ParticleSystem;
 use super::math::{interpolate_alphas, interpolate_colors, interpolate_sizes};

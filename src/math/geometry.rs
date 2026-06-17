@@ -1,11 +1,9 @@
-//! Standalone geometry toolbox for flat coordinate math and polygon routines.
-//! Covers circle, segment, line, and point queries used by gameplay systems.
-//! Computes polygon area, centroid, convex hull, and point inclusion tests.
-//! Provides line rasterization for grid traversal and tile-based effects.
-//! Includes Delaunay triangulation helpers for procedural meshes and Voronoi prep.
-//! Uses f32 for engine-facing work and f64 where triangulation precision matters.
-//! Exposes plain free functions with no shape ownership or scene coupling.
-//! Serves as the shared low-level layer for collision, map, and generation code.
+//! Standalone geometry toolbox for flat coordinate math and polygon routines. `math/geometry` delivers the geometry implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Covers circle, segment, line, and point queries used by gameplay systems. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Computes polygon area, centroid, convex hull, and point inclusion tests. Public callable behavior is centered on `angle_between`, `circle_contains_point`, `circle_intersects_circle`, `circle_intersects_line`, `circle_intersects_segment`, and 9 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Provides line rasterization for grid traversal and tile-based effects. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Includes Delaunay triangulation helpers for procedural meshes and Voronoi prep. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Uses f32 for engine-facing work and f64 where triangulation precision matters. The file boundary separates math implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 /// Return the angle in radians from point (x1, y1) to point (x2, y2) via `atan2`.
 pub fn angle_between(x1: f32, y1: f32, x2: f32, y2: f32) -> f32 {

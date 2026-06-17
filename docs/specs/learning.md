@@ -56,105 +56,95 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 ### attention.rs
 
-- Implements attention primitives used by sequence-learning stacks in the learning subsystem.
-- Provides positional encodings and multi-head attention flows over row-major tensor buffers.
-- Computes query-key-value interactions and head projection paths for contextual token mixing.
-- Integrates with shared evolutionary-layer contracts so parameters can be flattened and restored.
-- Targets CPU inference and training-style experiments without external deep-learning runtimes.
-- Supplies reusable building blocks consumed by transformer encoder and decoder compositions.
+- Implements attention primitives used by sequence-learning stacks in the learning subsystem. `learning/attention` delivers the attention implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides positional encodings and multi-head attention flows over row-major tensor buffers. The file owns or coordinates data contracts including `PositionalEncoding`, `MultiHeadAttention`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Computes query-key-value interactions and head projection paths for contextual token mixing. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `apply`, `forward` stays attached to the local data model and invariants.
+- Integrates with shared evolutionary-layer contracts so parameters can be flattened and restored. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Targets CPU inference and training-style experiments without external deep-learning runtimes. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### bandit.rs
 
-- Implements multi-armed bandit optimization with per-arm reward history and posterior statistics.
-- Supports epsilon-greedy, UCB-style, and Thompson-style selection strategies in one component.
-- Tracks pull counts and cumulative rewards to adapt action choice under uncertain payoffs.
-- Uses deterministic random helpers for reproducible sampling during probabilistic strategies.
-- Exposes reward ingestion, arm selection, and reset operations for online learning loops.
-- Fits lightweight decision problems where full planning frameworks are unnecessary.
+- Implements multi-armed bandit optimization with per-arm reward history and posterior statistics. `learning/bandit` delivers the bandit implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports epsilon-greedy, UCB-style, and Thompson-style selection strategies in one component. The file owns or coordinates data contracts including `BanditArm`, `BanditStrategy`, `Bandit`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Tracks pull counts and cumulative rewards to adapt action choice under uncertain payoffs. Public callable behavior is centered on no named public items, while method-level behavior such as `mean_reward`, `new`, `arm_count`, `select`, `update`, `best_arm`, and 1 more stays attached to the local data model and invariants.
+- Uses deterministic random helpers for reproducible sampling during probabilistic strategies. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Exposes reward ingestion, arm selection, and reset operations for online learning loops. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### conv.rs
 
-- Provides convolution and pooling layers for CPU-side learning and feature-extraction pipelines.
-- Implements tensor-shape-aware forward passes over channel-first image-style inputs.
-- Stores trainable kernels and biases in flat buffers compatible with evolutionary parameter flows.
-- Supports stride and padding behavior needed for practical stacked convolution blocks.
-- Supplies compact building blocks consumed by the higher-level neural engine.
+- Provides convolution and pooling layers for CPU-side learning and feature-extraction pipelines. `learning/conv` delivers the conv implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Implements tensor-shape-aware forward passes over channel-first image-style inputs. The file owns or coordinates data contracts including `Conv2D`, `MaxPool2D`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Stores trainable kernels and biases in flat buffers compatible with evolutionary parameter flows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `forward` stays attached to the local data model and invariants.
+- Supports stride and padding behavior needed for practical stacked convolution blocks. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### engine.rs
 
-- Defines a dynamic neural engine that chains heterogeneous learning blocks in one runtime graph.
-- Hosts dense, convolutional, recurrent, and transformer-like components behind a unified interface.
-- Packs and unpacks flat parameter buffers so composite models work with evolutionary optimizers.
-- Executes staged forward passes through configured block sequences on shared tensor carriers.
-- Serves as the composition hub for mixed-architecture experimentation in the learning module.
+- Defines a dynamic neural engine that chains heterogeneous learning blocks in one runtime graph. `learning/engine` delivers the engine implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Hosts dense, convolutional, recurrent, and transformer-like components behind a unified interface. The file owns or coordinates data contracts including `NeuralBlock`, `LurekNeuralEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Packs and unpacks flat parameter buffers so composite models work with evolutionary optimizers. Public callable behavior is centered on no named public items, while method-level behavior such as `param_count`, `set_weights`, `get_weights`, `new`, `add_block`, `blocks`, and 2 more stays attached to the local data model and invariants.
+- Executes staged forward passes through configured block sequences on shared tensor carriers. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### env.rs
 
 - Reinforcement learning environment abstractions following Gym-style conventions enabling training of generic agents on Lurek2D game tasks.
 - Defines SpaceSpec descriptors for action and observation spaces with shape, bounds, and discrete action counts supporting policy network design.
 - Implements FrameStack buffer accumulating historical observations into temporal context vectors required by recurrent and attention-based policies.
-- Standardizes reset() and step() interaction contracts matching OpenAI Gym patterns for seamless integration with popular RL frameworks.
 
 ### evolutionary.rs
 
-- Defines the shared trait contract for layers exposing flat trainable parameter buffers.
-- Standardizes parameter counting, import, and export across heterogeneous learning layers.
-- Enables neuroevolution and genetic workflows to operate on model components uniformly.
+- Defines the shared trait contract for layers exposing flat trainable parameter buffers. `learning/evolutionary` delivers the evolutionary implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### genetic.rs
 
-- Implements population-based genetic optimization over flat genomes with explicit generation tracking.
-- Executes elite preservation, parent selection, crossover, and mutation during evolution steps.
-- Maintains stable chromosome identifiers to support lineage tracing across generations.
-- Uses deterministic random and Gaussian sampling helpers for reproducible evolution runs.
-- Serves as a general optimizer backend for learning components and parameter-search tasks.
+- Implements population-based genetic optimization over flat genomes with explicit generation tracking. `learning/genetic` delivers the genetic implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Executes elite preservation, parent selection, crossover, and mutation during evolution steps. The file owns or coordinates data contracts including `Chromosome`, `GeneticAlgorithm`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Maintains stable chromosome identifiers to support lineage tracing across generations. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `pop_size`, `best`, `evolve` stays attached to the local data model and invariants.
+- Uses deterministic random and Gaussian sampling helpers for reproducible evolution runs. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
-- High-level learning module that aggregates neural, evolutionary, and reinforcement components.
-- Re-exports core model, optimizer, tensor, and environment types for unified caller access.
-- Connects lightweight CPU learning primitives with optional ONNX inference capabilities.
-- Defines the integration layer for experimentation-oriented training and decision systems.
+- High-level learning module that aggregates neural, evolutionary, and reinforcement components. `learning/mod` is the learning module index, declaring `attention`, `bandit`, `conv`, `engine`, `env`, and 9 more so agents can identify which files own each feature slice before opening implementation code.
+- Re-exports core model, optimizer, tensor, and environment types for unified caller access. `src/learning/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `attention::{MultiHeadAttention, PositionalEncoding}`, `bandit::{Bandit, BanditArm, BanditStrategy}`, `conv::{Conv2D, MaxPool2D}`, `engine::{LurekNeuralEngine, NeuralBlock}`, and 10 more centralized for the learning subsystem.
+- Connects lightweight CPU learning primitives with optional ONNX inference capabilities. The file documents how learning submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- Defines the integration layer for experimentation-oriented training and decision systems. Agents should read this index to choose the narrow owner file first, because it maps names such as `attention`, `bandit`, `conv`, `engine`, `env`, and 9 more to concrete implementation responsibilities.
+- `learning/mod` is the learning module index, declaring `attention`, `bandit`, `conv`, `engine`, `env`, and 9 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/learning/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `attention::{MultiHeadAttention, PositionalEncoding}`, `bandit::{Bandit, BanditArm, BanditStrategy}`, `conv::{Conv2D, MaxPool2D}`, `engine::{LurekNeuralEngine, NeuralBlock}`, and 10 more centralized for the learning subsystem.
 
 ### neural_net.rs
 
-- Implements lightweight feed-forward neural networks with dense layers and selectable activations.
-- Stores weights and biases in flat vectors for compact memory usage and easy serialization.
-- Performs layer-by-layer forward propagation over vector inputs for inference and evaluation.
-- Supports parameter counting plus import and export for optimizer and evolution workflows.
-- Provides network-assembly helpers that append layers into ordered model pipelines.
-- Targets simple ML tasks where minimal dependencies and predictable behavior are preferred.
+- Implements lightweight feed-forward neural networks with dense layers and selectable activations. `learning/neural_net` delivers the neural net implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores weights and biases in flat vectors for compact memory usage and easy serialization. The file owns or coordinates data contracts including `Activation`, `NeuralLayer`, `NeuralNet`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Performs layer-by-layer forward propagation over vector inputs for inference and evaluation. Public callable behavior is centered on no named public items, while method-level behavior such as `from_str`, `as_str`, `apply`, `new`, `param_count`, `forward`, and 4 more stays attached to the local data model and invariants.
+- Supports parameter counting plus import and export for optimizer and evolution workflows. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Provides network-assembly helpers that append layers into ordered model pipelines. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### neuroevolution.rs
 
-- Bridges genetic optimization and neural models to run population-based weight search workflows.
-- Rebuilds networks from flat chromosomes using template layer specifications.
-- Evaluates and records fitness before advancing generations through the underlying GA backend.
-- Provides a focused orchestration layer for neuroevolution experiments and gameplay AI prototyping.
+- Bridges genetic optimization and neural models to run population-based weight search workflows. `learning/neuroevolution` delivers the neuroevolution implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Rebuilds networks from flat chromosomes using template layer specifications. The file owns or coordinates data contracts including `Neuroevolution`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Evaluates and records fitness before advancing generations through the underlying GA backend. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `pop_size`, `chromosome_to_net`, `set_fitness`, `evolve`, `best_network`, and 2 more stays attached to the local data model and invariants.
 
 ### onnx.rs
 
-- Provides ONNX model loading and inference by bridging `LurekTensor` data into tract runtimes.
-- Builds optimized runnable plans from ONNX files for CPU execution paths.
-- Converts input and output tensors between engine-native and tract-native representations.
-- Exposes deterministic inference entry points used by learning APIs without game-loop coupling.
+- Provides ONNX model loading and inference by bridging `LurekTensor` data into tract runtimes. `learning/onnx` delivers the onnx implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Builds optimized runnable plans from ONNX files for CPU execution paths. The file owns or coordinates data contracts including `OnnxModel`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Converts input and output tensors between engine-native and tract-native representations. Public callable behavior is centered on no named public items, while method-level behavior such as `load`, `run`, `input_count`, `output_count` stays attached to the local data model and invariants.
+- Exposes deterministic inference entry points used by learning APIs without game-loop coupling. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### qlearner.rs
 
-- Implements tabular Q-learning over discrete state-action spaces with configurable hyperparameters.
-- Stores Q-values in a flat table for fast index-based update and query operations.
-- Applies epsilon-greedy action choice and Bellman updates during reinforcement cycles.
-- Tracks episode and training metadata useful for monitoring learner progression.
-- Supports persistence helpers for saving and reloading learned policy tables.
+- Implements tabular Q-learning over discrete state-action spaces with configurable hyperparameters. `learning/qlearner` delivers the qlearner implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores Q-values in a flat table for fast index-based update and query operations. The file owns or coordinates data contracts including `QLearner`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Applies epsilon-greedy action choice and Bellman updates during reinforcement cycles. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `choose_action`, `best_action`, `learn`, `end_episode`, `get_q`, and 3 more stays attached to the local data model and invariants.
+- Tracks episode and training metadata useful for monitoring learner progression. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### recurrent.rs
 
-- Provides recurrent sequence-learning layers including LSTM and GRU style stateful blocks.
-- Stores gate parameters in flat row-major buffers suitable for CPU forward evaluation.
-- Executes timestep iteration while carrying hidden-state context across sequence positions.
-- Integrates with evolutionary parameter interfaces for genome-based optimization workflows.
-- Offers compact recurrent primitives for temporal modeling without heavyweight dependencies.
-- Serves as a reusable foundation for sequence tasks in higher-level learning engines.
+- Provides recurrent sequence-learning layers including LSTM and GRU style stateful blocks. `learning/recurrent` delivers the recurrent implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores gate parameters in flat row-major buffers suitable for CPU forward evaluation. The file owns or coordinates data contracts including `LstmLayer`, `GruLayer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Executes timestep iteration while carrying hidden-state context across sequence positions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `step` stays attached to the local data model and invariants.
+- Integrates with evolutionary parameter interfaces for genome-based optimization workflows. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Offers compact recurrent primitives for temporal modeling without heavyweight dependencies. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### tensor.rs
 
@@ -165,13 +155,12 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 ### transformer.rs
 
-- Implements transformer-style blocks composed from attention, normalization, and feed-forward stages.
-- Defines encoder and decoder building units operating over engine-native tensor structures.
-- Applies residual pathways and normalization flows for stable sequence representation updates.
-- Stores trainable parameters in flat vectors to align with evolutionary optimization tooling.
-- Coordinates multi-stage forward execution across attention and projection subcomponents.
-- Provides reusable transformer primitives for sequence learning and inference experiments.
-- Integrates with the wider learning stack through common tensor and layer contracts.
+- Implements transformer-style blocks composed from attention, normalization, and feed-forward stages. `learning/transformer` delivers the transformer implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Defines encoder and decoder building units operating over engine-native tensor structures. The file owns or coordinates data contracts including `LayerNorm`, `TransformerEncoderBlock`, `TransformerDecoderBlock`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Applies residual pathways and normalization flows for stable sequence representation updates. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `forward_vec`, `forward_tensor`, `forward` stays attached to the local data model and invariants.
+- Stores trainable parameters in flat vectors to align with evolutionary optimization tooling. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Coordinates multi-stage forward execution across attention and projection subcomponents. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Provides reusable transformer primitives for sequence learning and inference experiments. The file boundary separates learning implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 
 

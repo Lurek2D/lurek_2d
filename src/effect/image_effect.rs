@@ -1,7 +1,7 @@
-//! Provides image-scoped post-effect pipelines that group shared and owned effects into ordered pass chains.
-//! Supports add, remove, and lookup workflows so runtime code can manage effect sets incrementally.
-//! Converts active effects into renderer-facing pass descriptors for downstream execution.
-//! Delivers the per-target composition layer for reusable shader effect application.
+//! Provides image-scoped post-effect pipelines that group shared and owned effects into ordered pass chains. `effect/image_effect` delivers the image effect implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports add, remove, and lookup workflows so runtime code can manage effect sets incrementally. The file owns or coordinates data contracts including `ImageEffect`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Converts active effects into renderer-facing pass descriptors for downstream execution. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_effect`, `add_effect_rc`, `get_effect_by_index`, `get_effect_by_name`, `remove_by_index`, and 4 more stays attached to the local data model and invariants.
+//! Delivers the per-target composition layer for reusable shader effect application. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::effect::PostFxEffect;
 use crate::log_msg;

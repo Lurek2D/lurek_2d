@@ -1,8 +1,7 @@
-//! Implements storage-agnostic persistence helpers for DataFrame and Database payload workflows.
-//! Defines narrow read and write abstraction traits decoupled from concrete filesystem backends.
-//! Bridges CSV, JSON, and binary serializers with caller-provided storage transport operations.
-//! Preserves distinct error domains for storage, parsing, and format conversion failure handling.
-//! Serves as the persistence integration layer for runtime and binding-side dataframe file operations.
+//! Implements storage-agnostic persistence helpers for DataFrame and Database payload workflows. `dataframe/file_io` delivers the file io implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Defines narrow read and write abstraction traits decoupled from concrete filesystem backends. The file owns or coordinates data contracts including `DataFrameFileStore`, `DataFrameFileError`, `DataFrameFileResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Bridges CSV, JSON, and binary serializers with caller-provided storage transport operations. Public callable behavior is centered on `read_csv_dataframe`, `read_json_dataframe`, `write_csv_dataframe`, `write_json_dataframe`, `write_binary_dataframe`, and 2 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Preserves distinct error domains for storage, parsing, and format conversion failure handling. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::dataframe::frame::{DataFrame, Database};
 use crate::dataframe::serial;

@@ -1,93 +1,73 @@
-"""validate_rust_file_docs.py — Check that every Rust source file in src/
-(excluding src/lua_api/) has a multi-line //! file-level doc comment with at
-least 2 bullet lines (//! - ...).
-
-Usage:
-    python tools/validate/validate_rust_file_docs.py           # all files
-    python tools/validate/validate_rust_file_docs.py --errors-only
-    python tools/validate/validate_rust_file_docs.py src/foo/bar.rs
-Exit code 0 = all pass, 1 = failures found.
-"""
+"""Validate Rust file-level //! docs with the repository docstring coverage policy."""
 
 from __future__ import annotations
+
 import argparse
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[2]
+AUDIT_DIR = ROOT / "tools" / "audit"
+if str(AUDIT_DIR) not in sys.path:
+    sys.path.insert(0, str(AUDIT_DIR))
 
-def check_file(path: Path) -> list[str]:
-    """Return list of failure messages for *path*, or empty list if OK."""
-    try:
-        text = path.read_text(encoding="utf-8", errors="replace")
-    except OSError as e:
-        return [f"{path}: cannot read — {e}"]
-
-    lines = text.splitlines()
-    doc_lines = [l for l in lines if l.startswith("//!")]
-    bullet_lines = [l for l in doc_lines if l.startswith("//! -")]
-
-    failures: list[str] = []
-    if len(doc_lines) < 2:
-        failures.append(
-            f"{path}: only {len(doc_lines)} //! line(s) — need at least 2 "
-            f"(multi-line block with bullet points)"
-        )
-    elif len(bullet_lines) < 2:
-        failures.append(
-            f"{path}: has {len(doc_lines)} //! line(s) but only "
-            f"{len(bullet_lines)} '//! -' bullet line(s) — need at least 2"
-        )
-    return failures
-
-
-def collect_targets(roots: list[Path]) -> list[Path]:
-    """Collect all .rs files under *roots*, skipping lua_api."""
-    result: list[Path] = []
-    for root in roots:
-        if root.is_file():
-            if "lua_api" not in root.parts:
-                result.append(root)
-        else:
-            for f in sorted(root.rglob("*.rs")):
-                if "lua_api" not in f.parts:
-                    result.append(f)
-    return result
+from module_docstring_audit import (  # noqa: E402
+    MAX_DOC_BODY_CHARS,
+    MIN_DOC_BODY_CHARS,
+    render_text,
+    run_audit,
+)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("paths", nargs="*", default=["src"], help="Rust files or directories to validate.")
+    parser.add_argument("--errors-only", action="store_true", help="Suppress passing summary details.")
     parser.add_argument(
-        "paths",
-        nargs="*",
-        default=["src"],
-        help="Files or directories to check (default: src/)",
+        "--min-doc-body-chars",
+        type=int,
+        default=MIN_DOC_BODY_CHARS,
+        help="Minimum nonblank characters required after each //! prefix.",
     )
     parser.add_argument(
-        "--errors-only",
-        action="store_true",
-        help="Only print failures, not the OK summary.",
+        "--max-doc-body-chars",
+        type=int,
+        default=MAX_DOC_BODY_CHARS,
+        help="Maximum nonblank characters allowed after each //! prefix.",
     )
     args = parser.parse_args()
 
-    targets = collect_targets([Path(p) for p in args.paths])
-    all_failures: list[str] = []
+    if args.min_doc_body_chars > args.max_doc_body_chars:
+        print("ERROR: --min-doc-body-chars cannot be greater than --max-doc-body-chars", file=sys.stderr)
+        return 2
 
-    for t in targets:
-        all_failures.extend(check_file(t))
-
-    if all_failures:
-        for msg in sorted(all_failures):
-            print(f"[FAIL] {msg}")
-        print(f"\n{len(all_failures)} file(s) need a multi-line //! doc block.")
-        return 1
-
-    if not args.errors_only:
-        print(
-            f"[OK] All {len(targets)} Rust files (excl. lua_api) have "
-            f"multi-line //! doc blocks."
+    reports = [
+        run_audit(
+            (ROOT / path).resolve() if not Path(path).is_absolute() else Path(path),
+            args.min_doc_body_chars,
+            args.max_doc_body_chars,
         )
-    return 0
+        for path in args.paths
+    ]
+    merged_files = [item for report in reports for item in report["files"]]
+    violations = [item for item in merged_files if not item["ok"]]
+    total = len(merged_files)
+    passing = total - len(violations)
+    coverage = round((passing / total) * 100, 2) if total else 100.0
+    report = {
+        "summary": {
+            "total_files": total,
+            "passing_files": passing,
+            "violating_files": len(violations),
+            "coverage_pct": coverage,
+        },
+        "violations": violations,
+    }
+
+    if violations or not args.errors_only:
+        print(render_text(report, summary_only=args.errors_only and not violations))
+    return 1 if violations else 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

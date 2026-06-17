@@ -1,13 +1,9 @@
-//! Dynamic broad-phase spatial index for 2D world queries and overlap culling.
-//! Stores moving bounds in a hierarchy that stays tight as entries shift each frame.
-//! Serves fast insert, remove, move, and query flows for dynamic actors.
-//! Reuses nodes through an internal pool to reduce allocation churn.
-//! Chooses sibling branches with a cost heuristic that keeps the tree balanced.
-//! Answers rectangle, point, circle, and segment tests from one entry map.
-//! Exposes helper bound math so callers can combine and compare leaves efficiently.
-//! Fits game-style workloads where many objects move but only a subset interact.
-//! Gives predictable query latency for proximity, visibility, and broad-phase passes.
-//! Keeps the data model leaf-centric so Lua-side handles stay simple and stable.
+//! Dynamic broad-phase spatial index for 2D world queries and overlap culling. `math/aabb_tree` delivers the aabb tree implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores moving bounds in a hierarchy that stays tight as entries shift each frame. The file owns or coordinates data contracts including `AabbEntry`, `AabbTree`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Serves fast insert, remove, move, and query flows for dynamic actors. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `insert`, `remove`, `query`, `query_point`, `query_circle`, and 6 more stays attached to the local data model and invariants.
+//! Reuses nodes through an internal pool to reduce allocation churn. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Chooses sibling branches with a cost heuristic that keeps the tree balanced. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Answers rectangle, point, circle, and segment tests from one entry map. The file boundary separates math implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use std::collections::HashMap;
 

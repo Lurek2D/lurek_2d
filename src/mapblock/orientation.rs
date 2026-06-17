@@ -1,6 +1,6 @@
-//! Orientation modes for interpreting generated mapblock layouts.
-//! Provides top-down and isometric variants for different presentation styles.
-//! Supplies parsing and helpers used by config-driven renderer integration.
+//! Orientation modes for interpreting generated mapblock layouts. `mapblock/orientation` delivers the orientation implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Provides top-down and isometric variants for different presentation styles. The file owns or coordinates data contracts including `MapOrientation`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supplies parsing and helpers used by config-driven renderer integration. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str` stays attached to the local data model and invariants.
 
 /// Projection / rendering orientation for the generated map.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

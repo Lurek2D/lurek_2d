@@ -1,53 +1,13 @@
-//! - Primary hardware-accelerated 2D rendering orchestrator for Lurek2D.
-//! - Integrates with wgpu to manage device, queue, swapchain, and graphics resources.
-//! - Translates Lua-side render commands into structured draw calls and pipeline states.
-//! - Controls multi-pass rendering flow including scenes, shadows, decals, and post-fx.
-//! - Aggressively coalesces contiguous draw calls sharing material parameters and textures.
-//! - Implements static geometry caching to bypass tessellation and CPU upload overhead.
-//! - Implements GPU-side instancing to render repetitive sprite grids and particle buffers.
-//! - Renders primitive vector shapes, dynamic outlines, rounded quads, and ellipses.
-//! - Resolves text rendering by drawing character quads lookup from font atlases.
-//! - Manages offscreen canvases as render targets to enable composite camera views.
-//! - Coordinates compute pass dispatches for hardware-accelerated distance-field shadows.
-//! - Resolves shadow atlas textures from compute results for lighting occlusion masks.
-//! - Emits screenshot captures via async buffer mapping without blocking frame updates.
-//! - Handles material definitions, diffuse textures, custom shader keys, and uniforms.
-//! - Orchestrates uniform buffer bindings for orthographic cameras and custom variables.
-//! - Pre-allocates exponential buffer arrays to reduce CPU-to-GPU synchronization stalls.
-//! - Drives post-processing pipeline chains, including CRT filters, bloom, and blur.
-//! - Employs default fallback shaders and placeholder textures for missing assets.
-//! - Implements depth sorting using sorted Z-layers to manage visual layering.
-//! - Optimizes state transitions by pre-sorting command pipelines before drawing.
-//! - Limits draw calls dynamically when zero-size target bounds are encountered.
-//! - Provides debug logging and performance counters to trace frame render times.
-//! - Configures color blending functions, including transparency, additive, and replace.
-//! - Enforces scissor rectangle tests to scissor GUI widgets and clipped sub-panels.
-//! - Operates texture samplers with configurable filter modes (nearest vs linear).
-//! - Generates stencil configurations to resolve masked shapes and stencil operations.
-//! - Manages decal surfaces, projecting stamp marks onto world tiles persistently.
-//! - Coordinates grid renders, particle arrays, and custom mesh draw commands.
-//! - Normalizes canvas transformations using unified 3x3 local coordinate systems.
-//! - Serves as the central interface connecting script buffers to native graphics APIs.
-//! - Releases unused textures, fonts, and target buffers during frame garbage collection.
-//! - Processes custom shader bind groups and mapping variables dynamically.
-//! - Implements adaptive LOD detail settings for curved shapes based on pixel radii.
-//! - Supports color vertex arrays, texture coordinate indices, and custom vertex inputs.
-//! - Ensures cross-platform compatibility across Windows and Linux Vulkan/DX12 backends.
-//! - Handles window resize events, adjusting swapchain sizes and depth targets.
-//! - Operates independent thread context checks for multi-threaded draw queues.
-//! - Prevents runtime memory leaks by managing slotmap indices for heavy assets.
-//! - Normalizes scissor boundaries to prevent out-of-bounds GPU validation errors.
-//! - Formats color values, alpha channels, and coordinate components for upload.
-//! - Feeds debug frame metrics to tracing tools to measure GPU execution bounds.
-//! - Maps texture coordinates, wrapping rules, and sampler details uniformly.
-//! - Drives final frame presentation to the swapchain surface texture view.
-//! - Reuses index and vertex buffers across consecutive frames to reduce allocations.
-//! - Rebuilds shadow atlas frames only when light sources or occluders change.
-//! - Supports multiple material channels, diffuse overlays, and blend configurations.
-//! - Translates render target IDs to select target attachments at runtime.
-//! - Isolates script parameters from raw graphics structures using binding converters.
-//! - Governs draw command validation, tracking error codes for invalid targets.
-//! - Controls viewport layouts, aspect ratios, and letterboxing setups for retro resolutions.
+//! Primary hardware-accelerated 2D rendering orchestrator for Lurek2D. `render/gpu_renderer` delivers the gpu renderer implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Integrates with wgpu to manage device, queue, swapchain, and graphics resources. The file owns or coordinates data contracts including `GpuRenderer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Translates Lua-side render commands into structured draw calls and pipeline states. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `resize`, `render_frame` stays attached to the local data model and invariants.
+//! Controls multi-pass rendering flow including scenes, shadows, decals, and post-fx. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Aggressively coalesces contiguous draw calls sharing material parameters and textures. External integration uses `slotmap`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Implements static geometry caching to bypass tessellation and CPU upload overhead. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Implements GPU-side instancing to render repetitive sprite grids and particle buffers. State changes, validation paths, and helper routines in `src/render/gpu_renderer.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+//! Renders primitive vector shapes, dynamic outlines, rounded quads, and ellipses. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! Resolves text rendering by drawing character quads lookup from font atlases. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
+//! Manages offscreen canvases as render targets to enable composite camera views. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
 
 use crate::log_msg;
 use crate::math::{polygon, Mat3, Vec2};

@@ -1,7 +1,7 @@
-//! Full-screen effect state machines for flash, shake, and fade.
-//! Keeps each state focused on timing, activation, and per-frame parameters.
-//! Uses a deterministic PRNG for shake offsets without extra RNG plumbing.
-//! Provides the short-lived effect core used by the overlay controller.
+//! Full-screen effect state machines for flash, shake, and fade. `overlay/screen_effects` delivers the screen effects implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Keeps each state focused on timing, activation, and per-frame parameters. The file owns or coordinates data contracts including `FlashState`, `ShakeState`, `FadeState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Uses a deterministic PRNG for shake offsets without extra RNG plumbing. Public callable behavior is centered on no named public items, while method-level behavior such as `next_random` stays attached to the local data model and invariants.
+//! Provides the short-lived effect core used by the overlay controller. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 #[derive(Debug, Clone)]
 /// Tracks a time-limited full-screen flash overlay.

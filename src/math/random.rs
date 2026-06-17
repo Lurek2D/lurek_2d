@@ -1,8 +1,7 @@
-//! Seedable pseudo-random generator wrapper for deterministic gameplay and replay.
-//! Produces uniform integer, float, and Gaussian samples from one stateful source.
-//! Serializes and restores seed state so saves can resume the same sequence.
-//! Gives higher-level systems a simple random facade without exposing backend details.
-//! Fits any flow that needs reproducible chance, noise, or procedural variation.
+//! Seedable pseudo-random generator wrapper for deterministic gameplay and replay. `math/random` delivers the random implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Produces uniform integer, float, and Gaussian samples from one stateful source. The file owns or coordinates data contracts including `RandomGenerator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Serializes and restores seed state so saves can resume the same sequence. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_seed`, `random`, `random_int`, `random_float`, `random_normal`, and 14 more stays attached to the local data model and invariants.
+//! Gives higher-level systems a simple random facade without exposing backend details. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use fastrand::Rng;
 

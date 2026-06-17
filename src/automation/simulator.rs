@@ -1,13 +1,9 @@
-//! Implements deterministic automation playback that advances script time and dispatches input events.
-//! Maintains registries of named scripts and macros for reusable scenario composition.
-//! Evaluates boolean condition expressions to gate control-flow steps and assertion behavior.
-//! Supports pause, resume, and speed scaling so runs can be inspected or accelerated as needed.
-//! Inlines macro calls into active playback flow while preserving temporal consistency.
-//! Executes visual assertions through baseline comparison with configurable tolerance thresholds.
-//! Stops or reports on failed assertions to provide reliable test-signal semantics during playback.
-//! Decouples event emission via sink abstractions to support runtime and test harness integration.
-//! Tracks simulator state transitions and progression indices for deterministic repeatability.
-//! Serves as the execution core for scripted automation scenarios and regression validation.
+//! Implements deterministic automation playback that advances script time and dispatches input events. `automation/simulator` delivers the simulator implementation for the automation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Maintains registries of named scripts and macros for reusable scenario composition. The file owns or coordinates data contracts including `StepEventSink`, `Simulator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Evaluates boolean condition expressions to gate control-flow steps and assertion behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `load`, `unload`, `has_script`, `get_scripts`, `start`, and 27 more stays attached to the local data model and invariants.
+//! Supports pause, resume, and speed scaling so runs can be inspected or accelerated as needed. Runtime integration reaches sibling engine areas through crate modules `event`, `input`, `log_msg`, `runtime`, `timer`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Inlines macro calls into active playback flow while preserving temporal consistency. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Executes visual assertions through baseline comparison with configurable tolerance thresholds. The file boundary separates automation implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::script::MAX_STEPS;
 use super::{Action, Script, Step};

@@ -1,6 +1,6 @@
-//! Engine module for network statistics.
-//! Provides runtime metrics such as bytes sent/received and latency.
-//! This is a generic, genre‑agnostic API.
+//! Engine module for network statistics. `network/netstat` delivers the netstat implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Provides runtime metrics such as bytes sent/received and latency. The file owns or coordinates data contracts including `NetStat`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! This is a generic, genre‑agnostic API. Public callable behavior is centered on `register`, while method-level behavior such as `new`, `update`, `snapshot` stays attached to the local data model and invariants.
 
 use crate::runtime::SharedState;
 use mlua::prelude::*;

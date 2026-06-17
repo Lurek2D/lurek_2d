@@ -1,7 +1,4 @@
-//! File: src/lua_api/window_api.rs
-//! Registers the public `lurek.window` API used by scripts to inspect and request desktop window changes.
-//! Keeps Lua bindings thin by delegating window state mutations and display queries to `src/window/`.
-//! Bridges Lua tables into typed deferred window commands so the event loop can apply them safely.
+//! Registers the public `lurek.window` API used by scripts to inspect and request desktop window changes. `src/lua_api/window_api.rs` registers the `lurek.window` Lua boundary for window behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::window;

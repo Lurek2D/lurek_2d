@@ -1,8 +1,7 @@
-//! Polygon-based navigation mesh for 2D pathfinding.
-//! Runs A* over a polygon adjacency graph with a centroid heuristic.
-//! Checks point containment with ray-cast tests and extracts centroid waypoints.
-//! Supports directed and bidirectional polygon connectivity.
-//! Serves large open areas where cell grids are too coarse.
+//! Polygon-based navigation mesh for 2D pathfinding. `pathfind/navmesh` delivers the navmesh implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Runs A* over a polygon adjacency graph with a centroid heuristic. The file owns or coordinates data contracts including `NavMesh`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Checks point containment with ray-cast tests and extracts centroid waypoints. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_polygon`, `connect`, `polygon_count`, `find_path` stays attached to the local data model and invariants.
+//! Supports directed and bidirectional polygon connectivity. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

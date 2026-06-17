@@ -499,6 +499,12 @@ def handle_module_docstring_audit(args: dict[str, Any]) -> dict[str, Any]:
     src_dir = args.get("src")
     if src_dir:
         cmd.extend(["--src", str(src_dir)])
+    min_doc_body_chars = args.get("min_doc_body_chars")
+    if min_doc_body_chars is not None:
+        cmd.extend(["--min-doc-body-chars", str(min_doc_body_chars)])
+    max_doc_body_chars = args.get("max_doc_body_chars")
+    if max_doc_body_chars is not None:
+        cmd.extend(["--max-doc-body-chars", str(max_doc_body_chars)])
     if args.get("check"):
         cmd.append("--check")
 
@@ -508,15 +514,30 @@ def handle_module_docstring_audit(args: dict[str, Any]) -> dict[str, Any]:
         timeout_sec=300,
         json_mode="flag",
     )
-    violations = data.get("parsed") or []
-    top = sorted(violations, key=lambda item: (item.get("deficit", 0), item.get("loc", 0)), reverse=True)[:5]
+    report = data.get("parsed") or {}
+    summary = report.get("summary", {})
+    violations = report.get("violations", [])
+    top = sorted(
+        violations,
+        key=lambda item: (
+            abs(item.get("required_doc_lines", 0) - item.get("actual_doc_lines", 0)),
+            item.get("loc", 0),
+        ),
+        reverse=True,
+    )[:5]
     lines = [
-        f"Module docstring violations: {len(violations)}.",
+        (
+            f"Rust file doc coverage: {summary.get('coverage_pct', 0)}% "
+            f"({summary.get('passing_files', 0)}/{summary.get('total_files', 0)} passing, "
+            f"{summary.get('violating_files', len(violations))} violating)."
+        ),
     ]
     for item in top:
+        out_of_range = len(item.get("short_doc_lines", [])) + len(item.get("long_doc_lines", []))
         lines.append(
-            f"- {item.get('file')}: deficit {item.get('deficit', 0)} "
-            f"(actual {item.get('actual_doc_lines', 0)}/{item.get('required_doc_lines', 0)})"
+            f"- {item.get('file')}: actual {item.get('actual_doc_lines', 0)}/"
+            f"{item.get('required_doc_lines', 0)}, out-of-range lines {out_of_range}; "
+            f"{item.get('rewrite_instruction', '')}"
         )
     return _text_result("\n".join(lines), data)
 
@@ -1065,12 +1086,14 @@ TOOLS: dict[str, ToolSpec] = {
     ),
     "module_docstring_audit": ToolSpec(
         name="module_docstring_audit",
-        description="Audit Rust module-level //! docstrings for size and completeness.",
+        description="Audit Rust file-level //! docstring coverage using exact LOC tiers, 90-120 character lines, mod.rs doubling, and lua_api exceptions.",
         input_schema={
             "type": "object",
             "properties": {
                 "src": {"type": "string"},
                 "check": {"type": "boolean", "default": False},
+                "min_doc_body_chars": {"type": "integer", "minimum": 1, "default": 90},
+                "max_doc_body_chars": {"type": "integer", "minimum": 1, "default": 120},
             },
             "additionalProperties": False,
         },

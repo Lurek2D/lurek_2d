@@ -1,7 +1,6 @@
 //! Pure view-transform helpers for moving between screen space, map space, and province-cell space without tying camera math to registry ownership.
 //! The file handles fitting, anchored zoom, and coordinate conversion in a way that stays numerically safe even when dimensions or inputs are degenerate.
 //! Keeping these transforms pure makes them easy to reuse from rendering, picking, and tooling without hidden mutable state.
-//! Functionally this file delivers the camera and projection math that lets province maps be viewed, fitted, and queried interactively.
 
 /// Return (cam_x, cam_y, zoom) that fits the full map centred on screen; clamps zoom to ≥ 0.0001.
 pub fn fit_camera_to_screen(

@@ -1,9 +1,8 @@
-//! Placement-grid state and legality checks for mapblock assembly operations.
-//! Tracks occupied cells and placed-block metadata used by scripted steps.
-//! Evaluates candidates against edge constraints and neighborhood compatibility rules.
-//! Enumerates valid placements for deterministic or random selection passes.
-//! Records coordinates and orientation details for downstream processing.
-//! Acts as the spatial validation core inside the generator loop.
+//! Placement-grid state and legality checks for mapblock assembly operations. `mapblock/placement` delivers the placement implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Tracks occupied cells and placed-block metadata used by scripted steps. The file owns or coordinates data contracts including `PlacedBlock`, `PlacementCandidate`, `PlacementSearch`, `PlacementGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Evaluates candidates against edge constraints and neighborhood compatibility rules. Public callable behavior is centered on `find_valid_placements`, while method-level behavior such as `new`, `new_rect`, `add_position`, `remove_position`, `add_positions`, `is_available`, and 11 more stays attached to the local data model and invariants.
+//! Enumerates valid placements for deterministic or random selection passes. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Records coordinates and orientation details for downstream processing. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use super::block::{Edge, MapBlock};
 use super::constraints::{opposite_edge, NeighborRules};

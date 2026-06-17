@@ -1,10 +1,8 @@
-//! Stateful MIDI transport for file playback through rendered PCM.
-//! Holds parsed song metadata and playback position in one controller object.
-//! Handles play, pause, resume, seek, stop, and duration queries.
-//! Tracks per-channel mix state such as volume, mute, solo, and instrument selection.
-//! Supports per-track muting plus tempo, looping, and output format control.
-//! Routes output through the mixer bus so playback fits the engine audio graph.
-//! Gives Lua a stable player surface for song-driven sequencing and testing.
+//! Stateful MIDI transport for file playback through rendered PCM. `midi/player` delivers the player implementation for the midi subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Holds parsed song metadata and playback position in one controller object. The file owns or coordinates data contracts including `MidiData`, `MidiPlayer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Handles play, pause, resume, seek, stop, and duration queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `load`, `load_data`, `is_loaded`, `file_path`, `play`, and 38 more stays attached to the local data model and invariants.
+//! Tracks per-channel mix state such as volume, mute, solo, and instrument selection. Runtime integration reaches sibling engine areas through crate modules `audio`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports per-track muting plus tempo, looping, and output format control. External integration uses `rodio`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::audio::PlayState;
 use crate::log_msg;

@@ -1,8 +1,7 @@
-//! Grid-based A* pathfinding over a rectangular isometric cell map.
-//! Stores blocked flags and movement costs for weighted searches.
-//! Uses Bresenham line-of-sight checks for visibility and smoothing support.
-//! Expands four-direction neighbours with bounds and passability filtering.
-//! Gives isometric tile worlds a direct path and visibility helper.
+//! Grid-based A* pathfinding over a rectangular isometric cell map. `pathfind/iso_grid` delivers the iso grid implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores blocked flags and movement costs for weighted searches. The file owns or coordinates data contracts including `IsoGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Uses Bresenham line-of-sight checks for visibility and smoothing support. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_blocked`, `set_cost`, `find_path`, `line_of_sight`, `neighbors` stays attached to the local data model and invariants.
+//! Expands four-direction neighbours with bounds and passability filtering. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

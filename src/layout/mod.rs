@@ -1,6 +1,5 @@
-//! Aggregates graph and tree layout strategies into one coherent coordinate service for runtime visuals.
-//! Unifies result and config contracts so callers can switch placement style without changing integration code.
-//! Exposes high-level re-exports that keep dependent systems decoupled from per-algorithm file structure.
+//! Aggregates graph and tree layout strategies into one coherent coordinate service for runtime visuals. `layout/mod` is the layout module index, declaring `dag`, `force`, `grid_align`, `tree`, `types` so agents can identify which files own each feature slice before opening implementation code.
+//! Unifies result and config contracts so callers can switch placement style without changing integration code. `src/layout/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `dag::layout_dag`, `force::{layout_force, ForceConfig}`, `grid_align::{center_in_area, snap_to_grid}`, `tree::layout_tree`, and 1 more centralized for the layout subsystem.
 
 /// Sugiyama layered layout algorithm for directed acyclic graphs (DAGs).
 pub mod dag;

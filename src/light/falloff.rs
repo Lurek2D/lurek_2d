@@ -1,6 +1,4 @@
-//! Defines radial falloff profiles that shape brightness between light center and radius boundary.
-//! Provides linear, smooth, and constant decay modes for distinct lighting aesthetics.
-//! Supplies simple mode flags combined with distance attenuation during light evaluation.
+//! Defines radial falloff profiles that shape brightness between light center and radius boundary. `light/falloff` delivers the falloff implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Radial intensity falloff shape applied on top of attenuation distance decay.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

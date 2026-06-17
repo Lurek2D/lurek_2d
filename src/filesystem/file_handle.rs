@@ -1,9 +1,8 @@
-//! Provides buffered file-handle behavior for mode-aware read, write, and append stream operations.
-//! Resolves logical game paths through GameFS before touching host filesystem resources.
-//! Exposes byte and line reading utilities with EOF-aware iteration semantics.
-//! Supports seek, tell, flush, and explicit close workflows for predictable stream control.
-//! Enforces access-mode checks so invalid operation mixes fail with clear runtime errors.
-//! Delivers safe per-file I/O primitives used by script APIs and engine persistence code.
+//! Provides buffered file-handle behavior for mode-aware read, write, and append stream operations. `filesystem/file_handle` delivers the file handle implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Resolves logical game paths through GameFS before touching host filesystem resources. The file owns or coordinates data contracts including `FileMode`, `FileHandle`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Exposes byte and line reading utilities with EOF-aware iteration semantics. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_mode`, `as_str`, `open`, `read`, `read_line`, `write`, and 8 more stays attached to the local data model and invariants.
+//! Supports seek, tell, flush, and explicit close workflows for predictable stream control. Runtime integration reaches sibling engine areas through crate modules `filesystem`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Enforces access-mode checks so invalid operation mixes fail with clear runtime errors. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::filesystem::GameFS;
 use crate::runtime::error::{EngineError, EngineResult};

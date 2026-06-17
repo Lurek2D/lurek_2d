@@ -44,61 +44,52 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 
 ### async_loader.rs
 
-- Provides background file I/O through a dedicated worker thread and bounded request channel.
-- Supports non-blocking read and write scheduling with opaque handles for later status polling.
-- Stores results in thread-safe maps so callers can retrieve outcomes without blocking producers.
-- Enforces queue capacity limits to keep memory and scheduling pressure under control.
-- Handles worker lifecycle shutdown cleanly when the loader is dropped.
-- Delivers asynchronous file transfer behavior for systems that must avoid main-thread stalls.
+- Provides background file I/O through a dedicated worker thread and bounded request channel. `filesystem/async_loader` delivers the async loader implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports non-blocking read and write scheduling with opaque handles for later status polling. The file owns or coordinates data contracts including `LoadHandle`, `LoadResult`, `LoadStatus`, `WriteResult`, `WriteStatus`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Stores results in thread-safe maps so callers can retrieve outcomes without blocking producers. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `request_load`, `request_write`, `poll`, `pending_results`, `poll_write` stays attached to the local data model and invariants.
+- Enforces queue capacity limits to keep memory and scheduling pressure under control. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Handles worker lifecycle shutdown cleanly when the loader is dropped. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### file_data.rs
 
-- Provides a lightweight file payload container pairing logical paths with loaded raw bytes.
-- Exposes basic size, emptiness, and UTF-8 decode helpers for convenient caller-side consumption.
-- Delivers the shared data object returned by filesystem read operations.
+- Provides a lightweight file payload container pairing logical paths with loaded raw bytes. `filesystem/file_data` delivers the file data implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Exposes basic size, emptiness, and UTF-8 decode helpers for convenient caller-side consumption. The file owns or coordinates data contracts including `FileData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Delivers the shared data object returned by filesystem read operations. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `len`, `is_empty`, `as_str` stays attached to the local data model and invariants.
 
 ### file_handle.rs
 
-- Provides buffered file-handle behavior for mode-aware read, write, and append stream operations.
-- Resolves logical game paths through GameFS before touching host filesystem resources.
-- Exposes byte and line reading utilities with EOF-aware iteration semantics.
-- Supports seek, tell, flush, and explicit close workflows for predictable stream control.
-- Enforces access-mode checks so invalid operation mixes fail with clear runtime errors.
-- Delivers safe per-file I/O primitives used by script APIs and engine persistence code.
+- Provides buffered file-handle behavior for mode-aware read, write, and append stream operations. `filesystem/file_handle` delivers the file handle implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Resolves logical game paths through GameFS before touching host filesystem resources. The file owns or coordinates data contracts including `FileMode`, `FileHandle`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Exposes byte and line reading utilities with EOF-aware iteration semantics. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_mode`, `as_str`, `open`, `read`, `read_line`, `write`, and 8 more stays attached to the local data model and invariants.
+- Supports seek, tell, flush, and explicit close workflows for predictable stream control. Runtime integration reaches sibling engine areas through crate modules `filesystem`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Enforces access-mode checks so invalid operation mixes fail with clear runtime errors. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod.rs
 
-- Provides the high-level filesystem module boundary for virtual mounts, async loading, and file handle access.
-- Connects path resolution, buffered I/O, watch support, and archive overlays into one storage surface.
-- Delivers the core file-service layer used by runtime systems and script-facing persistence flows.
+- Provides the high-level filesystem module boundary for virtual mounts, async loading, and file handle access. `filesystem/mod` is the filesystem module index, declaring `async_loader`, `file_data`, `file_handle`, `vfs`, `watcher`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
+- Connects path resolution, buffered I/O, watch support, and archive overlays into one storage surface. `src/filesystem/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `async_loader::{AsyncLoader, LoadHandle, LoadResult, LoadStatus, WriteResult, WriteStatus}`, `file_data::FileData`, `file_handle::{FileHandle, FileMode}`, `vfs::{FileInfo, FileType, GameFS, MountLayer}` centralized for the filesystem subsystem.
 
 ### vfs.rs
 
-- Provides the core virtual filesystem implementation rooted at a game directory and save space.
-- Resolves read and write paths through mount overlays and base-root fallback rules.
-- Enforces traversal rejection and write confinement to preserve sandboxed filesystem behavior.
-- Exposes metadata, glob, list, copy, move, and removal operations under one coherent API.
-- Supports layered directory and archive mounts with deterministic conflict resolution order.
-- Builds file-handle and async-loader integration points over canonical resolved paths.
-- Includes JSON helpers and temporary file utilities for common content and tooling workflows.
-- Normalizes separators and path shapes to keep behavior stable across desktop platforms.
-- Keeps mount metadata explicit so runtime systems can inspect and reason about storage topology.
-- Delivers the authoritative storage-routing layer consumed by higher-level filesystem services.
+- Provides the core virtual filesystem implementation rooted at a game directory and save space. `filesystem/vfs` delivers the vfs implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Resolves read and write paths through mount overlays and base-root fallback rules. The file owns or coordinates data contracts including `FileInfo`, `FileType`, `MountLayer`, `GameFS`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Enforces traversal rejection and write confinement to preserve sandboxed filesystem behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `new`, `base_dir`, `read_string`, `read_bytes`, `write_string`, and 35 more stays attached to the local data model and invariants.
+- Exposes metadata, glob, list, copy, move, and removal operations under one coherent API. Runtime integration reaches sibling engine areas through crate modules `dataframe`, `filesystem`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Supports layered directory and archive mounts with deterministic conflict resolution order. External integration uses `serde_json`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Builds file-handle and async-loader integration points over canonical resolved paths. The file boundary separates filesystem implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### watcher.rs
 
-- Provides poll-based file watch behavior that detects mtime changes for registered paths.
-- Maintains cached modification snapshots and reports deterministic change sets per poll cycle.
-- Supports watch, unwatch, and forced invalidation workflows for runtime refresh control.
-- Delivers a lightweight change-detection utility for assets and config reload pipelines.
+- Provides poll-based file watch behavior that detects mtime changes for registered paths. `filesystem/watcher` delivers the watcher implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Maintains cached modification snapshots and reports deterministic change sets per poll cycle. The file owns or coordinates data contracts including `FileWatcher`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports watch, unwatch, and forced invalidation workflows for runtime refresh control. Public callable behavior is centered on `read_mtime`, while method-level behavior such as `new`, `watch`, `unwatch`, `is_watching`, `poll`, `len`, and 2 more stays attached to the local data model and invariants.
 
 ### zip_mount.rs
 
-- Provides ZIP-backed virtual mount behavior that maps normalized virtual paths to archive entries.
-- Builds an index for fast repeated lookups while reading files on demand without full extraction.
-- Enforces traversal-safe path handling before archive access to maintain sandbox guarantees.
-- Supports listing and existence checks over the handle's indexed archive content.
-- Delivers standalone archive access for Lua callers without mutating the main GameFS mount stack in this phase.
+- Provides ZIP-backed virtual mount behavior that maps normalized virtual paths to archive entries. `filesystem/zip_mount` delivers the zip mount implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Builds an index for fast repeated lookups while reading files on demand without full extraction. The file owns or coordinates data contracts including `ZipMount`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Enforces traversal-safe path handling before archive access to maintain sandbox guarantees. Public callable behavior is centered on `normalise`, `is_traversal`, while method-level behavior such as `new`, `read_file`, `contains`, `list_files` stays attached to the local data model and invariants.
+- Supports listing and existence checks over mounted archive content through a unified interface. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 
@@ -126,7 +117,7 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 - `lurek.filesystem.load(path) -> function`: Loads a Lua chunk from GameFS and returns it as a Lua function.
 - `lurek.filesystem.mkdir(path) -> nil`: Creates a directory under the GameFS base directory.
 - `lurek.filesystem.mount(src, mp) -> boolean`: Mounts an external source path at a GameFS mount point.
-- `lurek.filesystem.mountZip(archive_path, prefix) -> LZipMount`: Opens a ZIP archive and returns a standalone archive handle rooted at the given virtual prefix.
+- `lurek.filesystem.mountZip(archive_path, prefix) -> LZipMount`: Opens a ZIP archive and exposes it through a virtual prefix.
 - `lurek.filesystem.move(src, dst) -> nil`: Moves or renames one GameFS file to another path.
 - `lurek.filesystem.newFileData(path) -> LFileData`: Loads a file into an immutable file data handle.
 - `lurek.filesystem.openFile(path, mode) -> LFileHandle`: Opens a GameFS file handle in a requested mode.

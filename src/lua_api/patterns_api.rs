@@ -1,13 +1,4 @@
-//! File: src/lua_api/patterns_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
-//! TODO: add doc note 6
-//! TODO: add doc note 7
+//! `src/lua_api/patterns_api.rs` registers the `lurek.patterns` Lua boundary for patterns behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use crate::lua_api::lua_types::{add_type_methods, LurekType};
 use crate::runtime::SharedState;

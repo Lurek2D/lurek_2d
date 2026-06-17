@@ -1,8 +1,7 @@
-//! Converts raw HTML text into document nodes with stable parent-child links and normalized attributes.
-//! Handles open, close, self-closing, void, and comment forms so authored markup maps to valid tree state.
-//! Parses attribute key-value pairs with quote-aware scanning and consistent lowercase key normalization.
-//! Encodes and decodes common HTML entities to preserve readable text while keeping stored values canonical.
-//! Collapses insignificant whitespace in text nodes to keep rendered output predictable across content styles.
+//! Converts raw HTML text into document nodes with stable parent-child links and normalized attributes. `html/parser` delivers the text parsing and structured conversion for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Handles open, close, self-closing, void, and comment forms so authored markup maps to valid tree state. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Parses attribute key-value pairs with quote-aware scanning and consistent lowercase key normalization. Public callable behavior is centered on `parse_into`, `escape_text`, `escape_attribute`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Encodes and decodes common HTML entities to preserve readable text while keeping stored values canonical. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::html::element::{HtmlElement, HtmlElementId};
 use std::collections::BTreeMap;

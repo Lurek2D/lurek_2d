@@ -1,7 +1,6 @@
-//! Storage for loaded MIDI SoundFont data and its source path.
-//! Validates SoundFont files before they enter the playback pipeline.
-//! Exposes query and clear helpers for runtime availability checks.
-//! Keeps the shared sample resource separate from transport state.
+//! Storage for loaded MIDI SoundFont data and its source path. `midi/state` delivers the state container and transition helpers for the midi subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Validates SoundFont files before they enter the playback pipeline. The file owns or coordinates data contracts including `MidiState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Exposes query and clear helpers for runtime availability checks. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_soundfont`, `has_soundfont`, `clear_soundfont`, `soundfont_path`, `soundfont_data` stays attached to the local data model and invariants.
 
 #[derive(Debug, Clone, Default)]
 /// Stores the loaded SoundFont binary data and its source path for MIDI synthesis.

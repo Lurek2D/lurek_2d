@@ -1,9 +1,4 @@
-//! File: src/lua_api/flownet_api.rs
-//! Registers the public `lurek.graph` Lua API for FLOWNET graph creation, mutation, routing, and simulation.
-//! Converts Lua userdata handles into Rust graph ids while keeping storage and simulation logic inside `src/flownet/`.
-//! Validates numeric bounds, enum-like strings, and handle ownership at the Lua boundary before mutating graph state.
-//! Dispatches simulation events back into Lua callbacks without exposing internal Rust containers directly.
-//! Keeps Lua-facing documentation, names, defaults, and runtime errors aligned with the FLOWNET module contract.
+//! Registers the public `lurek.graph` Lua API for FLOWNET graph creation, mutation, routing, and simulation. `src/lua_api/flownet_api.rs` registers the `lurek.flownet` Lua boundary for flownet behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use crate::flownet::pathfinding::PathResult;
 use crate::flownet::{ConversionRule, FlowMode, Graph, GraphEvent, ItemPosition, OverflowPolicy};

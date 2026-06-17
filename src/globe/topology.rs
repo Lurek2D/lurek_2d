@@ -1,8 +1,8 @@
-//! Provides region-topology graph storage with cached adjacency, centroids, and tagged border edges.
-//! Supports insertion, removal, and mutation workflows while keeping lookup caches coherent.
-//! Integrates pathfinding-friendly queries for route, cost, and reachability evaluation across regions.
-//! Exposes neighbor and region iteration helpers used by rendering and gameplay systems.
-//! Delivers the structural map-graph backbone that powers globe connectivity logic.
+//! Provides region-topology graph storage with cached adjacency, centroids, and tagged border edges. `globe/topology` delivers the topology implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports insertion, removal, and mutation workflows while keeping lookup caches coherent. The file owns or coordinates data contracts including `RegionGraph`, `ProvinceGraph`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Integrates pathfinding-friendly queries for route, cost, and reachability evaluation across regions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `insert`, `remove`, `get`, `get_mut`, `iter`, and 12 more stays attached to the local data model and invariants.
+//! Exposes neighbor and region iteration helpers used by rendering and gameplay systems. Runtime integration reaches sibling engine areas through crate modules `globe`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Delivers the structural map-graph backbone that powers globe connectivity logic. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::globe::types::{GlobeError, Region, RegionId, MAX_REGIONS};
 use crate::pathfind::graph_path::{find_province_path, ProvinceCostFn, ProvincePath};

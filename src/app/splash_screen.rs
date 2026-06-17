@@ -1,8 +1,7 @@
-//! Implements splash branding presentation before gameplay content is loaded into active runtime state.
-//! Decodes embedded visual assets into temporary texture storage used by startup rendering.
-//! Builds centered splash layout command sequences with icon, banner, and hint messaging elements.
-//! Adapts hint styling based on drag-and-drop hover state for clearer startup interaction feedback.
-//! Serves as the pre-game visual bridge between process launch and first playable scene.
+//! Implements splash branding presentation before gameplay content is loaded into active runtime state. `app/splash_screen` delivers the splash screen implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Decodes embedded visual assets into temporary texture storage used by startup rendering. The file owns or coordinates data contracts including `SplashTexture`, `SplashBranding`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Builds centered splash layout command sequences with icon, banner, and hint messaging elements. Public callable behavior is centered on `load_splash_branding`, `make_splash_commands`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Adapts hint styling based on drag-and-drop hover state for clearer startup interaction feedback. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::app::fit_contain_size;
 use crate::render::renderer::{DrawMode, RenderCommand, TextureData};

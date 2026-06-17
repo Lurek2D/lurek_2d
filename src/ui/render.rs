@@ -1,21 +1,13 @@
-//! This file provides UI render emission for GPU commands and headless pixel raster outputs.
-//! It draws the full retained widget catalog with consistent visual behavior across states.
-//! It resolves theme style data per widget and applies alpha-aware color composition.
-//! It emits shared primitives for shadows, fills, borders, gradients, and highlights.
-//! It handles control-specific visuals such as sliders, checks, radios, combos, and switches.
-//! It renders hierarchical content like trees and menus while preserving structural readability.
-//! It supports color-picker internals with hue-space conversion used during visual generation.
-//! It threads context, font, and output carriers through one deterministic render traversal.
-//! It merges generic and type-specific child sources so nested widgets render in correct order.
-//! It measures and aligns text with active font context to keep typography placement stable.
-//! It supports CPU fallback output for screenshots, tests, and non-GPU verification paths.
-//! It keeps rendering logic centralized so visual changes remain coherent and maintainable.
-//! It scales from lightweight HUDs to complex tool panels using one render architecture.
-//! It preserves deterministic draw command shape for regression checks and diagnostics.
-//! It bridges widget semantics to backend draw primitives without leaking UI internals.
-//! It supports theme-driven look changes without requiring widget logic rewrites.
-//! It maintains robust rendering behavior under dynamic UI mutation each frame.
-//! It anchors the visual execution layer of the retained UI subsystem.
+//! This file provides UI render emission for GPU commands and headless pixel raster outputs. `ui/render` delivers the rendering adapter and draw-command integration for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It draws the full retained widget catalog with consistent visual behavior across states. The file owns or coordinates data contracts including `TextLine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It resolves theme style data per widget and applies alpha-aware color composition. Public callable behavior is centered on `push_scissor`, `pop_scissor`, while method-level behavior such as `build_render_commands_with_fonts`, `build_render_commands`, `generate_render_commands`, `draw_to_image` stays attached to the local data model and invariants.
+//! It emits shared primitives for shadows, fills, borders, gradients, and highlights. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `runtime`, `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It handles control-specific visuals such as sliders, checks, radios, combos, and switches. External integration uses `slotmap`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! It renders hierarchical content like trees and menus while preserving structural readability. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! It supports color-picker internals with hue-space conversion used during visual generation. State changes, validation paths, and helper routines in `src/ui/render.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+//! It threads context, font, and output carriers through one deterministic render traversal. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! It merges generic and type-specific child sources so nested widgets render in correct order. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
+//! It measures and aligns text with active font context to keep typography placement stable. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
 
 use crate::math::Rect;
 use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};

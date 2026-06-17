@@ -1,7 +1,9 @@
-//! Core math module wiring the vector, matrix, shape, curve, and utility submodules.
-//! Collects the primitives that other engine systems build on for motion, collision, and mapping.
-//! Groups spatial structures with interpolation, geometry, and procedural helpers under one namespace.
-//! Keeps the public math surface compact while exposing the full foundation layer.
+//! Core math module wiring the vector, matrix, shape, curve, and utility submodules. `math/mod` is the math module index, declaring `aabb_tree`, `bezier`, `circle`, `easing`, `facade`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
+//! Collects the primitives that other engine systems build on for motion, collision, and mapping. `src/math/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `aabb_tree::AabbTree`, `bezier::BezierCurve`, `circle::Circle`, `facade::{clamp, inverse_lerp, lerp, remap, sign, smoothstep}`, and 13 more centralized for the math subsystem.
+//! Groups spatial structures with interpolation, geometry, and procedural helpers under one namespace. The file documents how math submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! Keeps the public math surface compact while exposing the full foundation layer. Agents should read this index to choose the narrow owner file first, because it maps names such as `aabb_tree`, `bezier`, `circle`, `easing`, `facade`, and 12 more to concrete implementation responsibilities.
+//! `math/mod` is the math module index, declaring `aabb_tree`, `bezier`, `circle`, `easing`, `facade`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/math/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `aabb_tree::AabbTree`, `bezier::BezierCurve`, `circle::Circle`, `facade::{clamp, inverse_lerp, lerp, remap, sign, smoothstep}`, and 13 more centralized for the math subsystem.
 
 /// AABB broadphase spatial query tree.
 pub mod aabb_tree;

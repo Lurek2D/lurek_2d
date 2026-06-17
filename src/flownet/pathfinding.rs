@@ -1,10 +1,8 @@
-//! Provides flownet pathfinding operations that compute cheapest routes across weighted directed edges.
-//! Respects edge activity, cooldown, and type filters so route output matches simulation constraints.
-//! Supports distance and reachability queries for planning and demand-matching workflows.
-//! Builds predecessor maps and reconstructs ordered node and edge paths for execution.
-//! Uses priority-queue traversal for efficient shortest-path expansion under dynamic graph state.
-//! Integrates neighbor discovery across directional and bidirectional connectivity patterns.
-//! Delivers the routing layer used by supply movement and logistics decision systems.
+//! Provides flownet pathfinding operations that compute cheapest routes across weighted directed edges. `flownet/pathfinding` delivers the pathfinding implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Respects edge activity, cooldown, and type filters so route output matches simulation constraints. The file owns or coordinates data contracts including `PathResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports distance and reachability queries for planning and demand-matching workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `find_path`, `find_path_for_item`, `get_distance`, `get_reachable`, `get_neighbors` stays attached to the local data model and invariants.
+//! Builds predecessor maps and reconstructs ordered node and edge paths for execution. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Uses priority-queue traversal for efficient shortest-path expansion under dynamic graph state. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use super::core::Graph;
 use std::cmp::Ordering;

@@ -1,7 +1,6 @@
-//! Bridges animation state-machine transitions to Spine clip playback through explicit state mapping.
-//! Owns skeleton progression and transform refresh so Spine output remains time-synchronized.
-//! Keeps external state changes aligned with internal skeleton animation updates each frame.
-//! Serves as the integration layer between engine animation logic and Spine runtime evaluation.
+//! Bridges animation state-machine transitions to Spine clip playback through explicit state mapping. `animation/spine_bridge` delivers the spine bridge implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Owns skeleton progression and transform refresh so Spine output remains time-synchronized. The file owns or coordinates data contracts including `SpineAnimBridge`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Keeps external state changes aligned with internal skeleton animation updates each frame. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `map`, `map_looping`, `update`, `skeleton`, `skeleton_mut`, and 2 more stays attached to the local data model and invariants.
 
 use super::state_machine::AnimStateMachine;
 use crate::spine::skeleton::Skeleton;

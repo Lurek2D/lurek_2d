@@ -1,13 +1,9 @@
-//! Defines core camera state models that represent both minimal and fully featured 2D camera behavior.
-//! Implements follow logic with dead-zone handling, smoothing response, and look-ahead displacement control.
-//! Integrates transient effects such as shake, pulse, sway, and breathing into effective camera transforms.
-//! Maintains zoom and rotation state with damping and bounded constraint ranges for runtime stability.
-//! Provides viewport-aware world-to-screen and screen-to-world mapping through explicit conversion utilities.
-//! Builds view matrices by composing position, rotation, zoom, and active effect contributions coherently.
-//! Exposes easing-driven interpolation options for authored motion character and follow response tuning.
-//! Supports target-follow presets that package common control profiles for gameplay camera styles.
-//! Keeps transform ownership centralized so dependent render and logic systems read consistent state.
-//! Serves as the primary camera runtime contract consumed across movement, rendering, and tooling layers.
+//! Defines core camera state models that represent both minimal and fully featured 2D camera behavior. `camera/types` delivers the shared type definitions and data contracts for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Implements follow logic with dead-zone handling, smoothing response, and look-ahead displacement control. The file owns or coordinates data contracts including `CameraEasing`, `Camera`, `Camera2D`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Integrates transient effects such as shake, pulse, sway, and breathing into effective camera transforms. Public callable behavior is centered on no named public items, while method-level behavior such as `apply`, `new`, `view_matrix`, `set_position`, `set_zoom`, `set_rotation`, and 45 more stays attached to the local data model and invariants.
+//! Maintains zoom and rotation state with damping and bounded constraint ranges for runtime stability. Runtime integration reaches sibling engine areas through crate modules `camera`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Provides viewport-aware world-to-screen and screen-to-world mapping through explicit conversion utilities. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Builds view matrices by composing position, rotation, zoom, and active effect contributions coherently. The file boundary separates camera implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::camera::effects::{CameraBreathing, CameraSway, ZoomPulse};
 use crate::math::{Mat3, Rect, Vec2};

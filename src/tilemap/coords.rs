@@ -1,8 +1,8 @@
-//! This file provides coordinate transforms for isometric and hex grids used across map systems.
-//! It keeps one geometric language between screen space, tile space, and movement direction logic.
-//! It offers orientation, rotation, and side classification helpers for grid navigation flows.
-//! It supports hex metrics and neighborhoods so pathing and range tools share a stable base.
-//! It delivers line, ring, and spiral traversals for tactical gameplay and map UI overlays.
+//! This file provides coordinate transforms for isometric and hex grids used across map systems. `tilemap/coords` delivers the coords implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It keeps one geometric language between screen space, tile space, and movement direction logic. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It offers orientation, rotation, and side classification helpers for grid navigation flows. Public callable behavior is centered on `to_screen_iso`, `from_screen_iso`, `iso_rotate`, `iso_direction_name`, `iso_direction_from_angle`, and 11 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! It supports hex metrics and neighborhoods so pathing and range tools share a stable base. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+
 use crate::math::Vec2;
 use std::f32::consts::PI;
 

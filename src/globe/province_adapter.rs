@@ -1,6 +1,4 @@
-//! Provides a bridge that applies province-registry ownership and visibility state onto globe regions.
-//! Synchronizes political coloring so map visuals reflect current simulation authority data.
-//! Delivers adapter logic that keeps province gameplay state aligned with globe presentation.
+//! Provides a bridge that applies province-registry ownership and visibility state onto globe regions. `globe/province_adapter` delivers the province adapter implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use crate::globe::registry::Globe;
 use crate::globe::types::RegionId;

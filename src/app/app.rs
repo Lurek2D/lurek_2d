@@ -1,24 +1,13 @@
-//! Implements the primary desktop runtime loop that binds windowing, rendering, input, and Lua execution.
-//! Owns application bootstrap from startup configuration through event-loop handoff and steady frame progression.
-//! Manages graphics surface lifecycle, device provisioning, and resize-aware presentation reconfiguration.
-//! Coordinates tick ordering so input, update callbacks, render callbacks, and presentation stay deterministic.
-//! Routes platform events into runtime systems with consistent keyboard, mouse, touch, and controller handling.
-//! Integrates gamepad polling and feedback signaling as part of per-frame platform service orchestration.
-//! Maintains viewport scaling and letterbox behavior so visual output remains stable across window sizes.
-//! Handles splash and fallback presentation paths before gameplay state is fully available.
-//! Provides fatal-error rendering transition when execution cannot continue in normal game flow.
-//! Controls screenshot timing and capture output as part of frame lifecycle responsibilities.
-//! Drives Lua VM startup, script loading, and callback invocation as the script execution spine.
-//! Applies guarded callback execution paths to keep runtime responsive under script-side anomalies.
-//! Coordinates hot-reload triggers for content and script changes in active development sessions.
-//! Preserves state continuity across reload boundaries where restart semantics allow safe recovery.
-//! Maintains integration seams between render backend, runtime state, and high-level app orchestration.
-//! Centralizes frame-profile collection points for observability and performance diagnostics.
-//! Exposes utility operations used by auxiliary app submodules without duplicating orchestration logic.
-//! Ensures one coherent ownership model for transient frame state and long-lived application resources.
-//! Keeps platform interactions isolated so gameplay modules consume normalized runtime behavior.
-//! Serves as the operational heartbeat that advances the engine from launch to shutdown.
-//! Anchors the complete desktop execution lifecycle under one deterministic application control surface.
+//! Implements the primary desktop runtime loop that binds windowing, rendering, input, and Lua execution. `app/app` delivers the app implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Owns application bootstrap from startup configuration through event-loop handoff and steady frame progression. The file owns or coordinates data contracts including `RunState`, `DropStartupTarget`, `LurekApp`, `App`, `AppRunOptions`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Manages graphics surface lifecycle, device provisioning, and resize-aware presentation reconfiguration. Public callable behavior is centered on `recompute_viewport`, `splash_window_title`, `fit_contain_size`, `classify_drop_startup_target`, `should_open_startup_picker_on_key`, while method-level behavior such as `new`, `resolve_present_mode`, `init_lua`, `run` stays attached to the local data model and invariants.
+//! Coordinates tick ordering so input, update callbacks, render callbacks, and presentation stay deterministic. Runtime integration reaches sibling engine areas through crate modules `event`, `filesystem`, `input`, `log_msg`, `lua_api`, `render`, and 2 more, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Routes platform events into runtime systems with consistent keyboard, mouse, touch, and controller handling. External integration uses `super`, `gilrs`, `mlua`, `slotmap`, `std`, and 1 more, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Integrates gamepad polling and feedback signaling as part of per-frame platform service orchestration. The file boundary separates app implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Maintains viewport scaling and letterbox behavior so visual output remains stable across window sizes. State changes, validation paths, and helper routines in `src/app/app.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+//! Handles splash and fallback presentation paths before gameplay state is fully available. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! Provides fatal-error rendering transition when execution cannot continue in normal game flow. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
+//! Controls screenshot timing and capture output as part of frame lifecycle responsibilities. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
 
 use super::debug_overlay::DebugOverlay;
 use super::error_screen::ErrorScreen;

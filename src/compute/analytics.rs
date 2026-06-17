@@ -1,9 +1,8 @@
-//! Implements analytical operations over arrays including cumulative, differential, and distribution metrics.
-//! Provides histogram generation with configurable domains and binning resolution control.
-//! Computes percentile estimates with interpolation for robust quantile-style inspection workflows.
-//! Exposes pairwise statistics such as covariance and correlation for relationship analysis.
-//! Includes normalization helpers for range scaling and standardized z-score transformations.
-//! Serves as the statistical post-processing layer for compute arrays and derived results.
+//! Implements analytical operations over arrays including cumulative, differential, and distribution metrics. `compute/analytics` delivers the analytics implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Provides histogram generation with configurable domains and binning resolution control. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Computes percentile estimates with interpolation for robust quantile-style inspection workflows. Public callable behavior is centered on `cumsum`, `diff`, `histogram`, `percentile`, `covariance`, and 5 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Exposes pairwise statistics such as covariance and correlation for relationship analysis. Runtime integration reaches sibling engine areas through crate modules `compute`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Includes normalization helpers for range scaling and standardized z-score transformations. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::compute::array::NdArray;
 

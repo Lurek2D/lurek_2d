@@ -6,13 +6,6 @@
 //! Fractal combinators turn base noise into richer terrain-scale structure by layering octaves into smoother hills, harsher ridges, or turbulent distortions.
 //! Domain warping further bends otherwise regular fields so generated output feels less axis-bound and more organically varied.
 //! Height-map generation helpers keep the module tied to practical terrain production rather than remaining a pile of isolated math routines.
-//! Parallel generation support matters here because large maps are a first-class workload, not an afterthought.
-//! Tileable periodic variants let the same toolbox serve looping textures and wraparound worlds where seam-free repetition matters.
-//! Internal hashing, gradients, and permutation logic live close to the public samplers so correctness and determinism share one source of truth.
-//! Seed handling is treated as authored input, which keeps results reproducible across tests, saves, and content pipelines.
-//! The file therefore acts as both a mathematical substrate and a production utility layer for the rest of procedural generation.
-//! It is intentionally broad because many higher-order systems in the module eventually reduce to sampled scalar fields shaped here.
-//! Functionally this file delivers the reusable field-generation backbone behind terrain, texture, biome, and layout variation across the engine.
 
 use rayon::prelude::*;
 

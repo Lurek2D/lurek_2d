@@ -48,74 +48,68 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### action_def.rs
 
-- Defines action-binding data shapes used to map logical actions onto multiple physical inputs.
-- Stores ordered binding strings and optional category grouping for tooling and menu presentation.
-- Provides serializable action-map structures for loading, saving, and sharing binding presets.
+- Defines action-binding data shapes used to map logical actions onto multiple physical inputs. `input/action_def` delivers the action def implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores ordered binding strings and optional category grouping for tooling and menu presentation. The file owns or coordinates data contracts including `ActionDef`, `ActionMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides serializable action-map structures for loading, saving, and sharing binding presets. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
 
 ### combo.rs
 
-- Implements sequential combo recognition for multi-step input patterns with timing constraints.
-- Tracks progress state across key feeds, validating per-step gaps and whole-sequence deadlines.
-- Emits explicit advanced, completed, and broken states to simplify caller-side response logic.
-- Resets predictably after failures or completion to support repeated combo attempts.
-- Powers gameplay and scripting features that require ordered gesture-style key sequences.
+- Implements sequential combo recognition for multi-step input patterns with timing constraints. `input/combo` delivers the combo implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Tracks progress state across key feeds, validating per-step gaps and whole-sequence deadlines. The file owns or coordinates data contracts including `ComboStep`, `ComboProgress`, `ComboDetector`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Emits explicit advanced, completed, and broken states to simplify caller-side response logic. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `feed`, `tick`, `reset`, `is_in_progress`, `progress`, and 2 more stays attached to the local data model and invariants.
+- Resets predictably after failures or completion to support repeated combo attempts. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### events.rs
 
-- Declares normalized input event names and payload types emitted from the platform event loop.
-- Defines keyboard, mouse, wheel, text, and gamepad event variants for unified downstream handling.
-- Serves as the shared event contract consumed by runtime queues and Lua-facing dispatch paths.
+- Declares normalized input event names and payload types emitted from the platform event loop. `input/events` delivers the event data and dispatch contracts for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### gamepad.rs
 
-- Manages gamepad device state per slot, including buttons, axes, and connection lifecycle changes.
-- Tracks per-frame deltas for press and release transitions so polling remains deterministic.
-- Queues rumble requests with normalized motor strengths for runtime delivery to OS backends.
-- Parses and stores mapping profiles using GUID-keyed formats compatible with common controller data.
-- Bridges backend-specific button and axis identities into stable engine-facing naming.
-- Synthesizes virtual directional output from analog sticks with deadzone-aware interpretation.
-- Exposes hat and direction queries used by gameplay code and Lua input APIs.
+- Manages gamepad device state per slot, including buttons, axes, and connection lifecycle changes. `input/gamepad` delivers the gamepad implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Tracks per-frame deltas for press and release transitions so polling remains deterministic. The file owns or coordinates data contracts including `GamepadVibrationRequest`, `GamepadState`, `GamepadMappings`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Queues rumble requests with normalized motor strengths for runtime delivery to OS backends. Public callable behavior is centered on `gilrs_button_to_string`, `gilrs_axis_to_string`, `virtual_dpad`, while method-level behavior such as `new`, `begin_frame`, `update_button`, `was_button_pressed`, `was_button_released`, `update_axis`, and 19 more stays attached to the local data model and invariants.
+- Parses and stores mapping profiles using GUID-keyed formats compatible with common controller data. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Bridges backend-specific button and axis identities into stable engine-facing naming. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### keyboard.rs
 
-- Implements per-frame keyboard state with held keys, transition deltas, and modifier tracking.
-- Separates logical key identity from physical scancode paths for layout-aware and layout-agnostic input.
-- Updates modifier bitmasks on each event to keep control-state queries cheap and consistent.
-- Maintains optional key-repeat and text-input buffering for UI fields and chat-like interactions.
-- Performs translation from backend key enums into stable engine key naming conventions.
-- Clears transient deltas at frame boundaries while preserving held-state continuity.
-- Supports binding workflows that combine textual key names with physical scan-code fallback semantics.
+- Implements per-frame keyboard state with held keys, transition deltas, and modifier tracking. `input/keyboard` delivers the keyboard implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Separates logical key identity from physical scancode paths for layout-aware and layout-agnostic input. The file owns or coordinates data contracts including `KeyboardState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Updates modifier bitmasks on each event to keep control-state queries cheap and consistent. Public callable behavior is centered on `get_scancode_from_key`, `get_key_from_scancode`, `winit_key_to_string`, `winit_scancode_to_string`, while method-level behavior such as `new`, `begin_frame`, `press_scancode`, `release_scancode`, `is_scancode_down`, `was_scancode_pressed`, and 16 more stays attached to the local data model and invariants.
+- Maintains optional key-repeat and text-input buffering for UI fields and chat-like interactions. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Performs translation from backend key enums into stable engine key naming conventions. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod.rs
 
-- High-level input module that groups keyboard, mouse, gamepad, touch, and recording components.
-- Re-exports action and state types so caller code can consume one coherent input surface.
-- Defines the composition boundary where platform events become gameplay-usable input state.
+- High-level input module that groups keyboard, mouse, gamepad, touch, and recording components. `input/mod` is the input module index, declaring `action_def`, `combo`, `gamepad`, `keyboard`, `mouse`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
+- Re-exports action and state types so caller code can consume one coherent input surface. `src/input/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `action_def::{ActionDef, ActionMap}`, `combo::{ComboDetector, ComboProgress, ComboStep}`, `gamepad::virtual_dpad`, `gamepad::GamepadMappings`, and 9 more centralized for the input subsystem.
+- Defines the composition boundary where platform events become gameplay-usable input state. The file documents how input submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- `input/mod` is the input module index, declaring `action_def`, `combo`, `gamepad`, `keyboard`, `mouse`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/input/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `action_def::{ActionDef, ActionMap}`, `combo::{ComboDetector, ComboProgress, ComboStep}`, `gamepad::virtual_dpad`, `gamepad::GamepadMappings`, and 9 more centralized for the input subsystem.
+- The file documents how input submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 ### mouse.rs
 
-- Tracks mouse position, button transitions, and scroll deltas with frame-local reset semantics.
-- Stores held, pressed, and released button sets for deterministic polling across gameplay systems.
-- Supports system cursor variants and custom cursor image metadata with hotspot offsets.
-- Exposes cursor visibility, grab, relative mode, and warp requests for runtime window integration.
-- Preserves smooth pointer-control behavior while separating transient and persistent state.
-- Serves as the central mouse state source for UI interaction and gameplay input checks.
+- Tracks mouse position, button transitions, and scroll deltas with frame-local reset semantics. `input/mouse` delivers the mouse implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores held, pressed, and released button sets for deterministic polling across gameplay systems. The file owns or coordinates data contracts including `SystemCursor`, `MouseState`, `CursorKind`, `CursorHandle`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports system cursor variants and custom cursor image metadata with hotspot offsets. Public callable behavior is centered on `is_cursor_supported`, while method-level behavior such as `from_name`, `as_str`, `new`, `begin_frame`, `update_position`, `request_position`, and 14 more stays attached to the local data model and invariants.
+- Exposes cursor visibility, grab, relative mode, and warp requests for runtime window integration. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Preserves smooth pointer-control behavior while separating transient and persistent state. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### recorder.rs
 
-- Records and replays input timelines as frame-indexed event sequences for automation and debugging.
-- Captures sparse frame data so silent periods do not inflate stored replay size.
-- Serializes recordings through versioned JSON envelopes for stable persistence and interchange.
-- Tracks recorder lifecycle state for live capture, loading, seeking, and playback progression.
-- Supports deterministic test scenarios by emitting recorded events on their original frame numbers.
-- Unifies recording and playback behavior in one stateful component used by runtime and tools.
+- Records and replays input timelines as frame-indexed event sequences for automation and debugging. `input/recorder` delivers the recorder implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Captures sparse frame data so silent periods do not inflate stored replay size. The file owns or coordinates data contracts including `InputEvent`, `RecordedFrame`, `InputRecording`, `InputRecorder`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Serializes recordings through versioned JSON envelopes for stable persistence and interchange. Public callable behavior is centered on no named public items, while method-level behavior such as `to_json`, `from_json`, `new`, `start_recording`, `record_frame`, `stop_recording`, and 7 more stays attached to the local data model and invariants.
+- Tracks recorder lifecycle state for live capture, loading, seeking, and playback progression. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Supports deterministic test scenarios by emitting recorded events on their original frame numbers. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### touch.rs
 
-- Tracks multi-touch contacts with active-point state and per-frame transition sets.
-- Stores per-contact position and pressure values keyed by stable touch identifiers.
-- Clears transient pressed and released markers at frame boundaries while preserving active points.
-- Provides touch lifecycle mutation paths for start, move, and end events from the platform layer.
+- Tracks multi-touch contacts with active-point state and per-frame transition sets. `input/touch` delivers the touch implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores per-contact position and pressure values keyed by stable touch identifiers. The file owns or coordinates data contracts including `TouchPoint`, `TouchState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Clears transient pressed and released markers at frame boundaries while preserving active points. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `begin_frame`, `touch_start`, `touch_move`, `touch_end`, `was_pressed`, and 4 more stays attached to the local data model and invariants.
+- Provides touch lifecycle mutation paths for start, move, and end events from the platform layer. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

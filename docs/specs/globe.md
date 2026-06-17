@@ -56,26 +56,26 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 
 ### composition.rs
 
-- Provides split-view globe composition that merges multiple named views into one render batch.
-- Applies per-entry viewport centers while preserving each globe's camera-relative projection behavior.
-- Delivers multi-panel frame assembly for comparative or tactical map presentation.
+- Provides split-view globe composition that merges multiple named views into one render batch. `globe/composition` delivers the composition implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Applies per-entry viewport centers while preserving each globe's camera-relative projection behavior. The file owns or coordinates data contracts including `SplitViewport`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Delivers multi-panel frame assembly for comparative or tactical map presentation. Public callable behavior is centered on `emit_split_frame`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 ### draw.rs
 
-- Provides full globe frame emission that converts world map state into ordered render commands.
-- Draws projected regions with fog, lighting, overlays, and optional texture contribution.
-- Renders borders, atmosphere, and arcs to preserve geographic structure and visual depth cues.
-- Integrates marker and label drawing with animation and LOD-aware visibility rules.
-- Applies camera projection and world parameters consistently across all rendered primitives.
-- Supports layered heat and style effects so thematic map signals remain legible.
-- Delivers the end-to-end draw pipeline for globe visualization in runtime frames.
+- Provides full globe frame emission that converts world map state into ordered render commands. `globe/draw` delivers the draw implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Draws projected regions with fog, lighting, overlays, and optional texture contribution. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Renders borders, atmosphere, and arcs to preserve geographic structure and visual depth cues. Public callable behavior is centered on `emit_globe_frame`, `project_arc`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Integrates marker and label drawing with animation and LOD-aware visibility rules. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Applies camera projection and world parameters consistently across all rendered primitives. External integration uses `super`, `slotmap`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Supports layered heat and style effects so thematic map signals remain legible. The file boundary separates globe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### export.rs
 
-- Provides globe geometry export helpers that convert region polygons into portable mesh text output.
-- Emits flat OBJ data with deterministic region object grouping for downstream tooling.
-- Delivers a simple export path for inspection, conversion, and offline map processing workflows.
-- Module API documentation
+- Provides globe geometry export helpers that convert region polygons into portable mesh text output. `globe/export` delivers the export implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Emits flat OBJ data with deterministic region object grouping for downstream tooling. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Delivers a simple export path for inspection, conversion, and offline map processing workflows. Public callable behavior is centered on `export_regions_to_obj`, `export_provinces_to_obj`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- `globe/export` delivers the export implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 
 ### fog.rs
 
@@ -84,118 +84,109 @@ This module primarily collaborates with `math`, `pathfind`, `province`, `render`
 - Provides reveal(), hide(), explore(), and toggle() operations for direct gameplay events plus batch reveal for efficient region updates.
 - Encodes fog state as base64-packed two-bit values enabling compact save-file persistence and safe transmission across network boundaries.
 - Exposes visibility and explored subset queries returning region IDs for UI rendering, camera targeting, and game logic decision systems.
-- Forms the backbone of fog-of-war rendering and strategic visibility constraints across globe rendering and campaign gameplay mechanics.
 
 ### label.rs
 
-- Provides id-keyed globe label storage for map annotations positioned by latitude and longitude.
-- Supports add, remove, update, and visibility operations for dynamic labeling workflows.
-- Applies LOD-aware filtering so text density scales with camera detail level.
-- Maintains stable iteration outputs used by rendering and debugging interfaces.
-- Delivers the label-management layer for readable and controllable geographic annotation.
+- Provides id-keyed globe label storage for map annotations positioned by latitude and longitude. `globe/label` delivers the label implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports add, remove, update, and visibility operations for dynamic labeling workflows. The file owns or coordinates data contracts including `LabelStore`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Applies LOD-aware filtering so text density scales with camera detail level. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `remove`, `get`, `get_mut`, `set_visible`, and 6 more stays attached to the local data model and invariants.
+- Maintains stable iteration outputs used by rendering and debugging interfaces. Runtime integration reaches sibling engine areas through crate modules `globe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### layer.rs
 
-- Provides named globe layer storage that overlays per-region color and visibility modifications.
-- Supports insert, remove, lookup, and alpha control for composable thematic map styling.
-- Resolves effective colors in z-order so stacked overlays produce deterministic final output.
-- Delivers the overlay-composition layer used by draw logic and gameplay visualization.
+- Provides named globe layer storage that overlays per-region color and visibility modifications. `globe/layer` delivers the layer implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports insert, remove, lookup, and alpha control for composable thematic map styling. The file owns or coordinates data contracts including `LayerStore`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Resolves effective colors in z-order so stacked overlays produce deterministic final output. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `remove`, `get`, `get_mut`, `set_province_color`, and 7 more stays attached to the local data model and invariants.
+- Delivers the overlay-composition layer used by draw logic and gameplay visualization. Runtime integration reaches sibling engine areas through crate modules `globe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### lighting.rs
 
-- Provides globe lighting helpers that derive sun direction and regional light intensity over time.
-- Computes diffuse contribution with ambient floors to keep night-side visuals readable.
-- Supports batch intensity and terminator blending calculations for smooth day-night transitions.
-- Delivers reusable illumination math consumed by globe rendering passes.
+- Provides globe lighting helpers that derive sun direction and regional light intensity over time. `globe/lighting` delivers the lighting implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Computes diffuse contribution with ambient floors to keep night-side visuals readable. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports batch intensity and terminator blending calculations for smooth day-night transitions. Public callable behavior is centered on `sun_direction`, `province_intensity`, `compute_intensities`, `terminator_alpha`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 ### loader.rs
 
-- Provides globe region-loading workflows from TOML, raster grids, and generated Voronoi seed sources.
-- Parses lightweight structured input into normalized region records with geometry and adjacency data.
-- Converts intermediate builder state into shared globe region types used across the subsystem.
-- Extracts bounds and neighbor hints from image-driven province maps for quick content bootstrapping.
-- Handles primitive parsing and validation to keep load-time failures explicit and actionable.
-- Supports both in-memory string input and file-based ingestion paths for tooling flexibility.
-- Delivers the map-ingestion layer that seeds topology and rendering state for globe runtime use.
+- Provides globe region-loading workflows from TOML, raster grids, and generated Voronoi seed sources. `globe/loader` delivers the asset or data loading path for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Parses lightweight structured input into normalized region records with geometry and adjacency data. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Converts intermediate builder state into shared globe region types used across the subsystem. Public callable behavior is centered on `load_from_toml_str`, `load_from_toml_file`, `load_from_png_file`, `load_from_province_grid`, `generate_voronoi_provinces`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Extracts bounds and neighbor hints from image-driven province maps for quick content bootstrapping. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, `province`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Handles primitive parsing and validation to keep load-time failures explicit and actionable. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Supports both in-memory string input and file-based ingestion paths for tooling flexibility. The file boundary separates globe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### marker.rs
 
-- Provides stable-id globe marker storage for pins and point annotations on planetary surfaces.
-- Supports marker insertion, removal, movement, and lookup by id or classification type.
-- Manages marker visibility and custom attributes for flexible runtime presentation.
-- Keeps marker collections deterministic for rendering and interaction queries.
-- Delivers the marker-management layer used by tactical and informational map overlays.
+- Provides stable-id globe marker storage for pins and point annotations on planetary surfaces. `globe/marker` delivers the marker implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports marker insertion, removal, movement, and lookup by id or classification type. The file owns or coordinates data contracts including `MarkerStore`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Manages marker visibility and custom attributes for flexible runtime presentation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `remove`, `get`, `get_mut`, `move_to`, and 8 more stays attached to the local data model and invariants.
+- Keeps marker collections deterministic for rendering and interaction queries. Runtime integration reaches sibling engine areas through crate modules `globe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
-- Provides the high-level globe module boundary for region topology, projection, and visual overlay orchestration.
-- Connects rendering, fog state, markers, labels, layers, and picking into one map-runtime surface.
-- Supports synchronization and loading flows so globe state can be updated from external game systems.
-- Delivers a cohesive planetary-view feature set for strategic map presentation and interaction.
+- Provides the high-level globe module boundary for region topology, projection, and visual overlay orchestration. `globe/mod` is the globe module index, declaring `composition`, `draw`, `export`, `fog`, `label`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
+- Connects rendering, fog state, markers, labels, layers, and picking into one map-runtime surface. `src/globe/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `fog::{FogMask, FogStore}`, `picking::PickResult`, `projection::OrbitCamera`, `registry::{Globe, GlobeRegistry}`, and 7 more centralized for the globe subsystem.
+- Supports synchronization and loading flows so globe state can be updated from external game systems. The file documents how globe submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- Delivers a cohesive planetary-view feature set for strategic map presentation and interaction. Agents should read this index to choose the narrow owner file first, because it maps names such as `composition`, `draw`, `export`, `fog`, `label`, and 12 more to concrete implementation responsibilities.
+- `globe/mod` is the globe module index, declaring `composition`, `draw`, `export`, `fog`, `label`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/globe/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `fog::{FogMask, FogStore}`, `picking::PickResult`, `projection::OrbitCamera`, `registry::{Globe, GlobeRegistry}`, and 7 more centralized for the globe subsystem.
 
 ### picking.rs
 
-- Provides globe picking helpers that translate screen-space clicks into front-hemisphere surface hits.
-- Converts pointer coordinates into spherical latitude and longitude using the current orbit camera.
-- Applies geographic point-in-polygon tests so province and region queries share one hit surface.
-- Exposes marker and region selection results consumed by rendering, UI, and gameplay layers.
+- Provides globe picking helpers that translate screen-space clicks into front-hemisphere surface hits. `globe/picking` delivers the picking implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Converts pointer coordinates into spherical latitude and longitude using the current orbit camera. The file owns or coordinates data contracts including `SurfaceHit`, `PickResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Applies geographic point-in-polygon tests so province and region queries share one hit surface. Public callable behavior is centered on `point_in_geo_polygon`, `point_in_geo_region`, `screen_to_surface`, `pick`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Exposes marker and region selection results consumed by rendering, UI, and gameplay layers. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### projection.rs
 
-- Provides globe projection math driven by an orbit camera with latitude, longitude, and zoom control.
-- Builds view transforms from globe rotation, axial tilt, and camera orientation inputs.
-- Projects points and regions from spherical coordinates into screen-space render geometry.
-- Applies facing checks and depth culling to reject back-hemisphere geometry during projection.
-- Delivers camera and projection utilities used by drawing, picking, and interaction code paths.
+- Provides globe projection math driven by an orbit camera with latitude, longitude, and zoom control. `globe/projection` delivers the projection implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Builds view transforms from globe rotation, axial tilt, and camera orientation inputs. The file owns or coordinates data contracts including `OrbitCamera`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Projects points and regions from spherical coordinates into screen-space render geometry. Public callable behavior is centered on `build_view_matrix`, `project_point`, `project_region`, `project_geo_loop`, `project_province`, and 3 more, while method-level behavior such as `clamp`, `pan`, `zoom_by`, `lod` stays attached to the local data model and invariants.
+- Applies facing checks and depth culling to reject back-hemisphere geometry during projection. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Delivers camera and projection utilities used by drawing, picking, and interaction code paths. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### province_adapter.rs
 
-- Provides a bridge that applies province-registry ownership and visibility state onto globe regions.
-- Synchronizes political coloring so map visuals reflect current simulation authority data.
-- Delivers adapter logic that keeps province gameplay state aligned with globe presentation.
+- Provides a bridge that applies province-registry ownership and visibility state onto globe regions. `globe/province_adapter` delivers the province adapter implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### registry.rs
 
-- Provides mutable globe state that aggregates topology, camera, fog, overlays, and interaction data.
-- Owns region storage operations together with markers, labels, layers, arcs, and heat visual layers.
-- Integrates camera projection and picking paths so selection and rendering share one state container.
-- Emits full-frame render commands from current globe state for deterministic map visualization.
-- Caches sector and reachability information to support strategic lookup and path-cost workflows.
-- Delivers named registry management for handling multiple independent globe instances.
+- Provides mutable globe state that aggregates topology, camera, fog, overlays, and interaction data. `globe/registry` delivers the lookup registry and handle ownership for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Owns region storage operations together with markers, labels, layers, arcs, and heat visual layers. The file owns or coordinates data contracts including `Globe`, `GlobeRegistry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Integrates camera projection and picking paths so selection and rendering share one state container. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_region`, `remove_region`, `get_region`, `get_region_mut`, `region_count`, and 33 more stays attached to the local data model and invariants.
+- Emits full-frame render commands from current globe state for deterministic map visualization. Runtime integration reaches sibling engine areas through crate modules `globe`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Caches sector and reachability information to support strategic lookup and path-cost workflows. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### sphere.rs
 
-- Provides spherical geometry helpers for converting between latitude-longitude and unit-vector space.
-- Computes great-circle distance and interpolation for geodesic path and arc construction.
-- Supplies ray-sphere intersection tests used by projection and picking style calculations.
-- Defines lightweight 3x3 rotation matrices and multiplication helpers for globe transforms.
-- Delivers foundational math primitives shared across lighting, projection, and topology tools.
+- Provides spherical geometry helpers for converting between latitude-longitude and unit-vector space. `globe/sphere` delivers the sphere implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Computes great-circle distance and interpolation for geodesic path and arc construction. The file owns or coordinates data contracts including `Mat3x3`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supplies ray-sphere intersection tests used by projection and picking style calculations. Public callable behavior is centered on `lat_lon_to_unit`, `unit_to_lat_lon`, `great_circle_distance`, `great_circle_path`, `ray_sphere_intersect`, and 3 more, while method-level behavior such as `identity`, `from_cols`, `mul_vec`, `mul_mat`, `transpose` stays attached to the local data model and invariants.
+- Defines lightweight 3x3 rotation matrices and multiplication helpers for globe transforms. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### sync.rs
 
-- Provides globe snapshot transfer structures for cross-thread synchronization and state exchange.
-- Defines channel wrappers and snapshot payload shapes used to move globe state safely.
-- Supports building and applying snapshots to keep remote and local globe views aligned.
-- Delivers the synchronization utility layer for background simulation integration.
+- Provides globe snapshot transfer structures for cross-thread synchronization and state exchange. `globe/sync` delivers the sync implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Defines channel wrappers and snapshot payload shapes used to move globe state safely. The file owns or coordinates data contracts including `GlobeSyncSnapshot`, `GlobeSyncChannel`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports building and applying snapshots to keep remote and local globe views aligned. Public callable behavior is centered on `build_snapshot`, `apply_snapshot`, while method-level behavior such as `new` stays attached to the local data model and invariants.
+- Delivers the synchronization utility layer for background simulation integration. Runtime integration reaches sibling engine areas through crate modules `globe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### topology.rs
 
-- Provides region-topology graph storage with cached adjacency, centroids, and tagged border edges.
-- Supports insertion, removal, and mutation workflows while keeping lookup caches coherent.
-- Integrates pathfinding-friendly queries for route, cost, and reachability evaluation across regions.
-- Exposes neighbor and region iteration helpers used by rendering and gameplay systems.
-- Delivers the structural map-graph backbone that powers globe connectivity logic.
+- Provides region-topology graph storage with cached adjacency, centroids, and tagged border edges. `globe/topology` delivers the topology implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports insertion, removal, and mutation workflows while keeping lookup caches coherent. The file owns or coordinates data contracts including `RegionGraph`, `ProvinceGraph`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Integrates pathfinding-friendly queries for route, cost, and reachability evaluation across regions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `insert`, `remove`, `get`, `get_mut`, `iter`, and 12 more stays attached to the local data model and invariants.
+- Exposes neighbor and region iteration helpers used by rendering and gameplay systems. Runtime integration reaches sibling engine areas through crate modules `globe`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Delivers the structural map-graph backbone that powers globe connectivity logic. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### types.rs
 
-- Provides the shared globe data model defining regions, overlays, markers, labels, arcs, and view artifacts.
-- Encodes geographic geometry with centroids, adjacency, edge tags, and per-region render attributes.
-- Defines globe specification parameters that drive atmosphere, lighting, rotation, and border behavior.
-- Supplies layer and heat-overlay structures used to blend thematic map information at runtime.
-- Models marker and label style data with visibility, pulse, and level-of-detail controls.
-- Includes projection result types for screen-space rendering and interaction pipelines.
-- Declares subsystem error variants for loading, lookup, and path-related failure handling.
-- Delivers the canonical type contract consumed by all globe modules and integration surfaces.
+- Provides the shared globe data model defining regions, overlays, markers, labels, arcs, and view artifacts. `globe/types` delivers the shared type definitions and data contracts for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Encodes geographic geometry with centroids, adjacency, edge tags, and per-region render attributes. The file owns or coordinates data contracts including `RegionId`, `RegionPart`, `Region`, `FogState`, `HeatLayer`, and 14 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Defines globe specification parameters that drive atmosphere, lighting, rotation, and border behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `raw`, `with_data`, `with_parts_data`, `from_parts`, `primary_vertices`, and 2 more stays attached to the local data model and invariants.
+- Supplies layer and heat-overlay structures used to blend thematic map information at runtime. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Models marker and label style data with visibility, pulse, and level-of-detail controls. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Includes projection result types for screen-space rendering and interaction pipelines. The file boundary separates globe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 
 

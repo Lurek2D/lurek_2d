@@ -1,5 +1,5 @@
 //! This file converts the prepared raycaster scene into renderer commands that the broader engine command stream already understands.
-//! It emits textured or flat-colored quads in the ordering expected for ceilings, floors, walls, and billboard content.
+//! It emits textured or flat-colored quads in the ordering expected for ceilings, floors, walls, and billboard content. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 //! Because the scene already carries geometry, UVs, light, and depth intent, this step mostly translates instead of recomputing presentation logic.
 //! The file is therefore the handoff point where raycast-specific scene data becomes generic render work for the engine backend.
 

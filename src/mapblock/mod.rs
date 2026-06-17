@@ -1,6 +1,9 @@
-//! High-level mapblock module that wires blocks, scripts, constraints, and output conversion together.
-//! Exposes the procedural assembly surface used to build tilemaps from authored content.
-//! Keeps layered generation, orientation handling, and placement validation under one namespace.
+//! High-level mapblock module that wires blocks, scripts, constraints, and output conversion together. `mapblock/mod` is the mapblock module index, declaring `block`, `config`, `constraints`, `generator`, `group`, and 8 more so agents can identify which files own each feature slice before opening implementation code.
+//! Exposes the procedural assembly surface used to build tilemaps from authored content. `src/mapblock/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `block::{Edge, MapBlock}`, `config::MapBlockConfig`, `constraints::{EdgeConstraint, NeighborRules}`, `generator::MapBlockGenerator`, and 9 more centralized for the mapblock subsystem.
+//! Keeps layered generation, orientation handling, and placement validation under one namespace. The file documents how mapblock submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! `mapblock/mod` is the mapblock module index, declaring `block`, `config`, `constraints`, `generator`, `group`, and 8 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/mapblock/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `block::{Edge, MapBlock}`, `config::MapBlockConfig`, `constraints::{EdgeConstraint, NeighborRules}`, `generator::MapBlockGenerator`, and 9 more centralized for the mapblock subsystem.
+//! The file documents how mapblock submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 /// Map block definition: tile slots, metadata, and per-block configuration.
 pub mod block;

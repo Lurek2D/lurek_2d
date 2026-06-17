@@ -1,6 +1,4 @@
-//! Formats frame timing samples into compact textual summaries for trace and diagnostics output.
-//! Reads tick, update, render, and callback metrics from the runtime profile snapshot.
-//! Emits one stable line shape that supports quick frame-budget scanning in logs.
+//! Formats frame timing samples into compact textual summaries for trace and diagnostics output. `app/frame_profile` delivers the frame profile implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use crate::runtime::FrameProfile;
 /// Format one `FrameProfile` sample as a compact single-line timing string.

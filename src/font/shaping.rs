@@ -1,8 +1,7 @@
-//! Provides text-shaping and wrapping behavior that transforms raw strings into render-ready line layouts.
-//! Supports no-wrap, word-wrap, and character-wrap strategies to match varied language and UI needs.
-//! Computes aligned line placement using measured advances and target width constraints.
-//! Emits shaped line collections with offsets and widths for downstream rendering stages.
-//! Delivers the layout layer that bridges font metrics and final text draw preparation.
+//! Provides text-shaping and wrapping behavior that transforms raw strings into render-ready line layouts. `font/shaping` delivers the shaping implementation for the font subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports no-wrap, word-wrap, and character-wrap strategies to match varied language and UI needs. The file owns or coordinates data contracts including `TextAlign`, `WordWrap`, `LineBreak`, `ShapedLine`, `ShapedText`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Computes aligned line placement using measured advances and target width constraints. Public callable behavior is centered on `shape_text`, `wrap_words`, `wrap_characters`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Emits shaped line collections with offsets and widths for downstream rendering stages. Runtime integration reaches sibling engine areas through crate modules `font`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::font::bitmap_font::BitmapFont;
 use crate::font::metrics::char_advance;

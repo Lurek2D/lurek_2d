@@ -1,8 +1,7 @@
-//! Implements sequential combo recognition for multi-step input patterns with timing constraints.
-//! Tracks progress state across key feeds, validating per-step gaps and whole-sequence deadlines.
-//! Emits explicit advanced, completed, and broken states to simplify caller-side response logic.
-//! Resets predictably after failures or completion to support repeated combo attempts.
-//! Powers gameplay and scripting features that require ordered gesture-style key sequences.
+//! Implements sequential combo recognition for multi-step input patterns with timing constraints. `input/combo` delivers the combo implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Tracks progress state across key feeds, validating per-step gaps and whole-sequence deadlines. The file owns or coordinates data contracts including `ComboStep`, `ComboProgress`, `ComboDetector`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Emits explicit advanced, completed, and broken states to simplify caller-side response logic. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `feed`, `tick`, `reset`, `is_in_progress`, `progress`, and 2 more stays attached to the local data model and invariants.
+//! Resets predictably after failures or completion to support repeated combo attempts. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// One required key press in a combo sequence with its maximum inter-step gap.
 #[derive(Clone, Debug, PartialEq)]

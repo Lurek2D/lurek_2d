@@ -1,7 +1,7 @@
-//! Provides mutable dialogue runtime state that tracks active position, visit history, and per-run variables.
-//! Supports conversation lifecycle transitions for start, advance, end, and subsequent re-entry handling.
-//! Preserves continuity data in a compact snapshot that dependent systems can query every frame.
-//! Delivers the authoritative progression record used to keep branching dialogue behavior coherent over time.
+//! Provides mutable dialogue runtime state that tracks active position, visit history, and per-run variables. `dialog/state` delivers the state container and transition helpers for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports conversation lifecycle transitions for start, advance, end, and subsequent re-entry handling. The file owns or coordinates data contracts including `DialogueState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Preserves continuity data in a compact snapshot that dependent systems can query every frame. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `start`, `advance`, `end`, `current`, `has_visited`, and 5 more stays attached to the local data model and invariants.
+//! Delivers the authoritative progression record used to keep branching dialogue behavior coherent over time. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::collections::{HashMap, HashSet};
 

@@ -1,11 +1,4 @@
-//! File: src/lua_api/terminal_api.rs
-//! Module API documentation
-//!
-//! TODO: add doc note 1
-//! TODO: add doc note 2
-//! TODO: add doc note 3
-//! TODO: add doc note 4
-//! TODO: add doc note 5
+//! `src/lua_api/terminal_api.rs` registers the `lurek.terminal` Lua boundary for terminal behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::terminal::ansi::{parse_ansi_spans, strip_ansi_codes};

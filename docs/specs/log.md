@@ -36,28 +36,23 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 ### facade.rs
 
-- Provides the structured logging facade used to emit level-tagged messages with fields.
-- Handles runtime level queries and updates while enforcing fast level gating before dispatch.
-- Exposes compact log-entry helpers consumed by Lua and Rust call sites.
+- Provides the structured logging facade used to emit level-tagged messages with fields. `log/facade` delivers the public facade over lower-level subsystem helpers for the log subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Handles runtime level queries and updates while enforcing fast level gating before dispatch. The file owns or coordinates data contracts including `LogFields`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Exposes compact log-entry helpers consumed by Lua and Rust call sites. Public callable behavior is centered on `log_structured`, `set_level`, `get_level`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 ### mod.rs
 
-- High-level logging module that combines facade APIs with sink implementations.
-- Re-exports level control and sink types for centralized runtime log configuration.
-- Defines the boundary for structured log routing to memory and file backends.
+- High-level logging module that combines facade APIs with sink implementations. `log/mod` is the log module index, declaring `facade`, `sinks` so agents can identify which files own each feature slice before opening implementation code.
+- Re-exports level control and sink types for centralized runtime log configuration. `src/log/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `facade::{get_level, log_structured, set_level, LogFields}`, `sinks::{MemoryEntry, RotatingFileSink, Sink, SinkLevel, SinkRegistry}` centralized for the log subsystem.
 
 ### sinks.rs
 
-- Implements logging sink backends, severity filters, and output formatting infrastructure.
-- Defines sink-level enums and parsing rules used to gate message delivery.
-- Provides in-memory capture sinks for runtime inspection and diagnostic tooling.
-- Supports plain, JSON, and NDJSON output styles for machine and human consumers.
-- Manages timestamp and optional color formatting for readable terminal and file logs.
-- Implements rotating file sinks with size limits and backup retention control.
-- Uses buffered writes and filtering hooks to keep output efficient and configurable.
-- Offers callback-style sink integration for forwarding logs to external handlers.
-- Unifies sink behavior under shared abstractions for consistent dispatch semantics.
-- Exposes registry orchestration for broadcasting structured and plain messages to many sinks.
+- Implements logging sink backends, severity filters, and output formatting infrastructure. `log/sinks` delivers the sinks implementation for the log subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Defines sink-level enums and parsing rules used to gate message delivery. The file owns or coordinates data contracts including `SinkLevel`, `MemoryEntry`, `RotatingFileSink`, `SinkKind`, `Sink`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides in-memory capture sinks for runtime inspection and diagnostic tooling. Public callable behavior is centered on no named public items, while method-level behavior such as `severity_rank`, `as_str`, `open`, `write_with_rotation`, `flush`, `file`, and 17 more stays attached to the local data model and invariants.
+- Supports plain, JSON, and NDJSON output styles for machine and human consumers. Runtime integration reaches sibling engine areas through crate modules `binary`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Manages timestamp and optional color formatting for readable terminal and file logs. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Implements rotating file sinks with size limits and backup retention control. The file boundary separates log implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 
 

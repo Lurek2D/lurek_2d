@@ -37,40 +37,36 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### channel.rs
 
-- This file provides the thread-safe message bus that moves typed payloads between isolated Lua VMs.
-- It defines a stable transport value model that preserves scalar values, nested tables, and binary blobs.
-- It supports bounded and unbounded queues so gameplay code can choose backpressure or open throughput.
-- It offers blocking and non-blocking push and pull flows for deterministic runtime synchronization.
-- It bridges Rust and Lua value domains with explicit conversion rules that avoid hidden sharing.
-- It keeps channel identity and message sequencing visible so concurrent data flow stays debuggable.
+- This file provides the thread-safe message bus that moves typed payloads between isolated Lua VMs. `thread/channel` delivers the channel implementation for the thread subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It defines a stable transport value model that preserves scalar values, nested tables, and binary blobs. The file owns or coordinates data contracts including `ChannelValue`, `OverflowPolicy`, `Channel`, `LuaChannel`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It supports bounded and unbounded queues so gameplay code can choose backpressure or open throughput. Public callable behavior is centered on `lua_to_channel_value`, `channel_value_to_lua`, while method-level behavior such as `new`, `bounded`, `named`, `named_bounded`, `push`, `try_push`, and 9 more stays attached to the local data model and invariants.
+- It offers blocking and non-blocking push and pull flows for deterministic runtime synchronization. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- It bridges Rust and Lua value domains with explicit conversion rules that avoid hidden sharing. External integration uses `mlua`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod.rs
 
-- This module delivers the high-level concurrency layer for isolated Lua workers in the runtime.
-- It combines channels, worker execution, pools, and one-shot promises into one coherent flow model.
-- It keeps cross-thread scripting safe by enforcing message passing instead of shared VM state.
+- This module delivers the high-level concurrency layer for isolated Lua workers in the runtime. `thread/mod` is the thread module index, declaring `channel`, `pool`, `promise`, `worker` so agents can identify which files own each feature slice before opening implementation code.
+- It combines channels, worker execution, pools, and one-shot promises into one coherent flow model. `src/thread/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through no named public items centralized for the thread subsystem.
 
 ### pool.rs
 
-- This file provides a fixed worker pool that executes Lua jobs in parallel with stable throughput.
-- It binds shared input and output channels so tasks and results travel on a predictable pipeline.
-- It exposes a practical lifecycle of submit, collect, and join for frame-safe orchestration.
-- It keeps named channel wiring consistent across engine and script boundaries during pooled execution.
+- This file provides a fixed worker pool that executes Lua jobs in parallel with stable throughput. `thread/pool` delivers the pool implementation for the thread subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It binds shared input and output channels so tasks and results travel on a predictable pipeline. The file owns or coordinates data contracts including `ThreadPool`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It exposes a practical lifecycle of submit, collect, and join for frame-safe orchestration. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `submit`, `collect`, `join`, `join_with_timeout`, `size` stays attached to the local data model and invariants.
+- It keeps named channel wiring consistent across engine and script boundaries during pooled execution. Runtime integration reaches sibling engine areas through crate modules `thread`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### promise.rs
 
-- This file provides a one-shot async result container for Lua work running off the main thread.
-- It models pending, success, and error states so callers can poll progress without blocking frames.
-- It delivers the resolved value through a dedicated channel for safe cross-thread handoff semantics.
-- It makes deferred gameplay logic simple by letting results be consumed cleanly in later updates.
+- This file provides a one-shot async result container for Lua work running off the main thread. `thread/promise` delivers the promise implementation for the thread subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It models pending, success, and error states so callers can poll progress without blocking frames. The file owns or coordinates data contracts including `PromiseState`, `Promise`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It delivers the resolved value through a dedicated channel for safe cross-thread handoff semantics. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_done`, `result`, `get_error` stays attached to the local data model and invariants.
 
 ### worker.rs
 
-- This file provides the worker lifecycle that boots an isolated Lua VM on its own OS thread.
-- It tracks execution transitions from pending to running to completed or failed outcomes.
-- It injects a restricted capability surface so background scripts run inside controlled boundaries.
-- It connects workers to shared named channels so inter-VM communication remains explicit and typed.
-- It offers blocking and timeout joins to synchronize background completion with frame progression.
+- This file provides the worker lifecycle that boots an isolated Lua VM on its own OS thread. `thread/worker` delivers the worker implementation for the thread subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- It tracks execution transitions from pending to running to completed or failed outcomes. The file owns or coordinates data contracts including `ThreadState`, `LuaThread`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- It injects a restricted capability surface so background scripts run inside controlled boundaries. Public callable behavior is centered on `worker_capabilities`, while method-level behavior such as `new`, `start`, `wait`, `wait_timeout`, `is_running`, `get_error` stays attached to the local data model and invariants.
+- It connects workers to shared named channels so inter-VM communication remains explicit and typed. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, `thread`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

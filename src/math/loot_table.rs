@@ -1,13 +1,9 @@
-//! Weighted loot sampling and pity tracking for deterministic drop systems.
-//! Uses the alias method for O(1) draws after an O(n) build step.
-//! Keeps the raw weight table and RNG state serializable for save files.
-//! Supports guaranteed outcomes once a pity threshold is reached.
-//! Lets callers combine normal sampling with tracked fail counters.
-//! Preserves fast runtime lookups without hiding the probability model.
-//! Fits reward tables, gacha-style drops, and event-driven item rolls.
-//! Restores exactly to the previous random state when deserialized.
-//! Keeps the core data structure simple enough for Lua-driven gameplay flows.
-//! Exposes predictable sampling behavior under both normal and pity paths.
+//! Weighted loot sampling and pity tracking for deterministic drop systems. `math/loot_table` delivers the loot table implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Uses the alias method for O(1) draws after an O(n) build step. The file owns or coordinates data contracts including `LootEntry`, `LootTable`, `PityTracker`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Keeps the raw weight table and RNG state serializable for save files. Public callable behavior is centered on `sample_with_pity`, while method-level behavior such as `new`, `with_seed`, `set_seed`, `add`, `remove`, `set_weight`, and 14 more stays attached to the local data model and invariants.
+//! Supports guaranteed outcomes once a pity threshold is reached. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Lets callers combine normal sampling with tracked fail counters. External integration uses `std`, `toml`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Preserves fast runtime lookups without hiding the probability model. The file boundary separates math implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::math::random::RandomGenerator;
 use std::collections::HashMap;

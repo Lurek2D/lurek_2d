@@ -1,8 +1,8 @@
-//! Runtime scene-input adapter that maps static or physics-backed 2D transforms
-//! into raycaster sprite, light, and optional model descriptors.
-//! It exists so gameplay code can treat physics bodies as the source of truth
-//! while still feeding the raycaster with pseudo-3D presentation inputs.
-//! Module API documentation
+//! Runtime scene-input adapter that maps static or physics-backed 2D transforms. `raycaster/scene_adapter` delivers the scene adapter implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! into raycaster sprite, light, and optional model descriptors. The file owns or coordinates data contracts including `ResolvedSceneTransform`, `SceneTransform`, `SceneAdapterSprite`, `SceneAdapterLight`, `ResolvedSceneModel`, and 2 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It exists so gameplay code can treat physics bodies as the source of truth. Public callable behavior is centered on no named public items, while method-level behavior such as `static_xy`, `body`, `resolve`, `new`, `clear`, `clear_sprites`, and 8 more stays attached to the local data model and invariants.
+//! while still feeding the raycaster with pseudo-3D presentation inputs. Runtime integration reaches sibling engine areas through crate modules `physics`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `raycaster/scene_adapter` delivers the scene adapter implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use std::cell::RefCell;
 use std::rc::Rc;

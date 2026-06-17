@@ -1,18 +1,4 @@
-//! File: src/lua_api/cinematic_api.rs
-//!
-//! Lua API wrapper for the `cinematic` engine module.
-//! Exposes `lurek.cinematic` to Lua scripts.
-//!
-//! # Exposed API (`lurek.cinematic`)
-//! - `new()` → `LCinematic` – creates an empty cinematic timeline handle.
-//!
-//! # `LCinematic` methods
-//! - `addCut(time, description)` – appends a timed cut to the timeline.
-//! - `play()` – plays all cuts (fires engine events).
-//! - `clear()` – removes all cuts from the timeline.
-//! - `cutCount()` → integer – number of cuts in the timeline.
-//! - `type()` → `"LCinematic"`.
-//! - `typeOf(name)` → boolean.
+//! Lua API wrapper for the `cinematic` engine module. `src/lua_api/cinematic_api.rs` registers the `lurek.cinematic` Lua boundary for cinematic behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use crate::cinematic::{Cinematic, CinematicClip, CinematicTimeline, ClipType};
 use crate::runtime::SharedState;

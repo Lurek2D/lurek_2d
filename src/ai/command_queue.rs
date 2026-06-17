@@ -1,8 +1,7 @@
-//! Provides a staged action stream that turns chosen intent into executable command cadence.
-//! Maintains ordering, urgency, and interruption semantics so control pressure stays predictable.
-//! Couples command payloads with completion hooks to close the loop between plan and outcome.
-//! Offers controlled dequeue flow that supports reactive overrides without timeline fragmentation.
-//! Serves as the pacing buffer between high-level deliberation and low-level execution dispatch.
+//! Provides a staged action stream that turns chosen intent into executable command cadence. `ai/command_queue` delivers the command queue implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Maintains ordering, urgency, and interruption semantics so control pressure stays predictable. The file owns or coordinates data contracts including `Command`, `CommandQueue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Couples command payloads with completion hooks to close the loop between plan and outcome. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `enqueue`, `push_front`, `replace`, `cancel_current`, `clear`, and 8 more stays attached to the local data model and invariants.
+//! Offers controlled dequeue flow that supports reactive overrides without timeline fragmentation. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{CQ01, CQ02, CQ03};

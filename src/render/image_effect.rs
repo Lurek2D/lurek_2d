@@ -1,7 +1,4 @@
-//! - Compact descriptor for post-processing steps in a shader pipeline.
-//! - Stores effect names, enable flags, and float parameter values.
-//! - Allows post-fx filters to be dynamically updated without custom struct layouts.
-//! - Serves as the control interface for full-screen post-processing effects.
+//! Compact descriptor for post-processing steps in a shader pipeline. `render/image_effect` delivers the image effect implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use std::collections::HashMap;
 /// One named shader pass in a post-processing chain; carries float uniform parameters.

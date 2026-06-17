@@ -30,17 +30,14 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ### lurek_headless.rs
 
-- Implements the headless CLI runner used for validation, packaging, and screenshot batch workflows.
-- Dispatches subcommands into deterministic offline operations without opening an interactive runtime window.
-- Runs game validation tooling and archive packaging against target directories for CI and release prep.
-- Captures batch screenshots across multiple games to support visual smoke checks in automation pipelines.
-- Serves as the command-line entrypoint for non-interactive engine operations.
+- Implements the headless CLI runner used for validation, packaging, and screenshot batch workflows. `bin/lurek_headless` delivers the lurek headless implementation for the bin subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Dispatches subcommands into deterministic offline operations without opening an interactive runtime window. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Runs game validation tooling and archive packaging against target directories for CI and release prep. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Captures batch screenshots across multiple games to support visual smoke checks in automation pipelines. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### lurekc.rs
 
-- Defines the console-suppressed desktop launcher that delegates to the shared engine bootstrap.
-- Reuses the main runtime startup path while controlling subsystem behavior on Windows.
-- Serves as the minimal binary entrypoint for standard interactive game launch.
+- Defines the console-suppressed desktop launcher that delegates to the shared engine bootstrap. `bin/lurekc` delivers the lurekc implementation for the bin subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 
 

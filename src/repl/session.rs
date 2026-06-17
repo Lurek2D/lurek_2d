@@ -2,7 +2,6 @@
 //! It distinguishes between command-style control input and ordinary Lua text so one prompt can manage both session behavior and code execution.
 //! Expression-first evaluation keeps interactive probing ergonomic while still falling back to statement execution for longer snippets.
 //! Command history is bounded and owned by the session, which keeps repeated use predictable without leaking VM references across calls.
-//! The file is therefore the operational core that makes the REPL feel persistent and interactive while remaining headless and embeddable.
 
 use crate::repl::commands::ReplCommand;
 use crate::repl::completer::complete_prefix;

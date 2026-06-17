@@ -1,7 +1,7 @@
-//! This file provides viewport scaling helpers between logical game space and physical pixels.
-//! It exposes logical dimensions and scale mode state used by rendering and input mapping.
-//! It computes conversion factors and offsets so coordinate translation remains consistent.
-//! It supports runtime staging of scale behavior without direct renderer coupling.
+//! This file provides viewport scaling helpers between logical game space and physical pixels. `window/viewport` delivers the viewport implementation for the window subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It exposes logical dimensions and scale mode state used by rendering and input mapping. The file owns or coordinates data contracts including `ScaleInfo`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It computes conversion factors and offsets so coordinate translation remains consistent. Public callable behavior is centered on `get_width`, `get_height`, `get_scale_mode`, `set_scale_mode`, `to_pixels`, and 3 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! It supports runtime staging of scale behavior without direct renderer coupling. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::runtime::shared_state::WindowState;
 /// Return the logical game viewport width in pixels.

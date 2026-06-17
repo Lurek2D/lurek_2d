@@ -1,8 +1,7 @@
-//! Visualizes procedural-generation data structures as images for analysis and tuning loops.
-//! Renders cellular grids, dungeon maps, and occupancy states with configurable color semantics.
-//! Draws Voronoi and Delaunay style outputs to inspect spatial partition behavior.
-//! Displays point samples and topology overlays for algorithm-step debugging.
-//! Provides compact visual proof artifacts for procgen experimentation and regression checks.
+//! Visualizes procedural-generation data structures as images for analysis and tuning loops. `image/visualization/procgen` delivers the procgen implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Renders cellular grids, dungeon maps, and occupancy states with configurable color semantics. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Draws Voronoi and Delaunay style outputs to inspect spatial partition behavior. Public callable behavior is centered on `cellular_grid_to_image`, `voronoi_to_image`, `points_to_image`, `dungeon_grid_to_image`, `colored_points_to_image`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Displays point samples and topology overlays for algorithm-step debugging. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::hsv_to_rgb_viz;
 use crate::image::ImageData;

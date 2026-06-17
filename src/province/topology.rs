@@ -1,7 +1,6 @@
 //! Province adjacency graph for representing which regions touch each other once the raster map has been decoded into province ids.
 //! The file keeps neighbor lists sorted and deduplicated so adjacency queries remain compact, deterministic, and cheap to inspect.
-//! Rebuild logic turns raw province pairs into a clean undirected graph while filtering out meaningless self-links.
-//! Functionally this file delivers the topological skeleton that route search, border logic, and province relationship queries depend on.
+//! Rebuild logic turns raw province pairs into a clean undirected graph while filtering out meaningless self-links. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `rebuild_from_pairs`, `neighbors_of`, `is_adjacent`, `province_ids`, `adjacency_pairs` stays attached to the local data model and invariants.
 
 use crate::province::types::ProvinceId;
 use std::collections::{HashMap, HashSet};

@@ -1,6 +1,5 @@
-//! This module delivers the validation surface for script content, assets, imports, and API usage.
-//! It combines built-in and custom rule paths into one extensible quality-check pipeline.
-//! It outputs structured findings that guide fixes in development and continuous integration.
+//! This module delivers the validation surface for script content, assets, imports, and API usage. `validator/mod` is the validator module index, declaring `api_check`, `asset_check`, `config`, `engine`, `import_check`, and 5 more so agents can identify which files own each feature slice before opening implementation code.
+//! It combines built-in and custom rule paths into one extensible quality-check pipeline. `src/validator/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `config::ValidatorConfig`, `engine::ValidationEngine`, `report::{Severity, ValidationReport, Violation}`, `rule::ValidationRule` centralized for the validator subsystem.
 
 /// Mod API compliance checker against registered type schemas and field contracts.
 pub mod api_check;

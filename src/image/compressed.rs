@@ -1,8 +1,7 @@
-//! Decodes DDS-style compressed textures into structured payloads used by higher-level image loading.
-//! Validates headers and extracts dimensions, mip blocks, and metadata needed for downstream upload.
-//! Detects desktop and mobile block-compression families from DXGI and legacy format descriptors.
-//! Exposes file and byte entry points so callers can probe and decode assets from multiple pipelines.
-//! Returns stable data carriers containing format tags and raw compressed mip chains.
+//! Decodes DDS-style compressed textures into structured payloads used by higher-level image loading. `image/compressed` delivers the compressed implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Validates headers and extracts dimensions, mip blocks, and metadata needed for downstream upload. The file owns or coordinates data contracts including `CompressedFormat`, `CompressedImageData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Detects desktop and mobile block-compression families from DXGI and legacy format descriptors. Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `from_dds`, `get_dimensions`, `get_mipmap_count`, `get_format`, `is_dds_magic`, and 2 more stays attached to the local data model and invariants.
+//! Exposes file and byte entry points so callers can probe and decode assets from multiple pipelines. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::runtime::EngineError;
 /// Compressed texture format recognized from DDS metadata.

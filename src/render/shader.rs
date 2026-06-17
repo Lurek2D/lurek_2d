@@ -1,15 +1,8 @@
-//! - Manages user-facing shader compilation and parsing of WGSL sources.
-//! - Wraps WGSL source code into normalized pipeline templates for the renderer.
-//! - Inspects fragment inputs to ensure only supported attributes are bound.
-//! - Represents shader uniform values in typed forms for per-frame upload.
-//! - Preserves the ordering of uniform variables to guarantee stable GPU buffer layouts.
-//! - Simplifies user shader attributes, mapping them to raw backend formats.
-//! - Translates dynamic Lua shader configurations into concrete wgpu pipeline steps.
-//! - Reports shader compilation errors and validation diagnostics to logs.
-//! - Defines uniform value mappings for arrays, float matrices, vectors, and scalars.
-//! - Validates uniform variables by matching types against compiled layout schemas.
-//! - Prevents runtime shader validation panic through strict preprocessing.
-//! - Keeps shader compilation metrics and uniform metadata key-indexed.
+//! Manages user-facing shader compilation and parsing of WGSL sources. `render/shader` delivers the shader implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Wraps WGSL source code into normalized pipeline templates for the renderer. The file owns or coordinates data contracts including `ShaderFragmentInput`, `Shader`, `UniformValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Inspects fragment inputs to ensure only supported attributes are bound. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `send`, `has_uniform`, `ordered_uniforms`, `wrapper_source`, `fragment_entry_name`, and 1 more stays attached to the local data model and invariants.
+//! Represents shader uniform values in typed forms for per-frame upload. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Preserves the ordering of uniform variables to guarantee stable GPU buffer layouts. External integration uses `std`, `wgpu`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::log_msg;
 use crate::runtime::log_messages::SH01_SHADER_OK;

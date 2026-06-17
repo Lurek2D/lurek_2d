@@ -1,7 +1,6 @@
-//! Cave-style map generator that uses cellular automata to turn noisy initial occupancy into organic cavern shapes.
+//! Cave-style map generator that uses cellular automata to turn noisy initial occupancy into organic cavern shapes. `procgen/cellular` delivers the cellular implementation for the procgen subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! The file exposes birth and survival style rules together with seeded randomization so cave density and texture can be tuned while staying reproducible.
-//! Edge treatment is baked into the model to keep map borders naturally enclosed rather than porous or artificially clean.
-//! Functionally this file delivers fast organic cave generation from simple rule-based iteration on a flat grid.
+//! Edge treatment is baked into the model to keep map borders naturally enclosed rather than porous or artificially clean. Public callable behavior is centered on `cellular_automata`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 use super::lcg::Lcg;
 

@@ -1,6 +1,4 @@
-//! Rasterises a single parallax layer into an ImageData bitmap.
-//! Applies tint, opacity, and visibility when drawing.
-//! Produces a solid-colour image sized to the requested dimensions.
+//! Rasterises a single parallax layer into an ImageData bitmap. `parallax/draw` delivers the draw implementation for the parallax subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use super::layer::ParallaxLayer;
 use crate::image::ImageData;

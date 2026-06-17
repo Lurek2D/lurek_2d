@@ -72,31 +72,26 @@ This module primarily collaborates with `globe`, `image`. Its responsibility sho
 
 ### aabb_tree.rs
 
-- Dynamic broad-phase spatial index for 2D world queries and overlap culling.
-- Stores moving bounds in a hierarchy that stays tight as entries shift each frame.
-- Serves fast insert, remove, move, and query flows for dynamic actors.
-- Reuses nodes through an internal pool to reduce allocation churn.
-- Chooses sibling branches with a cost heuristic that keeps the tree balanced.
-- Answers rectangle, point, circle, and segment tests from one entry map.
-- Exposes helper bound math so callers can combine and compare leaves efficiently.
-- Fits game-style workloads where many objects move but only a subset interact.
-- Gives predictable query latency for proximity, visibility, and broad-phase passes.
-- Keeps the data model leaf-centric so Lua-side handles stay simple and stable.
+- Dynamic broad-phase spatial index for 2D world queries and overlap culling. `math/aabb_tree` delivers the aabb tree implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores moving bounds in a hierarchy that stays tight as entries shift each frame. The file owns or coordinates data contracts including `AabbEntry`, `AabbTree`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Serves fast insert, remove, move, and query flows for dynamic actors. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `insert`, `remove`, `query`, `query_point`, `query_circle`, and 6 more stays attached to the local data model and invariants.
+- Reuses nodes through an internal pool to reduce allocation churn. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Chooses sibling branches with a cost heuristic that keeps the tree balanced. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Answers rectangle, point, circle, and segment tests from one entry map. The file boundary separates math implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### bezier.rs
 
-- Flexible Bézier curve utility for smooth motion paths and procedural shaping.
-- Supports dynamic control points, clamped evaluation, and partial-segment sampling.
-- Provides tangent and derivative queries for orientation and velocity-aware effects.
-- Can be transformed in place with translate, rotate, and scale operations.
-- Designed for path authoring, easing-like shaping, and motion interpolation use cases.
+- Flexible Bézier curve utility for smooth motion paths and procedural shaping. `math/bezier` delivers the bezier implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports dynamic control points, clamped evaluation, and partial-segment sampling. The file owns or coordinates data contracts including `BezierCurve`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides tangent and derivative queries for orientation and velocity-aware effects. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `evaluate`, `render`, `render_segment`, `get_derivative`, `get_control_point`, and 11 more stays attached to the local data model and invariants.
+- Can be transformed in place with translate, rotate, and scale operations. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Designed for path authoring, easing-like shaping, and motion interpolation use cases. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### circle.rs
 
 - 2D circle geometry primitive with center point and non-negative radius clamped on construction for collision and containment tests.
 - Implements point-in-circle, circle-circle intersection, and AABB containment queries using distance comparisons for gameplay geometry.
 - Computes area and perimeter values for numerical analysis enabling physics-based interactions and spatial reasoning in game logic.
-- Provides center accessor and bounding-box computation supporting rendering, camera framing, and spatial query integration.
 
 ### easing.rs
 
@@ -105,128 +100,112 @@ This module primarily collaborates with `globe`, `image`. Its responsibility sho
 - Handles edge clamping for exponential and elastic curves preventing invalid outputs at boundaries while supporting smooth S-curve acceleration patterns.
 - Provides linear identity passthrough and symmetric in-out variants enabling data-driven animation selection from configuration files.
 - Standardizes easing semantics across animation interpolation enabling consistent motion timing and response characteristics in gameplay animations.
-- Supports all common Easing.net function families used by game engines and animation libraries for broad compatibility and predictable behavior.
 
 ### facade.rs
 
-- Small scalar helper layer for interpolation and numeric remapping.
-- Groups lerp, inverse lerp, remap, smoothstep, clamp, and sign behavior.
-- Operates on f32 values only and stays side-effect free.
-- Acts as the lightweight math front door for common numeric tasks.
+- Small scalar helper layer for interpolation and numeric remapping. `math/facade` delivers the public facade over lower-level subsystem helpers for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Groups lerp, inverse lerp, remap, smoothstep, clamp, and sign behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Operates on f32 values only and stays side-effect free. Public callable behavior is centered on `lerp`, `remap`, `clamp`, `sign`, `smoothstep`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 ### geometry.rs
 
-- Standalone geometry toolbox for flat coordinate math and polygon routines.
-- Covers circle, segment, line, and point queries used by gameplay systems.
-- Computes polygon area, centroid, convex hull, and point inclusion tests.
-- Provides line rasterization for grid traversal and tile-based effects.
-- Includes Delaunay triangulation helpers for procedural meshes and Voronoi prep.
-- Uses f32 for engine-facing work and f64 where triangulation precision matters.
-- Exposes plain free functions with no shape ownership or scene coupling.
-- Serves as the shared low-level layer for collision, map, and generation code.
+- Standalone geometry toolbox for flat coordinate math and polygon routines. `math/geometry` delivers the geometry implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Covers circle, segment, line, and point queries used by gameplay systems. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Computes polygon area, centroid, convex hull, and point inclusion tests. Public callable behavior is centered on `angle_between`, `circle_contains_point`, `circle_intersects_circle`, `circle_intersects_line`, `circle_intersects_segment`, and 9 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Provides line rasterization for grid traversal and tile-based effects. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Includes Delaunay triangulation helpers for procedural meshes and Voronoi prep. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Uses f32 for engine-facing work and f64 where triangulation precision matters. The file boundary separates math implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### loot_table.rs
 
-- Weighted loot sampling and pity tracking for deterministic drop systems.
-- Uses the alias method for O(1) draws after an O(n) build step.
-- Keeps the raw weight table and RNG state serializable for save files.
-- Supports guaranteed outcomes once a pity threshold is reached.
-- Lets callers combine normal sampling with tracked fail counters.
-- Preserves fast runtime lookups without hiding the probability model.
-- Fits reward tables, gacha-style drops, and event-driven item rolls.
-- Restores exactly to the previous random state when deserialized.
-- Keeps the core data structure simple enough for Lua-driven gameplay flows.
-- Exposes predictable sampling behavior under both normal and pity paths.
+- Weighted loot sampling and pity tracking for deterministic drop systems. `math/loot_table` delivers the loot table implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Uses the alias method for O(1) draws after an O(n) build step. The file owns or coordinates data contracts including `LootEntry`, `LootTable`, `PityTracker`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Keeps the raw weight table and RNG state serializable for save files. Public callable behavior is centered on `sample_with_pity`, while method-level behavior such as `new`, `with_seed`, `set_seed`, `add`, `remove`, `set_weight`, and 14 more stays attached to the local data model and invariants.
+- Supports guaranteed outcomes once a pity threshold is reached. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Lets callers combine normal sampling with tracked fail counters. External integration uses `std`, `toml`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Preserves fast runtime lookups without hiding the probability model. The file boundary separates math implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### mat3.rs
 
-- Row-major 3x3 matrix for 2D affine transforms and coordinate mapping.
-- Builds identity, translation, rotation, scale, and shear matrices.
-- Supports inversion and multiplication for transform composition.
-- Maps points through a compact linear algebra core.
-- Serves as the numeric backbone for higher-level 2D transform code.
+- Row-major 3x3 matrix for 2D affine transforms and coordinate mapping. `math/mat3` delivers the mat3 implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Builds identity, translation, rotation, scale, and shear matrices. The file owns or coordinates data contracts including `Mat3`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports inversion and multiplication for transform composition. Public callable behavior is centered on no named public items, while method-level behavior such as `identity`, `from_row_major`, `from_translation`, `from_rotation`, `from_shear`, `from_scale`, and 2 more stays attached to the local data model and invariants.
+- Maps points through a compact linear algebra core. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### mod.rs
 
-- Core math module wiring the vector, matrix, shape, curve, and utility submodules.
-- Collects the primitives that other engine systems build on for motion, collision, and mapping.
-- Groups spatial structures with interpolation, geometry, and procedural helpers under one namespace.
-- Keeps the public math surface compact while exposing the full foundation layer.
+- Core math module wiring the vector, matrix, shape, curve, and utility submodules. `math/mod` is the math module index, declaring `aabb_tree`, `bezier`, `circle`, `easing`, `facade`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
+- Collects the primitives that other engine systems build on for motion, collision, and mapping. `src/math/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `aabb_tree::AabbTree`, `bezier::BezierCurve`, `circle::Circle`, `facade::{clamp, inverse_lerp, lerp, remap, sign, smoothstep}`, and 13 more centralized for the math subsystem.
+- Groups spatial structures with interpolation, geometry, and procedural helpers under one namespace. The file documents how math submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- Keeps the public math surface compact while exposing the full foundation layer. Agents should read this index to choose the narrow owner file first, because it maps names such as `aabb_tree`, `bezier`, `circle`, `easing`, `facade`, and 12 more to concrete implementation responsibilities.
+- `math/mod` is the math module index, declaring `aabb_tree`, `bezier`, `circle`, `easing`, `facade`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/math/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `aabb_tree::AabbTree`, `bezier::BezierCurve`, `circle::Circle`, `facade::{clamp, inverse_lerp, lerp, remap, sign, smoothstep}`, and 13 more centralized for the math subsystem.
 
 ### polygon.rs
 
-- Polygon toolkit for clipping, hull building, triangulation, and winding cleanup.
-- Handles simple and concave shapes with routines aimed at gameplay geometry.
-- Provides intersection and boolean-style operations for shape processing.
-- Computes signed area and point-in-triangle tests for structural checks.
-- Normalizes vertex order so downstream consumers can rely on consistent winding.
-- Supplies the low-level machinery behind map, collision, and editor-style geometry flows.
+- Polygon toolkit for clipping, hull building, triangulation, and winding cleanup. `math/polygon` delivers the polygon implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Handles simple and concave shapes with routines aimed at gameplay geometry. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides intersection and boolean-style operations for shape processing. Public callable behavior is centered on `triangulate`, `is_convex`, `polygon_clip`, `polygon_intersection`, `polygon_union`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Computes signed area and point-in-triangle tests for structural checks. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Normalizes vertex order so downstream consumers can rely on consistent winding. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### random.rs
 
-- Seedable pseudo-random generator wrapper for deterministic gameplay and replay.
-- Produces uniform integer, float, and Gaussian samples from one stateful source.
-- Serializes and restores seed state so saves can resume the same sequence.
-- Gives higher-level systems a simple random facade without exposing backend details.
-- Fits any flow that needs reproducible chance, noise, or procedural variation.
+- Seedable pseudo-random generator wrapper for deterministic gameplay and replay. `math/random` delivers the random implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Produces uniform integer, float, and Gaussian samples from one stateful source. The file owns or coordinates data contracts including `RandomGenerator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Serializes and restores seed state so saves can resume the same sequence. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_seed`, `random`, `random_int`, `random_float`, `random_normal`, and 14 more stays attached to the local data model and invariants.
+- Gives higher-level systems a simple random facade without exposing backend details. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### rect.rs
 
-- Axis-aligned rectangle helper for layout, bounds, and collision checks.
-- Stores top-left position plus size under the engine's y-down convention.
-- Supports containment, overlap, union, and bounding-box construction.
-- Offers both corner-based and center-based creation paths.
-- Acts as the basic 2D box type used across spatial code.
+- Axis-aligned rectangle helper for layout, bounds, and collision checks. `math/rect` delivers the rect implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores top-left position plus size under the engine's y-down convention. The file owns or coordinates data contracts including `Rect`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports containment, overlap, union, and bounding-box construction. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `center`, `area`, `contains`, `intersects`, `intersect`, and 3 more stays attached to the local data model and invariants.
+- Offers both corner-based and center-based creation paths. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### spatial_hash.rs
 
-- Uniform-grid spatial hash for broad-phase collision and proximity search.
-- Buckets moving bounds into cells so query cost follows local density, not world size.
-- Supports insert, remove, update, and deduplicated multi-shape queries.
-- Handles rectangle, circle, and segment probes with shared cell traversal logic.
-- Uses slab-style segment tests for fast box intersection checks.
-- Works best when many objects stay sparse across a large playfield.
+- Uniform-grid spatial hash for broad-phase collision and proximity search. `math/spatial_hash` delivers the spatial hash implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Buckets moving bounds into cells so query cost follows local density, not world size. The file owns or coordinates data contracts including `SpatialItem`, `SpatialHash`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports insert, remove, update, and deduplicated multi-shape queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `cell_size`, `item_count`, `insert`, `remove`, `update`, and 4 more stays attached to the local data model and invariants.
+- Handles rectangle, circle, and segment probes with shared cell traversal logic. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Uses slab-style segment tests for fast box intersection checks. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### spline.rs
 
-- Multi-segment spline helper for smooth interpolation across control points.
-- Bridges Catmull-Rom and Hermite style curve handling under one shape.
-- Supports normalized sampling across full paths or individual segments.
-- Tracks control points dynamically so paths can be edited at runtime.
-- Useful for motion trails, camera rails, and other smooth route logic.
+- Multi-segment spline helper for smooth interpolation across control points. `math/spline` delivers the spline implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Bridges Catmull-Rom and Hermite style curve handling under one shape. The file owns or coordinates data contracts including `CatmullRomSpline`, `HermiteSpline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports normalized sampling across full paths or individual segments. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `sample`, `sample_segment`, `len`, `is_empty`, `add_point`, and 1 more stays attached to the local data model and invariants.
+- Tracks control points dynamically so paths can be edited at runtime. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### transform.rs
 
-- Mutable 2D affine transform that accumulates position, rotation, scale, and shear.
-- Wraps a 3x3 matrix so chained edits stay compact and composable.
-- Exposes forward and inverse point mapping for world and local space conversion.
-- Includes SRT decomposition for systems that need readable transform components.
-- Bridges low-level matrix math with runtime spatial manipulation.
+- Mutable 2D affine transform that accumulates position, rotation, scale, and shear. `math/transform` delivers the transform implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Wraps a 3x3 matrix so chained edits stay compact and composable. The file owns or coordinates data contracts including `Transform`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Exposes forward and inverse point mapping for world and local space conversion. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_components`, `translate`, `rotate`, `scale`, `shear`, and 7 more stays attached to the local data model and invariants.
+- Includes SRT decomposition for systems that need readable transform components. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### vec2.rs
 
-- Fundamental 2D float vector for position, velocity, direction, and offsets.
-- Covers arithmetic, normalization, projection, and distance-style helpers.
-- Adds rotation, reflection, and angle conversion support for gameplay math.
-- Offers interpolation and unit-direction construction from radians.
-- Serves as the common scalar pair used throughout the engine.
+- Fundamental 2D float vector for position, velocity, direction, and offsets. `math/vec2` delivers the vec2 implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Covers arithmetic, normalization, projection, and distance-style helpers. The file owns or coordinates data contracts including `Vec2`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Adds rotation, reflection, and angle conversion support for gameplay math. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `zero`, `splat`, `dot`, `length`, `length_squared`, and 9 more stays attached to the local data model and invariants.
+- Offers interpolation and unit-direction construction from radians. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Serves as the common scalar pair used throughout the engine. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### vec3.rs
 
-- 3D float vector for cross products, directions, and other compact spatial math.
-- Provides arithmetic and geometric helpers for dot, cross, normalize, and reflection work.
-- Supports projection, interpolation, distance, and length queries.
-- Acts as the small 3D companion to the 2D math core.
-- Useful for normals, ray direction math, and procedural inputs.
+- 3D float vector for cross products, directions, and other compact spatial math. `math/vec3` delivers the vec3 implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides arithmetic and geometric helpers for dot, cross, normalize, and reflection work. The file owns or coordinates data contracts including `Vec3`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports projection, interpolation, distance, and length queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `zero`, `one`, `splat`, `dot`, `cross`, and 7 more stays attached to the local data model and invariants.
+- Acts as the small 3D companion to the 2D math core. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### voronoi.rs
 
-- Voronoi cell builder from 2D point sets using incremental Delaunay construction.
-- Produces closed polygonal cells with stable point deduplication and cleanup.
-- Relies on circumcircle predicates to drive triangulation updates.
-- Extracts boundary edges and orders vertices counter-clockwise for each region.
-- Handles coincident sites gracefully instead of failing the whole diagram.
-- Gives procedural generation and spatial partitioning code a ready-made diagram source.
+- Voronoi cell builder from 2D point sets using incremental Delaunay construction. `math/voronoi` delivers the voronoi implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Produces closed polygonal cells with stable point deduplication and cleanup. The file owns or coordinates data contracts including `VoronoiCell`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Relies on circumcircle predicates to drive triangulation updates. Public callable behavior is centered on `voronoi_from_points`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Extracts boundary edges and orders vertices counter-clockwise for each region. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

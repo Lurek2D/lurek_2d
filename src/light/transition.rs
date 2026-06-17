@@ -1,7 +1,7 @@
-//! Implements time-based linear transitions for light color, intensity, and radius values.
-//! Tracks elapsed progress against duration to produce deterministic interpolated states.
-//! Clamps timing parameters to safe bounds for stable update behavior.
-//! Supports per-frame stepping until transitions reach their configured targets.
+//! Implements time-based linear transitions for light color, intensity, and radius values. `light/transition` delivers the transition implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Tracks elapsed progress against duration to produce deterministic interpolated states. The file owns or coordinates data contracts including `LightTransition`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Clamps timing parameters to safe bounds for stable update behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `progress` stays attached to the local data model and invariants.
+//! Supports per-frame stepping until transitions reach their configured targets. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// Time-based linear tween that interpolates a light's color, intensity, and radius.
 #[derive(Clone)]

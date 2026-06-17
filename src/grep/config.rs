@@ -1,8 +1,6 @@
-//! - Grep engine configuration: thread count, file size limits, and encoding settings.
-//! - `GrepConfig` holds `thread_count`, `max_file_size`, `case_sensitive`, and `whole_word`.
-//! - Deserialized from the `[grep]` TOML block or constructed via Lua table defaults.
-//! - `thread_count` defaults to `num_cpus / 2`; 0 means single-threaded.
-//! - `max_file_size` prevents accidentally reading binary assets during a code search.
+//! Grep engine configuration: thread count, file size limits, and encoding settings. `grep/config` delivers the configuration schema and defaults for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `GrepConfig` holds `thread_count`, `max_file_size`, `case_sensitive`, and `whole_word`. The file owns or coordinates data contracts including `GrepConfig`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Deserialized from the `[grep]` TOML block or constructed via Lua table defaults. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 /// Grep engine search configuration.
 #[derive(Debug, Clone)]

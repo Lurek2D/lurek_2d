@@ -1,9 +1,8 @@
-//! Records and replays input timelines as frame-indexed event sequences for automation and debugging.
-//! Captures sparse frame data so silent periods do not inflate stored replay size.
-//! Serializes recordings through versioned JSON envelopes for stable persistence and interchange.
-//! Tracks recorder lifecycle state for live capture, loading, seeking, and playback progression.
-//! Supports deterministic test scenarios by emitting recorded events on their original frame numbers.
-//! Unifies recording and playback behavior in one stateful component used by runtime and tools.
+//! Records and replays input timelines as frame-indexed event sequences for automation and debugging. `input/recorder` delivers the recorder implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Captures sparse frame data so silent periods do not inflate stored replay size. The file owns or coordinates data contracts including `InputEvent`, `RecordedFrame`, `InputRecording`, `InputRecorder`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Serializes recordings through versioned JSON envelopes for stable persistence and interchange. Public callable behavior is centered on no named public items, while method-level behavior such as `to_json`, `from_json`, `new`, `start_recording`, `record_frame`, `stop_recording`, and 7 more stays attached to the local data model and invariants.
+//! Tracks recorder lifecycle state for live capture, loading, seeking, and playback progression. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Supports deterministic test scenarios by emitting recorded events on their original frame numbers. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 /// A single input event with a kind tag and a key/button name.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]

@@ -1,8 +1,7 @@
-//! Implements population-based genetic optimization over flat genomes with explicit generation tracking.
-//! Executes elite preservation, parent selection, crossover, and mutation during evolution steps.
-//! Maintains stable chromosome identifiers to support lineage tracing across generations.
-//! Uses deterministic random and Gaussian sampling helpers for reproducible evolution runs.
-//! Serves as a general optimizer backend for learning components and parameter-search tasks.
+//! Implements population-based genetic optimization over flat genomes with explicit generation tracking. `learning/genetic` delivers the genetic implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Executes elite preservation, parent selection, crossover, and mutation during evolution steps. The file owns or coordinates data contracts including `Chromosome`, `GeneticAlgorithm`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Maintains stable chromosome identifiers to support lineage tracing across generations. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `pop_size`, `best`, `evolve` stays attached to the local data model and invariants.
+//! Uses deterministic random and Gaussian sampling helpers for reproducible evolution runs. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// Evolving genome with fitness and stable id.
 #[derive(Clone)]

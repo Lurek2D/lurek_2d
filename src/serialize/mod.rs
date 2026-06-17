@@ -1,6 +1,9 @@
-//! This module provides the engine's multi-format serialization stack around one shared intermediate value representation.
-//! It covers encoding, decoding, schema validation, defaults, and Lua bridging across text and binary data formats.
+//! This module provides the engine's multi-format serialization stack around one shared intermediate value representation. `serialize/mod` is the serialize module index, declaring `codec`, `csv`, `ini`, `json`, `lua_table`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
+//! It covers encoding, decoding, schema validation, defaults, and Lua bridging across text and binary data formats. `src/serialize/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `codec::{ decode_bytes, decode_text, detect_format, encode, DecodeOptions, EncodeOptions, EncodedValue, SerialFormat, }`, `csv::{from_csv, to_csv, CsvOptions}`, `ini::from_ini`, `json::{from_json, to_json}`, and 5 more centralized for the serialize subsystem.
 //! At the highest level this is the data-translation foundation used when engine data must cross file, tool, or script boundaries.
+//! `serialize/mod` is the serialize module index, declaring `codec`, `csv`, `ini`, `json`, `lua_table`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/serialize/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `codec::{ decode_bytes, decode_text, detect_format, encode, DecodeOptions, EncodeOptions, EncodedValue, SerialFormat, }`, `csv::{from_csv, to_csv, CsvOptions}`, `ini::from_ini`, `json::{from_json, to_json}`, and 5 more centralized for the serialize subsystem.
+//! The file documents how serialize submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 /// Unified codec: format detection, encode, and decode entry points.
 pub mod codec;

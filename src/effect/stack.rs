@@ -1,10 +1,8 @@
-//! Provides ordered post-effect stack management with per-entry enable state and target dimensions.
-//! Stores effect references in application order while preserving synchronized activation flags.
-//! Supports insertion, removal, reordering, and dedup operations for dynamic runtime composition.
-//! Exposes query helpers that report active subsets and positional stack metadata.
-//! Includes stack-introspection render helpers for debugging and visual tooling overlays.
-//! Applies defensive index handling so invalid operations fail safely at runtime boundaries.
-//! Delivers the sequencing core that determines how effect chains are executed frame to frame.
+//! Provides ordered post-effect stack management with per-entry enable state and target dimensions. `effect/stack` delivers the stack implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores effect references in application order while preserving synchronized activation flags. The file owns or coordinates data contracts including `PostFxStack`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports insertion, removal, reordering, and dedup operations for dynamic runtime composition. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `remove`, `insert`, `set_enabled`, `is_enabled`, and 17 more stays attached to the local data model and invariants.
+//! Exposes query helpers that report active subsets and positional stack metadata. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Includes stack-introspection render helpers for debugging and visual tooling overlays. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{FX01, FX02};

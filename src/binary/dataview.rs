@@ -1,8 +1,7 @@
-//! Implements a read-only typed view over shared byte storage with offset and length windows.
-//! Provides bounds-checked scalar decoding for integer and floating-point primitive types.
-//! Supports validated sub-view creation for structured parsing of nested binary regions.
-//! Keeps shared ownership cheap through Arc-backed buffer references in multi-consumer paths.
-//! Serves as the safe read surface for binary inspection and Lua-facing bridge wrappers.
+//! Implements a read-only typed view over shared byte storage with offset and length windows. `binary/dataview` delivers the dataview implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Provides bounds-checked scalar decoding for integer and floating-point primitive types. The file owns or coordinates data contracts including `DataView`, `LuaDataView`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports validated sub-view creation for structured parsing of nested binary regions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `new_slice`, `get_size`, `get_u8`, `get_i8`, `get_u16`, and 5 more stays attached to the local data model and invariants.
+//! Keeps shared ownership cheap through Arc-backed buffer references in multi-consumer paths. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::sync::Arc;
 /// Hold shared byte slice window with offset and size.

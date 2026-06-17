@@ -1,7 +1,6 @@
-//! This file stores per-tile floor and ceiling offsets so a raycast map can express steps, pits, and varied room volumes.
+//! This file stores per-tile floor and ceiling offsets so a raycast map can express steps, pits, and varied room volumes. `raycaster/heightmap` delivers the heightmap implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! Height data can be assigned cell by cell or across rectangular regions, which makes authored layouts and procedural stamping equally convenient.
 //! Reads always yield a stable answer and invalid writes are ignored, keeping spatial queries predictable when tools or scripts probe edges.
-//! It is the lightweight elevation layer that feeds richer scene building without forcing the base map storage to change shape.
 
 /// Per-tile floor and ceiling height overrides for a raycaster map.
 pub struct HeightMap {

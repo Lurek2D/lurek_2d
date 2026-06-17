@@ -1,7 +1,7 @@
-//! Encodes plural category logic used to choose grammatically correct translation variants by count.
-//! Maps quantity values to form keys with dedicated paths for English-style and Slavic-style rules.
-//! Supports stable key conversion so plural forms align with translation-table naming conventions.
-//! Provides fallback-aware pluralized string selection when exact form variants are absent.
+//! Encodes plural category logic used to choose grammatically correct translation variants by count. `i18n/plural` delivers the plural implementation for the i18n subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Maps quantity values to form keys with dedicated paths for English-style and Slavic-style rules. The file owns or coordinates data contracts including `PluralForm`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports stable key conversion so plural forms align with translation-table naming conventions. Public callable behavior is centered on `pluralize`, `pluralize_slavic`, while method-level behavior such as `key`, `english`, `slavic`, `from_key` stays attached to the local data model and invariants.
+//! Provides fallback-aware pluralized string selection when exact form variants are absent. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// Plural categories used for translation lookup.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

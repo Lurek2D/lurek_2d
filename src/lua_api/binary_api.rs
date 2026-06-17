@@ -1,9 +1,4 @@
-//! File: src/lua_api/binary_api.rs
-//! Registers the public `lurek.binary` API for byte buffers, packing, compression, hashing, and encoding helpers.
-//! Keeps the Lua-facing layer focused on validation and userdata wiring while delegating byte-oriented logic to `src/binary/`.
-//! Bridges Lua strings, tables, and scalars into raw byte operations without forcing UTF-8 interpretation on binary payloads.
-//! Exposes mutable userdata handles such as `LByteData`, `LDataView`, and `LDataWriter` for structured binary workflows.
-//! Returns `mlua::Result` errors across the boundary so malformed offsets, bit ranges, and format strings stay recoverable from Lua.
+//! Registers the public `lurek.binary` API for byte buffers, packing, compression, hashing, and encoding helpers. `src/lua_api/binary_api.rs` registers the `lurek.binary` Lua boundary for binary behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::binary::{

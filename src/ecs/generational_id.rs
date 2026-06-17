@@ -1,6 +1,4 @@
-//! Provides stateless generational id packing that combines slot and generation into one compact handle.
-//! Enables cheap decoding of slot and generation fields for validity checks during entity access.
-//! Delivers the identity encoding contract used by ECS storage and lifecycle reuse rules.
+//! Provides stateless generational id packing that combines slot and generation into one compact handle. `ecs/generational_id` delivers the generational id implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Stateless namespace for encoding and decoding packed entity identifiers.
 ///

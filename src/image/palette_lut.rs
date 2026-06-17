@@ -1,8 +1,7 @@
-//! Provides palette lookup remapping that transforms source colors into target colors across images.
-//! Stores parallel source and destination palettes to express deterministic recolor tables.
-//! Applies in-place remap passes optimized by direct scan or hash-assisted lookup by palette size.
-//! Supports rotation-style remap workflows for palette cycling and stylized animation effects.
-//! Supplies reusable color-map primitives for procedural art and runtime theme variation.
+//! Provides palette lookup remapping that transforms source colors into target colors across images. `image/palette_lut` delivers the palette lut implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores parallel source and destination palettes to express deterministic recolor tables. The file owns or coordinates data contracts including `PaletteLUT`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Applies in-place remap passes optimized by direct scan or hash-assisted lookup by palette size. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_color_count`, `set_color`, `get_from_color`, `get_to_color`, `clear`, and 2 more stays attached to the local data model and invariants.
+//! Supports rotation-style remap workflows for palette cycling and stylized animation effects. Runtime integration reaches sibling engine areas through crate modules `color`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::color::Color;
 use std::collections::HashMap;

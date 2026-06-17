@@ -1,6 +1,5 @@
-//! Provides the top-level documentation module surface that connects collection, schema, export, and reporting stages.
-//! Centralizes re-exports so tooling callers can consume doc pipeline capabilities from one stable integration point.
-//! Delivers a coherent module boundary for transforming source metadata into validated documentation artifacts.
+//! Provides the top-level documentation module surface that connects collection, schema, export, and reporting stages. `docs/mod` is the docs module index, declaring `catalog`, `entry`, `export`, `report`, `schema` so agents can identify which files own each feature slice before opening implementation code.
+//! Centralizes re-exports so tooling callers can consume doc pipeline capabilities from one stable integration point. `src/docs/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `catalog::Catalog`, `entry::{DocEntry, ParamInfo, ReturnInfo}`, `export::{export_all, export_completions, export_hover, export_signatures}`, `report::{quality_grade, quality_score, QualityReport, ValidationReport}`, and 1 more centralized for the docs subsystem.
 
 /// Expose catalog storage and query operations for documentation entries.
 pub mod catalog;

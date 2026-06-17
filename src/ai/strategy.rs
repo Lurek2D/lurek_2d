@@ -1,8 +1,7 @@
-//! Implements high-level intent arbitration that ranks strategic goals against current world context.
-//! Blends static priority and dynamic scoring pressure into a single comparable decision signal.
-//! Evaluates on a controlled cadence to avoid noisy goal thrashing between adjacent frames.
-//! Retains active intent continuity so tactical layers receive stable direction over time.
-//! Serves as the top strategic filter above lower-level planners and executors.
+//! Implements high-level intent arbitration that ranks strategic goals against current world context. `ai/strategy` delivers the strategy implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Blends static priority and dynamic scoring pressure into a single comparable decision signal. The file owns or coordinates data contracts including `StrategicGoal`, `StrategyAI`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Evaluates on a controlled cadence to avoid noisy goal thrashing between adjacent frames. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `require_tag`, `is_eligible`, `add_goal`, `add_goal_named`, `set_tags`, and 7 more stays attached to the local data model and invariants.
+//! Retains active intent continuity so tactical layers receive stable direction over time. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// One strategic goal considered by the planner.
 #[derive(Clone)]

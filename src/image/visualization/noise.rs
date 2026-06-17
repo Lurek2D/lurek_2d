@@ -1,8 +1,7 @@
-//! Turns scalar noise functions into image outputs for terrain tuning and generator diagnostics.
-//! Renders normalized and raw grayscale maps to compare contrast handling across noise sources.
-//! Provides biome and elevation band coloring to inspect threshold-driven terrain classification.
-//! Supports sliced and tiled comparison views for spotting artifacts across parameter variations.
-//! Keeps sampling and raster paths deterministic for stable test and documentation visuals.
+//! Turns scalar noise functions into image outputs for terrain tuning and generator diagnostics. `image/visualization/noise` delivers the noise implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Renders normalized and raw grayscale maps to compare contrast handling across noise sources. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Provides biome and elevation band coloring to inspect threshold-driven terrain classification. Public callable behavior is centered on `noise_to_image`, `noise_raw_to_image`, `noise_terrain_to_image`, `heightmap_to_image`, `terrain_elevation_to_image`, and 2 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Supports sliced and tiled comparison views for spotting artifacts across parameter variations. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::image::ImageData;
 /// Render a noise function as a grayscale image, scaling range to full byte range.

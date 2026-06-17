@@ -1,9 +1,9 @@
-//! This file extends the flat raycaster into stacked slices so one map position can participate in a multi-storey layout.
+//! This file extends the flat raycaster into stacked slices so one map position can participate in a multi-storey layout. `raycaster/multilevel` delivers the multilevel implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! Each slice carries its own vertical span and tile layer, allowing bridges, overhead rooms, shafts, and similar structures to share horizontal space.
 //! The representation stays close to the base raycaster model, which keeps level transitions understandable for rendering and gameplay code.
-//! Special transitions can move the viewer between slices without inventing a separate world format or renderer.
-//! The design is meant to add vertical richness while preserving the core assumptions of the column-based pipeline.
-//! Module API documentation
+//! Special transitions can move the viewer between slices without inventing a separate world format or renderer. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! The design is meant to add vertical richness while preserving the core assumptions of the column-based pipeline. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `raycaster/multilevel` delivers the multilevel implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use super::build_scene::LoweredFloorCell;
 use super::dda::Raycaster2D;

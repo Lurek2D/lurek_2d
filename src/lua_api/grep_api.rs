@@ -1,8 +1,4 @@
-//! Lua bindings for `lurek.grep`.
-//!
-//! This module exposes the repo's literal-first search engine, simple file filters,
-//! and JSON/log helpers to Lua. Directory scans use buffered file reads plus a small
-//! worker pool, while regex and glob support stay on the lightweight matcher path.
+//! Lua bindings for `lurek.grep`. `src/lua_api/grep_api.rs` registers the `lurek.grep` Lua boundary for grep behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::grep::{engine::GrepEngine, filter::FileFilter, json_search, log_search, GrepConfig};
@@ -155,6 +151,7 @@ fn result_to_table<'lua>(
         fm_tbl.set("lines", lines_tbl)?;
         matches_tbl.set(i + 1, fm_tbl)?;
     }
+    // Return the per-file match list under `matches` so Lua callers can inspect line-level grep hits.
     tbl.set("matches", matches_tbl)?;
 
     Ok(tbl)

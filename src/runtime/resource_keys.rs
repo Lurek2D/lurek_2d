@@ -1,6 +1,6 @@
-//! This file defines the typed handle keys used to reference runtime-managed resources without exposing storage internals.
+//! This file defines the typed handle keys used to reference runtime-managed resources without exposing storage internals. `runtime/resource_keys` delivers the resource keys implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! The handles are cheap to copy and safe to hold across frames, which is essential for Lua userdata and engine-facing APIs.
-//! It is the type-safety layer that lets many resource pools share one slotmap-style ownership pattern.
+//! It is the type-safety layer that lets many resource pools share one slotmap-style ownership pattern. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 use slotmap::new_key_type;
 new_key_type! {

@@ -1,9 +1,7 @@
-//! Voronoi cell builder from 2D point sets using incremental Delaunay construction.
-//! Produces closed polygonal cells with stable point deduplication and cleanup.
-//! Relies on circumcircle predicates to drive triangulation updates.
-//! Extracts boundary edges and orders vertices counter-clockwise for each region.
-//! Handles coincident sites gracefully instead of failing the whole diagram.
-//! Gives procedural generation and spatial partitioning code a ready-made diagram source.
+//! Voronoi cell builder from 2D point sets using incremental Delaunay construction. `math/voronoi` delivers the voronoi implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Produces closed polygonal cells with stable point deduplication and cleanup. The file owns or coordinates data contracts including `VoronoiCell`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Relies on circumcircle predicates to drive triangulation updates. Public callable behavior is centered on `voronoi_from_points`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Extracts boundary edges and orders vertices counter-clockwise for each region. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::collections::HashMap;
 

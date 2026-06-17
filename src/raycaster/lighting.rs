@@ -1,7 +1,7 @@
-//! This file applies simple but readable local lighting to raycast space using colored point emitters and ambient fill.
+//! This file applies simple but readable local lighting to raycast space using colored point emitters and ambient fill. `raycaster/lighting` delivers the lighting implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! Visibility between a light and a sample point is checked against blocking tiles so illumination respects corridor walls and corners.
 //! Contributions from multiple emitters are accumulated into one tint that later scene builders can stamp onto walls, floors, and sprites.
-//! The model favors clear spatial mood and cheap evaluation over physically exact light transport.
+//! The model favors clear spatial mood and cheap evaluation over physically exact light transport. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// A point light placed in world space that contributes to tile-level lighting.
 #[derive(Debug, Clone)]

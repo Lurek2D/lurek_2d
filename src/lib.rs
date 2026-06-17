@@ -1,12 +1,12 @@
-//! Lurek2D crate root: module declarations and top-level runtime entry points.
-//!
-//! - Declares all engine subsystems as public modules — agent, ai, animation, audio, camera, compute, dsp, ecs, input, render, physics, and 30+ more — each documented in its own `//!` header.
-//! - `lurek_run()` is the primary binary entry: initialises the Lua VM, loads the game's `main.lua`, and runs the winit event loop until the window closes.
-//! - `build_builtin_cli_script()` generates the embedded Lua bootstrap baked into the binary for headless and launch use cases.
-//! - Re-exports `binary` as `data` so existing `crate::data::` import paths continue to resolve while the module itself lives at `crate::binary::`.
-//! - Feature-gates optional subsystems: `automation` behind `automation-plugin`, `charts` behind `charts`, keeping the binary lean for core builds.
-//! - Suppresses `unused_doc_comments` and `clippy::doc_lazy_continuation` globally; detailed documentation lives in each subsystem's own `//!` headers, not here.
-//! - Contains a single `unsafe` block in the ZIP-extraction helper; all archive entry paths are validated against path-traversal before extraction.
+//! `src/lib.rs` is the crate root, enumerating engine subsystems and defining the public Rust boundary exported by Lurek2D.
+//! It preserves compatibility through reexports like `binary` as `data` and `serialize` as `serial` for older imports.
+//! Feature gates here decide whether modules such as `automation`, `charts`, `flownet`, `pipeline`, and `spine` compile.
+//! `lurek_run()` owns CLI argument parsing, runtime mode selection, panic reporting, and app startup dispatch.
+//! GUI, TUI, headless, and CLI startup paths all branch here, making this file the runtime entry contract for the binary.
+//! Built-in helpers here create temporary game directories and bootstrap Lua scripts for CLI and TUI fallback modes.
+//! `.lurek` archive launching also lives here, including extraction safety checks before the runtime reads content.
+//! Platform-specific boot hooks, especially Windows timer resolution and crash dialogs, are coordinated from this file.
+//! Read this file first when startup flow, mode routing, archive launch, or top-level module exposure changes.
 
 #![allow(unused_doc_comments)]
 #![allow(clippy::doc_lazy_continuation)]

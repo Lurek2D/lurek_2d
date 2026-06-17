@@ -1,8 +1,7 @@
-//! Provides convolution and pooling layers for CPU-side learning and feature-extraction pipelines.
-//! Implements tensor-shape-aware forward passes over channel-first image-style inputs.
-//! Stores trainable kernels and biases in flat buffers compatible with evolutionary parameter flows.
-//! Supports stride and padding behavior needed for practical stacked convolution blocks.
-//! Supplies compact building blocks consumed by the higher-level neural engine.
+//! Provides convolution and pooling layers for CPU-side learning and feature-extraction pipelines. `learning/conv` delivers the conv implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Implements tensor-shape-aware forward passes over channel-first image-style inputs. The file owns or coordinates data contracts including `Conv2D`, `MaxPool2D`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Stores trainable kernels and biases in flat buffers compatible with evolutionary parameter flows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `forward` stays attached to the local data model and invariants.
+//! Supports stride and padding behavior needed for practical stacked convolution blocks. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::learning::tensor::LurekTensor;
 use crate::learning::EvolutionaryLayer;

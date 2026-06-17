@@ -1,8 +1,6 @@
-//! - JSON path search: query structured key-value paths within JSON files.
-//! - `search_json_path` scans a directory for JSON files and extracts values at a path.
-//! - `search_json_file` operates on a single file; returns `Option<serde_json::Value>`.
-//! - Path syntax uses `/`-separated keys; arrays are addressed by numeric index.
-//! - Exposed to Lua via `lurek.grep.json_path(dir, path)` in `grep_api.rs`.
+//! JSON path search: query structured key-value paths within JSON files. `grep/json_search` delivers the json search implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `search_json_path` scans a directory for JSON files and extracts values at a path. The file owns or coordinates data contracts including `JsonMatch`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! `search_json_file` operates on a single file; returns `Option<serde_json::Value>`. Public callable behavior is centered on `search_json_path`, `search_json_file`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 use std::path::Path;
 

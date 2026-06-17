@@ -1,8 +1,7 @@
-//! Renders graph structures into diagnostic images with nodes, edges, labels, and status overlays.
-//! Visualizes active and removed connections using distinct styling for topology change analysis.
-//! Supports item-flow style arrows and annotation text for simulation and logic debugging.
-//! Places titles and stats summaries to contextualize rendered graph snapshots.
-//! Uses circle-node layouts and adjacency-driven links for readable relationship visualization.
+//! Renders graph structures into diagnostic images with nodes, edges, labels, and status overlays. `image/visualization/graph` delivers the graph implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Visualizes active and removed connections using distinct styling for topology change analysis. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports item-flow style arrows and annotation text for simulation and logic debugging. Public callable behavior is centered on `draw_graph_operations_to_image`, `draw_graph_item_flow_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Places titles and stats summaries to contextualize rendered graph snapshots. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::image::ImageData;
 #[allow(clippy::too_many_arguments)]

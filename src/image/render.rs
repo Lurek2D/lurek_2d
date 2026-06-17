@@ -1,6 +1,4 @@
 //! Thin bridge layer converting ImageData buffers into render command payloads that reference texture resources and screen placement coordinates.
-//! Generates DrawImage commands containing texture key, position, and optional effects for pipeline consumption without copying pixel data.
-//! Provides snapshot utility creating standalone ImageData clones where value semantics are required by higher-level drawing systems.
 
 use super::image_data::ImageData;
 use crate::render::renderer::RenderCommand;

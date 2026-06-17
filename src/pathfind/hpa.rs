@@ -1,13 +1,9 @@
-//! Hierarchical Pathfinding A* over a chunked NavGrid abstraction.
-//! Partitions the grid into fixed-size chunks and detects entrance nodes at boundaries.
-//! Builds an abstract graph of chunk-to-chunk edges with computed costs.
-//! Runs abstract A* search with an octile heuristic.
-//! Refines abstract waypoints back into full grid-level paths per segment.
-//! Supports BFS reachability checks over chunk connectivity.
-//! Temporarily inserts start and goal nodes for single-query routing.
-//! Handles both horizontal and vertical chunk boundaries.
-//! Accepts variable unit sizes through to the refinement stage.
-//! Cuts large map searches down to a smaller navigation graph first.
+//! Hierarchical Pathfinding A* over a chunked NavGrid abstraction. `pathfind/hpa` delivers the hpa implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Partitions the grid into fixed-size chunks and detects entrance nodes at boundaries. The file owns or coordinates data contracts including `AbstractEdge`, `AbstractNode`, `Chunk`, `AbstractGraph`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Builds an abstract graph of chunk-to-chunk edges with computed costs. Public callable behavior is centered on `build_abstract`, `hpa_star`, `is_reachable`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Runs abstract A* search with an octile heuristic. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Refines abstract waypoints back into full grid-level paths per segment. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Supports BFS reachability checks over chunk connectivity. The file boundary separates pathfind implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use crate::runtime::log_messages::{HP01, HP02, HP03};
 

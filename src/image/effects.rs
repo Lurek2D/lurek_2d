@@ -1,13 +1,9 @@
-//! Provides the main CPU image effect toolkit for color grading, filtering, resampling, and compositing.
-//! Applies brightness, contrast, saturation, gamma, tint, threshold, and stylization transforms per pixel.
-//! Supports deterministic noise injection and alpha-aware operations for repeatable visual post-processing.
-//! Implements geometric edits like crop, flip, and rotation for texture preparation and UI workflows.
-//! Includes nearest, bilinear, and Lanczos resize paths to balance speed and quality by caller choice.
-//! Runs blur, sharpen, and generic kernel convolution with safe boundary handling on edge samples.
-//! Offers alpha-blended blit and nine-slice stretching for practical sprite and panel assembly tasks.
-//! Computes byte-level difference scores for test assertions and regression image comparisons.
-//! Normalizes effect behavior around mutable `ImageData` buffers without hidden global state.
-//! Exposes filter-selection enums parsed from textual inputs used at scripting boundaries.
+//! Provides the main CPU image effect toolkit for color grading, filtering, resampling, and compositing. `image/effects` delivers the effects implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Applies brightness, contrast, saturation, gamma, tint, threshold, and stylization transforms per pixel. The file owns or coordinates data contracts including `ResizeFilter`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports deterministic noise injection and alpha-aware operations for repeatable visual post-processing. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `brightness`, `contrast`, `saturation`, `gamma`, `tint`, and 22 more stays attached to the local data model and invariants.
+//! Implements geometric edits like crop, flip, and rotation for texture preparation and UI workflows. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Includes nearest, bilinear, and Lanczos resize paths to balance speed and quality by caller choice. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Runs blur, sharpen, and generic kernel convolution with safe boundary handling on edge samples. The file boundary separates image implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::image_data::ImageData;
 /// Resize kernels supported by the image resampler.

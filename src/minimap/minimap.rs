@@ -1,15 +1,9 @@
-//! Grid-based minimap model with configurable terrain colors and fog-of-war.
-//! Tracks world cells, visible state, and overlay layers in one structure.
-//! Stores object markers, pings, and path shapes for live HUD feedback.
-//! Supports terrain and political color modes for strategic presentation.
-//! Manages zoom, pan, camera tracking, and viewport framing.
-//! Projects screen and grid coordinates in both directions for interaction.
-//! Renders CPU-side image buffers for export and preview use cases.
-//! Includes timed animation behaviors for pings and persistent markers.
-//! Separates layer data so the minimap can stack multiple map representations.
-//! Keeps hover and hit information available for UI and debug tools.
-//! Balances compact runtime state with flexible overlay composition.
-//! Provides the main data source for both generic and raycaster-style minimaps.
+//! Grid-based minimap model with configurable terrain colors and fog-of-war. `minimap/minimap` delivers the minimap implementation for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Tracks world cells, visible state, and overlay layers in one structure. The file owns or coordinates data contracts including `MinimapIcon`, `Minimap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Stores object markers, pings, and path shapes for live HUD feedback. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `grid_width`, `grid_height`, `grid_size`, `display_width`, `display_height`, and 86 more stays attached to the local data model and invariants.
+//! Supports terrain and political color modes for strategic presentation. Runtime integration reaches sibling engine areas through crate modules `camera`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Manages zoom, pan, camera tracking, and viewport framing. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Projects screen and grid coordinates in both directions for interaction. The file boundary separates minimap implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use super::types::{
     ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapMarker, MinimapObject,

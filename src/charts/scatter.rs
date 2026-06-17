@@ -1,8 +1,8 @@
-//! Implements scatter-plot rasterization for point-cloud visualization of value distribution and relation.
-//! Draws each sample as a configurable filled marker over chart-space transformed coordinates.
-//! Supports automatic domain estimation or explicit axis bounds for controlled plot framing.
-//! Produces RGBA output buffers suitable for texture upload in runtime chart presentation.
-//! Serves as the point-series rendering backend for the charts scatter API path.
+//! Implements scatter-plot rasterization for point-cloud visualization of value distribution and relation. `charts/scatter` delivers the scatter implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Draws each sample as a configurable filled marker over chart-space transformed coordinates. The file owns or coordinates data contracts including `ScatterPlot`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports automatic domain estimation or explicit axis bounds for controlled plot framing. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_series_raw`, `add_series`, `add_series_from_dataframe`, `draw_to_image`, `clear`, and 6 more stays attached to the local data model and invariants.
+//! Produces RGBA output buffers suitable for texture upload in runtime chart presentation. Runtime integration reaches sibling engine areas through crate modules `charts`, `color`, `dataframe`, `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Serves as the point-series rendering backend for the charts scatter API path. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
 use crate::charts::render_utils::{

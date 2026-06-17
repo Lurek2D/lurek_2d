@@ -1,8 +1,7 @@
-//! Implements hierarchical runtime profiling with nested push-pop zone timing semantics.
-//! Computes total and exclusive durations per zone for accurate hotspot attribution.
-//! Captures per-frame profiling trees into bounded rolling history collections.
-//! Supports indexed frame access and flattened traversal for aggregate performance reporting.
-//! Serves as the profiling core for devtools runtime instrumentation.
+//! Implements hierarchical runtime profiling with nested push-pop zone timing semantics. `devtools/profiler` delivers the profiler implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Computes total and exclusive durations per zone for accurate hotspot attribution. The file owns or coordinates data contracts including `ProfileZone`, `Profiler`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Captures per-frame profiling trees into bounded rolling history collections. Public callable behavior is centered on no named public items, while method-level behavior such as `total_time`, `self_time`, `flatten`, `new`, `elapsed`, `push`, and 4 more stays attached to the local data model and invariants.
+//! Supports indexed frame access and flattened traversal for aggregate performance reporting. Runtime integration reaches sibling engine areas through crate modules `devtools`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::devtools::time_anchor::TimeAnchor;
 use std::collections::VecDeque;

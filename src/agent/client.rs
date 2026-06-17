@@ -1,8 +1,7 @@
-//! Provides asynchronous prompt transport that moves network latency off the main update path.
-//! Tracks in-flight requests and pending completions so polling remains deterministic and frame-safe.
-//! Supports callback-scoped cancellation to discard stale results after gameplay state has changed.
-//! Retries transient transport failures with bounded backoff to improve completion reliability.
-//! Bridges worker-thread execution and runtime polling with consistent response delivery semantics.
+//! Provides asynchronous prompt transport that moves network latency off the main update path. `agent/client` delivers the client implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Tracks in-flight requests and pending completions so polling remains deterministic and frame-safe. The file owns or coordinates data contracts including `AgentClient`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports callback-scoped cancellation to discard stale results after gameplay state has changed. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `send_prompt`, `cancel`, `in_flight_count`, `poll` stays attached to the local data model and invariants.
+//! Retries transient transport failures with bounded backoff to improve completion reliability. Runtime integration reaches sibling engine areas through crate modules `agent`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::agent::types::{AgentError, AgentRequest, AgentResponse};
 use std::collections::HashSet;

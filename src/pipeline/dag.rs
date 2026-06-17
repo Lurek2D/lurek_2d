@@ -3,8 +3,6 @@
 //! Topological sorting and cycle detection keep invalid orchestration from reaching runtime execution, which matters when workflows are composed dynamically from scripts or tools.
 //! Parallel grouping exposes natural concurrency boundaries without abandoning dependency correctness, letting unrelated branches advance together when the graph permits it.
 //! Sub-pipeline merging makes larger workflows composable by folding one graph into another under namespaced identities and inherited outer dependencies.
-//! ASCII visualization and execution-order queries turn the graph into something inspectable, not just executable, which is important for debugging author intent.
-//! Functionally this file delivers the orchestration map that every pipeline run relies on to know what can start, what must wait, and how the whole workflow hangs together.
 
 use crate::log_msg;
 use crate::pipeline::result::{PipelineResult, PipelineStatus};

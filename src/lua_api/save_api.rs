@@ -1,7 +1,4 @@
-//! File: src/lua_api/save_api.rs
 //! Registers the public `lurek.save` API for slot persistence, auto-save scheduling, migration hooks, and metadata queries.
-//! Keeps Lua bindings thin by translating callbacks and tables into `src/save/` operations instead of embedding persistence logic here.
-//! Loads save payloads through the constrained parser in `src/save/save_manager.rs` so slot metadata and content never require arbitrary Lua evaluation.
 
 use super::SharedState;
 use crate::save::{

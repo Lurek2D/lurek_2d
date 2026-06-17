@@ -1,9 +1,8 @@
-//! Implements lightweight feed-forward neural networks with dense layers and selectable activations.
-//! Stores weights and biases in flat vectors for compact memory usage and easy serialization.
-//! Performs layer-by-layer forward propagation over vector inputs for inference and evaluation.
-//! Supports parameter counting plus import and export for optimizer and evolution workflows.
-//! Provides network-assembly helpers that append layers into ordered model pipelines.
-//! Targets simple ML tasks where minimal dependencies and predictable behavior are preferred.
+//! Implements lightweight feed-forward neural networks with dense layers and selectable activations. `learning/neural_net` delivers the neural net implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores weights and biases in flat vectors for compact memory usage and easy serialization. The file owns or coordinates data contracts including `Activation`, `NeuralLayer`, `NeuralNet`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Performs layer-by-layer forward propagation over vector inputs for inference and evaluation. Public callable behavior is centered on no named public items, while method-level behavior such as `from_str`, `as_str`, `apply`, `new`, `param_count`, `forward`, and 4 more stays attached to the local data model and invariants.
+//! Supports parameter counting plus import and export for optimizer and evolution workflows. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Provides network-assembly helpers that append layers into ordered model pipelines. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::learning::EvolutionaryLayer;
 

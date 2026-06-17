@@ -1,8 +1,7 @@
-//! Implements layered image editing with per-layer visibility, opacity, naming, and pixel ownership.
-//! Maintains ordered stacks so compositing results stay deterministic during insert and reorder actions.
-//! Supports add, remove, rename, swap, and move operations for non-destructive content workflows.
-//! Merges the stack into flat output using alpha-over compositing compatible with engine image buffers.
-//! Provides practical layer primitives for editors, tooling pipelines, and scripted content generation.
+//! Implements layered image editing with per-layer visibility, opacity, naming, and pixel ownership. `image/layers` delivers the layers implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Maintains ordered stacks so compositing results stay deterministic during insert and reorder actions. The file owns or coordinates data contracts including `ImageLayer`, `LayeredImage`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports add, remove, rename, swap, and move operations for non-destructive content workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `width`, `height`, `layer_count`, `add_layer`, `remove_layer`, and 9 more stays attached to the local data model and invariants.
+//! Merges the stack into flat output using alpha-over compositing compatible with engine image buffers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::image_data::ImageData;
 /// A single named image layer with opacity, visibility, and pixel data.

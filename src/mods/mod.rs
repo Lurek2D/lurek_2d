@@ -1,6 +1,5 @@
-//! Entry point for the mod system and its lifecycle management.
-//! Groups discovery, enable/disable flow, sandboxing, and Lua integration.
-//! Keeps the mod runtime surface compact and centralised.
+//! Entry point for the mod system and its lifecycle management. `mods/mod` is the mods module index, declaring `api_registry`, `api_schema`, `mod_loader`, `mod_manager`, `mod_sandbox` so agents can identify which files own each feature slice before opening implementation code.
+//! Groups discovery, enable/disable flow, sandboxing, and Lua integration. `src/mods/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `api_registry::{GameApiRegistry, TypeSchema}`, `api_schema::{FieldDef, FieldType, MethodDef}`, `mod_loader::{FieldValue, ModInstance}`, `mod_manager::*`, and 1 more centralized for the mods subsystem.
 
 /// Game API type registry and instance validation.
 pub mod api_registry;

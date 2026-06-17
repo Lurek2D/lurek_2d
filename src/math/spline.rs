@@ -1,8 +1,7 @@
-//! Multi-segment spline helper for smooth interpolation across control points.
-//! Bridges Catmull-Rom and Hermite style curve handling under one shape.
-//! Supports normalized sampling across full paths or individual segments.
-//! Tracks control points dynamically so paths can be edited at runtime.
-//! Useful for motion trails, camera rails, and other smooth route logic.
+//! Multi-segment spline helper for smooth interpolation across control points. `math/spline` delivers the spline implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Bridges Catmull-Rom and Hermite style curve handling under one shape. The file owns or coordinates data contracts including `CatmullRomSpline`, `HermiteSpline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports normalized sampling across full paths or individual segments. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `sample`, `sample_segment`, `len`, `is_empty`, `add_point`, and 1 more stays attached to the local data model and invariants.
+//! Tracks control points dynamically so paths can be edited at runtime. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 /// Multi-point Catmull-Rom spline with dynamic control-point list.
 pub struct CatmullRomSpline {

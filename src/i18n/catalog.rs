@@ -1,11 +1,9 @@
-//! Provides a locale-first translation catalog that serves runtime string lookup with fallback chains.
-//! Stores per-locale key tables and active language state so content can switch language without rebuild.
-//! Performs resilient key resolution that walks configured fallback order before reporting missing entries.
-//! Supports import flattening from TOML and JSON trees into dot-path lookup keys for uniform access.
-//! Computes coverage gaps across locales to expose untranslated keys during QA and localization passes.
-//! Offers category grouping and search-style scans that help tools inspect large translation inventories.
-//! Includes locale validation, RTL detection, and system-locale discovery for startup language selection.
-//! Keeps lightweight caches to accelerate repeated text and word lookups in hot UI translation paths.
+//! Provides a locale-first translation catalog that serves runtime string lookup with fallback chains. `i18n/catalog` delivers the catalog implementation for the i18n subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Stores per-locale key tables and active language state so content can switch language without rebuild. The file owns or coordinates data contracts including `CatalogError`, `CoverageGap`, `Catalog`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Performs resilient key resolution that walks configured fallback order before reporting missing entries. Public callable behavior is centered on `is_valid_locale_code`, `is_rtl`, `detect_system_locale`, `flat_table_from_toml`, `flat_table_from_json`, while method-level behavior such as `new`, `load`, `unload`, `has_locale`, `locales`, `has_key`, and 15 more stays attached to the local data model and invariants.
+//! Supports import flattening from TOML and JSON trees into dot-path lookup keys for uniform access. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Computes coverage gaps across locales to expose untranslated keys during QA and localization passes. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Offers category grouping and search-style scans that help tools inspect large translation inventories. The file boundary separates i18n implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use serde_json;
 use std::cell::RefCell;

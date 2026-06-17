@@ -1,8 +1,8 @@
-//! Provides globe geometry export helpers that convert region polygons into portable mesh text output.
-//! Emits flat OBJ data with deterministic region object grouping for downstream tooling.
-//! Delivers a simple export path for inspection, conversion, and offline map processing workflows.
-//! Module API documentation
-//!
+//! Provides globe geometry export helpers that convert region polygons into portable mesh text output. `globe/export` delivers the export implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Emits flat OBJ data with deterministic region object grouping for downstream tooling. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Delivers a simple export path for inspection, conversion, and offline map processing workflows. Public callable behavior is centered on `export_regions_to_obj`, `export_provinces_to_obj`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! `globe/export` delivers the export implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 
 use crate::globe::registry::Globe;
 use crate::globe::types::{Region, RegionPart};

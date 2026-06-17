@@ -1,8 +1,7 @@
-//! Spawn-offset sampling for particle emission shapes and area distributions.
-//! Supports uniform, normal, ellipse, border, rectangle, ring, cone, star, and spiral modes.
-//! Handles area-angle rotation so emitted particles respect the configured shape.
-//! Keeps emission math separate from the particle runtime.
-//! Supplies the offset generator used by emitters and presets.
+//! Spawn-offset sampling for particle emission shapes and area distributions. `particle/emission` delivers the emission implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports uniform, normal, ellipse, border, rectangle, ring, cone, star, and spiral modes. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Handles area-angle rotation so emitted particles respect the configured shape. Public callable behavior is centered on `emission_offset`, `emission_shape_offset`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Keeps emission math separate from the particle runtime. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::config::{AreaDistribution, EmissionShape, ParticleConfig};
 use super::math::{rand_f32, rand_normal, rand_range, rand_u32};

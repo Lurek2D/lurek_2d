@@ -1,8 +1,7 @@
 //! This file implements the focused inverse-kinematics solver used when a short bone chain should reach toward a target automatically.
-//! It computes joint angles from geometric constraints instead of relying only on keyed animation values.
-//! Bend direction is part of the constraint so mirrored or elbow-up versus elbow-down poses can be chosen intentionally.
-//! The file adds procedural responsiveness to otherwise keyframed skeletal motion.
-//! It is the module's compact answer to target-seeking limb behavior.
+//! It computes joint angles from geometric constraints instead of relying only on keyed animation values. The file owns or coordinates data contracts including `IKConstraint`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Bend direction is part of the constraint so mirrored or elbow-up versus elbow-down poses can be chosen intentionally. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_target`, `solve` stays attached to the local data model and invariants.
+//! The file adds procedural responsiveness to otherwise keyframed skeletal motion. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::bone::Bone;
 

@@ -1,10 +1,8 @@
-//! Implements grouping-oriented dataframe operations for keyed aggregation and cross-tab reshaping.
-//! Aggregates grouped values with selectable reducers such as mean, sum, min, max, and count.
-//! Builds pivoted result frames from row, column, and value key combinations.
-//! Computes pairwise Pearson correlation between selected numeric columns.
-//! Generates full numeric correlation matrices for multivariate relationship inspection.
-//! Preserves deterministic group output construction and explicit missing-value handling paths.
-//! Serves as the grouping and correlation analytics layer for dataframe query pipelines.
+//! Implements grouping-oriented dataframe operations for keyed aggregation and cross-tab reshaping. `dataframe/query/grouping` delivers the grouping implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Aggregates grouped values with selectable reducers such as mean, sum, min, max, and count. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Builds pivoted result frames from row, column, and value key combinations. Public callable behavior is centered on no named public items, while method-level behavior such as `group_agg`, `par_group_agg`, `pivot`, `corr`, `correlation_matrix` stays attached to the local data model and invariants.
+//! Computes pairwise Pearson correlation between selected numeric columns. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Generates full numeric correlation matrices for multivariate relationship inspection. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::dataframe::frame::{AggFn, CellValue, ColRef, DataFrame};
 impl DataFrame {

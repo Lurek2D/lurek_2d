@@ -1,9 +1,8 @@
-//! This file implements the runtime path for executing games and scripts without opening a window or interactive frontend.
+//! This file implements the runtime path for executing games and scripts without opening a window or interactive frontend. `runtime/headless` delivers the headless implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! It exists for automation, tests, batch jobs, and command-line workflows that still need the engine lifecycle to run correctly.
 //! Startup wiring here prepares the Lua environment, script roots, and output behavior so headless sessions still feel like real engine sessions.
 //! Frame stepping follows the normal update rhythm closely enough that gameplay logic can be exercised without a graphical loop.
 //! Error mapping is also handled here because command-line callers need process-oriented outcomes while tests may need structured failures.
-//! The file is therefore the engine's bridge from full runtime behavior to non-visual execution contexts.
 
 use crate::lua_api::create_headless_vm;
 use crate::repl::value_to_string;

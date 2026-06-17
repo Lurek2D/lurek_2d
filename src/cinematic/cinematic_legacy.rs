@@ -1,7 +1,6 @@
-//! Legacy cut-based cinematic timeline.
-//!
-//! Provides backward compatibility for the simple cut-based API.
-//! New code should use CinematicTimeline from timeline.rs instead.
+//! Legacy cut-based cinematic timeline. `cinematic/cinematic_legacy` delivers the cinematic legacy implementation for the cinematic subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Provides backward compatibility for the simple cut-based API. The file owns or coordinates data contracts including `Cut`, `Cinematic`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! New code should use CinematicTimeline from timeline.rs instead. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_cut`, `cuts`, `play`, `clear` stays attached to the local data model and invariants.
 
 /// A single timed event in a cinematic timeline.
 #[derive(Debug, Clone)]

@@ -1,6 +1,5 @@
-//! This module provides the headless REPL stack for evaluating Lua, formatting results, and assisting interactive input.
+//! This module provides the headless REPL stack for evaluating Lua, formatting results, and assisting interactive input. `repl/mod` is the repl module index, declaring `commands`, `completer`, `session`, `value` so agents can identify which files own each feature slice before opening implementation code.
 //! It keeps the feature independent from rendering concerns so terminals, tests, and tools can all reuse the same session core.
-//! At the top level this is the engine's embeddable interactive console backend rather than a UI implementation.
 
 /// REPL command parsing and command result types.
 pub mod commands;

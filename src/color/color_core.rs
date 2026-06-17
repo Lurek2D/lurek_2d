@@ -1,9 +1,8 @@
-//! Implements core color representation and conversion utilities across RGB, HSL, and HSV domains.
-//! Parses hex color strings into structured channel values with support for common shorthand forms.
-//! Serializes RGBA channel values back to canonical hexadecimal text for interchange and debugging.
-//! Provides pure color-space transforms suitable for runtime use without hidden global state.
-//! Exposes stable conversion behavior reused by palettes, blending, and Lua-visible color APIs.
-//! Serves as the foundational color math and parsing layer for the full color module.
+//! Implements core color representation and conversion utilities across RGB, HSL, and HSV domains. `color/color_core` delivers the color core implementation for the color subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Parses hex color strings into structured channel values with support for common shorthand forms. The file owns or coordinates data contracts including `Color`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Serializes RGBA channel values back to canonical hexadecimal text for interchange and debugging. Public callable behavior is centered on `hsv_to_rgb`, `gamma_to_linear`, `linear_to_gamma`, `hsl_to_rgb`, while method-level behavior such as `from_u8`, `from_hsl`, `from_hsv`, `from_hex`, `to_u8`, `to_rgb_u32`, and 6 more stays attached to the local data model and invariants.
+//! Provides pure color-space transforms suitable for runtime use without hidden global state. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Exposes stable conversion behavior reused by palettes, blending, and Lua-visible color APIs. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 /// Linear RGBA float color; all channels are in [0.0, 1.0] unless explicitly noted.
 ///

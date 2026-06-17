@@ -1,10 +1,8 @@
-//! Jump Point Search optimized A* on uniform-cost 8-directional grids.
-//! Prunes symmetric neighbours to skip large open areas.
-//! Identifies forced neighbours and jump points along cardinal and diagonal directions.
-//! Reconstructs a full tile-by-tile path from the jump points.
-//! Uses an octile heuristic and a min-heap open list.
-//! Works best when long straight corridors dominate the map.
-//! Keeps uniform-grid search fast without changing the grid model.
+//! Jump Point Search optimized A* on uniform-cost 8-directional grids. `pathfind/jps` delivers the jps implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Prunes symmetric neighbours to skip large open areas. The file owns or coordinates data contracts including `JpsGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Identifies forced neighbours and jump points along cardinal and diagonal directions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_blocked`, `is_blocked`, `find_path` stays attached to the local data model and invariants.
+//! Reconstructs a full tile-by-tile path from the jump points. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Uses an octile heuristic and a min-heap open list. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

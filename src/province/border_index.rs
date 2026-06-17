@@ -1,8 +1,7 @@
-//! Border-pair indexing layer that turns neighboring province relationships into a stable per-pixel border identifier map.
+//! Border-pair indexing layer that turns neighboring province relationships into a stable per-pixel border identifier map. `province/border_index` delivers the border index implementation for the province subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 //! The file scans province ownership changes across the grid and assigns compact ids that higher rendering paths can treat as semantic border channels instead of raw color differences.
 //! Stable pair ids matter because styled borders need consistent addressing across shading, upload, and change-driven rebuilds.
 //! Optional dilation broadens those indexed borders so thick outlines can be expressed without re-deriving topology at draw time.
-//! Functionally this file delivers the border-id texture logic behind efficient province border styling.
 
 use crate::province::registry::ProvinceRegistry;
 use crate::province::types::{BorderPairStyle, ProvinceId};

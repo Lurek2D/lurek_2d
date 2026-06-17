@@ -35,27 +35,23 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### event_queue.rs
 
-- Provides a dual-priority FIFO event queue that dispatches high-priority items before normal traffic.
-- Defines portable event payload shapes that carry scalar and shallow table data across boundaries.
-- Supports blocking wait semantics with timeout control for synchronized producer-consumer patterns.
-- Converts queued payloads between Rust and Lua value domains using predictable marshalling rules.
-- Preserves insertion order inside each priority lane to keep event flow behavior deterministic.
-- Encapsulates push, poll, peek, and wait operations in one reusable runtime messaging primitive.
-- Delivers the queue core used by event-driven systems that need ordered asynchronous signaling.
+- Provides a dual-priority FIFO event queue that dispatches high-priority items before normal traffic. `event/event_queue` delivers the event queue implementation for the event subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Defines portable event payload shapes that carry scalar and shallow table data across boundaries. The file owns or coordinates data contracts including `EventPriority`, `EventTableKey`, `EventArg`, `Event`, `EventQueue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports blocking wait semantics with timeout control for synchronized producer-consumer patterns. Public callable behavior is centered on `event_arg_to_lua_value`, `event_to_lua_multi`, while method-level behavior such as `new`, `push`, `push_with_priority`, `push_event`, `push_event_with_priority`, `poll`, and 6 more stays attached to the local data model and invariants.
+- Converts queued payloads between Rust and Lua value domains using predictable marshalling rules. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Preserves insertion order inside each priority lane to keep event flow behavior deterministic. External integration uses `std`, `mlua`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod.rs
 
-- Provides the high-level event module boundary for queued dispatch and signal-based subscription routing.
-- Connects payload conversion, priority handling, and listener registration into one communication layer.
-- Delivers a stable event-facing surface for systems that need decoupled runtime messaging.
+- Provides the high-level event module boundary for queued dispatch and signal-based subscription routing. `event/mod` is the event module index, declaring `event_queue`, `signal` so agents can identify which files own each feature slice before opening implementation code.
+- Connects payload conversion, priority handling, and listener registration into one communication layer. `src/event/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `event_queue::{ event_arg_to_lua_value, event_to_lua_multi, Event, EventArg, EventPriority, EventQueue, EventTableKey, }`, `signal::Signal` centralized for the event subsystem.
 
 ### signal.rs
 
-- Provides named signal subscription storage with support for exact and wildcard pattern matching.
-- Allocates stable handle ids so listeners can be removed or inspected through explicit lifecycle control.
-- Resolves matching subscribers with deterministic behavior for both direct names and glob-style patterns.
-- Exposes snapshot-friendly query helpers that aid runtime diagnostics and tooling inspection.
-- Delivers the subscription registry used by event publishers to find active listeners efficiently.
+- Provides named signal subscription storage with support for exact and wildcard pattern matching. `event/signal` delivers the signal implementation for the event subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Allocates stable handle ids so listeners can be removed or inspected through explicit lifecycle control. The file owns or coordinates data contracts including `Subscription`, `Signal`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Resolves matching subscribers with deterministic behavior for both direct names and glob-style patterns. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `subscribe`, `remove`, `clear`, `clear_all`, `get_handles`, and 5 more stays attached to the local data model and invariants.
+- Exposes snapshot-friendly query helpers that aid runtime diagnostics and tooling inspection. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 
 

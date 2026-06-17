@@ -4,10 +4,6 @@
 //! Border and panel concepts live here because framed layout is a fundamental part of terminal-style interface composition.
 //! Text-bearing widgets are shaped around cell coordinates and constrained widths, which keeps them honest to the grid they inhabit.
 //! List widgets manage items and selection semantics here so terminal state can treat them as one coherent interactive object.
-//! Text boxes enforce cursor and content limits here, giving the terminal a predictable editing model for user input.
-//! Type discrimination helpers also belong here because higher layers often need to branch on widget behavior without unpacking every variant manually.
-//! The file is therefore the structural UI type system of the terminal module.
-//! It gives the terminal more expressive interface primitives than raw cells alone could provide.
 
 use super::cell::DEFAULT_FG;
 use super::terminal_state::{MAX_COLS, MAX_ROWS};

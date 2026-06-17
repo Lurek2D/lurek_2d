@@ -1,8 +1,8 @@
-//! Implements line-chart rasterization for connected series over categorical or continuous domains.
-//! Supports multi-series rendering with configurable color, width, and optional point markers.
-//! Maps value space into pixel coordinates through shared chart transformation utilities.
-//! Produces RGBA output buffers that can be uploaded as frame-local chart textures.
-//! Serves as the polyline rendering backend exposed through the charts line API.
+//! Implements line-chart rasterization for connected series over categorical or continuous domains. `charts/line` delivers the line implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Supports multi-series rendering with configurable color, width, and optional point markers. The file owns or coordinates data contracts including `LineChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Maps value space into pixel coordinates through shared chart transformation utilities. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_series`, `add_series`, `add_series_from_dataframe`, `draw_to_image`, `clear`, and 5 more stays attached to the local data model and invariants.
+//! Produces RGBA output buffers that can be uploaded as frame-local chart textures. Runtime integration reaches sibling engine areas through crate modules `charts`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Serves as the polyline rendering backend exposed through the charts line API. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::charts::config::{ChartConfig, ChartSeries};
 use crate::charts::render_utils::{

@@ -1,6 +1,9 @@
-//! High-level lighting module that groups light types, occluders, world state, and transition utilities.
-//! Re-exports core enums and structs used to configure 2D illumination behavior across the engine.
-//! Defines the module boundary for attenuation, blending, shadows, and runtime light orchestration.
+//! High-level lighting module that groups light types, occluders, world state, and transition utilities. `light/mod` is the light module index, declaring `attenuation`, `blend_mode`, `falloff`, `flicker`, `light2d`, and 5 more so agents can identify which files own each feature slice before opening implementation code.
+//! Re-exports core enums and structs used to configure 2D illumination behavior across the engine. `src/light/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `attenuation::Attenuation`, `blend_mode::LightBlendMode`, `falloff::FalloffMode`, `flicker::FlickerConfig`, and 5 more centralized for the light subsystem.
+//! Defines the module boundary for attenuation, blending, shadows, and runtime light orchestration. The file documents how light submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! `light/mod` is the light module index, declaring `attenuation`, `blend_mode`, `falloff`, `flicker`, `light2d`, and 5 more so agents can identify which files own each feature slice before opening implementation code.
+//! `src/light/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `attenuation::Attenuation`, `blend_mode::LightBlendMode`, `falloff::FalloffMode`, `flicker::FlickerConfig`, and 5 more centralized for the light subsystem.
+//! The file documents how light submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 /// Attenuation curve definitions for light intensity decay.
 pub mod attenuation;

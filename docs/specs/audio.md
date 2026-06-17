@@ -68,83 +68,71 @@ This module primarily collaborates with `dsp`, `image`, `midi`, `runtime`. Its r
 
 ### beat_clock.rs
 
-- Implements musical time tracking that maps wall-clock progression to beats, bars, and pulses.
-- Supports tempo and meter changes while preserving coherent phase continuity over runtime updates.
-- Provides tap-tempo and quantized scheduling utilities for rhythm-aware gameplay coordination.
-- Applies latency and swing parameters to shape musical timing feel without audio-thread coupling.
-- Exposes deterministic query surfaces for beat index, measure position, and subdivision boundaries.
-- Keeps timing logic pure and playback-agnostic so multiple systems can consume one clock source.
-- Serves rhythm, sequencing, and procedural trigger systems that require stable musical time.
-- Functions as the temporal backbone for Lua callbacks aligned to musical structure.
+- Implements musical time tracking that maps wall-clock progression to beats, bars, and pulses. `audio/beat_clock` delivers the beat clock implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports tempo and meter changes while preserving coherent phase continuity over runtime updates. The file owns or coordinates data contracts including `BeatClockOpts`, `JudgementWindows`, `JudgementResult`, `BeatClockEvents`, `BeatPosition`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides tap-tempo and quantized scheduling utilities for rhythm-aware gameplay coordination. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `new_with_opts`, `start`, `stop`, `reset`, `is_running`, and 32 more stays attached to the local data model and invariants.
+- Applies latency and swing parameters to shape musical timing feel without audio-thread coupling. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Exposes deterministic query surfaces for beat index, measure position, and subdivision boundaries. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Keeps timing logic pure and playback-agnostic so multiple systems can consume one clock source. The file boundary separates audio implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### bus.rs
 
-- Implements named audio routing channels that apply shared gain, pitch, pause, and ducking control.
-- Maintains per-bus processing parameters and effect-chain references for downstream mixer application.
-- Supports duck-target relationships so one bus can attenuate others during priority playback.
-- Enforces bounded parameter updates to keep runtime routing behavior stable and predictable.
+- Implements named audio routing channels that apply shared gain, pitch, pause, and ducking control. `audio/bus` delivers the bus implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Maintains per-bus processing parameters and effect-chain references for downstream mixer application. The file owns or coordinates data contracts including `Bus`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports duck-target relationships so one bus can attenuate others during priority playback. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `name`, `volume`, `set_volume`, `pitch`, `set_pitch`, and 5 more stays attached to the local data model and invariants.
+- Enforces bounded parameter updates to keep runtime routing behavior stable and predictable. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### decoder.rs
 
-- Implements full-file PCM decode for supported audio formats into a seekable in-memory sample buffer.
-- Provides random-access cursor movement for rewind, seek, and chunked iteration workflows.
-- Exposes duration and playback-position metrics derived from decoded sample metadata.
-- Serves as the decode bridge between file assets and streaming or buffered playback paths.
+- Implements full-file PCM decode for supported audio formats into a seekable in-memory sample buffer. `audio/decoder` delivers the decoder implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides random-access cursor movement for rewind, seek, and chunked iteration workflows. The file owns or coordinates data contracts including `Decoder`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Exposes duration and playback-position metrics derived from decoded sample metadata. Public callable behavior is centered on no named public items, while method-level behavior such as `from_file`, `decode`, `get_duration`, `seek`, `tell`, `is_seekable`, and 1 more stays attached to the local data model and invariants.
+- Serves as the decode bridge between file assets and streaming or buffered playback paths. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### facade.rs
 
-- Provides the audio device facade used for output listing and active-device selection hooks.
-- Exposes a stable API surface while backend-specific device enumeration remains minimal.
-- Validates requested device names against known outputs before accepting selection changes.
+- Provides the audio device facade used for output listing and active-device selection hooks. `audio/facade` delivers the public facade over lower-level subsystem helpers for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### mixer.rs
 
-- Implements the central audio mixer registry that owns sources, buses, streams, and listener state.
-- Manages output stream lifecycle with graceful fallback behavior when device initialization is unavailable.
-- Controls source playback lifecycle including load, play, pause, stop, seek, clone, and release flows.
-- Applies per-source parameters for gain, pitch, panning, looping, filters, and transition shaping.
-- Integrates bus routing so grouped sources share higher-level volume, pitch, pause, and effect behavior.
-- Supports queueable streaming sources with bounded buffer slots and free-space tracking semantics.
-- Maintains spatial-audio state for listener and source transforms used in attenuation and motion cues.
-- Applies distance-model and doppler controls for runtime spatialization consistency.
-- Tracks metering data across source, bus, and master levels for diagnostics and gameplay feedback.
-- Provides utility controls for stereo width, random pitch spread, crossfade behavior, and pooled playback.
-- Preserves stable key-based lookup so script calls map deterministically to mixer-owned runtime entities.
-- Coordinates effect processing boundaries while leaving advanced DSP behavior to dedicated modules.
-- Centralizes audio concurrency decisions so frame systems interact through one coherent control plane.
-- Serves as the primary engine-side audio execution surface behind Lua-facing playback APIs.
-- Anchors all real-time audio state mutation under a deterministic, runtime-safe ownership model.
+- Implements the central audio mixer registry that owns sources, buses, streams, and listener state. `audio/mixer` delivers the mixer implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Manages output stream lifecycle with graceful fallback behavior when device initialization is unavailable. The file owns or coordinates data contracts including `SourceType`, `PlayState`, `QueueableSource`, `Mixer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Controls source playback lifecycle including load, play, pause, stop, seek, clone, and release flows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `queue_buffer`, `free_buffer_count`, `stream_handle`, `load_source`, `play`, and 79 more stays attached to the local data model and invariants.
+- Applies per-source parameters for gain, pitch, panning, looping, filters, and transition shaping. Runtime integration reaches sibling engine areas through crate modules `audio`, `dsp`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Integrates bus routing so grouped sources share higher-level volume, pitch, pause, and effect behavior. External integration uses `rodio`, `slotmap`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Supports queueable streaming sources with bounded buffer slots and free-space tracking semantics. The file boundary separates audio implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Maintains spatial-audio state for listener and source transforms used in attenuation and motion cues. State changes, validation paths, and helper routines in `src/audio/mixer.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+- Applies distance-model and doppler controls for runtime spatialization consistency. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
 
 ### mod.rs
 
-- Defines the audio module boundary that groups playback, routing, decode, and source-data primitives.
-- Exposes coherent core audio contracts while delegating specialized processing to adjacent modules.
-- Serves as the composition entry for engine-side runtime audio behavior and shared types.
+- Defines the audio module boundary that groups playback, routing, decode, and source-data primitives. `audio/mod` is the audio module index, declaring `bus`, `decoder`, `mixer`, `source`, `sound_data`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
+- Exposes coherent core audio contracts while delegating specialized processing to adjacent modules. `src/audio/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bus::Bus`, `decoder::Decoder`, `mixer::Mixer`, `mixer::PlayState`, and 15 more centralized for the audio subsystem.
+- Serves as the composition entry for engine-side runtime audio behavior and shared types. The file documents how audio submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- `audio/mod` is the audio module index, declaring `bus`, `decoder`, `mixer`, `source`, `sound_data`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/audio/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bus::Bus`, `decoder::Decoder`, `mixer::Mixer`, `mixer::PlayState`, and 15 more centralized for the audio subsystem.
+- The file documents how audio submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 ### pool.rs
 
-- Implements round-robin voice pooling for low-latency repeated playback of one sound asset.
-- Cycles preloaded source keys to distribute trigger load across reusable playback voices.
-- Stores per-pool gain and optional bus assignment for grouped routing behavior.
-- Validates pool integrity so empty or invalid voice sets are rejected early.
+- Implements round-robin voice pooling for low-latency repeated playback of one sound asset. `audio/pool` delivers the pool implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Cycles preloaded source keys to distribute trigger load across reusable playback voices. The file owns or coordinates data contracts including `SoundPool`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Stores per-pool gain and optional bus assignment for grouped routing behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `voice_count`, `file_path`, `volume`, `set_volume`, `bus_name`, and 5 more stays attached to the local data model and invariants.
 
 ### sound_data.rs
 
-- Implements in-memory interleaved PCM storage with metadata-aware sample access and mutation.
-- Supports decode from file and direct buffer creation for generated or procedural audio content.
-- Provides waveform synthesis helpers for common tonal and noise signal generation workflows.
-- Applies lightweight in-place transforms such as filtering, gain, and buffer mixing operations.
-- Exposes encode paths for export-ready WAV byte output from runtime sample data.
-- Supplies duration and shape queries for tools, previews, and script-side audio reasoning.
-- Bridges sample data to visual workflows through waveform drawing integration points.
-- Serves as the core raw sound-data container for playback and preprocessing pipelines.
+- Implements in-memory interleaved PCM storage with metadata-aware sample access and mutation. `audio/sound_data` delivers the sound data implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports decode from file and direct buffer creation for generated or procedural audio content. The file owns or coordinates data contracts including `SoundData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides waveform synthesis helpers for common tonal and noise signal generation workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_samples`, `from_lua_args`, `from_file`, `get_sample`, `samples`, and 23 more stays attached to the local data model and invariants.
+- Applies lightweight in-place transforms such as filtering, gain, and buffer mixing operations. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Exposes encode paths for export-ready WAV byte output from runtime sample data. External integration uses `rodio`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Supplies duration and shape queries for tools, previews, and script-side audio reasoning. The file boundary separates audio implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### source.rs
 
-- Defines source-level audio metadata and spatial attributes used by mixer-side playback control.
-- Encapsulates position, velocity, and orientation state for positional and motion-aware rendering.
-- Stores identity and basic playback defaults that classify each loaded runtime source.
-- Serves as the foundational source contract shared across routing, playback, and spatialization paths.
+- Defines source-level audio metadata and spatial attributes used by mixer-side playback control. `audio/source` delivers the source implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Encapsulates position, velocity, and orientation state for positional and motion-aware rendering. The file owns or coordinates data contracts including `SpatialState`, `AudioSource`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Stores identity and basic playback defaults that classify each loaded runtime source. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
 
 
 

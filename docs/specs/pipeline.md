@@ -48,37 +48,31 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 - Topological sorting and cycle detection keep invalid orchestration from reaching runtime execution, which matters when workflows are composed dynamically from scripts or tools.
 - Parallel grouping exposes natural concurrency boundaries without abandoning dependency correctness, letting unrelated branches advance together when the graph permits it.
 - Sub-pipeline merging makes larger workflows composable by folding one graph into another under namespaced identities and inherited outer dependencies.
-- ASCII visualization and execution-order queries turn the graph into something inspectable, not just executable, which is important for debugging author intent.
-- Functionally this file delivers the orchestration map that every pipeline run relies on to know what can start, what must wait, and how the whole workflow hangs together.
 
 ### mod.rs
 
 - Workflow orchestration module for building dependency-aware task graphs, advancing them over time, and collecting explicit run outcomes.
 - It ties together graph structure, per-step policy, frame-driven scheduling, and result reporting into one coherent surface for asynchronous or staged work.
-- Functionally this file is the high-level entry point for pipeline execution, dependency management, retry-aware progress, and summarized completion state.
 
 ### result.rs
 
 - Pipeline outcome model for turning many individual step endings into one readable picture of how a workflow actually finished.
 - The file records lifecycle state, per-step timing, errors, and completion data so callers can inspect success, failure, skips, and duration after a run.
 - Convenience queries keep common result questions cheap and direct instead of forcing every user to re-interpret raw status fields.
-- Functionally this delivers the post-run memory and reporting surface for pipeline execution.
 
 ### scheduler.rs
 
-- Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies.
+- Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies. `pipeline/scheduler` delivers the scheduler implementation for the pipeline subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 - The file counts down configured delays, tracks overall runtime progress, and reports which waiting steps are now allowed to begin.
 - Waiting membership is tracked explicitly in scheduler-owned timers, so async readiness does not depend on mutating pipeline definition structs at runtime.
 - Keeping this timing logic separate from the graph keeps execution pacing explicit without diluting structural dependency rules.
-- Functionally this delivers the temporal gatekeeper for delayed and frame-advanced pipeline work.
 
 ### step.rs
 
-- Pipeline step model for expressing one unit of work together with the policy that controls when and how it should run.
+- Pipeline step model for expressing one unit of work together with the policy that controls when and how it should run. `pipeline/step` delivers the step implementation for the pipeline subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 - The file combines identity, dependencies, delays, retries, timeout-like settings, metadata, and callback hooks into a single authored execution record.
 - Status tracking gives each step a visible lifecycle from pending through terminal outcomes, which keeps orchestration state legible during async progress.
 - Error policy at step level lets important and optional work coexist inside the same pipeline without flattening all failures into one rule.
-- Functionally this file delivers the configurable work atom from which larger dependency graphs are assembled.
 
 
 

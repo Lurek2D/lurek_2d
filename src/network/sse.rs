@@ -1,9 +1,8 @@
-//! Server-Sent Events stream reader for HTTP event endpoints.
-//! Uses a background thread to parse frames and forward them through a channel.
-//! Offers non-blocking polling plus a blocking collect helper for batched reads.
-//! Keeps live event streams separate from the main game thread.
-//! Fits long-lived event feeds that should not stall gameplay.
-//! Exposes a simple streaming shape for push-based remote updates.
+//! Server-Sent Events stream reader for HTTP event endpoints. `network/sse` delivers the sse implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Uses a background thread to parse frames and forward them through a channel. The file owns or coordinates data contracts including `SseEvent`, `SseStream`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Offers non-blocking polling plus a blocking collect helper for batched reads. Public callable behavior is centered on no named public items, while method-level behavior such as `connect`, `next`, `close`, `is_open`, `collect` stays attached to the local data model and invariants.
+//! Keeps live event streams separate from the main game thread. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Fits long-lived event feeds that should not stall gameplay. External integration uses `log`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use log::warn;
 use std::io::{BufRead, BufReader};

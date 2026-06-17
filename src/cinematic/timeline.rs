@@ -1,8 +1,8 @@
-//! Cinematic timeline system with multi-track support.
-//!
-//! Provides a scriptable timeline of clips and tracks that can be played, paused, scrubbed, and looped.
-//! Supports Tween, Camera, Audio, and Signal track types with frame-accurate scheduling.
-//! Clips are applied in time order, and playback state is driven by update(dt) each frame.
+//! Cinematic timeline system with multi-track support. `cinematic/timeline` delivers the timeline implementation for the cinematic subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Provides a scriptable timeline of clips and tracks that can be played, paused, scrubbed, and looped. The file owns or coordinates data contracts including `CinematicClip`, `ClipType`, `Track`, `TimelineState`, `CinematicTimeline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports Tween, Camera, Audio, and Signal track types with frame-accurate scheduling. Public callable behavior is centered on no named public items, while method-level behavior such as `end_time`, `new`, `add_clip`, `clips_at`, `as_str`, `add_track`, and 19 more stays attached to the local data model and invariants.
+//! Clips are applied in time order, and playback state is driven by update(dt) each frame. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `cinematic/timeline` delivers the timeline implementation for the cinematic subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use std::collections::HashMap;
 

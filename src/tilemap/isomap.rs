@@ -1,10 +1,8 @@
-//! This file provides a multi-level isometric map model with separate parts per tile cell.
-//! It maps tile coordinates to diamond-projected screen space for coherent scene placement.
-//! It iterates draw order by diagonal progression so elevation layering reads correctly.
-//! It lets each elevation level be shown or hidden to support staged world presentation.
-//! It keeps part ordering configurable so floor, wall, and object composition remains flexible.
-//! It supports both bulk writes and precise per-slot updates for runtime editing workflows.
-//! It anchors isometric world structure in a form that is predictable for rendering and tools.
+//! This file provides a multi-level isometric map model with separate parts per tile cell. `tilemap/isomap` delivers the isomap implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It maps tile coordinates to diamond-projected screen space for coherent scene placement. The file owns or coordinates data contracts including `IsoTilePart`, `IsoTile`, `IsoLevel`, `IsoDrawItem`, `IsoMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It iterates draw order by diagonal progression so elevation layering reads correctly. Public callable behavior is centered on no named public items, while method-level behavior such as `from_index`, `index`, `new`, `get_tile`, `get_tile_mut`, `add_level`, and 13 more stays attached to the local data model and invariants.
+//! It lets each elevation level be shown or hidden to support staged world presentation. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It keeps part ordering configurable so floor, wall, and object composition remains flexible. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 /// Draw-layer part of an isometric tile (floor, walls, objects).
 #[non_exhaustive]

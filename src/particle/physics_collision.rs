@@ -1,6 +1,4 @@
-//! Bounce particles off rapier colliders using AABB overlap probes.
-//! Reflects velocity with configurable restitution per collision pass.
-//! Operates on all live particles in a system each frame.
+//! Bounce particles off rapier colliders using AABB overlap probes. `particle/physics_collision` delivers the physics collision implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 use crate::particle::ParticleSystem;
 use crate::physics::World;

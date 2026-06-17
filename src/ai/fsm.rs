@@ -1,8 +1,7 @@
-//! Provides explicit mode-based control where behavior advances through named states over time.
-//! Evaluates guarded transitions in deterministic priority order to keep switching reproducible.
-//! Coordinates lifecycle callbacks around entry, steady update, and exit handoff boundaries.
-//! Tracks dwell time to support time-aware logic without external bookkeeping overhead.
-//! Serves agents that need clear phase changes rather than fully continuous utility arbitration.
+//! Provides explicit mode-based control where behavior advances through named states over time. `ai/fsm` delivers the fsm implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Evaluates guarded transitions in deterministic priority order to keep switching reproducible. The file owns or coordinates data contracts including `StateCallbacks`, `Transition`, `StateMachine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Coordinates lifecycle callbacks around entry, steady update, and exit handoff boundaries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_transition`, `current_state`, `time_in_state`, `add_state_raw`, `add_transition_raw`, and 1 more stays attached to the local data model and invariants.
+//! Tracks dwell time to support time-aware logic without external bookkeeping overhead. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{FN01, FN02};

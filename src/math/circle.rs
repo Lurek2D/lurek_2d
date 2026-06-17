@@ -1,7 +1,6 @@
 //! 2D circle geometry primitive with center point and non-negative radius clamped on construction for collision and containment tests.
 //! Implements point-in-circle, circle-circle intersection, and AABB containment queries using distance comparisons for gameplay geometry.
 //! Computes area and perimeter values for numerical analysis enabling physics-based interactions and spatial reasoning in game logic.
-//! Provides center accessor and bounding-box computation supporting rendering, camera framing, and spatial query integration.
 
 use super::vec2::Vec2;
 

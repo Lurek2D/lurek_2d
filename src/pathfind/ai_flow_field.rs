@@ -1,8 +1,7 @@
-//! Precomputed flow field steering many agents toward a single goal cell.
-//! Propagates breadth-first distance over 8-directional neighbours with diagonal cost.
-//! Stores per-cell direction vectors for smooth unit movement.
-//! Respects walkability masks when terrain blocks pathing.
-//! Gives group movement code a cheap steering target instead of a full path.
+//! Precomputed flow field steering many agents toward a single goal cell. `pathfind/ai_flow_field` delivers the ai flow field implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Propagates breadth-first distance over 8-directional neighbours with diagonal cost. The file owns or coordinates data contracts including `FlowField`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Stores per-cell direction vectors for smooth unit movement. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_goal`, `compute`, `get_direction`, `get_distance` stays attached to the local data model and invariants.
+//! Respects walkability masks when terrain blocks pathing. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::collections::VecDeque;
 

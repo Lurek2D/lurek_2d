@@ -2,7 +2,6 @@
 //! The file models words as character paths, letting inserts and exact searches coexist naturally with prefix queries that expand into many matching keys.
 //! Removal includes branch pruning so the structure sheds dead paths instead of accumulating empty nodes after content churn.
 //! Depth-first key collection turns the trie into a practical retrieval tool for completions, dictionaries, filters, and lookup-heavy scripting workflows.
-//! Functionally this delivers the text-prefix indexing backbone for command palettes, content search, lexicons, and other systems built around incremental string matching.
 
 /// Internal trie node holding child edges and end-of-word marker.
 #[derive(Debug, Default)]

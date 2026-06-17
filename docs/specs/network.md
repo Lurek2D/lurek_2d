@@ -57,125 +57,120 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### constants.rs
 
-- Numeric limits for peer connections, channels, and buffer sizes.
-- Provides default fallback values when game config omits network settings.
-- Holds timeout durations for HTTP and transport-level operations.
+- Numeric limits for peer connections, channels, and buffer sizes. `network/constants` delivers the constants implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### error.rs
 
-- Unified error type for all network subsystem failures.
-- Covers socket I/O, ENet, HTTP, WebSocket, TCP, and threading faults.
-- Integrates with thiserror for automatic Display and From implementations.
+- Unified error type for all network subsystem failures. `network/error` delivers the error implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Covers socket I/O, ENet, HTTP, WebSocket, TCP, and threading faults. The file owns or coordinates data contracts including `NetworkError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Integrates with thiserror for automatic Display and From implementations. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 ### host.rs
 
-- ENet host wrapper owning a non-blocking UDP socket and peer slots for one endpoint.
-- Classifies the host role as server, client, or combined host for session routing.
-- Runs the event poll loop that yields connect, disconnect, and receive events.
-- Manages connection lifecycle, packet delivery, and reset flows.
-- Exposes peer diagnostics such as round-trip time, state, address, and statistics.
-- Lets callers tune bandwidth and channel limits at runtime.
-- Provides convenience constructors for common server and client bind patterns.
-- Acts as the low-level connection anchor for the multiplayer stack.
+- ENet host wrapper owning a non-blocking UDP socket and peer slots for one endpoint. `network/host` delivers the host implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Classifies the host role as server, client, or combined host for session routing. The file owns or coordinates data contracts including `HostRole`, `EnetLease`, `NetworkHost`, `NetworkEvent`, `PeerStats`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Runs the event poll loop that yields connect, disconnect, and receive events. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `service`, `connect`, `send`, `send_bytes`, `broadcast`, and 31 more stays attached to the local data model and invariants.
+- Manages connection lifecycle, packet delivery, and reset flows. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Exposes peer diagnostics such as round-trip time, state, address, and statistics. External integration uses `super`, `rusty_enet`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Lets callers tune bandwidth and channel limits at runtime. The file boundary separates network implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 ### http.rs
 
-- Synchronous HTTP client built on ureq for common request verbs.
-- Supports per-request timeout configuration through the agent builder.
-- Returns a unified response object with status, body, headers, and error text.
-- Keeps the API small so game code can fetch remote data without async setup.
-- Fits simple request/response workflows inside scripts and engine tools.
+- Synchronous HTTP client built on ureq for common request verbs. `network/http` delivers the http implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports per-request timeout configuration through the agent builder. The file owns or coordinates data contracts including `HttpResponse`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Returns a unified response object with status, body, headers, and error text. Public callable behavior is centered on `execute_request`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Keeps the API small so game code can fetch remote data without async setup. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### lobby.rs
 
-- LAN lobby discovery via timed UDP broadcast on a fixed port.
-- Encodes and parses lobby advertisements in a compact key-value wire format.
-- Maintains an in-process room registry for create, join, leave, and list flows.
-- Sends one broadcast datagram across all interfaces when scanning starts.
-- Deduplicates discovered lobbies by host and port during the scan window.
+- LAN lobby discovery via timed UDP broadcast on a fixed port. `network/lobby` delivers the lobby implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Encodes and parses lobby advertisements in a compact key-value wire format. The file owns or coordinates data contracts including `LobbyInfo`, `RoomInfo`, `PlayerState`, `RoomState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Maintains an in-process room registry for create, join, leave, and list flows. Public callable behavior is centered on `broadcast_lobby`, `discover_lobbies`, `create_room`, `list_rooms`, `join_room`, and 5 more, while method-level behavior such as `to_wire`, `from_wire` stays attached to the local data model and invariants.
+- Sends one broadcast datagram across all interfaces when scanning starts. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Deduplicates discovered lobbies by host and port during the scan window. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### message.rs
 
-- Wire-format value type mirroring Lua's dynamic type system for peer messaging.
-- Uses MessagePack serialization and deserialization for packed transport.
-- Provides zero-allocation size estimation before a message is sent.
+- Wire-format value type mirroring Lua's dynamic type system for peer messaging. `network/message` delivers the message implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Uses MessagePack serialization and deserialization for packed transport. The file owns or coordinates data contracts including `NetValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides zero-allocation size estimation before a message is sent. Public callable behavior is centered on `pack`, `unpack`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 ### mod.rs
 
-- Multiplayer networking across TCP, WebSocket, relay, and HTTP helpers.
-- Hosts the host/client model, lobby flow, peer management, and game-state sync.
-- Runs the background async runtime for non-blocking socket I/O.
+- Multiplayer networking across TCP, WebSocket, relay, and HTTP helpers. `network/mod` is the network module index, declaring `constants`, `error`, `host`, `http`, `lobby`, and 9 more so agents can identify which files own each feature slice before opening implementation code.
+- Hosts the host/client model, lobby flow, peer management, and game-state sync. `src/network/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `sse::{SseEvent, SseStream}` centralized for the network subsystem.
+- Runs the background async runtime for non-blocking socket I/O. The file documents how network submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- `network/mod` is the network module index, declaring `constants`, `error`, `host`, `http`, `lobby`, and 9 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/network/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `sse::{SseEvent, SseStream}` centralized for the network subsystem.
+- The file documents how network submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 ### net_sync.rs
 
-- Entity snapshot capture and wire serialization for networked state.
-- Supports linear dead-reckoning prediction between ticks.
-- Handles server-authoritative reconciliation with a configurable blend factor.
-- Gives the multiplayer stack a compact sync model for replicated actors.
-- Module API documentation
+- Entity snapshot capture and wire serialization for networked state. `network/net_sync` delivers the net sync implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports linear dead-reckoning prediction between ticks. The file owns or coordinates data contracts including `EntitySnapshot`, `SyncSnapshot`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Handles server-authoritative reconciliation with a configurable blend factor. Public callable behavior is centered on `predict_linear`, `reconcile`, `reconcile_with_policy`, while method-level behavior such as `to_netvalue`, `from_netvalue` stays attached to the local data model and invariants.
+- Gives the multiplayer stack a compact sync model for replicated actors. Runtime integration reaches sibling engine areas through crate modules `network`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `network/net_sync` delivers the net sync implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### net_thread.rs
 
-- Background network thread that owns all blocking I/O for HTTP, TCP, and WebSocket work.
-- Uses MPSC request and response channels to keep the game thread isolated from latency.
-- Drives transport activity through typed request and response enums.
-- Models connection state with explicit TCP and WebSocket event types.
-- Spawns, polls, and shuts down the runtime while preserving request ordering.
-- Routes completed results back with correlation ids for outstanding work.
-- Keeps the blocking transport surface off the main loop.
-- Module API documentation
+- Background network thread that owns all blocking I/O for HTTP, TCP, and WebSocket work. `network/net_thread` delivers the net thread implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Uses MPSC request and response channels to keep the game thread isolated from latency. The file owns or coordinates data contracts including `NetworkRequest`, `NetworkResponse`, `TcpEvent`, `WsEvent`, `NetworkRuntime`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Drives transport activity through typed request and response enums. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `next_request_id`, `send`, `poll`, `shutdown`, `is_running`, and 14 more stays attached to the local data model and invariants.
+- Models connection state with explicit TCP and WebSocket event types. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Spawns, polls, and shuts down the runtime while preserving request ordering. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Routes completed results back with correlation ids for outstanding work. The file boundary separates network implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Keeps the blocking transport surface off the main loop. State changes, validation paths, and helper routines in `src/network/net_thread.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
+- `network/net_thread` delivers the net thread implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### netstat.rs
 
-- Engine module for network statistics.
-- Provides runtime metrics such as bytes sent/received and latency.
-- This is a generic, genre‑agnostic API.
+- Engine module for network statistics. `network/netstat` delivers the netstat implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides runtime metrics such as bytes sent/received and latency. The file owns or coordinates data contracts including `NetStat`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- This is a generic, genre‑agnostic API. Public callable behavior is centered on `register`, while method-level behavior such as `new`, `update`, `snapshot` stays attached to the local data model and invariants.
 
 ### netstate.rs
 
-- Network state synchronization manager for replicated state across peers.
-- Provides `LNetworkState` userdata wrapping the pure-Lua netstate protocol.
-- Supports authority-based writes, per-key versioning, turn-based coordination,
-- and callback-driven change notifications.
+- Network state synchronization manager for replicated state across peers. `network/netstate` delivers the netstate implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides `LNetworkState` userdata wrapping the pure-Lua netstate protocol. The file owns or coordinates data contracts including `LNetworkState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports authority-based writes, per-key versioning, turn-based coordination,. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
+- and callback-driven change notifications. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### relay.rs
 
-- Relay ticket encoding and decoding for room and peer identification.
-- Builds UDP hole-punch probe payloads with a magic prefix.
-- Provides lightweight helpers for relay-based NAT traversal signalling.
+- Relay ticket encoding and decoding for room and peer identification. `network/relay` delivers the relay implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Builds UDP hole-punch probe payloads with a magic prefix. The file owns or coordinates data contracts including `RelayTicket`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides lightweight helpers for relay-based NAT traversal signalling. Public callable behavior is centered on `encode_ticket`, `decode_ticket`, `make_punch_probe`, `parse_punch_probe`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
 
 ### rpc.rs
 
-- Remote Procedure Call (RPC) manager for networked function invocation.
-- Provides request/response patterns, fire-and-forget notifications, and broadcasts
-- over network connections. Manages pending calls with timeout, automatic request ID
-- generation, and response callback dispatch.
+- Remote Procedure Call (RPC) manager for networked function invocation. `network/rpc` delivers the rpc implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Provides request/response patterns, fire-and-forget notifications, and broadcasts. The file owns or coordinates data contracts including `LNetworkRpc`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- over network connections. Manages pending calls with timeout, automatic request ID. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
+- generation, and response callback dispatch. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### sse.rs
 
-- Server-Sent Events stream reader for HTTP event endpoints.
-- Uses a background thread to parse frames and forward them through a channel.
-- Offers non-blocking polling plus a blocking collect helper for batched reads.
-- Keeps live event streams separate from the main game thread.
-- Fits long-lived event feeds that should not stall gameplay.
-- Exposes a simple streaming shape for push-based remote updates.
+- Server-Sent Events stream reader for HTTP event endpoints. `network/sse` delivers the sse implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Uses a background thread to parse frames and forward them through a channel. The file owns or coordinates data contracts including `SseEvent`, `SseStream`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Offers non-blocking polling plus a blocking collect helper for batched reads. Public callable behavior is centered on no named public items, while method-level behavior such as `connect`, `next`, `close`, `is_open`, `collect` stays attached to the local data model and invariants.
+- Keeps live event streams separate from the main game thread. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Fits long-lived event feeds that should not stall gameplay. External integration uses `log`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### tcp.rs
 
-- Non-blocking TCP connection pool for the background network thread.
-- Uses round-robin polling across all active streams with event-based notification.
-- Supports connect, send, close, and bulk-poll operations with automatic cleanup.
-- Keeps stream management simple for the threaded network runtime.
-- Serves as the pooled TCP transport layer for multiplayer I/O.
+- Non-blocking TCP connection pool for the background network thread. `network/tcp` delivers the tcp implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Uses round-robin polling across all active streams with event-based notification. The file owns or coordinates data contracts including `TcpConnectionManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports connect, send, close, and bulk-poll operations with automatic cleanup. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `connect`, `send`, `close`, `poll_all`, `close_all`, and 1 more stays attached to the local data model and invariants.
+- Keeps stream management simple for the threaded network runtime. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### websocket.rs
 
-- Pool of active WebSocket connections keyed by caller-assigned id.
-- Spawns background threads for TLS and TCP handshakes so connect never blocks the game loop.
-- Polls live sockets for text, binary, and close frames without blocking.
-- Sends text or binary frames and performs graceful close with drain semantics.
-- Posts connection lifecycle events through an MPSC channel.
-- Keeps WebSocket transport behaviour isolated from game-thread timing.
+- Pool of active WebSocket connections keyed by caller-assigned id. `network/websocket` delivers the websocket implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Spawns background threads for TLS and TCP handshakes so connect never blocks the game loop. The file owns or coordinates data contracts including `WebSocketManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Polls live sockets for text, binary, and close frames without blocking. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_empty`, `connect`, `send`, `close`, `poll_all`, and 1 more stays attached to the local data model and invariants.
+- Sends text or binary frames and performs graceful close with drain semantics. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Posts connection lifecycle events through an MPSC channel. External integration uses `super`, `log`, `std`, `tungstenite`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 
 

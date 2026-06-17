@@ -1,8 +1,7 @@
-//! This file provides the core frame clock that drives delta, elapsed time, and fps metrics.
-//! It computes stable per-frame timing and rolling averages for smoother runtime decisions.
-//! It maintains one-second fps windows so performance telemetry stays readable and comparable.
-//! It exposes one tick-driven timeline that other subsystems can trust each frame.
-//! It anchors deterministic game-loop timing for update, scheduling, and diagnostics paths.
+//! This file provides the core frame clock that drives delta, elapsed time, and fps metrics. `timer/clock` delivers the clock implementation for the timer subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It computes stable per-frame timing and rolling averages for smoother runtime decisions. The file owns or coordinates data contracts including `Clock`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It maintains one-second fps windows so performance telemetry stays readable and comparable. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `tick`, `delta`, `total`, `fps`, `frame_count`, and 2 more stays attached to the local data model and invariants.
+//! It exposes one tick-driven timeline that other subsystems can trust each frame. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use std::time::Instant;
 

@@ -1,13 +1,9 @@
-//! Provides continuous movement intent synthesis for agents that steer instead of teleporting state.
-//! Combines concurrent influences into one force signal while preserving controllable blending semantics.
-//! Supports reactive pursuit, evasion, spacing, and exploratory drift as composable motion textures.
-//! Integrates waypoint progression so authored path flow and emergent steering can coexist smoothly.
-//! Applies bounded output shaping to keep acceleration pressure stable for frame-to-frame integration.
-//! Treats path following as a first-class influence that can lead or defer to behavior priorities.
-//! Preserves deterministic fallback when no active influence produces meaningful directional intent.
-//! Exposes configurable weighting that lets designers tune expressive movement character per actor role.
-//! Maintains lightweight state for runtime-safe updates under dense multi-agent simulation loads.
-//! Serves as the tactical locomotion bridge between decision outputs and physics-facing motion updates.
+//! Provides continuous movement intent synthesis for agents that steer instead of teleporting state. `ai/steering` delivers the steering implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Combines concurrent influences into one force signal while preserving controllable blending semantics. The file owns or coordinates data contracts including `Force`, `SteeringEntity`, `CombineMode`, `SteeringBase`, `SteeringBehaviorType`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports reactive pursuit, evasion, spacing, and exploratory drift as composable motion textures. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `as_str`, `base`, `base_mut`, `kind`, `calculate`, and 20 more stays attached to the local data model and invariants.
+//! Integrates waypoint progression so authored path flow and emergent steering can coexist smoothly. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Applies bounded output shaping to keep acceleration pressure stable for frame-to-frame integration. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Treats path following as a first-class influence that can lead or defer to behavior priorities. The file boundary separates ai implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
 
 use std::collections::HashMap;
 

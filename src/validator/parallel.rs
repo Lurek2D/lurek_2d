@@ -1,7 +1,7 @@
-//! This file provides parallel execution plumbing for validator rule application across files.
-//! It enumerates candidate inputs and partitions work over worker threads efficiently.
-//! It merges per-file violations into unified reports without unstable ordering surprises.
-//! It supports configurable thread control, including single-thread fallback execution.
+//! This file provides parallel execution plumbing for validator rule application across files. `validator/parallel` delivers the parallel implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It enumerates candidate inputs and partitions work over worker threads efficiently. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It merges per-file violations into unified reports without unstable ordering surprises. Public callable behavior is centered on `validate_parallel`, `collect_lua_files`, `collect_files_with_ext`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! It supports configurable thread control, including single-thread fallback execution. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use super::report::ValidationReport;
 use super::rule::ValidationRule;

@@ -1,6 +1,4 @@
-//! File: src/lua_api/lua_module.rs
-//! Module API documentation
-//!
+//! `src/lua_api/lua_module.rs` registers the `lurek.lua_module` Lua boundary for lua_module behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use crate::runtime::config::ModulesConfig;
 use crate::runtime::SharedState;

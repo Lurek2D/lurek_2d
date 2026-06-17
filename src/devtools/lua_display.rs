@@ -1,6 +1,4 @@
-//! Implements Lua value pretty-print conversion for REPL and debug-facing display output.
-//! Handles scalar and structured value variants with stable human-readable formatting behavior.
-//! Returns safe fallback labels for unrecognized or unsupported value representations.
+//! Implements Lua value pretty-print conversion for REPL and debug-facing display output. `devtools/lua_display` delivers the lua display implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Convert one Lua value to display text and return a fallback for unknown kinds.
 pub fn value_to_string(v: &mlua::Value) -> String {

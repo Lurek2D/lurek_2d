@@ -1,9 +1,8 @@
-//! Implements a behavior orchestration lattice that evaluates intent through composable control flow.
-//! Carries running status across ticks so long actions keep temporal continuity instead of restarting.
-//! Balances branching policies to prefer resilient progress under mixed success and failure outcomes.
-//! Threads guard logic and decorator shaping into each decision pulse without breaking determinism.
-//! Emits inspectable execution state that tools can render as readable runtime decision rhythm.
-//! Provides a stable bridge for Lua-driven leaves while preserving engine-owned traversal guarantees.
+//! Implements a behavior orchestration lattice that evaluates intent through composable control flow. `ai/behavior_tree` delivers the behavior tree implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Carries running status across ticks so long actions keep temporal continuity instead of restarting. The file owns or coordinates data contracts including `BTStatus`, `ParallelPolicy`, `BTNode`, `BehaviorTree`, `BtDebugState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Balances branching policies to prefer resilient progress under mixed success and failure outcomes. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `as_str`, `reset`, `child_count`, `new`, `debug_state` stays attached to the local data model and invariants.
+//! Threads guard logic and decorator shaping into each decision pulse without breaking determinism. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Emits inspectable execution state that tools can render as readable runtime decision rhythm. External integration uses `mlua`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use mlua::RegistryKey;
 /// Execution result produced by a behavior-tree node or whole tree.

@@ -3,7 +3,6 @@
 //! Directional layout helpers matter here because many character sheets encode facing and animation state as a regular grid convention.
 //! Preset constructors keep common authoring patterns, such as RPG-style character sheets, easy to adopt without custom math in game code.
 //! Debug visualization is included because sheet layout mistakes are easier to catch when the frame grid can be rendered and inspected directly.
-//! The file is the animation-frame organization layer of the sprite module.
 
 use crate::log_msg;
 use crate::math::Rect;

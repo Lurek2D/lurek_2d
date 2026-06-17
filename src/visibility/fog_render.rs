@@ -1,6 +1,4 @@
-//! This file provides fog rendering configuration that maps visibility state to visual intensity.
-//! It defines opacity and transition behavior used by world compositing passes.
-//! It keeps fog appearance tunable without altering visibility simulation internals.
+//! This file provides fog rendering configuration that maps visibility state to visual intensity. `visibility/fog_render` delivers the fog render implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 /// Configuration for how fog is rendered visually.
 #[derive(Debug, Clone, Copy)]

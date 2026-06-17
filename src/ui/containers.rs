@@ -1,10 +1,8 @@
-//! This file provides retained-mode UI containers that structure complex screen hierarchies.
-//! It defines panels, layouts, windows, splits, and docks as composable spatial building blocks.
-//! It drives vertical, horizontal, and grid arrangement with stable spacing and alignment rules.
-//! It supplies scrollable viewports for overflowed content without breaking parent layout flow.
-//! It supports nine-slice framing so scalable borders keep visual intent across resolutions.
-//! It enables draggable and resizable window shells for tool-like and in-game interface scenes.
-//! It anchors container semantics that other widgets rely on for predictable composition.
+//! This file provides retained-mode UI containers that structure complex screen hierarchies. `ui/containers` delivers the containers implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! It defines panels, layouts, windows, splits, and docks as composable spatial building blocks. The file owns or coordinates data contracts including `Panel`, `LayoutDirection`, `Layout`, `ScrollPanel`, `NineSlice`, and 4 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! It drives vertical, horizontal, and grid arrangement with stable spacing and alignment rules. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `parse_str`, `as_str`, `perform_layout`, `max_scroll`, `clamp_scroll`, and 1 more stays attached to the local data model and invariants.
+//! It supplies scrollable viewports for overflowed content without breaking parent layout flow. Runtime integration reaches sibling engine areas through crate modules `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! It supports nine-slice framing so scalable borders keep visual intent across resolutions. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Plain box container that groups children with an optional title and scroll flag.

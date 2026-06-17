@@ -1,8 +1,7 @@
-//! Tile-grid walker with smooth camera following.
-//!
-//! Provides a walker that moves on a tile-based grid with collision detection and
-//! integrates camera following behavior. The walker tracks both world-space and tile-space positions,
-//! supports directional movement with tile collision checks, and smoothly updates an associated camera.
+//! Tile-grid walker with smooth camera following. `camera/walker` delivers the walker implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Provides a walker that moves on a tile-based grid with collision detection and. The file owns or coordinates data contracts including `CameraWalker`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! integrates camera following behavior. The walker tracks both world-space and tile-space positions,. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_position`, `get_position`, `set_tile_position`, `get_tile_position`, `move_direction`, and 6 more stays attached to the local data model and invariants.
+//! supports directional movement with tile collision checks, and smoothly updates an associated camera. Runtime integration reaches sibling engine areas through crate modules `camera`, `tilemap`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::camera::Camera2D;
 use crate::tilemap::tilemap::TileMap;

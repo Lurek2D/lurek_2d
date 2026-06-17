@@ -46,64 +46,67 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 
 ### area.rs
 
-- Implements area-chart rasterization where series are rendered as filled regions over plot space.
-- Supports overlapping and stacked accumulation modes for comparative and compositional data views.
-- Maps data coordinates into pixel coordinates through shared chart-space transform helpers.
-- Produces RGBA buffers that downstream systems upload as textures for runtime presentation.
-- Integrates optional DataFrame extraction paths for column-driven area plotting workflows.
-- Serves as the filled-series rendering backend behind the charts area API surface.
+- Implements area-chart rasterization where series are rendered as filled regions over plot space. `charts/area` delivers the area implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports overlapping and stacked accumulation modes for comparative and compositional data views. The file owns or coordinates data contracts including `AreaChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Maps data coordinates into pixel coordinates through shared chart-space transform helpers. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_series`, `add_layer`, `add_layer_from_dataframe`, `draw_to_image`, `clear`, and 4 more stays attached to the local data model and invariants.
+- Produces RGBA buffers that downstream systems upload as textures for runtime presentation. Runtime integration reaches sibling engine areas through crate modules `charts`, `color`, `dataframe`, `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Integrates optional DataFrame extraction paths for column-driven area plotting workflows. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### bar.rs
 
-- Implements bar-chart rasterization for categorical comparison through grouped or stacked layouts.
-- Supports configurable bar width, spacing, and orientation behavior across multiple value series.
-- Converts scaled chart coordinates into pixel-aligned rectangle fills for each rendered segment.
-- Produces RGBA image buffers suitable for per-frame upload and display in runtime overlays.
-- Serves as the rectangular-series rendering backend for the charts bar API path.
+- Implements bar-chart rasterization for categorical comparison through grouped or stacked layouts. `charts/bar` delivers the bar implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports configurable bar width, spacing, and orientation behavior across multiple value series. The file owns or coordinates data contracts including `BarChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Converts scaled chart coordinates into pixel-aligned rectangle fills for each rendered segment. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_series`, `add_series`, `add_series_data`, `add_category`, `add_categories_from_dataframe`, and 6 more stays attached to the local data model and invariants.
+- Produces RGBA image buffers suitable for per-frame upload and display in runtime overlays. Runtime integration reaches sibling engine areas through crate modules `charts`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Serves as the rectangular-series rendering backend for the charts bar API path. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### config.rs
 
-- Defines shared chart configuration contracts used across all chart rendering variants.
-- Stores dimensions, margins, titles, palette defaults, and optional legend or axis metadata.
-- Provides common series and DataFrame mapping structures consumed by concrete chart specs.
-- Serves as the canonical option layer for consistent chart behavior and appearance.
+- Defines shared chart configuration contracts used across all chart rendering variants. `charts/config` delivers the configuration schema and defaults for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Stores dimensions, margins, titles, palette defaults, and optional legend or axis metadata. The file owns or coordinates data contracts including `ChartMargin`, `ChartConfig`, `ChartSeries`, `ChartDataFrameOptions`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Provides common series and DataFrame mapping structures consumed by concrete chart specs. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Serves as the canonical option layer for consistent chart behavior and appearance. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### heatmap.rs
 
-- Implements heatmap rasterization for matrix-style ML and dashboard views.
-- Maps matrix values to a configurable color ramp and annotates row/column labels.
-- Supports direct matrix updates, per-cell streaming changes, and dataframe pivot ingestion.
-- Module API documentation
-- TODO: add doc note 1
+- Implements heatmap rasterization for matrix-style ML and dashboard views. `charts/heatmap` delivers the heatmap implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Maps matrix values to a configurable color ramp and annotates row/column labels. The file owns or coordinates data contracts including `HeatmapChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports direct matrix updates, per-cell streaming changes, and dataframe pivot ingestion. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `resize`, `set_matrix`, `set_matrix_from_dataframe`, `set_cell`, `clear`, and 8 more stays attached to the local data model and invariants.
+- `charts/heatmap` delivers the heatmap implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- The file owns or coordinates data contracts including `HeatmapChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `resize`, `set_matrix`, `set_matrix_from_dataframe`, `set_cell`, `clear`, and 8 more stays attached to the local data model and invariants.
 
 ### histogram.rs
 
-- Implements histogram rasterization for distribution analysis and dashboard telemetry.
-- Buckets numeric samples into configurable bins and renders grouped bars for one or more series.
-- Supports streaming sample windows, dataframe ingestion, explicit ranges, and density mode.
-- Module API documentation
+- Implements histogram rasterization for distribution analysis and dashboard telemetry. `charts/histogram` delivers the histogram implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Buckets numeric samples into configurable bins and renders grouped bars for one or more series. The file owns or coordinates data contracts including `HistogramSeries`, `HistogramChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports streaming sample windows, dataframe ingestion, explicit ranges, and density mode. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_series`, `add_series_from_dataframe`, `replace_series`, `append_value`, `clear`, and 8 more stays attached to the local data model and invariants.
+- `charts/histogram` delivers the histogram implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- The file owns or coordinates data contracts including `HistogramSeries`, `HistogramChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
 
 ### line.rs
 
-- Implements line-chart rasterization for connected series over categorical or continuous domains.
-- Supports multi-series rendering with configurable color, width, and optional point markers.
-- Maps value space into pixel coordinates through shared chart transformation utilities.
-- Produces RGBA output buffers that can be uploaded as frame-local chart textures.
-- Serves as the polyline rendering backend exposed through the charts line API.
+- Implements line-chart rasterization for connected series over categorical or continuous domains. `charts/line` delivers the line implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Supports multi-series rendering with configurable color, width, and optional point markers. The file owns or coordinates data contracts including `LineChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Maps value space into pixel coordinates through shared chart transformation utilities. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_series`, `add_series`, `add_series_from_dataframe`, `draw_to_image`, `clear`, and 5 more stays attached to the local data model and invariants.
+- Produces RGBA output buffers that can be uploaded as frame-local chart textures. Runtime integration reaches sibling engine areas through crate modules `charts`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Serves as the polyline rendering backend exposed through the charts line API. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 ### mod.rs
 
-- Defines the charts module boundary for CPU-rasterized data-visualization rendering.
-- Groups chart types, shared config contracts, and utility drawing primitives into one surface.
-- Serves as the composition entry for runtime chart image generation from raw series or DataFrames.
+- Defines the charts module boundary for CPU-rasterized data-visualization rendering. `charts/mod` is the charts module index, declaring `area`, `bar`, `config`, `heatmap`, `histogram`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
+- Groups chart types, shared config contracts, and utility drawing primitives into one surface. `src/charts/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `area::AreaChart`, `bar::BarChart`, `config::{ChartConfig, ChartDataFrameOptions, ChartMargin, ChartSeries}`, `heatmap::HeatmapChart`, and 4 more centralized for the charts subsystem.
+- Serves as the composition entry for runtime chart image generation from raw series or DataFrames. The file documents how charts submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- `charts/mod` is the charts module index, declaring `area`, `bar`, `config`, `heatmap`, `histogram`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
+- `src/charts/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `area::AreaChart`, `bar::BarChart`, `config::{ChartConfig, ChartDataFrameOptions, ChartMargin, ChartSeries}`, `heatmap::HeatmapChart`, and 4 more centralized for the charts subsystem.
+- The file documents how charts submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
 
 ### pie.rs
 
-- Implements pie-style chart rasterization where values are mapped to proportional angular slices.
-- Computes normalized slice spans and renders arc-filled sectors into RGBA output buffers.
-- Supports optional donut-hole shaping and label metadata for ring-style visual presentation.
-- Integrates DataFrame-derived value extraction for tabular-to-pie plotting workflows.
-- Serves as the circular-segment rendering backend behind the charts pie API.
+- Implements pie-style chart rasterization where values are mapped to proportional angular slices. `charts/pie` delivers the pie implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Computes normalized slice spans and renders arc-filled sectors into RGBA output buffers. The file owns or coordinates data contracts including `PieSlice`, `PieChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports optional donut-hole shaping and label metadata for ring-style visual presentation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_segment`, `add_segments_from_dataframe`, `draw_to_image`, `add_slice`, `clear`, and 2 more stays attached to the local data model and invariants.
+- Integrates DataFrame-derived value extraction for tabular-to-pie plotting workflows. Runtime integration reaches sibling engine areas through crate modules `charts`, `color`, `dataframe`, `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 ### render_utils.rs
 
@@ -112,15 +115,15 @@ This module primarily collaborates with `color`, `dataframe`, `image`. Its respo
 - Computes automatic value range bounds across multiple series to establish default axis domains avoiding degenerate zero-width ranges.
 - Maintains consistent low-level drawing semantics across all chart renderer implementations enabling uniform image generation behavior.
 - Clamps coordinates to buffer bounds, handling edge cases like zero-sized ranges and out-of-bounds pixel access silently.
-- Module API documentation
+- `charts/render_utils` delivers the render utils implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
 
 ### scatter.rs
 
-- Implements scatter-plot rasterization for point-cloud visualization of value distribution and relation.
-- Draws each sample as a configurable filled marker over chart-space transformed coordinates.
-- Supports automatic domain estimation or explicit axis bounds for controlled plot framing.
-- Produces RGBA output buffers suitable for texture upload in runtime chart presentation.
-- Serves as the point-series rendering backend for the charts scatter API path.
+- Implements scatter-plot rasterization for point-cloud visualization of value distribution and relation. `charts/scatter` delivers the scatter implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Draws each sample as a configurable filled marker over chart-space transformed coordinates. The file owns or coordinates data contracts including `ScatterPlot`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- Supports automatic domain estimation or explicit axis bounds for controlled plot framing. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_series_raw`, `add_series`, `add_series_from_dataframe`, `draw_to_image`, `clear`, and 6 more stays attached to the local data model and invariants.
+- Produces RGBA output buffers suitable for texture upload in runtime chart presentation. Runtime integration reaches sibling engine areas through crate modules `charts`, `color`, `dataframe`, `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Serves as the point-series rendering backend for the charts scatter API path. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 
 

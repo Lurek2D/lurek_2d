@@ -1,8 +1,7 @@
-//! Provides glyph and line metric structures used to measure text blocks in logical pixel space.
-//! Computes single-line and multiline dimensions with kerning-aware advance accumulation.
-//! Tracks per-line width and source ranges so layout systems can map metrics back to input text.
-//! Exposes aggregate text bounds including line count and total height for UI sizing flows.
-//! Delivers measurement primitives required by shaping, wrapping, and render preparation paths.
+//! Provides glyph and line metric structures used to measure text blocks in logical pixel space. `font/metrics` delivers the metrics implementation for the font subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Computes single-line and multiline dimensions with kerning-aware advance accumulation. The file owns or coordinates data contracts including `GlyphMetrics`, `LineMetrics`, `TextMetrics`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Tracks per-line width and source ranges so layout systems can map metrics back to input text. Public callable behavior is centered on `measure_text`, `measure_line`, `char_advance`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Exposes aggregate text bounds including line count and total height for UI sizing flows. Runtime integration reaches sibling engine areas through crate modules `font`, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use crate::font::bitmap_font::BitmapFont;
 

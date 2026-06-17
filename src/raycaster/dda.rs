@@ -4,8 +4,6 @@
 //! Line-of-sight checks reuse the same grid logic, so lighting, AI, and visibility questions follow the same blocking semantics as rendering.
 //! The map storage stays simple and row-major, with safe fallback behavior for out-of-range reads and silent rejection of invalid writes.
 //! Sprite projection helpers live beside ray stepping so billboard placement uses the same camera conventions as wall casting.
-//! Floor and ceiling sampling utilities expose screen-to-world relationships without forcing higher layers to re-derive projection math.
-//! This file is the computational core of the raycaster, where map occupancy becomes reliable spatial hits and camera-facing depth data.
 
 use super::doors::DoorManager;
 use super::ray_hit::RayHit;

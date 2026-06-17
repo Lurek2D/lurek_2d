@@ -1,8 +1,7 @@
-//! Network state synchronization manager for replicated state across peers.
-//!
-//! Provides `LNetworkState` userdata wrapping the pure-Lua netstate protocol.
-//! Supports authority-based writes, per-key versioning, turn-based coordination,
-//! and callback-driven change notifications.
+//! Network state synchronization manager for replicated state across peers. `network/netstate` delivers the netstate implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Provides `LNetworkState` userdata wrapping the pure-Lua netstate protocol. The file owns or coordinates data contracts including `LNetworkState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Supports authority-based writes, per-key versioning, turn-based coordination,. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
+//! and callback-driven change notifications. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use mlua::prelude::*;
 

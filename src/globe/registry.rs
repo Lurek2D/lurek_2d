@@ -1,9 +1,8 @@
-//! Provides mutable globe state that aggregates topology, camera, fog, overlays, and interaction data.
-//! Owns region storage operations together with markers, labels, layers, arcs, and heat visual layers.
-//! Integrates camera projection and picking paths so selection and rendering share one state container.
-//! Emits full-frame render commands from current globe state for deterministic map visualization.
-//! Caches sector and reachability information to support strategic lookup and path-cost workflows.
-//! Delivers named registry management for handling multiple independent globe instances.
+//! Provides mutable globe state that aggregates topology, camera, fog, overlays, and interaction data. `globe/registry` delivers the lookup registry and handle ownership for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Owns region storage operations together with markers, labels, layers, arcs, and heat visual layers. The file owns or coordinates data contracts including `Globe`, `GlobeRegistry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Integrates camera projection and picking paths so selection and rendering share one state container. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_region`, `remove_region`, `get_region`, `get_region_mut`, `region_count`, and 33 more stays attached to the local data model and invariants.
+//! Emits full-frame render commands from current globe state for deterministic map visualization. Runtime integration reaches sibling engine areas through crate modules `globe`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Caches sector and reachability information to support strategic lookup and path-cost workflows. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
 
 use crate::globe::draw::emit_globe_frame;
 use crate::globe::fog::FogStore;

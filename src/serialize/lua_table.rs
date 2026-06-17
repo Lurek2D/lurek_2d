@@ -1,8 +1,7 @@
 //! This file bridges the dynamic world of Lua tables and values into the typed intermediate tree used by the serialization subsystem.
 //! It decides when Lua data should be treated as sequences, maps, scalars, or explicit null-like values for downstream codecs.
-//! Array-like tables are recognized structurally so callers do not have to tag them manually before encoding.
-//! The reverse path also lives here, turning decoded serial values back into Lua-friendly tables and primitives.
-//! This file is the language boundary where loose script data becomes format-ready structured data.
+//! Array-like tables are recognized structurally so callers do not have to tag them manually before encoding. Public callable behavior is centered on `to_lua`, `from_lua`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! The reverse path also lives here, turning decoded serial values back into Lua-friendly tables and primitives. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
 
 use indexmap::IndexMap;
 use mlua::prelude::{Lua, LuaResult, LuaValue};

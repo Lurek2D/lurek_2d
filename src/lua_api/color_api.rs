@@ -1,7 +1,4 @@
-//! Lua bindings for `lurek.color`.
-//!
-//! Exposes constructors, color-space conversion, blending, palettes, and
-//! utility helpers over the engine's core `Color` type.
+//! Lua bindings for `lurek.color`. `src/lua_api/color_api.rs` registers the `lurek.color` Lua boundary for color behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
 
 use super::SharedState;
 use crate::color::{blend, gamma_to_linear, hsl_to_rgb, hsv_to_rgb, linear_to_gamma, retro, Color};
