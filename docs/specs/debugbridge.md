@@ -18,9 +18,7 @@
 
 - The `debugbridge` module is the remote inspection channel between a running game and external development tools such as the VS Code extension or MCP-style clients.
 - It owns the bridge state, network protocol, queued requests and responses, print-history streaming, and guarded remote operations such as screenshots or hot reload requests.
-- This keeps remote inspection and tool commands under one controlled runtime policy.
 - Read it as the integration boundary for external observability: gameplay systems do not need to know editor protocols, because `debugbridge` translates between runtime state and tool clients.
-
 
 ## Imports
 

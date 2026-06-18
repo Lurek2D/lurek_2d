@@ -20,18 +20,18 @@
 ## Summary
 
 - The `province` module is the engine's territory-region system for users who want named areas, borders, ownership, routing, and province-like gameplay state to behave as one native feature.
-- Topology, registries, imports, labels, caches, route helpers, property layers, render bridges, and view transforms all matter here because a province map is more than a color fill; it is a structured graph of regions with state and presentation rules.
-- Province identity is central from the user perspective. Scripts typically need to ask which region an area belongs to, how regions connect, what properties they carry, and how those answers change over time.
+- Topology, registries, imports, labels, caches, route helpers, property layers, render bridges, and view transforms matter because a province map is more than a color fill; it is a structured graph of regions with state and presentation rules.
+- Province identity is central from the user perspective. Scripts need to ask which region an area belongs to, how regions connect, what properties they carry, and how those answers change over time.
 - Ownership, labels, borders, and view helpers make the module useful for strategy maps, campaign layers, regional simulations, and UI-heavy territory systems where territory data must be both playable and readable.
-- Import and cache support show that the module is designed for large-world workflows rather than toy examples. Province data often comes from authored assets or preprocessing, then has to be reused efficiently during live play.
-- Routing and adjacency behavior extend the feature from passive map metadata into active game logic, because movement, logistics, diplomacy, or campaign progression often depend on region-to-region relationships.
-- GPU-facing upload paths and rendering support matter because province state often needs to be redrawn at scale while still reflecting dynamic changes such as ownership or overlays.
-- Property layers and events make the module valuable as a simulation substrate. A region can carry more than one identity or visual trait, and the rest of the game can react when those values change.
-- Picking, highlighting, and view-transform helpers are important for strategy and map-heavy tools because province systems often need direct user interaction, not only passive rendering or query-by-id access.
-- The module is therefore useful both as a gameplay authority for territory logic and as an interaction surface for map UIs, overlays, and editor-style region inspection.
-- Cached lookup and region-scale rendering paths matter because province-heavy games often operate over large maps where repeated ownership, border, and adjacency queries must stay cheap and visually synchronized.
-- Read `province` as the territory authority of the engine. Other systems may navigate, draw, or summarize provinces, but this module decides how provinces are represented, connected, labeled, updated, and queried.
-
+- Routing and adjacency behavior extend the feature from passive map metadata into active game logic, because movement, logistics, diplomacy, and campaign progression often depend on region-to-region relationships.
+- Property layers, events, and interaction helpers make the module useful both as a gameplay authority for territory logic and as a map-facing surface for highlighting, picking, overlays, and editor-style inspection.
+- Import and cache support matter because province-heavy projects often operate on large authored maps where region definitions, border relationships, and property tables must be reused efficiently at runtime instead of reparsed or recomputed ad hoc.
+- Region properties broaden the feature beyond simple ownership maps. Provinces often carry economy, culture, terrain, danger, visibility, supply, or event flags, and the module gives those layers one shared place to live and change over time.
+- That shared province identity is what keeps strategy logic, labels, overlays, and player interaction pointed at the same region model instead of drifting apart.
+- Picking and view-transform helpers are especially important for strategy interfaces and editors, where the province system must translate user interaction into stable region identity rather than acting as a query-by-id database hidden behind other UI layers.
+- This is why `province` works well for campaign maps, strategy regions, and territory editors.
+- It also gives simulation and map UI one shared authority for ownership and adjacency.
+- Read `province` as the territory authority of the engine. Other systems may navigate, draw, or summarize provinces, but this module decides how provinces are represented, connected, labeled, updated, and queried with one stable region model.
 
 ## Imports
 

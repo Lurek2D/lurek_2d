@@ -18,9 +18,8 @@
 
 - The `color` module is the shared toolbox for defining, converting, and reusing runtime color values across the engine.
 - It combines low-level color math with practical authoring workflows, so scripts can move between RGB, HSL, HSV, hex, blending, and interpolation without custom conversion helpers.
-- That makes the module useful for themes, fades, highlights, palette work, and effect tuning, because color changes can stay data-driven instead of becoming hardcoded rendering logic.
+- That makes it useful for themes, fades, highlights, palette work, and effect tuning.
 - Read it as the common color language for the engine: other systems decide where color is used, but `color` keeps conversion, composition, and palette logic consistent.
-
 
 ## Imports
 

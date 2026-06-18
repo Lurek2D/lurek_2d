@@ -37,7 +37,6 @@
 - `tilemap`, `province`, and related modules define traversable space, but `pathfind` owns how that space is searched, scored, and turned into movement advice.
 - Read `pathfind` as the reusable navigation layer of the engine, not as a locomotion or animation system.
 
-
 ## Imports
 
 - `flownet`: Imports or references `src/flownet/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.

@@ -4,12 +4,23 @@
 
 --- REPL Module: interactive Lua evaluation session
 
+local function example_print_log(...)
+    local parts = {}
+    for i = 1, select("#", ...) do
+        parts[i] = tostring(select(i, ...))
+    end
+    lurek.log.info(table.concat(parts, " "))
+end
+
 --@api: lurek.repl.new
 do
     ---@type LReplSession
     local repl = lurek.repl.new(8)
-    print("type = " .. repl:type())
-    print("initial len = " .. repl:len())
+    local initial_len = repl:len()
+    local is_session = repl:typeOf("LReplSession")
+    lurek.log.info("repl type = " .. repl:type())
+    lurek.log.info("initial len = " .. initial_len)
+    assert(is_session and initial_len == 0, "new REPL session starts empty")
 end
 
 --@api: LReplSession:eval
@@ -18,8 +29,8 @@ do
     local repl = lurek.repl.new()
     repl:eval("local total = 2 + 2")
     local result = repl:eval("return total * 3")
-    print("eval result = " .. result)
-    print("history len = " .. repl:len())
+    example_print_log("eval result = " .. result)
+    example_print_log("history len = " .. repl:len())
 end
 
 --@api: LReplSession:history
@@ -28,8 +39,8 @@ do
     repl:eval("return 'first'")
     repl:eval("return 'second'")
     local hist = repl:history()
-    print("history entries = " .. #hist)
-    print("last entry = " .. hist[#hist])
+    example_print_log("history entries = " .. #hist)
+    example_print_log("last entry = " .. hist[#hist])
 end
 
 --@api: LReplSession:complete
@@ -37,8 +48,10 @@ do
     ---@type LReplSession
     local repl = lurek.repl.new()
     local completions = repl:complete("lurek.re")
-    print("completions for 'lurek.re' = " .. #completions)
-    print("first match = " .. tostring(completions[1]))
+    local first = tostring(completions[1] or "")
+    local count = #completions
+    lurek.log.info("completions for lurek.re = " .. count)
+    lurek.log.info("first match = " .. first)
 end
 
 --@api: LReplSession:clear
@@ -47,7 +60,7 @@ do
     repl:eval("return 1")
     repl:eval("return 2")
     repl:clear()
-    print("after clear = " .. repl:len() .. " history=" .. #repl:history())
+    example_print_log("after clear = " .. repl:len() .. " history=" .. #repl:history())
 end
 
 --@api: LReplSession:len
@@ -55,22 +68,29 @@ do
     local repl = lurek.repl.new()
     repl:eval("return 'a'")
     repl:eval("return 'b'")
-    print("len = " .. repl:len())
+    example_print_log("len = " .. repl:len())
     repl:clear()
-    print("after clear = " .. repl:len())
+    example_print_log("after clear = " .. repl:len())
 end
 
 --@api: LReplSession:type
 do
     ---@type LReplSession
     local sess = lurek.repl.new()
-    print("type = " .. sess:type())
+    local type_name = sess:type()
+    local matches = sess:typeOf(type_name)
+    lurek.log.info("repl session type = " .. type_name)
+    lurek.log.info("type check = " .. tostring(matches))
+    assert(matches, "session reports its own type")
 end
 
 --@api: LReplSession:typeOf
 do
     ---@type LReplSession
     local sess = lurek.repl.new()
-    print("is session = " .. tostring(sess:typeOf("LReplSession")))
-    print("is object = " .. tostring(sess:typeOf("LObject")))
+    local is_session = sess:typeOf("LReplSession")
+    local is_object = sess:typeOf("LObject")
+    lurek.log.info("is session = " .. tostring(is_session))
+    lurek.log.info("history entries = " .. tostring(repl:historyLen()))
+    assert(is_session and is_object, "REPL session exposes expected type hierarchy")
 end

@@ -24,9 +24,9 @@
 - Export paths are a major part of the feature. The same curated knowledge can be shaped into wiki-style outputs, editor hover text, completion data, machine-readable references, and other formats aimed at different readers and tools.
 - Quality scoring, schema-oriented checks, and module-focused audits make the system practical for ongoing maintenance instead of occasional cleanup passes.
 - This makes the module useful not only for publishing, but also for governance. Teams can spot undocumented APIs, stale wording, or inconsistent coverage before those gaps spread across several outputs.
+- It also gives tooling one stable documentation catalog to consume.
 - Other modules own behavior and signatures, but `docs` owns how that behavior is discovered, checked, cataloged, and published.
 - Read `docs` as the coordination layer between engine reality and documentation output.
-
 
 ## Imports
 

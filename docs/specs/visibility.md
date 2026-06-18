@@ -20,9 +20,9 @@
 - It combines adjacency rules, reveal cost, ownership flags, events, shadowcasting, and stored state so the same module can answer both gameplay questions and presentation needs.
 - That makes it more than a single visibility check: current sight, remembered discovery, reveal transitions, and display-friendly output are meant to behave as one coherent information system.
 - Team-specific reveal state and remembered exploration are especially important because many map-aware games care not only about what is visible now, but also about what was discovered earlier and by whom.
-- This is what lets fog-of-war, scouting, and minimap-style presentation share one truth about what a faction can currently see and remember.
-- Read this module as the authority for what an actor currently knows about a space. Other systems may consume that knowledge, but `visibility` is where the rules and state are maintained.
-
+- That unified state is what lets fog-of-war, scouting, and map presentation stay aligned.
+- It also keeps team knowledge explicit.
+- Read this module as the authority for what an actor currently knows about a space.
 
 ## Imports
 

@@ -28,10 +28,11 @@
 - Naming helpers show that the scope is not restricted to geometry. Procedural content also includes readable labels, faction or place names, and other text-like generated outputs that help a world feel authored and coherent.
 - Rendering and visualization support are therefore part of the practical story, since generated results often need to be previewed, compared, or debugged.
 - Support for both small local algorithms and larger assembly logic makes the toolkit useful across scales, from decorative patterns up to multi-region world structures with interacting constraints.
-- The module is especially helpful in hybrid projects where authored and generated content mix. Reusable procgen primitives can augment designed spaces or fill in gaps without forcing an all-or-nothing procedural pipeline.
+- The module is especially helpful in hybrid projects where authored and generated content mix.
+- That breadth also helps teams iterate on generated layouts before treating them as final world content.
+- It also lets the same procedural vocabulary serve prototypes, editor previews, and final content workflows.
 - Downstream modules render, navigate, or simulate the output, but `procgen` owns the samplers, constructive rules, and algorithmic helpers that create it.
 - Read `procgen` as the engine's creation toolkit for algorithmic content.
-
 
 ## Imports
 

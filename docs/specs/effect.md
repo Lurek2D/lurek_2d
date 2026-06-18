@@ -18,15 +18,14 @@
 ## Summary
 
 - The `effect` module is the post-processing surface for users who want final-frame styling to be configurable at runtime instead of buried in renderer internals.
-- Effect stacks, presets, and parameter control let a project combine blur, bloom, grading, distortion, and custom passes as a reusable look pipeline rather than as isolated toggles.
+- Effect stacks, presets, and parameter control let projects combine blur, bloom, grading, distortion, and custom passes as a reusable look pipeline rather than as isolated toggles.
 - The same module supports both full-frame and image-scoped workflows, which makes it useful for global scene mood, local asset treatment, and diagnostic capture flows.
 - Runtime enabling, disabling, and reordering matter because visual iteration often depends on trying combinations quickly while the game is running.
-- Preset-oriented workflow is a major user-facing advantage because art direction often depends on named looks that can be switched, blended, or tuned per scene rather than reassembled from scratch each time.
-- The module also improves experimentation: users can compare treatments, capture reference outputs, and stage layered effect combinations without rewriting renderer-facing pass code.
-- This makes `effect` a useful art-direction layer for both shipped visuals and tooling-time look development, especially when several passes must be coordinated as one style decision.
-- Read this module as the owner of effect composition and art-direction control. The renderer executes passes, but `effect` defines how those passes are organized and tuned from the user side.
-- `effect` owns composition policy, while `render` performs the underlying passes.
-
+- Preset-oriented workflow is a major user-facing advantage because art direction usually depends on named looks that can be switched, blended, or tuned per scene instead of rebuilt from scratch each time.
+- That makes the module valuable for shipped presentation, look development, and visual comparison.
+- It is especially useful when several passes need to be staged and tuned together as one style decision.
+- It also keeps composition policy above the renderer, so projects can adjust how global and local treatments are assembled without rewriting low-level pass code.
+- Read `effect` as the owner of effect composition and art-direction control. The renderer executes passes, but `effect` defines how those passes are organized and tuned from the user side.
 
 ## Imports
 

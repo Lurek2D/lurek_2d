@@ -17,9 +17,8 @@
 ## Summary
 
 - This spec covers executable startup modes.
-- `lurek_headless` is for automation and capture runs, while `lurekc` is for interactive startup.
+- `lurek_headless` is for automation, while `lurekc` is for interactive startup.
 - Read it as the boundary between tool execution and live play.
-
 
 ## Imports
 

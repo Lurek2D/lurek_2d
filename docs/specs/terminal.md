@@ -18,16 +18,16 @@
 ## Summary
 
 - The `terminal` module is the engine's character-grid interface surface for users who want text-mode displays, debug consoles, command panels, or roguelike-style presentation.
-- It treats terminal behavior as a real interface model rather than as plain text drawing: cells, ANSI parsing, completion, highlighting, editing state, and render helpers all cooperate under one system.
-- This matters because terminal-style surfaces need cursor behavior, history, prompt handling, navigation, and scrollback, not only glyph output.
-- The cell-grid model gives the module a distinct role from ordinary widget UI and makes it suitable for dense textual dashboards, shells, and ASCII-heavy interfaces.
-- Completion, highlighting, and command-history support make the feature practical for tools and debug consoles as well as for games.
-- Widget-like terminal panels and command surfaces are also part of the value, because many projects want an interactive console that behaves like a proper runtime tool instead of a passive text dump.
-- ANSI-aware styling and grid semantics make it possible to reuse familiar console-oriented output formats while still keeping them inside the engine's own rendering and interaction model.
-- It is especially valuable when a project needs command-driven introspection, because prompts, completions, and history can expose structured controls without building a separate debug UI for every task.
-- Systems can feed or consume text, but `terminal` owns how that interaction becomes an editable, navigable, character-grid surface.
-- Read `terminal` as the owner of interactive text-grid behavior inside the engine.
-
+- It treats terminal behavior as an actual interface model rather than as plain text drawing: cells, ANSI parsing, completion, highlighting, editing state, prompt handling, and render helpers cooperate under one system.
+- That matters because terminal-like surfaces need cursor movement, history, navigation, scrollback, and structured command input, not only glyph output.
+- The grid model gives the module a clear role distinct from ordinary widget UI and makes it suitable for dense dashboards, shells, ASCII-heavy views, and trace-oriented tooling.
+- Completion, highlighting, prompt handling, and command history make the feature practical for live developer tools as well as for player-facing interfaces that rely on typed interaction.
+- The same surface also gives projects a natural place for aligned textual diagnostics, command-driven introspection, and replayable console workflows without building a separate debug UI for every task.
+- Cursor-aware editing and scrollback behavior are part of that value too, because terminal surfaces usually need to behave like interactive text tools rather than passive output panes.
+- ANSI parsing and style-aware cells broaden the feature from a retro display into a practical runtime console that can show logs, structured status, highlighted feedback, or shell-like results without abandoning the grid model.
+- The module is therefore useful for debug consoles, roguelike views, dashboards, and embedded command panels.
+- That makes it especially strong when text itself is the interface instead of only the output format.
+- Systems can feed or consume text, but `terminal` owns how that interaction becomes an editable, navigable, scrollable, character-grid runtime surface.
 
 ## Imports
 

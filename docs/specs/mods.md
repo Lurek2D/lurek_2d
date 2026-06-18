@@ -16,15 +16,14 @@
 
 ## Summary
 
-- The `mods` module is the mod-loading and capability-governance surface for users who want external content packs to behave like controlled runtime extensions instead of unrestricted code drops.
+- The `mods` module is the governed extension surface for projects that want external content packs to behave like controlled runtime extensions instead of unrestricted code drops.
 - Schemas, registries, loaders, managers, and sandbox rules work together so mod content can be discovered, validated, ordered, and constrained under one lifecycle.
-- That matters because a real mod workflow needs more than file loading: projects also need dependency sorting, manifest metadata, capability boundaries, and controlled reload behavior.
-- The module is useful both for shipped player-facing mod ecosystems and for internal extension-style content workflows during development.
-- Capability governance is the key policy idea here. The module exists so external content can be powerful without becoming arbitrary unrestricted code or data access.
-- Dependency and reload semantics are equally important because modded projects need predictable ordering and recoverable iteration, not just a best-effort folder scan.
-- It also gives teams a place to express trust policy explicitly, which is important when user content should extend the game without silently inheriting every engine capability.
-- Read `mods` as the runtime policy layer for modded content. Filesystem and runtime systems provide underlying capabilities, but `mods` decides how external content is described, admitted, isolated, and managed.
-
+- Real mod workflows need more than file loading: projects also need dependency sorting, manifest metadata, capability boundaries, reload behavior, and explicit trust policy.
+- That policy layer is the main reason the module exists, because external content can be powerful without automatically receiving unrestricted code or data access.
+- The same system is useful for shipped player-facing mod ecosystems and for internal extension-style content workflows during development.
+- Controlled reload behavior and dependency ordering are especially important because modded projects need predictable iteration, recoverable startup, and explicit load precedence rather than a best-effort folder scan.
+- It keeps mod power visible, explicit, and reviewable.
+- Read `mods` as the runtime policy layer for modded content: filesystem and runtime systems provide capabilities, but `mods` decides how external content is described, admitted, isolated, and managed.
 
 ## Imports
 

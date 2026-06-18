@@ -19,24 +19,22 @@
 
 ## Summary
 
-- The `physics` module is the engine's 2D simulation authority for users who want motion, contact, shapes, joints, and collision queries to live inside one consistent world model instead of several unrelated helper systems.
-- Bodies, colliders, forces, terrain, joints, sensors, and collision layers all belong to the same simulation step, which makes movement and contact rules coherent across the engine.
+- The `physics` module is the engine's 2D simulation authority for users who want motion, contact, shapes, joints, and collision queries to live inside one consistent world model.
+- Bodies, colliders, forces, terrain, joints, sensors, and collision layers all belong to the same simulation step, which keeps movement and contact rules coherent across the engine.
 - The module supports dynamic, static, kinematic, and sensor-style roles so projects can mix actors, level geometry, triggers, platforms, and detection-only regions inside one physical space without switching subsystems.
-- This matters because practical game physics is rarely only about spawning bodies. Scripts also need to ask what overlaps what, where a sweep stops, which contacts are active, and how constraints or terrain affect motion over time.
-- Query support is therefore as important as simulation support. Raycasts, overlap checks, shape queries, sweep-style tests, and contact-oriented inspection let gameplay ask the physics world questions instead of only pushing bodies through it.
-- Shape support gives the system expressive range. Different collider forms and geometry choices let projects model characters, bullets, walls, pickups, platforms, and area effects with semantics that match their role.
-- Joint support matters because many worlds contain articulated or coupled behavior such as doors, hinges, chains, levers, and linked mechanisms rather than only isolated bodies.
-- Terrain integration extends the module beyond free-floating rigid objects. Many games need stable collision against authored ground, ramps, tile-derived obstacles, or other environment shapes, and the module keeps those interactions inside the same contact authority.
-- Contact information is one of the most important user-facing outputs. When things touch, systems often need normals, hit points, and begin/end-style state changes so gameplay can react meaningfully.
-- The module is therefore useful not only for passive simulation but also for explanation. A script can ask why motion stopped, what was hit, or what region a body is currently interacting with and get answers from the same spatial authority.
-- This makes `physics` a natural backbone for grounded movement, projectile logic, puzzle machinery, hazards, and any feature where authoritative 2D contact semantics matter more than ad hoc coordinate math.
-- Simulation progression over time is part of the contract too. Other systems can synchronize against the step loop because the module owns world advancement rules instead of leaving each feature to approximate them.
-- That shared step authority is what lets several systems trust the same answers about position, collision, and contact state instead of drifting into parallel approximations.
-- The module also keeps filtering and response policy close to world state, which helps projects express what should block, trigger, slide, or ignore contact without inventing separate spatial rule systems.
-- Debug visualization is a core capability because collision and tuning mistakes are much easier to fix when shapes, contacts, joints, sensors, and query paths can be inspected directly.
+- Practical physics also depends on querying the world, not only advancing it. Raycasts, overlap checks, sweep-style tests, and contact inspection let gameplay ask what was hit, what overlaps, and why motion changed.
+- Shape support, terrain integration, and joints give the system expressive range for characters, bullets, walls, pickups, hazards, linked mechanisms, and authored environment collision.
+- Contact data is one of the main user-facing outputs because systems often need normals, hit points, and begin or end state changes to react meaningfully.
+- That query surface is a major part of the module's identity. Many gameplay features care less about rigid-body theory than about dependable answers to questions such as where movement will stop, whether a region is occupied, what a sensor can currently detect, or which body pair produced a specific contact event.
+- The module therefore acts as both simulator and spatial authority. It advances bodies through time, but it also explains the world back to scripts in terms of overlaps, hits, filters, material response, joints, and collision-layer policy.
+- Terrain support matters because a large share of game physics is really about how actors relate to authored space. Ground, ramps, tile-derived obstacles, one-way behavior, ledges, and sensor volumes all need to participate in the same contact model or movement quickly becomes inconsistent.
+- Joints and constraints extend the feature beyond isolated bodies into coupled systems such as hinges, chains, levers, suspended loads, doors, and puzzle machinery. Without that layer, several gameplay designs would need bespoke approximations instead of sharing engine-owned physical semantics.
+- Filtering rules are equally important because not every shape should collide, trigger, block, or report in the same way. Keeping collision layers and response policy near world state lets projects express interaction rules explicitly rather than hiding them in scattered caller-side checks.
+- Debug visualization is not just a convenience but a necessary part of the contract because collision tuning mistakes are difficult to reason about from code alone. Seeing shapes, sensors, normals, joints, and query paths turns the simulation into something inspectable instead of opaque.
+- This makes `physics` especially important for grounded locomotion, projectile travel, hazard interaction, puzzle systems, traversal mechanics, and any design where contact semantics are part of gameplay rather than an incidental backend.
+- The shared step loop gives other systems one trusted spatial authority for grounded movement, projectiles, puzzle machinery, and hazards instead of several drifting approximations.
+- That authority is what lets gameplay, tools, and effects ask the same world-state questions without maintaining parallel collision logic.
 - Other systems consume the results, but `physics` owns the source of truth for what counts as solid, colliding, constrained, or detectable in 2D space.
-- Read `physics` as the owner of motion and collision semantics for the engine's physical world.
-
 
 ## Imports
 

@@ -18,8 +18,7 @@
 
 - The `repl` module is the interactive evaluation surface for users who want to inspect or execute Lua code live inside a running engine context.
 - Session state, commands, completion, and value rendering work together so ad hoc evaluation feels like a usable runtime console instead of a raw `eval` hook.
-- Read it as the runtime console boundary. Other modules expose state worth inspecting, but `repl` owns how that state is queried, evaluated, formatted, and returned.
-
+- Read it as the runtime console boundary. `repl` owns how state is queried, evaluated, formatted, and returned.
 
 ## Imports
 

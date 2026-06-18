@@ -18,17 +18,16 @@
 ## Summary
 
 - The `input` module is the engine's unified control surface for users who need keyboard, mouse, gamepad, and touch state to behave as one coherent runtime system.
-- Its primary job is normalization. Device-specific events become stable engine-side state so scripts can ask about buttons, axes, touches, combos, and actions through one consistent vocabulary.
+- Its main job is normalization. Device-specific events become stable engine-side state so scripts can ask about buttons, axes, touches, combos, and actions through one consistent vocabulary.
 - Per-frame snapshots matter because gameplay, UI, replays, and tools all need deterministic control state rather than raw transient platform events.
 - Action mapping, rebinding, presets, and conflict handling are central because real projects care about intent and user-configurable schemes more than about hardwired physical keys.
-- This is important for both player-facing accessibility and internal tooling, since several devices or bindings may need to express the same logical action under explicit precedence rules.
-- Mouse, pointer, touch, and compound input remain part of the same model, which keeps interaction semantics consistent across different device families.
-- Recording and playback make the module useful for debugging, tests, automation, and deterministic repro workflows as well as for live play.
-- Replay support matters because input is often the cleanest representation of what happened in a failing run or a scripted demonstration.
-- Normalization also protects higher-level systems from platform detail churn. UI and gameplay code can ask for stable actions instead of reinventing per-device handling each time a new interaction surface appears.
+- Mouse, pointer, touch, and compound input remain part of the same model, which keeps interaction semantics consistent across device families and helps accessibility layers share the same action surface.
+- Recording and playback make the module useful for debugging, tests, automation, tutorials, and deterministic repro workflows as well as for live play.
+- That normalization layer protects higher-level systems from platform detail churn. Gameplay and UI code can ask for stable actions instead of reinventing per-device handling every time a new device family or interaction surface appears.
+- Rebinding is especially important because modern projects often need several physical inputs to express the same logical action under explicit precedence, accessibility, or user-preference rules.
+- Input capture and replay also make the module one of the cleanest sources of truth for what happened during a failing run, a scripted demonstration, or a tool-driven automation pass.
+- The result is a surface that serves players, tools, and tests at the same time: it turns noisy device events into deterministic, serializable, reusable intent.
 - Other systems consume the result, but `input` owns normalization, mapping, serialization, and replay semantics for device-originated intent.
-- Read `input` as the authority for how physical interaction becomes stable game-facing and tool-facing control state.
-
 
 ## Imports
 

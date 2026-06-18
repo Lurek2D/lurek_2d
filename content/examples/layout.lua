@@ -2,6 +2,14 @@
 --- @desc Tree, DAG, and force-directed layouts for node positioning.
 
 -- Define nodes
+local function example_print_log(...)
+    local parts = {}
+    for i = 1, select("#", ...) do
+        parts[i] = tostring(select(i, ...))
+    end
+    lurek.log.info(table.concat(parts, " "))
+end
+
 --@api: lurek.layout.tree
 do
     local nodes = {
@@ -17,9 +25,9 @@ do
         vSpacing = 90,
         margin = 20,
     })
-    print("tree nodes = " .. #result.nodes)
-    print("tree size = " .. result.width .. "x" .. result.height)
-    print("root x = " .. result.nodes[1].x)
+    example_print_log("tree nodes = " .. #result.nodes)
+    example_print_log("tree size = " .. result.width .. "x" .. result.height)
+    example_print_log("root x = " .. result.nodes[1].x)
 end
 
 --@api: lurek.layout.dag
@@ -38,9 +46,9 @@ do
         vSpacing = 100,
         margin = 24,
     })
-    print("dag nodes = " .. #result.nodes)
-    print("dag size = " .. result.width .. "x" .. result.height)
-    print("node 2 y = " .. result.nodes[2].y)
+    example_print_log("dag nodes = " .. #result.nodes)
+    example_print_log("dag size = " .. result.width .. "x" .. result.height)
+    example_print_log("node 2 y = " .. result.nodes[2].y)
 end
 
 --@api: lurek.layout.force
@@ -62,9 +70,9 @@ do
         areaWidth = 400,
         areaHeight = 300,
     })
-    print("force nodes = " .. #result.nodes)
-    print("force size = " .. result.width .. "x" .. result.height)
-    print("node 1 pos = " .. result.nodes[1].x .. "," .. result.nodes[1].y)
+    example_print_log("force nodes = " .. #result.nodes)
+    example_print_log("force size = " .. result.width .. "x" .. result.height)
+    example_print_log("node 1 pos = " .. result.nodes[1].x .. "," .. result.nodes[1].y)
 end
 
 --@api: lurek.layout.snapToGrid
@@ -76,9 +84,9 @@ do
         },
     }
     local snapped = lurek.layout.snapToGrid(result, 16)
-    print("snapped nodes = " .. #snapped.nodes)
-    print("node 1 = " .. snapped.nodes[1].x .. "," .. snapped.nodes[1].y)
-    print("node 2 = " .. snapped.nodes[2].x .. "," .. snapped.nodes[2].y)
+    example_print_log("snapped nodes = " .. #snapped.nodes)
+    example_print_log("node 1 = " .. snapped.nodes[1].x .. "," .. snapped.nodes[1].y)
+    example_print_log("node 2 = " .. snapped.nodes[2].x .. "," .. snapped.nodes[2].y)
 end
 
 --@api: lurek.layout.centerInArea
@@ -90,7 +98,7 @@ do
         },
     }
     local centered = lurek.layout.centerInArea(result, 400, 300)
-    print("centered nodes = " .. #centered.nodes)
-    print("node 1 x = " .. centered.nodes[1].x)
-    print("layout height = " .. centered.height)
+    example_print_log("centered nodes = " .. #centered.nodes)
+    example_print_log("node 1 x = " .. centered.nodes[1].x)
+    example_print_log("layout height = " .. centered.height)
 end

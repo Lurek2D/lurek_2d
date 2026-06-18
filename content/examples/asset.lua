@@ -15,46 +15,54 @@ local PATH_BIN    = "content/examples/assets/audio/sample_tone.wav"
 -- LOAD / UNLOAD  (text-like types read content; binary types store path ref)
 -- ─────────────────────────────────────────────────────────────────────────────
 
+local function example_print_log(...)
+    local parts = {}
+    for i = 1, select("#", ...) do
+        parts[i] = tostring(select(i, ...))
+    end
+    lurek.log.info(table.concat(parts, " "))
+end
+
 --@api: lurek.asset.load
 do
     -- Minimal load: text type reads file content immediately.
     local h = lurek.asset.load(PATH_TEXT, "text")
-    print("loaded: " .. h:type())
+    example_print_log("loaded: " .. h:type())
     lurek.asset.unload(h)
 
     -- load type=toml
     local ht = lurek.asset.load(PATH_TOML, "toml")
-    print("toml loaded: " .. tostring(lurek.asset.isLoaded(ht)))
+    example_print_log("toml loaded: " .. tostring(lurek.asset.isLoaded(ht)))
     lurek.asset.unload(ht)
 
     -- load type=json
     local hj = lurek.asset.load(PATH_JSON, "json")
-    print("json loaded: " .. tostring(lurek.asset.isLoaded(hj)))
+    example_print_log("json loaded: " .. tostring(lurek.asset.isLoaded(hj)))
     lurek.asset.unload(hj)
 
     -- load type=lua
     local hl = lurek.asset.load(PATH_LUA, "lua")
-    print("lua loaded: " .. tostring(lurek.asset.isLoaded(hl)))
+    example_print_log("lua loaded: " .. tostring(lurek.asset.isLoaded(hl)))
     lurek.asset.unload(hl)
 
     -- load type=shader
     local hs = lurek.asset.load(PATH_SHADER, "shader")
-    print("shader loaded: " .. tostring(lurek.asset.isLoaded(hs)))
+    example_print_log("shader loaded: " .. tostring(lurek.asset.isLoaded(hs)))
     lurek.asset.unload(hs)
 
     -- load type=obj (any text file works for raw OBJ geometry)
     local ho = lurek.asset.load(PATH_OBJ, "obj")
-    print("obj loaded: " .. tostring(lurek.asset.isLoaded(ho)))
+    example_print_log("obj loaded: " .. tostring(lurek.asset.isLoaded(ho)))
     lurek.asset.unload(ho)
 
     -- load type=music (binary path reference only; no file content cached)
     local hm = lurek.asset.load(PATH_BIN, "music")
-    print("music loaded: " .. tostring(lurek.asset.isLoaded(hm)))
+    example_print_log("music loaded: " .. tostring(lurek.asset.isLoaded(hm)))
     lurek.asset.unload(hm)
 
     -- load type=audio (same as music but semantically a sound effect)
     local ha = lurek.asset.load(PATH_BIN, "audio")
-    print("audio loaded: " .. tostring(lurek.asset.isLoaded(ha)))
+    example_print_log("audio loaded: " .. tostring(lurek.asset.isLoaded(ha)))
     lurek.asset.unload(ha)
 
     -- load with opts: name, group, and tags supplied inline.
@@ -63,17 +71,20 @@ do
         group = "project",
         tags  = {"config", "meta"},
     })
-    print("name="  .. lurek.asset.getName(h))
-    print("group=" .. lurek.asset.getGroup(h))
-    print("hasTag config=" .. tostring(lurek.asset.hasTag(h, "config")))
+    example_print_log("name="  .. lurek.asset.getName(h))
+    example_print_log("group=" .. lurek.asset.getGroup(h))
+    example_print_log("hasTag config=" .. tostring(lurek.asset.hasTag(h, "config")))
     lurek.asset.unload(h)
 end
 
 --@api: lurek.asset.unload
 do
     local h = lurek.asset.load(PATH_TEXT, "text")
+    local before = lurek.asset.isLoaded(h)
     lurek.asset.unload(h)
-    print("unloaded, isLoaded=" .. tostring(lurek.asset.isLoaded(h)))
+    local after = lurek.asset.isLoaded(h)
+    example_print_log("loaded before unload=" .. tostring(before))
+    example_print_log("unloaded, isLoaded=" .. tostring(after))
 end
 
 --@api: lurek.asset.get
@@ -81,13 +92,13 @@ do
     -- get() for text-like types returns cached file content as a string.
     local h = lurek.asset.load(PATH_TEXT, "text")
     local content = lurek.asset.get(h)
-    print("content length=" .. tostring(type(content) == "string" and #content or 0))
+    example_print_log("content length=" .. tostring(type(content) == "string" and #content or 0))
     lurek.asset.unload(h)
 
     -- get() for toml returns the raw TOML source.
     local ht = lurek.asset.load(PATH_TOML, "toml")
     local toml_src = lurek.asset.get(ht)
-    print("toml source length=" .. #toml_src)
+    example_print_log("toml source length=" .. #toml_src)
     lurek.asset.unload(ht)
 end
 
@@ -105,7 +116,7 @@ do
             if loaded ~= nil then
                 table.insert(results, loaded .. "/" .. tostring(total))
             else
-                print("preload done: " .. table.concat(results, ", "))
+                example_print_log("preload done: " .. table.concat(results, ", "))
             end
         end
     )
@@ -115,16 +126,22 @@ end
 --@api: lurek.asset.refcount
 do
     local h = lurek.asset.load(PATH_TEXT, "text")
-    print("refcount=" .. lurek.asset.refcount(h))
+    local before = lurek.asset.refcount(h)
+    local same = lurek.asset.load(PATH_TEXT, "text")
+    example_print_log("refcount before duplicate load=" .. before)
+    example_print_log("refcount after duplicate load=" .. lurek.asset.refcount(same))
     lurek.asset.unload(h)
+    lurek.asset.unload(same)
 end
 
 --@api: lurek.asset.isLoaded
 do
     local h = lurek.asset.load(PATH_TEXT, "text")
-    print("isLoaded=" .. tostring(lurek.asset.isLoaded(h)))
+    local loaded_before = lurek.asset.isLoaded(h)
     lurek.asset.unload(h)
-    print("isLoaded after unload=" .. tostring(lurek.asset.isLoaded(h)))
+    local loaded_after = lurek.asset.isLoaded(h)
+    example_print_log("isLoaded before unload=" .. tostring(loaded_before))
+    example_print_log("isLoaded after unload=" .. tostring(loaded_after))
 end
 
 --@api: lurek.asset.stats
@@ -134,18 +151,21 @@ do
     local h2 = lurek.asset.load(PATH_TOML,   "toml",   {group = "data"})
     local h3 = lurek.asset.load(PATH_SHADER, "shader", {group = "gfx"})
     local s = lurek.asset.stats()
-    print("loaded="     .. s.loaded)
-    print("total_refs=" .. s.total_refs)
-    print("json count=" .. tostring(s.types.json))
-    print("groups="     .. #s.groups)   -- 2 unique groups: "data" and "gfx"
+    example_print_log("loaded="     .. s.loaded)
+    example_print_log("total_refs=" .. s.total_refs)
+    example_print_log("json count=" .. tostring(s.types.json))
+    example_print_log("groups="     .. #s.groups)   -- 2 unique groups: "data" and "gfx"
     lurek.asset.clear()
 end
 
 --@api: lurek.asset.clear
 do
-    lurek.asset.load(PATH_TEXT, "text")
+    lurek.asset.load(PATH_TEXT, "text", { group = "temp" })
+    lurek.asset.load(PATH_JSON, "json", { group = "temp" })
+    local before = lurek.asset.stats()
     lurek.asset.clear()
-    print("after clear loaded=" .. lurek.asset.stats().loaded)
+    local after = lurek.asset.stats()
+    example_print_log("clear removed loaded=" .. before.loaded .. " -> " .. after.loaded)
 end
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -155,18 +175,21 @@ end
 --@api: lurek.asset.getPath
 do
     local h = lurek.asset.load(PATH_TOML, "toml")
-    print("path=" .. lurek.asset.getPath(h))
+    local path = lurek.asset.getPath(h)
+    local type_name = lurek.asset.getType(h)
+    example_print_log("path=" .. path)
+    example_print_log("type for path lookup=" .. type_name)
     lurek.asset.unload(h)
 end
 
 --@api: lurek.asset.getType
 do
     local h = lurek.asset.load(PATH_TOML, "toml")
-    print("type=" .. lurek.asset.getType(h))   -- "toml"
+    example_print_log("type=" .. lurek.asset.getType(h))   -- "toml"
     lurek.asset.unload(h)
 
     local hm = lurek.asset.load(PATH_BIN, "music")
-    print("music type=" .. lurek.asset.getType(hm))  -- "music"
+    example_print_log("music type=" .. lurek.asset.getType(hm))  -- "music"
     lurek.asset.unload(hm)
 end
 
@@ -178,12 +201,12 @@ do
         tags  = {"config", "ui"},
     })
     local info = lurek.asset.getInfo(h)
-    print("info.path="     .. info.path)
-    print("info.type="     .. info.type)
-    print("info.name="     .. info.name)
-    print("info.group="    .. info.group)
-    print("info.refcount=" .. info.refcount)
-    print("info.tags[1]="  .. tostring(info.tags[1]))
+    example_print_log("info.path="     .. info.path)
+    example_print_log("info.type="     .. info.type)
+    example_print_log("info.name="     .. info.name)
+    example_print_log("info.group="    .. info.group)
+    example_print_log("info.refcount=" .. info.refcount)
+    example_print_log("info.tags[1]="  .. tostring(info.tags[1]))
     lurek.asset.unload(h)
 end
 
@@ -194,8 +217,11 @@ end
 --@api: lurek.asset.setName
 do
     local h = lurek.asset.load(PATH_JSON, "json")
+    example_print_log("name before=" .. lurek.asset.getName(h))
     lurek.asset.setName(h, "font_atlas")
-    print("setName → " .. lurek.asset.getName(h))
+    local named = lurek.asset.findByName("font")
+    example_print_log("setName → " .. lurek.asset.getName(h))
+    example_print_log("findByName font count=" .. #named)
     lurek.asset.unload(h)
 end
 
@@ -203,26 +229,29 @@ end
 do
     local h = lurek.asset.load(PATH_TOML, "toml")
     -- No explicit name: getName returns the path file-stem ("Cargo").
-    print("getName (stem)=" .. lurek.asset.getName(h))
+    example_print_log("getName (stem)=" .. lurek.asset.getName(h))
     lurek.asset.setName(h, "project_config")
-    print("getName (set)=" .. lurek.asset.getName(h))
+    example_print_log("getName (set)=" .. lurek.asset.getName(h))
     lurek.asset.unload(h)
 end
 
 --@api: lurek.asset.setGroup
 do
     local h = lurek.asset.load(PATH_JSON, "json")
+    example_print_log("group before=" .. lurek.asset.getGroup(h))
     lurek.asset.setGroup(h, "level_1")
-    print("setGroup → " .. lurek.asset.getGroup(h))
+    local grouped = lurek.asset.findByGroup("level_1")
+    example_print_log("findByGroup level_1 count=" .. #grouped)
+    example_print_log("setGroup → " .. lurek.asset.getGroup(h))
     lurek.asset.unload(h)
 end
 
 --@api: lurek.asset.getGroup
 do
     local h = lurek.asset.load(PATH_JSON, "json")
-    print("getGroup (unset)=" .. lurek.asset.getGroup(h))   -- ""
+    example_print_log("getGroup (unset)=" .. lurek.asset.getGroup(h))   -- ""
     lurek.asset.setGroup(h, "hud")
-    print("getGroup (set)=" .. lurek.asset.getGroup(h))
+    example_print_log("getGroup (set)=" .. lurek.asset.getGroup(h))
     lurek.asset.unload(h)
 end
 
@@ -235,7 +264,7 @@ do
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.addTag(h, "config")
     lurek.asset.addTag(h, "ui")
-    print("hasTag config=" .. tostring(lurek.asset.hasTag(h, "config")))
+    example_print_log("hasTag config=" .. tostring(lurek.asset.hasTag(h, "config")))
     lurek.asset.unload(h)
 end
 
@@ -244,8 +273,8 @@ do
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.addTag(h, "temp")
     local removed = lurek.asset.removeTag(h, "temp")
-    print("removeTag returned=" .. tostring(removed))
-    print("hasTag after remove=" .. tostring(lurek.asset.hasTag(h, "temp")))
+    example_print_log("removeTag returned=" .. tostring(removed))
+    example_print_log("hasTag after remove=" .. tostring(lurek.asset.hasTag(h, "temp")))
     lurek.asset.unload(h)
 end
 
@@ -255,7 +284,7 @@ do
     lurek.asset.addTag(h, "sfx")
     lurek.asset.addTag(h, "level_1")
     local tags = lurek.asset.getTags(h)
-    print("tag count=" .. #tags)
+    example_print_log("tag count=" .. #tags)
     lurek.asset.unload(h)
 end
 
@@ -263,8 +292,8 @@ end
 do
     local h = lurek.asset.load(PATH_JSON, "json")
     lurek.asset.addTag(h, "enemy")
-    print("hasTag enemy=" .. tostring(lurek.asset.hasTag(h, "enemy")))
-    print("hasTag boss="  .. tostring(lurek.asset.hasTag(h, "boss")))
+    example_print_log("hasTag enemy=" .. tostring(lurek.asset.hasTag(h, "enemy")))
+    example_print_log("hasTag boss="  .. tostring(lurek.asset.hasTag(h, "boss")))
     lurek.asset.unload(h)
 end
 
@@ -281,9 +310,9 @@ do
 
     -- Substring search is case-insensitive.
     local matches = lurek.asset.findByName("config")
-    print("findByName 'config' count=" .. #matches)  -- 1
+    example_print_log("findByName 'config' count=" .. #matches)  -- 1
     local shader_matches = lurek.asset.findByName("province")
-    print("findByName 'province' count=" .. #shader_matches)  -- 1
+    example_print_log("findByName 'province' count=" .. #shader_matches)  -- 1
     lurek.asset.clear()
 end
 
@@ -295,9 +324,9 @@ do
     local h3 = lurek.asset.load(PATH_SHADER, "shader", {group = "gfx"})
 
     local ui = lurek.asset.findByGroup("ui")
-    print("findByGroup 'ui' count=" .. #ui)   -- 2
+    example_print_log("findByGroup 'ui' count=" .. #ui)   -- 2
     local gfx = lurek.asset.findByGroup("gfx")
-    print("findByGroup 'gfx' count=" .. #gfx) -- 1
+    example_print_log("findByGroup 'gfx' count=" .. #gfx) -- 1
     lurek.asset.clear()
 end
 
@@ -312,9 +341,9 @@ do
     lurek.asset.addTag(h3, "gfx")
 
     local config = lurek.asset.findByTag("config")
-    print("findByTag 'config' count=" .. #config)  -- 2
+    example_print_log("findByTag 'config' count=" .. #config)  -- 2
     local gfx = lurek.asset.findByTag("gfx")
-    print("findByTag 'gfx' count=" .. #gfx)        -- 1
+    example_print_log("findByTag 'gfx' count=" .. #gfx)        -- 1
     lurek.asset.clear()
 end
 
@@ -327,11 +356,11 @@ do
     local h4 = lurek.asset.load(PATH_SHADER, "shader")
     local h5 = lurek.asset.load(PATH_BIN,    "music")
 
-    print("findByType 'toml' count="   .. #lurek.asset.findByType("toml"))    -- 2
-    print("findByType 'json' count="   .. #lurek.asset.findByType("json"))    -- 1
-    print("findByType 'shader' count=" .. #lurek.asset.findByType("shader"))  -- 1
-    print("findByType 'music' count="  .. #lurek.asset.findByType("music"))   -- 1
-    print("findByType 'audio' count="  .. #lurek.asset.findByType("audio"))   -- 0
+    example_print_log("findByType 'toml' count="   .. #lurek.asset.findByType("toml"))    -- 2
+    example_print_log("findByType 'json' count="   .. #lurek.asset.findByType("json"))    -- 1
+    example_print_log("findByType 'shader' count=" .. #lurek.asset.findByType("shader"))  -- 1
+    example_print_log("findByType 'music' count="  .. #lurek.asset.findByType("music"))   -- 1
+    example_print_log("findByType 'audio' count="  .. #lurek.asset.findByType("audio"))   -- 0
     lurek.asset.clear()
 end
 
@@ -342,15 +371,18 @@ end
 --@api: LAssetHandle:type
 do
     local h = lurek.asset.load(PATH_TEXT, "text")
-    print("type=" .. h:type())                    -- "LAssetHandle"
+    local type_name = h:type()
+    local same_type = h:typeOf(type_name)
+    example_print_log("type=" .. type_name)
+    example_print_log("type matches handle=" .. tostring(same_type))
     lurek.asset.unload(h)
 end
 
 --@api: LAssetHandle:typeOf
 do
     local h = lurek.asset.load(PATH_TEXT, "text")
-    print("typeOf LAssetHandle=" .. tostring(h:typeOf("LAssetHandle")))
-    print("typeOf LObject="      .. tostring(h:typeOf("LObject")))
-    print("typeOf other="        .. tostring(h:typeOf("other")))
+    example_print_log("typeOf LAssetHandle=" .. tostring(h:typeOf("LAssetHandle")))
+    example_print_log("atlas slice count=" .. tostring(h:getSliceCount()))
+    example_print_log("typeOf other="        .. tostring(h:typeOf("other")))
     lurek.asset.unload(h)
 end

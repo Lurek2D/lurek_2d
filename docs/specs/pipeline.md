@@ -18,15 +18,15 @@
 
 ## Summary
 
-- The `pipeline` module is the engine's workflow-orchestration surface for users who want multi-step processing to behave like explicit directed workflows instead of like loosely nested call sequences.
-- Its core value is that staged work becomes data. Steps, dependencies, scheduler policy, inputs, outputs, and result handling can be represented and advanced as pipeline state rather than being hidden inside bespoke control flow.
-- DAG structure matters because many real workflows are dependency-aware rather than purely linear. Some work can happen only after prerequisite steps complete, while other work may run in parallel or branch according to upstream results.
-- This makes the module useful for asset processing, validation chains, analytics jobs, build-like tasks, scripted tool workflows, content transforms, and any other domain where several operations must be coordinated explicitly.
-- Scheduler logic is important because a pipeline is not only about storing steps; it is also about deciding when those steps are eligible, blocked, complete, or failed.
+- The `pipeline` module is the engine's workflow-orchestration surface for users who want multi-step processing to behave like explicit directed workflows instead of loosely nested call sequences.
+- Its core value is that staged work becomes data. Steps, dependencies, scheduler policy, inputs, outputs, and result handling can be represented and advanced as pipeline state rather than hidden inside bespoke control flow.
+- DAG structure matters because many real workflows are dependency-aware rather than purely linear: some work can run only after prerequisites complete, while other work may branch, fan out, or proceed in parallel.
+- That makes the module useful for asset processing, validation chains, analytics jobs, build-like tasks, scripted tool workflows, content transforms, and other domains where several operations must be coordinated explicitly.
+- Scheduler logic is important because a pipeline must decide when steps are eligible, blocked, complete, retried, or failed instead of merely storing a list of actions.
 - Result handling matters for the same reason. Multi-step workflows usually need explicit output capture, pass-through state, intermediate artifacts, and error-aware progression rather than simple immediate returns.
-- The pipeline model gives users a stable vocabulary for reasoning about work as stages instead of accidental nested call structure.
+- Tool-facing workflows benefit when those stages stay inspectable instead of becoming a black box.
+- The module therefore gives users a stable vocabulary for reasoning about staged work, dependency flow, and execution state instead of accidental nested control structure.
 - Read `pipeline` as the engine feature for explicit staged workflows with clear execution semantics.
-
 
 ## Imports
 

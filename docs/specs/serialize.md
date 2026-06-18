@@ -19,12 +19,11 @@
 
 - The `serialize` module is the format-translation surface for users who want several external data formats to map into one shared runtime value model.
 - JSON, TOML, CSV, XML, INI, MessagePack, schemas, and codec entrypoints all matter here because a project often needs to move content between several representations without rewriting conversion logic each time.
-- The module is useful both for loading or saving data and for validating whether data actually fits the expected structure after translation.
-- Its shared intermediate tree is the key user-facing idea: several formats can participate in the same workflows because they resolve into one common serial representation.
-- That shared representation is what makes cross-format tooling practical. A validator, exporter, or transform step can reason about one normalized value model instead of reimplementing logic for every source format separately.
-- That shared model keeps cross-format validation and conversion workflows in one place.
-- Read `serialize` as the normalization layer for structured data. Other modules decide what the data means, but `serialize` decides how that data is parsed, validated, and emitted across supported formats.
-
+- The module is useful both for loading or saving data and for validating whether translated data actually fits an expected structure.
+- Its shared intermediate tree is the key user-facing idea: several formats can participate in the same workflows because they resolve into one normalized serial representation.
+- That normalized representation is what makes cross-format tooling practical. Validators, exporters, migration steps, and transforms can reason about one value model instead of reimplementing logic for every source format.
+- That also makes migrations easier to reason about.
+- Read `serialize` as the normalization layer for structured data moving between external formats and engine-facing workflows.
 
 ## Imports
 

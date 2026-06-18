@@ -4,52 +4,86 @@
 
 --- Pathfinding Module Part 1: grid pathfinding basics (LPathGrid, LNavGrid)
 
+local function pathfind_log(message)
+    lurek.log.info("[pathfind.example] " .. tostring(message))
+end
+
+local function example_print_log(...)
+    local parts = {}
+    for i = 1, select("#", ...) do
+        parts[i] = tostring(select(i, ...))
+    end
+    lurek.log.info(table.concat(parts, " "))
+end
+
 --@api: lurek.pathfind.newPathGrid
 do
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
+    grid:setWalkable(10, 8, false)
+    local width = grid:getWidth()
+    local height = grid:getHeight()
+    local cell_size = grid:getCellSize()
+    local chokepoint_open = grid:isWalkable(10, 7)
 
-    print("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
-    print("cell_size = " .. grid:getCellSize())
+    pathfind_log("patrol grid = " .. width .. "x" .. height)
+    pathfind_log("patrol cell size = " .. cell_size)
+    pathfind_log("approach tile walkable = " .. tostring(chokepoint_open))
 end
 
 --@api: LPathGrid:setWalkable
 do
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
-
+    grid:setWalkable(6, 7, false)
     grid:setWalkable(5, 5, false)
+    local blocked_gate = grid:isWalkable(5, 5)
+    local flank_route = grid:isWalkable(5, 6)
+    local guard_post = grid:isWalkable(6, 7)
 
-    print("walkable_5_5 = " .. tostring(grid:isWalkable(5, 5)))
-    print("walkable_5_6 = " .. tostring(grid:isWalkable(5, 6)))
+    pathfind_log("main gate open = " .. tostring(blocked_gate))
+    pathfind_log("flank route open = " .. tostring(flank_route))
+    pathfind_log("guard post open = " .. tostring(guard_post))
 end
 
 --@api: LPathGrid:isWalkable
 do
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
-
     grid:setWalkable(4, 4, false)
+    grid:setWalkable(4, 5, true)
+    local tower_cell = grid:isWalkable(4, 4)
+    local stairs_cell = grid:isWalkable(4, 5)
+    local courtyard_cell = grid:isWalkable(5, 5)
 
-    print("walkable_4_4 = " .. tostring(grid:isWalkable(4, 4)))
-    print("walkable_4_5 = " .. tostring(grid:isWalkable(4, 5)))
+    pathfind_log("tower cell walkable = " .. tostring(tower_cell))
+    pathfind_log("stairs cell walkable = " .. tostring(stairs_cell))
+    pathfind_log("courtyard cell walkable = " .. tostring(courtyard_cell))
 end
 
 --@api: LPathGrid:setCost
 do
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
-
+    grid:setCost(3, 2, 2)
     grid:setCost(3, 3, 5)
+    local mud_cost = grid:getCost(3, 3)
+    local road_cost = grid:getCost(3, 2)
+    local plain_cost = grid:getCost(3, 4)
 
-    print("cost_3_3 = " .. grid:getCost(3, 3))
-    print("cost_3_4 = " .. grid:getCost(3, 4))
+    pathfind_log("mud tile cost = " .. mud_cost)
+    pathfind_log("road tile cost = " .. road_cost)
+    pathfind_log("plain tile cost = " .. plain_cost)
 end
 
 --@api: LPathGrid:getCost
 do
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
-
+    grid:setCost(6, 1, 1.5)
     grid:setCost(6, 2, 2.5)
+    local bridge_cost = grid:getCost(6, 2)
+    local lane_cost = grid:getCost(6, 1)
+    local base_cost = grid:getCost(1, 1)
 
-    print("cost_6_2 = " .. grid:getCost(6, 2))
-    print("cost_1_1 = " .. grid:getCost(1, 1))
+    pathfind_log("bridge tile cost = " .. bridge_cost)
+    pathfind_log("lane tile cost = " .. lane_cost)
+    pathfind_log("default tile cost = " .. base_cost)
 end
 
 --@api: LPathGrid:findPath
@@ -63,11 +97,11 @@ do
 
     local path = grid:findPath(1, 1, 10, 10)
     if path then
-        print("steps = " .. #path)
-        print("first = " .. path[1].x .. "," .. path[1].y)
-        print("last = " .. path[#path].x .. "," .. path[#path].y)
+        example_print_log("steps = " .. #path)
+        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
+        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        print("steps = 0")
+        example_print_log("steps = 0")
     end
 end
 
@@ -81,76 +115,112 @@ do
 
     local path = grid:findPathSmoothed(1, 5, 20, 5)
     if path then
-        print("points = " .. #path)
-        print("first = " .. path[1].x .. "," .. path[1].y)
-        print("last = " .. path[#path].x .. "," .. path[#path].y)
+        example_print_log("points = " .. #path)
+        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
+        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        print("points = 0")
+        example_print_log("points = 0")
     end
 end
 
 --@api: LPathGrid:type
 do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
+    grid:setWalkable(3, 3, false)
+    local type_name = grid:type()
+    local width = grid:getWidth()
+    local height = grid:getHeight()
+    local blocked_center = grid:isWalkable(3, 3)
 
-    print("type = " .. grid:type())
+    pathfind_log("path grid type = " .. type_name)
+    pathfind_log("training grid = " .. width .. "x" .. height)
+    pathfind_log("center walkable = " .. tostring(blocked_center))
 end
 
 --@api: LPathGrid:typeOf
 do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
+    grid:setCost(2, 2, 3)
+    local is_path_grid = grid:typeOf("LPathGrid")
+    local is_object = grid:typeOf("LObject")
+    local is_nav_grid = grid:typeOf("LNavGrid")
 
-    print("is_path_grid = " .. tostring(grid:typeOf("LPathGrid")))
-    print("is_object = " .. tostring(grid:typeOf("LObject")))
+    pathfind_log("matches LPathGrid = " .. tostring(is_path_grid))
+    pathfind_log("matches LObject = " .. tostring(is_object))
+    pathfind_log("matches LNavGrid = " .. tostring(is_nav_grid))
 end
 
 --@api: lurek.pathfind.newNavGrid
 do
     local nav = lurek.pathfind.newNavGrid(50, 50)
     local w, h = nav:getDimensions()
+    nav:setBlocked(25, 25, true)
+    local chunk = nav:getChunkSize()
+    local center_blocked = nav:isBlocked(25, 25)
 
-    print("dims = " .. w .. "x" .. h)
-    print("chunk = " .. nav:getChunkSize())
+    pathfind_log("city nav dims = " .. w .. "x" .. h)
+    pathfind_log("default chunk = " .. chunk)
+    pathfind_log("market center blocked = " .. tostring(center_blocked))
 end
 
 --@api: LNavGrid:setBlocked
 do
     local nav = lurek.pathfind.newNavGrid(30, 30)
-
+    nav:fill(1)
     nav:setBlocked(10, 10, true)
+    nav:setBlocked(10, 11, true)
+    local blocked_gate = nav:isBlocked(10, 10)
+    local blocked_corridor = nav:isBlocked(10, 11)
+    local detour_open = nav:isWalkable(11, 10)
 
-    print("blocked_10_10 = " .. tostring(nav:isBlocked(10, 10)))
-    print("cost_10_10 = " .. nav:getCost(10, 10))
+    pathfind_log("main gate blocked = " .. tostring(blocked_gate))
+    pathfind_log("corridor blocked = " .. tostring(blocked_corridor))
+    pathfind_log("detour open = " .. tostring(detour_open))
 end
 
 --@api: LNavGrid:isBlocked
 do
     local nav = lurek.pathfind.newNavGrid(30, 30)
-
+    nav:fill(1)
     nav:setBlocked(12, 12, true)
+    nav:setBlocked(13, 12, true)
+    local barricade = nav:isBlocked(12, 12)
+    local second_barricade = nav:isBlocked(13, 12)
+    local alley = nav:isBlocked(12, 13)
 
-    print("blocked_12_12 = " .. tostring(nav:isBlocked(12, 12)))
-    print("blocked_12_13 = " .. tostring(nav:isBlocked(12, 13)))
+    pathfind_log("barricade = " .. tostring(barricade))
+    pathfind_log("second barricade = " .. tostring(second_barricade))
+    pathfind_log("alley blocked = " .. tostring(alley))
 end
 
 --@api: LNavGrid:setCost
 do
     local nav = lurek.pathfind.newNavGrid(30, 30)
-
+    nav:fill(1)
     nav:setCost(5, 5, 200)
+    nav:setCost(5, 6, 25)
+    local swamp_cost = nav:getCost(5, 5)
+    local path_cost = nav:getCost(5, 6)
+    local swamp_blocked = nav:isBlocked(5, 5)
 
-    print("cost_5_5 = " .. nav:getCost(5, 5))
-    print("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
+    pathfind_log("swamp cost = " .. swamp_cost)
+    pathfind_log("trail cost = " .. path_cost)
+    pathfind_log("swamp blocked = " .. tostring(swamp_blocked))
 end
 
 --@api: LNavGrid:getCost
 do
     local nav = lurek.pathfind.newNavGrid(30, 30)
-
+    nav:fill(1)
     nav:setCost(7, 8, 4)
+    nav:setCost(8, 8, 7)
+    local shallow_water = nav:getCost(7, 8)
+    local deep_water = nav:getCost(8, 8)
+    local dry_ground = nav:getCost(1, 1)
 
-    print("cost_7_8 = " .. nav:getCost(7, 8))
-    print("cost_1_1 = " .. nav:getCost(1, 1))
+    pathfind_log("shallow water cost = " .. shallow_water)
+    pathfind_log("deep water cost = " .. deep_water)
+    pathfind_log("dry ground cost = " .. dry_ground)
 end
 
 --@api: LNavGrid:isWalkable
@@ -160,19 +230,23 @@ do
     nav:fill(1)
     nav:setBlocked(6, 6, true)
 
-    print("walkable_1x1 = " .. tostring(nav:isWalkable(5, 5)))
-    print("walkable_blocked = " .. tostring(nav:isWalkable(6, 6)))
-    print("walkable_2x2 = " .. tostring(nav:isWalkable(5, 5, 2)))
+    example_print_log("walkable_1x1 = " .. tostring(nav:isWalkable(5, 5)))
+    example_print_log("walkable_blocked = " .. tostring(nav:isWalkable(6, 6)))
+    example_print_log("walkable_2x2 = " .. tostring(nav:isWalkable(5, 5, 2)))
 end
 
 --@api: LNavGrid:fill
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
-
     nav:fill(3)
+    nav:setCost(10, 10, 1)
+    local border_cost = nav:getCost(1, 1)
+    local far_corner_cost = nav:getCost(20, 20)
+    local plaza_cost = nav:getCost(10, 10)
 
-    print("cost_1_1 = " .. nav:getCost(1, 1))
-    print("cost_20_20 = " .. nav:getCost(20, 20))
+    pathfind_log("default patrol cost = " .. border_cost)
+    pathfind_log("far corner cost = " .. far_corner_cost)
+    pathfind_log("plaza override cost = " .. plaza_cost)
 end
 
 --@api: LNavGrid:fillRect
@@ -181,46 +255,62 @@ do
 
     nav:fillRect(5, 5, 5, 5, 0)
 
-    print("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
-    print("blocked_10_10 = " .. tostring(nav:isBlocked(10, 10)))
-    print("blocked_11_11 = " .. tostring(nav:isBlocked(11, 11)))
+    example_print_log("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
+    example_print_log("blocked_10_10 = " .. tostring(nav:isBlocked(10, 10)))
+    example_print_log("blocked_11_11 = " .. tostring(nav:isBlocked(11, 11)))
 end
 
 --@api: LNavGrid:setDiagonalMode
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
-
     nav:setDiagonalMode("always")
+    nav:setBlocked(5, 5, true)
+    local mode = nav:getDiagonalMode()
+    local direct_corner = nav:isWalkable(4, 4)
 
-    print("mode = " .. nav:getDiagonalMode())
+    pathfind_log("scout diagonal mode = " .. mode)
+    pathfind_log("corner tile open = " .. tostring(direct_corner))
+    pathfind_log("blocked pivot = " .. tostring(nav:isBlocked(5, 5)))
 end
 
 --@api: LNavGrid:getDiagonalMode
 do
     local nav = lurek.pathfind.newNavGrid(10, 10)
-
     nav:setDiagonalMode("nocornercut")
+    nav:setBlocked(4, 5, true)
+    local mode = nav:getDiagonalMode()
+    local blocked_neighbor = nav:isBlocked(4, 5)
 
-    print("mode = " .. nav:getDiagonalMode())
+    pathfind_log("formation diagonal mode = " .. mode)
+    pathfind_log("blocked neighbor = " .. tostring(blocked_neighbor))
+    pathfind_log("origin walkable = " .. tostring(nav:isWalkable(1, 1)))
 end
 
 --@api: LNavGrid:setChunkSize
 do
     local nav = lurek.pathfind.newNavGrid(100, 100)
-
     nav:setChunkSize(16)
     nav:rebuildAbstract()
+    nav:setBlocked(40, 40, true)
+    local chunk_size = nav:getChunkSize()
+    local blocked_hub = nav:isBlocked(40, 40)
 
-    print("chunk = " .. nav:getChunkSize())
+    pathfind_log("hpa chunk size = " .. chunk_size)
+    pathfind_log("blocked logistics hub = " .. tostring(blocked_hub))
+    pathfind_log("nav width = " .. nav:getWidth())
 end
 
 --@api: LNavGrid:getChunkSize
 do
     local nav = lurek.pathfind.newNavGrid(100, 100)
-
     nav:setChunkSize(12)
+    nav:setBlocked(60, 60, true)
+    local chunk_size = nav:getChunkSize()
+    local dimensions = nav:getWidth() .. "x" .. nav:getHeight()
 
-    print("chunk = " .. nav:getChunkSize())
+    pathfind_log("chunk size = " .. chunk_size)
+    pathfind_log("sector dims = " .. dimensions)
+    pathfind_log("warehouse blocked = " .. tostring(nav:isBlocked(60, 60)))
 end
 
 --@api: LNavGrid:rebuildAbstract
@@ -230,8 +320,8 @@ do
     nav:setChunkSize(8)
     nav:rebuildAbstract()
 
-    print("chunk = " .. nav:getChunkSize())
-    print("blocked_1_1 = " .. tostring(nav:isBlocked(1, 1)))
+    example_print_log("chunk = " .. nav:getChunkSize())
+    example_print_log("blocked_1_1 = " .. tostring(nav:isBlocked(1, 1)))
 end
 
 --@api: LNavGrid:findHpaPath
@@ -240,8 +330,8 @@ do
     nav:setChunkSize(4)
     nav:rebuildAbstract()
     local path = nav:findHpaPath(1, 1, 16, 16, 1)
-    print("hpa path exists = " .. tostring(path ~= nil))
-    print("hpa path len = " .. tostring(path and #path or 0))
+    example_print_log("hpa path exists = " .. tostring(path ~= nil))
+    example_print_log("hpa path len = " .. tostring(path and #path or 0))
 end
 
 --@api: LNavGrid:setDirty
@@ -254,8 +344,8 @@ do
     nav:setDirty(20, 20, 10, 10)
     nav:rebuildAbstract()
 
-    print("blocked_25_25 = " .. tostring(nav:isBlocked(25, 25)))
-    print("chunk = " .. nav:getChunkSize())
+    example_print_log("blocked_25_25 = " .. tostring(nav:isBlocked(25, 25)))
+    example_print_log("chunk = " .. nav:getChunkSize())
 end
 
 --@api: LNavGrid:clearDirty
@@ -267,7 +357,7 @@ do
     nav:clearDirty()
     nav:rebuildAbstract()
 
-    print("chunk = " .. nav:getChunkSize())
+    example_print_log("chunk = " .. nav:getChunkSize())
 end
 
 --@api: LNavGrid:saveToString
@@ -279,8 +369,8 @@ do
 
     local data = nav:saveToString()
 
-    print("bytes = " .. #data)
-    print("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
+    example_print_log("bytes = " .. #data)
+    example_print_log("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
 end
 
 --@api: LNavGrid:loadFromString
@@ -294,23 +384,34 @@ do
     local nav2 = lurek.pathfind.newNavGrid(10, 10)
     nav2:loadFromString(data)
 
-    print("blocked_5_5 = " .. tostring(nav2:isBlocked(5, 5)))
-    print("cost_3_3 = " .. nav2:getCost(3, 3))
+    example_print_log("blocked_5_5 = " .. tostring(nav2:isBlocked(5, 5)))
+    example_print_log("cost_3_3 = " .. nav2:getCost(3, 3))
 end
 
 --@api: LNavGrid:type
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
+    nav:setCost(3, 3, 9)
+    local type_name = nav:type()
+    local dims = nav:getWidth() .. "x" .. nav:getHeight()
+    local center_cost = nav:getCost(3, 3)
 
-    print("type = " .. nav:type())
+    pathfind_log("nav grid type = " .. type_name)
+    pathfind_log("debug dims = " .. dims)
+    pathfind_log("center cost = " .. center_cost)
 end
 
 --@api: LNavGrid:typeOf
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
+    nav:setBlocked(2, 3, true)
+    local is_nav_grid = nav:typeOf("LNavGrid")
+    local is_object = nav:typeOf("LObject")
+    local is_path_grid = nav:typeOf("LPathGrid")
 
-    print("is_nav_grid = " .. tostring(nav:typeOf("LNavGrid")))
-    print("is_object = " .. tostring(nav:typeOf("LObject")))
+    pathfind_log("matches LNavGrid = " .. tostring(is_nav_grid))
+    pathfind_log("matches LObject = " .. tostring(is_object))
+    pathfind_log("matches LPathGrid = " .. tostring(is_path_grid))
 end
 
 --- Pathfinding Module Part 2: navmesh, hex grid, JPS grid
@@ -329,8 +430,8 @@ do
         { x = 150, y = 80 },
     })
 
-    print("polygons = " .. mesh:getPolygonCount())
-    print("ids = " .. id1 .. "," .. id2)
+    example_print_log("polygons = " .. mesh:getPolygonCount())
+    example_print_log("ids = " .. id1 .. "," .. id2)
 end
 
 --@api: LNavMesh:addPolygon
@@ -342,8 +443,8 @@ do
         { x = 30, y = 45 },
     })
 
-    print("polygon_id = " .. id)
-    print("polygon_count = " .. mesh:getPolygonCount())
+    example_print_log("polygon_id = " .. id)
+    example_print_log("polygon_count = " .. mesh:getPolygonCount())
 end
 
 --@api: LNavMesh:connectPolygons
@@ -367,9 +468,9 @@ do
     local ab = mesh:connectPolygons(a, b, true)
     local bc = mesh:connectPolygons(b, c, false)
 
-    print("connected_ab = " .. tostring(ab))
-    print("connected_bc = " .. tostring(bc))
-    print("polygon_count = " .. mesh:getPolygonCount())
+    example_print_log("connected_ab = " .. tostring(ab))
+    example_print_log("connected_bc = " .. tostring(bc))
+    example_print_log("polygon_count = " .. mesh:getPolygonCount())
 end
 
 --@api: LNavMesh:findPath
@@ -399,27 +500,45 @@ do
 
     local path = mesh:findPath(10, 50, 290, 50)
     if path then
-        print("waypoints = " .. #path)
-        print("first = " .. path[1].x .. "," .. path[1].y)
-        print("last = " .. path[#path].x .. "," .. path[#path].y)
+        example_print_log("waypoints = " .. #path)
+        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
+        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        print("waypoints = 0")
+        example_print_log("waypoints = 0")
     end
 end
 
 --@api: LNavMesh:type
 do
     local mesh = lurek.pathfind.newNavMesh()
+    mesh:addPolygon({
+        { x = 0, y = 0 },
+        { x = 64, y = 0 },
+        { x = 32, y = 48 },
+    })
+    local type_name = mesh:type()
+    local polygon_count = mesh:getPolygonCount()
 
-    print("type = " .. mesh:type())
+    pathfind_log("nav mesh type = " .. type_name)
+    pathfind_log("triangle count = " .. polygon_count)
+    pathfind_log("mesh ready for corridor routing = " .. tostring(polygon_count > 0))
 end
 
 --@api: LNavMesh:typeOf
 do
     local mesh = lurek.pathfind.newNavMesh()
+    mesh:addPolygon({
+        { x = 0, y = 0 },
+        { x = 32, y = 0 },
+        { x = 16, y = 24 },
+    })
+    local is_nav_mesh = mesh:typeOf("LNavMesh")
+    local is_object = mesh:typeOf("LObject")
+    local is_goal_map = mesh:typeOf("LGoalMap")
 
-    print("is_nav_mesh = " .. tostring(mesh:typeOf("LNavMesh")))
-    print("is_object = " .. tostring(mesh:typeOf("LObject")))
+    pathfind_log("matches LNavMesh = " .. tostring(is_nav_mesh))
+    pathfind_log("matches LObject = " .. tostring(is_object))
+    pathfind_log("matches LGoalMap = " .. tostring(is_goal_map))
 end
 
 --@api: lurek.pathfind.newHexGrid
@@ -429,8 +548,8 @@ do
     hex:setBlocked(5, 5, true)
     hex:setBlocked(6, 5, true)
 
-    print("blocked_5_5 = " .. tostring(hex:isBlocked(5, 5)))
-    print("blocked_1_1 = " .. tostring(hex:isBlocked(1, 1)))
+    example_print_log("blocked_5_5 = " .. tostring(hex:isBlocked(5, 5)))
+    example_print_log("blocked_1_1 = " .. tostring(hex:isBlocked(1, 1)))
 end
 
 --@api: LHexGrid:setBlocked
@@ -440,18 +559,22 @@ do
     hex:setBlocked(5, 5, true)
     hex:setBlocked(6, 5, true)
 
-    print("blocked_5_5 = " .. tostring(hex:isBlocked(5, 5)))
-    print("blocked_6_5 = " .. tostring(hex:isBlocked(6, 5)))
+    example_print_log("blocked_5_5 = " .. tostring(hex:isBlocked(5, 5)))
+    example_print_log("blocked_6_5 = " .. tostring(hex:isBlocked(6, 5)))
 end
 
 --@api: LHexGrid:isBlocked
 do
     local hex = lurek.pathfind.newHexGrid(12, 10, "flat")
-
     hex:setBlocked(4, 4, true)
+    hex:setBlocked(5, 4, true)
+    local ridge = hex:isBlocked(4, 4)
+    local ridge_neighbor = hex:isBlocked(5, 4)
+    local open_hex = hex:isBlocked(4, 5)
 
-    print("blocked_4_4 = " .. tostring(hex:isBlocked(4, 4)))
-    print("blocked_4_5 = " .. tostring(hex:isBlocked(4, 5)))
+    pathfind_log("ridge blocked = " .. tostring(ridge))
+    pathfind_log("ridge neighbor blocked = " .. tostring(ridge_neighbor))
+    pathfind_log("southern hex blocked = " .. tostring(open_hex))
 end
 
 --@api: LHexGrid:setCost
@@ -462,9 +585,9 @@ do
     hex:setCost(5, 4, 4)
 
     local reachable = hex:rangeOfMovement(4, 4, 4)
-    print("reachable = " .. #reachable)
+    example_print_log("reachable = " .. #reachable)
     if #reachable > 0 then
-        print("first = " .. reachable[1].col .. "," .. reachable[1].row)
+        example_print_log("first = " .. reachable[1].col .. "," .. reachable[1].row)
     end
 end
 
@@ -478,20 +601,25 @@ do
 
     local path = hex:findPath(1, 5, 10, 5)
     if path then
-        print("steps = " .. #path)
-        print("first = " .. path[1].col .. "," .. path[1].row)
-        print("last = " .. path[#path].col .. "," .. path[#path].row)
+        example_print_log("steps = " .. #path)
+        example_print_log("first = " .. path[1].col .. "," .. path[1].row)
+        example_print_log("last = " .. path[#path].col .. "," .. path[#path].row)
     else
-        print("steps = 0")
+        example_print_log("steps = 0")
     end
 end
 
 --@api: LHexGrid:distance
 do
     local hex = lurek.pathfind.newHexGrid(10, 10)
+    hex:setBlocked(3, 3, true)
+    local flank_distance = hex:distance(1, 1, 5, 5)
+    local same_cell_distance = hex:distance(1, 1, 1, 1)
+    local scout_distance = hex:distance(2, 4, 7, 4)
 
-    print("dist_1_1_to_5_5 = " .. hex:distance(1, 1, 5, 5))
-    print("dist_1_1_to_1_1 = " .. hex:distance(1, 1, 1, 1))
+    pathfind_log("flank distance = " .. flank_distance)
+    pathfind_log("same cell distance = " .. same_cell_distance)
+    pathfind_log("frontline distance = " .. scout_distance)
 end
 
 --@api: LHexGrid:lineOfSight
@@ -502,8 +630,8 @@ do
     hex:setBlocked(5, 5, true)
     local blocked = hex:lineOfSight(1, 1, 10, 10)
 
-    print("clear = " .. tostring(clear))
-    print("blocked = " .. tostring(blocked))
+    example_print_log("clear = " .. tostring(clear))
+    example_print_log("blocked = " .. tostring(blocked))
 end
 
 --@api: LHexGrid:fieldOfView
@@ -513,9 +641,9 @@ do
     hex:setBlocked(8, 8, true)
 
     local visible = hex:fieldOfView(7, 7, 3)
-    print("visible = " .. #visible)
+    example_print_log("visible = " .. #visible)
     if #visible > 0 then
-        print("first = " .. visible[1].col .. "," .. visible[1].row)
+        example_print_log("first = " .. visible[1].col .. "," .. visible[1].row)
     end
 end
 
@@ -526,25 +654,35 @@ do
     hex:setCost(6, 6, 3)
 
     local reachable = hex:rangeOfMovement(6, 6, 4)
-    print("reachable = " .. #reachable)
+    example_print_log("reachable = " .. #reachable)
     if #reachable > 0 then
-        print("first = " .. reachable[1].col .. "," .. reachable[1].row)
+        example_print_log("first = " .. reachable[1].col .. "," .. reachable[1].row)
     end
 end
 
 --@api: LHexGrid:type
 do
     local hex = lurek.pathfind.newHexGrid(5, 5, "pointy")
+    hex:setCost(3, 3, 2)
+    local type_name = hex:type()
+    local reachable = hex:rangeOfMovement(3, 3, 3)
 
-    print("type = " .. hex:type())
+    pathfind_log("hex grid type = " .. type_name)
+    pathfind_log("reachable cells = " .. #reachable)
+    pathfind_log("center blocked = " .. tostring(hex:isBlocked(3, 3)))
 end
 
 --@api: LHexGrid:typeOf
 do
     local hex = lurek.pathfind.newHexGrid(5, 5, "pointy")
+    hex:setBlocked(2, 2, true)
+    local is_hex_grid = hex:typeOf("LHexGrid")
+    local is_object = hex:typeOf("LObject")
+    local is_jps_grid = hex:typeOf("LJpsGrid")
 
-    print("is_hex_grid = " .. tostring(hex:typeOf("LHexGrid")))
-    print("is_object = " .. tostring(hex:typeOf("LObject")))
+    pathfind_log("matches LHexGrid = " .. tostring(is_hex_grid))
+    pathfind_log("matches LObject = " .. tostring(is_object))
+    pathfind_log("matches LJpsGrid = " .. tostring(is_jps_grid))
 end
 
 --@api: lurek.pathfind.newJpsGrid
@@ -555,8 +693,8 @@ do
     jps:setBlocked(15, 11, true)
     jps:setBlocked(15, 12, true)
 
-    print("blocked_15_10 = " .. tostring(jps:isBlocked(15, 10)))
-    print("blocked_1_1 = " .. tostring(jps:isBlocked(1, 1)))
+    example_print_log("blocked_15_10 = " .. tostring(jps:isBlocked(15, 10)))
+    example_print_log("blocked_1_1 = " .. tostring(jps:isBlocked(1, 1)))
 end
 
 --@api: LJpsGrid:setBlocked
@@ -567,18 +705,22 @@ do
     jps:setBlocked(15, 11, true)
     jps:setBlocked(15, 12, true)
 
-    print("blocked_15_10 = " .. tostring(jps:isBlocked(15, 10)))
-    print("blocked_15_12 = " .. tostring(jps:isBlocked(15, 12)))
+    example_print_log("blocked_15_10 = " .. tostring(jps:isBlocked(15, 10)))
+    example_print_log("blocked_15_12 = " .. tostring(jps:isBlocked(15, 12)))
 end
 
 --@api: LJpsGrid:isBlocked
 do
     local jps = lurek.pathfind.newJpsGrid(30, 30)
-
     jps:setBlocked(9, 9, true)
+    jps:setBlocked(10, 9, true)
+    local wall_center = jps:isBlocked(9, 9)
+    local wall_neighbor = jps:isBlocked(10, 9)
+    local lane_open = jps:isBlocked(9, 10)
 
-    print("blocked_9_9 = " .. tostring(jps:isBlocked(9, 9)))
-    print("blocked_9_10 = " .. tostring(jps:isBlocked(9, 10)))
+    pathfind_log("wall center blocked = " .. tostring(wall_center))
+    pathfind_log("wall neighbor blocked = " .. tostring(wall_neighbor))
+    pathfind_log("lane blocked = " .. tostring(lane_open))
 end
 
 --@api: LJpsGrid:findPath
@@ -592,27 +734,38 @@ do
 
     local path = jps:findPath(1, 25, 50, 25)
     if path then
-        print("points = " .. #path)
-        print("first = " .. path[1].x .. "," .. path[1].y)
-        print("last = " .. path[#path].x .. "," .. path[#path].y)
+        example_print_log("points = " .. #path)
+        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
+        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        print("points = 0")
+        example_print_log("points = 0")
     end
 end
 
 --@api: LJpsGrid:type
 do
     local jps = lurek.pathfind.newJpsGrid(5, 5)
+    jps:setBlocked(3, 3, true)
+    local type_name = jps:type()
+    local blocked_center = jps:isBlocked(3, 3)
+    local path = jps:findPath(1, 1, 5, 5)
 
-    print("type = " .. jps:type())
+    pathfind_log("jps grid type = " .. type_name)
+    pathfind_log("center blocked = " .. tostring(blocked_center))
+    pathfind_log("corner route nodes = " .. tostring(path and #path or 0))
 end
 
 --@api: LJpsGrid:typeOf
 do
     local jps = lurek.pathfind.newJpsGrid(5, 5)
+    jps:setBlocked(2, 2, true)
+    local is_jps_grid = jps:typeOf("LJpsGrid")
+    local is_object = jps:typeOf("LObject")
+    local is_hex_grid = jps:typeOf("LHexGrid")
 
-    print("is_jps_grid = " .. tostring(jps:typeOf("LJpsGrid")))
-    print("is_object = " .. tostring(jps:typeOf("LObject")))
+    pathfind_log("matches LJpsGrid = " .. tostring(is_jps_grid))
+    pathfind_log("matches LObject = " .. tostring(is_object))
+    pathfind_log("matches LHexGrid = " .. tostring(is_hex_grid))
 end
 
 --- Pathfinding Module Part 3: flow fields, AI flow fields, unit pathfinder
@@ -629,8 +782,8 @@ do
     local ff = lurek.pathfind.newFlowField(nav)
     ff:calculate(20, 10)
 
-    print("calculated = " .. tostring(ff:isCalculated()))
-    print("targets = " .. #ff:getTargets())
+    example_print_log("calculated = " .. tostring(ff:isCalculated()))
+    example_print_log("targets = " .. #ff:getTargets())
 end
 
 --@api: LFlowField:calculate
@@ -642,8 +795,8 @@ do
     local ff = lurek.pathfind.newFlowField(nav)
     ff:calculate(20, 10)
 
-    print("calculated = " .. tostring(ff:isCalculated()))
-    print("targets = " .. #ff:getTargets())
+    example_print_log("calculated = " .. tostring(ff:isCalculated()))
+    example_print_log("targets = " .. #ff:getTargets())
 end
 
 --@api: LFlowField:getDirection
@@ -656,9 +809,9 @@ do
     ff:calculate(10, 10)
 
     local dx, dy = ff:getDirection(1, 1)
-    print("dir = " .. dx .. "," .. dy)
-    print("angle = " .. ff:getDirectionAngle(1, 1))
-    print("cost = " .. ff:getCostToTarget(1, 1))
+    example_print_log("dir = " .. dx .. "," .. dy)
+    example_print_log("angle = " .. ff:getDirectionAngle(1, 1))
+    example_print_log("cost = " .. ff:getCostToTarget(1, 1))
 end
 
 --@api: LFlowField:getDirectionAngle
@@ -670,8 +823,8 @@ do
     local ff = lurek.pathfind.newFlowField(nav)
     ff:calculate(10, 10)
 
-    print("angle = " .. ff:getDirectionAngle(1, 1))
-    print("cost = " .. ff:getCostToTarget(1, 1))
+    example_print_log("angle = " .. ff:getDirectionAngle(1, 1))
+    example_print_log("cost = " .. ff:getCostToTarget(1, 1))
 end
 
 --@api: LFlowField:getCostToTarget
@@ -684,8 +837,8 @@ do
     ff:calculate(10, 10)
 
     local dx, dy = ff:getDirection(1, 1)
-    print("dir = " .. dx .. "," .. dy)
-    print("cost = " .. ff:getCostToTarget(1, 1))
+    example_print_log("dir = " .. dx .. "," .. dy)
+    example_print_log("cost = " .. ff:getCostToTarget(1, 1))
 end
 
 --@api: LFlowField:calculateMulti
@@ -701,9 +854,9 @@ do
     })
 
     local targets = ff:getTargets()
-    print("targets = " .. #targets)
-    print("first = " .. targets[1].x .. "," .. targets[1].y)
-    print("last = " .. targets[#targets].x .. "," .. targets[#targets].y)
+    example_print_log("targets = " .. #targets)
+    example_print_log("first = " .. targets[1].x .. "," .. targets[1].y)
+    example_print_log("last = " .. targets[#targets].x .. "," .. targets[#targets].y)
 end
 
 --@api: LFlowField:getTargets
@@ -719,8 +872,8 @@ do
     })
 
     local targets = ff:getTargets()
-    print("targets = " .. #targets)
-    print("first = " .. targets[1].x .. "," .. targets[1].y)
+    example_print_log("targets = " .. #targets)
+    example_print_log("first = " .. targets[1].x .. "," .. targets[1].y)
 end
 
 --@api: LFlowField:steer
@@ -733,24 +886,35 @@ do
     ff:calculate(10, 10)
 
     local vx, vy = ff:steer(50, 50, 100, 32, 32)
-    print("velocity = " .. vx .. "," .. vy)
+    example_print_log("velocity = " .. vx .. "," .. vy)
 end
 
 --@api: LFlowField:type
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local ff = lurek.pathfind.newFlowField(nav)
+    ff:calculate(5, 5)
+    local type_name = ff:type()
+    local calculated = ff:isCalculated()
+    local targets = ff:getTargets()
 
-    print("type = " .. ff:type())
+    pathfind_log("flow field type = " .. type_name)
+    pathfind_log("calculated = " .. tostring(calculated))
+    pathfind_log("target count = " .. #targets)
 end
 
 --@api: LFlowField:typeOf
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local ff = lurek.pathfind.newFlowField(nav)
+    ff:calculate(4, 4)
+    local is_flow_field = ff:typeOf("LFlowField")
+    local is_object = ff:typeOf("LObject")
+    local is_ai_flow_field = ff:typeOf("LAIFlowField")
 
-    print("is_flow_field = " .. tostring(ff:typeOf("LFlowField")))
-    print("is_object = " .. tostring(ff:typeOf("LObject")))
+    pathfind_log("matches LFlowField = " .. tostring(is_flow_field))
+    pathfind_log("matches LObject = " .. tostring(is_object))
+    pathfind_log("matches LAIFlowField = " .. tostring(is_ai_flow_field))
 end
 
 --@api: lurek.pathfind.newPathFlowField
@@ -761,9 +925,9 @@ do
     aiff:setGoal(10, 10)
 
     local gx, gy = aiff:getGoal()
-    print("dims = " .. aiff:getWidth() .. "x" .. aiff:getHeight())
-    print("has_goal = " .. tostring(aiff:hasGoal()))
-    print("goal = " .. gx .. "," .. gy)
+    example_print_log("dims = " .. aiff:getWidth() .. "x" .. aiff:getHeight())
+    example_print_log("has_goal = " .. tostring(aiff:hasGoal()))
+    example_print_log("goal = " .. gx .. "," .. gy)
 end
 
 --@api: LAIFlowField:setGoal
@@ -774,8 +938,8 @@ do
     aiff:setGoal(10, 10)
 
     local gx, gy = aiff:getGoal()
-    print("has_goal = " .. tostring(aiff:hasGoal()))
-    print("goal = " .. gx .. "," .. gy)
+    example_print_log("has_goal = " .. tostring(aiff:hasGoal()))
+    example_print_log("goal = " .. gx .. "," .. gy)
 end
 
 --@api: LAIFlowField:getGoal
@@ -786,8 +950,8 @@ do
     aiff:setGoal(10, 10)
 
     local gx, gy = aiff:getGoal()
-    print("goal = " .. gx .. "," .. gy)
-    print("has_goal = " .. tostring(aiff:hasGoal()))
+    example_print_log("goal = " .. gx .. "," .. gy)
+    example_print_log("has_goal = " .. tostring(aiff:hasGoal()))
 end
 
 --@api: LAIFlowField:getDirection
@@ -798,8 +962,8 @@ do
     aiff:setGoal(10, 10)
 
     local dx, dy = aiff:getDirection(1, 1)
-    print("dir = " .. dx .. "," .. dy)
-    print("distance = " .. aiff:getDistance(1, 1))
+    example_print_log("dir = " .. dx .. "," .. dy)
+    example_print_log("distance = " .. aiff:getDistance(1, 1))
 end
 
 --@api: LAIFlowField:getDistance
@@ -810,25 +974,36 @@ do
     aiff:setGoal(10, 10)
 
     local dx, dy = aiff:getDirection(1, 1)
-    print("dir = " .. dx .. "," .. dy)
-    print("distance = " .. aiff:getDistance(1, 1))
+    example_print_log("dir = " .. dx .. "," .. dy)
+    example_print_log("distance = " .. aiff:getDistance(1, 1))
 end
 
 --@api: LAIFlowField:type
 do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
+    aiff:setGoal(5, 5)
+    local type_name = aiff:type()
+    local width = aiff:getWidth()
+    local height = aiff:getHeight()
 
-    print("type = " .. aiff:type())
+    pathfind_log("ai flow field type = " .. type_name)
+    pathfind_log("field dims = " .. width .. "x" .. height)
+    pathfind_log("goal ready = " .. tostring(aiff:hasGoal()))
 end
 
 --@api: LAIFlowField:typeOf
 do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
+    aiff:setGoal(4, 4)
+    local is_ai_flow_field = aiff:typeOf("LAIFlowField")
+    local is_object = aiff:typeOf("LObject")
+    local is_flow_field = aiff:typeOf("LFlowField")
 
-    print("is_ai_flow_field = " .. tostring(aiff:typeOf("LAIFlowField")))
-    print("is_object = " .. tostring(aiff:typeOf("LObject")))
+    pathfind_log("matches LAIFlowField = " .. tostring(is_ai_flow_field))
+    pathfind_log("matches LObject = " .. tostring(is_object))
+    pathfind_log("matches LFlowField = " .. tostring(is_flow_field))
 end
 
 --@api: lurek.pathfind.newPathfinder
@@ -844,11 +1019,11 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path = pf:findPath(1, 12, 30, 12)
     if path then
-        print("steps = " .. #path)
-        print("first = " .. path[1].x .. "," .. path[1].y)
-        print("last = " .. path[#path].x .. "," .. path[#path].y)
+        example_print_log("steps = " .. #path)
+        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
+        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        print("steps = 0")
+        example_print_log("steps = 0")
     end
 end
 
@@ -865,11 +1040,11 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path = pf:findPath(1, 12, 30, 12)
     if path then
-        print("steps = " .. #path)
-        print("first = " .. path[1].x .. "," .. path[1].y)
-        print("last = " .. path[#path].x .. "," .. path[#path].y)
+        example_print_log("steps = " .. #path)
+        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
+        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        print("steps = 0")
+        example_print_log("steps = 0")
     end
 end
 
@@ -882,11 +1057,11 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path = pf:findPathSmooth(1, 1, 20, 20)
     if path then
-        print("points = " .. #path)
-        print("first = " .. path[1].x .. "," .. path[1].y)
-        print("last = " .. path[#path].x .. "," .. path[#path].y)
+        example_print_log("points = " .. #path)
+        example_print_log("first = " .. path[1].x .. "," .. path[1].y)
+        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        print("points = 0")
+        example_print_log("points = 0")
     end
 end
 
@@ -899,11 +1074,11 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path, complete = pf:findPathBidirectional(1, 1, 40, 40, 1, 500)
     if path then
-        print("points = " .. #path)
-        print("complete = " .. tostring(complete))
-        print("last = " .. path[#path].x .. "," .. path[#path].y)
+        example_print_log("points = " .. #path)
+        example_print_log("complete = " .. tostring(complete))
+        example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
     else
-        print("complete = " .. tostring(complete))
+        example_print_log("complete = " .. tostring(complete))
     end
 end
 
@@ -918,9 +1093,9 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path, reached = pf:findPartialPath(1, 1, 100, 100, 50)
 
-    print("points = " .. #path)
-    print("reached = " .. tostring(reached))
-    print("last = " .. path[#path].x .. "," .. path[#path].y)
+    example_print_log("points = " .. #path)
+    example_print_log("reached = " .. tostring(reached))
+    example_print_log("last = " .. path[#path].x .. "," .. path[#path].y)
 end
 
 --@api: LUnitPathfinder:isReachable
@@ -932,8 +1107,8 @@ do
 
     local pf = lurek.pathfind.newPathfinder(nav)
 
-    print("reachable_left = " .. tostring(pf:isReachable(1, 1, 9, 9)))
-    print("reachable_right = " .. tostring(pf:isReachable(1, 1, 20, 20)))
+    example_print_log("reachable_left = " .. tostring(pf:isReachable(1, 1, 9, 9)))
+    example_print_log("reachable_right = " .. tostring(pf:isReachable(1, 1, 20, 20)))
 end
 
 --@api: LUnitPathfinder:lineOfSight
@@ -947,17 +1122,22 @@ do
     nav:setBlocked(10, 10, true)
     local blocked = pf:lineOfSight(1, 1, 20, 20)
 
-    print("clear = " .. tostring(clear))
-    print("blocked = " .. tostring(blocked))
+    example_print_log("clear = " .. tostring(clear))
+    example_print_log("blocked = " .. tostring(blocked))
 end
 
 --@api: LUnitPathfinder:heuristicDistance
 do
     local nav = lurek.pathfind.newNavGrid(20, 20)
     local pf = lurek.pathfind.newPathfinder(nav)
+    nav:setBlocked(10, 10, true)
+    local map_corner = pf:heuristicDistance(1, 1, 20, 20)
+    local same_cell = pf:heuristicDistance(5, 5, 5, 5)
+    local front_line = pf:heuristicDistance(2, 10, 18, 10)
 
-    print("dist_1_1_to_20_20 = " .. pf:heuristicDistance(1, 1, 20, 20))
-    print("dist_5_5_to_5_5 = " .. pf:heuristicDistance(5, 5, 5, 5))
+    pathfind_log("corner estimate = " .. map_corner)
+    pathfind_log("same cell estimate = " .. same_cell)
+    pathfind_log("front line estimate = " .. front_line)
 end
 
 --@api: LUnitPathfinder:findNearestWalkable
@@ -973,7 +1153,7 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local nx, ny = pf:findNearestWalkable(10, 10, 5)
 
-    print("nearest = " .. nx .. "," .. ny)
+    example_print_log("nearest = " .. nx .. "," .. ny)
 end
 
 --@api: LUnitPathfinder:getPathCost
@@ -986,10 +1166,10 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path = pf:findPath(1, 1, 10, 10)
     if path then
-        print("cost = " .. pf:getPathCost(path))
-        print("length = " .. pf:getPathLength(path))
+        example_print_log("cost = " .. pf:getPathCost(path))
+        example_print_log("length = " .. pf:getPathLength(path))
     else
-        print("cost = 0")
+        example_print_log("cost = 0")
     end
 end
 
@@ -1002,10 +1182,10 @@ do
     local pf = lurek.pathfind.newPathfinder(nav)
     local path = pf:findPath(1, 1, 10, 10)
     if path then
-        print("length = " .. pf:getPathLength(path))
-        print("cost = " .. pf:getPathCost(path))
+        example_print_log("length = " .. pf:getPathLength(path))
+        example_print_log("cost = " .. pf:getPathCost(path))
     else
-        print("length = 0")
+        example_print_log("length = 0")
     end
 end
 
@@ -1021,10 +1201,10 @@ do
     pf:findPath(1, 1, 20, 20)
     pf:findPath(5, 5, 15, 15)
 
-    print("enabled = " .. tostring(pf:isCacheEnabled()))
-    print("cache_size = " .. pf:getCacheSize())
+    example_print_log("enabled = " .. tostring(pf:isCacheEnabled()))
+    example_print_log("cache_size = " .. pf:getCacheSize())
     pf:clearCache()
-    print("cache_after_clear = " .. pf:getCacheSize())
+    example_print_log("cache_after_clear = " .. pf:getCacheSize())
 end
 
 --@api: LUnitPathfinder:isCacheEnabled
@@ -1038,8 +1218,8 @@ do
     local enabled = pf:isCacheEnabled()
     pf:setCacheEnabled(false)
 
-    print("enabled_before_disable = " .. tostring(enabled))
-    print("enabled_after_disable = " .. tostring(pf:isCacheEnabled()))
+    example_print_log("enabled_before_disable = " .. tostring(enabled))
+    example_print_log("enabled_after_disable = " .. tostring(pf:isCacheEnabled()))
 end
 
 --@api: LUnitPathfinder:setCacheMaxSize
@@ -1055,7 +1235,7 @@ do
     pf:findPath(2, 2, 19, 19)
     pf:findPath(3, 3, 18, 18)
 
-    print("cache_size = " .. pf:getCacheSize())
+    example_print_log("cache_size = " .. pf:getCacheSize())
 end
 
 --@api: LUnitPathfinder:getCacheSize
@@ -1069,7 +1249,7 @@ do
     pf:findPath(1, 1, 20, 20)
     pf:findPath(5, 5, 15, 15)
 
-    print("cache_size = " .. pf:getCacheSize())
+    example_print_log("cache_size = " .. pf:getCacheSize())
 end
 
 --@api: LUnitPathfinder:clearCache
@@ -1082,26 +1262,37 @@ do
     pf:setCacheEnabled(true)
     pf:findPath(1, 1, 20, 20)
 
-    print("cache_before_clear = " .. pf:getCacheSize())
+    example_print_log("cache_before_clear = " .. pf:getCacheSize())
     pf:clearCache()
-    print("cache_after_clear = " .. pf:getCacheSize())
+    example_print_log("cache_after_clear = " .. pf:getCacheSize())
 end
 
 --@api: LUnitPathfinder:type
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local pf = lurek.pathfind.newPathfinder(nav)
+    nav:fill(1)
+    local type_name = pf:type()
+    local path = pf:findPath(1, 1, 5, 5)
+    local cache_enabled = pf:isCacheEnabled()
 
-    print("type = " .. pf:type())
+    pathfind_log("pathfinder type = " .. type_name)
+    pathfind_log("route nodes = " .. tostring(path and #path or 0))
+    pathfind_log("cache enabled = " .. tostring(cache_enabled))
 end
 
 --@api: LUnitPathfinder:typeOf
 do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local pf = lurek.pathfind.newPathfinder(nav)
+    nav:fill(1)
+    local is_pathfinder = pf:typeOf("LUnitPathfinder")
+    local is_object = pf:typeOf("LObject")
+    local is_nav_grid = pf:typeOf("LNavGrid")
 
-    print("is_pathfinder = " .. tostring(pf:typeOf("LUnitPathfinder")))
-    print("is_object = " .. tostring(pf:typeOf("LObject")))
+    pathfind_log("matches LUnitPathfinder = " .. tostring(is_pathfinder))
+    pathfind_log("matches LObject = " .. tostring(is_object))
+    pathfind_log("matches LNavGrid = " .. tostring(is_nav_grid))
 end
 
 --@api: lurek.pathfind.rangeMap
@@ -1115,18 +1306,23 @@ do
         diagonal = true,
     })
 
-    print("dims = " .. result.width .. "x" .. result.height)
-    print("cells = " .. #result.cells)
+    example_print_log("dims = " .. result.width .. "x" .. result.height)
+    example_print_log("cells = " .. #result.cells)
     if #result.cells > 0 then
-        print("first = " .. result.cells[1].x .. "," .. result.cells[1].y .. "," .. result.cells[1].cost)
+        example_print_log("first = " .. result.cells[1].x .. "," .. result.cells[1].y .. "," .. result.cells[1].cost)
     end
 end
 
 --@api: lurek.pathfind.getThreadCount
 do
     local tc = lurek.pathfind.getThreadCount()
+    local nav = lurek.pathfind.newNavGrid(8, 8)
+    nav:setBlocked(4, 4, true)
+    local pending = lurek.pathfind.getAsyncPendingCount()
 
-    print("thread_count = " .. tc)
+    pathfind_log("thread count = " .. tc)
+    pathfind_log("pending async jobs = " .. pending)
+    pathfind_log("sample grid blocked = " .. tostring(nav:isBlocked(4, 4)))
 end
 
 --- Pathfind Module Part 4: AI flow field state, nav dimensions, tilemap nav grids, thread count
@@ -1138,8 +1334,8 @@ do
 
     ff:setGoal(16, 16)
 
-    print("dims = " .. ff:getWidth() .. "x" .. ff:getHeight())
-    print("has_goal = " .. tostring(ff:hasGoal()))
+    example_print_log("dims = " .. ff:getWidth() .. "x" .. ff:getHeight())
+    example_print_log("has_goal = " .. tostring(ff:hasGoal()))
 end
 
 --@api: LAIFlowField:getWidth
@@ -1149,8 +1345,8 @@ do
 
     ff:setGoal(16, 16)
 
-    print("dims = " .. ff:getWidth() .. "x" .. ff:getHeight())
-    print("has_goal = " .. tostring(ff:hasGoal()))
+    example_print_log("dims = " .. ff:getWidth() .. "x" .. ff:getHeight())
+    example_print_log("has_goal = " .. tostring(ff:hasGoal()))
 end
 
 --@api: LAIFlowField:hasGoal
@@ -1158,9 +1354,9 @@ do
     local pg = lurek.pathfind.newPathGrid(32, 32, 1)
     local ff = lurek.pathfind.newPathFlowField(pg)
 
-    print("has_goal_before = " .. tostring(ff:hasGoal()))
+    example_print_log("has_goal_before = " .. tostring(ff:hasGoal()))
     ff:setGoal(16, 16)
-    print("has_goal_after = " .. tostring(ff:hasGoal()))
+    example_print_log("has_goal_after = " .. tostring(ff:hasGoal()))
 end
 
 --@api: LFlowField:isCalculated
@@ -1168,18 +1364,22 @@ do
     local grid = lurek.pathfind.newNavGrid(16, 16)
     local ff = lurek.pathfind.newFlowField(grid)
 
-    print("calculated_before = " .. tostring(ff:isCalculated()))
+    example_print_log("calculated_before = " .. tostring(ff:isCalculated()))
     ff:calculate(8, 8, 1)
-    print("calculated_after = " .. tostring(ff:isCalculated()))
+    example_print_log("calculated_after = " .. tostring(ff:isCalculated()))
 end
 
 --@api: LNavGrid:getDimensions
 do
     local ng = lurek.pathfind.newNavGrid(20, 15)
     local w, h = ng:getDimensions()
+    ng:setBlocked(10, 8, true)
+    local width = ng:getWidth()
+    local height = ng:getHeight()
 
-    print("dims = " .. w .. "x" .. h)
-    print("width = " .. ng:getWidth())
+    pathfind_log("nav dims = " .. w .. "x" .. h)
+    pathfind_log("width via getter = " .. width)
+    pathfind_log("height via getter = " .. height)
 end
 
 --@api: LNavGrid:getHeight
@@ -1188,8 +1388,8 @@ do
     local w, h = ng:getDimensions()
     local height = ng:getHeight()
 
-    print("dims = " .. w .. "x" .. h)
-    print("height = " .. height)
+    example_print_log("dims = " .. w .. "x" .. h)
+    example_print_log("height = " .. height)
 end
 
 --@api: LNavGrid:getWidth
@@ -1198,8 +1398,8 @@ do
     local w, h = ng:getDimensions()
     local width = ng:getWidth()
 
-    print("dims = " .. w .. "x" .. h)
-    print("width = " .. width)
+    example_print_log("dims = " .. w .. "x" .. h)
+    example_print_log("width = " .. width)
 end
 
 --@api: LNavMesh:getPolygonCount
@@ -1211,32 +1411,47 @@ do
         { x = 32, y = 48 },
     })
 
-    print("polygon_count = " .. mesh:getPolygonCount())
-    print("first_id = " .. id)
+    example_print_log("polygon_count = " .. mesh:getPolygonCount())
+    example_print_log("first_id = " .. id)
 end
 
 --@api: LPathGrid:getCellSize
 do
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
+    pg:setWalkable(5, 5, false)
+    local cell_size = pg:getCellSize()
+    local dims = pg:getWidth() .. "x" .. pg:getHeight()
+    local center_open = pg:isWalkable(5, 5)
 
-    print("cell_size = " .. pg:getCellSize())
-    print("dims = " .. pg:getWidth() .. "x" .. pg:getHeight())
+    pathfind_log("cell size = " .. cell_size)
+    pathfind_log("path grid dims = " .. dims)
+    pathfind_log("center open = " .. tostring(center_open))
 end
 
 --@api: LPathGrid:getHeight
 do
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
+    pg:setCost(6, 6, 4)
+    local height = pg:getHeight()
+    local width = pg:getWidth()
+    local center_cost = pg:getCost(6, 6)
 
-    print("height = " .. pg:getHeight())
-    print("cell_size = " .. pg:getCellSize())
+    pathfind_log("height = " .. height)
+    pathfind_log("width = " .. width)
+    pathfind_log("center cost = " .. center_cost)
 end
 
 --@api: LPathGrid:getWidth
 do
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
+    pg:setCost(4, 4, 3)
+    local width = pg:getWidth()
+    local height = pg:getHeight()
+    local cell_size = pg:getCellSize()
 
-    print("width = " .. pg:getWidth())
-    print("cell_size = " .. pg:getCellSize())
+    pathfind_log("width = " .. width)
+    pathfind_log("height = " .. height)
+    pathfind_log("cell size = " .. cell_size)
 end
 
 --@api: lurek.pathfind.newNavGridFromTileMap
@@ -1249,16 +1464,23 @@ do
 
     local ng = lurek.pathfind.newNavGridFromTileMap(tm, layer_index, { 2 })
 
-    print("dims = " .. ng:getWidth() .. "x" .. ng:getHeight())
-    print("blocked_3_3 = " .. tostring(ng:isBlocked(3, 3)))
-    print("blocked_4_3 = " .. tostring(ng:isBlocked(4, 3)))
+    example_print_log("dims = " .. ng:getWidth() .. "x" .. ng:getHeight())
+    example_print_log("blocked_3_3 = " .. tostring(ng:isBlocked(3, 3)))
+    example_print_log("blocked_4_3 = " .. tostring(ng:isBlocked(4, 3)))
 end
 
 --@api: lurek.pathfind.setThreadCount
 do
-    lurek.pathfind.setThreadCount(2)
+    local previous = lurek.pathfind.getThreadCount()
+    local target = previous < 2 and 2 or previous
 
-    print("thread_count = " .. lurek.pathfind.getThreadCount())
+    lurek.pathfind.setThreadCount(target)
+    local actual = lurek.pathfind.getThreadCount()
+    local nav = lurek.pathfind.newNavGrid(6, 6)
+
+    pathfind_log("thread count target = " .. target)
+    pathfind_log("thread count actual = " .. actual)
+    pathfind_log("worker sample dims = " .. nav:getWidth() .. "x" .. nav:getHeight())
 end
 
 --@api: lurek.pathfind.submitAsyncPath
@@ -1272,7 +1494,7 @@ do
         goal_y = 24,
         stream_budget = 4,
     })
-    print("request_id = " .. tostring(request_id))
+    example_print_log("request_id = " .. tostring(request_id))
 end
 
 --@api: lurek.pathfind.pollAsyncPaths
@@ -1297,8 +1519,8 @@ do
         end
         lurek.timer.sleep(0.001)
     end
-    print("request = " .. tostring(request_id))
-    print("events = " .. tostring(#seen))
+    example_print_log("request = " .. tostring(request_id))
+    example_print_log("events = " .. tostring(#seen))
 end
 
 --@api: lurek.pathfind.cancelAsyncPath
@@ -1312,7 +1534,7 @@ do
         goal_y = 24,
         stream_budget = 4,
     })
-    print("cancelled = " .. tostring(lurek.pathfind.cancelAsyncPath(request_id)))
+    example_print_log("cancelled = " .. tostring(lurek.pathfind.cancelAsyncPath(request_id)))
 end
 
 --@api: lurek.pathfind.getAsyncPendingCount
@@ -1328,8 +1550,8 @@ do
         stream_budget = 2,
     })
     local after = lurek.pathfind.getAsyncPendingCount()
-    print("pending_before = " .. tostring(before))
-    print("pending_after = " .. tostring(after))
+    example_print_log("pending_before = " .. tostring(before))
+    example_print_log("pending_after = " .. tostring(after))
     lurek.pathfind.clearAsyncPaths()
 end
 
@@ -1345,21 +1567,35 @@ do
         stream_budget = 2,
     })
     lurek.pathfind.clearAsyncPaths()
-    print("pending = " .. tostring(lurek.pathfind.getAsyncPendingCount()))
+    example_print_log("pending = " .. tostring(lurek.pathfind.getAsyncPendingCount()))
 end
 
 --@api: lurek.pathfind.newGoalMap
 do
     local gm = lurek.pathfind.newGoalMap(16, 16)
-    print("goal_map_type = " .. gm:type())
+    gm:addSource(8, 8, 1)
+    gm:bake()
+    local ready = gm:isReady()
+    local center_distance = gm:distanceAt(8, 8)
+
+    pathfind_log("goal map type = " .. gm:type())
+    pathfind_log("goal map ready = " .. tostring(ready))
+    pathfind_log("center distance = " .. center_distance)
 end
 
 --@api: LGoalMap:addSource
 do
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:addSource(8, 8, 1)
+    gm:addSource(4, 12, 2)
     gm:bake()
-    print("distance_1_1 = " .. gm:distanceAt(1, 1))
+    local origin_distance = gm:distanceAt(8, 8)
+    local flank_distance = gm:distanceAt(4, 12)
+    local corner_distance = gm:distanceAt(1, 1)
+
+    pathfind_log("origin distance = " .. origin_distance)
+    pathfind_log("flank source distance = " .. flank_distance)
+    pathfind_log("corner distance = " .. corner_distance)
 end
 
 --@api: LGoalMap:setSources
@@ -1370,7 +1606,7 @@ do
         { x = 13, y = 13, weight = 2 },
     })
     gm:bake()
-    print("ready = " .. tostring(gm:isReady()))
+    example_print_log("ready = " .. tostring(gm:isReady()))
 end
 
 --@api: LGoalMap:clearSources
@@ -1379,7 +1615,7 @@ do
     gm:addSource(8, 8, 1)
     gm:clearSources()
     gm:bake()
-    print("ready_after_clear = " .. tostring(gm:isReady()))
+    example_print_log("ready_after_clear = " .. tostring(gm:isReady()))
 end
 
 --@api: LGoalMap:setBlocker
@@ -1390,7 +1626,7 @@ do
         return x == 9 and y >= 4 and y <= 12
     end)
     gm:bake()
-    print("distance_12_8 = " .. gm:distanceAt(12, 8))
+    example_print_log("distance_12_8 = " .. gm:distanceAt(12, 8))
 end
 
 --@api: LGoalMap:bake
@@ -1398,16 +1634,22 @@ do
     local gm = lurek.pathfind.newGoalMap(16, 16)
     gm:addSource(8, 8, 1)
     gm:bake()
-    print("ready_after_bake = " .. tostring(gm:isReady()))
+    local ready = gm:isReady()
+    local distance_mid = gm:distanceAt(10, 8)
+    local distance_corner = gm:distanceAt(1, 1)
+
+    pathfind_log("ready after bake = " .. tostring(ready))
+    pathfind_log("east lane distance = " .. distance_mid)
+    pathfind_log("corner distance = " .. distance_corner)
 end
 
 --@api: LGoalMap:isReady
 do
     local gm = lurek.pathfind.newGoalMap(8, 8)
     gm:addSource(4, 4, 1)
-    print("ready_before = " .. tostring(gm:isReady()))
+    example_print_log("ready_before = " .. tostring(gm:isReady()))
     gm:bake()
-    print("ready_after = " .. tostring(gm:isReady()))
+    example_print_log("ready_after = " .. tostring(gm:isReady()))
 end
 
 --@api: LGoalMap:distanceAt
@@ -1415,8 +1657,8 @@ do
     local gm = lurek.pathfind.newGoalMap(10, 10)
     gm:addSource(5, 5, 1)
     gm:bake()
-    print("distance_5_5 = " .. gm:distanceAt(5, 5))
-    print("distance_1_1 = " .. gm:distanceAt(1, 1))
+    example_print_log("distance_5_5 = " .. gm:distanceAt(5, 5))
+    example_print_log("distance_1_1 = " .. gm:distanceAt(1, 1))
 end
 
 --@api: LGoalMap:gradientAt
@@ -1425,7 +1667,7 @@ do
     gm:addSource(10, 10, 1)
     gm:bake()
     local dx, dy = gm:gradientAt(1, 1)
-    print("gradient = " .. dx .. "," .. dy)
+    example_print_log("gradient = " .. dx .. "," .. dy)
 end
 
 --@api: LGoalMap:flee
@@ -1434,7 +1676,7 @@ do
     gm:addSource(5, 5, 1)
     gm:bake()
     local dx, dy = gm:flee(5, 6, 1.0)
-    print("flee = " .. dx .. "," .. dy)
+    example_print_log("flee = " .. dx .. "," .. dy)
 end
 
 --@api: LGoalMap:floodFill
@@ -1443,7 +1685,7 @@ do
     gm:addSource(6, 6, 1)
     gm:bake()
     local cells = gm:floodFill(6, 6, 4)
-    print("flood_cells = " .. #cells)
+    example_print_log("flood_cells = " .. #cells)
 end
 
 --@api: LGoalMap:save
@@ -1452,7 +1694,7 @@ do
     gm:addSource(6, 6, 1)
     gm:bake()
     local blob = gm:save()
-    print("blob_bytes = " .. #blob)
+    example_print_log("blob_bytes = " .. #blob)
 end
 
 --@api: LGoalMap:restore
@@ -1464,18 +1706,32 @@ do
 
     local gm2 = lurek.pathfind.newGoalMap(12, 12)
     gm2:restore(blob)
-    print("distance_restored = " .. gm2:distanceAt(6, 6))
+    example_print_log("distance_restored = " .. gm2:distanceAt(6, 6))
 end
 
 --@api: LGoalMap:type
 do
     local gm = lurek.pathfind.newGoalMap(8, 8)
-    print("type = " .. gm:type())
+    gm:addSource(4, 4, 1)
+    gm:bake()
+    local type_name = gm:type()
+    local ready = gm:isReady()
+
+    pathfind_log("goal map type = " .. type_name)
+    pathfind_log("ready = " .. tostring(ready))
+    pathfind_log("center distance = " .. gm:distanceAt(4, 4))
 end
 
 --@api: LGoalMap:typeOf
 do
     local gm = lurek.pathfind.newGoalMap(8, 8)
-    print("is_goal_map = " .. tostring(gm:typeOf("LGoalMap")))
-    print("is_object = " .. tostring(gm:typeOf("LObject")))
+    gm:addSource(4, 4, 1)
+    gm:bake()
+    local is_goal_map = gm:typeOf("LGoalMap")
+    local is_object = gm:typeOf("LObject")
+    local is_nav_mesh = gm:typeOf("LNavMesh")
+
+    pathfind_log("matches LGoalMap = " .. tostring(is_goal_map))
+    pathfind_log("matches LObject = " .. tostring(is_object))
+    pathfind_log("matches LNavMesh = " .. tostring(is_nav_mesh))
 end

@@ -36,11 +36,10 @@
 - That makes `patterns` valuable not only as a library shelf, but also as a consistency layer. Several systems can solve similar structural problems without diverging in naming, behavior, or maintenance style.
 - For wiki readers, the practical boundary is that `patterns` owns reusable mechanics, not end-user domain behavior. If a component could reasonably be reused by AI, UI, tooling, and automation alike, it probably belongs here rather than inside one specialized module.
 - This broad but domain-neutral scope is what makes the module distinctive. `patterns` does not try to become the owner of AI, rendering, or networking itself; it supplies the architectural pieces those higher-level systems repeatedly depend on.
-- That separation matters because several engine features need the same structures without wanting to import each other's domain logic.
-- It also makes the module useful as a long-term maintenance layer, where shared mechanics can improve together instead of fragmenting into near-duplicates.
+- That separation matters because several engine features need the same structures without importing each other's domain logic.
+- It also gives long-lived projects one place to refine shared mechanics instead of letting near-duplicates drift.
 - The module therefore acts like a shared vocabulary for structure. It gives different features a common way to talk about transitions, events, coordination, reversible actions, pooling, and shared facts, which improves consistency across the rest of the engine.
 - Read `patterns` as the place where recurring structural ideas become concrete runtime components and shared coordination vocabulary.
-
 
 ## Imports
 

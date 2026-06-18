@@ -1,239 +1,240 @@
 --- @title Cinematic Timeline
 --- @desc Multi-track timeline system for orchestrating game sequences.
 
+local function cinematic_log(message)
+    lurek.log.info("[cinematic] " .. message)
+end
+
+local function make_timeline_with_signal_clip()
+    local timeline = lurek.cinematic.newTimeline()
+    timeline:addTrack("signals")
+    timeline:addClip("signals", 0.0, 2.0, { type = "signal", name = "intro_ready", data = "scene_a" })
+    return timeline
+end
+
 --@api: lurek.cinematic.newTimeline
 do
-    local tl = lurek.cinematic.newTimeline()
-    print("lurek.cinematic.newTimeline type=" .. tl:type())
-    print("state=" .. tl:getState())
+    local timeline = lurek.cinematic.newTimeline()
+    timeline:addTrack("camera")
+    local state = timeline:getState()
+    local type_name = timeline:type()
+    cinematic_log("new timeline type=" .. type_name .. " state=" .. state)
 end
 
 --@api: LCinematicTimeline:addTrack
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addTrack("camera")
-    tl:addTrack("audio")
-    print("LCinematicTimeline:addTrack ok")
+    local timeline = lurek.cinematic.newTimeline()
+    timeline:addTrack("camera")
+    timeline:addTrack("audio")
+    local state = timeline:getState()
+    cinematic_log("registered tracks for cutscene setup state=" .. state)
 end
 
 --@api: LCinematicTimeline:addClip
 do
-    local tl = lurek.cinematic.newTimeline()
-    local camera_clip = {
-        type = "camera",
-        x = 100.0,
-        y = 50.0,
-        zoom = 2.0,
-        easing = "ease_out_quad"
-    }
-    tl:addClip("camera", 0.0, 3.0, camera_clip)
-    print("LCinematicTimeline:addClip camera clip ok")
-
-    -- add signal clip
-    local signal_clip = {
-        type = "signal",
-        name = "combat_start",
-        data = "goblin_wave_1"
-    }
-    tl:addClip("signals", 2.0, 0.1, signal_clip)
-    print("LCinematicTimeline:addClip signal clip ok")
-
-    -- add audio clip
-    local audio_clip = {
-        type = "audio",
-        path = "music/boss_theme.wav"
-    }
-    tl:addClip("music", 5.0, 30.0, audio_clip)
-    print("LCinematicTimeline:addClip audio clip ok")
-
-    -- add tween clip
-    local tween_clip = {
-        type = "tween",
-        target = "player_sprite",
-        properties = { x = 500.0, y = 300.0, alpha = 1.0 },
-        easing = "ease_in_out_cubic"
-    }
-    tl:addClip("tweens", 1.0, 2.0, tween_clip)
-    print("LCinematicTimeline:addClip tween clip ok")
+    local timeline = lurek.cinematic.newTimeline()
+    timeline:addTrack("camera")
+    timeline:addTrack("signals")
+    timeline:addClip("camera", 0.0, 3.0, { type = "camera", x = 100.0, y = 50.0, zoom = 2.0, easing = "ease_out_quad" })
+    timeline:addClip("signals", 2.0, 0.1, { type = "signal", name = "boss_gate_open", data = "phase_1" })
+    cinematic_log("timeline duration after camera and signal clips=" .. timeline:getDuration())
 end
 
 --@api: LCinematicTimeline:play
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 5.0, { type = "signal", name = "test" })
-    tl:play()
-    print("LCinematicTimeline:play state=" .. tl:getState())
+    local timeline = make_timeline_with_signal_clip()
+    timeline:play()
+    local state = timeline:getState()
+    local playing = timeline:isPlaying()
+    cinematic_log("play moved timeline to state=" .. state .. " playing=" .. tostring(playing))
 end
 
 --@api: LCinematicTimeline:pause
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 10.0, { type = "signal", name = "test" })
-    tl:play()
-    tl:update(3.0)
-    tl:pause()
-    print("LCinematicTimeline:pause state=" .. tl:getState())
-    print("time=" .. tl:getTime())
+    local timeline = make_timeline_with_signal_clip()
+    timeline:play()
+    timeline:update(1.25)
+    timeline:pause()
+    cinematic_log("pause kept playhead at " .. timeline:getTime() .. " with state=" .. timeline:getState())
 end
 
 --@api: LCinematicTimeline:stop
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 10.0, { type = "signal", name = "test" })
-    tl:play()
-    tl:update(5.0)
-    tl:stop()
-    print("LCinematicTimeline:stop state=" .. tl:getState())
-    print("time reset=" .. tl:getTime())
+    local timeline = make_timeline_with_signal_clip()
+    timeline:play()
+    timeline:update(1.5)
+    timeline:stop()
+    cinematic_log("stop reset time=" .. timeline:getTime() .. " state=" .. timeline:getState())
 end
 
 --@api: LCinematicTimeline:seek
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 20.0, { type = "signal", name = "test" })
-    tl:seek(10.5)
-    print("LCinematicTimeline:seek time=" .. tl:getTime())
+    local timeline = make_timeline_with_signal_clip()
+    timeline:addClip("signals", 3.0, 1.0, { type = "signal", name = "camera_pan", data = "phase_2" })
+    timeline:seek(1.75)
+    local time = timeline:getTime()
+    cinematic_log("seek positioned playhead at " .. time .. " seconds")
 end
 
 --@api: LCinematicTimeline:update
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 10.0, { type = "signal", name = "test" })
-    tl:play()
-    tl:update(2.5)
-    print("LCinematicTimeline:update time=" .. tl:getTime())
+    local timeline = make_timeline_with_signal_clip()
+    timeline:play()
+    timeline:update(0.75)
+    local time = timeline:getTime()
+    local state = timeline:getState()
+    cinematic_log("update advanced cutscene to " .. time .. " with state=" .. state)
 end
 
 --@api: LCinematicTimeline:skipToEnd
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 15.0, { type = "signal", name = "test" })
-    tl:skipToEnd()
-    print("LCinematicTimeline:skipToEnd time=" .. tl:getTime())
+    local timeline = make_timeline_with_signal_clip()
+    local duration = timeline:getDuration()
+    timeline:skipToEnd()
+    local time = timeline:getTime()
+    cinematic_log("skipToEnd jumped from 0 to " .. time .. " of " .. duration)
 end
 
 --@api: LCinematicTimeline:getTime
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 10.0, { type = "signal", name = "test" })
-    tl:seek(4.2)
-    print("LCinematicTimeline:getTime=" .. tl:getTime())
+    local timeline = make_timeline_with_signal_clip()
+    timeline:seek(0.6)
+    local time = timeline:getTime()
+    local duration = timeline:getDuration()
+    cinematic_log("current cinematic time=" .. time .. " within duration=" .. duration)
 end
 
 --@api: LCinematicTimeline:getDuration
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("track1", 0.0, 5.0, { type = "signal", name = "a" })
-    tl:addClip("track2", 2.0, 8.0, { type = "signal", name = "b" })
-    print("LCinematicTimeline:getDuration=" .. tl:getDuration())
+    local timeline = lurek.cinematic.newTimeline()
+    timeline:addTrack("signals")
+    timeline:addClip("signals", 0.0, 5.0, { type = "signal", name = "intro" })
+    timeline:addClip("signals", 2.0, 8.0, { type = "signal", name = "boss_reveal" })
+    cinematic_log("timeline duration follows latest clip end=" .. timeline:getDuration())
 end
 
 --@api: LCinematicTimeline:getState
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 5.0, { type = "signal", name = "test" })
-    print("initial state=" .. tl:getState())
-    tl:play()
-    print("after play=" .. tl:getState())
+    local timeline = make_timeline_with_signal_clip()
+    local before = timeline:getState()
+    timeline:play()
+    local after = timeline:getState()
+    cinematic_log("state changed from " .. before .. " to " .. after)
 end
 
 --@api: LCinematicTimeline:isPlaying
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 5.0, { type = "signal", name = "test" })
-    print("before play=" .. tostring(tl:isPlaying()))
-    tl:play()
-    print("after play=" .. tostring(tl:isPlaying()))
+    local timeline = make_timeline_with_signal_clip()
+    local before = timeline:isPlaying()
+    timeline:play()
+    local after = timeline:isPlaying()
+    cinematic_log("isPlaying before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 
 --@api: LCinematicTimeline:isComplete
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 5.0, { type = "signal", name = "test" })
-    print("at start=" .. tostring(tl:isComplete()))
-    tl:seek(6.0)
-    print("past end=" .. tostring(tl:isComplete()))
+    local timeline = make_timeline_with_signal_clip()
+    local before = timeline:isComplete()
+    timeline:skipToEnd()
+    local after = timeline:isComplete()
+    cinematic_log("isComplete before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 
 --@api: LCinematicTimeline:addLabel
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 20.0, { type = "signal", name = "test" })
-    tl:addLabel("intro", 0.0)
-    tl:addLabel("midpoint", 10.0)
-    tl:addLabel("ending", 20.0)
-    print("LCinematicTimeline:addLabel ok")
+    local timeline = make_timeline_with_signal_clip()
+    timeline:addLabel("intro", 0.0)
+    timeline:addLabel("reveal", 1.0)
+    timeline:addLabel("exit", 2.0)
+    cinematic_log("labels added for intro, reveal, and exit on duration=" .. timeline:getDuration())
 end
 
 --@api: LCinematicTimeline:branch
 do
-    local tl = lurek.cinematic.newTimeline()
-    tl:addClip("test", 0.0, 20.0, { type = "signal", name = "test" })
-    tl:addLabel("checkpoint", 7.5)
-    local ok = tl:branch("checkpoint")
-    print("LCinematicTimeline:branch ok=" .. tostring(ok))
-    print("jumped to=" .. tl:getTime())
+    local timeline = make_timeline_with_signal_clip()
+    timeline:addLabel("checkpoint", 1.5)
+    timeline:seek(0.25)
+    local ok = timeline:branch("checkpoint")
+    cinematic_log("branch jumped=" .. tostring(ok) .. " playhead=" .. timeline:getTime())
 end
 
 --@api: LCinematicTimeline:type
 do
-    local tl = lurek.cinematic.newTimeline()
-    print("LCinematicTimeline:type=" .. tl:type())
+    local timeline = make_timeline_with_signal_clip()
+    timeline:seek(0.5)
+    local type_name = timeline:type()
+    local state = timeline:getState()
+    cinematic_log("timeline userdata type=" .. type_name .. " state=" .. state)
 end
 
 --@api: LCinematicTimeline:typeOf
 do
-    local tl = lurek.cinematic.newTimeline()
-    print("typeOf LCinematicTimeline=" .. tostring(tl:typeOf("LCinematicTimeline")))
-    print("typeOf Object=" .. tostring(tl:typeOf("Object")))
+    local timeline = make_timeline_with_signal_clip()
+    timeline:play()
+    local is_timeline = timeline:typeOf("LCinematicTimeline")
+    local is_object = timeline:typeOf("Object")
+    cinematic_log("typeOf timeline=" .. tostring(is_timeline) .. " object=" .. tostring(is_object))
 end
 
 --@api: lurek.cinematic.new
 do
     local cinematic = lurek.cinematic.new()
-    print("lurek.cinematic.new type=" .. cinematic:type())
+    cinematic:addCut(0.0, "fade_from_black")
+    local type_name = cinematic:type()
+    local cuts = cinematic:cutCount()
+    cinematic_log("legacy cinematic type=" .. type_name .. " cuts=" .. cuts)
 end
 
 --@api: LCinematic:addCut
 do
     local cinematic = lurek.cinematic.new()
-    cinematic:addCut(0.0, "Intro pan")
-    cinematic:addCut(1.5, "Player reveal")
-    print("cuts after add = " .. tostring(cinematic:cutCount()))
+    cinematic:addCut(0.0, "intro_pan")
+    cinematic:addCut(1.5, "player_reveal")
+    local cuts = cinematic:cutCount()
+    cinematic_log("legacy cut list size after addCut=" .. tostring(cuts))
 end
 
 --@api: LCinematic:cutCount
 do
     local cinematic = lurek.cinematic.new()
-    cinematic:addCut(0.0, "single cut")
-    print("cut count = " .. tostring(cinematic:cutCount()))
+    cinematic:addCut(0.0, "drone_establish")
+    cinematic:addCut(2.0, "control_room_zoom")
+    local cuts = cinematic:cutCount()
+    cinematic_log("cutCount reports " .. tostring(cuts) .. " queued legacy cuts")
 end
 
 --@api: LCinematic:play
 do
     local cinematic = lurek.cinematic.new()
-    cinematic:addCut(0.0, "start")
+    cinematic:addCut(0.0, "alarm_start")
+    cinematic:addCut(0.5, "lights_flash")
     cinematic:play()
-    print("cinematic play invoked")
+    cinematic_log("legacy cut list played with " .. tostring(cinematic:cutCount()) .. " cuts")
 end
 
 --@api: LCinematic:clear
 do
     local cinematic = lurek.cinematic.new()
-    cinematic:addCut(0.0, "to clear")
+    cinematic:addCut(0.0, "temp_intro")
+    cinematic:addCut(0.5, "temp_pan")
     cinematic:clear()
-    print("cut count after clear = " .. tostring(cinematic:cutCount()))
+    cinematic_log("clear removed all cuts count=" .. tostring(cinematic:cutCount()))
 end
 
 --@api: LCinematic:type
 do
     local cinematic = lurek.cinematic.new()
-    print("LCinematic:type = " .. cinematic:type())
+    cinematic:addCut(0.0, "intro")
+    local type_name = cinematic:type()
+    local cuts = cinematic:cutCount()
+    cinematic_log("legacy cinematic type=" .. type_name .. " cuts=" .. tostring(cuts))
 end
 
 --@api: LCinematic:typeOf
 do
     local cinematic = lurek.cinematic.new()
-    print("is LCinematic = " .. tostring(cinematic:typeOf("LCinematic")))
-    print("is Object = " .. tostring(cinematic:typeOf("Object")))
+    cinematic:addCut(0.0, "intro")
+    local is_cinematic = cinematic:typeOf("LCinematic")
+    local is_object = cinematic:typeOf("Object")
+    cinematic_log("typeOf cinematic=" .. tostring(is_cinematic) .. " object=" .. tostring(is_object))
 end

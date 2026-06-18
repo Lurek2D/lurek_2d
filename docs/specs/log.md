@@ -17,10 +17,9 @@
 ## Summary
 
 - The `log` module is the common script-facing path for runtime diagnostics, so users can emit messages through one consistent logging surface instead of mixing ad hoc print styles.
-- It keeps message formatting, structured fields, severity, and sink routing together, which lets debugging output scale from quick local traces to more deliberate retained logs.
-- That consistency matters when logs must be filtered, archived, or correlated across several subsystems instead of read as isolated console noise.
+- It keeps message formatting, structured fields, severity, and sink routing together, which lets debugging output scale from quick traces to retained logs.
+- That common path makes filtering and correlation across subsystems easier.
 - Read it as the standard language for script diagnostics when several systems need to be debugged through the same output flow.
-
 
 ## Imports
 

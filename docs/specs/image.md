@@ -29,11 +29,10 @@
 - Province and grid extraction features show that image data can also be a source of gameplay structure. A picture may become region data, mask data, or map guidance rather than only something to display.
 - That two-way relationship is important: `image` is useful both after a visual asset exists and when visual data is being used as input to another system.
 - Serialization and format conversion keep the module connected to the outside world. The same subsystem can move between files, generated runtime state, debugging artifacts, and exported outputs without pushing those conversions into ad hoc helpers.
+- That flexibility also makes the module useful for tool-driven inspection as well as asset preparation.
 - This makes the module useful across the whole asset lifecycle: load, inspect, transform, compare, pack, export, and sometimes reinterpret as data for another system.
-- It is also useful for golden-image workflows and repeatable visual checks.
 - `render` consumes prepared results, but `image` owns pixel-domain manipulation, inspection, packing, and export before or outside final rendering.
-- Read `image` as the engine's pixel-domain authority.
-
+- Read `image` as the engine's pixel-domain authority for asset prep and tooling.
 
 ## Imports
 

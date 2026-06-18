@@ -18,9 +18,8 @@
 
 - The `layout` module is the automatic placement layer for users who need graph-like structures to become readable 2D diagrams without hand-positioning every node.
 - It supports different layout strategies for different shapes, so dependency graphs, trees, and more organic maps can use an algorithm that matches the structure.
-- This is especially useful when a graph changes often and the engine still needs readable coordinates without manual upkeep.
-- Read it as the module that turns abstract structure into stable coordinates which other systems can draw or inspect.
-
+- This is useful when a graph changes and still needs readable coordinates without manual upkeep.
+- Read it as the module that turns abstract structure into stable coordinates.
 
 ## Imports
 

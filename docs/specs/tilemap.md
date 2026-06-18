@@ -36,9 +36,9 @@
 - Chunk-aware storage matters beyond performance, because streaming, tooling, and large-world editing all depend on a shared notion of how the map is partitioned.
 - That makes `tilemap` useful not only for drawing terrain, but also for organizing the world model that several other modules stand on.
 - The feature therefore serves as both storage and interpretation: it does not merely hold tile IDs, it defines what tile-space means well enough for the rest of the engine to build on top of it.
+- That authority lets authored maps, generated chunks, and runtime overlays remain compatible.
 - `pathfind`, `physics`, `raycaster`, and `render` all consume tile-space in specialized ways, but `tilemap` owns what the grid world fundamentally is.
 - Read `tilemap` as the engine's main authority for tile space and tile-world structure.
-
 
 ## Imports
 

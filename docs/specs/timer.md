@@ -17,14 +17,14 @@
 ## Summary
 
 - The `timer` module is the shared time-management surface for users who need clocks, delayed callbacks, repeating work, and timing queries to behave consistently.
-- Clocks, accumulators, schedulers, and sleep helpers work together so the same module can cover frame deltas, elapsed-time tracking, wall-time waits, and callback scheduling.
-- That matters because several systems rely on time, but they do not all need time in the same way; some need smooth frame metrics, others need deferred events, and others need accumulated timing without drift.
-- Scheduling support is especially important because many features need explicit future work rather than only current elapsed time. Delayed callbacks, repeating intervals, and cancelable timer handles give gameplay and tooling code a structured way to express that work.
-- Deterministic accumulation also matters for scripted sequences, cooldowns, UI feedback, analytics sampling, and automated tests where time should be queryable and comparable instead of buried in scattered frame math.
-- The module is therefore useful both as a low-level clock source and as a coordination surface for anything that must happen later, repeatedly, or after a measured duration.
-- That common layer also reduces drift between systems, because UI, gameplay, automation, and diagnostics can all schedule work against the same timing vocabulary.
-- Read it as the common timing layer for the engine. Neighboring modules depend on time, but `timer` is where time becomes a reusable, queryable, and schedulable runtime resource.
-
+- Clocks, accumulators, schedulers, and sleep helpers live together here so one module can cover frame deltas, elapsed tracking, wall-time waits, and callback scheduling.
+- That matters because different systems rely on time in different ways: some need smooth frame metrics, some need deferred events, and some need accumulated timing without drift or ad hoc frame math.
+- Delayed callbacks, repeating intervals, and cancelable timer handles give gameplay, UI, and tooling code a structured way to express future work instead of scattering timing state through unrelated systems.
+- Deterministic accumulation is especially valuable for scripted sequences, cooldowns, analytics sampling, and automated tests where time should stay queryable and comparable.
+- That shared scheduling layer also helps systems agree on cadence instead of inventing separate delay bookkeeping.
+- It keeps deferred work inspectable.
+- The module therefore serves both as a low-level clock source and as a coordination surface for anything that must happen later, repeatedly, or after a measured duration.
+- Read `timer` as the engine's common timing layer: neighboring modules consume time, but this module turns it into a reusable, schedulable runtime resource.
 
 ## Imports
 

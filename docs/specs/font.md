@@ -16,11 +16,10 @@
 
 ## Summary
 
-- The `font` module is the shared typography layer for users who need predictable text behavior in UI, HUDs, overlays, or retro-style screens.
+- The `font` module is the typography layer for users who need predictable text behavior in UI, HUDs, overlays, or retro-style screens.
 - It covers loading and registering fonts, so scripts can reuse named font resources instead of rebuilding text setup at every draw site.
-- Measurement and shaping are just as important as loading here: glyph metrics, wrapping, line sizing, and related text geometry helpers let layout code make reliable decisions before anything is rendered.
-- Read this module as the place where text data becomes stable and reusable. Rendering and UI systems still decide where text appears, but `font` keeps lookup and measurement consistent.
-
+- Measurement and shaping are just as important as loading here: glyph metrics, wrapping, line sizing, and text geometry helpers let layout code make reliable decisions before anything is rendered.
+- Read this module as the place where text data becomes stable and reusable. Rendering and UI systems still decide where text appears, but `font` keeps measurement consistent.
 
 ## Imports
 

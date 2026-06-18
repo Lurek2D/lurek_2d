@@ -25,9 +25,10 @@
 - Blend and attenuation semantics are especially important because they control not only whether a light exists, but how strongly it influences surrounding space and how several lights combine visually.
 - Occluder-aware behavior is equally important because lights only become useful for scene reasoning when blocking and shadow semantics are modeled alongside them.
 - This lets the same subsystem support both atmosphere and gameplay readability, since visibility cues often depend on how light is shaped by world geometry rather than on color alone.
+- It also gives tools a stable light-world model to inspect.
+- That shared data layer matters whenever gameplay, art direction, and debugging all need to read the same light setup.
 - `render` draws the final result, but `light` owns how 2D light entities, falloff, and occlusion semantics are represented together.
 - Read `light` as the owner of light definitions and light-world state inside the engine.
-
 
 ## Imports
 

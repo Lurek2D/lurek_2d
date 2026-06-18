@@ -24,10 +24,9 @@
 - Script hooks and grouping support make the system adaptable to thematic or progression-aware generation, which is important when modular pieces need more nuance than simple random choice.
 - Orientation and multilevel handling matter because reusable blocks often connect vertically or directionally, and the legality of the final layout depends on those relationships being tracked explicitly.
 - This makes the module useful whenever designed pieces need to stay meaningful after recombination. A corridor, room, bridge, or stair block can keep its authored purpose while still participating in procedural assembly.
-- The system gives projects a middle ground between raw procgen and fully hand-built maps.
+- It preserves authored intent while still enabling recombination.
 - Neighboring modules consume the output, but `mapblock` owns the modular grammar that decides how authored fragments connect into a legal larger space.
 - Read `mapblock` as the subsystem that turns reusable map pieces into generated layouts with explicit connection rules.
-
 
 ## Imports
 

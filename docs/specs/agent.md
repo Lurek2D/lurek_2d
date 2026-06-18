@@ -27,11 +27,9 @@
 - Embeddings support is equally important because retrieval, similarity search, and grounding workflows often matter as much as text generation itself.
 - This makes the module useful not only for chat-like helpers, but also for assistants that classify, retrieve, summarize, or fill structured records as part of larger tool or content workflows.
 - Orchestration support matters because several named agents may need different prompts, memory scopes, and response rules while still living under one runtime surface.
-- Local Ollama integration keeps the same model useful for self-hosted and offline workflows while preserving one script-facing API.
 - The module is useful for tool copilots, content helpers, QA utilities, retrieval-backed assistants, and other workflows where model access should feel native to the engine.
-- `network` owns transport mechanics, but `agent` owns prompts, memory, agent identity, structured responses, and request orchestration semantics.
+- `agent` owns prompts, memory, agent identity, structured responses, and request orchestration semantics.
 - Read `agent` as the place where assistants become first-class runtime capabilities rather than thin HTTP wrappers.
-
 
 ## Imports
 

@@ -18,17 +18,17 @@
 ## Summary
 
 - The `flownet` module is the logistics-graph simulation surface for users who want resources, items, queues, routes, and transformation rules to behave as one explicit networked system.
-- Nodes, edges, items, capacities, queue rules, cooldowns, transit timing, and single-owner placement semantics combine into a model where supply and processing are visible parts of gameplay rather than hidden bookkeeping.
-- This is valuable because many logistics-heavy features depend on more than pathfinding alone. They also need ownership of where an item is, how much throughput a path supports, how congestion behaves, and how transformation steps consume and produce goods.
-- Push and pull flows, reservations, demand matching, and simulation ticks make the module useful for factory-style loops, economy simulations, routing puzzles, and colony-like systems where movement through a graph is itself the game.
-- Structural algorithms such as components, cycle checks, coloring, and topological views keep the same module relevant for diagnostics and editor-like tooling, not only for live per-tick simulation.
-- Pathfinding and supply-demand helpers matter because graph flow usually involves more than “is there a route.” Users often need the best route under constraints, prioritization across several needs, and observable reasons why a flow did or did not happen.
-- Render and visualization support make the module inspectable. That is important in logistics systems, where the hard part is often understanding why a network behaves unexpectedly rather than simply storing the network.
-- Serialization and deterministic simulation state turn `flownet` into a practical engine feature for saves, tests, or long-running scenarios where the exact network state must survive and be reproduced.
-- This makes the module especially strong for factory chains, colony logistics, convoy-style resource movement, and other designs where bottlenecks and queue behavior are part of the gameplay challenge rather than invisible backend details.
-- Reservation and throughput semantics give users a way to explain congestion, starvation, or blocked production in explicit system terms.
-- Read `flownet` as the owner of directed resource movement and conversion across a graph. Other systems may feed data into the network or draw conclusions from it, but this module decides how items, capacities, paths, and transformations interact over time.
-
+- Nodes, edges, items, capacities, queue rules, cooldowns, transit timing, and placement semantics combine into a model where supply and processing are visible parts of gameplay rather than hidden bookkeeping.
+- Logistics-heavy features depend on more than pathfinding alone. They also need ownership of where an item is, how much throughput a path supports, how congestion behaves, and how transformation steps consume and produce goods.
+- Push and pull flows, reservations, demand matching, and simulation ticks make the module useful for factory loops, economy simulations, routing puzzles, and colony-style systems where movement through a graph is itself part of the game.
+- Structural algorithms such as components and cycle checks keep the module useful for diagnostics and tooling.
+- Visualization, serialization, and deterministic state handling make `flownet` practical for saves, tests, long-running scenarios, and bottleneck debugging where users need to explain why a network did or did not move goods.
+- Reservation and throughput semantics are especially important because most logistics gameplay is really about contention. Users need to understand why an item waited, which edge saturated first, whether a consumer starved, or how competing flows were prioritized through the same network.
+- Transformation support broadens the module beyond transport. Many networks do not merely move goods; they refine, combine, split, package, or otherwise convert them, so production logic has to remain visible inside the same graph model as routing.
+- Simulation ticks give the system a temporal identity as well. Transit delays, cooldowns, queue progress, and staged processing make flow behavior something that evolves over time rather than resolving as an instant path query.
+- That timing layer helps explain congestion.
+- This makes `flownet` strong for factory chains, colony logistics, convoy simulation, resource routing puzzles, and economy layers where bottlenecks, congestion, and transformation rules are core gameplay rather than invisible backend bookkeeping.
+- Read `flownet` as the owner of directed resource movement and conversion across a graph. Other systems may feed data into the network or draw conclusions from it, but this module decides how items, capacities, paths, queues, and transformations interact over time.
 
 ## Imports
 

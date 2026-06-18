@@ -24,12 +24,11 @@
 - Screen shake, sway, breathing, zoom pulses, and scripted paths extend the module from neutral viewing into gameplay feedback and cinematic presentation.
 - Screen-to-world and world-to-screen conversion are equally important because overlays, minimaps, targeting, and editor tools depend on the same view contract.
 - Split views, subviews, and viewport-aware framing broaden the feature beyond one player camera into inspection tools and multi-panel presentation workflows.
-- That conversion layer is one of the main reasons the module belongs outside gameplay code: several systems need the same answer to where the world appears on screen, and camera policy is what keeps those answers consistent.
 - Scripted path motion also makes the feature useful for guided pans, flyovers, tutorials, and tool previews where the point is not only to follow a target, but to author how attention moves through space.
-- The module is useful for gameplay cameras, cutscenes, split views, inspection tools, and any feature that needs stable framing semantics.
+- That same contract helps previews and gameplay stay visually aligned.
+- This shared framing policy is what keeps several view-dependent systems aligned instead of each inventing its own screen-space math.
 - `render` shows the result and world systems choose what to focus, but `camera` owns how that focus is followed, constrained, and transformed into visible space.
 - Read `camera` as the authority for framing policy and coordinate conversion between world and screen.
-
 
 ## Imports
 

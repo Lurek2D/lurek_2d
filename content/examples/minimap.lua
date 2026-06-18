@@ -2,44 +2,67 @@
 -- Auto-generated from content/examples2/minimap_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/minimap.lua
 
+local function minimap_log(message)
+    lurek.log.info("[minimap.example] " .. tostring(message))
+end
+
 --- Minimap Module Part 1: creation, terrain, fog, display, layers
+
+local function example_print_log(...)
+    local parts = {}
+    for i = 1, select("#", ...) do
+        parts[i] = tostring(select(i, ...))
+    end
+    lurek.log.info(table.concat(parts, " "))
+end
 
 --@api: lurek.minimap.newMinimap
 do
     local mm = lurek.minimap.newMinimap(64, 64, 200, 200)
+    mm:setCenter(32, 24)
+    mm:setZoom(1.25)
     local dw, dh = mm:getDisplaySize()
-    print("grid = " .. mm:getGridWidth() .. "x" .. mm:getGridHeight())
-    print("display = " .. dw .. "x" .. dh)
+    minimap_log("command view " .. mm:getGridWidth() .. "x" .. mm:getGridHeight() .. " -> " .. dw .. "x" .. dh)
 end
 
 --@api: LMinimap:setTerrain
 do
     local mm = lurek.minimap.newMinimap(16, 16)
-    mm:setTerrain(1, 1, 2)
-    print("terrain(1,1) = " .. mm:getTerrain(1, 1))
+    mm:setTileDescription(2, "Forest")
+    mm:setTerrain(6, 5, 2)
+    local terrain = mm:getTerrain(6, 5)
+    local desc = mm:getTileDescription(terrain)
+    minimap_log("sector 6,5 became " .. tostring(desc))
 end
 
 --@api: LMinimap:getTerrain
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setTileDescription(7, "Mountain")
     mm:setTerrain(2, 3, 7)
-    print("terrain(2,3) = " .. mm:getTerrain(2, 3))
+    local terrain = mm:getTerrain(2, 3)
+    local desc = mm:getTileDescription(terrain)
+    minimap_log("scouted tile 2,3 = " .. tostring(desc))
 end
 
 --@api: LMinimap:setTerrainColor
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setTerrain(4, 4, 1)
     mm:setTerrainColor(1, 0.2, 0.6, 0.1, 0.9)
     local r, g, b, a = mm:getTerrainColor(1)
-    print("terrain 1 color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    local terrain = mm:getTerrain(4, 4)
+    minimap_log("terrain " .. terrain .. " palette = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
 --@api: LMinimap:getTerrainColor
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setTerrain(8, 2, 3)
     mm:setTerrainColor(3, 0.7, 0.4, 0.2, 1.0)
     local r, g, b, a = mm:getTerrainColor(3)
-    print("terrain 3 color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    local terrain = mm:getTerrain(8, 2)
+    minimap_log("desert terrain " .. terrain .. " uses " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
 --@api: LMinimap:setTerrainData
@@ -52,54 +75,69 @@ do
     end
 
     mm:setTerrainData(data)
-    print("terrain(1,1) = " .. mm:getTerrain(1, 1))
-    print("terrain(4,4) = " .. mm:getTerrain(4, 4))
+    example_print_log("terrain(1,1) = " .. mm:getTerrain(1, 1))
+    example_print_log("terrain(4,4) = " .. mm:getTerrain(4, 4))
 end
 
 --@api: LMinimap:setFogEnabled
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setFogColor(0.0, 0.0, 0.0, 0.75)
     mm:setFogEnabled(true)
-    print("fog enabled = " .. tostring(mm:isFogEnabled()))
+    mm:setFogLevel(8, 8, 0)
+    local enabled = mm:isFogEnabled()
+    minimap_log("fog toggle for unexplored map = " .. tostring(enabled))
 end
 
 --@api: LMinimap:isFogEnabled
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setFogLevel(4, 4, 2)
     mm:setFogEnabled(false)
-    print("fog enabled = " .. tostring(mm:isFogEnabled()))
+    local enabled = mm:isFogEnabled()
+    local fog = mm:getFogLevel(4, 4)
+    minimap_log("fog visible? " .. tostring(enabled) .. " while cell keeps state " .. fog)
 end
 
 --@api: LMinimap:setFogLevel
 do
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setFogEnabled(true)
+    mm:setFogColor(0.0, 0.0, 0.0, 0.6)
     mm:setFogLevel(1, 1, 2)
-    print("fog(1,1) = " .. mm:getFogLevel(1, 1))
+    local fog = mm:getFogLevel(1, 1)
+    minimap_log("spawn tile fog level now " .. fog)
 end
 
 --@api: LMinimap:getFogLevel
 do
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setFogEnabled(true)
+    mm:setTerrain(2, 2, 1)
     mm:setFogLevel(2, 2, 1)
-    print("fog(2,2) = " .. mm:getFogLevel(2, 2))
+    local fog = mm:getFogLevel(2, 2)
+    local terrain = mm:getTerrain(2, 2)
+    minimap_log("tile 2,2 terrain " .. terrain .. " has fog " .. fog)
 end
 
 --@api: LMinimap:setFogColor
 do
     local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setFogEnabled(true)
     mm:setFogColor(0.0, 0.0, 0.0, 0.7)
     local r, g, b, a = mm:getFogColor()
-    print("fog color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    mm:setFogLevel(3, 3, 2)
+    minimap_log("night raid fog color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
 --@api: LMinimap:getFogColor
 do
     local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setFogEnabled(true)
     mm:setFogColor(0.1, 0.2, 0.3, 0.6)
     local r, g, b, a = mm:getFogColor()
-    print("fog color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    mm:setFogLevel(5, 5, 1)
+    minimap_log("exploration fog tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
 --@api: LMinimap:setFogData
@@ -114,8 +152,8 @@ do
     end
 
     mm:setFogData(fog)
-    print("fog(1,1) = " .. mm:getFogLevel(1, 1))
-    print("fog(4,4) = " .. mm:getFogLevel(4, 4))
+    example_print_log("fog(1,1) = " .. mm:getFogLevel(1, 1))
+    example_print_log("fog(4,4) = " .. mm:getFogLevel(4, 4))
 end
 
 --@api: LMinimap:revealRadius
@@ -131,36 +169,48 @@ do
 
     mm:setFogData(fog)
     mm:revealRadius(16, 16, 5)
-    print("center fog = " .. mm:getFogLevel(16, 16))
-    print("corner fog = " .. mm:getFogLevel(1, 1))
+    example_print_log("center fog = " .. mm:getFogLevel(16, 16))
+    example_print_log("corner fog = " .. mm:getFogLevel(1, 1))
 end
 
 --@api: LMinimap:setColorMode
 do
     local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setOwnerColor(1, 0.9, 0.2, 0.2, 1.0)
+    mm:setTerrain(4, 4, 1)
     mm:setColorMode("political")
-    print("mode = " .. mm:getColorMode())
+    local mode = mm:getColorMode()
+    minimap_log("campaign view mode = " .. mode)
 end
 
 --@api: LMinimap:getColorMode
 do
     local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setTerrainColor(1, 0.1, 0.5, 0.1, 1.0)
     mm:setColorMode("terrain")
-    print("mode = " .. mm:getColorMode())
+    local mode = mm:getColorMode()
+    local cells = mm:getCellCount()
+    minimap_log("terrain palette active across " .. cells .. " cells: " .. mode)
 end
 
 --@api: LMinimap:setLayer
 do
     local mm = lurek.minimap.newMinimap(4, 4)
-    mm:setLayer(2)
-    print("layer = " .. mm:getLayer())
+    mm:setLayerData(1, { 1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 2, 2, 3, 3, 3, 3 })
+    mm:setLayer(1)
+    local layer = mm:getLayer()
+    local layer_cells = mm:getLayerData(layer)
+    minimap_log("switched to layer " .. layer .. " with " .. #(layer_cells or {}) .. " cells")
 end
 
 --@api: LMinimap:getLayer
 do
     local mm = lurek.minimap.newMinimap(4, 4)
-    mm:setLayer(1)
-    print("layer = " .. mm:getLayer())
+    mm:setLayerData(2, { 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 3, 3, 3, 3 })
+    mm:setLayer(2)
+    local layer_data = mm:getLayerData(2)
+    local layer = mm:getLayer()
+    minimap_log("active terrain layer " .. layer .. " sample " .. tostring(layer_data and layer_data[1]))
 end
 
 --@api: LMinimap:getLayerCount
@@ -173,7 +223,7 @@ do
     end
 
     mm:setLayerData(1, data)
-    print("layer count = " .. mm:getLayerCount())
+    example_print_log("layer count = " .. mm:getLayerCount())
 end
 
 --@api: LMinimap:setLayerData
@@ -187,8 +237,8 @@ do
 
     mm:setLayerData(0, data)
     local out = mm:getLayerData(0)
-    print("layer 0 size = " .. #(out or {}))
-    print("layer 0 first = " .. (out and out[1] or -1))
+    example_print_log("layer 0 size = " .. #(out or {}))
+    example_print_log("layer 0 first = " .. (out and out[1] or -1))
 end
 
 --@api: LMinimap:getLayerData
@@ -202,105 +252,148 @@ do
 
     mm:setLayerData(1, data)
     local out = mm:getLayerData(1)
-    print("layer 1 size = " .. #(out or {}))
-    print("layer 1 last = " .. (out and out[#out] or -1))
+    example_print_log("layer 1 size = " .. #(out or {}))
+    example_print_log("layer 1 last = " .. (out and out[#out] or -1))
 end
 
 --@api: LMinimap:setDisplaySize
 do
     local mm = lurek.minimap.newMinimap(16, 16, 100, 100)
+    mm:setCenter(8, 8)
     mm:setDisplaySize(300, 250)
-    print("display = " .. mm:getDisplayWidth() .. "x" .. mm:getDisplayHeight())
+    local dw, dh = mm:getDisplaySize()
+    local zoom = mm:getZoom()
+    minimap_log("resized hud panel to " .. dw .. "x" .. dh .. " at zoom " .. zoom)
 end
 
 --@api: LMinimap:getDisplayWidth
 do
     local mm = lurek.minimap.newMinimap(16, 16, 100, 100)
     mm:setDisplaySize(300, 250)
-    print("display width = " .. mm:getDisplayWidth())
+    mm:setViewportRect(2, 2, 6, 6)
+    local width = mm:getDisplayWidth()
+    local viewport_w = select(3, mm:getViewportRect())
+    minimap_log("display width " .. width .. " tracks viewport width " .. tostring(viewport_w))
 end
 
 --@api: LMinimap:getDisplayHeight
 do
     local mm = lurek.minimap.newMinimap(16, 16, 100, 100)
     mm:setDisplaySize(300, 250)
-    print("display height = " .. mm:getDisplayHeight())
+    mm:setViewportRect(2, 2, 6, 6)
+    local height = mm:getDisplayHeight()
+    local viewport_h = select(4, mm:getViewportRect())
+    minimap_log("display height " .. height .. " tracks viewport height " .. tostring(viewport_h))
 end
 
 --@api: LMinimap:setCenter
 do
     local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setZoom(1.5)
     mm:setCenter(16, 12)
     local cx, cy = mm:getCenter()
-    print("center = " .. cx .. "," .. cy)
+    local sx, sy = mm:gridToScreen(cx, cy, 0, 0)
+    minimap_log("camera focus moved to " .. cx .. "," .. cy .. " => " .. sx .. "," .. sy)
 end
 
 --@api: LMinimap:getCenter
 do
     local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setViewportRect(6, 14, 8, 8)
     mm:setCenter(10, 20)
     local cx, cy = mm:getCenter()
-    print("center = " .. cx .. "," .. cy)
+    local vw, vh = select(3, mm:getViewportRect()), select(4, mm:getViewportRect())
+    minimap_log("tracked center " .. cx .. "," .. cy .. " with viewport " .. tostring(vw) .. "x" .. tostring(vh))
 end
 
 --@api: LMinimap:getCenterX
 do
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setCenter(14, 9)
-    print("center x = " .. mm:getCenterX())
+    mm:setZoom(2.0)
+    local cx = mm:getCenterX()
+    local sx = select(1, mm:gridToScreen(cx, mm:getCenterY(), 0, 0))
+    minimap_log("center x " .. cx .. " projects to " .. sx)
 end
 
 --@api: LMinimap:getCenterY
 do
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:setCenter(14, 9)
-    print("center y = " .. mm:getCenterY())
+    mm:setZoom(2.0)
+    local cy = mm:getCenterY()
+    local sy = select(2, mm:gridToScreen(mm:getCenterX(), cy, 0, 0))
+    minimap_log("center y " .. cy .. " projects to " .. sy)
 end
 
 --@api: LMinimap:setZoom
 do
     local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setCenter(16, 16)
     mm:setZoom(2.0)
-    print("zoom = " .. mm:getZoom())
+    local zoom = mm:getZoom()
+    local sx, sy = mm:gridToScreen(20, 20, 0, 0)
+    minimap_log("zoom " .. zoom .. " pushes scout ping to " .. sx .. "," .. sy)
 end
 
 --@api: LMinimap:getZoom
 do
     local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setCenter(8, 8)
     mm:setZoom(1.5)
-    print("zoom = " .. mm:getZoom())
+    local zoom = mm:getZoom()
+    local gx, gy = mm:screenToGrid(100, 100, 0, 0)
+    minimap_log("zoom readback " .. zoom .. " around screen sample " .. tostring(gx) .. "," .. tostring(gy))
 end
 
 --@api: LMinimap:setAntiAlias
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setDisplaySize(128, 128)
     mm:setAntiAlias(true)
-    print("anti alias = " .. tostring(mm:isAntiAlias()))
+    local enabled = mm:isAntiAlias()
+    local dw, dh = mm:getDisplaySize()
+    minimap_log("anti alias " .. tostring(enabled) .. " on " .. dw .. "x" .. dh)
 end
 
 --@api: LMinimap:isAntiAlias
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setDisplaySize(96, 96)
     mm:setAntiAlias(false)
-    print("anti alias = " .. tostring(mm:isAntiAlias()))
+    local enabled = mm:isAntiAlias()
+    local cells = mm:getCellCount()
+    minimap_log("anti alias " .. tostring(enabled) .. " for " .. cells .. " tactical cells")
 end
 
 --@api: LMinimap:getCellCount
 do
     local mm = lurek.minimap.newMinimap(10, 20)
-    print("cell count = " .. mm:getCellCount())
+    mm:setDisplaySize(200, 120)
+    mm:setCenter(5, 10)
+    local cells = mm:getCellCount()
+    local gw, gh = mm:getGridSize()
+    minimap_log("grid " .. gw .. "x" .. gh .. " exposes " .. cells .. " cells")
 end
 
 --@api: LMinimap:getGridWidth
 do
     local mm = lurek.minimap.newMinimap(10, 20)
-    print("grid width = " .. mm:getGridWidth())
+    mm:setDisplaySize(160, 160)
+    mm:setCenter(5, 10)
+    local width = mm:getGridWidth()
+    local cells = mm:getCellCount()
+    minimap_log("grid width " .. width .. " within " .. cells .. " total cells")
 end
 
 --@api: LMinimap:getGridHeight
 do
     local mm = lurek.minimap.newMinimap(10, 20)
-    print("grid height = " .. mm:getGridHeight())
+    mm:setDisplaySize(160, 160)
+    mm:setCenter(5, 10)
+    local height = mm:getGridHeight()
+    local cells = mm:getCellCount()
+    minimap_log("grid height " .. height .. " within " .. cells .. " total cells")
 end
 
 --@api: LMinimap:setTileDescription
@@ -308,24 +401,27 @@ do
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setTileDescription(1, "Grass")
     mm:setTileDescription(2, "Water")
-    print("tile 1 = " .. tostring(mm:getTileDescription(1)))
-    print("tile 2 = " .. tostring(mm:getTileDescription(2)))
+    example_print_log("tile 1 = " .. tostring(mm:getTileDescription(1)))
+    example_print_log("tile 2 = " .. tostring(mm:getTileDescription(2)))
 end
 
 --@api: LMinimap:getTileDescription
 do
     local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setTerrain(3, 4, 3)
     mm:setTileDescription(3, "Mountain")
-    print("tile 3 = " .. tostring(mm:getTileDescription(3)))
+    local terrain = mm:getTerrain(3, 4)
+    local desc = mm:getTileDescription(terrain)
+    minimap_log("hover label for ridge tile = " .. tostring(desc))
 end
 
 --@api: LMinimap:update
 do
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:addPing(4, 4, 0.25)
-    print("pings before = " .. mm:getPingCount())
+    example_print_log("pings before = " .. mm:getPingCount())
     mm:update(0.5)
-    print("pings after = " .. mm:getPingCount())
+    example_print_log("pings after = " .. mm:getPingCount())
 end
 
 --@api: LMinimap:render
@@ -333,8 +429,8 @@ do
     local mm = lurek.minimap.newMinimap(8, 8, 96, 96)
     mm:setTerrain(1, 1, 1)
     mm:render(10, 10)
-    print("render queued at = 10,10")
-    print("type = " .. mm:type())
+    example_print_log("render queued at = 10,10")
+    example_print_log("type = " .. mm:type())
 end
 
 --- Minimap Module Part 2: markers, objects, paths, overlays, viewport, coordinate mapping
@@ -345,32 +441,38 @@ do
     local id1 = mm:addMarker(10, 10, "Base", 0, 1, 0, 1)
 
     mm:addMarker(20, 5, "Enemy", 1, 0, 0, 1)
-    print("marker id = " .. id1)
-    print("marker count = " .. mm:getMarkerCount())
+    example_print_log("marker id = " .. id1)
+    example_print_log("marker count = " .. mm:getMarkerCount())
 end
 
 --@api: LMinimap:hasMarker
 do
     local mm = lurek.minimap.newMinimap(32, 32)
     local id = mm:addMarker(10, 10, "Outpost")
-
-    print("has marker = " .. tostring(mm:hasMarker(id)))
+    mm:setCenter(10, 10)
+    local present = mm:hasMarker(id)
+    local count = mm:getMarkerCount()
+    minimap_log("outpost marker present = " .. tostring(present) .. " count " .. count)
 end
 
 --@api: LMinimap:getMarkerCount
 do
     local mm = lurek.minimap.newMinimap(32, 32)
     mm:addMarker(10, 10, "Base")
-    mm:addMarker(20, 5, "Enemy")
-    print("marker count = " .. mm:getMarkerCount())
+    local enemy_id = mm:addMarker(20, 5, "Enemy")
+    local count = mm:getMarkerCount()
+    local enemy = mm:getMarkerDescription(enemy_id)
+    minimap_log("markers tracked = " .. count .. " including " .. tostring(enemy))
 end
 
 --@api: LMinimap:getMarkerDescription
 do
     local mm = lurek.minimap.newMinimap(32, 32)
     local id = mm:addMarker(10, 10, "Quest")
-
-    print("marker desc = " .. tostring(mm:getMarkerDescription(id)))
+    mm:setMarkerAnimation(id, "pulse", 1.5)
+    local desc = mm:getMarkerDescription(id)
+    local count = mm:getMarkerCount()
+    minimap_log("marker " .. id .. " => " .. tostring(desc) .. " of " .. count)
 end
 
 --@api: LMinimap:removeMarker
@@ -378,9 +480,9 @@ do
     local mm = lurek.minimap.newMinimap(16, 16)
     local id = mm:addMarker(5, 5, "Temp")
 
-    print("before = " .. mm:getMarkerCount())
-    print("removed = " .. tostring(mm:removeMarker(id)))
-    print("after = " .. mm:getMarkerCount())
+    example_print_log("before = " .. mm:getMarkerCount())
+    example_print_log("removed = " .. tostring(mm:removeMarker(id)))
+    example_print_log("after = " .. mm:getMarkerCount())
 end
 
 --@api: LMinimap:setMarkerAnimation
@@ -390,8 +492,8 @@ do
 
     mm:setMarkerAnimation(id, "pulse", 2.0)
     mm:update(0.5)
-    print("marker exists = " .. tostring(mm:hasMarker(id)))
-    print("marker count = " .. mm:getMarkerCount())
+    example_print_log("marker exists = " .. tostring(mm:hasMarker(id)))
+    example_print_log("marker count = " .. mm:getMarkerCount())
 end
 
 --@api: LMinimap:clearMarkerAnimation
@@ -402,7 +504,7 @@ do
     mm:setMarkerAnimation(id, "blink", 4.0)
     mm:clearMarkerAnimation(id)
     mm:update(0.25)
-    print("marker exists = " .. tostring(mm:hasMarker(id)))
+    example_print_log("marker exists = " .. tostring(mm:hasMarker(id)))
 end
 
 --@api: LMinimap:addObjectType
@@ -411,25 +513,29 @@ do
     local unit = mm:addObjectType("unit", 0, 0, 1, 1)
     local building = mm:addObjectType("building", 1, 1, 0, 0.8)
 
-    print("types = " .. mm:getObjectTypeCount())
-    print("unit = " .. unit .. " building = " .. building)
+    example_print_log("types = " .. mm:getObjectTypeCount())
+    example_print_log("unit = " .. unit .. " building = " .. building)
 end
 
 --@api: LMinimap:getObjectTypeCount
 do
     local mm = lurek.minimap.newMinimap(16, 16)
-    mm:addObjectType("unit", 0, 0, 1, 1)
-    mm:addObjectType("building", 1, 1, 0, 0.8)
-    print("object type count = " .. mm:getObjectTypeCount())
+    local scout = mm:addObjectType("unit", 0, 0, 1, 1)
+    local base = mm:addObjectType("building", 1, 1, 0, 0.8)
+    mm:setObject(1, 5, 5, scout, 1)
+    local count = mm:getObjectTypeCount()
+    minimap_log("registered types " .. scout .. "," .. base .. " => " .. count)
 end
 
 --@api: LMinimap:setObject
 do
     local mm = lurek.minimap.newMinimap(16, 16)
     local npc = mm:addObjectType("npc", 0, 1, 0, 1)
-
+    mm:setOwnerColor(2, 0.9, 0.8, 0.2, 1.0)
     mm:setObject(1, 4, 4, npc, 2)
-    print("object count = " .. mm:getObjectCount())
+    local count = mm:getObjectCount()
+    local owner_r = select(1, mm:getOwnerColor(2))
+    minimap_log("placed object count " .. count .. " with owner tint " .. tostring(owner_r))
 end
 
 --@api: LMinimap:getObjectCount
@@ -439,7 +545,7 @@ do
 
     mm:setObject(1, 4, 4, npc, 0)
     mm:setObject(2, 8, 8, npc, 1)
-    print("object count = " .. mm:getObjectCount())
+    example_print_log("object count = " .. mm:getObjectCount())
 end
 
 --@api: LMinimap:removeObject
@@ -449,9 +555,9 @@ do
 
     mm:setObject(1, 4, 4, npc, 0)
     mm:setObject(2, 8, 8, npc, 1)
-    print("before = " .. mm:getObjectCount())
-    print("removed = " .. tostring(mm:removeObject(2)))
-    print("after = " .. mm:getObjectCount())
+    example_print_log("before = " .. mm:getObjectCount())
+    example_print_log("removed = " .. tostring(mm:removeObject(2)))
+    example_print_log("after = " .. mm:getObjectCount())
 end
 
 --@api: LMinimap:clearObjects
@@ -461,43 +567,51 @@ do
 
     mm:setObject(1, 4, 4, npc, 0)
     mm:setObject(2, 8, 8, npc, 1)
-    print("before = " .. mm:getObjectCount())
+    example_print_log("before = " .. mm:getObjectCount())
     mm:clearObjects()
-    print("after = " .. mm:getObjectCount())
+    example_print_log("after = " .. mm:getObjectCount())
 end
 
 --@api: LMinimap:setObjectTypeVisible
 do
     local mm = lurek.minimap.newMinimap(16, 16)
     local t = mm:addObjectType("hidden", 1, 0, 0, 1)
-
+    mm:setObject(1, 6, 6, t, 0)
     mm:setObjectTypeVisible(t, false)
-    print("visible = " .. tostring(mm:isObjectTypeVisible(t)))
+    local visible = mm:isObjectTypeVisible(t)
+    local count = mm:getObjectCount()
+    minimap_log("ambush icon visible = " .. tostring(visible) .. " across " .. count .. " objects")
 end
 
 --@api: LMinimap:isObjectTypeVisible
 do
     local mm = lurek.minimap.newMinimap(16, 16)
     local t = mm:addObjectType("scout", 0, 1, 1, 1)
-
+    mm:setObject(7, 9, 3, t, 1)
     mm:setObjectTypeVisible(t, true)
-    print("visible = " .. tostring(mm:isObjectTypeVisible(t)))
+    local visible = mm:isObjectTypeVisible(t)
+    local types = mm:getObjectTypeCount()
+    minimap_log("scout visibility = " .. tostring(visible) .. " for " .. types .. " type(s)")
 end
 
 --@api: LMinimap:setOwnerColor
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    local scout = mm:addObjectType("scout", 0.1, 0.9, 0.2, 1.0)
     mm:setOwnerColor(1, 0, 0, 1, 1)
+    mm:setObject(1, 8, 8, scout, 1)
     local r, g, b, a = mm:getOwnerColor(1)
-    print("owner 1 = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    minimap_log("owner 1 faction tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
 --@api: LMinimap:getOwnerColor
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    local base = mm:addObjectType("base", 0.6, 0.6, 0.6, 1.0)
     mm:setOwnerColor(2, 1, 0, 0, 1)
+    mm:setObject(2, 12, 4, base, 2)
     local r, g, b, a = mm:getOwnerColor(2)
-    print("owner 2 = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    minimap_log("enemy owner tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
 --@api: LMinimap:showPath
@@ -511,8 +625,8 @@ do
     }
     local pid = mm:showPath(pts, { 255, 0, 0, 255 })
 
-    print("path id = " .. pid)
-    print("path count = " .. mm:getPathCount())
+    example_print_log("path id = " .. pid)
+    example_print_log("path count = " .. mm:getPathCount())
 end
 
 --@api: LMinimap:getPathCount
@@ -525,7 +639,7 @@ do
     }
 
     mm:showPath(pts, { 0, 255, 0, 255 })
-    print("path count = " .. mm:getPathCount())
+    example_print_log("path count = " .. mm:getPathCount())
 end
 
 --@api: LMinimap:clearPath
@@ -538,9 +652,9 @@ do
     }
     local pid = mm:showPath(pts, { 255, 255, 255, 255 })
 
-    print("before = " .. mm:getPathCount())
+    example_print_log("before = " .. mm:getPathCount())
     mm:clearPath(pid)
-    print("after = " .. mm:getPathCount())
+    example_print_log("after = " .. mm:getPathCount())
 end
 
 --@api: LMinimap:addPing
@@ -548,31 +662,39 @@ do
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:addPing(8, 8, 2.0, 1, 1, 0, 1)
     mm:addPing(4, 4, 1.0)
-    print("pings before = " .. mm:getPingCount())
+    example_print_log("pings before = " .. mm:getPingCount())
     mm:update(2.5)
-    print("pings after = " .. mm:getPingCount())
+    example_print_log("pings after = " .. mm:getPingCount())
 end
 
 --@api: LMinimap:getPingCount
 do
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:addPing(8, 8, 2.0)
+    mm:update(0.25)
     mm:addPing(4, 4, 1.0)
-    print("ping count = " .. mm:getPingCount())
+    local count = mm:getPingCount()
+    minimap_log("active alert pings = " .. count)
 end
 
 --@api: LMinimap:drawLine
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setCenter(8, 8)
     mm:drawLine(0, 0, 15, 15, { 255, 255, 255, 255 })
-    print("overlay shapes = " .. mm:getOverlayShapeCount())
+    local shapes = mm:getOverlayShapeCount()
+    local sx, sy = mm:gridToScreen(15, 15, 0, 0)
+    minimap_log("retreat route overlay count " .. shapes .. " ends near " .. sx .. "," .. sy)
 end
 
 --@api: LMinimap:drawRect
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setCenter(8, 8)
     mm:drawRect(2, 2, 4, 4, { 0, 255, 0, 200 })
-    print("overlay shapes = " .. mm:getOverlayShapeCount())
+    local shapes = mm:getOverlayShapeCount()
+    local hover = mm:getHoverInfo(20, 20, 0, 0)
+    minimap_log("safe zone overlay count " .. shapes .. " hover " .. tostring(hover))
 end
 
 --@api: LMinimap:clearOverlay
@@ -580,9 +702,9 @@ do
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:drawLine(0, 0, 15, 15, { 255, 255, 255, 255 })
     mm:drawRect(2, 2, 4, 4, { 0, 255, 0, 200 })
-    print("before = " .. mm:getOverlayShapeCount())
+    example_print_log("before = " .. mm:getOverlayShapeCount())
     mm:clearOverlay()
-    print("after = " .. mm:getOverlayShapeCount())
+    example_print_log("after = " .. mm:getOverlayShapeCount())
 end
 
 --@api: LMinimap:getOverlayShapeCount
@@ -590,23 +712,28 @@ do
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:drawLine(0, 0, 15, 15, { 255, 255, 255, 255 })
     mm:drawRect(2, 2, 4, 4, { 0, 255, 0, 200 })
-    print("overlay shape count = " .. mm:getOverlayShapeCount())
+    local shapes = mm:getOverlayShapeCount()
+    local dw, dh = mm:getDisplaySize()
+    minimap_log("overlay shapes = " .. shapes .. " on " .. dw .. "x" .. dh)
 end
 
 --@api: LMinimap:setViewportRect
 do
     local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setCenter(16, 16)
     mm:setViewportRect(4, 4, 12, 12)
     local x, y, w, h = mm:getViewportRect()
-    print("viewport = " .. tostring(x) .. "," .. tostring(y) .. " " .. tostring(w) .. "x" .. tostring(h))
+    minimap_log("camera frame = " .. tostring(x) .. "," .. tostring(y) .. " " .. tostring(w) .. "x" .. tostring(h))
 end
 
 --@api: LMinimap:getViewportRect
 do
     local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setViewportVisible(true)
     mm:setViewportRect(6, 8, 10, 14)
     local x, y, w, h = mm:getViewportRect()
-    print("viewport = " .. tostring(x) .. "," .. tostring(y) .. " " .. tostring(w) .. "x" .. tostring(h))
+    local visible = mm:isViewportVisible()
+    minimap_log("viewport " .. tostring(visible) .. " => " .. tostring(x) .. "," .. tostring(y) .. " " .. tostring(w) .. "x" .. tostring(h))
 end
 
 --@api: LMinimap:clearViewportRect
@@ -615,68 +742,87 @@ do
     mm:setViewportRect(4, 4, 12, 12)
     mm:clearViewportRect()
     local x = select(1, mm:getViewportRect())
-    print("viewport cleared = " .. tostring(x == nil))
+    example_print_log("viewport cleared = " .. tostring(x == nil))
 end
 
 --@api: LMinimap:setViewportColor
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setViewportRect(2, 2, 6, 6)
     mm:setViewportColor(1, 1, 0, 0.5)
     local r, g, b, a = mm:getViewportColor()
-    print("viewport color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    mm:setViewportVisible(true)
+    minimap_log("viewport tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
 --@api: LMinimap:getViewportColor
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setViewportRect(3, 3, 5, 5)
     mm:setViewportColor(0.2, 0.4, 1.0, 0.75)
     local r, g, b, a = mm:getViewportColor()
-    print("viewport color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    local rect_w = select(3, mm:getViewportRect())
+    minimap_log("viewport width " .. tostring(rect_w) .. " uses tint " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
 --@api: LMinimap:setViewportVisible
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setViewportRect(1, 1, 6, 6)
     mm:setViewportVisible(true)
-    print("viewport visible = " .. tostring(mm:isViewportVisible()))
+    local visible = mm:isViewportVisible()
+    local rect_w = select(3, mm:getViewportRect())
+    minimap_log("viewport visibility = " .. tostring(visible) .. " width " .. tostring(rect_w))
 end
 
 --@api: LMinimap:isViewportVisible
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setViewportRect(1, 1, 6, 6)
     mm:setViewportVisible(false)
-    print("viewport visible = " .. tostring(mm:isViewportVisible()))
+    local visible = mm:isViewportVisible()
+    local rect_h = select(4, mm:getViewportRect())
+    minimap_log("viewport visibility = " .. tostring(visible) .. " height " .. tostring(rect_h))
 end
 
 --@api: LMinimap:setClickable
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setDisplaySize(160, 160)
     mm:setClickable(false)
-    print("clickable = " .. tostring(mm:isClickable()))
+    local clickable = mm:isClickable()
+    local dw = mm:getDisplayWidth()
+    minimap_log("map clicking = " .. tostring(clickable) .. " on width " .. dw)
 end
 
 --@api: LMinimap:isClickable
 do
     local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setDisplaySize(160, 160)
     mm:setClickable(true)
-    print("clickable = " .. tostring(mm:isClickable()))
+    local clickable = mm:isClickable()
+    local dh = mm:getDisplayHeight()
+    minimap_log("map clicking = " .. tostring(clickable) .. " on height " .. dh)
 end
 
 --@api: LMinimap:gridToScreen
 do
     local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
+    mm:setCenter(8, 8)
+    mm:setZoom(2.0)
     local sx, sy = mm:gridToScreen(8, 8, 0, 0)
-
-    print("screen = " .. sx .. "," .. sy)
+    local gx, gy = mm:screenToGrid(sx, sy, 0, 0)
+    minimap_log("grid 8,8 => screen " .. sx .. "," .. sy .. " => " .. tostring(gx) .. "," .. tostring(gy))
 end
 
 --@api: LMinimap:screenToGrid
 do
     local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
+    mm:setCenter(8, 8)
     local sx, sy = mm:gridToScreen(8, 8, 0, 0)
     local gx, gy = mm:screenToGrid(sx, sy, 0, 0)
-
-    print("grid = " .. gx .. "," .. gy)
+    local hover = mm:getHoverInfo(sx, sy, 0, 0)
+    minimap_log("screen " .. sx .. "," .. sy .. " resolves to " .. gx .. "," .. gy .. " hover " .. tostring(hover))
 end
 
 --@api: LMinimap:getHoverInfo
@@ -684,7 +830,9 @@ do
     local mm = lurek.minimap.newMinimap(8, 8, 80, 80)
     mm:setTileDescription(1, "Plains")
     mm:setTerrain(1, 1, 1)
-    print("hover = " .. tostring(mm:getHoverInfo(1, 1, 0, 0)))
+    local sx, sy = mm:gridToScreen(1, 1, 0, 0)
+    local hover = mm:getHoverInfo(sx, sy, 0, 0)
+    minimap_log("hover at " .. sx .. "," .. sy .. " => " .. tostring(hover))
 end
 
 --@api: LMinimap:drawToImage
@@ -693,8 +841,8 @@ do
     mm:setTerrainColor(0, 0.5, 0.5, 0.5, 1.0)
     local img = mm:drawToImage(2)
 
-    print("image type = " .. img:type())
-    print("image size = " .. img:getWidth() .. "x" .. img:getHeight())
+    example_print_log("image type = " .. img:type())
+    example_print_log("image size = " .. img:getWidth() .. "x" .. img:getHeight())
 end
 
 --- Minimap Module Part 3: textures, display size, grid size, camera tracking, type
@@ -702,17 +850,21 @@ end
 --@api: LMinimap:getDisplaySize
 do
     local mm = lurek.minimap.newMinimap(32, 32, 200, 200)
+    mm:setDisplaySize(240, 180)
+    mm:setViewportRect(4, 4, 10, 10)
     local dw, dh = mm:getDisplaySize()
-
-    print("display = " .. dw .. "x" .. dh)
+    local visible = mm:isViewportVisible()
+    minimap_log("display size = " .. dw .. "x" .. dh .. " viewport visible " .. tostring(visible))
 end
 
 --@api: LMinimap:getGridSize
 do
     local mm = lurek.minimap.newMinimap(32, 32, 200, 200)
+    mm:setCenter(16, 16)
+    mm:setZoom(1.1)
     local gw, gh = mm:getGridSize()
-
-    print("grid = " .. gw .. "x" .. gh)
+    local cells = mm:getCellCount()
+    minimap_log("grid size = " .. gw .. "x" .. gh .. " cells " .. cells)
 end
 
 --@api: LMinimap:setMarkerTexture
@@ -722,7 +874,7 @@ do
     local img = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
 
     mm:setMarkerTexture(id, img, 24, 24)
-    print("marker count = " .. mm:getMarkerCount())
+    example_print_log("marker count = " .. mm:getMarkerCount())
 end
 
 --@api: LMinimap:clearMarkerTexture
@@ -733,7 +885,7 @@ do
 
     mm:setMarkerTexture(id, img, 24, 24)
     mm:clearMarkerTexture(id)
-    print("marker exists = " .. tostring(mm:hasMarker(id)))
+    example_print_log("marker exists = " .. tostring(mm:hasMarker(id)))
 end
 
 --@api: LMinimap:setObjectTypeTexture
@@ -743,7 +895,7 @@ do
     local img = lurek.render.newImage("content/examples/assets/images/sample_icon.png")
 
     mm:setObjectTypeTexture(type_idx, img, 16, 16)
-    print("object types = " .. mm:getObjectTypeCount())
+    example_print_log("object types = " .. mm:getObjectTypeCount())
 end
 
 --@api: LMinimap:clearObjectTypeTexture
@@ -754,7 +906,7 @@ do
 
     mm:setObjectTypeTexture(type_idx, img, 16, 16)
     mm:clearObjectTypeTexture(type_idx)
-    print("object types = " .. mm:getObjectTypeCount())
+    example_print_log("object types = " .. mm:getObjectTypeCount())
 end
 
 --@api: LMinimap:trackCamera
@@ -767,19 +919,26 @@ do
 
     local cx, cy = mm:getCenter()
     local _, _, vw, vh = mm:getViewportRect()
-    print("center = " .. cx .. "," .. cy)
-    print("viewport size = " .. tostring(vw) .. "x" .. tostring(vh))
+    example_print_log("center = " .. cx .. "," .. cy)
+    example_print_log("viewport size = " .. tostring(vw) .. "x" .. tostring(vh))
 end
 
 --@api: LMinimap:type
 do
     local mm = lurek.minimap.newMinimap(16, 16)
-    print("type = " .. mm:type())
+    mm:setTerrain(8, 8, 1)
+    mm:setCenter(8, 8)
+    local type_name = mm:type()
+    local cells = mm:getCellCount()
+    minimap_log("handle type " .. type_name .. " owns " .. cells .. " cells")
 end
 
 --@api: LMinimap:typeOf
 do
     local mm = lurek.minimap.newMinimap(16, 16)
-    print("is LMinimap = " .. tostring(mm:typeOf("LMinimap")))
-    print("is LObject = " .. tostring(mm:typeOf("LObject")))
+    mm:setTerrain(4, 4, 2)
+    local is_minimap = mm:typeOf("LMinimap")
+    local is_object = mm:typeOf("LObject")
+    local type_name = mm:type()
+    minimap_log(type_name .. " -> LMinimap=" .. tostring(is_minimap) .. " LObject=" .. tostring(is_object))
 end

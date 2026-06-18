@@ -1,10 +1,282 @@
 //! Registers the `lurek.automation` Lua API for automation data bridging, vector decoding, and runtime controls.
 
 use super::SharedState;
+use crate::app::lua_callbacks::{
+    call_function_with_optional_timeout, call_lua_callback_checked_with_timeout,
+};
+use crate::automation::simulator::StepEventSink;
 use crate::automation::{Action, Script, Simulator, Step};
+use crate::event::{Event, EventArg};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+fn call_lua_ui_bool<'a, A: IntoLuaMulti<'a>>(
+    lua: &'a Lua,
+    method: &str,
+    args: A,
+    timeout_ms: Option<f32>,
+) -> Result<bool, mlua::Error> {
+    let Ok(lurek) = lua.globals().get::<_, LuaTable>("lurek") else {
+        return Ok(false);
+    };
+    let Ok(ui) = lurek.get::<_, LuaTable>("ui") else {
+        return Ok(false);
+    };
+    let Ok(func) = ui.get::<_, LuaFunction>(method) else {
+        return Ok(false);
+    };
+    call_function_with_optional_timeout(lua, &format!("ui.{method}"), func, args, timeout_ms)
+}
+
+fn event_arg_string(args: &[EventArg], index: usize, default: &str) -> String {
+    match args.get(index) {
+        Some(EventArg::Str(value)) => value.clone(),
+        _ => default.to_string(),
+    }
+}
+
+fn event_arg_num(args: &[EventArg], index: usize, default: f64) -> f64 {
+    match args.get(index) {
+        Some(EventArg::Num(value)) => *value,
+        _ => default,
+    }
+}
+
+fn event_arg_bool(args: &[EventArg], index: usize, default: bool) -> bool {
+    match args.get(index) {
+        Some(EventArg::Bool(value)) => *value,
+        _ => default,
+    }
+}
+
+fn refresh_keyboard_modifiers(state: &mut SharedState) {
+    let shift = state.keyboard.is_down("shift");
+    let ctrl = state.keyboard.is_down("ctrl");
+    let alt = state.keyboard.is_down("alt");
+    let meta = state.keyboard.is_down("meta") || state.keyboard.is_down("super");
+    state.keyboard.set_modifiers(shift, ctrl, alt, meta);
+}
+
+fn button_slot(button: u32) -> Option<usize> {
+    match button {
+        1..=5 => Some((button - 1) as usize),
+        _ => None,
+    }
+}
+
+fn dispatch_automation_event(
+    lua: &Lua,
+    state: &Rc<RefCell<SharedState>>,
+    event: &Event,
+) -> LuaResult<()> {
+    let timeout_ms = state.borrow().lua_callback_timeout_ms;
+    match event.name.as_str() {
+        "keypressed" => {
+            let key = event_arg_string(&event.args, 0, "unknown");
+            let scancode = event_arg_string(&event.args, 1, "");
+            let is_repeat = event_arg_bool(&event.args, 2, false);
+            let repeat_enabled = state.borrow().keyboard.has_key_repeat();
+            if !is_repeat || repeat_enabled {
+                {
+                    let mut st = state.borrow_mut();
+                    if !scancode.is_empty() {
+                        st.keyboard.press_scancode(scancode.clone());
+                    }
+                    st.keys_down.insert(key.clone());
+                    st.keyboard.set_key_down(&key);
+                    refresh_keyboard_modifiers(&mut st);
+                }
+                let auto_ui_input = state.borrow().auto_ui_input;
+                let mut ui_consumed = false;
+                if auto_ui_input {
+                    ui_consumed = call_lua_ui_bool(lua, "keypressed", key.clone(), timeout_ms)?;
+                }
+                if !ui_consumed {
+                    call_lua_callback_checked_with_timeout(
+                        lua,
+                        "keypressed",
+                        (key.clone(), scancode.clone(), is_repeat),
+                        timeout_ms,
+                    )?;
+                }
+            }
+        }
+        "keyreleased" => {
+            let key = event_arg_string(&event.args, 0, "unknown");
+            let scancode = event_arg_string(&event.args, 1, "");
+            {
+                let mut st = state.borrow_mut();
+                if !scancode.is_empty() {
+                    st.keyboard.release_scancode(scancode.clone());
+                }
+                st.keys_down.remove(&key);
+                st.keyboard.set_key_up(&key);
+                refresh_keyboard_modifiers(&mut st);
+            }
+            call_lua_callback_checked_with_timeout(
+                lua,
+                "keyreleased",
+                (key.clone(), scancode.clone()),
+                timeout_ms,
+            )?;
+        }
+        "mousemoved" => {
+            let x = event_arg_num(&event.args, 0, 0.0) as f32;
+            let y = event_arg_num(&event.args, 1, 0.0) as f32;
+            let (dx, dy) = {
+                let mut st = state.borrow_mut();
+                let dx = x - st.mouse.x;
+                let dy = y - st.mouse.y;
+                st.mouse.update_position(x, y);
+                (dx, dy)
+            };
+            let auto_ui_input = state.borrow().auto_ui_input;
+            let mut ui_consumed = false;
+            if auto_ui_input {
+                ui_consumed = call_lua_ui_bool(lua, "mousemoved", (x, y), timeout_ms)?;
+            }
+            if !ui_consumed {
+                call_lua_callback_checked_with_timeout(
+                    lua,
+                    "mousemoved",
+                    (x, y, dx, dy),
+                    timeout_ms,
+                )?;
+            }
+        }
+        "mousepressed" => {
+            let x = event_arg_num(&event.args, 0, 0.0) as f32;
+            let y = event_arg_num(&event.args, 1, 0.0) as f32;
+            let button = event_arg_num(&event.args, 2, 1.0) as u32;
+            if let Some(slot) = button_slot(button) {
+                let was_pressed = {
+                    let mut st = state.borrow_mut();
+                    let was_pressed = st.mouse.is_down(slot);
+                    st.mouse.update_position(x, y);
+                    st.mouse.set_button(slot, true);
+                    was_pressed
+                };
+                if !was_pressed {
+                    let auto_ui_input = state.borrow().auto_ui_input;
+                    let mut ui_consumed = false;
+                    if auto_ui_input {
+                        ui_consumed =
+                            call_lua_ui_bool(lua, "mousepressed", (x, y, button), timeout_ms)?;
+                    }
+                    if !ui_consumed {
+                        call_lua_callback_checked_with_timeout(
+                            lua,
+                            "mousepressed",
+                            (x, y, button),
+                            timeout_ms,
+                        )?;
+                    }
+                }
+            }
+        }
+        "mousereleased" => {
+            let x = event_arg_num(&event.args, 0, 0.0) as f32;
+            let y = event_arg_num(&event.args, 1, 0.0) as f32;
+            let button = event_arg_num(&event.args, 2, 1.0) as u32;
+            if let Some(slot) = button_slot(button) {
+                let was_pressed = {
+                    let mut st = state.borrow_mut();
+                    let was_pressed = st.mouse.is_down(slot);
+                    st.mouse.update_position(x, y);
+                    st.mouse.set_button(slot, false);
+                    was_pressed
+                };
+                if was_pressed {
+                    let auto_ui_input = state.borrow().auto_ui_input;
+                    let mut ui_consumed = false;
+                    if auto_ui_input {
+                        ui_consumed =
+                            call_lua_ui_bool(lua, "mousereleased", (x, y, button), timeout_ms)?;
+                    }
+                    if !ui_consumed {
+                        call_lua_callback_checked_with_timeout(
+                            lua,
+                            "mousereleased",
+                            (x, y, button),
+                            timeout_ms,
+                        )?;
+                    }
+                }
+            }
+        }
+        "wheelmoved" => {
+            let dx = event_arg_num(&event.args, 0, 0.0);
+            let dy = event_arg_num(&event.args, 1, 0.0);
+            {
+                let mut st = state.borrow_mut();
+                st.mouse.accumulate_scroll(dx, dy);
+            }
+            let auto_ui_input = state.borrow().auto_ui_input;
+            let mut ui_consumed = false;
+            if auto_ui_input {
+                ui_consumed = call_lua_ui_bool(lua, "wheelmoved", (dx, dy), timeout_ms)?;
+            }
+            if !ui_consumed {
+                call_lua_callback_checked_with_timeout(lua, "wheelmoved", (dx, dy), timeout_ms)?;
+            }
+        }
+        "textinput" => {
+            let text = event_arg_string(&event.args, 0, "");
+            let text_enabled = state.borrow().keyboard.has_text_input();
+            if text_enabled {
+                {
+                    let mut st = state.borrow_mut();
+                    st.keyboard.push_text_input(text.clone());
+                }
+                let auto_ui_input = state.borrow().auto_ui_input;
+                let mut ui_consumed = false;
+                if auto_ui_input {
+                    ui_consumed = call_lua_ui_bool(lua, "textinput", text.clone(), timeout_ms)?;
+                }
+                if !ui_consumed {
+                    call_lua_callback_checked_with_timeout(
+                        lua,
+                        "textinput",
+                        text.clone(),
+                        timeout_ms,
+                    )?;
+                }
+            }
+        }
+        _ => {}
+    }
+    state.borrow_mut().event_queue.push(event.clone());
+    Ok(())
+}
+
+struct AutomationDispatchSink<'a> {
+    lua: &'a Lua,
+    state: Rc<RefCell<SharedState>>,
+    first_error: Option<mlua::Error>,
+}
+
+impl<'a> AutomationDispatchSink<'a> {
+    fn new(lua: &'a Lua, state: Rc<RefCell<SharedState>>) -> Self {
+        Self {
+            lua,
+            state,
+            first_error: None,
+        }
+    }
+}
+
+impl StepEventSink for AutomationDispatchSink<'_> {
+    fn push_event(&mut self, event: Event) {
+        if self.first_error.is_some() {
+            return;
+        }
+        if let Err(err) = dispatch_automation_event(self.lua, &self.state, &event) {
+            self.first_error = Some(err);
+        }
+    }
+}
+
 /// Registers the `lurek.automation` API table with the Lua VM.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -129,7 +401,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                     return Ok(());
                 }
             }
-            sim.borrow_mut().update(dt, &mut s.borrow_mut().event_queue);
+            let mut sink = AutomationDispatchSink::new(lua, s.clone());
+            sim.borrow_mut().update_with_sink(dt, &mut sink);
+            if let Some(err) = sink.first_error {
+                return Err(err);
+            }
             Ok(())
         })?,
     )?;

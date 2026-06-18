@@ -16,13 +16,13 @@
 
 ## Summary
 
-- The `thread` module is the isolated-concurrency surface for users who want background Lua work without breaking the engine's VM and runtime-safety rules.
-- Channels, worker threads, pools, and promises work together so asynchronous work can move messages and results between isolated execution contexts instead of sharing unsafe state directly.
-- That matters because concurrency in the engine is not only about creating threads; it is about controlling what can cross between them and how a caller gets results back safely.
-- The module is useful for expensive background tasks, staged jobs, and other workflows where script-facing logic should continue while separate workers finish their part of the work.
-- Promise-style return paths are important because background work is only useful when the foreground can observe completion without unsafe polling tricks.
-- Read it as the engine's sanctioned script-concurrency model. Other modules may produce work to run, but `thread` owns the worker, channel, and promise semantics that make that work safe to schedule.
-
+- The `thread` module is the isolated-concurrency surface for projects that want background Lua work without violating the engine's VM and runtime-safety rules.
+- Channels, worker threads, pools, and promises let asynchronous work move messages and results between isolated execution contexts instead of sharing unsafe state directly.
+- That matters because concurrency here is not just thread creation; it is about controlling what can cross between workers and how results return safely.
+- The module is useful for expensive background tasks, staged jobs, and workflows where script-facing logic should continue while separate workers finish their part of the work.
+- Promise-style completion is central because finished work still has to rejoin the foreground safely.
+- It keeps worker isolation visible to scripts while still making background jobs practical and safe.
+- Read it as the engine's sanctioned script-concurrency model.
 
 ## Imports
 

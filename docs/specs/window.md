@@ -21,10 +21,8 @@
 - Fullscreen choices, placement, resizing, file-dialog support, and coordinate conversion matter because the window is both a presentation target and a user-facing operating-system object.
 - The module is useful for settings screens, startup configuration, tool windows, and any feature that needs to query or change how the engine occupies the desktop.
 - DPI-aware scaling and coordinate conversion are especially important because modern desktop behavior is not one-to-one with raw pixels; the window surface must mediate between OS display rules and engine-facing view logic.
-- The module also matters for editor-style or multi-display workflows, where the host surface may need to move, resize, or switch behavior while the runtime stays alive.
-- That separation keeps platform-window policy out of rendering and gameplay code.
+- It also supports editor-style and multi-display workflows while the runtime stays alive.
 - Read it as the owner of desktop-window policy and scaling behavior. Other modules render or process input within the window, but `window` decides how that host surface is configured and managed.
-
 
 ## Imports
 

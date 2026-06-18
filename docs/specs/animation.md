@@ -20,15 +20,14 @@
 
 - The `animation` module is the engine's time-based motion system for users who need sprites, poses, and related visual states to advance through structured runtime playback.
 - Clips, frames, controllers, state machines, sync groups, events, blending, and curve handling live together here so simple loops and richer motion behavior share one model.
-- This matters because animation is not only frame stepping; it also needs transitions, timing hooks, authored state changes, and gameplay-aware playback control.
+- Animation is not only frame stepping; it also needs transitions, timing hooks, authored state changes, and gameplay-aware playback control.
 - Runtime events make the module useful beyond visuals, since footsteps, attack windows, cutscene timing, and other logic often need to fire from the animation timeline.
-- Aseprite import and Spine bridging keep the feature aligned with common art pipelines instead of forcing everything into one internal-only format.
 - Blend and sync-group support matter because animated systems often need continuity across states or coordinated playback across several visual parts instead of abrupt clip swaps.
-- The module therefore works as both a playback layer and a timing surface for game logic that needs authored motion to remain inspectable and deterministic enough for tools and debugging.
-- This is especially useful for gameplay-driven animation, where movement, combat, cutscene timing, and feedback effects all want to share the same authored motion surface instead of fighting several parallel playback hacks.
-- `render` shows the result and `spine` specializes skeletal rigs, but `animation` owns clip selection, synchronization, transitions, and timeline advancement.
-- Read `animation` as the owner of animation sequencing and playback semantics across the engine.
-
+- Aseprite import and Spine bridging keep the feature aligned with common art pipelines, while the shared timeline model gives teams one place to reason about authored motion timing for gameplay, tools, and preview behavior.
+- State-machine support matters because animation behavior usually depends on more than a current clip. Characters, UI elements, effects, and tools often need explicit transitions, guard conditions, and coordinated playback states that remain inspectable instead of being hidden in scattered script logic.
+- Timeline events also help gameplay and motion stay synchronized.
+- This makes `animation` useful for straightforward sprite loops and richer authored motion systems where timing, transitions, and events need to stay deterministic enough for debugging, preview, and gameplay integration.
+- `render` shows the result and `spine` specializes skeletal rigs, but `animation` owns clip selection, transitions, and timeline advancement.
 
 ## Imports
 

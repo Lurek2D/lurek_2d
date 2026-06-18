@@ -23,9 +23,8 @@
 - Marker and layer support are especially important because a minimap often needs to combine several categories of information at once: player position, objectives, faction territory, danger, or discovered landmarks.
 - In tool and strategy-heavy contexts, the minimap can also become a compact interaction surface or diagnostic lens rather than only a passive HUD element, which is why adapters and styling control matter.
 - Rotation, zoom, clipping, and icon policy matter too, because a compact map has to stay legible while world state and camera framing keep changing.
-- That legibility requirement is what makes minimap presentation a separate concern from the full map or terrain renderer.
-- Read it as the owner of compact map presentation. Other systems define terrain and visibility data, but `minimap` decides how that information is condensed, styled, and rendered for the user.
-
+- A minimap is therefore not only a tiny render, but a compact policy layer for world awareness.
+- Read it as the owner of compact map presentation.
 
 ## Imports
 

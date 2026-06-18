@@ -16,8 +16,7 @@ Global `lurek.*` callbacks are documented here as a dedicated generated spec, in
 
 ## Summary
 
-- This spec lists global `lurek.*` lifecycle, input, and render callbacks.
-- Detailed signatures stay in generated API references.
+Documents global `lurek.*` engine callbacks. Read it as the inventory for lifecycle, input, and render hooks.
 
 ## Imports
 

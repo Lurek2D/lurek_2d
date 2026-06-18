@@ -23,10 +23,9 @@
 - MsgPack, TOML bridges, and schema-like packing utilities make the module useful for both debug tooling and production-facing data paths such as saves, networking, and cached assets.
 - Exact offset control, byte-order awareness, and sequential write semantics are especially valuable when interoperating with protocols or compact save formats where structure must be reproduced precisely.
 - The module therefore acts as the engine's low-level data construction kit whenever higher-level structured formats are too heavy or too opaque for the problem at hand.
-- In practice this makes `binary` a bridge between human-meaningful data models and the compact byte layouts that transport, persistence, and caching layers often demand.
-- That precision is what makes the module dependable for interoperability work, where one misplaced offset or endian assumption can invalidate an entire payload.
+- That also makes it useful when tests or tools need to inspect raw payload layout instead of only decoded high-level values.
+- It keeps raw layout work first-class.
 - Read `binary` as the shared byte-language of the engine: other modules decide what the data means, but `binary` owns how that data is packed, transformed, verified, and moved around safely.
-
 
 ## Imports
 

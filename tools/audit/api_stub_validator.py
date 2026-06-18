@@ -4,7 +4,7 @@
 Each API stub block must:
   1. Have NO comments on the marker line (--@api-stub: NAME)
   2. Have a 'do' block immediately following (no blank lines between)
-  3. Block body must have minimum 5 non-empty lines before 'end'
+  3. Block body must have minimum 5 code lines before 'end' (blank/comment lines do not count)
 
 This ensures stub blocks are properly structured and substantive.
 
@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_EXAMPLES_DIR = ROOT / 'content' / 'examples'
 OUTPUT_JSON = ROOT / 'logs' / 'data' / 'stub_validation_report.json'
 
-MIN_BODY_LINES = 3
+MIN_BODY_LINES = 5
 
 API_MARKER_RE = re.compile(r'^--@api-stub:\s*(.+)$')
 DO_BLOCK_RE = re.compile(r'^do\s*$')
@@ -127,7 +127,7 @@ def validate_stub_blocks(lua_file: Path) -> List[StubViolation]:
             i += 1
             continue
 
-        # V3: Count non-empty lines in the block body
+        # V3: Count executable/context code lines in the block body
         body_start = do_line_idx + 1
         body_lines = []
         depth = 1  # Already seen 'do'
@@ -139,7 +139,7 @@ def validate_stub_blocks(lua_file: Path) -> List[StubViolation]:
             depth += block_line.count('do') + block_line.count('then') + block_line.count('repeat')
             depth -= block_line.count('end') + block_line.count('until')
 
-            if block_line:
+            if block_line and not block_line.startswith("--"):
                 body_lines.append(block_line)
 
             # Check if we've reached the matching 'end'
@@ -152,7 +152,7 @@ def validate_stub_blocks(lua_file: Path) -> List[StubViolation]:
                 line_num=marker_line,
                 marker_name=marker_name,
                 violation_type="insufficient_body",
-                detail=f"Block body has {len(body_lines)} non-empty lines but requires {MIN_BODY_LINES}",
+                detail=f"Block body has {len(body_lines)} code lines but requires {MIN_BODY_LINES}",
             ))
 
         i += 1
@@ -228,7 +228,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         type_labels = {
             "comment_on_marker": "Marker line has trailing comment",
             "no_do_block": "No 'do' block immediately after marker",
-            "insufficient_body": f"Block body has fewer than {MIN_BODY_LINES} lines",
+            "insufficient_body": f"Block body has fewer than {MIN_BODY_LINES} code lines",
         }
         for vtype, count in sorted(by_type.items(), key=lambda x: -x[1]):
             label = type_labels.get(vtype, vtype)

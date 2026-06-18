@@ -24,10 +24,8 @@
 - Parallel thresholds and typed operations matter from a user perspective because the same script-facing module can scale from quick experimentation to heavier numeric workloads without changing conceptual models.
 - The module is also a useful bridge for neighboring numeric systems such as image processing, signal work, procedural analysis, and learning-oriented workloads because they often need dense arrays before they need a more specialized domain API.
 - Deterministic typed array behavior matters for tooling and tests as much as for performance. Users can prototype a transform interactively and still keep the same operations reproducible enough for validation or batch workflows.
-- That combination of expressiveness and repeatability is what makes the module practical for both interactive analysis and scripted offline processing.
-- This makes it a practical staging area for algorithms that start as experiments and later become reusable runtime tools.
+- This gives the engine a practical middle layer between generic Lua tables and fully specialized numeric subsystems.
 - Read `compute` as the engine feature that turns numerical data processing into a first-class runtime capability rather than an external preprocessing step.
-
 
 ## Imports
 

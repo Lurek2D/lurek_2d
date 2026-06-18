@@ -24,13 +24,13 @@
 - Session and host helpers matter because communication often begins before any gameplay packet is exchanged. Discovery, lobby state, connection negotiation, and participant tracking are all part of real multiplayer or remote-tool workflows.
 - RPC-style and sync-oriented surfaces broaden the feature into structured state exchange, while background thread support keeps network activity off the main loop.
 - This asynchronous model matters for responsiveness, retries, timeouts, and long-lived connections where the network layer must remain active even while other systems continue to update.
-- HTTP, websocket, and streaming surfaces keep the module useful outside classic multiplayer for tooling, editor integrations, remote control, telemetry, and service-backed workflows.
+- HTTP, websocket, and streaming surfaces keep the module useful beyond multiplayer for tooling, remote control, telemetry, and services.
 - Error typing and connection-state tracking are equally valuable because networking only becomes usable at scale when disconnects, retries, and degraded states are visible rather than hidden in transport internals.
+- That shared transport layer also reduces the need for project-specific communication glue.
 - The module is therefore useful for online play, local-network coordination, service-backed tools, live dashboards, remote assistants, telemetry sinks, and any feature that depends on structured communication beyond the current process.
 - That breadth is one reason the subsystem belongs in the engine rather than in ad hoc project code.
 - Domain modules define what should be exchanged, while `network` owns how those exchanges are carried, coordinated, monitored, and kept off the blocking path.
 - Read `network` as the engine feature that turns remote communication into a reusable runtime capability.
-
 
 ## Imports
 

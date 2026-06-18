@@ -21,8 +21,6 @@
 - Wildcard-style subscriptions and explicit listener lifecycle management make the bus practical for both large subsystems and small script integrations.
 - History and Rust-Lua payload transfer matter because the module is not only about dispatch, but also about making that dispatch inspectable and usable across the engine boundary.
 - Read it as the shared traffic system for runtime messages.
-- This makes the bus useful for gameplay, tools, and runtime diagnostics alike.
-
 
 ## Imports
 

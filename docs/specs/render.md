@@ -37,8 +37,7 @@
 - The renderer is therefore not just a drawer of primitives, but the arbiter of when and where visual work becomes final output.
 - That backend discipline is what lets several higher-level modules share one frame pipeline without each inventing its own incompatible render lifecycle.
 - For users, the important boundary is that `render` does not usually define domain meaning. It does not decide enemy AI, tile adjacency, or UI layout policy. Instead, it owns the visual execution model that allows those domains to appear consistently.
-- Read `render` as the final visual translation layer of the engine. Feature modules describe visual state and intent, and `render` turns that intent into frames, captures, shadows, text, effects, and finished composited output.
-
+- Read `render` as the final visual translation layer of the engine. Feature modules describe visual state and intent, and `render` turns that intent into frames, captures, shadows, text, effects, and finished composited output for a shared frame contract.
 
 ## Imports
 

@@ -17,10 +17,9 @@
 ## Summary
 
 - The `asset` module is the shared runtime catalog for loaded resources, so users can work with stable handles instead of repeatedly reopening raw file paths.
-- Its core value is lifecycle control: the cache keeps assets deduplicated, reference counted, and discoverable by name, group, and tag, which makes reuse explicit across gameplay systems and tools.
-- Preload and lookup features turn it into more than a passive cache, because startup setup, content pipelines, and diagnostic scripts can all ask the same module what is loaded and what should stay alive.
+- Its core value is lifecycle control: the cache keeps assets deduplicated, reference counted, and discoverable by name, group, and tag.
+- Preload and lookup features keep it useful during startup setup, content pipelines, and diagnostics because the same module can answer what is loaded and what should stay alive.
 - Read it as the ownership layer for resource identity and retention. Neighboring modules still decide how loaded resources are consumed.
-
 
 ## Imports
 

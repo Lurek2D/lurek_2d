@@ -1,4 +1,4 @@
--- content/examples/serial.lua
+-- content/examples/serialize.lua
 -- Auto-generated from content/examples2/serial_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/serial.lua
 
@@ -8,115 +8,153 @@
 do
     local jsonStr = '{"name":"warrior","level":12,"alive":true,"items":["sword","shield"]}'
     local data = lurek.serial.fromJson(jsonStr)
-    print("name = " .. data.name)
-    print("items count = " .. #data.items)
+    local equipment = data.items[1] .. " + " .. data.items[2]
+    local summary = data.name .. " lvl " .. data.level
+    lurek.log.info("loaded party member: " .. summary)
+    lurek.log.info("alive = " .. tostring(data.alive) .. ", gear = " .. equipment)
 end
 
 --@api: lurek.serial.toJson
 do
-    local json = lurek.serial.toJson({ player = { name = "Alice", level = 2 } }, true)
-    print("encoded length = " .. #json)
-    print("has player = " .. tostring(json:find('"player"') ~= nil))
+    local save_state = { player = { name = "Alice", level = 2 }, checkpoint = "town_gate" }
+    local json = lurek.serial.toJson(save_state, true)
+    local restored = lurek.serial.fromJson(json)
+    local has_player = json:find('"player"') ~= nil
+    lurek.log.info("save checkpoint = " .. restored.checkpoint)
+    lurek.log.info("pretty json has player key = " .. tostring(has_player))
 end
 
 --@api: lurek.serial.fromToml
 do
     local tomlStr = '[game]\ntitle = "Dungeon Quest"\n[window]\nwidth = 1920\nheight = 1080'
     local config = lurek.serial.fromToml(tomlStr)
-    print("title = " .. config.game.title)
-    print("window = " .. config.window.width .. "x" .. config.window.height)
+    local resolution = config.window.width .. "x" .. config.window.height
+    local area = config.window.width * config.window.height
+    local title = config.game.title
+    lurek.log.info("loaded TOML config for " .. title)
+    lurek.log.info("window = " .. resolution .. " (" .. area .. " px)")
 end
 
 --@api: lurek.serial.fromCsv
 do
     local csvWithHeaders = "name,age,city\nAlice,30,Warsaw\nBob,25,Krakow\nCarol,35,Gdansk"
     local rows = lurek.serial.fromCsv(csvWithHeaders, ",", true)
-    print("rows with headers = " .. #rows)
-    print("first row name = " .. rows[1].name)
-    print("second row city = " .. rows[2].city)
+    lurek.log.info("rows with headers = " .. #rows)
+    lurek.log.info("first row name = " .. rows[1].name)
+    lurek.log.info("second row city = " .. rows[2].city)
 end
 
 --@api: lurek.serial.fromIni
 do
     local iniStr = '[player]\nname = Hero\nclass = warrior\n[controls]\njump = space'
     local ini = lurek.serial.fromIni(iniStr)
-    print("player name = " .. ini.player.name)
-    print("jump key = " .. ini.controls.jump)
+    local player = ini.player.name .. " the " .. ini.player.class
+    local jump_key = ini.controls.jump
+    local config_source = "legacy input preset"
+    lurek.log.info("loaded " .. config_source .. " for " .. player)
+    lurek.log.info("jump key = " .. jump_key)
 end
 
 --@api: lurek.serial.encodeMsgPack
 do
-    local packed = lurek.serial.encodeMsgPack({ version = 2, entities = { { id = 1, hp = 100 } } })
+    local snapshot = { version = 2, entities = { { id = 1, hp = 100, x = 16, y = 24 } } }
+    local packed = lurek.serial.encodeMsgPack(snapshot)
     local unpacked = lurek.serial.decodeMsgPack(packed)
-    print("version = " .. unpacked.version)
-    print("entities = " .. #unpacked.entities)
+    local first = unpacked.entities[1]
+    local position = first.x .. "," .. first.y
+    lurek.log.info("msgpack snapshot version = " .. unpacked.version)
+    lurek.log.info("entity #" .. first.id .. " hp=" .. first.hp .. " pos=" .. position)
 end
 
 --@api: lurek.serial.decodeXml
 do
-    local doc = lurek.serial.decodeXml('<tilemap><layer name="ground" visible="true"/></tilemap>')
-    print("root tag = " .. (doc.tag or doc.name or "unknown"))
-    print("decoded xml type = " .. type(doc))
+    local doc = lurek.serial.decodeXml('<tilemap width="32"><layer name="ground">solid</layer></tilemap>')
+    local root_tag = doc.tag or doc.name or "unknown"
+    local first_layer = doc.children and doc.children[1] or {}
+    local layer_name = first_layer.attrs and first_layer.attrs.name or "missing"
+    lurek.log.info("xml root = " .. root_tag .. " width=" .. tostring(doc.attrs.width))
+    lurek.log.info("first layer = " .. layer_name .. " text=" .. tostring(first_layer.text))
 end
 
 --@api: lurek.serial.encode
 do
-    local jsonOut = lurek.serial.encode({ greeting = "hello", count = 42 }, "json", { pretty = true })
-    print("json encode = " .. jsonOut)
-    print("count = " .. lurek.serial.decode(jsonOut, "json").count)
+    local quest_state = { quest = "intro", count = 42, completed = false }
+    local jsonOut = lurek.serial.encode(quest_state, "json", { pretty = true })
+    local restored = lurek.serial.decode(jsonOut, "json")
+    local detected = lurek.serial.detectFormat(jsonOut)
+    lurek.log.info("encoded quest payload as " .. tostring(detected))
+    lurek.log.info("quest=" .. restored.quest .. " count=" .. restored.count)
 end
 
 --@api: lurek.serial.detectFormat
 do
-    local format = lurek.serial.detectFormat('{"key": "value"}')
-    print("json detected = " .. tostring(format))
+    local json_format = lurek.serial.detectFormat('{"key":"value"}')
+    local ini_format = lurek.serial.detectFormat("[video]\nvsync=true\n")
+    local unknown_format = lurek.serial.detectFormat("spawn goblin at x=4")
+    local knows_unknown = unknown_format == nil
+    lurek.log.info("detected formats: json=" .. tostring(json_format) .. ", ini=" .. tostring(ini_format))
+    lurek.log.info("plain designer note unresolved = " .. tostring(knows_unknown))
 end
 
 --@api: lurek.serial.validate
 do
-    local schema = { type = "object", required = { "name", "level" } }
-    local ok, err = lurek.serial.validate({ name = "Knight", level = 50 }, schema)
-    print("valid data ok = " .. tostring(ok))
-    print("valid err = " .. tostring(err))
+    local schema = {
+        type = "table",
+        fields = { name = { type = "string", required = true }, level = { type = "number", min = 1, max = 100 } },
+    }
+    local ok_valid = lurek.serial.validate({ name = "Knight", level = 50 }, schema)
+    local ok_invalid, err_invalid = lurek.serial.validate({ name = "Knight", level = 150 }, schema)
+    lurek.log.info("valid hero payload = " .. tostring(ok_valid))
+    lurek.log.info("invalid payload rejected = " .. tostring(not ok_invalid) .. " err=" .. tostring(err_invalid))
 end
 
 --@api: lurek.serial.applyDefaults
 do
     local schema = { fields = { width = { default = 800 }, height = { default = 600 }, title = { default = "Untitled" } } }
     local filled = lurek.serial.applyDefaults({ width = 1280 }, schema)
-    print("width = " .. filled.width)
-    print("height = " .. filled.height)
-    print("title = " .. filled.title)
+    lurek.log.info("width = " .. filled.width)
+    lurek.log.info("height = " .. filled.height)
+    lurek.log.info("title = " .. filled.title)
 end
 
 --@api: lurek.serial.decode
 do
     local jsonPayload = '{"auto": true, "score": 99}'
     local result = lurek.serial.decode(jsonPayload)
-    print("auto-detected json: auto = " .. tostring(result.auto))
-    print("score = " .. result.score)
+    local bytes = lurek.serial.encodeMsgPack({ hp = 10, mana = 4 })
+    local stats = lurek.serial.decode(bytes, "msgpack")
+    lurek.log.info("auto-detected json score = " .. result.score)
+    lurek.log.info("decoded msgpack stats hp=" .. stats.hp .. " mana=" .. stats.mana)
 end
 
 --- Serial Module: decode, decodeMsgPack, toCsv, toJson, toToml
 
 --@api: lurek.serial.decodeMsgPack
 do
-    local bytes = lurek.serial.encodeMsgPack({ x = 1, y = 2 })
+    local bytes = lurek.serial.encodeMsgPack({ x = 1, y = 2, room = "spawn" })
     local decoded = lurek.serial.decodeMsgPack(bytes)
-    print("x = " .. tostring(decoded.x))
-    print("y = " .. tostring(decoded.y))
+    local room = decoded.room
+    local sum = decoded.x + decoded.y
+    lurek.log.info("spawn room = " .. room)
+    lurek.log.info("decoded coordinates = " .. decoded.x .. "," .. decoded.y .. " sum=" .. sum)
 end
 
 --@api: lurek.serial.toCsv
 do
-    local csv = lurek.serial.toCsv({ { name = "Alice", score = 100 }, { name = "Bob", score = 90 } }, ",", true)
-    print("csv length = " .. #csv)
-    print("contains header = " .. tostring(csv:find("name") ~= nil))
+    local rows = { { name = "Alice", score = 100 }, { name = "Bob", score = 90 } }
+    local csv = lurek.serial.toCsv(rows, ",", true)
+    local restored = lurek.serial.fromCsv(csv, ",", true)
+    local has_header = csv:find("name", 1, true) ~= nil
+    lurek.log.info("csv leaderboard rows = " .. #restored)
+    lurek.log.info("header present = " .. tostring(has_header) .. ", top player = " .. restored[1].name)
 end
 
 --@api: lurek.serial.toToml
 do
-    local toml = lurek.serial.toToml({ version = "1.0", debug = false })
-    print("toml length = " .. #toml)
-    print("contains version = " .. tostring(toml:find("version") ~= nil))
+    local settings = { version = "1.0", debug = false, game = { title = "Arena" } }
+    local toml = lurek.serial.toToml(settings)
+    local restored = lurek.serial.fromToml(toml)
+    local has_version = toml:find("version", 1, true) ~= nil
+    lurek.log.info("toml bytes = " .. #toml .. ", has version = " .. tostring(has_version))
+    lurek.log.info("restored title = " .. restored.game.title)
 end

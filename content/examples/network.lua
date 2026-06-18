@@ -2,13 +2,28 @@
 -- Auto-generated from content/examples2/network_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/network.lua
 
+local function network_log(message)
+    lurek.log.info("[network.example] " .. tostring(message))
+end
+
 --- Network Module Part 1: LNetworkHost — server, client, peer management
+
+local function example_print_log(...)
+    local parts = {}
+    for i = 1, select("#", ...) do
+        parts[i] = tostring(select(i, ...))
+    end
+    lurek.log.info(table.concat(parts, " "))
+end
 
 --@api: lurek.network.newServer
 do
     local server = lurek.network.newServer({port = 7777, maxPeers = 16, channels = 2})
-    print("role=" .. server:getRole())
-    print("peer_limit=" .. server:getPeerLimit())
+    local limits = server:getBandwidthLimit()
+    local metrics = server:getMetrics()
+    network_log("dedicated server role=" .. server:getRole() .. " addr=" .. server:getAddress())
+    network_log("peer_limit=" .. server:getPeerLimit() .. " channels=" .. server:getChannelLimit())
+    network_log("bw=" .. tostring(limits.incoming) .. "/" .. tostring(limits.outgoing) .. " connected=" .. metrics.connected_peers)
     server:destroy()
 end
 
@@ -16,8 +31,8 @@ end
 do
     local server = lurek.network.newServer({port = 7778, maxPeers = 4, channels = 2})
     local client = lurek.network.newClient({addr = "127.0.0.1:7778", channels = 2, data = 21})
-    print("role=" .. client:getRole())
-    print("type=" .. client:type())
+    example_print_log("role=" .. client:getRole())
+    example_print_log("type=" .. client:type())
     client:destroy()
     server:destroy()
 end
@@ -25,15 +40,18 @@ end
 --@api: lurek.network.newHost
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:8888", maxPeers = 32, channels = 4})
-    print("address=" .. host:getAddress())
-    print("channels=" .. host:getChannelLimit())
+    local metrics = host:getMetrics()
+    local limits = host:getBandwidthLimit()
+    network_log("listen host addr=" .. host:getAddress() .. " role=" .. host:getRole())
+    network_log("channels=" .. host:getChannelLimit() .. " peers=" .. host:getPeerLimit())
+    network_log("bw=" .. tostring(limits.incoming) .. "/" .. tostring(limits.outgoing) .. " connected=" .. metrics.connected_peers)
     host:destroy()
 end
 
 --@api: LNetworkHost:connect
 do
     local function wait_for_event(host, expected_type, max_attempts)
-        max_attempts = max_attempts or 60
+        max_attempts = max_attempts or 8
         for _ = 1, max_attempts do
             local event = host:service()
             if event and (expected_type == nil or event.type == expected_type) then
@@ -48,8 +66,8 @@ do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 1, channels = 2})
     local peer_id = host:connect("127.0.0.1:7779", 2, 17)
     local event = wait_for_event(server, "connect")
-    print("peer_id=" .. peer_id)
-    print("server_event=" .. tostring(event and event.type or "nil"))
+    example_print_log("peer_id=" .. peer_id)
+    example_print_log("server_event=" .. tostring(event and event.type or "nil"))
     host:destroy()
     server:destroy()
 end
@@ -62,7 +80,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -103,8 +121,8 @@ do
     end
 
     local server, client, server_connect = connect_pair(7780, 2)
-    print("event_type=" .. tostring(server_connect and server_connect.type or "nil"))
-    print("peer_id=" .. tostring(server_connect and server_connect.peer_id or "nil"))
+    example_print_log("event_type=" .. tostring(server_connect and server_connect.type or "nil"))
+    example_print_log("peer_id=" .. tostring(server_connect and server_connect.peer_id or "nil"))
     client:destroy()
     server:destroy()
 end
@@ -117,7 +135,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -158,7 +176,7 @@ do
     end
 
     local function wait_for_event(host, expected_type, max_attempts)
-        max_attempts = max_attempts or 60
+        max_attempts = max_attempts or 8
         for _ = 1, max_attempts do
             local event = host:service()
             if event and (expected_type == nil or event.type == expected_type) then
@@ -173,8 +191,8 @@ do
     server:send(server_connect.peer_id, 0, "welcome", true)
     server:flush()
     local event = wait_for_event(client, "receive")
-    print("event_type=" .. tostring(event and event.type or "nil"))
-    print("payload=" .. tostring(event and event.data or "nil"))
+    example_print_log("event_type=" .. tostring(event and event.type or "nil"))
+    example_print_log("payload=" .. tostring(event and event.data or "nil"))
     client:destroy()
     server:destroy()
 end
@@ -187,7 +205,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -228,7 +246,7 @@ do
     end
 
     local function wait_for_event(host, expected_type, max_attempts)
-        max_attempts = max_attempts or 60
+        max_attempts = max_attempts or 8
         for _ = 1, max_attempts do
             local event = host:service()
             if event and (expected_type == nil or event.type == expected_type) then
@@ -243,8 +261,8 @@ do
     server:broadcast(1, "state:update", true)
     server:flush()
     local event = wait_for_event(client, "receive")
-    print("channel=" .. tostring(event and event.channel_id or "nil"))
-    print("payload=" .. tostring(event and event.data or "nil"))
+    example_print_log("channel=" .. tostring(event and event.channel_id or "nil"))
+    example_print_log("payload=" .. tostring(event and event.data or "nil"))
     client:destroy()
     server:destroy()
 end
@@ -257,7 +275,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -298,7 +316,7 @@ do
     end
 
     local server, client = connect_pair(7783, 2)
-    print("connected=" .. server:getConnectedPeerCount())
+    example_print_log("connected=" .. server:getConnectedPeerCount())
     client:destroy()
     server:destroy()
 end
@@ -311,7 +329,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -353,8 +371,8 @@ do
 
     local server, client = connect_pair(7784, 2)
     local ids = server:getConnectedPeerIds()
-    print("peer_count=" .. #ids)
-    print("first_peer=" .. tostring(ids[1]))
+    example_print_log("peer_count=" .. #ids)
+    example_print_log("first_peer=" .. tostring(ids[1]))
     client:destroy()
     server:destroy()
 end
@@ -367,7 +385,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -408,7 +426,7 @@ do
     end
 
     local server, client, server_connect = connect_pair(7785, 2)
-    print("peer_state=" .. server:getPeerState(server_connect.peer_id))
+    example_print_log("peer_state=" .. server:getPeerState(server_connect.peer_id))
     client:destroy()
     server:destroy()
 end
@@ -421,7 +439,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -462,7 +480,7 @@ do
     end
 
     local server, client, server_connect = connect_pair(7786, 2)
-    print("peer_addr=" .. tostring(server:getPeerAddress(server_connect.peer_id)))
+    example_print_log("peer_addr=" .. tostring(server:getPeerAddress(server_connect.peer_id)))
     client:destroy()
     server:destroy()
 end
@@ -475,7 +493,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -518,7 +536,7 @@ do
     local server, client, server_connect = connect_pair(7787, 2)
     server:ping(server_connect.peer_id)
     server:flush()
-    print("rtt_ms=" .. math.floor(server:getRoundTripTime(server_connect.peer_id)))
+    example_print_log("rtt_ms=" .. math.floor(server:getRoundTripTime(server_connect.peer_id)))
     client:destroy()
     server:destroy()
 end
@@ -531,7 +549,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -573,8 +591,8 @@ do
 
     local server, client, server_connect = connect_pair(7788, 2)
     local stats = server:getPeerStats(server_connect.peer_id)
-    print("packets_sent=" .. stats.packets_sent)
-    print("rtt_ms=" .. stats.round_trip_time)
+    example_print_log("packets_sent=" .. stats.packets_sent)
+    example_print_log("rtt_ms=" .. stats.round_trip_time)
     client:destroy()
     server:destroy()
 end
@@ -584,8 +602,8 @@ do
     local server = lurek.network.newServer({port = 7783, maxPeers = 4})
     server:setBandwidthLimit(100000, 50000)
     local limits = server:getBandwidthLimit()
-    print("incoming=" .. tostring(limits.incoming))
-    print("outgoing=" .. tostring(limits.outgoing))
+    example_print_log("incoming=" .. tostring(limits.incoming))
+    example_print_log("outgoing=" .. tostring(limits.outgoing))
     server:destroy()
 end
 
@@ -594,16 +612,20 @@ do
     local server = lurek.network.newServer({port = 7789, maxPeers = 4})
     server:setBandwidthLimit(64000, 32000)
     local bw = server:getBandwidthLimit()
-    print("bw_in=" .. tostring(bw.incoming))
-    print("bw_out=" .. tostring(bw.outgoing))
+    example_print_log("bw_in=" .. tostring(bw.incoming))
+    example_print_log("bw_out=" .. tostring(bw.outgoing))
     server:destroy()
 end
 
 --@api: LNetworkHost:setChannelLimit
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:7790", maxPeers = 2, channels = 1})
+    local before = host:getChannelLimit()
     host:setChannelLimit(4)
-    print("channels=" .. host:getChannelLimit())
+    local after = host:getChannelLimit()
+    local peers = host:getPeerLimit()
+    network_log("match channels before=" .. before .. " after=" .. after)
+    network_log("peer slots remain=" .. peers)
     host:destroy()
 end
 
@@ -615,7 +637,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -656,7 +678,7 @@ do
     end
 
     local function wait_for_event(host, expected_type, max_attempts)
-        max_attempts = max_attempts or 60
+        max_attempts = max_attempts or 8
         for _ = 1, max_attempts do
             local event = host:service()
             if event and (expected_type == nil or event.type == expected_type) then
@@ -671,8 +693,8 @@ do
     server:disconnect(server_connect.peer_id, 7)
     server:flush()
     local event = wait_for_event(client, "disconnect")
-    print("event_type=" .. tostring(event and event.type or "nil"))
-    print("data=" .. tostring(event and event.data or "nil"))
+    example_print_log("event_type=" .. tostring(event and event.type or "nil"))
+    example_print_log("data=" .. tostring(event and event.data or "nil"))
     client:destroy()
     server:destroy()
 end
@@ -685,7 +707,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -726,7 +748,7 @@ do
     end
 
     local function wait_for_event(host, expected_type, max_attempts)
-        max_attempts = max_attempts or 60
+        max_attempts = max_attempts or 8
         for _ = 1, max_attempts do
             local event = host:service()
             if event and (expected_type == nil or event.type == expected_type) then
@@ -743,8 +765,8 @@ do
     server:flush()
     local receive = wait_for_event(client, "receive")
     local disconnect = wait_for_event(client, "disconnect")
-    print("payload=" .. tostring(receive and receive.data or "nil"))
-    print("disconnect_data=" .. tostring(disconnect and disconnect.data or "nil"))
+    example_print_log("payload=" .. tostring(receive and receive.data or "nil"))
+    example_print_log("disconnect_data=" .. tostring(disconnect and disconnect.data or "nil"))
     client:destroy()
     server:destroy()
 end
@@ -757,7 +779,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -798,7 +820,7 @@ do
     end
 
     local function wait_for_event(host, expected_type, max_attempts)
-        max_attempts = max_attempts or 60
+        max_attempts = max_attempts or 8
         for _ = 1, max_attempts do
             local event = host:service()
             if event and (expected_type == nil or event.type == expected_type) then
@@ -813,8 +835,8 @@ do
     server:disconnectNow(server_connect.peer_id, 9)
     server:flush()
     local event = wait_for_event(client, "disconnect")
-    print("event_type=" .. tostring(event and event.type or "nil"))
-    print("data=" .. tostring(event and event.data or "nil"))
+    example_print_log("event_type=" .. tostring(event and event.type or "nil"))
+    example_print_log("data=" .. tostring(event and event.data or "nil"))
     client:destroy()
     server:destroy()
 end
@@ -827,7 +849,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -868,7 +890,7 @@ do
     end
 
     local function wait_for_event(host, expected_type, max_attempts)
-        max_attempts = max_attempts or 60
+        max_attempts = max_attempts or 8
         for _ = 1, max_attempts do
             local event = host:service()
             if event and (expected_type == nil or event.type == expected_type) then
@@ -883,8 +905,8 @@ do
     client:send(client_connect.peer_id, 0, "flush-check", true)
     client:flush()
     local event = wait_for_event(server, "receive")
-    print("event_type=" .. tostring(event and event.type or "nil"))
-    print("payload=" .. tostring(event and event.data or "nil"))
+    example_print_log("event_type=" .. tostring(event and event.type or "nil"))
+    example_print_log("payload=" .. tostring(event and event.data or "nil"))
     client:destroy()
     server:destroy()
 end
@@ -897,7 +919,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -940,8 +962,8 @@ do
     local server, client, server_connect = connect_pair(7795, 2)
     server:ping(server_connect.peer_id)
     server:flush()
-    print("peer_state=" .. server:getPeerState(server_connect.peer_id))
-    print("rtt_ms=" .. math.floor(server:getRoundTripTime(server_connect.peer_id)))
+    example_print_log("peer_state=" .. server:getPeerState(server_connect.peer_id))
+    example_print_log("rtt_ms=" .. math.floor(server:getRoundTripTime(server_connect.peer_id)))
     client:destroy()
     server:destroy()
 end
@@ -954,7 +976,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -998,8 +1020,8 @@ do
     server:resetPeer(server_connect.peer_id)
     server:service()
     client:service()
-    print("reset_peer=" .. server_connect.peer_id)
-    print("connected=" .. server:getConnectedPeerCount())
+    example_print_log("reset_peer=" .. server_connect.peer_id)
+    example_print_log("connected=" .. server:getConnectedPeerCount())
     client:destroy()
     server:destroy()
 end
@@ -1009,8 +1031,11 @@ end
 --@api: lurek.network.newRuntime
 do
     local rt = lurek.network.newRuntime()
-    print("type=" .. rt:type())
-    print("typeOf=" .. tostring(rt:typeOf("LNetworkRuntime")))
+    local metrics = rt:getMetrics()
+    local status = rt:getAuthStatus()
+    local token = rt:getAuthToken()
+    network_log("runtime type=" .. rt:type() .. " typeOf=" .. tostring(rt:typeOf("LNetworkRuntime")))
+    network_log("queue=" .. metrics.queue_size .. " auth=" .. status .. " token=" .. tostring(token))
     rt:shutdown()
 end
 
@@ -1018,8 +1043,8 @@ end
 do
     local rt = lurek.network.newRuntime()
     local req_id = rt:httpGet("http://127.0.0.1:1/status", {Accept = "text/plain"})
-    print("request_id=" .. req_id)
-    print("pending_events=" .. #rt:poll())
+    example_print_log("request_id=" .. req_id)
+    example_print_log("pending_events=" .. #rt:poll())
     rt:shutdown()
 end
 
@@ -1027,17 +1052,17 @@ end
 do
     local rt = lurek.network.newRuntime()
     local req_id = rt:httpPost("http://127.0.0.1:1/data", '{"key":"value"}', {["Content-Type"] = "application/json"})
-    print("request_id=" .. req_id)
-    print("pending_events=" .. #rt:poll())
+    example_print_log("request_id=" .. req_id)
+    example_print_log("pending_events=" .. #rt:poll())
     rt:shutdown()
 end
 
 --@api: LNetworkRuntime:httpRequest
 do
     local rt = lurek.network.newRuntime()
-    local req_id = rt:httpRequest({url = "http://127.0.0.1:1/resource", method = "PUT", body = "updated data", timeout = 5})
-    print("request_id=" .. req_id)
-    print("pending_events=" .. #rt:poll())
+    local req_id = rt:httpRequest({url = "http://127.0.0.1:1/resource", method = "PUT", body = "updated data", timeout = 0.01})
+    example_print_log("request_id=" .. req_id)
+    example_print_log("pending_events=" .. #rt:poll())
     rt:shutdown()
 end
 
@@ -1046,7 +1071,7 @@ do
     local rt = lurek.network.newRuntime()
     rt:httpGet("http://127.0.0.1:1/poll")
     local events = rt:poll()
-    print("events=" .. #events)
+    example_print_log("events=" .. #events)
     rt:shutdown()
 end
 
@@ -1054,8 +1079,8 @@ end
 do
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9")
-    print("tcp_id=" .. id)
-    print("pending_events=" .. #rt:poll())
+    example_print_log("tcp_id=" .. id)
+    example_print_log("pending_events=" .. #rt:poll())
     rt:shutdown()
 end
 
@@ -1064,8 +1089,8 @@ do
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9")
     rt:tcpSend(id, "PING\n")
-    print("tcp_id=" .. id)
-    print("pending_events=" .. #rt:poll())
+    example_print_log("tcp_id=" .. id)
+    example_print_log("pending_events=" .. #rt:poll())
     rt:shutdown()
 end
 
@@ -1074,8 +1099,8 @@ do
     local rt = lurek.network.newRuntime()
     local id = rt:tcpConnect("127.0.0.1:9")
     rt:tcpClose(id)
-    print("tcp_id=" .. id)
-    print("pending_events=" .. #rt:poll())
+    example_print_log("tcp_id=" .. id)
+    example_print_log("pending_events=" .. #rt:poll())
     rt:shutdown()
 end
 
@@ -1083,8 +1108,8 @@ end
 do
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:1/game")
-    print("ws_id=" .. id)
-    print("pending_events=" .. #rt:poll())
+    example_print_log("ws_id=" .. id)
+    example_print_log("pending_events=" .. #rt:poll())
     rt:shutdown()
 end
 
@@ -1093,8 +1118,8 @@ do
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:1/game")
     rt:wsSend(id, '{"action":"join","room":"lobby"}')
-    print("ws_id=" .. id)
-    print("pending_events=" .. #rt:poll())
+    example_print_log("ws_id=" .. id)
+    example_print_log("pending_events=" .. #rt:poll())
     rt:shutdown()
 end
 
@@ -1103,8 +1128,8 @@ do
     local rt = lurek.network.newRuntime()
     local id = rt:wsConnect("ws://127.0.0.1:1/game")
     rt:wsClose(id)
-    print("ws_id=" .. id)
-    print("pending_events=" .. #rt:poll())
+    example_print_log("ws_id=" .. id)
+    example_print_log("pending_events=" .. #rt:poll())
     rt:shutdown()
 end
 
@@ -1113,16 +1138,18 @@ do
     local room = lurek.network.createRoom("Arena", "player1", 8)
     local joined = lurek.network.joinRoom(room.id)
     local left = lurek.network.leaveRoom(room.id)
-    print("room_id=" .. room.id)
-    print("players=" .. joined.player_count .. "->" .. left.player_count)
+    example_print_log("room_id=" .. room.id)
+    example_print_log("players=" .. joined.player_count .. "->" .. left.player_count)
 end
 
 --@api: lurek.network.createLobby
 do
     local lobby = lurek.network.createLobby("My Game", 7777, 1, 4)
-    local found = lurek.network.discoverLobbies(200)
-    print("lobby=" .. lobby.name .. ":" .. lobby.port)
-    print("discovered=" .. #found)
+    local found = lurek.network.discoverLobbies(10)
+    local room = lurek.network.createRoom("My Game staging", "host-A", 4)
+    local rooms = lurek.network.listRooms()
+    network_log("lobby=" .. lobby.name .. ":" .. lobby.port .. " players=" .. lobby.player_count .. "/" .. lobby.max_players)
+    network_log("discoveries=" .. #found .. " local_rooms=" .. #rooms .. " staging=" .. room.id)
 end
 
 --@api: lurek.network.pack
@@ -1130,8 +1157,8 @@ do
     local data = {hp = 100, pos = {x = 10.5, y = 20.3}, name = "Hero"}
     local packed = lurek.network.pack(data)
     local unpacked = lurek.network.unpack(packed)
-    print("packed_bytes=" .. #packed)
-    print("unpacked_name=" .. unpacked.name)
+    example_print_log("packed_bytes=" .. #packed)
+    example_print_log("unpacked_name=" .. unpacked.name)
 end
 
 --@api: lurek.network.syncEntity
@@ -1142,7 +1169,7 @@ do
         local server_connect = nil
         local client_connect = nil
 
-        for _ = 1, 60 do
+        for _ = 1, 8 do
             server:flush()
             client:flush()
 
@@ -1183,7 +1210,7 @@ do
     end
 
     local function wait_for_event(host, expected_type, max_attempts)
-        max_attempts = max_attempts or 60
+        max_attempts = max_attempts or 8
         for _ = 1, max_attempts do
             local event = host:service()
             if event and (expected_type == nil or event.type == expected_type) then
@@ -1199,8 +1226,8 @@ do
     server:flush()
     local event = wait_for_event(client, "receive")
     local payload = lurek.network.unpack(event.data)
-    print("entity_id=" .. payload.id)
-    print("hp=" .. payload.data.hp)
+    example_print_log("entity_id=" .. payload.id)
+    example_print_log("hp=" .. payload.data.hp)
     client:destroy()
     server:destroy()
 end
@@ -1209,24 +1236,30 @@ end
 do
     local snapshot = {id = 1, tick = 10, x = 10, y = 20, vx = 5, vy = 0}
     local predicted = lurek.network.predictLinear(snapshot, 0.016)
-    print("tick=" .. predicted.tick)
-    print("x=" .. predicted.x)
+    local auth = {id = 1, tick = 11, x = 10.3, y = 20, vx = 5, vy = 0}
+    local corrected = lurek.network.reconcileSnapshot(predicted, auth, 0.5)
+    network_log("predicted tick=" .. predicted.tick .. " pos=" .. predicted.x .. "," .. predicted.y)
+    network_log("corrected pos=" .. corrected.x .. "," .. corrected.y)
 end
 
 --@api: lurek.network.newRelayTicket
 do
     local token = lurek.network.newRelayTicket("room_abc", "peer_42")
     local ticket = lurek.network.parseRelayTicket(token)
-    print("ticket=" .. token)
-    print("peer_id=" .. ticket.peer_id)
+    local packed = lurek.network.pack({ room = ticket.room_id, peer = ticket.peer_id })
+    local unpacked = lurek.network.unpack(packed)
+    network_log("relay room=" .. ticket.room_id .. " peer=" .. ticket.peer_id)
+    network_log("packed mirror room=" .. unpacked.room .. " token_bytes=" .. #token)
 end
 
 --@api: lurek.network.makePunchProbe
 do
     local probe = lurek.network.makePunchProbe("peer_99")
     local peer_id = lurek.network.parsePunchProbe(probe)
-    print("probe_bytes=" .. #probe)
-    print("peer_id=" .. tostring(peer_id))
+    local relay = lurek.network.newRelayTicket("room_probe", peer_id)
+    local ticket = lurek.network.parseRelayTicket(relay)
+    network_log("probe bytes=" .. #probe .. " peer=" .. tostring(peer_id))
+    network_log("relay pairing room=" .. ticket.room_id .. " peer=" .. ticket.peer_id)
 end
 
 --- Network Module Part 2: host queries, runtime lifecycle, room, relay, and snapshot
@@ -1234,36 +1267,55 @@ end
 --@api: LNetworkHost:destroy
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
-    print("before=" .. tostring(host:isDestroyed()))
+    local before = host:isDestroyed()
+    local role = host:getRole()
     host:destroy()
-    print("after=" .. tostring(host:isDestroyed()))
+    local after = host:isDestroyed()
+    network_log("host role=" .. role .. " before_destroy=" .. tostring(before))
+    network_log("after_destroy=" .. tostring(after))
 end
 
 --@api: LNetworkHost:getAddress
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
-    print("addr=" .. host:getAddress())
+    local addr = host:getAddress()
+    local role = host:getRole()
+    local peers = host:getPeerLimit()
+    network_log("local host addr=" .. addr)
+    network_log("role=" .. role .. " peer_limit=" .. peers)
     host:destroy()
 end
 
 --@api: LNetworkHost:getChannelLimit
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
-    print("channels=" .. host:getChannelLimit())
+    local channels = host:getChannelLimit()
+    local peers = host:getPeerLimit()
+    local role = host:getRole()
+    network_log("channel budget=" .. channels)
+    network_log("peer_limit=" .. peers .. " role=" .. role)
     host:destroy()
 end
 
 --@api: LNetworkHost:getPeerLimit
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
-    print("peer_limit=" .. host:getPeerLimit())
+    local peers = host:getPeerLimit()
+    local channels = host:getChannelLimit()
+    local addr = host:getAddress()
+    network_log("peer cap=" .. peers)
+    network_log("channels=" .. channels .. " addr=" .. addr)
     host:destroy()
 end
 
 --@api: LNetworkHost:getRole
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
-    print("role=" .. host:getRole())
+    local role = host:getRole()
+    local typeName = host:type()
+    local addr = host:getAddress()
+    network_log("host role=" .. role)
+    network_log("type=" .. typeName .. " addr=" .. addr)
     host:destroy()
 end
 
@@ -1271,7 +1323,7 @@ end
 do
     local server = lurek.network.newServer({port = 7798, maxPeers = 4, channels = 2})
     local client = lurek.network.newClient({addr = "127.0.0.1:7798", channels = 2})
-    print("is_client=" .. tostring(client:isClient()))
+    example_print_log("is_client=" .. tostring(client:isClient()))
     client:destroy()
     server:destroy()
 end
@@ -1279,67 +1331,98 @@ end
 --@api: LNetworkHost:isDestroyed
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
-    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    local before = host:isDestroyed()
+    local role = host:getRole()
     host:destroy()
+    local after = host:isDestroyed()
+    network_log("role=" .. role .. " before_destroyed=" .. tostring(before))
+    network_log("after_destroyed=" .. tostring(after))
 end
 
 --@api: LNetworkHost:isServer
 do
     local server = lurek.network.newServer({port = 7799, maxPeers = 4, channels = 2})
-    print("is_server=" .. tostring(server:isServer()))
+    local role = server:getRole()
+    local isServer = server:isServer()
+    local channels = server:getChannelLimit()
+    network_log("role=" .. role .. " is_server=" .. tostring(isServer))
+    network_log("channel_limit=" .. channels)
     server:destroy()
 end
 
 --@api: LNetworkHost:type
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
-    print("type=" .. host:type())
+    local typeName = host:type()
+    local role = host:getRole()
+    local destroyed = host:isDestroyed()
+    network_log("host userdata=" .. typeName)
+    network_log("role=" .. role .. " destroyed=" .. tostring(destroyed))
     host:destroy()
 end
 
 --@api: LNetworkHost:typeOf
 do
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 4, channels = 2})
-    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    local isHost = host:typeOf("LNetworkHost")
+    local isObject = host:typeOf("LObject")
+    local isRuntime = host:typeOf("LNetworkRuntime")
+    network_log("typeOf host=" .. tostring(isHost) .. " object=" .. tostring(isObject))
+    network_log("runtime check=" .. tostring(isRuntime) .. " type=" .. host:type())
     host:destroy()
 end
 
 --@api: LNetworkRuntime:shutdown
 do
     local rt = lurek.network.newRuntime()
-    print("rt_type=" .. rt:type())
+    local typeName = rt:type()
+    local status = rt:getAuthStatus()
+    local metrics = rt:getMetrics()
     rt:shutdown()
-    print("shutdown=true")
+    network_log("runtime type=" .. typeName .. " status=" .. status)
+    network_log("shutdown queue=" .. metrics.queue_size)
 end
 
 --@api: LNetworkRuntime:type
 do
     local rt = lurek.network.newRuntime()
-    print("rt_type=" .. rt:type())
+    local typeName = rt:type()
+    local status = rt:getAuthStatus()
+    local metrics = rt:getMetrics()
+    network_log("runtime userdata=" .. typeName)
+    network_log("status=" .. status .. " queue=" .. metrics.queue_size)
     rt:shutdown()
 end
 
 --@api: LNetworkRuntime:typeOf
 do
     local rt = lurek.network.newRuntime()
-    print("rt_typeOf=" .. tostring(rt:typeOf("LNetworkRuntime")))
+    local isRuntime = rt:typeOf("LNetworkRuntime")
+    local isObject = rt:typeOf("LObject")
+    local isStream = rt:typeOf("LSseStream")
+    network_log("runtime check=" .. tostring(isRuntime) .. " object=" .. tostring(isObject))
+    network_log("stream check=" .. tostring(isStream) .. " type=" .. rt:type())
     rt:shutdown()
 end
 
 --@api: lurek.network.discoverLobbies
 do
     lurek.network.createLobby("Discovery", 7788, 1, 4)
-    local lobbies = lurek.network.discoverLobbies(200)
-    print("lobbies=" .. #lobbies)
-    print("first_name=" .. tostring(lobbies[1] and lobbies[1].name or "nil"))
+    local lobbies = lurek.network.discoverLobbies(10)
+    local room = lurek.network.createRoom("Discovery staging", "host-discovery", 4)
+    local rooms = lurek.network.listRooms()
+    network_log("lan lobbies=" .. #lobbies)
+    network_log("first=" .. tostring(lobbies[1] and lobbies[1].name or "nil") .. " local_rooms=" .. #rooms .. " staging=" .. room.id)
 end
 
 --@api: lurek.network.joinRoom
 do
     local room = lurek.network.createRoom("Joinable", "host-B", 4)
     local joined = lurek.network.joinRoom(room.id)
-    print("room_id=" .. room.id)
-    print("player_count=" .. joined.player_count)
+    local players = lurek.network.getPlayerList(room.id)
+    local meta = lurek.network.getRoom(room.id)
+    network_log("joined room=" .. tostring(room.id) .. " name=" .. tostring(joined.name))
+    network_log("player_count=" .. tostring(joined.player_count) .. " tracked_players=" .. #players .. " meta_host=" .. tostring(meta.host))
 end
 
 --@api: lurek.network.leaveRoom
@@ -1347,8 +1430,8 @@ do
     local room = lurek.network.createRoom("Leavable", "host-C", 4)
     lurek.network.joinRoom(room.id)
     local left = lurek.network.leaveRoom(room.id)
-    print("room_id=" .. room.id)
-    print("player_count=" .. left.player_count)
+    example_print_log("room_id=" .. room.id)
+    example_print_log("player_count=" .. left.player_count)
 end
 
 --@api: lurek.network.listRooms
@@ -1356,23 +1439,28 @@ do
     local rooms = lurek.network.listRooms()
     local room = lurek.network.createRoom("Listed", "host-D", 3)
     rooms = lurek.network.listRooms()
-    print("rooms=" .. #rooms)
-    print("last_room=" .. room.name)
+    example_print_log("rooms=" .. #rooms)
+    example_print_log("last_room=" .. room.name)
 end
 
 --@api: lurek.network.parsePunchProbe
 do
     local probe = lurek.network.makePunchProbe("peer_parse")
     local peer_id = lurek.network.parsePunchProbe(probe)
-    print("peer_id=" .. tostring(peer_id))
+    local relay = lurek.network.newRelayTicket("room_parse_probe", peer_id)
+    local ticket = lurek.network.parseRelayTicket(relay)
+    network_log("parsed probe peer=" .. tostring(peer_id))
+    network_log("relay room=" .. ticket.room_id .. " peer=" .. ticket.peer_id)
 end
 
 --@api: lurek.network.parseRelayTicket
 do
     local token = lurek.network.newRelayTicket("room_parse", "peer_parse")
     local ticket = lurek.network.parseRelayTicket(token)
-    print("room_id=" .. ticket.room_id)
-    print("peer_id=" .. ticket.peer_id)
+    local packed = lurek.network.pack({ room = ticket.room_id, peer = ticket.peer_id })
+    local unpacked = lurek.network.unpack(packed)
+    network_log("ticket room=" .. ticket.room_id)
+    network_log("ticket peer=" .. tostring(ticket.peer_id) .. " unpacked_peer=" .. tostring(unpacked.peer))
 end
 
 --@api: lurek.network.reconcileSnapshot
@@ -1380,47 +1468,53 @@ do
     local pred = {id = 3, tick = 20, x = 10, y = 10, vx = 1, vy = 0}
     local auth = {id = 3, tick = 21, x = 12, y = 11, vx = 1, vy = 0}
     local result = lurek.network.reconcileSnapshot(pred, auth, 0.5)
-    print("tick=" .. result.tick)
-    print("x=" .. result.x)
+    example_print_log("tick=" .. result.tick)
+    example_print_log("x=" .. result.x)
 end
 
 --@api: lurek.network.unpack
 do
     local raw = lurek.network.pack({ id = 1, data = "hello" })
     local msg = lurek.network.unpack(raw)
-    print("id=" .. msg.id)
-    print("data=" .. msg.data)
+    local packedSnapshot = lurek.network.pack({ id = msg.id, tag = "chat", body = msg.data })
+    local echo = lurek.network.unpack(packedSnapshot)
+    network_log("message id=" .. msg.id .. " body=" .. msg.data)
+    network_log("echo tag=" .. echo.tag .. " raw_bytes=" .. #raw)
 end
 
 --@api: lurek.network.sseConnect
 do
     ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(ev)
-        print("event=" .. tostring(ev.event) .. " data=" .. ev.data)
+    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(ev)
+        example_print_log("event=" .. tostring(ev.event) .. " data=" .. ev.data)
     end)
     -- Poll for events each frame; close when done.
     local ev = stream:next()
     if ev then
-        print("got event: " .. ev.data)
+        example_print_log("got event: " .. ev.data)
     end
     stream:close()
 end
 
 --@api: lurek.network.sseCollect
 do
-    local events = lurek.network.sseCollect("http://127.0.0.1:9999/events", 10, 2.0)
+    local events = lurek.network.sseCollect("http://127.0.0.1:1/events", 1, 0.01)
+    local count = #events
+    local firstEvent = events[1]
     for _, ev in ipairs(events) do
-        print("collected: " .. ev.data)
+        network_log("collected event=" .. tostring(ev.event) .. " data=" .. tostring(ev.data))
     end
+    network_log("sse batch size=" .. count)
+    network_log("first event=" .. tostring(firstEvent and firstEvent.event or "nil"))
 end
 
 --@api: LSseStream:next
 do
     ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
+    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
     local ev = stream:next()
     if ev then
-        print("data=" .. ev.data)
+        example_print_log("data=" .. ev.data)
     end
     stream:close()
 end
@@ -1428,31 +1522,48 @@ end
 --@api: LSseStream:close
 do
     ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
+    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
+    local wasOpen = stream:isOpen()
+    local typeName = stream:type()
     stream:close()
+    local isStream = stream:typeOf("LSseStream")
+    network_log("sse close open_before=" .. tostring(wasOpen))
+    network_log("type=" .. typeName .. " check=" .. tostring(isStream))
 end
 
 --@api: LSseStream:isOpen
 do
     ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
-    print("open=" .. tostring(stream:isOpen()))
+    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
+    local open = stream:isOpen()
+    local typeName = stream:type()
+    local event = stream:next()
+    network_log("sse open=" .. tostring(open))
+    network_log("type=" .. typeName .. " next=" .. tostring(event and event.event or "nil"))
     stream:close()
 end
 
 --@api: LSseStream:type
 do
     ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
-    print(stream:type())
+    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
+    local typeName = stream:type()
+    local isStream = stream:typeOf("LSseStream")
+    local open = stream:isOpen()
+    network_log("sse userdata=" .. typeName)
+    network_log("is_stream=" .. tostring(isStream) .. " open=" .. tostring(open))
     stream:close()
 end
 
 --@api: LSseStream:typeOf
 do
     ---@type LSseStream
-    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
-    print(stream:typeOf("LSseStream"))
+    local stream = lurek.network.sseConnect("http://127.0.0.1:1/events", function(_ev) end)
+    local isStream = stream:typeOf("LSseStream")
+    local isObject = stream:typeOf("LObject")
+    local isRuntime = stream:typeOf("LNetworkRuntime")
+    network_log("sse typeOf stream=" .. tostring(isStream) .. " object=" .. tostring(isObject))
+    network_log("runtime check=" .. tostring(isRuntime) .. " type=" .. stream:type())
     stream:close()
 end
 
@@ -1460,10 +1571,10 @@ end
 do
     local rt = lurek.network.newRuntime()
     local ok, response = pcall(function()
-        return rt:httpJson("http://localhost:8080/api", '{"key":"value"}')
+        return rt:httpJson("http://127.0.0.1:1/api", '{"key":"value"}')
     end)
-    print("httpJson ok: " .. tostring(ok))
-    print("httpJson response: " .. tostring(response))
+    example_print_log("httpJson ok: " .. tostring(ok))
+    example_print_log("httpJson response: " .. tostring(response))
     rt:shutdown()
 end
 
@@ -1471,10 +1582,10 @@ end
 do
     local rt = lurek.network.newRuntime()
     local ok, response = pcall(function()
-        return rt:httpStream("http://localhost:8080/stream")
+        return rt:httpStream("http://127.0.0.1:1/stream")
     end)
-    print("httpStream ok: " .. tostring(ok))
-    print("httpStream response: " .. tostring(response))
+    example_print_log("httpStream ok: " .. tostring(ok))
+    example_print_log("httpStream response: " .. tostring(response))
     rt:shutdown()
 end
 
@@ -1482,10 +1593,10 @@ end
 do
     local rt = lurek.network.newRuntime()
     local ok, id = pcall(function()
-        return rt:authBootstrap("http://localhost:8080/auth", '{"user":"test"}', "http://localhost:8080/refresh")
+        return rt:authBootstrap("http://127.0.0.1:1/auth", '{"user":"test"}', "http://127.0.0.1:1/refresh")
     end)
-    print("auth ok: " .. tostring(ok))
-    print("auth id: " .. tostring(id))
+    example_print_log("auth ok: " .. tostring(ok))
+    example_print_log("auth id: " .. tostring(id))
     rt:shutdown()
 end
 
@@ -1493,7 +1604,10 @@ end
 do
     local rt = lurek.network.newRuntime()
     local token = rt:getAuthToken()
-    print("token: " .. tostring(token))
+    local status = rt:getAuthStatus()
+    local metrics = rt:getMetrics()
+    network_log("auth token=" .. tostring(token))
+    network_log("status=" .. status .. " queue=" .. metrics.queue_size)
     rt:shutdown()
 end
 
@@ -1501,14 +1615,22 @@ end
 do
     local rt = lurek.network.newRuntime()
     local status = rt:getAuthStatus()
-    print("status: " .. tostring(status))
+    local token = rt:getAuthToken()
+    local metrics = rt:getMetrics()
+    network_log("auth status=" .. tostring(status))
+    network_log("token=" .. tostring(token) .. " queue=" .. metrics.queue_size)
     rt:shutdown()
 end
 
 --@api: LNetworkRuntime:authCancel
 do
     local rt = lurek.network.newRuntime()
+    local before = rt:getAuthStatus()
     rt:authCancel()
+    local after = rt:getAuthStatus()
+    local token = rt:getAuthToken()
+    network_log("auth cancel before=" .. before .. " after=" .. after)
+    network_log("token after cancel=" .. tostring(token))
     rt:shutdown()
 end
 
@@ -1516,17 +1638,21 @@ end
 do
     local rt = lurek.network.newRuntime()
     local ok, id = pcall(function()
-        return rt:matchmakeStart("http://localhost:8080/match", '{"game_mode":"ranked"}')
+        return rt:matchmakeStart("http://127.0.0.1:1/match", '{"game_mode":"ranked"}')
     end)
-    print("matchmake ok: " .. tostring(ok))
-    print("matchmake id: " .. tostring(id))
+    example_print_log("matchmake ok: " .. tostring(ok))
+    example_print_log("matchmake id: " .. tostring(id))
     rt:shutdown()
 end
 
 --@api: LNetworkRuntime:matchmakeCancel
 do
     local rt = lurek.network.newRuntime()
+    local before = rt:getMetrics()
     rt:matchmakeCancel(1)
+    local after = rt:getMetrics()
+    network_log("cancelled matchmaking request id=1")
+    network_log("queue before=" .. before.queue_size .. " after=" .. after.queue_size)
     rt:shutdown()
 end
 
@@ -1534,7 +1660,10 @@ end
 do
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(1, 30)
-    print("registered lease token: " .. tostring(token))
+    local peer = host:getLeasePeer(token)
+    local renewed = host:renewLease(token, 45)
+    network_log("lease token=" .. tostring(token) .. " peer=" .. tostring(peer))
+    network_log("renewed=" .. tostring(renewed))
     host:destroy()
 end
 
@@ -1543,7 +1672,7 @@ do
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(2, 30)
     local peer_id = host:getLeasePeer(token)
-    print("lease peer: " .. tostring(peer_id))
+    example_print_log("lease peer: " .. tostring(peer_id))
     host:destroy()
 end
 
@@ -1552,7 +1681,7 @@ do
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(3, 30)
     local success = host:renewLease(token, 60)
-    print("lease renew: " .. tostring(success))
+    example_print_log("lease renew: " .. tostring(success))
     host:destroy()
 end
 
@@ -1561,7 +1690,7 @@ do
     local host = lurek.network.newHost({ port = 0 })
     local token = host:registerLease(4, 30)
     host:clearLease(token)
-    print("cleared lease: " .. tostring(host:getLeasePeer(token) == nil))
+    example_print_log("cleared lease: " .. tostring(host:getLeasePeer(token) == nil))
     host:destroy()
 end
 
@@ -1569,7 +1698,10 @@ end
 do
     local host = lurek.network.newHost({ port = 0 })
     local metrics = host:getMetrics()
-    print("host peers: " .. tostring(metrics.connected_peers))
+    local role = host:getRole()
+    local addr = host:getAddress()
+    network_log("host metrics peers=" .. tostring(metrics.connected_peers))
+    network_log("role=" .. role .. " addr=" .. addr)
     host:destroy()
 end
 
@@ -1577,7 +1709,10 @@ end
 do
     local rt = lurek.network.newRuntime()
     local metrics = rt:getMetrics()
-    print("queue size: " .. tostring(metrics.queue_size))
+    local status = rt:getAuthStatus()
+    local typeName = rt:type()
+    network_log("runtime queue size=" .. tostring(metrics.queue_size))
+    network_log("status=" .. status .. " type=" .. typeName)
     rt:shutdown()
 end
 
@@ -1591,7 +1726,7 @@ do
         }
     }
     local packed = lurek.network.packSnapshot(snapshot)
-    print("packed_snapshot_bytes=" .. #packed)
+    example_print_log("packed_snapshot_bytes=" .. #packed)
 end
 
 --@api: lurek.network.unpackSnapshot
@@ -1607,8 +1742,8 @@ do
     }
     local packed = lurek.network.packSnapshot(snapshot)
     local unpacked = lurek.network.unpackSnapshot(packed)
-    print("unpacked_type=" .. unpacked.type)
-    print("unpacked_tick=" .. unpacked.tick)
+    example_print_log("unpacked_type=" .. unpacked.type)
+    example_print_log("unpacked_tick=" .. unpacked.tick)
 end
 
 --@api: lurek.network.reconcileWithPolicy
@@ -1616,15 +1751,19 @@ do
     local pred = { id = 1, tick = 10, x = 10.0, y = 0.0, vx = 0.0, vy = 0.0 }
     local auth = { id = 1, tick = 10, x = 12.0, y = 0.0, vx = 1.0, vy = 2.0 }
     local result = lurek.network.reconcileWithPolicy(pred, auth, 0.5, 0.2, 5.0)
-    print("reconciled_x=" .. result.x)
+    local hardSnap = lurek.network.reconcileWithPolicy(pred, { id = 1, tick = 10, x = 20.0, y = 0.0, vx = 1.0, vy = 2.0 }, 0.5, 0.2, 5.0)
+    network_log("soft reconcile x=" .. result.x .. " y=" .. result.y)
+    network_log("hard reconcile x=" .. hardSnap.x .. " vx=" .. hardSnap.vx)
 end
 
 --@api: lurek.network.setReady
 do
     lurek.network.setReady("game_room", 1, true)
     lurek.network.setReady("game_room", 2, false)
-    print("set_player_1_ready=true")
-    print("set_player_2_ready=false")
+    local players = lurek.network.getPlayerList("game_room")
+    local room = lurek.network.getRoom("game_room")
+    network_log("room=" .. tostring(room.name) .. " players=" .. tostring(room.player_count))
+    network_log("tracked player ids=" .. table.concat(players, ","))
 end
 
 --@api: lurek.network.isAllReady
@@ -1632,7 +1771,10 @@ do
     lurek.network.setReady("lobby_room", 1, true)
     lurek.network.setReady("lobby_room", 2, true)
     local all_ready = lurek.network.isAllReady("lobby_room")
-    print("all_ready=" .. tostring(all_ready))
+    local room = lurek.network.getRoom("lobby_room")
+    local players = lurek.network.getPlayerList("lobby_room")
+    network_log("all_ready=" .. tostring(all_ready))
+    network_log("room players=" .. tostring(room.player_count) .. " ids=" .. table.concat(players, ","))
 end
 
 --@api: lurek.network.getRoom
@@ -1640,9 +1782,9 @@ do
     lurek.network.setReady("session_room", 1, true)
     lurek.network.setReady("session_room", 2, false)
     local room = lurek.network.getRoom("session_room")
-    print("room_name=" .. room.name)
-    print("room_host=" .. room.host_peer)
-    print("room_players=" .. room.player_count)
+    example_print_log("room_name=" .. room.name)
+    example_print_log("room_host=" .. room.host_peer)
+    example_print_log("room_players=" .. room.player_count)
 end
 
 --@api: lurek.network.getPlayerList
@@ -1651,9 +1793,9 @@ do
     lurek.network.setReady("match_room", 3, true)
     lurek.network.setReady("match_room", 2, false)
     local players = lurek.network.getPlayerList("match_room")
-    print("player_list_count=" .. #players)
+    example_print_log("player_list_count=" .. #players)
     for i, pid in ipairs(players) do
-        print("player_" .. i .. "=" .. pid)
+        example_print_log("player_" .. i .. "=" .. pid)
     end
 end
 
@@ -1663,13 +1805,13 @@ do
     local ok, rpc = pcall(function()
         return lurek.network.newRpc(host, 0, 30.0)
     end)
-    print("newRpc ok=" .. tostring(ok))
+    example_print_log("newRpc ok=" .. tostring(ok))
     if ok then
         rpc:register("ping", function(peer_id)
             return "pong"
         end)
         local responses = rpc:poll()
-        print("rpc_responses=" .. #responses)
+        example_print_log("rpc_responses=" .. #responses)
     end
 end
 
@@ -1679,23 +1821,25 @@ do
     local ok, state = pcall(function()
         return lurek.network.newNetState(host, { authority = true })
     end)
-    print("newNetState ok=" .. tostring(ok))
+    example_print_log("newNetState ok=" .. tostring(ok))
     if ok then
         state:set("player_x", 100)
         state:set("player_y", 50)
 
         local x = state:get("player_x")
-        print("player_x=" .. x)
+        example_print_log("player_x=" .. x)
 
         state:onChange("player_x", function(value, old_value, peer_id)
-            print("player_x changed from " .. tostring(old_value) .. " to " .. tostring(value))
+            example_print_log("player_x changed from " .. tostring(old_value) .. " to " .. tostring(value))
         end)
 
         local all_state = state:getAll()
-        print("state_keys=" .. #all_state)
+        example_print_log("state_keys=" .. #all_state)
 
         state:poll()
     end
 
     host:destroy()
 end
+
+

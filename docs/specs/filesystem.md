@@ -24,9 +24,7 @@
 - Mount and archive support are especially important because real projects often mix loose files, packaged assets, save locations, and mod roots under one conceptual storage view.
 - The sandboxed design is the key policy boundary: `filesystem` exists so scripts can do meaningful file work while the engine still controls what paths are valid, portable, and safe to expose.
 - Async reads and watch-style helpers also make the module practical for hot-reload and content-iteration workflows where storage changes need to become observable runtime events.
-- This gives the engine one place to reason about what storage operations are allowed, observable, and portable across several execution environments.
-- Read `filesystem` as the place where byte-oriented storage becomes safe, portable, and composable for the rest of the engine.
-
+- Read `filesystem` as the place where storage becomes safe, portable, and composable for the rest of the engine.
 
 ## Imports
 

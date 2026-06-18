@@ -2,880 +2,919 @@
 -- Auto-generated from content/examples2/terminal_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/terminal.lua
 
---- Terminal Module Part 1: terminal creation, cell operations, fonts, widgets, rendering
+local function terminal_log(message)
+    lurek.log.info("[terminal] " .. message)
+end
+
+local function click_cell(term, col, row, button)
+    local cell_w, cell_h = term:getCellSize()
+    term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
+end
+
+local function make_console(cols, rows)
+    local term = lurek.terminal.newTerminal(cols or 48, rows or 16)
+    lurek.terminal.applyTheme(term, "nord")
+    term:print(1, 1, "> status")
+    term:print(1, 2, "bridge online")
+    return term
+end
+
+local function make_inventory_list()
+    local list = lurek.terminal.newList(2, 3, 18, 5)
+    list:addItem("Potion")
+    list:addItem("Keycard")
+    list:addItem("Battery")
+    return list
+end
+
+local function make_status_panel()
+    local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+    local title = lurek.terminal.newLabel(2, 2, "Bridge Status")
+    local footer = lurek.terminal.newLabel(2, 4, "Docking: ready")
+    panel:addChild(title)
+    panel:addChild(footer)
+    return panel, title, footer
+end
 
 --@api: lurek.terminal.newTerminal
 do
-    ---@type LTerminal
-    local term = lurek.terminal.newTerminal(80, 40)
-    print("type = " .. term:type())
+    local term = make_console(80, 24)
     local cols, rows = term:getDimensions()
-    print("dimensions = " .. cols .. "x" .. rows)
+    local cell_w, cell_h = term:getCellSize()
+    local prompt_char = string.char(term:get(1, 1))
+    terminal_log("newTerminal grid=" .. cols .. "x" .. rows .. " cell=" .. cell_w .. "x" .. cell_h .. " prompt=" .. prompt_char)
 end
 
 --@api: LTerminal:set
 do
-    ---@type LTerminal
-    local term = lurek.terminal.newTerminal(80, 25)
-    term:set(1, 1, "H", 1, 1, 1, 1, 0, 0, 0, 0)
-    local ch, fr, fg, fb, fa, br, bg, bb, ba = term:get(1, 1)
-    print("cell(1,1) ch=" .. ch .. " fg=(" .. fr .. "," .. fg .. "," .. fb .. ")")
+    local term = make_console(32, 8)
+    term:set(5, 3, "!", 1, 0.3, 0.2, 1, 0.1, 0.1, 0.1, 1)
+    local ch, fr, fg, fb = term:get(5, 3)
+    local glyph = string.char(ch)
+    terminal_log("set alert glyph=" .. glyph .. " fg=" .. fr .. "," .. fg .. "," .. fb)
 end
 
 --@api: LTerminal:get
 do
-    ---@type LTerminal
-    local term = lurek.terminal.newTerminal(80, 25)
-    term:set(1, 1, "H", 1, 1, 1, 1, 0, 0, 0, 0)
-    local ch, fr, fg, fb, fa, br, bg, bb, ba = term:get(1, 1)
-    print("cell(1,1) ch=" .. ch .. " fg=(" .. fr .. "," .. fg .. "," .. fb .. ")")
+    local term = make_console(32, 8)
+    term:print(3, 4, "HP 84")
+    local ch = term:get(4, 4)
+    local ahead = term:get(5, 4)
+    local pair = string.char(ch) .. string.char(ahead)
+    terminal_log("get status pair=" .. pair)
 end
 
 --@api: LTerminal:print
 do
-    local term = lurek.terminal.newTerminal(60, 20)
-    term:print(1, 1, "Hello, Terminal!")
-    term:print(1, 2, "Line two here")
-    term:print(5, 5, "Centered text at col 5, row 5")
-    term:print(1, 20, "Bottom row")
-    local ch = term:get(1, 1)
-    print("printed first cell = " .. tostring(ch))
+    local term = make_console(40, 10)
+    term:print(1, 4, "scan sector beta")
+    term:print(1, 5, "fuel line stable")
+    local first = string.char(term:get(1, 4))
+    local second = string.char(term:get(6, 4))
+    terminal_log("print wrote line prefix=" .. first .. second)
 end
 
 --@api: LTerminal:clear
 do
-    local term = lurek.terminal.newTerminal(40, 10)
-    term:print(1, 1, "This will be erased")
-    term:print(1, 2, "And this too")
+    local term = make_console(40, 10)
+    term:print(1, 6, "temporary warning")
+    local before = string.char(term:get(1, 6))
     term:clear()
-    local ch = term:get(1, 1)
-    print("after clear ch = " .. ch)
+    local after = string.char(term:get(1, 6))
+    terminal_log("clear reset row6 from " .. before .. " to " .. after)
 end
 
 --@api: LTerminal:getCellSize
 do
-    ---@type LTerminal
-    local term = lurek.terminal.newTerminal(80, 25)
+    local term = make_console(30, 8)
     term:setCellSize(12, 20)
     local w, h = term:getCellSize()
-    print("custom cell = " .. w .. "x" .. h)
+    local cols, rows = term:getDimensions()
+    terminal_log("getCellSize override=" .. w .. "x" .. h .. " for grid=" .. cols .. "x" .. rows)
 end
 
 --@api: LTerminal:setCellSize
 do
-    ---@type LTerminal
-    local term = lurek.terminal.newTerminal(80, 25)
-    term:setCellSize(12, 20)
-    print("cell size set")
+    local term = make_console(30, 8)
+    local before_w, before_h = term:getCellSize()
+    term:setCellSize(10, 18)
+    local after_w, after_h = term:getCellSize()
+    terminal_log("setCellSize changed " .. before_w .. "x" .. before_h .. " to " .. after_w .. "x" .. after_h)
 end
 
 --@api: LTerminal:resetCellSize
 do
-    local term = lurek.terminal.newTerminal(80, 25)
-    term:setCellSize(12, 20)
+    local term = make_console(30, 8)
+    term:setCellSize(10, 18)
     term:resetCellSize()
     local w, h = term:getCellSize()
-    print("reset cell = " .. w .. "x" .. h)
+    local cols, rows = term:getDimensions()
+    terminal_log("resetCellSize restored cell=" .. w .. "x" .. h .. " for " .. cols .. "x" .. rows)
 end
 
 --@api: LTerminal:setFont
 do
-    local term = lurek.terminal.newTerminal(80, 25)
+    local term = make_console(30, 8)
     term:setFont(16)
-    local w, h = term:getCellSize()
-    print("font 16: cell = " .. w .. "x" .. h)
+    local large_w, large_h = term:getCellSize()
     term:setFont(12)
-    w, h = term:getCellSize()
-    print("font 12: cell = " .. w .. "x" .. h)
+    local small_w, small_h = term:getCellSize()
+    terminal_log("setFont 16px=" .. large_w .. "x" .. large_h .. " 12px=" .. small_w .. "x" .. small_h)
 end
 
 --@api: LTerminal:render
 do
-    ---@type LTerminal
-    local term = lurek.terminal.newTerminal(60, 20)
-    term:print(1, 1, "Rendering test")
+    local term = make_console(32, 8)
+    term:print(1, 7, "rendering diagnostics")
     term:render()
-    print("rendered at default pos")
+    local cols, rows = term:getDimensions()
+    terminal_log("render submitted terminal at " .. cols .. "x" .. rows)
 end
 
 --@api: LTerminal:autoResize
 do
-    ---@type LTerminal
-    local term = lurek.terminal.newTerminal(60, 20)
+    local term = make_console(50, 18)
+    term:setCellSize(9, 16)
     term:autoResize()
-    print("auto-resized window to fit grid")
+    local cols, rows = term:getDimensions()
+    local w, h = term:getCellSize()
+    terminal_log("autoResize fit window for " .. cols .. "x" .. rows .. " using " .. w .. "x" .. h .. " cells")
 end
 
 --@api: lurek.terminal.newLabel
 do
-    local label = lurek.terminal.newLabel(5, 3, "Score: 0")
+    local label = lurek.terminal.newLabel(3, 2, "Shields 100%")
     local col, row = label:getPosition()
-    print("label type = " .. label:type() .. " is LWidget = " .. tostring(label:typeOf("LWidget")))
-    print("text = " .. label:getText() .. " position = " .. col .. ", " .. row)
-    label:setText("Score: 1500")
-    print("updated text = " .. label:getText())
+    local text = label:getText()
+    local kind = label:type()
+    terminal_log("newLabel type=" .. kind .. " text='" .. text .. "' at " .. col .. "," .. row)
 end
 
 --@api: lurek.terminal.newButton
 do
-    local clickCount = 0
-    local btn = lurek.terminal.newButton(10, 5, 12, 1, "Click Me")
-    print("button text = " .. btn:getText())
-    local w, h = btn:getSize()
-    print("button size = " .. w .. "x" .. h)
-    btn:setOnClick(function()
-        clickCount = clickCount + 1
-        print("clicked! count = " .. clickCount)
-    end)
-    print("click handler set")
+    local button = lurek.terminal.newButton(4, 6, 14, 1, "Launch Drone")
+    local width, height = button:getSize()
+    local enabled = button:isEnabled()
+    local text = button:getText()
+    terminal_log("newButton '" .. text .. "' size=" .. width .. "x" .. height .. " enabled=" .. tostring(enabled))
 end
 
 --@api: lurek.terminal.newTextBox
 do
-    local input = lurek.terminal.newTextBox(5, 8, 20)
-    print("input text = '" .. input:getText() .. "'")
-    input:setText("Hello")
-    print("set text = " .. input:getText())
-    input:setMaxLength(30)
-    print("max length = " .. input:getMaxLength())
-    input:setOnChange(function() print("text changed to: " .. input:getText()) end)
+    local input = lurek.terminal.newTextBox(2, 8, 20)
+    input:setText("scan --sector beta")
+    input:setMaxLength(32)
+    local text = input:getText()
+    local max_length = input:getMaxLength()
+    terminal_log("newTextBox text='" .. text .. "' max=" .. max_length)
 end
 
 --@api: lurek.terminal.newList
 do
-    local list = lurek.terminal.newList(2, 3, 20, 8)
-    list:addItem("Sword")
-    list:addItem("Shield")
-    list:addItem("Potion")
-    list:addItem("Scroll")
-    list:addItem("Bow")
-    print("item count = " .. list:getItemCount() .. " item 1 = " .. list:getItem(1) .. " item 3 = " .. list:getItem(3))
+    local list = make_inventory_list()
     list:setSelected(2)
-    print("selected = " .. list:getSelected())
-    list:setOnSelect(function() print("selection changed to " .. list:getSelected()) end)
+    local first = list:getItem(1)
+    local selected = list:getSelected()
+    local count = list:getItemCount()
+    terminal_log("newList items=" .. count .. " first=" .. first .. " selected=" .. selected)
 end
 
 --@api: lurek.terminal.newBorder
 do
-    local border = lurek.terminal.newBorder(1, 1, 30, 10)
-    print("border style = " .. border:getStyle())
+    local border = lurek.terminal.newBorder(1, 1, 26, 9)
     border:setStyle("double")
-    print("new style = " .. border:getStyle())
-    border:setTitle("Inventory")
-    print("title = " .. border:getTitle())
+    border:setTitle("Cargo Hold")
+    local style = border:getStyle()
+    local title = border:getTitle()
+    terminal_log("newBorder style=" .. style .. " title='" .. title .. "'")
 end
 
 --@api: lurek.terminal.newPanel
 do
-    local panel = lurek.terminal.newPanel(1, 1, 40, 20)
-    panel:addChild(lurek.terminal.newLabel(2, 2, "Name:"))
-    panel:addChild(lurek.terminal.newLabel(2, 3, "Class:"))
-    print("panel children = " .. panel:getChildCount())
-    local child1 = panel:getChild(1)
-    print("child 1 text = " .. child1:getText())
+    local panel, title, footer = make_status_panel()
+    local children = panel:getChildCount()
+    local header = title:getText()
+    local state = footer:getText()
+    terminal_log("newPanel children=" .. children .. " header='" .. header .. "' state='" .. state .. "'")
 end
 
 --@api: LTerminal:addWidget
 do
-    local term = lurek.terminal.newTerminal(60, 20)
-    term:addWidget(lurek.terminal.newLabel(1, 1, "Status"))
-    term:addWidget(lurek.terminal.newButton(1, 3, 10, 1, "OK"))
-    print("widget count = " .. term:getWidgetCount())
+    local term = make_console(48, 16)
+    local panel = lurek.terminal.newPanel(1, 4, 24, 8)
+    local button = lurek.terminal.newButton(3, 6, 12, 1, "Acknowledge")
+    term:addWidget(panel)
+    term:addWidget(button)
+    terminal_log("addWidget count=" .. term:getWidgetCount())
 end
 
 --@api: LTerminal:removeWidget
 do
-    local term = lurek.terminal.newTerminal(60, 20)
-    local btn = lurek.terminal.newButton(1, 3, 10, 1, "OK")
-    term:addWidget(lurek.terminal.newLabel(1, 1, "Status"))
-    term:addWidget(btn)
-    print("widget count = " .. term:getWidgetCount())
-    term:removeWidget(btn)
-    print("after remove = " .. term:getWidgetCount())
+    local term = make_console(48, 16)
+    local button = lurek.terminal.newButton(3, 6, 12, 1, "Acknowledge")
+    term:addWidget(lurek.terminal.newLabel(2, 4, "Warning"))
+    term:addWidget(button)
+    term:removeWidget(button)
+    terminal_log("removeWidget remaining=" .. term:getWidgetCount())
 end
 
 --@api: LTerminal:getWidgetCount
 do
-    local term = lurek.terminal.newTerminal(60, 20)
-    term:addWidget(lurek.terminal.newLabel(1, 1, "Status"))
-    term:addWidget(lurek.terminal.newButton(1, 3, 10, 1, "OK"))
-    print("widget count = " .. term:getWidgetCount())
+    local term = make_console(48, 16)
+    term:addWidget(lurek.terminal.newLabel(2, 4, "Engine Temp"))
+    term:addWidget(lurek.terminal.newButton(2, 6, 12, 1, "Reset"))
+    local count = term:getWidgetCount()
+    terminal_log("getWidgetCount total=" .. count)
 end
 
 --@api: LTerminal:clearWidgets
 do
-    local term = lurek.terminal.newTerminal(60, 20)
-    term:addWidget(lurek.terminal.newLabel(1, 1, "Status"))
-    term:addWidget(lurek.terminal.newButton(1, 3, 10, 1, "OK"))
-    print("widget count = " .. term:getWidgetCount())
+    local term = make_console(48, 16)
+    term:addWidget(lurek.terminal.newLabel(2, 4, "Engine Temp"))
+    term:addWidget(lurek.terminal.newButton(2, 6, 12, 1, "Reset"))
     term:clearWidgets()
-    print("after clear = " .. term:getWidgetCount())
+    local count = term:getWidgetCount()
+    terminal_log("clearWidgets remaining=" .. count)
 end
 
 --@api: LTerminal:setFocus
 do
-    local term = lurek.terminal.newTerminal(60, 20)
-    local input1 = lurek.terminal.newTextBox(1, 1, 15)
-    term:addWidget(input1)
-    term:addWidget(lurek.terminal.newTextBox(1, 3, 15))
-    term:setFocus(input1)
-    local focused = term:getFocused()
-    print("focused = " .. tostring(focused == input1))
-    term:setFocus(nil)
-    focused = term:getFocused()
-    print("no focus = " .. tostring(focused == nil))
+    local term = make_console(48, 16)
+    local name_box = lurek.terminal.newTextBox(2, 4, 18)
+    local route_box = lurek.terminal.newTextBox(2, 6, 18)
+    term:addWidget(name_box)
+    term:addWidget(route_box)
+    term:setFocus(route_box)
+    terminal_log("setFocus route_box=" .. tostring(term:getFocused() == route_box))
 end
 
 --@api: LTerminal:getFocused
 do
-    local term = lurek.terminal.newTerminal(60, 20)
-    term:addWidget(lurek.terminal.newTextBox(1, 1, 15))
-    local input2 = lurek.terminal.newTextBox(1, 3, 15)
-    term:addWidget(input2)
-    term:setFocus(input2)
+    local term = make_console(48, 16)
+    local button = lurek.terminal.newButton(2, 4, 10, 1, "Accept")
+    term:addWidget(button)
+    term:setFocus(button)
     local focused = term:getFocused()
-    print("focused = " .. tostring(focused == input2))
-    term:setFocus(nil)
-    focused = term:getFocused()
-    print("no focus = " .. tostring(focused == nil))
+    local focused_type = focused and focused:type() or "nil"
+    terminal_log("getFocused type=" .. focused_type)
 end
 
 --@api: LTerminal:keypressed
 do
-    local term = lurek.terminal.newTerminal(60, 20)
-    local input = lurek.terminal.newTextBox(1, 1, 20)
+    local term = make_console(48, 16)
+    local input = lurek.terminal.newTextBox(2, 4, 20)
     term:addWidget(input)
     term:setFocus(input)
-    local consumed = term:textinput("A")
-    print("textinput consumed = " .. tostring(consumed))
-    consumed = term:keypressed("backspace")
-    print("keypressed consumed = " .. tostring(consumed))
     term:textinput("alpha beta")
-    term:keypressed("ctrl+a")
-    term:keypressed("ctrl+c")
-    term:keypressed("ctrl+x")
-    term:keypressed("ctrl+v")
-    term:keypressed("ctrl+backspace")
-    term:keypressed("ctrl+delete")
-    term:mousepressed(50, 10, 1)
-    print("mousepressed sent")
+    local handled = term:keypressed("ctrl+backspace")
+    terminal_log("keypressed handled=" .. tostring(handled) .. " text='" .. input:getText() .. "'")
 end
 
 --@api: LTerminal:textinput
 do
-    local term = lurek.terminal.newTerminal(60, 20)
-    local input = lurek.terminal.newTextBox(1, 1, 20)
+    local term = make_console(48, 16)
+    local input = lurek.terminal.newTextBox(2, 4, 20)
     term:addWidget(input)
     term:setFocus(input)
-    local consumed = term:textinput("A")
-    print("textinput consumed = " .. tostring(consumed))
+    local handled = term:textinput("warp")
+    terminal_log("textinput handled=" .. tostring(handled) .. " text='" .. input:getText() .. "'")
 end
 
 --@api: LTerminal:mousepressed
 do
-    local term = lurek.terminal.newTerminal(60, 20)
-    local input = lurek.terminal.newTextBox(1, 1, 20)
-    term:addWidget(input)
-    term:setFocus(input)
-    term:mousepressed(50, 10, 1)
-    print("mousepressed sent")
+    local term = make_console(48, 16)
+    local button = lurek.terminal.newButton(2, 4, 14, 1, "Confirm Jump")
+    term:addWidget(button)
+    click_cell(term, 2, 4, 1)
+    local focused = term:getFocused()
+    terminal_log("mousepressed focused_button=" .. tostring(focused == button))
 end
-
---- Terminal Module Part 2: themes, command history, scrollback, completions, ANSI, highlighting
 
 --@api: lurek.terminal.applyTheme
 do
-    local term = lurek.terminal.newTerminal(80, 25)
-    lurek.terminal.applyTheme(term, "solarized_dark")
-    print("applied solarized_dark")
-    lurek.terminal.applyTheme(term, "monokai")
-    print("applied monokai")
-    lurek.terminal.applyTheme(term, "dracula")
-    print("applied dracula")
-    lurek.terminal.applyTheme(term, "nord")
-    print("applied nord")
-    lurek.terminal.applyTheme(term, "solarized_light")
-    print("applied solarized_light")
+    local term = lurek.terminal.newTerminal(40, 12)
+    local themes = {"solarized_dark", "monokai", "dracula", "nord", "solarized_light"}
+    for _, name in ipairs(themes) do
+        lurek.terminal.applyTheme(term, name)
+    end
+    local cols, rows = term:getDimensions()
+    terminal_log("applyTheme cycled " .. #themes .. " themes on " .. cols .. "x" .. rows)
 end
 
 --@api: lurek.terminal.pushCmdHistory
 do
-    local term = lurek.terminal.newTerminal(80, 25)
-    lurek.terminal.pushCmdHistory(term, "status")
-    lurek.terminal.pushCmdHistory(term, "inventory")
-    local prev = lurek.terminal.prevCmd(term)
-    print("prev 1 = " .. tostring(prev))
-    prev = lurek.terminal.prevCmd(term)
-    print("prev 2 = " .. tostring(prev))
-    local next_cmd = lurek.terminal.nextCmd(term)
-    print("next = " .. tostring(next_cmd))
+    local term = make_console(48, 16)
+    lurek.terminal.clearCmdHistory(term)
+    lurek.terminal.pushCmdHistory(term, "help")
+    lurek.terminal.pushCmdHistory(term, "scan sector-beta")
+    local previous = lurek.terminal.prevCmd(term)
+    terminal_log("pushCmdHistory last='" .. tostring(previous) .. "' len=" .. lurek.terminal.cmdHistoryLen(term))
 end
 
 --@api: lurek.terminal.cmdHistoryLen
 do
-    local term = lurek.terminal.newTerminal(80, 25)
-    lurek.terminal.pushCmdHistory(term, "look")
-    lurek.terminal.pushCmdHistory(term, "go north")
-    lurek.terminal.pushCmdHistory(term, "take sword")
-    print("history len = " .. lurek.terminal.cmdHistoryLen(term))
+    local term = make_console(48, 16)
     lurek.terminal.clearCmdHistory(term)
-    print("after clear len = " .. lurek.terminal.cmdHistoryLen(term))
+    lurek.terminal.pushCmdHistory(term, "help")
+    lurek.terminal.pushCmdHistory(term, "dock")
+    local count = lurek.terminal.cmdHistoryLen(term)
+    terminal_log("cmdHistoryLen count=" .. count)
 end
 
 --@api: lurek.terminal.pushScrollback
 do
-    local term = lurek.terminal.newTerminal(80, 25)
-    lurek.terminal.pushScrollback(term, "You see a dark corridor.")
-    lurek.terminal.pushScrollback(term, "A torch flickers on the wall.")
-    lurek.terminal.pushScrollback(term, "You hear footsteps.")
-    lurek.terminal.pushScrollback(term, "An enemy appears!")
-    print("scrollback len = " .. lurek.terminal.scrollbackLen(term))
-    local lines = lurek.terminal.getScrollback(term, 0, 3)
-    print("recent 3 lines: " .. table.concat(lines, " | "))
+    local term = make_console(48, 16)
+    lurek.terminal.setScrollbackCap(term, 8)
+    lurek.terminal.pushScrollback(term, "[ok] reactor stable")
+    lurek.terminal.pushScrollback(term, "[ok] path locked")
+    local lines = lurek.terminal.getScrollback(term, 0, 10)
+    terminal_log("pushScrollback first='" .. tostring(lines[1]) .. "' count=" .. #lines)
 end
 
 --@api: lurek.terminal.setScrollbackCap
 do
-    local term = lurek.terminal.newTerminal(80, 25)
+    local term = make_console(48, 16)
     lurek.terminal.setScrollbackCap(term, 2)
-    lurek.terminal.pushScrollback(term, "Line 1")
-    lurek.terminal.pushScrollback(term, "Line 2")
-    lurek.terminal.pushScrollback(term, "Line 3")
-    print("scrollback after overflow = " .. lurek.terminal.scrollbackLen(term))
+    lurek.terminal.pushScrollback(term, "line-1")
+    lurek.terminal.pushScrollback(term, "line-2")
+    lurek.terminal.pushScrollback(term, "line-3")
+    terminal_log("setScrollbackCap kept=" .. lurek.terminal.scrollbackLen(term) .. " line(s)")
 end
 
 --@api: lurek.terminal.addCompletion
 do
     lurek.terminal.clearCompletions()
-    lurek.terminal.addCompletion("help")
-    lurek.terminal.addCompletion("health")
-    lurek.terminal.addCompletion("heal")
-    lurek.terminal.addCompletion("inventory")
-    lurek.terminal.addCompletion("inspect")
-    local matches = lurek.terminal.getCompletions("he")
-    print("matches for 'he': " .. table.concat(matches, ", "))
-    local inv = lurek.terminal.getCompletions("in")
-    print("matches for 'in' = " .. #inv)
+    lurek.terminal.addCompletion("scan")
+    lurek.terminal.addCompletion("status")
+    local matches = lurek.terminal.getCompletions("s")
+    local next_value = lurek.terminal.nextCompletion("s")
+    terminal_log("addCompletion matches=" .. #matches .. " first='" .. tostring(next_value) .. "'")
 end
 
 --@api: lurek.terminal.nextCompletion
 do
     lurek.terminal.clearCompletions()
-    lurek.terminal.addCompletion("attack")
-    lurek.terminal.addCompletion("attune")
-    lurek.terminal.addCompletion("attract")
-    lurek.terminal.resetCompletion()
-    local c1 = lurek.terminal.nextCompletion("att")
-    print("cycle 1 = " .. tostring(c1))
-    local c2 = lurek.terminal.nextCompletion("att")
-    print("cycle 2 = " .. tostring(c2))
-    local c3 = lurek.terminal.nextCompletion("att")
-    print("cycle 3 = " .. tostring(c3))
+    lurek.terminal.addCompletion("scan")
+    lurek.terminal.addCompletion("scope")
+    local first = lurek.terminal.nextCompletion("sc")
+    local second = lurek.terminal.nextCompletion("sc")
+    terminal_log("nextCompletion cycled '" .. tostring(first) .. "' then '" .. tostring(second) .. "'")
 end
 
 --@api: lurek.terminal.parseAnsi
 do
-    local ansiText = "\27[1;31mError:\27[0m File not found"
-    local spans = lurek.terminal.parseAnsi(ansiText)
-    print("span count = " .. #spans)
-    if spans[1] then print("span 1: text='" .. spans[1].text .. "' bold=" .. tostring(spans[1].bold)) end
+    local text = "\27[1m\27[31mALERT\27[0m nominal"
+    local spans = lurek.terminal.parseAnsi(text)
+    local first = spans[1]
+    local second = spans[2]
+    local summary = tostring(first and first.text) .. "|" .. tostring(second and second.text)
+    terminal_log("parseAnsi span_count=" .. #spans .. " parts=" .. summary)
 end
 
 --@api: lurek.terminal.stripAnsi
 do
-    local colored = "\27[32mSuccess\27[0m: Operation complete"
-    local plain = lurek.terminal.stripAnsi(colored)
-    print("stripped = " .. plain)
-    print("length original = " .. #colored)
-    print("length stripped = " .. #plain)
+    local raw = "\27[1m\27[32mwarp ready\27[0m now"
+    local stripped = lurek.terminal.stripAnsi(raw)
+    local term = make_console(36, 8)
+    term:print(1, 4, stripped)
+    terminal_log("stripAnsi plain='" .. stripped .. "'")
 end
 
 --@api: lurek.terminal.printAnsi
 do
-    local term = lurek.terminal.newTerminal(80, 25)
-    lurek.terminal.printAnsi(term, 1, 1, "\27[1;33mWarning:\27[0m Low health")
-    lurek.terminal.printAnsi(term, 1, 2, "\27[34mInfo:\27[0m Checkpoint saved")
-    lurek.terminal.printAnsi(term, 1, 3, "\27[1;31mCritical:\27[0m System failure")
-    print("ANSI text rendered to grid")
+    local term = make_console(48, 16)
+    local message = "\27[31mERROR\27[0m coolant low"
+    lurek.terminal.printAnsi(term, 1, 5, message)
+    local first = string.char(term:get(1, 5))
+    local second = string.char(term:get(2, 5))
+    terminal_log("printAnsi row5 prefix=" .. first .. second)
 end
 
 --@api: lurek.terminal.printHighlighted
 do
-    local term = lurek.terminal.newTerminal(80, 25)
-    local rules = { { pattern = "local%s+%w+", fg = { r = 100, g = 150, b = 255 } }, { pattern = '\"[^\"]*\"', fg = { r = 200, g = 200, b = 100 } }, { pattern = "%-%-%s.*$", fg = { r = 100, g = 100, b = 100 } }, { pattern = "%d+", fg = { r = 255, g = 150, b = 50 } } }
-    local code = 'local name = "hero" -- player name'
-    lurek.terminal.printHighlighted(term, 1, 1, code, rules)
-    print("highlighted code rendered")
+    local term = make_console(48, 16)
+    local rules = {{pattern = "fuel", fg = {255, 196, 0}}, {pattern = "ok", fg = {0, 255, 0}}}
+    lurek.terminal.printHighlighted(term, 1, 6, "fuel ok", rules)
+    local first = string.char(term:get(1, 6))
+    local fifth = string.char(term:get(5, 6))
+    terminal_log("printHighlighted row6 prefix=" .. first .. fifth)
 end
 
 --@api: lurek.terminal.getMaxCols
 do
-    local maxCols = lurek.terminal.getMaxCols()
-    print("max cols = " .. maxCols)
+    local max_cols = lurek.terminal.getMaxCols()
+    local term = lurek.terminal.newTerminal(math.min(80, max_cols), 10)
+    local cols, rows = term:getDimensions()
+    term:print(1, 3, "width budget active")
+    terminal_log("getMaxCols max=" .. max_cols .. " active=" .. cols .. "x" .. rows)
 end
 
 --@api: LLabel:setColor
 do
-    ---@type LWidget
-    local label = lurek.terminal.newLabel(1, 1, "Colored")
-    label:setColor(0.2, 0.8, 0.3, 1)
+    local label = lurek.terminal.newLabel(2, 2, "Hull 92%")
+    label:setColor(0.3, 0.8, 1.0, 1.0)
     local r, g, b, a = label:getColor()
-    print("color = " .. r .. ", " .. g .. ", " .. b .. ", " .. a)
+    local text = label:getText()
+    terminal_log("LLabel:setColor text='" .. text .. "' rgba=" .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
 --@api: LButton:isEnabled
 do
-    ---@type LWidget
-    local btn = lurek.terminal.newButton(1, 1, 10, 1, "Submit")
-    print("enabled = " .. tostring(btn:isEnabled()))
-    btn:setEnabled(false)
-    print("after disable = " .. tostring(btn:isEnabled()))
+    local button = lurek.terminal.newButton(2, 2, 12, 1, "Dock")
+    local before = button:isEnabled()
+    button:setEnabled(false)
+    local after = button:isEnabled()
+    terminal_log("LButton:isEnabled before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 
 --@api: LList:addItem
 do
-    local list = lurek.terminal.newList(1, 1, 20, 5)
-    list:addItem("Apple")
-    list:addItem("Banana")
-    list:addItem("Cherry")
-    list:addItem("Date")
-    print("items = " .. list:getItemCount())
+    local list = lurek.terminal.newList(2, 2, 18, 5)
+    list:addItem("Repair Kit")
+    list:addItem("Antidote")
+    local count = list:getItemCount()
+    local last = list:getItem(2)
+    terminal_log("LList:addItem count=" .. count .. " last='" .. tostring(last) .. "'")
 end
 
 --@api: LPanel:addChild
 do
-    local panel = lurek.terminal.newPanel(1, 1, 40, 20)
-    panel:addChild(lurek.terminal.newLabel(2, 2, "Label A"))
-    panel:addChild(lurek.terminal.newLabel(2, 4, "Label B"))
-    panel:addChild(lurek.terminal.newButton(2, 6, 10, 1, "Btn"))
-    print("children = " .. panel:getChildCount())
+    local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+    local label = lurek.terminal.newLabel(2, 2, "Objective")
+    local value = lurek.terminal.newLabel(2, 3, "Secure relay")
+    panel:addChild(label)
+    panel:addChild(value)
+    terminal_log("LPanel:addChild children=" .. panel:getChildCount())
 end
-
---- Terminal Part 2: LTerminal full API + missing module-level functions
 
 --@api: LTerminal:getDimensions
 do
-    local term = lurek.terminal.newTerminal(80, 24)
+    local term = make_console(54, 18)
     local cols, rows = term:getDimensions()
-    print("cols=" .. cols .. " rows=" .. rows)
+    local cell_w, cell_h = term:getCellSize()
+    term:print(1, rows, "footer")
+    terminal_log("getDimensions grid=" .. cols .. "x" .. rows .. " cell=" .. cell_w .. "x" .. cell_h)
 end
 
 --@api: LTerminal:type
 do
-    local term = lurek.terminal.newTerminal(80, 24)
-    print("type=" .. term:type())
+    local term = make_console(24, 6)
+    local kind = term:type()
+    local cols, rows = term:getDimensions()
+    term:print(1, 4, "typed console")
+    terminal_log("type kind=" .. kind .. " grid=" .. cols .. "x" .. rows)
 end
 
 --@api: LTerminal:typeOf
 do
-    local term = lurek.terminal.newTerminal(80, 24)
-    print("typeOf=" .. tostring(term:typeOf("LTerminal")))
+    local term = make_console(24, 6)
+    local is_terminal = term:typeOf("LTerminal")
+    local is_object = term:typeOf("LObject")
+    local cols, rows = term:getDimensions()
+    terminal_log("typeOf LTerminal=" .. tostring(is_terminal) .. " LObject=" .. tostring(is_object) .. " grid=" .. cols .. "x" .. rows)
 end
 
 --@api: lurek.terminal.clearCmdHistory
 do
-    local term = lurek.terminal.newTerminal(40, 10)
+    local term = make_console(36, 10)
+    lurek.terminal.pushCmdHistory(term, "status")
+    lurek.terminal.pushCmdHistory(term, "dock")
     lurek.terminal.clearCmdHistory(term)
-    local prev = lurek.terminal.prevCmd(term)
-    print("prev_cmd=" .. tostring(prev))
-    local next_cmd = lurek.terminal.nextCmd(term)
-    print("next_cmd=" .. tostring(next_cmd))
+    local count = lurek.terminal.cmdHistoryLen(term)
+    terminal_log("clearCmdHistory count=" .. count)
 end
 
 --@api: lurek.terminal.prevCmd
 do
-    local term = lurek.terminal.newTerminal(40, 10)
-    lurek.terminal.pushCmdHistory(term, "look")
-    lurek.terminal.pushCmdHistory(term, "take key")
+    local term = make_console(36, 10)
     lurek.terminal.clearCmdHistory(term)
-    local prev = lurek.terminal.prevCmd(term)
-    print("prev_cmd=" .. tostring(prev))
+    lurek.terminal.pushCmdHistory(term, "status")
+    lurek.terminal.pushCmdHistory(term, "dock")
+    local previous = lurek.terminal.prevCmd(term)
+    terminal_log("prevCmd value='" .. tostring(previous) .. "'")
 end
 
 --@api: lurek.terminal.nextCmd
 do
-    local term = lurek.terminal.newTerminal(40, 10)
-    lurek.terminal.pushCmdHistory(term, "north")
-    lurek.terminal.pushCmdHistory(term, "east")
-    print("prev_cmd=" .. tostring(lurek.terminal.prevCmd(term)))
-    local next_cmd = lurek.terminal.nextCmd(term)
-    print("next_cmd=" .. tostring(next_cmd))
+    local term = make_console(36, 10)
+    lurek.terminal.clearCmdHistory(term)
+    lurek.terminal.pushCmdHistory(term, "status")
+    lurek.terminal.pushCmdHistory(term, "dock")
+    lurek.terminal.prevCmd(term)
+    terminal_log("nextCmd value='" .. tostring(lurek.terminal.nextCmd(term)) .. "'")
 end
 
 --@api: lurek.terminal.getScrollback
 do
-    local term = lurek.terminal.newTerminal(40, 10)
-    lurek.terminal.pushScrollback(term, "line one")
-    lurek.terminal.pushScrollback(term, "line two")
-    lurek.terminal.pushScrollback(term, "line three")
-    local sb = lurek.terminal.getScrollback(term, 0, 5)
-    print("scrollback count=" .. #sb)
-    print("first line=" .. tostring(sb[1]))
+    local term = make_console(36, 10)
+    lurek.terminal.setScrollbackCap(term, 6)
+    lurek.terminal.pushScrollback(term, "alpha")
+    lurek.terminal.pushScrollback(term, "beta")
+    local lines = lurek.terminal.getScrollback(term, 0, 2)
+    terminal_log("getScrollback first='" .. tostring(lines[1]) .. "' second='" .. tostring(lines[2]) .. "'")
 end
 
 --@api: lurek.terminal.scrollbackLen
 do
-    local term = lurek.terminal.newTerminal(40, 10)
+    local term = make_console(36, 10)
+    lurek.terminal.setScrollbackCap(term, 6)
     lurek.terminal.pushScrollback(term, "alpha")
     lurek.terminal.pushScrollback(term, "beta")
-    local sb_len = lurek.terminal.scrollbackLen(term)
-    print("scrollback_len=" .. sb_len)
+    local count = lurek.terminal.scrollbackLen(term)
+    terminal_log("scrollbackLen count=" .. count)
 end
 
 --@api: lurek.terminal.removeCompletion
 do
     lurek.terminal.clearCompletions()
-    lurek.terminal.addCompletion("test_completion")
-    lurek.terminal.addCompletion("test_other")
-    lurek.terminal.removeCompletion("test_completion")
-    local completions = lurek.terminal.getCompletions("test")
-    print("remaining completions = " .. #completions)
-    print("first completion = " .. tostring(completions[1]))
+    lurek.terminal.addCompletion("scan")
+    lurek.terminal.addCompletion("scope")
+    lurek.terminal.removeCompletion("scope")
+    local matches = lurek.terminal.getCompletions("sc")
+    terminal_log("removeCompletion matches=" .. #matches .. " survivor='" .. tostring(matches[1]) .. "'")
 end
 
 --@api: lurek.terminal.resetCompletion
 do
     lurek.terminal.clearCompletions()
-    lurek.terminal.addCompletion("test_completion")
-    lurek.terminal.addCompletion("test_case")
-    print("first = " .. tostring(lurek.terminal.nextCompletion("test")))
+    lurek.terminal.addCompletion("scan")
+    lurek.terminal.addCompletion("scope")
+    local first = lurek.terminal.nextCompletion("sc")
+    lurek.terminal.nextCompletion("sc")
     lurek.terminal.resetCompletion()
-    print("after reset = " .. tostring(lurek.terminal.nextCompletion("test")))
+    terminal_log("resetCompletion restart='" .. tostring(lurek.terminal.nextCompletion("sc")) .. "' first='" .. tostring(first) .. "'")
 end
 
 --@api: lurek.terminal.clearCompletions
 do
-    lurek.terminal.addCompletion("help")
-    lurek.terminal.addCompletion("heal")
     lurek.terminal.clearCompletions()
-    local completions = lurek.terminal.getCompletions("he")
-    print("completion count = " .. #completions)
+    lurek.terminal.addCompletion("dock")
+    lurek.terminal.addCompletion("drop")
+    lurek.terminal.clearCompletions()
+    local matches = lurek.terminal.getCompletions("d")
+    terminal_log("clearCompletions matches=" .. #matches)
 end
 
 --@api: lurek.terminal.getCompletions
 do
     lurek.terminal.clearCompletions()
-    lurek.terminal.addCompletion("help")
-    lurek.terminal.addCompletion("heal")
-    lurek.terminal.addCompletion("hex")
-    local completions = lurek.terminal.getCompletions("he")
-    print("matches = " .. #completions)
-    print("first match = " .. tostring(completions[1]))
+    lurek.terminal.addCompletion("scan")
+    lurek.terminal.addCompletion("scope")
+    lurek.terminal.addCompletion("status")
+    local matches = lurek.terminal.getCompletions("sc")
+    terminal_log("getCompletions count=" .. #matches .. " second='" .. tostring(matches[2]) .. "'")
 end
 
 --@api: lurek.terminal.getMaxRows
 do
-    local maxRows = lurek.terminal.getMaxRows()
-    local maxCols = lurek.terminal.getMaxCols()
-    print("max rows = " .. maxRows)
-    print("max cols = " .. maxCols)
+    local max_rows = lurek.terminal.getMaxRows()
+    local term = lurek.terminal.newTerminal(24, math.min(18, max_rows))
+    local cols, rows = term:getDimensions()
+    term:print(1, rows, "bottom")
+    terminal_log("getMaxRows max=" .. max_rows .. " active=" .. cols .. "x" .. rows)
 end
 
 --@api: LWidget:getChild
 do
-    local panel = lurek.terminal.newPanel(0, 0, 40, 20)
-    local btn = lurek.terminal.newButton(1, 1, 10, 1, "OK")
-    panel:addChild(btn)
+    local panel, title = make_status_panel()
     local child = panel:getChild(1)
-    print("child exists = " .. tostring(child ~= nil))
-    print("child type = " .. tostring(child and child:type()))
+    local text = child and child:getText() or "nil"
+    local count = panel:getChildCount()
+    terminal_log("getChild count=" .. count .. " first='" .. text .. "' seed='" .. title:getText() .. "'")
 end
 
 --@api: LWidget:getChildCount
 do
-    local panel = lurek.terminal.newPanel(0, 0, 40, 20)
-    local btn = lurek.terminal.newButton(1, 1, 10, 1, "OK")
-    panel:addChild(btn)
-    panel:addChild(lurek.terminal.newLabel(1, 3, "Hint"))
+    local panel, title, footer = make_status_panel()
     local count = panel:getChildCount()
-    print("child count = " .. count)
+    local first = title:getText()
+    local second = footer:getText()
+    terminal_log("getChildCount count=" .. count .. " values='" .. first .. "'/'" .. second .. "'")
 end
 
 --@api: LWidget:addChild
 do
-    local panel = lurek.terminal.newPanel(0, 0, 40, 20)
-    local btn = lurek.terminal.newButton(1, 1, 10, 1, "OK")
-    panel:addChild(btn)
-    local count = panel:getChildCount()
-    print("child count = " .. count)
-    print("first child type = " .. panel:getChild(1):type())
+    local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+    local title = lurek.terminal.newLabel(2, 2, "Subsystem")
+    local value = lurek.terminal.newLabel(2, 3, "Life Support")
+    panel:addChild(title)
+    panel:addChild(value)
+    terminal_log("addChild children=" .. panel:getChildCount())
 end
 
 --@api: LWidget:clearChildren
 do
-    local panel = lurek.terminal.newPanel(0, 0, 40, 20)
-    local btn = lurek.terminal.newButton(1, 1, 10, 1, "X")
-    panel:addChild(btn)
-    panel:addChild(lurek.terminal.newLabel(1, 3, "Info"))
+    local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+    panel:addChild(lurek.terminal.newLabel(2, 2, "Subsystem"))
+    panel:addChild(lurek.terminal.newLabel(2, 3, "Life Support"))
     panel:clearChildren()
-    print("child count after clear = " .. panel:getChildCount())
+    local count = panel:getChildCount()
+    terminal_log("clearChildren count=" .. count)
 end
 
 --@api: LWidget:removeChild
 do
-    local panel = lurek.terminal.newPanel(0, 0, 40, 20)
-    local btn = lurek.terminal.newButton(1, 1, 10, 1, "X")
-    panel:addChild(btn)
-    panel:removeChild(btn)
-    print("child count after remove = " .. panel:getChildCount())
+    local panel = lurek.terminal.newPanel(1, 1, 24, 8)
+    local title = lurek.terminal.newLabel(2, 2, "Subsystem")
+    local value = lurek.terminal.newLabel(2, 3, "Life Support")
+    panel:addChild(title)
+    panel:addChild(value)
+    panel:removeChild(title)
+    terminal_log("removeChild remaining=" .. panel:getChildCount())
 end
 
 --@api: LWidget:addItem
 do
-    local list = lurek.terminal.newList(0, 0, 20, 10)
-    list:addItem("item one")
-    list:addItem("item two")
-    print("item count = " .. list:getItemCount())
+    local list = lurek.terminal.newList(1, 1, 18, 5)
+    list:addItem("Bandage")
+    list:addItem("Ration Pack")
+    list:addItem("Access Card")
+    local count = list:getItemCount()
+    terminal_log("addItem count=" .. count .. " last='" .. tostring(list:getItem(3)) .. "'")
 end
 
 --@api: LWidget:clearItems
 do
-    local list = lurek.terminal.newList(0, 0, 20, 10)
-    list:addItem("alpha")
-    list:addItem("beta")
+    local list = make_inventory_list()
+    local before = list:getItemCount()
     list:clearItems()
-    print("item count after clear = " .. list:getItemCount())
+    local after = list:getItemCount()
+    terminal_log("clearItems before=" .. before .. " after=" .. after)
 end
 
 --@api: LWidget:getItem
 do
-    local list = lurek.terminal.newList(0, 0, 20, 10)
-    list:addItem("alpha")
-    list:addItem("beta")
-    local item = list:getItem(1)
-    print("first item = " .. item)
+    local list = make_inventory_list()
+    list:setSelected(2)
+    local first = list:getItem(1)
+    local second = list:getItem(2)
+    terminal_log("getItem first='" .. tostring(first) .. "' second='" .. tostring(second) .. "'")
 end
 
 --@api: LWidget:getItemCount
 do
-    local list = lurek.terminal.newList(0, 0, 20, 10)
-    list:addItem("alpha")
-    list:addItem("beta")
+    local list = make_inventory_list()
+    list:addItem("Toolkit")
     local count = list:getItemCount()
-    print("item count = " .. count)
+    local selected = list:getSelected()
+    terminal_log("getItemCount count=" .. count .. " selected=" .. tostring(selected))
 end
 
 --@api: LWidget:getColor
 do
-    local label = lurek.terminal.newLabel(0, 0, "Tag")
-    label:setColor(255, 200, 100, 255)
+    local label = lurek.terminal.newLabel(2, 2, "Beacon")
+    label:setColor(0.25, 0.5, 0.75, 0.9)
     local r, g, b, a = label:getColor()
-    print("color = " .. r .. ", " .. g .. ", " .. b .. ", " .. a)
+    local text = label:getText()
+    terminal_log("getColor text='" .. text .. "' rgba=" .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
 --@api: LWidget:getStyle
 do
-    local border = lurek.terminal.newBorder(0, 1, 10, 3)
-    border:setStyle("single")
+    local border = lurek.terminal.newBorder(1, 1, 22, 8)
+    border:setStyle("double")
+    border:setTitle("Cargo")
     local style = border:getStyle()
-    print("style = " .. style)
+    terminal_log("getStyle style='" .. style .. "' title='" .. border:getTitle() .. "'")
 end
 
 --@api: LWidget:getTag
 do
-    local border = lurek.terminal.newBorder(0, 1, 10, 3)
-    border:setTag("my_border")
-    local tag = border:getTag()
-    print("tag = " .. tag)
+    local label = lurek.terminal.newLabel(2, 2, "Objective")
+    label:setTag("hud.objective")
+    local tag = label:getTag()
+    local text = label:getText()
+    terminal_log("getTag tag='" .. tag .. "' text='" .. text .. "'")
 end
 
 --@api: LWidget:getText
 do
-    local tb = lurek.terminal.newTextBox(0, 0, 20)
-    tb:setText("hello")
-    local txt = tb:getText()
-    print("text = " .. txt)
+    local box = lurek.terminal.newTextBox(2, 2, 20)
+    box:setText("scan cargo bay")
+    local text = box:getText()
+    local width, height = box:getSize()
+    terminal_log("getText text='" .. text .. "' size=" .. width .. "x" .. height)
 end
 
 --@api: LWidget:getTitle
 do
-    local border = lurek.terminal.newBorder(0, 1, 20, 3)
-    border:setTitle("Input")
+    local border = lurek.terminal.newBorder(1, 1, 22, 8)
+    border:setTitle("Mission Log")
     local title = border:getTitle()
-    print("title = " .. title)
+    local style = border:getStyle()
+    terminal_log("getTitle title='" .. title .. "' style='" .. style .. "'")
 end
 
 --@api: LWidget:getMaxLength
 do
-    local tb = lurek.terminal.newTextBox(0, 0, 20)
-    tb:setMaxLength(32)
-    local maxLen = tb:getMaxLength()
-    print("max length = " .. maxLen)
+    local box = lurek.terminal.newTextBox(2, 2, 18)
+    box:setMaxLength(40)
+    box:setText("dock")
+    local max_length = box:getMaxLength()
+    terminal_log("getMaxLength max=" .. max_length .. " text='" .. box:getText() .. "'")
 end
 
 --@api: LWidget:getPosition
 do
-    local list = lurek.terminal.newList(5, 3, 15, 8)
-    local px, py = list:getPosition()
-    print("position = " .. px .. ", " .. py)
+    local list = lurek.terminal.newList(5, 3, 15, 6)
+    local col, row = list:getPosition()
+    local width, height = list:getSize()
+    local count = list:getItemCount()
+    terminal_log("getPosition pos=" .. col .. "," .. row .. " size=" .. width .. "x" .. height .. " items=" .. count)
 end
 
 --@api: LWidget:getSize
 do
-    local list = lurek.terminal.newList(5, 3, 15, 8)
-    local w, h = list:getSize()
-    print("size = " .. w .. "x" .. h)
+    local list = lurek.terminal.newList(5, 3, 15, 6)
+    local width, height = list:getSize()
+    local col, row = list:getPosition()
+    local count = list:getItemCount()
+    terminal_log("getSize size=" .. width .. "x" .. height .. " at " .. col .. "," .. row .. " items=" .. count)
 end
 
 --@api: LWidget:getSelected
 do
-    local list = lurek.terminal.newList(5, 3, 15, 8)
-    list:addItem("opt1")
-    list:addItem("opt2")
-    list:setSelected(1)
-    local sel = list:getSelected()
-    print("selected = " .. sel)
+    local list = make_inventory_list()
+    list:setSelected(2)
+    local selected = list:getSelected()
+    local item = list:getItem(selected)
+    terminal_log("getSelected index=" .. tostring(selected) .. " item='" .. tostring(item) .. "'")
 end
 
 --@api: LWidget:isEnabled
 do
-    local btn = lurek.terminal.newButton(0, 0, 10, 1, "Test")
-    print("before = " .. tostring(btn:isEnabled()))
-    btn:setEnabled(false)
-    print("after = " .. tostring(btn:isEnabled()))
+    local button = lurek.terminal.newButton(2, 2, 12, 1, "Dock")
+    local before = button:isEnabled()
+    button:setEnabled(false)
+    local after = button:isEnabled()
+    terminal_log("isEnabled before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 
 --@api: LWidget:isVisible
 do
-    local btn = lurek.terminal.newButton(0, 0, 10, 1, "Test")
-    print("before = " .. tostring(btn:isVisible()))
-    btn:setVisible(false)
-    print("after = " .. tostring(btn:isVisible()))
+    local button = lurek.terminal.newButton(2, 2, 12, 1, "Dock")
+    local before = button:isVisible()
+    button:setVisible(false)
+    local after = button:isVisible()
+    terminal_log("isVisible before=" .. tostring(before) .. " after=" .. tostring(after))
 end
 
 --@api: LWidget:type
 do
-    local btn = lurek.terminal.newButton(0, 0, 10, 1, "Btn")
-    print("type = " .. btn:type())
+    local button = lurek.terminal.newButton(2, 2, 12, 1, "Dock")
+    local kind = button:type()
+    local text = button:getText()
+    local width, height = button:getSize()
+    terminal_log("widget type kind=" .. kind .. " text='" .. text .. "' size=" .. width .. "x" .. height)
 end
 
 --@api: LWidget:typeOf
 do
-    local btn = lurek.terminal.newButton(0, 0, 10, 1, "Btn")
-    local ok = btn:typeOf("LWidget")
-    print("typeOf LWidget = " .. tostring(ok))
+    local button = lurek.terminal.newButton(2, 2, 12, 1, "Dock")
+    local is_widget = button:typeOf("LWidget")
+    local is_object = button:typeOf("LObject")
+    local text = button:getText()
+    terminal_log("widget typeOf text='" .. text .. "' LWidget=" .. tostring(is_widget) .. " LObject=" .. tostring(is_object))
 end
 
 --@api: LWidget:setColor
 do
-    local label = lurek.terminal.newLabel(0, 0, "Styled")
-    label:setColor(255, 200, 100, 255)
+    local label = lurek.terminal.newLabel(2, 2, "Beacon")
+    label:setColor(0.9, 0.7, 0.2, 1.0)
     local r, g, b, a = label:getColor()
-    print("setColor = " .. r .. ", " .. g .. ", " .. b .. ", " .. a)
+    local text = label:getText()
+    terminal_log("setColor text='" .. text .. "' rgba=" .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
 --@api: LWidget:setEnabled
 do
-    local label = lurek.terminal.newLabel(0, 0, "Styled")
+    local label = lurek.terminal.newLabel(2, 2, "Beacon")
     label:setEnabled(false)
-    print("setEnabled = " .. tostring(label:isEnabled()))
+    local enabled = label:isEnabled()
+    label:setEnabled(true)
+    terminal_log("setEnabled restored=" .. tostring(label:isEnabled()) .. " initial_after_disable=" .. tostring(enabled))
 end
 
 --@api: LWidget:setVisible
 do
-    local label = lurek.terminal.newLabel(0, 0, "Styled")
+    local label = lurek.terminal.newLabel(2, 2, "Beacon")
     label:setVisible(false)
-    print("setVisible = " .. tostring(label:isVisible()))
+    local hidden = label:isVisible()
+    label:setVisible(true)
+    terminal_log("setVisible hidden_state=" .. tostring(hidden) .. " restored=" .. tostring(label:isVisible()))
 end
 
 --@api: LWidget:setMaxLength
 do
-    local tb = lurek.terminal.newTextBox(0, 0, 20)
-    tb:setMaxLength(50)
-    local ml = tb:getMaxLength()
-    print("setMaxLength = " .. ml)
+    local box = lurek.terminal.newTextBox(2, 2, 18)
+    box:setMaxLength(12)
+    box:setText("dock alpha")
+    local max_length = box:getMaxLength()
+    terminal_log("setMaxLength max=" .. max_length .. " text='" .. box:getText() .. "'")
 end
 
 --@api: LWidget:setPosition
 do
-    local tb = lurek.terminal.newTextBox(0, 0, 20)
-    tb:setPosition(3, 5)
-    local px, py = tb:getPosition()
-    print("setPosition = " .. px .. ", " .. py)
+    local box = lurek.terminal.newTextBox(1, 1, 18)
+    box:setPosition(4, 6)
+    local col, row = box:getPosition()
+    local width, height = box:getSize()
+    terminal_log("setPosition pos=" .. col .. "," .. row .. " size=" .. width .. "x" .. height)
 end
 
 --@api: LWidget:setSize
 do
-    local tb = lurek.terminal.newTextBox(0, 0, 20)
-    tb:setSize(25, 1)
-    local w, h = tb:getSize()
-    print("setSize = " .. w .. "x" .. h)
+    local box = lurek.terminal.newTextBox(1, 1, 18)
+    box:setSize(24, 1)
+    local width, height = box:getSize()
+    local text = box:getText()
+    terminal_log("setSize size=" .. width .. "x" .. height .. " text='" .. text .. "'")
 end
 
 --@api: LWidget:setStyle
 do
-    local border = lurek.terminal.newBorder(0, 0, 12, 4)
+    local border = lurek.terminal.newBorder(1, 1, 18, 6)
     border:setStyle("double")
+    border:setTitle("Map")
     local style = border:getStyle()
-    print("setStyle = " .. style)
+    terminal_log("setStyle style='" .. style .. "' title='" .. border:getTitle() .. "'")
 end
 
 --@api: LWidget:setTag
 do
-    local border = lurek.terminal.newBorder(0, 0, 12, 4)
-    border:setTag("border_ok")
-    print("setTag = " .. border:getTag())
+    local border = lurek.terminal.newBorder(1, 1, 18, 6)
+    border:setTag("hud.map")
+    border:setTitle("Map")
+    local tag = border:getTag()
+    terminal_log("setTag tag='" .. tag .. "' title='" .. border:getTitle() .. "'")
 end
 
 --@api: LWidget:setText
 do
-    local btn = lurek.terminal.newButton(1, 1, 10, 1, "Confirm")
-    btn:setText("Apply")
-    print("setText = " .. btn:getText())
+    local button = lurek.terminal.newButton(2, 2, 14, 1, "Undock")
+    button:setText("Engage Warp")
+    local text = button:getText()
+    local width, height = button:getSize()
+    terminal_log("setText text='" .. text .. "' size=" .. width .. "x" .. height)
 end
 
 --@api: LWidget:setTitle
 do
-    local border = lurek.terminal.newBorder(0, 0, 22, 10)
-    border:setTitle("Options")
-    print("setTitle = " .. border:getTitle())
+    local border = lurek.terminal.newBorder(1, 1, 22, 8)
+    border:setTitle("Subsystems")
+    local title = border:getTitle()
+    local style = border:getStyle()
+    terminal_log("setTitle title='" .. title .. "' style='" .. style .. "'")
 end
 
 --@api: LWidget:setSelected
 do
-    local list = lurek.terminal.newList(0, 0, 20, 8)
-    list:addItem("choice1")
-    list:addItem("choice2")
-    list:setSelected(2)
-    local sel = list:getSelected()
-    print("setSelected = " .. sel)
+    local list = make_inventory_list()
+    list:setSelected(3)
+    local selected = list:getSelected()
+    local item = list:getItem(selected)
+    terminal_log("setSelected index=" .. tostring(selected) .. " item='" .. tostring(item) .. "'")
 end
 
 --@api: LWidget:setOnChange
 do
-    local tb = lurek.terminal.newTextBox(0, 0, 20)
-    tb:setOnChange(function(text)
-        print("changed to " .. tostring(text))
-    end)
-    tb:setText("hello")
-    print("text box length = " .. #tb:getText())
+    local term = make_console(48, 16)
+    local input = lurek.terminal.newTextBox(2, 4, 20)
+    local changes = 0
+    input:setOnChange(function() changes = changes + 1 end)
+    term:addWidget(input)
+    term:setFocus(input)
+    input:setText("dock")
+    terminal_log("setOnChange changes=" .. changes .. " text='" .. input:getText() .. "'")
 end
 
 --@api: LWidget:setOnClick
 do
-    local btn = lurek.terminal.newButton(0, 0, 10, 1, "Click")
-    btn:setOnClick(function() print("clicked") end)
-    print("button text = " .. btn:getText())
+    local term = make_console(48, 16)
+    local button = lurek.terminal.newButton(2, 4, 14, 1, "Confirm")
+    local clicks = 0
+    button:setOnClick(function() clicks = clicks + 1 end)
+    term:addWidget(button)
+    click_cell(term, 2, 4, 1)
+    terminal_log("setOnClick clicks=" .. clicks .. " text='" .. button:getText() .. "'")
 end
 
 --@api: LWidget:setOnSelect
 do
-    local list = lurek.terminal.newList(0, 0, 20, 8)
-    list:addItem("small")
-    list:addItem("large")
-    list:setOnSelect(function(idx)
-        print("selected " .. tostring(idx))
-    end)
+    local list = make_inventory_list()
+    local selections = 0
+    list:setOnSelect(function() selections = selections + 1 end)
     list:setSelected(2)
-    print("selected index = " .. list:getSelected())
+    local item = list:getItem(list:getSelected())
+    terminal_log("setOnSelect callbacks=" .. selections .. " item='" .. tostring(item) .. "'")
 end
 
 --@api: LWidget:removeItem
 do
-    local list = lurek.terminal.newList(0, 0, 20, 8)
-    list:addItem("remove_me")
-    list:addItem("keep_me")
+    local list = make_inventory_list()
+    local before = list:getItemCount()
     list:removeItem(1)
-    print("remaining count = " .. list:getItemCount())
-    print("first item = " .. tostring(list:getItem(1)))
+    local after = list:getItemCount()
+    local first = list:getItem(1)
+    terminal_log("removeItem before=" .. before .. " after=" .. after .. " first='" .. tostring(first) .. "'")
 end

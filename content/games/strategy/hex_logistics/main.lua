@@ -19,6 +19,14 @@ local BUILD_MINE_GOLD = "MINE_GOLD"
 local BUILD_GENERATOR = "GENERATOR"
 local BUILD_DRONE_FACTORY = "DRONE_FACTORY"
 local BUILD_TURRET = "TURRET"
+local BUILD_ORDER = {
+    BUILD_HQ,
+    BUILD_MINE_METAL,
+    BUILD_MINE_GOLD,
+    BUILD_GENERATOR,
+    BUILD_DRONE_FACTORY,
+    BUILD_TURRET,
+}
 
 local DRONE_LIMIT = 50
 local PRIORITY_DISABLED = "DISABLED"
@@ -42,6 +50,8 @@ local resources = { metal = 150, energy = 0, gold = 0 }
 local player = { x = 0, y = 0, vx = 0, vy = 0 }
 local camera = { x = 0, y = 0 }
 local selected_hex = nil
+local active_build_type = BUILD_HQ
+local move_target = nil
 local message = "Build HQ first. It releases three logistics drones."
 local message_timer = 5
 local fps = 0
@@ -80,6 +90,12 @@ end
 local function show_message(text)
     message = text
     message_timer = 3.5
+end
+
+local function build_label(type_name)
+    local cost = BUILD_COSTS[type_name]
+    if cost then return cost.label end
+    return tostring(type_name)
 end
 
 local function generate_map()
@@ -137,9 +153,67 @@ local function find_active_hq()
     return nil
 end
 
+local function summarize_building(b)
+    if not b then return nil end
+    return {
+        type = b.type,
+        q = b.q,
+        r = b.r,
+        state = b.state,
+        priority = b.priority,
+        queue = b.queue or 0,
+    }
+end
+
 local function building_under_player()
     local q, r = pixel_to_hex(player.x, player.y)
     return find_building(q, r)
+end
+
+local function set_active_build(type_name)
+    if BUILD_COSTS[type_name] then
+        active_build_type = type_name
+        show_message("Build tool: " .. build_label(type_name) .. ".")
+    end
+end
+
+local function cycle_build_selection(direction)
+    local index = 1
+    for i = 1, #BUILD_ORDER do
+        if BUILD_ORDER[i] == active_build_type then
+            index = i
+            break
+        end
+    end
+    local count = #BUILD_ORDER
+    local next_index = ((index - 1 + direction) % count) + 1
+    set_active_build(BUILD_ORDER[next_index])
+end
+
+local function select_hex_from_screen(x, y)
+    local q, r = pixel_to_hex(x + camera.x, y + camera.y)
+    if map[key(q, r)] then
+        selected_hex = { q = q, r = r }
+        return q, r
+    end
+    selected_hex = nil
+    return nil, nil
+end
+
+local function nearest_buildable_hex(tile_type)
+    local best = nil
+    local best_dist = math.huge
+    for _, tile in ipairs(tiles) do
+        if (not tile_type or tile.type == tile_type) and not find_building(tile.q, tile.r) then
+            local wx, wy = hex_to_pixel(tile.q, tile.r)
+            local dist = distance(player.x, player.y, wx, wy)
+            if dist > 1 and dist <= BUILD_RADIUS and dist < best_dist then
+                best = tile
+                best_dist = dist
+            end
+        end
+    end
+    return best
 end
 
 local function spawn_drone(q, r)
@@ -194,67 +268,131 @@ local function new_building(type_name, q, r)
     return b
 end
 
-local function build(type_name)
-    local q, r = pixel_to_hex(player.x, player.y)
+local function build_at(type_name, q, r)
     local tile = map[key(q, r)]
     local cost = BUILD_COSTS[type_name]
     if not tile then
         show_message("Out of mapped sector.")
-        return
+        return false
     end
     if not cost then
         show_message("Unknown build order.")
-        return
+        return false
     end
     if find_building(q, r) then
         show_message("Hex already occupied.")
-        return
+        return false
+    end
+    local wx, wy = hex_to_pixel(q, r)
+    if distance(player.x, player.y, wx, wy) > BUILD_RADIUS then
+        show_message("Target hex is outside construction range.")
+        return false
     end
     if resources.metal < cost.metal then
         show_message(cost.label .. " needs " .. cost.metal .. " metal.")
-        return
+        return false
     end
 
     if type_name == BUILD_HQ then
         if find_hq() then
             show_message("Only one HQ is allowed.")
-            return
+            return false
         end
     elseif type_name == BUILD_MINE_METAL then
         if tile.type ~= TILE_METAL then
             show_message("Metal mine needs a metal vein.")
-            return
+            return false
         end
     elseif type_name == BUILD_MINE_GOLD then
         if tile.type ~= TILE_GOLD then
             show_message("Gold mine needs a gold vein.")
-            return
+            return false
         end
     end
 
     resources.metal = resources.metal - cost.metal
     buildings[#buildings + 1] = new_building(type_name, q, r)
     show_message(cost.label .. " construction started.")
+    return true
 end
 
-local function queue_drone_production()
-    local b = building_under_player()
+local function build(type_name)
+    local q, r = pixel_to_hex(player.x, player.y)
+    return build_at(type_name, q, r)
+end
+
+local function queue_drone_production_at(q, r)
+    local b = find_building(q, r)
     if b and b.type == BUILD_DRONE_FACTORY and b.state == "ACTIVE" then
         b.queue = b.queue + 1
         show_message("Drone order queued.")
+        return true
     else
-        show_message("Stand on an active drone factory to queue drones.")
+        show_message("Select an active drone factory to queue drones.")
+        return false
+    end
+end
+
+local function queue_drone_production()
+    local q, r = pixel_to_hex(player.x, player.y)
+    return queue_drone_production_at(q, r)
+end
+
+local function set_building_priority_at(q, r, priority)
+    local b = find_building(q, r)
+    if b and b.type ~= BUILD_HQ then
+        b.priority = priority
+        show_message("Priority set to " .. string.lower(priority) .. ".")
+        return true
+    else
+        show_message("Select a non-HQ building to set priority.")
+        return false
     end
 end
 
 local function set_building_priority(priority)
-    local b = building_under_player()
-    if b and b.type ~= BUILD_HQ then
-        b.priority = priority
-        show_message("Priority set to " .. string.lower(priority) .. ".")
-    else
-        show_message("Stand on a non-HQ building to set priority.")
+    local q, r = pixel_to_hex(player.x, player.y)
+    return set_building_priority_at(q, r, priority)
+end
+
+local function cycle_building_priority_at(q, r)
+    local b = find_building(q, r)
+    if not b or b.type == BUILD_HQ then
+        show_message("Select a non-HQ building to cycle priority.")
+        return false
     end
+    local next_priority = PRIORITY_DISABLED
+    if b.priority == PRIORITY_DISABLED then
+        next_priority = PRIORITY_NORMAL
+    elseif b.priority == PRIORITY_NORMAL then
+        next_priority = PRIORITY_HIGH
+    end
+    b.priority = next_priority
+    show_message("Priority set to " .. string.lower(next_priority) .. ".")
+    return true
+end
+
+local function set_move_target(q, r)
+    local tile = map[key(q, r)]
+    if not tile then
+        show_message("Out of mapped sector.")
+        return false
+    end
+    local wx, wy = hex_to_pixel(q, r)
+    move_target = { q = q, r = r, x = wx, y = wy }
+    show_message("Course plotted to hex " .. q .. "," .. r .. ".")
+    return true
+end
+
+local function mouse_interact(q, r)
+    local b = find_building(q, r)
+    if b then
+        if b.type == BUILD_DRONE_FACTORY and b.state == "ACTIVE" then
+            return queue_drone_production_at(q, r)
+        end
+        return cycle_building_priority_at(q, r)
+    end
+    return build_at(active_build_type, q, r)
 end
 
 local function incoming(q, r, stage, resource)
@@ -493,6 +631,19 @@ local function update_player(dt)
         ax, ay = ax / len, ay / len
         player.vx = player.vx + ax * 900 * dt
         player.vy = player.vy + ay * 900 * dt
+        move_target = nil
+    elseif move_target then
+        local dx = move_target.x - player.x
+        local dy = move_target.y - player.y
+        local dist = math.sqrt(dx * dx + dy * dy)
+        if dist <= 8 then
+            move_target = nil
+        else
+            ax = dx / dist
+            ay = dy / dist
+            player.vx = player.vx + ax * 900 * dt
+            player.vy = player.vy + ay * 900 * dt
+        end
     end
     player.vx = player.vx * math.pow(0.08, dt)
     player.vy = player.vy * math.pow(0.08, dt)
@@ -507,12 +658,7 @@ end
 
 local function update_selection()
     local mx, my = lurek.input.mouse.getPosition()
-    local q, r = pixel_to_hex(mx + camera.x, my + camera.y)
-    if map[key(q, r)] then
-        selected_hex = { q = q, r = r }
-    else
-        selected_hex = nil
-    end
+    select_hex_from_screen(mx, my)
 end
 
 local function bind_input()
@@ -536,7 +682,20 @@ end
 function lurek.init()
     lurek.window.setTitle("Hex Logistics - Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.07, 0.11)
-    math.randomseed(os.time())
+    map = {}
+    tiles = {}
+    buildings = {}
+    drones = {}
+    resources = { metal = 150, energy = 0, gold = 0 }
+    player = { x = 0, y = 0, vx = 0, vy = 0 }
+    camera = { x = 0, y = 0 }
+    selected_hex = nil
+    active_build_type = BUILD_HQ
+    move_target = nil
+    message = "Build HQ first. It releases three logistics drones."
+    message_timer = 5
+    fps = 0
+    math.randomseed(rawget(_G, "HEX_LOGISTICS_TEST_SEED") or os.time())
     bind_input()
     generate_map()
 end
@@ -545,12 +704,12 @@ function lurek.process(dt)
     if lurek.automation then lurek.automation.update(dt) end
     if lurek.input.wasActionPressed("quit") then lurek.event.quit() return end
 
-    if lurek.input.wasActionPressed("build_hq") then build(BUILD_HQ) end
-    if lurek.input.wasActionPressed("build_metal") then build(BUILD_MINE_METAL) end
-    if lurek.input.wasActionPressed("build_gold") then build(BUILD_MINE_GOLD) end
-    if lurek.input.wasActionPressed("build_generator") then build(BUILD_GENERATOR) end
-    if lurek.input.wasActionPressed("build_factory") then build(BUILD_DRONE_FACTORY) end
-    if lurek.input.wasActionPressed("build_turret") then build(BUILD_TURRET) end
+    if lurek.input.wasActionPressed("build_hq") then set_active_build(BUILD_HQ); build(BUILD_HQ) end
+    if lurek.input.wasActionPressed("build_metal") then set_active_build(BUILD_MINE_METAL); build(BUILD_MINE_METAL) end
+    if lurek.input.wasActionPressed("build_gold") then set_active_build(BUILD_MINE_GOLD); build(BUILD_MINE_GOLD) end
+    if lurek.input.wasActionPressed("build_generator") then set_active_build(BUILD_GENERATOR); build(BUILD_GENERATOR) end
+    if lurek.input.wasActionPressed("build_factory") then set_active_build(BUILD_DRONE_FACTORY); build(BUILD_DRONE_FACTORY) end
+    if lurek.input.wasActionPressed("build_turret") then set_active_build(BUILD_TURRET); build(BUILD_TURRET) end
     if lurek.input.wasActionPressed("queue_drone") then queue_drone_production() end
     if lurek.input.wasActionPressed("priority_disabled") then set_building_priority(PRIORITY_DISABLED) end
     if lurek.input.wasActionPressed("priority_normal") then set_building_priority(PRIORITY_NORMAL) end
@@ -567,6 +726,28 @@ function lurek.process(dt)
 
     fps = lurek.timer.getFPS()
     if message_timer > 0 then message_timer = message_timer - dt end
+end
+
+function lurek.mousemoved(x, y, dx, dy)
+    select_hex_from_screen(x, y)
+end
+
+function lurek.mousepressed(x, y, button)
+    local q, r = select_hex_from_screen(x, y)
+    if not q then return end
+    if button == 1 then
+        mouse_interact(q, r)
+    elseif button == 2 then
+        set_move_target(q, r)
+    end
+end
+
+function lurek.wheelmoved(dx, dy)
+    if dy > 0 then
+        cycle_build_selection(1)
+    elseif dy < 0 then
+        cycle_build_selection(-1)
+    end
 end
 
 local function tile_color(tile)
@@ -747,8 +928,9 @@ function lurek.draw_ui()
     draw_text("Gold: " .. resources.gold, 370, 10, {1.00, 0.84, 0.25, 1})
     draw_text("Energy: " .. resources.energy, 470, 10, {0.40, 0.91, 1.00, 1})
     draw_text("FPS: " .. tostring(math.floor(fps)), w - 88, 10, {0.48, 0.55, 0.65, 1})
+    draw_text("Tool: " .. build_label(active_build_type), 640, 10, {1.00, 0.78, 0.30, 1})
     draw_text("WASD move | 1 HQ 0M | 2 metal 10M | 3 gold 20M | 4 gen 15M | 5 factory 50M | 6 turret 30M", 14, 34, {0.57, 0.65, 0.76, 1})
-    draw_text("Q queue drone at factory | Z/X/C priority off/normal/high | ESC quit", 14, 54, {0.57, 0.65, 0.76, 1})
+    draw_text("Mouse wheel tool | LMB build/queue/cycle | RMB move ship | Q queue | Z/X/C priority | ESC quit", 14, 54, {0.57, 0.65, 0.76, 1})
 
     set_color({0.04, 0.06, 0.10, 0.88})
     lurek.render.rectangle("fill", 12, h - 64, 560, 50)
@@ -760,4 +942,60 @@ function lurek.draw_ui()
         local pulse = 0.7 + 0.3 * math.sin(lurek.timer.getTime() * 6)
         draw_text(message, 22, h - 22, {1, 0.95, 0.62, pulse})
     end
+end
+
+function hex_logistics_debug()
+    local nearby_empty = nearest_buildable_hex(TILE_EMPTY)
+    local nearby_metal = nearest_buildable_hex(TILE_METAL)
+    local nearby_gold = nearest_buildable_hex(TILE_GOLD)
+    local selected_building = nil
+    if selected_hex then
+        selected_building = find_building(selected_hex.q, selected_hex.r)
+    end
+    return {
+        active_build = active_build_type,
+        building_count = #buildings,
+        drone_count = #drones,
+        fps = fps,
+        message = message,
+        resources = {
+            metal = resources.metal,
+            energy = resources.energy,
+            gold = resources.gold,
+        },
+        player = {
+            x = player.x,
+            y = player.y,
+            vx = player.vx,
+            vy = player.vy,
+        },
+        camera = {
+            x = camera.x,
+            y = camera.y,
+        },
+        move_target = move_target and {
+            q = move_target.q,
+            r = move_target.r,
+            x = move_target.x,
+            y = move_target.y,
+        } or nil,
+        selected_hex = selected_hex and {
+            q = selected_hex.q,
+            r = selected_hex.r,
+        } or nil,
+        selected_building = summarize_building(selected_building),
+        hq = summarize_building(find_hq()),
+        nearby_empty_hex = nearby_empty and {
+            q = nearby_empty.q,
+            r = nearby_empty.r,
+        } or nil,
+        nearby_metal_hex = nearby_metal and {
+            q = nearby_metal.q,
+            r = nearby_metal.r,
+        } or nil,
+        nearby_gold_hex = nearby_gold and {
+            q = nearby_gold.q,
+            r = nearby_gold.r,
+        } or nil,
+    }
 end

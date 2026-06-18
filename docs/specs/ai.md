@@ -22,7 +22,7 @@
 
 - The `ai` module is the engine's gameplay-intelligence surface for users who need actors to perceive, decide, coordinate, and adapt in ways that go far beyond hard-coded if-then behavior.
 - Its defining characteristic is breadth of decision models. The module deliberately supports behavior trees, finite state machines, utility scoring, GOAP, HTN, Monte Carlo Tree Search, and related helpers so a single project can choose the right reasoning style for each actor type or gameplay layer.
-- That breadth matters because game AI is rarely solved by one universal algorithm. Ambient civilians, tactical enemies, planners, companions, directors, and scripted bosses often need different control models even when they inhabit the same world.
+- That breadth matters because game AI is rarely solved by one universal algorithm.
 - Reactive control and deliberative planning are both first-class here. An actor can respond immediately through short-horizon stateful logic while also relying on planning, utility, or hierarchical decomposition for larger goals and longer-term behavior.
 - The module is therefore not only about selecting an action. It also models the internal information that makes action selection meaningful: perceptions, remembered stimuli, blackboard facts, needs, emotions, traits, alertness, and contextual world knowledge.
 - Perception support is especially important because believable decisions depend on what an agent knows, not only on what the world objectively contains. Vision, hearing, custom stimuli, awareness memory, and alertness tracking all shape what options the actor should consider.
@@ -38,10 +38,11 @@
 - The module is useful for enemies, companions, neutral populations, strategic directors, simulation agents, crowd coordinators, and any feature where behavior should be data-driven, inspectable, and scalable rather than buried in one-off control code.
 - Neighboring modules still matter, but the boundary is clear. `pathfind` searches space, `physics` defines motion and collision semantics, and `render` visualizes results, while `ai` owns the reasoning structures, internal drives, sensory interpretation, and coordination layers that decide what to do.
 - The breadth of the spec is intentional because modern game AI is an ecosystem. Perception, memory, scoring, planning, execution, local movement, and group coordination all reinforce one another, and users need them to live under a shared conceptual surface.
-- That ecosystem view also improves authoring. Teams can mix authored logic, tactical heuristics, and simulation-like drives within one runtime surface instead of treating each new behavior family as an isolated special case.
+- That ecosystem view also improves authoring. Teams can mix authored logic, tactical heuristics, and simulation-like drives within one runtime surface instead of treating each behavior family as an isolated special case.
+- It also helps debugging stay on one common reasoning vocabulary.
+- That common vocabulary matters once several actor types share a world.
 - The module is therefore not only about smarter enemies; it is also about giving complex runtime behavior a legible structure that can be tuned, debugged, and scaled over the lifetime of a project.
 - For wiki readers, the key takeaway is that `ai` is not one algorithm or one enemy helper. It is the engine's full runtime toolkit for building decision-rich actors whose perception, planning, movement, group behavior, and debugging story are treated as one coherent feature family.
-
 
 ## Imports
 

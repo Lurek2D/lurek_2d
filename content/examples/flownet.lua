@@ -2,21 +2,37 @@
 -- Auto-generated from content/examples2/graph_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/flownet.lua
 
+local function flownet_log(message)
+    lurek.log.info("[flownet.example] " .. tostring(message))
+end
+
 --- Graph Module Part 1: factory, LGraph core (nodes, edges, items, pathfinding, stats)
+
+local function example_print_log(...)
+    local parts = {}
+    for i = 1, select("#", ...) do
+        parts[i] = tostring(select(i, ...))
+    end
+    lurek.log.info(table.concat(parts, " "))
+end
 
 --@api: lurek.graph.newGraph
 do
     local g = lurek.graph.newGraph()
-    print("graph type = " .. g:type())
-    print("nodes = " .. g:getNodeCount())
-    print("edges = " .. g:getEdgeCount())
+    local mine = g:addNode("mine", 24)
+    local depot = g:addNode("depot", 48)
+    g:addEdge(mine, depot, "belt")
+    flownet_log("fresh network nodes=" .. g:getNodeCount() .. " edges=" .. g:getEdgeCount())
 end
 
 --@api: LGraph:addNode
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode("warehouse", 100)
-    print("node type = " .. n:type())
+    local source = g:addNode("warehouse", 100)
+    local sink = g:addNode("factory", 40)
+    local edge = g:addEdge(source, sink, "road")
+    local source_type = source:getType()
+    flownet_log("added " .. source_type .. " linked by " .. edge:getType() .. " to " .. sink:getType())
 end
 
 --@api: LGraph:addEdge
@@ -25,14 +41,17 @@ do
     local a = g:addNode("src")
     local b = g:addNode("dst")
     local e = g:addEdge(a, b, "road")
-    print("edge type = " .. e:type())
+    example_print_log("edge type = " .. e:type())
 end
 
 --@api: LGraph:createItem
 do
     local g = lurek.graph.newGraph()
+    local store = g:addNode("storage", 8)
     local item = g:createItem("ore", 10.0)
-    print("item type = " .. item:type())
+    g:addItem(item, store)
+    local kind = item:getType()
+    flownet_log("created " .. kind .. " for " .. store:getType())
 end
 
 --@api: LGraph:addItem
@@ -41,15 +60,17 @@ do
     local n = g:addNode("storage")
     local item = g:createItem("wood")
     g:addItem(item, n)
-    print("item placed on node")
+    example_print_log("item placed on node")
 end
 
 --@api: LGraph:removeNode
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode()
+    local n = g:addNode("buffer", 4)
+    g:addNode("sink", 4)
     local ok = g:removeNode(n)
-    print("removed node = " .. tostring(ok))
+    local remaining = g:getNodeCount()
+    flownet_log("removed buffer=" .. tostring(ok) .. " remaining=" .. remaining)
 end
 
 --@api: LGraph:removeEdge
@@ -58,22 +79,28 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     local ok = g:removeEdge(e)
-    print("removed edge = " .. tostring(ok))
+    example_print_log("removed edge = " .. tostring(ok))
 end
 
 --@api: LGraph:removeItem
 do
     local g = lurek.graph.newGraph()
+    local junkyard = g:addNode("junkyard", 8)
     local item = g:createItem("scrap")
+    g:addItem(item, junkyard)
     local ok = g:removeItem(item)
-    print("removed item = " .. tostring(ok))
+    local remaining = g:getItemCount()
+    flownet_log("removed scrap=" .. tostring(ok) .. " items=" .. remaining)
 end
 
 --@api: LGraph:hasNode
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    print("has node = " .. tostring(g:hasNode(n)))
+    local n = g:addNode("source", 8)
+    g:addNode("sink", 8)
+    local present = g:hasNode(n)
+    local count = g:getNodeCount()
+    flownet_log("source present=" .. tostring(present) .. " node count=" .. count)
 end
 
 --@api: LGraph:hasEdge
@@ -82,22 +109,27 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("has edge = " .. tostring(g:hasEdge(e)))
+    example_print_log("has edge = " .. tostring(g:hasEdge(e)))
 end
 
 --@api: LGraph:hasItem
 do
     local g = lurek.graph.newGraph()
-    local item = g:createItem()
-    print("has item = " .. tostring(g:hasItem(item)))
+    local store = g:addNode("store", 4)
+    local item = g:createItem("parcel")
+    g:addItem(item, store)
+    local present = g:hasItem(item)
+    flownet_log("parcel tracked=" .. tostring(present) .. " items=" .. g:getItemCount())
 end
 
 --@api: LGraph:getNodeCount
 do
     local g = lurek.graph.newGraph()
-    g:addNode()
-    g:addNode()
-    print("nodes = " .. g:getNodeCount())
+    g:addNode("mine", 8)
+    g:addNode("smelter", 8)
+    g:addNode("warehouse", 16)
+    local count = g:getNodeCount()
+    flownet_log("factory line nodes=" .. count)
 end
 
 --@api: LGraph:getEdgeCount
@@ -106,15 +138,17 @@ do
     local a = g:addNode()
     local b = g:addNode()
     g:addEdge(a, b)
-    print("edges = " .. g:getEdgeCount())
+    example_print_log("edges = " .. g:getEdgeCount())
 end
 
 --@api: LGraph:getItemCount
 do
     local g = lurek.graph.newGraph()
-    g:createItem("a")
-    g:createItem("b")
-    print("items = " .. g:getItemCount())
+    local storage = g:addNode("storage", 12)
+    g:addItem(g:createItem("iron"), storage)
+    g:addItem(g:createItem("coal"), storage)
+    local count = g:getItemCount()
+    flownet_log("inventory items=" .. count)
 end
 
 --@api: LGraph:getNodes
@@ -123,7 +157,7 @@ do
     g:addNode("x")
     g:addNode("y")
     local nodes = g:getNodes()
-    print("node list = " .. #nodes)
+    example_print_log("node list = " .. #nodes)
 end
 
 --@api: LGraph:getEdges
@@ -132,15 +166,18 @@ do
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local edges = g:getEdges()
-    print("edge list = " .. #edges)
+    example_print_log("edge list = " .. #edges)
 end
 
 --@api: LGraph:getItems
 do
     local g = lurek.graph.newGraph()
-    g:createItem("iron")
+    local storage = g:addNode("storage", 12)
+    g:addItem(g:createItem("iron"), storage)
+    g:addItem(g:createItem("copper"), storage)
     local items = g:getItems()
-    print("item list = " .. #items)
+    local first_type = items[1] and items[1]:getType() or "none"
+    flownet_log("item list=" .. #items .. " first=" .. first_type)
 end
 
 --@api: LGraph:getNeighbors
@@ -150,7 +187,7 @@ do
     g:addEdge(a, b)
     g:addEdge(a, c)
     local neighbors = g:getNeighbors(a)
-    print("neighbors of a = " .. #neighbors)
+    example_print_log("neighbors of a = " .. #neighbors)
 end
 
 --@api: LGraph:getEdgeBetween
@@ -159,7 +196,7 @@ do
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b, "pipe")
     local e = g:getEdgeBetween(a, b)
-    print("edge between a-b exists = " .. tostring(e ~= nil))
+    example_print_log("edge between a-b exists = " .. tostring(e ~= nil))
 end
 
 --@api: LGraph:findPath
@@ -169,7 +206,7 @@ do
     g:addEdge(a, b)
     g:addEdge(b, c)
     local result = g:findPath(a, c)
-    print("path found = " .. tostring(result ~= nil))
+    example_print_log("path found = " .. tostring(result ~= nil))
 end
 
 --@api: LGraph:findPathForItem
@@ -179,7 +216,7 @@ do
     g:addEdge(a, b)
     local item = g:createItem("cargo")
     local result = g:findPathForItem(item, a, b)
-    print("item path found = " .. tostring(result ~= nil))
+    example_print_log("item path found = " .. tostring(result ~= nil))
 end
 
 --@api: LGraph:astar
@@ -188,7 +225,7 @@ do
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local path = g:astar(a, b)
-    print("astar path = " .. tostring(path ~= nil))
+    example_print_log("astar path = " .. tostring(path ~= nil))
 end
 
 --@api: LGraph:getDistance
@@ -197,7 +234,7 @@ do
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local d = g:getDistance(a, b)
-    print("distance = " .. tostring(d))
+    example_print_log("distance = " .. tostring(d))
 end
 
 --@api: LGraph:getReachable
@@ -206,7 +243,7 @@ do
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local reachable = g:getReachable(a, 5.0)
-    print("reachable = " .. #reachable)
+    example_print_log("reachable = " .. #reachable)
 end
 
 --@api: LGraph:getStats
@@ -215,7 +252,7 @@ do
     g:addNode()
     g:addNode()
     local stats = g:getStats()
-    print("nodes=" .. stats.nodes .. " edges=" .. stats.edges .. " items=" .. stats.items)
+    example_print_log("nodes=" .. stats.nodes .. " edges=" .. stats.edges .. " items=" .. stats.items)
 end
 
 --@api: LGraph:hasCycle
@@ -224,7 +261,7 @@ do
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     g:addEdge(b, a)
-    print("has cycle = " .. tostring(g:hasCycle()))
+    example_print_log("has cycle = " .. tostring(g:hasCycle()))
 end
 
 --@api: LGraph:isBipartite
@@ -233,7 +270,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     g:addEdge(a, b)
-    print("bipartite = " .. tostring(g:isBipartite()))
+    example_print_log("bipartite = " .. tostring(g:isBipartite()))
 end
 
 --@api: LGraph:topologicalSort
@@ -243,7 +280,7 @@ do
     g:addEdge(a, b)
     g:addEdge(b, c)
     local sorted = g:topologicalSort()
-    print("topo sort = " .. tostring(sorted ~= nil))
+    example_print_log("topo sort = " .. tostring(sorted ~= nil))
 end
 
 --@api: LGraph:mst
@@ -254,7 +291,7 @@ do
     g:addEdge(b, c)
     g:addEdge(a, c)
     local tree = g:mst()
-    print("MST edges = " .. #tree)
+    example_print_log("MST edges = " .. #tree)
 end
 
 --@api: LGraph:colorGraph
@@ -263,7 +300,7 @@ do
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local colors = g:colorGraph()
-    print("coloring type = " .. type(colors))
+    example_print_log("coloring type = " .. type(colors))
 end
 
 --@api: LGraph:getComponents
@@ -272,7 +309,7 @@ do
     g:addNode()
     g:addNode()
     local comps = g:getComponents()
-    print("components = " .. #comps)
+    example_print_log("components = " .. #comps)
 end
 
 --@api: LGraph:subgraph
@@ -281,7 +318,7 @@ do
     local a, b = g:addNode(), g:addNode()
     g:addNode()
     local sub = g:subgraph({a, b})
-    print("subgraph nodes = " .. sub:getNodeCount())
+    example_print_log("subgraph nodes = " .. sub:getNodeCount())
 end
 
 --@api: LGraph:sendItem
@@ -291,56 +328,76 @@ do
     local e, item = g:addEdge(a, b), g:createItem("package")
     g:addItem(item, a)
     g:sendItem(item, e)
-    print("item sent along edge")
+    example_print_log("item sent along edge")
 end
 
 --@api: LGraph:on
 do
     local g = lurek.graph.newGraph()
     g:on("itemEnter", function(item, node)
-        print("item arrived at node")
+        example_print_log("item arrived at node")
     end)
-    print("callback registered")
+    example_print_log("callback registered")
 end
 
 --@api: LGraph:step
 do
     local g = lurek.graph.newGraph()
+    local mine = g:addNode("mine", 8)
+    local factory = g:addNode("factory", 8)
+    g:addEdge(mine, factory, "belt")
     g:step()
-    print("stepped")
+    flownet_log("step processed " .. g:getNodeCount() .. " nodes")
 end
 
 --@api: LGraph:update
 do
     local g = lurek.graph.newGraph()
+    local mine = g:addNode("mine", 8)
+    local factory = g:addNode("factory", 8)
+    g:addEdge(mine, factory, "belt")
     g:update(0.016)
-    print("updated")
+    flownet_log("update advanced " .. g:getEdgeCount() .. " edge(s)")
 end
 
 --@api: LGraph:tickParallel
 do
     local g = lurek.graph.newGraph()
+    local mine = g:addNode("mine", 8)
+    local factory = g:addNode("factory", 8)
+    g:addEdge(mine, factory, "belt")
     g:tickParallel(0.016)
-    print("tick parallel done")
+    flownet_log("parallel tick ran on " .. g:getNodeCount() .. " nodes")
 end
 
 --@api: LGraph:processDemand
 do
     local g = lurek.graph.newGraph()
+    local mine = g:addNode("mine", 8)
+    local factory = g:addNode("factory", 8)
+    g:addEdge(mine, factory, "belt")
     g:processDemand()
-    print("demand processed")
+    flownet_log("demand pass scanned " .. g:getEdgeCount() .. " edge(s)")
 end
 
 --@api: LGraph:type
 do
     local g = lurek.graph.newGraph()
-    print("type = " .. g:type())
+    local mine = g:addNode("mine", 8)
+    g:addNode("depot", 8)
+    local type_name = g:type()
+    local present = g:hasNode(mine)
+    flownet_log(type_name .. " tracks source=" .. tostring(present))
 end
 
 --@api: LGraph:typeOf
 do
     local g = lurek.graph.newGraph()
-    print("is Graph = " .. tostring(g:typeOf("LGraph")))
+    local mine = g:addNode("mine", 8)
+    local is_graph = g:typeOf("LGraph")
+    local is_object = g:typeOf("LObject")
+    local node_count = g:getNodeCount()
+    flownet_log("typeOf graph=" .. tostring(is_graph) .. " object=" .. tostring(is_object) .. " nodes=" .. node_count)
 end
 
 --- Graph Module Part 2: LGraphNode methods
@@ -349,7 +406,10 @@ end
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("factory")
-    print("node type = " .. n:getType())
+    n:addTag("smelting")
+    local node_type = n:getType()
+    local tags = n:getTags()
+    flownet_log("node type=" .. node_type .. " tags=" .. #tags)
 end
 
 --@api: LGraphNode:setType
@@ -357,14 +417,19 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setType("warehouse")
-    print("set type = " .. n:getType())
+    n:setCapacity(24)
+    local node_type = n:getType()
+    flownet_log("retagged node=" .. node_type .. " capacity=" .. n:getCapacity())
 end
 
 --@api: LGraphNode:getCapacity
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("store", 50)
-    print("capacity = " .. n:getCapacity())
+    n:addTag("buffer")
+    local capacity = n:getCapacity()
+    local node_type = n:getType()
+    flownet_log(node_type .. " capacity=" .. capacity)
 end
 
 --@api: LGraphNode:setCapacity
@@ -372,7 +437,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setCapacity(200)
-    print("capacity = " .. n:getCapacity())
+    n:setType("depot")
+    local capacity = n:getCapacity()
+    flownet_log(n:getType() .. " capacity=" .. capacity)
 end
 
 --@api: LGraphNode:getReservedCapacity
@@ -380,7 +447,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode("warehouse", 5)
     n:reserveCapacity("planner-a", 2)
-    print("reserved capacity = " .. n:getReservedCapacity())
+    local reserved = n:getReservedCapacity()
+    local free = n:getAvailableCapacity()
+    flownet_log("reserved=" .. reserved .. " free=" .. free)
 end
 
 --@api: LGraphNode:getAvailableCapacity
@@ -388,7 +457,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode("warehouse", 5)
     n:reserveCapacity("planner-a", 2)
-    print("available capacity = " .. n:getAvailableCapacity())
+    local free = n:getAvailableCapacity()
+    local reserved = n:getReservedCapacity()
+    flownet_log("warehouse free=" .. free .. " reserved=" .. reserved)
 end
 
 --@api: LGraphNode:reserveCapacity
@@ -396,7 +467,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode("warehouse", 5)
     local ok = n:reserveCapacity("planner-a", 2)
-    print("reservation accepted = " .. tostring(ok))
+    local reserved = n:getReservedCapacity()
+    local free = n:getAvailableCapacity()
+    flownet_log("reservation ok=" .. tostring(ok) .. " reserved=" .. reserved .. " free=" .. free)
 end
 
 --@api: LGraphNode:releaseCapacityReservation
@@ -405,7 +478,7 @@ do
     local n = g:addNode("warehouse", 5)
     n:reserveCapacity("planner-a", 2)
     local released = n:releaseCapacityReservation("planner-a", 1)
-    print("released slots = " .. released)
+    example_print_log("released slots = " .. released)
 end
 
 --@api: LGraphNode:clearCapacityReservations
@@ -414,14 +487,17 @@ do
     local n = g:addNode("warehouse", 5)
     n:reserveCapacity("planner-a", 2)
     n:clearCapacityReservations()
-    print("reserved capacity = " .. n:getReservedCapacity())
+    example_print_log("reserved capacity = " .. n:getReservedCapacity())
 end
 
 --@api: LGraphNode:isActive
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    print("active = " .. tostring(n:isActive()))
+    n:setType("router")
+    local active = n:isActive()
+    local node_type = n:getType()
+    flownet_log(node_type .. " active=" .. tostring(active))
 end
 
 --@api: LGraphNode:setActive
@@ -429,21 +505,29 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setActive(false)
-    print("active = " .. tostring(n:isActive()))
+    n:setType("router")
+    local active = n:isActive()
+    flownet_log(n:getType() .. " active=" .. tostring(active))
 end
 
 --@api: LGraphNode:isFull
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode("bin", 1)
-    print("full before = " .. tostring(n:isFull()))
+    local item = g:createItem("crate")
+    g:addItem(item, n)
+    local full = n:isFull()
+    flownet_log("bin full=" .. tostring(full) .. " items=" .. n:getItemCount())
 end
 
 --@api: LGraphNode:getItemCount
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    print("items = " .. n:getItemCount())
+    local n = g:addNode("stockpile", 4)
+    g:addItem(g:createItem("ore"), n)
+    g:addItem(g:createItem("coal"), n)
+    local items = n:getItemCount()
+    flownet_log("stockpile items=" .. items)
 end
 
 --@api: LGraphNode:getItems
@@ -452,7 +536,7 @@ do
     local n = g:addNode()
     g:addItem(g:createItem("ore"), n)
     local items = n:getItems()
-    print("node items = " .. #items)
+    example_print_log("node items = " .. #items)
 end
 
 --@api: LGraphNode:getEdges
@@ -461,7 +545,7 @@ do
     local a, b = g:addNode(), g:addNode()
     g:addEdge(a, b)
     local edges = a:getEdges("both")
-    print("edges = " .. #edges)
+    example_print_log("edges = " .. #edges)
 end
 
 --@api: LGraphNode:addSupply
@@ -469,7 +553,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode("mine")
     n:addSupply("iron", 10)
-    print("supply added")
+    n:setPushRate(4)
+    local stats = g:getStats()
+    flownet_log("mine supply registered on " .. n:getType() .. " nodes=" .. stats.nodes)
 end
 
 --@api: LGraphNode:removeSupply
@@ -478,7 +564,7 @@ do
     local n = g:addNode()
     n:addSupply("wood", 5)
     local ok = n:removeSupply("wood")
-    print("removed supply = " .. tostring(ok))
+    example_print_log("removed supply = " .. tostring(ok))
 end
 
 --@api: LGraphNode:clearSupplies
@@ -488,7 +574,7 @@ do
     n:addSupply("a", 1)
     n:addSupply("b", 2)
     n:clearSupplies()
-    print("supplies cleared")
+    example_print_log("supplies cleared")
 end
 
 --@api: LGraphNode:addDemand
@@ -496,7 +582,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode("factory")
     n:addDemand("iron", 5, 1)
-    print("demand added")
+    n:setPullRate(3)
+    local stats = g:getStats()
+    flownet_log("factory demand registered nodes=" .. stats.nodes .. " edges=" .. stats.edges)
 end
 
 --@api: LGraphNode:removeDemand
@@ -505,7 +593,7 @@ do
     local n = g:addNode()
     n:addDemand("coal", 3)
     local ok = n:removeDemand("coal")
-    print("removed demand = " .. tostring(ok))
+    example_print_log("removed demand = " .. tostring(ok))
 end
 
 --@api: LGraphNode:clearDemands
@@ -514,7 +602,7 @@ do
     local n = g:addNode()
     n:addDemand("x", 1)
     n:clearDemands()
-    print("demands cleared")
+    example_print_log("demands cleared")
 end
 
 --@api: LGraphNode:setConversion
@@ -522,7 +610,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode("smelter")
     n:setConversion("iron_ore", "iron_bar", 2, 1)
-    print("conversion set: 2 ore -> 1 bar")
+    n:setProcessTime(2.5)
+    local process_time = n:getProcessTime()
+    flownet_log("smelter converts ore -> bar in " .. process_time .. "s")
 end
 
 --@api: LGraphNode:clearConversion
@@ -531,7 +621,7 @@ do
     local n = g:addNode()
     n:setConversion("a", "b")
     local ok = n:clearConversion("a")
-    print("cleared conversion = " .. tostring(ok))
+    example_print_log("cleared conversion = " .. tostring(ok))
 end
 
 --@api: LGraphNode:clearAllConversions
@@ -541,14 +631,16 @@ do
     n:setConversion("a", "b")
     n:setConversion("c", "d")
     n:clearAllConversions()
-    print("all conversions cleared")
+    example_print_log("all conversions cleared")
 end
 
 --@api: LGraphNode:getProcessTime
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    print("process time = " .. n:getProcessTime())
+    local n = g:addNode("assembler")
+    n:setConversion("plate", "gear", 2, 1)
+    local process_time = n:getProcessTime()
+    flownet_log("assembler process time=" .. process_time)
 end
 
 --@api: LGraphNode:setProcessTime
@@ -556,14 +648,18 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setProcessTime(2.5)
-    print("process time = " .. n:getProcessTime())
+    n:setConversion("ore", "ingot", 1, 1)
+    local process_time = n:getProcessTime()
+    flownet_log("custom process time=" .. process_time)
 end
 
 --@api: LGraphNode:getFlowMode
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    print("flow mode = " .. n:getFlowMode())
+    local n = g:addNode("router")
+    n:setPushRate(2)
+    local mode = n:getFlowMode()
+    flownet_log("router flow mode=" .. mode)
 end
 
 --@api: LGraphNode:setFlowMode
@@ -571,14 +667,18 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setFlowMode("push")
-    print("flow mode = " .. n:getFlowMode())
+    n:setPushRate(5)
+    local mode = n:getFlowMode()
+    flownet_log("node flow mode=" .. mode .. " push=" .. n:getPushRate())
 end
 
 --@api: LGraphNode:getPushRate
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    print("push rate = " .. n:getPushRate())
+    local n = g:addNode("mine")
+    n:setFlowMode("push")
+    local push_rate = n:getPushRate()
+    flownet_log("push rate=" .. push_rate)
 end
 
 --@api: LGraphNode:setPushRate
@@ -586,14 +686,18 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setPushRate(5)
-    print("push rate = " .. n:getPushRate())
+    n:setFlowMode("push")
+    local push_rate = n:getPushRate()
+    flownet_log("configured push rate=" .. push_rate)
 end
 
 --@api: LGraphNode:getPullRate
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    print("pull rate = " .. n:getPullRate())
+    local n = g:addNode("factory")
+    n:setFlowMode("pull")
+    local pull_rate = n:getPullRate()
+    flownet_log("pull rate=" .. pull_rate)
 end
 
 --@api: LGraphNode:setPullRate
@@ -601,7 +705,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setPullRate(3)
-    print("pull rate = " .. n:getPullRate())
+    n:setFlowMode("pull")
+    local pull_rate = n:getPullRate()
+    flownet_log("configured pull rate=" .. pull_rate)
 end
 
 --@api: LGraphNode:getPushFilter
@@ -609,7 +715,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     local f = n:getPushFilter()
-    print("push filter = " .. tostring(f))
+    n:setType("mine")
+    local node_type = n:getType()
+    flownet_log(node_type .. " push filter=" .. tostring(f))
 end
 
 --@api: LGraphNode:setPushFilter
@@ -617,7 +725,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setPushFilter("iron")
-    print("push filter = " .. tostring(n:getPushFilter()))
+    n:setPushRate(4)
+    local filter = n:getPushFilter()
+    flownet_log("push filter=" .. tostring(filter) .. " rate=" .. n:getPushRate())
 end
 
 --@api: LGraphNode:getPullFilter
@@ -625,7 +735,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     local f = n:getPullFilter()
-    print("pull filter = " .. tostring(f))
+    n:setType("assembler")
+    local node_type = n:getType()
+    flownet_log(node_type .. " pull filter=" .. tostring(f))
 end
 
 --@api: LGraphNode:setPullFilter
@@ -633,14 +745,18 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setPullFilter("wood")
-    print("pull filter = " .. tostring(n:getPullFilter()))
+    n:setPullRate(2)
+    local filter = n:getPullFilter()
+    flownet_log("pull filter=" .. tostring(filter) .. " rate=" .. n:getPullRate())
 end
 
 --@api: LGraphNode:getOverflowPolicy
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    print("overflow = " .. tostring(n:getOverflowPolicy() or "reject"))
+    local n = g:addNode("buffer", 2)
+    n:setQueueEnabled(true)
+    local policy = n:getOverflowPolicy() or "reject"
+    flownet_log("overflow policy=" .. tostring(policy))
 end
 
 --@api: LGraphNode:setOverflowPolicy
@@ -648,14 +764,18 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setOverflowPolicy("destroy")
-    print("overflow = " .. tostring(n:getOverflowPolicy() or "destroy"))
+    n:setCapacity(1)
+    local policy = n:getOverflowPolicy() or "destroy"
+    flownet_log("overflow policy=" .. tostring(policy) .. " cap=" .. n:getCapacity())
 end
 
 --@api: LGraphNode:isQueueEnabled
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    print("queue enabled = " .. tostring(n:isQueueEnabled()))
+    local n = g:addNode("buffer")
+    n:setQueueCapacity(4)
+    local enabled = n:isQueueEnabled()
+    flownet_log("queue enabled=" .. tostring(enabled) .. " cap=" .. n:getQueueCapacity())
 end
 
 --@api: LGraphNode:setQueueEnabled
@@ -663,14 +783,18 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setQueueEnabled(true)
-    print("queue enabled = " .. tostring(n:isQueueEnabled()))
+    n:setQueueCapacity(4)
+    local enabled = n:isQueueEnabled()
+    flownet_log("queue enabled=" .. tostring(enabled) .. " cap=" .. n:getQueueCapacity())
 end
 
 --@api: LGraphNode:getQueueCapacity
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    print("queue cap = " .. n:getQueueCapacity())
+    local n = g:addNode("buffer")
+    n:setQueueEnabled(true)
+    local cap = n:getQueueCapacity()
+    flownet_log("queue capacity=" .. cap)
 end
 
 --@api: LGraphNode:setQueueCapacity
@@ -678,14 +802,18 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:setQueueCapacity(10)
-    print("queue cap = " .. n:getQueueCapacity())
+    n:setQueueEnabled(true)
+    local cap = n:getQueueCapacity()
+    flownet_log("queue capacity=" .. cap)
 end
 
 --@api: LGraphNode:getQueueSize
 do
     local g = lurek.graph.newGraph()
-    local n = g:addNode()
-    print("queue size = " .. n:getQueueSize())
+    local n = g:addNode("buffer")
+    n:setQueueEnabled(true)
+    local queue_size = n:getQueueSize()
+    flownet_log("queue size=" .. queue_size)
 end
 
 --@api: LGraphNode:enqueue
@@ -697,8 +825,8 @@ do
     local item = g:createItem("parcel")
     g:addItem(item, n)
     local queued = n:enqueue(item)
-    print("queue size = " .. n:getQueueSize())
-    print("enqueued = " .. tostring(queued))
+    example_print_log("queue size = " .. n:getQueueSize())
+    example_print_log("enqueued = " .. tostring(queued))
 end
 
 --@api: LGraphNode:dequeue
@@ -711,8 +839,8 @@ do
     g:addItem(item, n)
     n:enqueue(item)
     local out = n:dequeue()
-    print("queue size = " .. n:getQueueSize())
-    print("dequeued = " .. tostring(out ~= nil))
+    example_print_log("queue size = " .. n:getQueueSize())
+    example_print_log("dequeued = " .. tostring(out ~= nil))
 end
 
 --@api: LGraphNode:addTag
@@ -720,7 +848,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:addTag("important")
-    print("tag added")
+    n:setType("hub")
+    local tags = n:getTags()
+    flownet_log(n:getType() .. " tags=" .. #tags)
 end
 
 --@api: LGraphNode:hasTag
@@ -728,7 +858,9 @@ do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
     n:addTag("vip")
-    print("has vip = " .. tostring(n:hasTag("vip")))
+    n:addTag("priority")
+    local has_vip = n:hasTag("vip")
+    flownet_log("has vip=" .. tostring(has_vip) .. " tags=" .. #n:getTags())
 end
 
 --@api: LGraphNode:getTags
@@ -738,7 +870,7 @@ do
     n:addTag("a")
     n:addTag("b")
     local tags = n:getTags()
-    print("tags = " .. #tags)
+    example_print_log("tags = " .. #tags)
 end
 
 --@api: LGraphNode:removeTag
@@ -747,7 +879,7 @@ do
     local n = g:addNode()
     n:addTag("temp")
     local ok = n:removeTag("temp")
-    print("removed = " .. tostring(ok))
+    example_print_log("removed = " .. tostring(ok))
 end
 
 --@api: LGraphNode:clearTags
@@ -757,21 +889,27 @@ do
     n:addTag("x")
     n:addTag("y")
     n:clearTags()
-    print("tags cleared")
+    example_print_log("tags cleared")
 end
 
 --@api: LGraphNode:type
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    print("type = " .. n:type())
+    n:setType("terminal")
+    local type_name = n:type()
+    local node_type = n:getType()
+    flownet_log(type_name .. " node_type=" .. node_type)
 end
 
 --@api: LGraphNode:typeOf
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    print("is GraphNode = " .. tostring(n:typeOf("LGraphNode")))
+    n:setType("terminal")
+    local is_node = n:typeOf("LGraphNode")
+    local is_object = n:typeOf("LObject")
+    flownet_log("node typeOf=" .. tostring(is_node) .. " object=" .. tostring(is_object))
 end
 
 --- Graph Module Part 3: LGraphEdge and LGraphItem methods
@@ -782,7 +920,7 @@ do
     local a, b = g:addNode("src"), g:addNode("dst")
     local e = g:addEdge(a, b)
     local from = e:getFrom()
-    print("from type = " .. from:getType())
+    example_print_log("from type = " .. from:getType())
 end
 
 --@api: LGraphEdge:getTo
@@ -791,7 +929,7 @@ do
     local a, b = g:addNode(), g:addNode("target")
     local e = g:addEdge(a, b)
     local to = e:getTo()
-    print("to type = " .. to:getType())
+    example_print_log("to type = " .. to:getType())
 end
 
 --@api: LGraphEdge:getType
@@ -800,7 +938,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b, "conveyor")
-    print("edge type = " .. e:getType())
+    example_print_log("edge type = " .. e:getType())
 end
 
 --@api: LGraphEdge:setType
@@ -809,7 +947,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setType("rail")
-    print("edge type = " .. e:getType())
+    example_print_log("edge type = " .. e:getType())
 end
 
 --@api: LGraphEdge:getWeight
@@ -818,7 +956,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("weight = " .. e:getWeight())
+    example_print_log("weight = " .. e:getWeight())
 end
 
 --@api: LGraphEdge:setWeight
@@ -827,7 +965,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setWeight(3.5)
-    print("weight = " .. e:getWeight())
+    example_print_log("weight = " .. e:getWeight())
 end
 
 --@api: LGraphEdge:getTravelTime
@@ -836,7 +974,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("travel time = " .. e:getTravelTime())
+    example_print_log("travel time = " .. e:getTravelTime())
 end
 
 --@api: LGraphEdge:setTravelTime
@@ -845,7 +983,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setTravelTime(5.0)
-    print("travel time = " .. e:getTravelTime())
+    example_print_log("travel time = " .. e:getTravelTime())
 end
 
 --@api: LGraphEdge:getCapacity
@@ -854,7 +992,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("capacity = " .. e:getCapacity())
+    example_print_log("capacity = " .. e:getCapacity())
 end
 
 --@api: LGraphEdge:setCapacity
@@ -863,7 +1001,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setCapacity(10)
-    print("capacity = " .. e:getCapacity())
+    example_print_log("capacity = " .. e:getCapacity())
 end
 
 --@api: LGraphEdge:getReservedCapacity
@@ -874,7 +1012,7 @@ do
     local e = g:addEdge(a, b)
     e:setCapacity(4)
     e:reserveCapacity("planner-a", 2)
-    print("reserved capacity = " .. e:getReservedCapacity())
+    example_print_log("reserved capacity = " .. e:getReservedCapacity())
 end
 
 --@api: LGraphEdge:getAvailableCapacity
@@ -885,7 +1023,7 @@ do
     local e = g:addEdge(a, b)
     e:setCapacity(4)
     e:reserveCapacity("planner-a", 2)
-    print("available capacity = " .. e:getAvailableCapacity())
+    example_print_log("available capacity = " .. e:getAvailableCapacity())
 end
 
 --@api: LGraphEdge:reserveCapacity
@@ -896,7 +1034,7 @@ do
     local e = g:addEdge(a, b)
     e:setCapacity(4)
     local ok = e:reserveCapacity("planner-a", 2)
-    print("reservation accepted = " .. tostring(ok))
+    example_print_log("reservation accepted = " .. tostring(ok))
 end
 
 --@api: LGraphEdge:releaseCapacityReservation
@@ -908,7 +1046,7 @@ do
     e:setCapacity(4)
     e:reserveCapacity("planner-a", 2)
     local released = e:releaseCapacityReservation("planner-a", 1)
-    print("released slots = " .. released)
+    example_print_log("released slots = " .. released)
 end
 
 --@api: LGraphEdge:clearCapacityReservations
@@ -920,7 +1058,7 @@ do
     e:setCapacity(4)
     e:reserveCapacity("planner-a", 2)
     e:clearCapacityReservations()
-    print("reserved capacity = " .. e:getReservedCapacity())
+    example_print_log("reserved capacity = " .. e:getReservedCapacity())
 end
 
 --@api: LGraphEdge:getSpeedModifier
@@ -929,7 +1067,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("speed mod = " .. e:getSpeedModifier())
+    example_print_log("speed mod = " .. e:getSpeedModifier())
 end
 
 --@api: LGraphEdge:setSpeedModifier
@@ -938,7 +1076,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setSpeedModifier(2.0)
-    print("speed mod = " .. e:getSpeedModifier())
+    example_print_log("speed mod = " .. e:getSpeedModifier())
 end
 
 --@api: LGraphEdge:getThroughput
@@ -947,7 +1085,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("throughput = " .. e:getThroughput())
+    example_print_log("throughput = " .. e:getThroughput())
 end
 
 --@api: LGraphEdge:setThroughput
@@ -956,7 +1094,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setThroughput(100)
-    print("throughput = " .. e:getThroughput())
+    example_print_log("throughput = " .. e:getThroughput())
 end
 
 --@api: LGraphEdge:getCooldown
@@ -965,7 +1103,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("cooldown = " .. e:getCooldown())
+    example_print_log("cooldown = " .. e:getCooldown())
 end
 
 --@api: LGraphEdge:setCooldown
@@ -974,7 +1112,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setCooldown(1.0)
-    print("cooldown = " .. e:getCooldown())
+    example_print_log("cooldown = " .. e:getCooldown())
 end
 
 --@api: LGraphEdge:isOnCooldown
@@ -983,7 +1121,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("on cooldown = " .. tostring(e:isOnCooldown()))
+    example_print_log("on cooldown = " .. tostring(e:isOnCooldown()))
 end
 
 --@api: LGraphEdge:isActive
@@ -992,7 +1130,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("active = " .. tostring(e:isActive()))
+    example_print_log("active = " .. tostring(e:isActive()))
 end
 
 --@api: LGraphEdge:setActive
@@ -1001,7 +1139,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setActive(false)
-    print("active = " .. tostring(e:isActive()))
+    example_print_log("active = " .. tostring(e:isActive()))
 end
 
 --@api: LGraphEdge:isBidirectional
@@ -1010,7 +1148,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("bidi = " .. tostring(e:isBidirectional()))
+    example_print_log("bidi = " .. tostring(e:isBidirectional()))
 end
 
 --@api: LGraphEdge:setBidirectional
@@ -1019,7 +1157,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:setBidirectional(true)
-    print("bidi = " .. tostring(e:isBidirectional()))
+    example_print_log("bidi = " .. tostring(e:isBidirectional()))
 end
 
 --@api: LGraphEdge:addAllowedType
@@ -1028,7 +1166,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:addAllowedType("iron")
-    print("iron allowed")
+    example_print_log("iron allowed")
 end
 
 --@api: LGraphEdge:isItemTypeAllowed
@@ -1037,7 +1175,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     e:addAllowedType("gold")
-    print("gold allowed = " .. tostring(e:isItemTypeAllowed("gold")))
+    example_print_log("gold allowed = " .. tostring(e:isItemTypeAllowed("gold")))
 end
 
 --@api: LGraphEdge:removeAllowedType
@@ -1047,7 +1185,7 @@ do
     local e = g:addEdge(a, b)
     e:addAllowedType("coal")
     local ok = e:removeAllowedType("coal")
-    print("removed = " .. tostring(ok))
+    example_print_log("removed = " .. tostring(ok))
 end
 
 --@api: LGraphEdge:clearAllowedTypes
@@ -1057,7 +1195,7 @@ do
     local e = g:addEdge(a, b)
     e:addAllowedType("x")
     e:clearAllowedTypes()
-    print("allow list cleared")
+    example_print_log("allow list cleared")
 end
 
 --@api: LGraphEdge:getItemsInTransit
@@ -1066,7 +1204,7 @@ do
     local a, b = g:addNode(), g:addNode()
     local e = g:addEdge(a, b)
     local items = e:getItemsInTransit()
-    print("in transit = " .. #items)
+    example_print_log("in transit = " .. #items)
 end
 
 --@api: LGraphEdge:type
@@ -1075,7 +1213,7 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("type = " .. e:type())
+    example_print_log("type = " .. e:type())
 end
 
 --@api: LGraphEdge:typeOf
@@ -1084,14 +1222,17 @@ do
     local a = g:addNode()
     local b = g:addNode()
     local e = g:addEdge(a, b)
-    print("is GraphEdge = " .. tostring(e:typeOf("LGraphEdge")))
+    example_print_log("is GraphEdge = " .. tostring(e:typeOf("LGraphEdge")))
 end
 
 --@api: LGraphItem:getType
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem("ore")
-    print("item type = " .. item:getType())
+    local storage = g:addNode("storage", 4)
+    g:addItem(item, storage)
+    local item_type = item:getType()
+    flownet_log("item type=" .. item_type .. " on " .. storage:getType())
 end
 
 --@api: LGraphItem:setType
@@ -1099,29 +1240,41 @@ do
     local g = lurek.graph.newGraph()
     local item = g:createItem("raw")
     item:setType("processed")
-    print("item type = " .. item:getType())
+    local storage = g:addNode("storage", 4)
+    g:addItem(item, storage)
+    local item_type = item:getType()
+    flownet_log("retagged item=" .. item_type)
 end
 
 --@api: LGraphItem:getPriority
 do
     local g = lurek.graph.newGraph()
-    local item = g:createItem()
-    print("priority = " .. item:getPriority())
+    local item = g:createItem("parcel")
+    local storage = g:addNode("storage", 4)
+    g:addItem(item, storage)
+    local priority = item:getPriority()
+    flownet_log("parcel priority=" .. priority)
 end
 
 --@api: LGraphItem:setPriority
 do
     local g = lurek.graph.newGraph()
-    local item = g:createItem()
+    local item = g:createItem("parcel")
     item:setPriority(5)
-    print("priority = " .. item:getPriority())
+    local storage = g:addNode("storage", 4)
+    g:addItem(item, storage)
+    local priority = item:getPriority()
+    flownet_log("rush order priority=" .. priority)
 end
 
 --@api: LGraphItem:getDecayTime
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem("food", 30.0)
-    print("decay time = " .. item:getDecayTime())
+    local pantry = g:addNode("pantry", 6)
+    g:addItem(item, pantry)
+    local decay = item:getDecayTime()
+    flownet_log("food decay=" .. decay)
 end
 
 --@api: LGraphItem:setDecayTime
@@ -1129,29 +1282,41 @@ do
     local g = lurek.graph.newGraph()
     local item = g:createItem("fruit")
     item:setDecayTime(60.0)
-    print("decay time = " .. item:getDecayTime())
+    local pantry = g:addNode("pantry", 6)
+    g:addItem(item, pantry)
+    local decay = item:getDecayTime()
+    flownet_log("fruit decay=" .. decay)
 end
 
 --@api: LGraphItem:getRemainingLife
 do
     local g = lurek.graph.newGraph()
     local item = g:createItem("milk", 10.0)
-    print("remaining = " .. item:getRemainingLife())
+    local cooler = g:addNode("cooler", 6)
+    g:addItem(item, cooler)
+    local remaining = item:getRemainingLife()
+    flownet_log("milk remaining=" .. remaining)
 end
 
 --@api: LGraphItem:isAlive
 do
     local g = lurek.graph.newGraph()
-    local item = g:createItem()
-    print("alive = " .. tostring(item:isAlive()))
+    local item = g:createItem("drone_part")
+    local store = g:addNode("store", 4)
+    g:addItem(item, store)
+    local alive = item:isAlive()
+    flownet_log("drone part alive=" .. tostring(alive))
 end
 
 --@api: LGraphItem:kill
 do
     local g = lurek.graph.newGraph()
-    local item = g:createItem()
+    local item = g:createItem("waste")
+    local dump = g:addNode("dump", 4)
+    g:addItem(item, dump)
     item:kill()
-    print("alive after kill = " .. tostring(item:isAlive()))
+    local alive = item:isAlive()
+    flownet_log("waste alive after kill=" .. tostring(alive))
 end
 
 --@api: LGraphItem:getPosition
@@ -1160,21 +1325,27 @@ do
     local n = g:addNode()
     local item = g:createItem("box")
     g:addItem(item, n)
-    print("item is on a node = " .. tostring(item:getPosition() ~= nil))
+    example_print_log("item is on a node = " .. tostring(item:getPosition() ~= nil))
 end
 
 --@api: LGraphItem:type
 do
     local g = lurek.graph.newGraph()
-    local item = g:createItem()
-    print("type = " .. item:type())
+    local item = g:createItem("box")
+    local store = g:addNode("store", 4)
+    g:addItem(item, store)
+    local type_name = item:type()
+    flownet_log(type_name .. " item_type=" .. item:getType())
 end
 
 --@api: LGraphItem:typeOf
 do
     local g = lurek.graph.newGraph()
-    local item = g:createItem()
-    print("is GraphItem = " .. tostring(item:typeOf("LGraphItem")))
+    local item = g:createItem("box")
+    local store = g:addNode("store", 4)
+    g:addItem(item, store)
+    local is_item = item:typeOf("LGraphItem")
+    flownet_log("item typeOf=" .. tostring(is_item) .. " alive=" .. tostring(item:isAlive()))
 end
 
 --@api: LGraph:addEdgeUnchecked
@@ -1183,8 +1354,8 @@ do
     local a = g:addNode("hub")
     local b = g:addNode("sink")
     local edge = g:addEdgeUnchecked(a, b, "belt")
-    print("edge type = " .. edge:getType())
-    print("edge count = " .. g:getEdgeCount())
+    example_print_log("edge type = " .. edge:getType())
+    example_print_log("edge count = " .. g:getEdgeCount())
 end
 
 --@api: LGraph:batchAddNodes
@@ -1192,9 +1363,9 @@ do
     local g = lurek.graph.newGraph()
     local ids = g:batchAddNodes(3, { node_type = "router", capacity = 4 })
     local nodes = g:getNodes()
-    print("created ids = " .. #ids)
-    print("node count = " .. g:getNodeCount())
-    print("first node type = " .. nodes[1]:getType())
+    example_print_log("created ids = " .. #ids)
+    example_print_log("node count = " .. g:getNodeCount())
+    example_print_log("first node type = " .. nodes[1]:getType())
 end
 
 --@api: LGraph:batchAddEdges
@@ -1205,8 +1376,8 @@ do
         { ids[1], ids[2], "lane" },
         { ids[2], ids[3], "lane" },
     })
-    print("created edges = " .. #edge_ids)
-    print("edge count = " .. g:getEdgeCount())
+    example_print_log("created edges = " .. #edge_ids)
+    example_print_log("edge count = " .. g:getEdgeCount())
 end
 
 --@api: LGraph:batchStep
@@ -1217,6 +1388,6 @@ do
         { ids[1], ids[2], "lane" },
     })
     g:batchStep(0.25, 4)
-    print("node count = " .. g:getNodeCount())
-    print("edge count = " .. g:getEdgeCount())
+    example_print_log("node count = " .. g:getNodeCount())
+    example_print_log("edge count = " .. g:getEdgeCount())
 end

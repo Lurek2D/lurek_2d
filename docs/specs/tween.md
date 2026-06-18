@@ -20,14 +20,16 @@
 - Tweens, handles, chains, grouped sequences, interpolators, and springs all live together here so one-off transitions and larger scripted motion can share one model.
 - This matters because many features need shaped progression, not just endpoint changes: UI reveals, camera motion, gameplay feedback, and scripted effects all depend on timing semantics.
 - Easing and spring behavior give the module expressive range, while handle-based control makes active transitions inspectable, cancelable, and synchronizable.
-- The sequencing surface is important because many real transitions happen in stages. A panel may fade and slide together, a camera may zoom then settle, and a gameplay cue may need several timed phases instead of one linear interpolation.
+- The sequencing surface is important because many real transitions happen in stages instead of one linear interpolation.
 - Parallel and chained motion therefore belong in the same subsystem as simple tweens, which keeps authored timing workflows coherent instead of scattering them across unrelated feature code.
 - This makes the module suitable not only for decorative polish, but also for stateful workflows where motion is part of how a feature behaves instead of merely how it looks.
 - The feature is useful whenever another system decides what should move but still needs reusable rules for how that movement advances over time.
-- `tween` does not own the meaning of the value being animated; it owns progression, sequencing, and control once the target state is known.
+- That separation is what lets several domains share one timing model without sharing any domain-specific update semantics.
+- It also gives tools and gameplay code the same language for staged motion and timed value changes.
+- The same model also helps previews and iteration stay controllable while motion is active.
+- It is therefore as much a sequencing tool as a visual-polish helper.
 - The module improves consistency across UI, cameras, overlays, and feedback systems by giving them one temporal vocabulary.
 - Read `tween` as the engine's reusable workflow for interpolation, sequencing, and spring-like motion.
-
 
 ## Imports
 

@@ -4,22 +4,36 @@
 
 --- Procgen Module: noise, dungeons, heightmaps, caves, L-systems, Voronoi, WFC, biomes, names
 
+local function procgen_log(message)
+    lurek.log.info("[procgen.example] " .. tostring(message))
+end
+
+local function example_print_log(...)
+    local parts = {}
+    for i = 1, select("#", ...) do
+        parts[i] = tostring(select(i, ...))
+    end
+    lurek.log.info(table.concat(parts, " "))
+end
+
 --@api: lurek.procgen.simplex2d
 do
     local value = lurek.procgen.simplex2d(1.5, 2.3)
     local mirrored = lurek.procgen.simplex2d(2.3, 1.5)
-
-    print(string.format("simplex2d=%.4f", value))
-    print(string.format("simplex2d mirrored=%.4f", mirrored))
+    local ridge = lurek.procgen.simplex2d(1.75, 2.55)
+    procgen_log(string.format("simplex2d hillside=%.4f", value))
+    procgen_log(string.format("simplex2d mirrored hillside=%.4f", mirrored))
+    procgen_log(string.format("simplex2d ridge sample=%.4f", ridge))
 end
 
 --@api: lurek.procgen.perlinNoise
 do
     local first = lurek.procgen.perlinNoise(0.5, 0.5, 4.0, 4.0)
     local tiled = lurek.procgen.perlinNoise(4.5, 0.5, 4.0, 4.0)
-
-    print(string.format("perlinNoise first=%.4f", first))
-    print(string.format("perlinNoise tiled=%.4f", tiled))
+    local downstream = lurek.procgen.perlinNoise(0.5, 2.5, 4.0, 4.0)
+    procgen_log(string.format("perlinNoise first=%.4f", first))
+    procgen_log(string.format("perlinNoise tiled=%.4f", tiled))
+    procgen_log(string.format("perlinNoise downstream=%.4f", downstream))
 end
 
 --@api: lurek.procgen.noiseMap
@@ -33,8 +47,8 @@ do
         seed = 42,
     })
 
-    print("noiseMap cells=" .. #map)
-    print(string.format("noiseMap first=%.4f", map[1]))
+    example_print_log("noiseMap cells=" .. #map)
+    example_print_log(string.format("noiseMap first=%.4f", map[1]))
 end
 
 --@api: lurek.procgen.noiseMapParallel
@@ -47,8 +61,8 @@ do
         persistence = 0.5,
     })
 
-    print("noiseMapParallel cells=" .. #map)
-    print(string.format("noiseMapParallel midpoint=%.4f", map[4096]))
+    example_print_log("noiseMapParallel cells=" .. #map)
+    example_print_log(string.format("noiseMapParallel midpoint=%.4f", map[4096]))
 end
 
 --@api: lurek.procgen.heightmap
@@ -64,8 +78,8 @@ do
         erosion_passes = 3,
     })
 
-    print("heightmap size=" .. hm.width .. "x" .. hm.height)
-    print("heightmap cells=" .. #hm.cells)
+    example_print_log("heightmap size=" .. hm.width .. "x" .. hm.height)
+    example_print_log("heightmap cells=" .. #hm.cells)
 end
 
 --@api: lurek.procgen.cellularAutomata
@@ -78,8 +92,8 @@ do
         seed = 777,
     })
 
-    print("cellularAutomata cells=" .. #cave)
-    print("cellularAutomata first=" .. tostring(cave[1]))
+    example_print_log("cellularAutomata cells=" .. #cave)
+    example_print_log("cellularAutomata first=" .. tostring(cave[1]))
 end
 
 --@api: lurek.procgen.heightmapFromCellular
@@ -91,8 +105,8 @@ do
     })
     local hm = lurek.procgen.heightmapFromCellular(64, 64, cells, 0)
 
-    print("heightmapFromCellular size=" .. hm.width .. "x" .. hm.height)
-    print(string.format("heightmapFromCellular first=%.4f", hm.cells[1]))
+    example_print_log("heightmapFromCellular size=" .. hm.width .. "x" .. hm.height)
+    example_print_log(string.format("heightmapFromCellular first=%.4f", hm.cells[1]))
 end
 
 --@api: lurek.procgen.floodFill
@@ -105,8 +119,8 @@ do
     }
     local filled = lurek.procgen.floodFill(cells, 4, 4, 0, 0, 128, true)
 
-    print("floodFill cells=" .. #filled)
-    print("floodFill first=" .. tostring(filled[1]))
+    example_print_log("floodFill cells=" .. #filled)
+    example_print_log("floodFill first=" .. tostring(filled[1]))
 end
 
 --@api: lurek.procgen.bspDungeon
@@ -120,8 +134,8 @@ do
         padding = 1,
     })
 
-    print("bspDungeon rooms=" .. #dungeon.rooms)
-    print("bspDungeon corridors=" .. #dungeon.corridors)
+    example_print_log("bspDungeon rooms=" .. #dungeon.rooms)
+    example_print_log("bspDungeon corridors=" .. #dungeon.corridors)
 end
 
 --@api: lurek.procgen.roomsDungeon
@@ -135,8 +149,8 @@ do
         seed = 123,
     })
 
-    print("roomsDungeon rooms=" .. #dungeon.rooms)
-    print("roomsDungeon grid=" .. #dungeon.grid)
+    example_print_log("roomsDungeon rooms=" .. #dungeon.rooms)
+    example_print_log("roomsDungeon grid=" .. #dungeon.grid)
 end
 
 --@api: lurek.procgen.bspDungeonWithPrefabs
@@ -152,8 +166,8 @@ do
         seed = 55,
     }, prefabs)
 
-    print("bspDungeonWithPrefabs rooms=" .. #dungeon.rooms)
-    print("bspDungeonWithPrefabs placed=" .. #placed)
+    example_print_log("bspDungeonWithPrefabs rooms=" .. #dungeon.rooms)
+    example_print_log("bspDungeonWithPrefabs placed=" .. #placed)
 end
 
 --@api: lurek.procgen.roomsDungeonWithPrefabs
@@ -168,17 +182,18 @@ do
         seed = 200,
     }, prefabs, 3)
 
-    print("roomsDungeonWithPrefabs size=" .. dungeon.width .. "x" .. dungeon.height)
-    print("roomsDungeonWithPrefabs placed=" .. #placed)
+    example_print_log("roomsDungeonWithPrefabs size=" .. dungeon.width .. "x" .. dungeon.height)
+    example_print_log("roomsDungeonWithPrefabs placed=" .. #placed)
 end
 
 --@api: lurek.procgen.poissonDisk
 do
     local points = lurek.procgen.poissonDisk(200, 200, 15, 30, 42)
     local first = points[1]
-
-    print("poissonDisk points=" .. #points)
-    print(string.format("poissonDisk first=(%.2f, %.2f)", first.x, first.y))
+    local second = points[2] or first
+    procgen_log("poissonDisk spawn points=" .. #points)
+    procgen_log(string.format("poissonDisk first=(%.2f, %.2f)", first.x, first.y))
+    procgen_log(string.format("poissonDisk second=(%.2f, %.2f)", second.x, second.y))
 end
 
 --@api: lurek.procgen.voronoi
@@ -189,9 +204,9 @@ do
         { x = 50, y = 30 },
     })
 
-    print("voronoi regions=" .. #regions)
-    print(string.format("voronoi first distances=%.2f / %.2f", dist1[1], dist2[1]))
-    print("voronoi first region=" .. tostring(regions[1]))
+    example_print_log("voronoi regions=" .. #regions)
+    example_print_log(string.format("voronoi first distances=%.2f / %.2f", dist1[1], dist2[1]))
+    example_print_log("voronoi first region=" .. tostring(regions[1]))
 end
 
 --@api: lurek.procgen.lsystem
@@ -202,8 +217,8 @@ do
         rules = { F = "F[+F]F[-F]F" },
     })
 
-    print("lsystem length=" .. #result)
-    print("lsystem preview=" .. result:sub(1, 40))
+    example_print_log("lsystem length=" .. #result)
+    example_print_log("lsystem preview=" .. result:sub(1, 40))
 end
 
 --@api: lurek.procgen.lsystemSegments
@@ -214,8 +229,8 @@ do
         rules = { F = "FF+[+F-F-F]-[-F+F+F]" },
     }, 25, 5.0)
 
-    print("lsystemSegments count=" .. #segments)
-    print("lsystemSegments firstExists=" .. tostring(segments[1] ~= nil))
+    example_print_log("lsystemSegments count=" .. #segments)
+    example_print_log("lsystemSegments firstExists=" .. tostring(segments[1] ~= nil))
 end
 
 --@api: lurek.procgen.wfcGenerate
@@ -235,16 +250,18 @@ do
         },
     })
 
-    print("wfcGenerate size=" .. result.width .. "x" .. result.height)
-    print("wfcGenerate cells=" .. #result.cells)
+    example_print_log("wfcGenerate size=" .. result.width .. "x" .. result.height)
+    example_print_log("wfcGenerate cells=" .. #result.cells)
 end
 
 --@api: lurek.procgen.generateName
 do
     local samples = { "Aldric", "Baldric", "Cedric", "Eldric", "Godric", "Fredric" }
     local name = lurek.procgen.generateName(samples, 4, 8, 1)
-
-    print("generateName result=" .. name)
+    local fallback = lurek.procgen.generateName(samples, 4, 8, 2)
+    procgen_log("generateName result=" .. name)
+    procgen_log("generateName fallback=" .. fallback)
+    procgen_log("generateName sample count=" .. #samples)
 end
 
 --@api: lurek.procgen.newBiomeClassifier
@@ -256,23 +273,27 @@ do
     })
     local biome = classifier:classify(0.5, 0.6, 0.5)
 
-    print("newBiomeClassifier biome=" .. biome)
-    print("newBiomeClassifier type=" .. classifier:type())
+    example_print_log("newBiomeClassifier biome=" .. biome)
+    example_print_log("newBiomeClassifier type=" .. classifier:type())
 end
 
 --@api: lurek.procgen.biomeColor
 do
     local r, g, b, a = lurek.procgen.biomeColor("ocean")
-
-    print("biomeColor ocean=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    local brightness = r + g + b
+    procgen_log("biomeColor ocean=" .. r .. "," .. g .. "," .. b .. "," .. a)
+    procgen_log("biomeColor ocean brightness=" .. tostring(brightness))
+    procgen_log("biomeColor alpha=" .. tostring(a))
 end
 
 --@api: lurek.procgen.worldGraph
 do
     local world = lurek.procgen.worldGraph(500, 500, 12, 42)
-
-    print("worldGraph regions=" .. #world.regions)
-    print("worldGraph edges=" .. #world.edges)
+    local first_region = world.regions[1]
+    local first_edge = world.edges[1]
+    procgen_log("worldGraph regions=" .. #world.regions)
+    procgen_log("worldGraph edges=" .. #world.edges)
+    procgen_log("worldGraph first region=" .. tostring(first_region and first_region.name or "nil") .. " first edge cost=" .. tostring(first_edge and first_edge.cost or "nil"))
 end
 
 --- Procgen Module Part 1: BiomeClassifier, generateNames, noiseMapParallelSeeded, simplex3d
@@ -287,7 +308,7 @@ do
     })
     local biome = classifier:classify(0.5, 0.6, 0.4)
 
-    print("LBiomeClassifier:classify=" .. biome)
+    example_print_log("LBiomeClassifier:classify=" .. biome)
 end
 
 --@api: LBiomeClassifier:classifyMap
@@ -305,33 +326,39 @@ do
         { 0.4, 0.4, 0.4, 0.2 }
     )
 
-    print("LBiomeClassifier:classifyMap size=" .. #map)
-    print("LBiomeClassifier:classifyMap last=" .. map[#map])
+    example_print_log("LBiomeClassifier:classifyMap size=" .. #map)
+    example_print_log("LBiomeClassifier:classifyMap last=" .. map[#map])
 end
 
 --@api: LBiomeClassifier:type
 do
     local classifier = lurek.procgen.newBiomeClassifier()
     local type_name = classifier:type()
-
-    print("LBiomeClassifier:type=" .. type_name)
+    local sample = classifier:classify(0.82, 0.35, 0.2)
+    procgen_log("LBiomeClassifier:type=" .. type_name)
+    procgen_log("LBiomeClassifier sample biome=" .. sample)
+    procgen_log("LBiomeClassifier type captured for climate debug")
 end
 
 --@api: LBiomeClassifier:typeOf
 do
     local classifier = lurek.procgen.newBiomeClassifier()
     local matches = classifier:typeOf("LBiomeClassifier")
-
-    print("LBiomeClassifier:typeOf=" .. tostring(matches))
+    local object_match = classifier:typeOf("LObject")
+    local sample = classifier:classify(0.12, 0.85, 0.5)
+    procgen_log("LBiomeClassifier:typeOf self=" .. tostring(matches))
+    procgen_log("LBiomeClassifier:typeOf object=" .. tostring(object_match))
+    procgen_log("LBiomeClassifier swamp sample=" .. sample)
 end
 
 --@api: lurek.procgen.generateNames
 do
     local samples = { "Alon", "Beren", "Caran", "Doran", "Elan" }
     local names = lurek.procgen.generateNames(samples, 5, 3, 8, 42)
-
-    print("generateNames count=" .. #names)
-    print("generateNames first=" .. names[1])
+    local last = names[#names]
+    procgen_log("generateNames count=" .. #names)
+    procgen_log("generateNames first=" .. names[1])
+    procgen_log("generateNames last=" .. tostring(last))
 end
 
 --@api: lurek.procgen.noiseMapParallelSeeded
@@ -343,34 +370,38 @@ do
         seed = 12345,
     })
 
-    print("noiseMapParallelSeeded cells=" .. #map)
-    print(string.format("noiseMapParallelSeeded first=%.4f", map[1]))
+    example_print_log("noiseMapParallelSeeded cells=" .. #map)
+    example_print_log(string.format("noiseMapParallelSeeded first=%.4f", map[1]))
 end
 
 --@api: lurek.procgen.simplex3d
 do
     local value = lurek.procgen.simplex3d(0.1, 0.5, 0.9)
     local shifted = lurek.procgen.simplex3d(0.1, 0.5, 1.1)
-
-    print(string.format("simplex3d=%.4f", value))
-    print(string.format("simplex3d shifted=%.4f", shifted))
+    local animated = lurek.procgen.simplex3d(0.1, 0.5, 1.3)
+    procgen_log(string.format("simplex3d base=%.4f", value))
+    procgen_log(string.format("simplex3d shifted=%.4f", shifted))
+    procgen_log(string.format("simplex3d animated=%.4f", animated))
 end
 
 --@api: lurek.procgen.perlin4d
 do
     local value = lurek.procgen.perlin4d(0.1, 0.2, 0.3, 0.4)
     local seeded = lurek.procgen.perlin4d(0.1, 0.2, 0.3, 0.4, 17)
-
-    print(string.format("perlin4d=%.4f", value))
-    print(string.format("perlin4d seeded=%.4f", seeded))
+    local alternate = lurek.procgen.perlin4d(0.2, 0.3, 0.4, 0.5, 17)
+    procgen_log(string.format("perlin4d=%.4f", value))
+    procgen_log(string.format("perlin4d seeded=%.4f", seeded))
+    procgen_log(string.format("perlin4d alternate=%.4f", alternate))
 end
 
 --@api: LNoiseGenerator:fbm
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:fbm(0.5, 0.5, 4, 2.0, 0.5)
-
-    print(string.format("LNoiseGenerator:fbm=%.4f", value))
+    local valley = generator:fbm(0.25, 0.75, 4, 2.0, 0.5)
+    procgen_log(string.format("LNoiseGenerator:fbm ridge=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:fbm valley=%.4f", valley))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:generateMap
@@ -386,8 +417,8 @@ do
         fractal = "fbm",
     })
 
-    print("LNoiseGenerator:generateMap cells=" .. #map)
-    print(string.format("LNoiseGenerator:generateMap first=%.4f", map[1]))
+    example_print_log("LNoiseGenerator:generateMap cells=" .. #map)
+    example_print_log(string.format("LNoiseGenerator:generateMap first=%.4f", map[1]))
 end
 
 --@api: LNoiseGenerator:generateMapCompute
@@ -403,189 +434,231 @@ do
         fractal = "turbulence",
     })
 
-    print("LNoiseGenerator:generateMapCompute cells=" .. #map)
-    print(string.format("LNoiseGenerator:generateMapCompute first=%.4f", map[1]))
+    example_print_log("LNoiseGenerator:generateMapCompute cells=" .. #map)
+    example_print_log(string.format("LNoiseGenerator:generateMapCompute first=%.4f", map[1]))
 end
 
 --@api: LNoiseGenerator:getSeed
 do
     local generator = lurek.procgen.newNoiseGenerator(12345)
     local seed = generator:getSeed()
-
-    print("LNoiseGenerator:getSeed=" .. seed)
+    local height_a = generator:perlin2d(0.2, 0.2)
+    local height_b = generator:perlin2d(0.4, 0.4)
+    procgen_log("LNoiseGenerator:getSeed=" .. seed)
+    procgen_log(string.format("LNoiseGenerator sample a=%.4f", height_a))
+    procgen_log(string.format("LNoiseGenerator sample b=%.4f", height_b))
 end
 
 --@api: LNoiseGenerator:perlin1d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin1d(0.5)
-
-    print(string.format("LNoiseGenerator:perlin1d=%.4f", value))
+    local next_value = generator:perlin1d(0.75)
+    procgen_log(string.format("LNoiseGenerator:perlin1d=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:perlin1d next=%.4f", next_value))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:perlin2d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin2d(0.3, 0.7)
-
-    print(string.format("LNoiseGenerator:perlin2d=%.4f", value))
+    local nearby = generator:perlin2d(0.35, 0.75)
+    procgen_log(string.format("LNoiseGenerator:perlin2d=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:perlin2d nearby=%.4f", nearby))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:perlin3d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin3d(0.2, 0.4, 0.8)
-
-    print(string.format("LNoiseGenerator:perlin3d=%.4f", value))
+    local layered = generator:perlin3d(0.2, 0.4, 1.0)
+    procgen_log(string.format("LNoiseGenerator:perlin3d=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:perlin3d layered=%.4f", layered))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:perlin4d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:perlin4d(0.1, 0.2, 0.3, 0.6)
-
-    print(string.format("LNoiseGenerator:perlin4d=%.4f", value))
+    local shifted = generator:perlin4d(0.1, 0.2, 0.3, 0.8)
+    procgen_log(string.format("LNoiseGenerator:perlin4d=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:perlin4d shifted=%.4f", shifted))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:ridged
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:ridged(0.4, 0.6)
-
-    print(string.format("LNoiseGenerator:ridged=%.4f", value))
+    local adjacent = generator:ridged(0.45, 0.65)
+    procgen_log(string.format("LNoiseGenerator:ridged=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:ridged adjacent=%.4f", adjacent))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:setSeed
 do
     local generator = lurek.procgen.newNoiseGenerator(1)
-
+    local before = generator:getSeed()
     generator:setSeed(99999)
-
-    print("LNoiseGenerator:setSeed=" .. generator:getSeed())
+    local after = generator:getSeed()
+    local sample = generator:simplex2d(0.2, 0.8)
+    procgen_log("LNoiseGenerator:setSeed before=" .. before)
+    procgen_log("LNoiseGenerator:setSeed after=" .. after)
+    procgen_log(string.format("LNoiseGenerator sample after reseed=%.4f", sample))
 end
 
 --@api: LNoiseGenerator:simplex1d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:simplex1d(0.5)
-
-    print(string.format("LNoiseGenerator:simplex1d=%.4f", value))
+    local next_value = generator:simplex1d(0.75)
+    procgen_log(string.format("LNoiseGenerator:simplex1d=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:simplex1d next=%.4f", next_value))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:simplex2d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:simplex2d(0.3, 0.8)
-
-    print(string.format("LNoiseGenerator:simplex2d=%.4f", value))
+    local nearby = generator:simplex2d(0.35, 0.85)
+    procgen_log(string.format("LNoiseGenerator:simplex2d=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:simplex2d nearby=%.4f", nearby))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:simplex3d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:simplex3d(0.1, 0.5, 0.9)
-
-    print(string.format("LNoiseGenerator:simplex3d=%.4f", value))
+    local layered = generator:simplex3d(0.1, 0.5, 1.1)
+    procgen_log(string.format("LNoiseGenerator:simplex3d=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:simplex3d layered=%.4f", layered))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:turbulence
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:turbulence(0.5, 0.5, 4)
-
-    print(string.format("LNoiseGenerator:turbulence=%.4f", value))
+    local border = generator:turbulence(0.2, 0.8, 4)
+    procgen_log(string.format("LNoiseGenerator:turbulence=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:turbulence border=%.4f", border))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:type
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local type_name = generator:type()
-
-    print("LNoiseGenerator:type=" .. type_name)
+    local sample = generator:perlin2d(0.1, 0.1)
+    procgen_log("LNoiseGenerator:type=" .. type_name)
+    procgen_log(string.format("LNoiseGenerator sample=%.4f", sample))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:typeOf
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local matches = generator:typeOf("LNoiseGenerator")
-
-    print("LNoiseGenerator:typeOf=" .. tostring(matches))
+    local object_match = generator:typeOf("LObject")
+    local sample = generator:simplex2d(0.4, 0.4)
+    procgen_log("LNoiseGenerator:typeOf self=" .. tostring(matches))
+    procgen_log("LNoiseGenerator:typeOf object=" .. tostring(object_match))
+    procgen_log(string.format("LNoiseGenerator type sample=%.4f", sample))
 end
 
 --@api: LNoiseGenerator:warpDomain
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local warped_x, warped_y = generator:warpDomain(0.3, 0.7, 0.1)
-
-    print(string.format("LNoiseGenerator:warpDomain x=%.4f", warped_x))
-    print(string.format("LNoiseGenerator:warpDomain y=%.4f", warped_y))
+    local noise_after_warp = generator:perlin2d(warped_x, warped_y)
+    procgen_log(string.format("LNoiseGenerator:warpDomain x=%.4f", warped_x))
+    procgen_log(string.format("LNoiseGenerator:warpDomain y=%.4f", warped_y))
+    procgen_log(string.format("LNoiseGenerator warped sample=%.4f", noise_after_warp))
 end
 
 --@api: LNoiseGenerator:worley2d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:worley2d(0.5, 0.5)
-
-    print(string.format("LNoiseGenerator:worley2d=%.4f", value))
+    local second = generator:worley2d(0.6, 0.5)
+    procgen_log(string.format("LNoiseGenerator:worley2d=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:worley2d second=%.4f", second))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: LNoiseGenerator:worley3d
 do
     local generator = lurek.procgen.newNoiseGenerator(42)
     local value = generator:worley3d(0.5, 0.5, 0.5)
-
-    print(string.format("LNoiseGenerator:worley3d=%.4f", value))
+    local layer = generator:worley3d(0.5, 0.5, 0.7)
+    procgen_log(string.format("LNoiseGenerator:worley3d=%.4f", value))
+    procgen_log(string.format("LNoiseGenerator:worley3d layer=%.4f", layer))
+    procgen_log("LNoiseGenerator seed=" .. generator:getSeed())
 end
 
 --@api: lurek.procgen.fbm
 do
     local value = lurek.procgen.fbm(0.5, 0.5, 7, 4, 2.0, 0.5)
     local other = lurek.procgen.fbm(0.75, 0.25, 7, 4, 2.0, 0.5)
-
-    print(string.format("lurek.procgen.fbm=%.4f", value))
-    print(string.format("lurek.procgen.fbm other=%.4f", other))
+    local ridge = lurek.procgen.fbm(0.25, 0.75, 7, 4, 2.0, 0.5)
+    procgen_log(string.format("lurek.procgen.fbm=%.4f", value))
+    procgen_log(string.format("lurek.procgen.fbm other=%.4f", other))
+    procgen_log(string.format("lurek.procgen.fbm ridge=%.4f", ridge))
 end
 
 --@api: lurek.procgen.newNoiseGenerator
 do
     local generator = lurek.procgen.newNoiseGenerator(777)
-
-    print("lurek.procgen.newNoiseGenerator type=" .. generator:type())
-    print("lurek.procgen.newNoiseGenerator seed=" .. generator:getSeed())
+    local sample = generator:simplex2d(0.2, 0.2)
+    procgen_log("lurek.procgen.newNoiseGenerator type=" .. generator:type())
+    procgen_log("lurek.procgen.newNoiseGenerator seed=" .. generator:getSeed())
+    procgen_log(string.format("lurek.procgen.newNoiseGenerator sample=%.4f", sample))
 end
 
 --@api: lurek.procgen.perlin2d
 do
     local value = lurek.procgen.perlin2d(0.2, 0.6)
     local seeded = lurek.procgen.perlin2d(0.2, 0.6, 9)
-
-    print(string.format("lurek.procgen.perlin2d=%.4f", value))
-    print(string.format("lurek.procgen.perlin2d seeded=%.4f", seeded))
+    local nearby = lurek.procgen.perlin2d(0.25, 0.65, 9)
+    procgen_log(string.format("lurek.procgen.perlin2d=%.4f", value))
+    procgen_log(string.format("lurek.procgen.perlin2d seeded=%.4f", seeded))
+    procgen_log(string.format("lurek.procgen.perlin2d nearby=%.4f", nearby))
 end
 
 --@api: lurek.procgen.perlin3d
 do
     local value = lurek.procgen.perlin3d(0.1, 0.3, 0.7)
     local seeded = lurek.procgen.perlin3d(0.1, 0.3, 0.7, 11)
-
-    print(string.format("lurek.procgen.perlin3d=%.4f", value))
-    print(string.format("lurek.procgen.perlin3d seeded=%.4f", seeded))
+    local layered = lurek.procgen.perlin3d(0.1, 0.3, 0.9, 11)
+    procgen_log(string.format("lurek.procgen.perlin3d=%.4f", value))
+    procgen_log(string.format("lurek.procgen.perlin3d seeded=%.4f", seeded))
+    procgen_log(string.format("lurek.procgen.perlin3d layered=%.4f", layered))
 end
 
 --@api: lurek.procgen.simplexNoise
 do
     local value2d = lurek.procgen.simplexNoise(0.4, 0.9)
     local value3d = lurek.procgen.simplexNoise(0.4, 0.9, 1.2)
-
-    print(string.format("lurek.procgen.simplexNoise2d=%.4f", value2d))
-    print(string.format("lurek.procgen.simplexNoise3d=%.4f", value3d))
+    local animated = lurek.procgen.simplexNoise(0.4, 0.9, 1.4)
+    procgen_log(string.format("lurek.procgen.simplexNoise2d=%.4f", value2d))
+    procgen_log(string.format("lurek.procgen.simplexNoise3d=%.4f", value3d))
+    procgen_log(string.format("lurek.procgen.simplexNoise animated=%.4f", animated))
 end
 
 --@api: lurek.procgen.setConstraintsFromLLM
 do
     -- LLM may be offline in CI; result is always a table (empty on error)
     local constraints = lurek.procgen.setConstraintsFromLLM("2 tiles: grass and water. Grass can be next to grass or water. Water can only be next to water.")
-    print("setConstraintsFromLLM type=" .. type(constraints))
+    local next_key = next(constraints)
+    procgen_log("setConstraintsFromLLM type=" .. type(constraints))
+    procgen_log("setConstraintsFromLLM has_entries=" .. tostring(next_key ~= nil))
+    procgen_log("setConstraintsFromLLM first_key=" .. tostring(next_key))
 end
 
 --@api: lurek.procgen.wfcFromPrompt
@@ -595,9 +668,9 @@ do
         "small dungeon with stone floor and walls",
         { width = 4, height = 4, seed = 1, max_attempts = 5 }
     )
-    print("wfcFromPrompt width=" .. grid.width .. " height=" .. grid.height)
-    print("wfcFromPrompt cells_type=" .. type(grid.cells))
-    print("wfcFromPrompt failed_type=" .. type(grid.failed_cells))
+    example_print_log("wfcFromPrompt width=" .. grid.width .. " height=" .. grid.height)
+    example_print_log("wfcFromPrompt cells_type=" .. type(grid.cells))
+    example_print_log("wfcFromPrompt failed_type=" .. type(grid.failed_cells))
 end
 
 --@api: lurek.procgen.newCellular
@@ -605,28 +678,44 @@ do
     local ca = lurek.procgen.newCellular(32, 32)
     ca:setCell(5, 5, lurek.procgen.CELL_SAND)
     ca:step()
-    print("cellular type = " .. ca:type())
+    local cell = ca:getCell(5, 5)
+    procgen_log("cellular type = " .. ca:type())
+    procgen_log("cellular sand count = " .. ca:countCells(lurek.procgen.CELL_SAND))
+    procgen_log("cellular sample cell = " .. tostring(cell))
 end
 
 --@api: LCellular:countCells
 do
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(0, 0, lurek.procgen.CELL_ROCK)
-    print("rock count = " .. ca:countCells(lurek.procgen.CELL_ROCK))
+    ca:setCell(1, 0, lurek.procgen.CELL_ROCK)
+    local rocks = ca:countCells(lurek.procgen.CELL_ROCK)
+    local sand = ca:countCells(lurek.procgen.CELL_SAND)
+    procgen_log("rock count = " .. rocks)
+    procgen_log("sand count = " .. sand)
+    procgen_log("cellular type = " .. ca:type())
 end
 
 --@api: LCellular:fillCircle
 do
     local ca = lurek.procgen.newCellular(32, 32)
     ca:fillCircle(16, 16, 5, lurek.procgen.CELL_WATER)
-    print("fillCircle done")
+    local water = ca:countCells(lurek.procgen.CELL_WATER)
+    local center = ca:getCell(16, 16)
+    procgen_log("fillCircle water count = " .. water)
+    procgen_log("fillCircle center cell = " .. tostring(center))
+    procgen_log("fillCircle image bytes = " .. #ca:toImageDataRegion(8, 8, 16, 16))
 end
 
 --@api: LCellular:fillRect
 do
     local ca = lurek.procgen.newCellular(32, 32)
     ca:fillRect(0, 0, 8, 8, lurek.procgen.CELL_ROCK)
-    print("fillRect done")
+    local rocks = ca:countCells(lurek.procgen.CELL_ROCK)
+    local corner = ca:getCell(0, 0)
+    procgen_log("fillRect rock count = " .. rocks)
+    procgen_log("fillRect corner cell = " .. tostring(corner))
+    procgen_log("fillRect bytes = " .. #ca:toBytes())
 end
 
 --@api: LCellular:findCells
@@ -634,14 +723,21 @@ do
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(3, 7, lurek.procgen.CELL_WATER)
     local found = ca:findCells(lurek.procgen.CELL_WATER)
-    print("found count = " .. #found)
+    local first = found[1]
+    procgen_log("found count = " .. #found)
+    procgen_log("first water cell = " .. tostring(first and first.x or "nil") .. "," .. tostring(first and first.y or "nil"))
+    procgen_log("water count = " .. ca:countCells(lurek.procgen.CELL_WATER))
 end
 
 --@api: LCellular:getCell
 do
     local ca = lurek.procgen.newCellular(16, 16)
+    ca:setCell(0, 0, lurek.procgen.CELL_FIRE)
     local v = ca:getCell(0, 0)
-    print("cell = " .. v)
+    local neighbor = ca:getCell(1, 0)
+    procgen_log("cell = " .. v)
+    procgen_log("neighbor = " .. neighbor)
+    procgen_log("fire count = " .. ca:countCells(lurek.procgen.CELL_FIRE))
 end
 
 --@api: LCellular:loadFromBytes
@@ -650,59 +746,88 @@ do
     local bytes = ca:toBytes()
     local ca2 = lurek.procgen.newCellular(8, 8)
     ca2:loadFromBytes(bytes)
-    print("loadFromBytes done")
+    example_print_log("loadFromBytes done")
 end
 
 --@api: LCellular:setCell
 do
     local ca = lurek.procgen.newCellular(16, 16)
     ca:setCell(3, 3, lurek.procgen.CELL_SAND)
-    print("setCell done")
+    local cell = ca:getCell(3, 3)
+    local sand = ca:countCells(lurek.procgen.CELL_SAND)
+    procgen_log("setCell value = " .. tostring(cell))
+    procgen_log("setCell sand count = " .. sand)
+    procgen_log("cellular type = " .. ca:type())
 end
 
 --@api: LCellular:step
 do
     local ca = lurek.procgen.newCellular(16, 16)
+    ca:setCell(4, 4, lurek.procgen.CELL_SAND)
     ca:step()
-    print("step done")
+    local sample = ca:getCell(4, 4)
+    local sand = ca:countCells(lurek.procgen.CELL_SAND)
+    procgen_log("step sample cell = " .. tostring(sample))
+    procgen_log("step sand count = " .. sand)
+    procgen_log("step bytes = " .. #ca:toBytes())
 end
 
 --@api: LCellular:stepN
 do
     local ca = lurek.procgen.newCellular(16, 16)
+    ca:setCell(4, 4, lurek.procgen.CELL_SAND)
     ca:stepN(5)
-    print("stepN done")
+    local sample = ca:getCell(4, 4)
+    local sand = ca:countCells(lurek.procgen.CELL_SAND)
+    procgen_log("stepN sample cell = " .. tostring(sample))
+    procgen_log("stepN sand count = " .. sand)
+    procgen_log("stepN bytes = " .. #ca:toBytes())
 end
 
 --@api: LCellular:toBytes
 do
     local ca = lurek.procgen.newCellular(8, 8)
+    ca:setCell(2, 2, lurek.procgen.CELL_ROCK)
     local bytes = ca:toBytes()
-    print("toBytes length = " .. #bytes)
+    procgen_log("toBytes length = " .. #bytes)
+    procgen_log("toBytes rock count = " .. ca:countCells(lurek.procgen.CELL_ROCK))
+    procgen_log("toBytes type = " .. ca:type())
 end
 
 --@api: LCellular:toImageData
 do
     local ca = lurek.procgen.newCellular(16, 16)
+    ca:fillRect(0, 0, 4, 4, lurek.procgen.CELL_WATER)
     local img = ca:toImageData()
-    print("toImageData bytes = " .. #img)
+    procgen_log("toImageData bytes = " .. #img)
+    procgen_log("toImageData water count = " .. ca:countCells(lurek.procgen.CELL_WATER))
+    procgen_log("toImageData type = " .. ca:type())
 end
 
 --@api: LCellular:toImageDataRegion
 do
     local ca = lurek.procgen.newCellular(32, 32)
+    ca:fillCircle(16, 16, 6, lurek.procgen.CELL_FIRE)
     local img = ca:toImageDataRegion(0, 0, 16, 16)
-    print("toImageDataRegion bytes = " .. #img)
+    procgen_log("toImageDataRegion bytes = " .. #img)
+    procgen_log("toImageDataRegion fire count = " .. ca:countCells(lurek.procgen.CELL_FIRE))
+    procgen_log("toImageDataRegion type = " .. ca:type())
 end
 
 --@api: LCellular:type
 do
     local ca = lurek.procgen.newCellular(8, 8)
-    print("type = " .. ca:type())
+    ca:setCell(1, 1, lurek.procgen.CELL_GAS)
+    procgen_log("type = " .. ca:type())
+    procgen_log("gas count = " .. ca:countCells(lurek.procgen.CELL_GAS))
+    procgen_log("sample cell = " .. tostring(ca:getCell(1, 1)))
 end
 
 --@api: LCellular:typeOf
 do
     local ca = lurek.procgen.newCellular(8, 8)
-    print("typeOf LCellular = " .. tostring(ca:typeOf("LCellular")))
+    ca:setCell(1, 1, lurek.procgen.CELL_GAS)
+    procgen_log("typeOf LCellular = " .. tostring(ca:typeOf("LCellular")))
+    procgen_log("cells width = " .. tostring(ca:getWidth()))
+    procgen_log("gas count = " .. ca:countCells(lurek.procgen.CELL_GAS))
 end

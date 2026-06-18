@@ -22,9 +22,8 @@
 - Import support makes the module practical for authored content workflows, while runtime skeleton control keeps it useful for gameplay-driven animation changes after import.
 - Runtime events, attachment swaps, and skin changes are especially important because skeletal content often needs to react to equipment, status, or scripted actions without reauthoring the rig itself.
 - Constraint solving is a major part of the value, because believable skeletal motion often depends on live bone relationships rather than on clip playback alone.
-- That keeps authored rigs flexible when gameplay needs live attachment or pose changes.
-- Read `spine` as the owner of skeletal rig state and timeline evaluation. Rendering displays the posed result, but `spine` defines how bones, slots, skins, and constraints move together.
-
+- That keeps imported rigs flexible at runtime.
+- Read `spine` as the owner of skeletal rig state and timeline evaluation.
 
 ## Imports
 

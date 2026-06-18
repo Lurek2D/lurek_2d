@@ -22,14 +22,12 @@
 - Live projects often need to inspect those measurements without exporting them into external plotting tools first, and this module keeps that workflow inside the runtime.
 - CPU-side rasterization is central because it makes chart output deterministic and portable across live UI, screenshots, reports, docs, and test artifacts.
 - Styling controls keep the module useful for polished runtime dashboards as well as for raw debug panels, while interactive helpers such as nearest-point queries make exact values explorable instead of merely visible.
-- The same chart output can serve both player-facing panels and internal diagnostics.
-- That portability is one of the module's biggest practical strengths. A chart rendered for a live dashboard can also be reused in a screenshot, audit report, generated page, or regression artifact without changing the underlying data flow.
 - Interactivity also matters because a chart often becomes useful only when a caller can inspect an exact point, bucket, or outlier instead of visually guessing from the overall shape.
+- Portability is part of the module's practical value too, because the same chart can move between live overlays, screenshots, generated reports, and regression artifacts without changing the underlying data model.
 - The module also helps bridge structured analysis and communication: once numbers become a chart, teams can compare trends, outliers, and distributions much faster than by reading rows or logs directly.
 - The module is useful for telemetry, tuning, economy balancing, analytics overlays, progress dashboards, and any workflow where numbers should become images instead of logs.
 - `dataframe` and other systems may own the source data, but `charts` owns the mapping from structured values to chart-specific visual form.
 - Read `charts` as the place where engine-side measurements become inspectable visual explanations.
-
 
 ## Imports
 

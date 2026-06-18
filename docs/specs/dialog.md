@@ -17,14 +17,14 @@
 
 ## Summary
 
-- The `dialog` module is the conversation-runtime surface for users building branching narrative, tutorial flows, reactive chatter, or choice-driven UI exchanges.
-- Dialogue trees, speaker metadata, conditional gates, weighted branching, callbacks, waits, and jumps work together so conversations can be authored as structured progression rather than scattered state checks.
-- Sequencing features matter because the module does not stop at static text lookup: reveal timing, advancement, and event hooks let dialogue participate in pacing and game logic.
-- State tracking and variable-aware flow make it practical to blend authored story content with system-driven responses, which is important for larger RPG, strategy, or simulation interfaces.
-- This makes the module useful not only for narrative scenes but also for tutorials, reactive barks, negotiation flows, and any interaction where controlled text progression should react to runtime state.
-- It also helps narrative and systems code meet cleanly, because authored dialogue can wait on runtime conditions without collapsing into custom state-machine glue.
-- Read this module as the owner of conversation structure and progression. UI renders the words, but `dialog` decides how dialogue choices, conditions, and narrative state fit together.
-
+- The `dialog` module is the conversation-runtime surface for users building branching narrative, tutorial flows, reactive chatter, or choice-driven exchanges.
+- Dialogue trees, speaker metadata, conditional gates, weighted branching, callbacks, waits, and jumps work together so conversations can be authored as explicit progression instead of scattered local state checks.
+- Sequencing is a core part of the value: reveal timing, advancement, and event hooks let dialogue participate in pacing, scripting, and gameplay rather than acting as a static text lookup table.
+- Variable-aware flow and state tracking make it practical to mix authored story beats with runtime-driven responses, which is important for larger RPG, strategy, and simulation interfaces.
+- That same explicit flow is useful for branch testing and replay.
+- It also helps keep dialogue progression inspectable in larger projects.
+- The module therefore fits narrative scenes, tutorials, reactive barks, negotiation flows, and tool-driven branch inspection wherever text progression should remain a first-class runtime structure.
+- Read `dialog` as the owner of conversation structure and progression.
 
 ## Imports
 

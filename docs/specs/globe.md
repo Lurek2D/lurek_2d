@@ -17,19 +17,18 @@
 
 ## Summary
 
-- The `globe` module is the planetary-map surface for users who want a world-scale spherical view that behaves as a full gameplay and tooling system instead of a decorative background.
+- The `globe` module is the planetary-map surface for users who want a world-scale spherical view to behave as a full gameplay and tooling system instead of a decorative background.
 - It combines region topology, spherical navigation, camera movement, picking, overlays, labels, markers, fog, lighting, and style control so the globe can serve as a strategic layer, simulation view, or inspectable data surface.
-- A key user-facing idea is that the module owns both interaction and presentation. Users do not only look at the globe; they can navigate it, click into it, convert screen interactions into geographic meaning, and layer game-specific information on top.
-- Region adjacency and route-oriented helpers matter because a globe in many games is not just a sphere to admire. It is often a graph of territories, paths, missions, logistics, or influence that must remain queryable and playable.
-- Layer support makes the module practical for several visual stories at once. Ownership, heatmaps, tactical overlays, visibility, or thematic markers can all coexist without forcing each project to reinvent map annotation logic.
-- Lighting and atmosphere are functional features here, not only cosmetic ones. Day-night cues, borders, and atmospheric styling change how readable the world is and therefore how useful the globe becomes as a strategic interface.
-- Province and world-state adapters keep the globe connected to other engine systems, which matters when territory ownership, region metadata, or larger simulation state must be reflected back onto the planetary view.
-- Import, generation, synchronization, and export helpers make the module useful across content pipelines as well as at runtime. A globe may start from authored data, procedural generation, or imported topology and still live under the same feature surface.
-- Spherical picking and navigation helpers are especially important because a globe is harder to interact with than a flat map; the module has to convert between user input, geographic meaning, and readable camera behavior.
-- The result is a world-view surface that supports strategy, exploration, annotation, and simulation inspection without forcing projects to reduce planetary logic to a flat approximation too early.
-- The module is especially strong for grand strategy, campaign maps, XCOM-like geoscapes, geospatial dashboards, and educational interfaces where the “world view” is itself part of the core gameplay loop.
-- Read `globe` as the owner of planetary interaction, topology, and visualization. Rendering ultimately shows the result, but this module decides how a spherical world is represented, navigated, annotated, and synchronized with the rest of the game state.
-
+- The module owns both interaction and presentation: users can navigate the sphere, click into it, convert screen interactions into geographic meaning, and layer game-specific information on top.
+- Region adjacency and route helpers matter because many globe-driven games treat the world as a graph of territories, paths, logistics, or influence rather than as a sphere to admire.
+- Layer support keeps ownership, heatmaps, tactical overlays, visibility, and markers in one annotation surface, while lighting and atmosphere improve readability as well as mood.
+- Province and world-state adapters keep the globe synchronized with larger simulation systems, and import or generation helpers make it practical across authored, procedural, and tool-facing workflows.
+- Region topology is equally central. The globe often acts as a graph of territories, travel arcs, or influence zones, so adjacency, routing, and territory-aware lookup must remain queryable rather than being flattened away into generic mesh behavior.
+- Overlay and marker support keep several kinds of information visible at once: ownership, danger, weather, heat, logistics, missions, visibility, faction presence, or educational annotation can coexist without each feature reinventing map decoration rules.
+- Province adapters and world-state synchronization keep the planetary view grounded in the rest of the simulation. A campaign map is only useful when ownership, events, region metadata, and larger systems can flow into the same world representation.
+- Spherical picking and camera movement remain especially important because a globe becomes strategically useful only when users can navigate it, inspect regions, and turn screen-space interaction into stable geographic meaning.
+- The result is a world-view layer that supports strategy, geoscape-style play, simulation inspection, and data-driven presentation without forcing projects to collapse planetary logic into a flat approximation too early.
+- Read `globe` as the owner of planetary interaction, topology, and visualization. Rendering shows the result, but this module decides how a spherical world is represented, navigated, annotated, and synchronized.
 
 ## Imports
 

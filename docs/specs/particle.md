@@ -26,11 +26,10 @@
 - Force handling is especially important because many effects are really motion systems: wind, gravity-like influence, turbulence, and attractors all shape how a burst reads to the player.
 - Spawn-shape variety matters too, since emitters often need circles, lines, cones, boxes, or directional releases rather than a single point source.
 - Presets and visualization support make the system useful for iteration, docs, tests, and content authoring as well as for final shipped visuals.
-- Reusable presets keep effects expressive without letting transient visuals sprawl into dozens of bespoke mini-systems.
+- The same pooled model also keeps high-volume effects legible for debugging, because emitters, lifetimes, and force rules remain inspectable instead of dissolving into ad hoc update code.
 - The module is useful for combat hits, weather, ambience, UI flourishes, projectiles, and other procedural or semi-procedural effect workflows.
 - `render` draws the result and `physics` may inform light collision behavior, but `particle` owns effect spawning, pooled update logic, and transient visual behavior over time.
 - Read `particle` as the subsystem that decides how short-lived procedural effects are described, updated, reused, and inspected.
-
 
 ## Imports
 

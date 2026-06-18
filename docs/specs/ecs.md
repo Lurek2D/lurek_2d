@@ -24,9 +24,11 @@
 - Blueprints, bulk spawning, snapshots, and serialization broaden the module from live simulation into save/load, rollback, reset, and data-driven population workflows.
 - Hierarchy and relationship support matter because game worlds are rarely flat; parent-child links, semantic grouping, and layered ownership all need to remain queryable as the world grows.
 - The module also improves feature isolation, because several systems can share the same entities without collapsing their state into one oversized object model.
-- The ECS world becomes a shared substrate for rendering, AI, physics, UI, and tooling, but `ecs` owns the organization of that world rather than the domain behavior of those consumers.
+- That makes the ECS world a stable meeting point for subsystems that need different views of the same population.
+- The model is especially strong when many systems need partial views of the same population without inheriting each other's update logic.
+- That shared world model keeps those views aligned.
+- The ECS world becomes a shared substrate for other systems, but `ecs` owns its organization.
 - Read `ecs` as the authority for entity identity, component storage, queries, and shared world composition.
-
 
 ## Imports
 

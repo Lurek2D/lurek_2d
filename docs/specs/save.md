@@ -18,10 +18,9 @@
 
 - The `save` module is the persistence-lifecycle surface for users who want game state to be stored, versioned, and restored as a managed workflow instead of a raw file dump.
 - Save managers, metadata, migration support, schema versions, and summary information work together so save files can evolve over time without every project rolling its own compatibility rules.
-- That matters because persistence is usually more than writing bytes: projects also need naming, summaries, migration paths, validation, and a clear distinction between save metadata and payload content.
+- That matters because persistence is usually more than writing bytes: projects also need naming, summaries, migration paths, and validation.
+- It also needs a clear lifecycle for selecting, migrating, and restoring stored game state.
 - Read `save` as the owner of save and load policy. Serialization modules decide how data is encoded, but `save` decides how game-state persistence is packaged, versioned, and coordinated for users.
-- `save` owns persistence policy, while lower-level formats handle encoding details.
-
 
 ## Imports
 

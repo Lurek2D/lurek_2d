@@ -24,11 +24,9 @@
 - That temporal behavior is the key reason the module exists: these effects are often stateful and orchestrated, not just one-frame visual filters.
 - The same subsystem can therefore own persistent environmental treatment and short-lived screen transitions without burying either concern inside unrelated render code.
 - Layer-wide control is important because these treatments often need coordinated fade-in, fade-out, stacking, and override rules when several moods or transitions compete for the screen at once.
-- That makes the module useful not only for atmosphere, but also for presentation choreography where full-screen effects have to enter and leave in a predictable order.
 - The module is useful whenever a project needs stronger screen-space presentation than a local sprite effect but does not need a full scene rewrite.
 - `render` still draws the final image, but `overlay` owns the grouping, configuration, and temporal behavior of these large-scale scene treatments.
-- Read `overlay` as the orchestration layer for atmospheric, transitional, and other scene-wide screen effects.
-
+- Read `overlay` as the orchestration layer for scene-wide atmospheric and transitional effects.
 
 ## Imports
 

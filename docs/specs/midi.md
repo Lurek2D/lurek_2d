@@ -16,11 +16,10 @@
 
 ## Summary
 
-- The `midi` module is the playback surface for projects that want symbolic music control instead of treating every track as a pre-rendered audio file.
-- It brings MIDI transport, playback state, and SoundFont-backed synthesis into one namespace.
-- That makes it useful for rhythm systems, adaptive music, and score-driven tooling.
-- Read this module as the bridge between authored MIDI content and audible output.
-
+- The `midi` module is the playback surface for projects that want symbolic music control instead of treating every cue as rendered audio.
+- It combines transport, playback state, and SoundFont-backed synthesis under one runtime surface.
+- That makes it useful for adaptive scoring, live control, and note-driven playback.
+- Read it as the bridge from MIDI data to audible output.
 
 ## Imports
 
