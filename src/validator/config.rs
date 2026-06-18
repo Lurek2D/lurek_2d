@@ -1,4 +1,6 @@
-//! This file provides configuration structures that shape validator execution policy. `validator/config` delivers the configuration schema and defaults for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `ValidatorConfig`, the execution policy record that shapes how validator scans should run.
+//! It stores worker count, maximum file size, early-stop behavior, and hint inclusion defaults in one place.
+//! Open this file when validator runtime policy changes; rule logic and report formatting belong to siblings.
 
 /// Validator engine configuration.
 #[derive(Debug, Clone)]

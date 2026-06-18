@@ -1,7 +1,7 @@
-//! Implements named audio routing channels that apply shared gain, pitch, pause, and ducking control. `audio/bus` delivers the bus implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Maintains per-bus processing parameters and effect-chain references for downstream mixer application. The file owns or coordinates data contracts including `Bus`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports duck-target relationships so one bus can attenuate others during priority playback. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `name`, `volume`, `set_volume`, `pitch`, `set_pitch`, and 5 more stays attached to the local data model and invariants.
-//! Enforces bounded parameter updates to keep runtime routing behavior stable and predictable. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `Bus`, the named routing channel that groups sources under shared mix controls and effects.
+//! It stores bus name, volume, pitch, paused state, DSP effect chain, and optional duck target for suppression.
+//! Mutation helpers clamp gain and pitch, toggle pause state, and configure or clear ducking relationships.
+//! Open it when shared routing semantics change; source playback and device output are managed in sibling files.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{BU01, BU02, BU03};

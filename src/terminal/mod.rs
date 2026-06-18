@@ -1,5 +1,9 @@
-//! This module provides the in-engine terminal stack, combining a character grid, ANSI-aware text handling, interactive widgets, and renderer handoff.
-//! It supports both console-like workflows and text-heavy in-game interfaces built on a cell-based presentation model. `src/terminal/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `cell::TCell`, `terminal_state::Terminal`, `widget::{BorderStyle, Widget, WidgetBase, WidgetKind}` centralized for the terminal subsystem.
+//! This module is the terminal index, re-exporting cell, widget, state, completion, ANSI, and render support.
+//! It is the navigation point for character-grid storage, styled text parsing, visual composition, and input routing.
+//! `terminal_state.rs` owns the mutable grid, cursor, histories, widget focus, and render-cell composition logic.
+//! `widget.rs` owns terminal UI parts, while `ansi.rs`, `highlighter.rs`, and `completion.rs` enrich text flows.
+//! `cell.rs` and `text_utils.rs` provide the atomic grid unit plus UTF-8-safe helpers reused across terminal code.
+//! Change this file when public terminal exports move; change siblings when behavior or rendering semantics change.
 
 /// ANSI escape-code parsing and attribute types.
 pub mod ansi;

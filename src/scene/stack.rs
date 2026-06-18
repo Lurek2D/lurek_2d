@@ -1,9 +1,11 @@
-//! This file implements the actual scene stack that decides which scenes are present, active, paused, resumed, or removed over time.
-//! It supports classic push and pop navigation as well as replacements, overlays, named lookup, and explicit clearing of flow state.
-//! Scene lifecycle callbacks are coordinated here so transitions between states follow one consistent pattern instead of ad hoc caller logic.
-//! Transition queuing is integrated into the stack because movement between scenes often has both control-flow and visual timing aspects.
-//! Shared scene data also lives at this layer, giving separate scenes a structured way to pass values without global sprawl.
-//! Layer and overlay handling let multiple scenes coexist when needed while still preserving a clear notion of current stack order.
+//! `src/scene/stack.rs` owns the scene stack that decides which scenes exist, which one is current, and how flow changes.
+//! It defines `SceneId` and `SceneStack`, keeping stack order, overlays, layers, transitions, and scene ids together.
+//! Push, pop, switch, clear, pop-until, and overlay entry points live here so scene navigation policy stays centralized.
+//! The file also owns transition queuing, active transition updates, and the rules that reveal scenes after stack changes.
+//! Named scene registration and lightweight cross-scene data slots live here so callers avoid ad hoc global routing state.
+//! Per-scene execution flags for process, physics, late, and update passes are stored here with stack-owned defaults.
+//! Rendering helpers expose active and ordered scene ids, while transition math and frame drawing remain in other files.
+//! Read this file when scene lifetime, overlay semantics, layer priority, registry behavior, or shared scene state changes.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{

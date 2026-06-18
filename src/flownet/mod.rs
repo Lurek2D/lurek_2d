@@ -1,9 +1,9 @@
-//! Provides the high-level flownet module boundary for graph flow modeling, simulation, and rendering support. `flownet/mod` is the flownet module index, declaring `algorithms`, `core`, `edge`, `item`, `node`, and 5 more so agents can identify which files own each feature slice before opening implementation code.
-//! Connects nodes, edges, items, demand logic, routing, and update events into one runtime network surface. `src/flownet/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `core::{Graph, GraphStats}`, `edge::Edge`, `item::{GraphItem, ItemPosition}`, `node::{ConversionRule, Demand, FlowMode, Node, OverflowPolicy, Supply}`, and 2 more centralized for the flownet subsystem.
-//! Delivers a complete directed-flow toolkit for gameplay systems that model transport and transformation. The file documents how flownet submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! `flownet/mod` is the flownet module index, declaring `algorithms`, `core`, `edge`, `item`, `node`, and 5 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/flownet/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `core::{Graph, GraphStats}`, `edge::Edge`, `item::{GraphItem, ItemPosition}`, `node::{ConversionRule, Demand, FlowMode, Node, OverflowPolicy, Supply}`, and 2 more centralized for the flownet subsystem.
-//! The file documents how flownet submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! This module is the flownet index, wiring graph storage, simulation, routing, algorithms, and render helpers.
+//! It reexports `Graph`, ids, node contracts, items, edges, and events so callers enter the subsystem from one file.
+//! `core.rs` owns mutation and persistence, `simulation.rs` advances state, and `pathfinding.rs` owns route queries.
+//! `node.rs`, `edge.rs`, `item.rs`, and `types.rs` define the local data contracts consumed across all flownet logic.
+//! This file owns visibility and navigation only, not graph state, update rules, route costs, or debug drawing behavior.
+//! Open it when public flownet exports move; open the sibling owner file when transport or simulation semantics change.
 
 /// Graph algorithm helpers. This module is publicly re-exported.
 pub mod algorithms;

@@ -1,7 +1,8 @@
-//! Implements viewport scaling policies that map fixed game space into dynamic window dimensions. `camera/viewport` delivers the viewport implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Defines scale modes for aspect-preserving letterbox, free stretch, and pixel-perfect presentation. The file owns or coordinates data contracts including `ScaleMode`, `Viewport`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Stores computed scale and offset transforms recalculated on resize without recreating viewport state. Public callable behavior is centered on no named public items, while method-level behavior such as `compute_transforms`, `new`, `resize`, `get_scale`, `get_offset`, `get_game_dimensions`, and 4 more stays attached to the local data model and invariants.
-//! Provides bidirectional coordinate conversion between screen pixels and logical game coordinates. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/camera/viewport.rs` owns viewport scaling policies that map fixed game space into variable window dimensions.
+//! It defines `ScaleMode` and `Viewport`, keeping scaling mode selection, offsets, and coordinate remapping together.
+//! Letterbox, stretch, and pixel-perfect transform computation all live here, separate from camera transform state.
+//! Resize handling plus game-to-screen and screen-to-game conversion helpers are implemented directly in this file.
+//! Read it when scale-mode policy or viewport transform behavior for resized windows needs to change.
 
 #[derive(Debug, Clone, PartialEq)]
 /// Selects how the game surface scales into a window surface.

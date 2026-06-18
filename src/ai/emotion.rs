@@ -1,7 +1,8 @@
-//! Tracks affective channels as bounded signals that rise on events and relax toward personal baselines. `ai/emotion` delivers the emotion implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Translates short-term emotional pressure into a clean modulation stream for decision weighting. The file owns or coordinates data contracts including `Emotion`, `EmotionModel`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Preserves stability with clamped values and predictable decay so mood changes remain interpretable. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_active`, `trigger`, `set`, `update`, `add`, and 5 more stays attached to the local data model and invariants.
-//! Resolves dominant feeling state as a compact summary other AI layers can consume cheaply. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Owns named emotional channels that rise from triggers and decay toward resting levels over simulation time.
+//! Stores per-emotion thresholds and decay settings, then aggregates them into an EmotionModel for one agent.
+//! Supports dominant-emotion queries and active-name filtering so higher AI layers can read compact affect summaries.
+//! Provides the affect boundary between raw events and reusable mood state that can bias planning or scoring.
+//! Open this owner when emotional decay, trigger clamping, or dominant-state semantics need coordinated changes.
 
 /// One named emotion tracked by `EmotionModel`.
 pub struct Emotion {

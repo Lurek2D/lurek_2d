@@ -1,4 +1,4 @@
-//! Lua bindings for `lurek.i18n`. `src/lua_api/i18n_api.rs` registers the `lurek.i18n` Lua boundary for i18n behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.i18n` Lua API for translation bundles, table flattening, and localization helpers.
 
 use crate::i18n::format::{format_date, format_number, locale_separators};
 use crate::i18n::{

@@ -1,9 +1,9 @@
-//! Defines the camera module boundary that groups transform state, effects, viewport, and rendering helpers. `camera/mod` is the camera module index, declaring `effects`, `multi`, `path`, `render`, `types`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
-//! Exposes a coherent camera surface while keeping pathing, rigs, and scaling concerns modularized. `src/camera/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `effects::{CameraBreathing, CameraSway, ZoomPulse}`, `multi::CameraRig2D`, `path::{CameraPath, CameraTweenEasing, CameraZoomTween, ZoomTween}`, `types::{Camera, Camera2D, CameraEasing}`, and 4 more centralized for the camera subsystem.
-//! Serves as the high-level composition root for runtime camera behavior across engine systems. The file documents how camera submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! `camera/mod` is the camera module index, declaring `effects`, `multi`, `path`, `render`, `types`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/camera/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `effects::{CameraBreathing, CameraSway, ZoomPulse}`, `multi::CameraRig2D`, `path::{CameraPath, CameraTweenEasing, CameraZoomTween, ZoomTween}`, `types::{Camera, Camera2D, CameraEasing}`, and 4 more centralized for the camera subsystem.
-//! The file documents how camera submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! `src/camera/mod.rs` is the module index that exposes camera state, effects, paths, viewport logic, and render helpers.
+//! It reexports core camera types plus effect, rig, tween, viewport, and walker APIs through one stable camera surface.
+//! No live camera state is stored here; this file only declares child modules and defines which camera symbols are public.
+//! Read this index when wiring view behavior, because it shows where transform state ends and specialized helpers begin.
+//! Changes here reshape the camera boundary, since reexports decide what runtime code may import without deep paths.
+//! This module keeps transforms, effects, scaling, and scripted movement split by responsibility for clearer ownership.
 
 /// Exposes camera effect primitives for sway, breathing, and pulse behavior.
 pub mod effects;

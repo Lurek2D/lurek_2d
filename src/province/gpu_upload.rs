@@ -1,8 +1,9 @@
-//! Province texture upload layer for moving grid-derived ids, border indices, and auxiliary fields from CPU memory into GPU-friendly texture resources.
-//! The file standardizes texture shapes and formats so every upload path speaks the same low-level contract for province data.
-//! Packing helpers keep byte layout rules centralized, which reduces the chance of subtle mismatches between generation code, upload code, and tests.
-//! This is not generic rendering infrastructure but province-specific transfer logic shaped around the module's data products.
-//! Keeping the upload details here lets registry and renderer code stay focused on map meaning instead of texture plumbing.
+//! Creates province-related GPU textures so shaders can sample ownership, pair IDs, and distance fields by map pixel.
+//! Owns upload helpers for R32Uint, R16Uint, and R8Unorm texture creation plus byte-packing for integer cell arrays.
+//! Provides the renderer-facing resource boundary between CPU province structures and wgpu texture initialization calls.
+//! This file is where texture dimensions, formats, and upload staging logic for province data are coordinated together.
+//! Neighboring edits usually come from ProvinceGrid, ProvinceBorderIndex, or ProvinceDistanceField layout adjustments.
+//! Open this owner when a shader needs new province lookup textures or existing upload formats stop matching consumers.
 
 /// GPU texture bundle used by the province map renderer.
 pub struct ProvinceGpuTextures {

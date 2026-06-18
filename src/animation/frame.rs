@@ -1,4 +1,6 @@
-//! Defines the minimal frame payload of source rectangle and optional per-frame timing override. `animation/frame` delivers the frame implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `AnimFrame`, the minimal frame payload of source quad plus optional per-frame duration override.
+//! It keeps authored geometry and timing local so clips can reference frame data without duplicating rectangle state.
+//! Open it when frame payload semantics change; clip policy and playback progression live in sibling files.
 
 use crate::math::Rect;
 /// Frame rectangle and duration.

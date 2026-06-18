@@ -1,7 +1,8 @@
-//! Full finite state machine runtime for systems that need named states, validated transitions, and a remembered trail of where control has moved over time.
-//! The file separates state membership from transition rules so allowed movement stays explicit and can be guarded rather than implied by arbitrary caller behavior.
-//! Bounded history gives each machine a replayable memory of recent changes, which is useful for debugging, analytics, and gameplay rules that depend on prior modes.
-//! Current-state management, rule inspection, and history maintenance live together so switching logic stays coherent instead of fragmenting across helpers.
+//! This file owns the full finite-state machine used to manage named states, allowed transitions, and recent history.
+//! `TransitionRule` stores source, destination, label, and guard presence, while `StateMachine` owns live state data.
+//! Declared states, current and previous mode, transition lists, and bounded visit history all remain in one owner.
+//! Transition checks and history compaction stay here because they define what moves are legal and what memory persists.
+//! Open it when mode-transition semantics change; simpler current-state tracking lives in `simple_state.rs`.
 
 use std::collections::HashMap;
 

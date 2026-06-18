@@ -1,8 +1,10 @@
-//! Flat 2D grid storage with per-cell walkability flags and movement-cost values enabling pathfinding and navigation queries on tile-based maps.
-//! Implements A* algorithm with optional 8-connected diagonal movement, configurable Euclidean/Manhattan heuristics, and cached distance scoring.
-//! Supports Dijkstra and BFS variants for weighted multi-target distance fields and uniform-cost search enabling flow field and range queries.
-//! Provides efficient indexing, neighbor enumeration, and reconstruction helpers supporting O(log N) priority-queue based pathfinding.
-//! Integrates cell walkability validation preventing path generation through obstacles while respecting per-cell terrain movement costs.
+//! Implements the general weighted tile grid used for A*, Dijkstra, BFS, and flow-field style distance queries.
+//! Owns walkability flags, per-cell float costs, priority-queue nodes, and parent reconstruction over flat storage.
+//! Exposes multiple search styles from one owner so callers can swap between heuristic, weighted, and uniform modes.
+//! Provides the boundary between simple tile cost maps and higher-level systems that need reusable grid algorithms.
+//! Also builds a distance field from many targets, keeping multi-goal propagation close to the core grid substrate.
+//! This file matters when neighbor policy, cost semantics, or path reconstruction rules for generic grids change.
+//! Open this owner for shared grid-search fixes before touching specialized NavGrid, hex, iso, or province solvers.
 
 use crate::runtime::log_messages::{PF01_GRID_INIT, PF03_NO_PATH};
 

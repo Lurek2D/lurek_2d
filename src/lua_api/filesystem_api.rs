@@ -1,4 +1,4 @@
-//! Registers the `lurek.filesystem` Lua namespace over the sandboxed GameFS service. `src/lua_api/filesystem_api.rs` registers the `lurek.filesystem` Lua boundary for filesystem behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.filesystem` Lua API over GameFS for sandboxed paths, saves, and file operations.
 
 use super::SharedState;
 use crate::filesystem::watcher::FileWatcher;

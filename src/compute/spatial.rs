@@ -1,8 +1,9 @@
-//! Implements spatial and neighborhood operations over array-based 1D and 2D data surfaces. `compute/spatial` delivers the spatial implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides zero-padded convolution for kernel filtering across image-like matrix inputs. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Includes binary morphology operators such as dilation and erosion with radius-based neighborhoods. Public callable behavior is centered on `convolve2d`, `dilate`, `erode`, `flood_fill`, `get_region`, and 3 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Supports flood-fill propagation and region extraction or insertion for localized data editing. Runtime integration reaches sibling engine areas through crate modules `compute`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Exposes matrix multiplication and dot-product helpers for core spatial-numeric composition. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/compute/spatial.rs` owns 2D neighborhood operators, region editing, and matrix-style spatial transforms.
+//! It provides convolution, dilation, erosion, flood fill, region extraction, region writes, matmul, and dot products.
+//! Zero-padding, Manhattan-radius morphology, and queue-driven fill behavior live here so spatial semantics stay local.
+//! This file is the neighborhood-processing boundary for compute arrays; it does not own dense storage or scalar analytics.
+//! Read it when 2D filtering, morphology, flood-fill semantics, or spatial matrix helpers for array data need changes.
+//! Shape validation happens here before spatial work begins, keeping region and kernel operations deterministic and safe.
 
 use crate::compute::array::{DataType, NdArray};
 use std::collections::VecDeque;

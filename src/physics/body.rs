@@ -1,8 +1,9 @@
-//! Physics body description layer that gathers the state a simulation object needs before or while it lives inside the world.
-//! The file defines the playable vocabulary of rigid body roles such as dynamic movers, fixed solids, script-driven kinematics, and overlap-only sensors.
-//! It also binds those roles to supported geometry forms, material defaults, collision filtering, and transform helpers so a body can be reasoned about as one coherent unit.
-//! Constructors emphasize ready-to-use authoring by filling in sensible density, friction, restitution, and motion settings rather than forcing every caller to spell out raw fields.
-//! Geometry utilities keep body space and world space connected, which matters for bounds queries, spawn setup, editor tooling, and shape-aware logic outside the solver.
+//! This file owns `BodyType`, `BodyShape`, and `Body`, the authored body descriptor used before and during world use.
+//! It stores simulation role, primitive shape, material settings, filters, pose, velocity, and optional extended geometry.
+//! Constructors cover rectangles, circles, polygons, edges, and chains so tools and gameplay code share one body surface.
+//! Geometry helpers expose bounding boxes plus local or world point conversion without requiring a live solver context.
+//! This file is the boundary between authored rigid-body intent and the runtime world that simulates those bodies.
+//! Open it when body payloads or authoring semantics change; stepping, queries, and zones live in sibling owners.
 
 use crate::log_msg;
 use crate::math::{Rect, Vec2};

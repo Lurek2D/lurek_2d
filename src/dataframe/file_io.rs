@@ -1,7 +1,8 @@
-//! Implements storage-agnostic persistence helpers for DataFrame and Database payload workflows. `dataframe/file_io` delivers the file io implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Defines narrow read and write abstraction traits decoupled from concrete filesystem backends. The file owns or coordinates data contracts including `DataFrameFileStore`, `DataFrameFileError`, `DataFrameFileResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Bridges CSV, JSON, and binary serializers with caller-provided storage transport operations. Public callable behavior is centered on `read_csv_dataframe`, `read_json_dataframe`, `write_csv_dataframe`, `write_json_dataframe`, `write_binary_dataframe`, and 2 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Preserves distinct error domains for storage, parsing, and format conversion failure handling. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns storage-agnostic persistence adapters for reading and writing dataframe and database payloads.
+//! `DataFrameFileStore` defines the read and write contract, while `DataFrameFileError` preserves storage vs format errors.
+//! CSV, JSON, and LVDF helpers live here because they bridge caller transport with `serial.rs` parsing and encoding.
+//! Database JSON load and save also stay here so external persistence boundaries remain outside core table ownership.
+//! Open it when IO error mapping or storage contracts change; schema, SQL, and row operations live in siblings.
 
 use crate::dataframe::frame::{DataFrame, Database};
 use crate::dataframe::serial;

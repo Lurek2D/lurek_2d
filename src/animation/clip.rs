@@ -1,4 +1,6 @@
-//! Defines reusable animation clip metadata over frame spans, playback direction, and loop policy. `animation/clip` delivers the clip implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns clip metadata that names frame spans, default FPS, looping intent, and playback direction.
+//! `AnimClip` stores frame indices and policy, while `ClipPlaybackMode` selects forward, reverse, or ping-pong flow.
+//! Open it when authored clip semantics change; frame storage and live playback logic live in sibling files.
 
 /// Supported clip playback modes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

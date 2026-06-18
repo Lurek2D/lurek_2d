@@ -1,7 +1,8 @@
-//! Dijkstra-based budget-limited range expansion over a 2-D grid. `pathfind/range_map` delivers the range map implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Produces a cost map for cells reachable within a travel budget. The file owns or coordinates data contracts including `RangeMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports cardinal and diagonal movement with per-cell cost weights. Public callable behavior is centered on no named public items, while method-level behavior such as `from_grid`, `reachable`, `cost_to`, `reachable_cells`, `reachable_cells_with_cost` stays attached to the local data model and invariants.
-//! Useful for movement preview, threat radius, and action-range queries. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Builds a budget-limited travel map over a weighted grid so callers can preview where movement can reach.
+//! Owns per-cell optional costs, Dijkstra heap expansion, and helpers that return cells with or without distances.
+//! Respects blockers, per-cell weights, and optional diagonal movement while capping expansion by a travel budget.
+//! Provides the boundary between raw movement costs and UI or AI systems that need reachable-area calculations.
+//! Open this owner when movement budget semantics, diagonal weighting, or reachability output shape needs changes.
 
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;

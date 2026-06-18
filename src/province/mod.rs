@@ -1,9 +1,11 @@
-//! Province runtime module for irregular region maps that need authoritative state, import tooling, geometry extraction, GPU preparation, and on-screen rendering in one connected system.
-//! It treats provinces as semantic map entities rather than tilemap cells, combining topology, styling, labels, capitals, and change tracking into a single map stack.
-//! The module also owns the bridges that move province data from imported assets through cached geometry and into renderable outputs.
-//! Functionally this file is the high-level entry point for province-based cartography, visualization, and region-centric gameplay support.
-//! `province/mod` is the province module index, declaring `border_index`, `cache`, `distance_field`, `events`, `gpu_bridge`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/province/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `province_grid::{AdjacencyPair, ProvinceGrid, ProvinceShapeCacheEntry}`, `events::{ProvinceChange, ProvinceEvent}`, `import::{ import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions, MarkerSanitizeSummary, ProvinceMetadataImportOptions, ProvinceMetadataImportSummary, }`, `properties::ProvinceProperties`, and 3 more centralized for the province subsystem.
+//! Exports the province subsystem surface that groups grid extraction, registry state, rendering, import, and helpers.
+//! Acts as the navigation entry for province ownership, borders, labels, map modes, and GPU support modules below.
+//! Keeps the module boundary explicit so callers can find whether a province concern belongs to data, import, or draw.
+//! Open this file when adding or retiring province submodules or when the public organization of province code shifts.
+//! Neighboring work usually spans ProvinceRegistry, ProvinceGrid, render generation, and metadata import pipelines.
+//! The exported set here defines which province owners are considered part of the supported internal engine surface.
+//! Agents should start here when tracing province features because it reveals the authoritative file split by concern.
+//! This file stays thin by contract, so substantive province behavior belongs in the concrete owners it re-exports.
 
 /// Precomputed border-pair index map for shader and thick-border pipelines.
 pub mod border_index;

@@ -1,4 +1,4 @@
-//! `src/lua_api/html_api.rs` registers the `lurek.html` Lua boundary for html behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.html` Lua API for DOM-like elements, event emission, listeners, and HTML userdata.
 
 use super::SharedState;
 use crate::html::{parse_css_color_rgba, HtmlDocument, HtmlDocumentOptions, HtmlElementId};

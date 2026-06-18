@@ -1,8 +1,9 @@
-//! This file interprets ANSI terminal escape sequences so colored or styled text streams can be understood by the in-engine terminal.
-//! It strips control bytes when plain text is needed and decodes styling spans when visual fidelity matters. The file owns or coordinates data contracts including `AnsiColor`, `AnsiSpan`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Classic palette colors, extended xterm indexes, and full RGB forms are all resolved here into engine-friendly color data.
-//! Span extraction is part of the same logic so one input string can become ordered runs with shared style state. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Low-level parsing helpers stay close to the decoder because escape handling is sensitive to byte structure and malformed fragments.
+//! This file owns ANSI escape parsing that turns styled byte streams into plain text or resolved color spans.
+//! `AnsiColor` and `AnsiSpan` capture the decoded foreground, background, and bold state for each text run.
+//! `strip_ansi_codes` removes control sequences when callers need raw text without styling metadata.
+//! `parse_ansi_spans` and SGR helpers decode classic, bright, xterm-256, and explicit RGB color forms.
+//! Low-level UTF-8 walking stays here because malformed escapes and multibyte chars must be handled together.
+//! Open it when styled-stream parsing changes; highlighting and grid rendering live in sibling terminal files.
 
 use super::text_utils::utf8_char_len;
 

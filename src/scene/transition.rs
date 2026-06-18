@@ -1,7 +1,8 @@
-//! This file defines the time-based visual language for moving from one scene state to another without abrupt swaps. `scene/transition` delivers the transition implementation for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It combines transition kinds, easing behavior, and active progress tracking so scene changes can carry controlled visual momentum.
-//! Parsing support is included here because scripts often describe transitions through compact names rather than direct Rust types.
-//! The file turns those names and durations into concrete animated progress over time. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/scene/transition.rs` owns the visual transition types and active progress state used when moving between scenes.
+//! It defines `TransitionType`, `EasingType`, and `ActiveTransition`, keeping names, easing curves, and timers together.
+//! Parsing from script strings, linear and eased progress, completion checks, and elapsed-time updates all live here.
+//! This file is the transition-visual boundary for scene changes, while stack policy decides when a transition starts.
+//! Read it when transition vocabulary, easing behavior, or active transition timing semantics need to change.
 
 use crate::log_msg;
 use crate::math::easing;

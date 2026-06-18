@@ -1,4 +1,6 @@
-//! This file defines the hit record that carries everything a marched ray learned when it touched visible map geometry. `raycaster/ray_hit` delivers the ray hit implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `RayHit`, the per-ray result record produced when DDA traversal reaches visible geometry.
+//! It stores corrected distance, raw distance, tile value, face side, texture coordinate, alpha, and hit point.
+//! Open this file when ray-hit payload shape changes; projection math and scene construction live in siblings.
 
 /// Result record for one DDA ray; produced by `Raycaster2D::cast_ray`.
 #[derive(Debug, Clone)]

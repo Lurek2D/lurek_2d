@@ -19,45 +19,26 @@
 
 ## Summary
 
-- The raycaster module projects 2D grid maps into pseudo-3D first-person scenes.
-- Core traversal uses DDA ray marching for reliable tile intersection.
-- Perpendicular distance correction reduces fish-eye distortion artifacts.
-- Layered hit traversal supports transparent or partially passable surfaces.
-- Heightmaps support variable floor and ceiling profiles.
-- Multilevel support enables stacked slices and vertical transition logic.
-- Sliding doors are tracked as stateful animated grid occupants.
-- Grid-motion helpers support classic tile-snapped dungeon movement.
-- Billboard sprites represent dynamic entities in camera-facing projection.
-- Depth-aware ordering prevents billboard leakage through wall columns.
-- Scene building composes walls, floors, ceilings, sprites, and optional mesh inserts.
-- Lighting combines ambient and point-light effects with occlusion checks.
-- Last-build diagnostics expose lighting sample counts and cache reuse for scene-build profiling.
-- Depth buffers track wall ownership per screen column.
-- GPU path emits render commands for shared backend composition.
-- CPU software path supports snapshots, tests, and tool previews.
-- Tile picking maps screen coordinates back to hit tile and side semantics.
-- Visibility helpers support line-of-sight and fan-style query tooling.
-- Visualization utilities generate diagnostic images for rays and depth behavior.
-- Column batch structures provide compact transport of cast results.
-- Scene structs define a stable handoff between cast and draw phases.
-- Camera semantics are kept consistent across cast, pick, and render paths.
-- The module is 2D-first and does not implement full 3D physics.
-- It owns projection and scene composition for first-person map experiences.
-- Dependencies remain aligned with Lurek2D architecture boundaries.
-- Invariants emphasize deterministic cast output for fixed camera/map input.
-- Ordering invariants preserve coherent depth between walls and billboards.
-- APIs support both gameplay runtime and authoring/debug workflows.
-- The module is suitable for retro FPS and dungeon crawler experiences.
-- It provides strong observability through explicit diagnostics.
-- Performance is controlled by bounded per-column processing and culling assumptions.
-- Integration with render is direct through shared quad-oriented command language.
-- Overall, raycaster is a dedicated Feature Systems view pipeline.
-- It delivers practical first-person rendering without a full 3D stack.
-- This keeps implementation affordable while preserving gameplay readability.
-- The module is robust enough for production maps and iterative prototypes.
-- It supports deterministic behavior needed by evidence-style tests.
+- The `raycaster` module is the engine's pseudo-3D first-person view system for users who want corridor shooters, dungeon crawlers, exploration views, or tactical previews built from structured 2D world data instead of from a full freeform 3D engine stack.
+- Its technical base is DDA-style ray traversal over map-aligned space, but the important user-facing point is that the module turns that low-level technique into a complete first-person workflow with scene building, interaction helpers, lighting hooks, and deterministic output options.
+- The module is valuable because it solves the interpretation layer between a tile or cell world and a playable camera view. Users provide structured world data, and `raycaster` decides how that data becomes walls, depth, occlusion, visible openings, and navigable perspective.
+- This matters most in projects that want first-person presence without the complexity of general 3D mesh authoring, continuous physics, and fully free camera semantics. The system stays constrained enough to be authorable and testable while still producing a convincing viewpoint.
+- Variable heights, multilevel interpretation, partial blockers, and transparent or layered hits make the subsystem more than a toy single-plane corridor renderer. It can represent richer spaces where openings, stacked features, and elevation differences matter to play and readability.
+- Door state and related wall-feature handling are especially important because first-person tile spaces often depend on interactable architecture. A door is not only a texture change; it affects visibility, ray obstruction, navigation feel, and scene comprehension, and this module keeps those consequences together.
+- Floors and ceilings are part of the same contract rather than optional garnish, since convincing pseudo-3D scenes need more than wall columns to read as spaces.
+- Billboard sprites keep moving actors, pickups, props, projectiles, and markers inside the same depth model as the wall renderer, which avoids a separate mismatched pseudo-3D object layer.
+- Depth-aware ordering and visibility rules are therefore core capabilities. When wall features, sprites, and translucent elements overlap, the module owns what is actually visible and in what order.
+- Lighting hooks, visibility helpers, and picking support make the subsystem useful for gameplay and tooling as well as for final rendering.
+- Those helpers matter beyond display. Projects may use raycasted visibility for perception checks, preview cameras, editor probes, or line-of-sight style gameplay questions tied to the same projected world.
+- Scene assembly is one of the biggest practical wins for users: walls, floors, ceilings, sprites, and optional inserted content are composed through one coherent first-person pipeline instead of several subsystems guessing at perspective differently.
+- Movement-oriented helpers keep the module grounded in its natural use cases. Many raycasted projects combine discrete or grid-influenced movement with first-person presentation, so helpers for that style of navigation reduce project-specific glue at the camera seam.
+- Deterministic preview and software-capture paths matter because raycasted scenes often need screenshots, regression checks, editor thumbnails, or evidence artifacts outside live play.
+- Because the module owns both projection and interaction-friendly queries, aiming, object picking, and visibility-sensitive gameplay can stay aligned with the same depth model instead of relying on separate approximations.
+- The result is a feature that serves both play and inspection. The same projection model can support a shipped first-person game, a level preview tool, or a visibility-debug workflow without changing how world interpretation works.
+- This combination of constrained world model and rich view helpers is what gives the subsystem its identity: it provides first-person readability without giving up the structural advantages of a map-driven engine.
+- From a boundary perspective, world modules define the environment and `render` draws the final commands, but `raycaster` owns how structured 2D space becomes a first-person readable visual field with depth, occlusion, and object placement semantics.
+- Read `raycaster` as the engine authority for grid-based first-person projection and scene composition.
 
-This module primarily collaborates with `color`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -72,178 +53,209 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### build_scene.rs
 
-- This file assembles the full per-frame raycaster scene from camera state, grid hits, texture routing, and lighting inputs.
-- It turns wall contacts into screen-space quads whose geometry already matches the perspective rules expected by the render stage.
-- Floor and ceiling strips are expanded into textured spans with stable UVs so long corridors and open rooms keep coherent surface motion.
-- Lowered cells become pits with visible bottoms, side faces, and transitions that preserve depth cues instead of flattening into one plane.
-- Roofed regions are darkened differently from open regions so covered space reads denser even before dynamic lights are applied.
-- Point lights, ambient light, and distance falloff are blended here so every emitted surface leaves this file with its final light tint.
-- Billboard sprites are projected into the same camera space as walls, which keeps monsters, props, and pickups aligned with corridor depth.
-- Static meshes can be injected beside billboarded elements without asking later stages to reconstruct world-space context.
+- This file owns `RaycasterScene::build` and `build_multilevel`, which turn camera state into prepared scene geometry.
+- It defines scene-build inputs such as `SceneBuildParams`, `LoweredFloorCell`, `WorldSprite`, and `LevelSprite`.
+- Wall hits are converted here into perspective-correct quads with texture routing, cell values, depths, and light tint.
+- Floor and ceiling tiles expand into screen-space spans with stable UVs, texture overrides, and roof-aware lighting.
+- Lowered-floor cells generate pits, bottoms, and side faces so vertical relief survives scene translation cleanly.
+- Lighting sampling blends ambient, point, and global light here, with a cache that keeps repeated queries affordable.
+- Roofed cells, ceiling holes, and multilevel visibility rules influence which surfaces are emitted and how they render.
+- Billboard sprites use the same camera model as walls, including directional texture selection from viewer angle.
+- Multilevel builds group sprites and lights per slice, compile level runtimes on demand, and merge visible slices.
+- Texture lookup callbacks keep resource routing outside the builder while geometry and lighting policy stay centralized.
+- This file is the staging boundary between grid-owned ray data and the renderer-facing `RaycasterScene` surface.
+- It is the right owner for changing surface emission, pit geometry, or light application without renderer rewrites.
+- Open this file when scene assembly semantics change; casting, picking, and draw translation live in siblings.
 
 ### column_batch.rs
 
-- This file stores the compact per-column output that the raycaster produces before any richer scene assembly begins. `raycaster/column_batch` delivers the column batch implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It keeps wall slice projection, depth, and screen span data in a shape that is cheap to fill for an entire frame at once.
-- Frame-level metadata for colors and dimensions rides next to the columns so downstream code can treat one batch as a complete column pass.
-- Packed ray input is unpacked here into stable per-column records that preserve shading and visibility decisions from the DDA stage.
+- This file owns `ColumnData` and `ColumnBatch`, the compact per-column output buffer before scene assembly.
+- It stores wall slice spans, texture coordinate, shade, cell value, depth, screen size, and flat fill colors.
+- Helpers initialize frame-sized buffers, write one column, or unpack packed DDA float arrays into stable records.
+- Downstream render paths can reuse one batch as a complete wall pass without rederiving projection or shading.
+- Open this file when per-column buffer shape changes; DDA casting and scene translation live in sibling owners.
 
 ### dda.rs
 
-- This file owns the grid-backed DDA marcher that turns a 2D tile map into ray hits, corrected distances, and wall sampling coordinates.
-- It handles both single-hit and layered traversal so partially transparent cells can be marched through without losing the final solid contact.
-- Wide fan casts for a whole screen are derived from the same stepping rules, which keeps column rendering consistent with ad hoc queries.
-- Line-of-sight checks reuse the same grid logic, so lighting, AI, and visibility questions follow the same blocking semantics as rendering.
-- The map storage stays simple and row-major, with safe fallback behavior for out-of-range reads and silent rejection of invalid writes.
-- Sprite projection helpers live beside ray stepping so billboard placement uses the same camera conventions as wall casting.
+- This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers ray or LOS queries.
+- It stores map dimensions, row-major cells, wall alpha overrides, wall features, and synchronized door feature state.
+- Core casting methods produce single hits, layered transparent hits, fan casts, and packed ray buffers from one model.
+- Visibility helpers reuse the same blocking rules for line of sight, so lighting and AI stay aligned with rendering.
+- Door synchronization translates `DoorManager` openness into wall features without replacing underlying tile identity.
+- Sprite and floor helpers project billboards and sample floor rows with the same camera conventions as wall casting.
+- Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes.
+- Open this file when marching semantics or map-owned ray data change; debug views and scene building live in siblings.
 
 ### depth_buffer.rs
 
-- This file keeps the narrow depth memory that tells the raycaster which wall distance currently owns each screen column. `raycaster/depth_buffer` delivers the depth buffer implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It exists so later sprite and overlay work can reject fragments that should remain hidden behind already projected geometry.
-- The structure is intentionally simple because it is cleared, written, and read every frame on the hottest render path. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `clear`, `set`, `get`, `is_visible`, `width` stays attached to the local data model and invariants.
+- This file owns `DepthBuffer`, the per-column wall-depth memory used to hide sprites behind geometry.
+- It stores one depth per screen column and exposes clear, set, get, and visibility checks for each frame.
+- Open this file when occlusion buffering changes; wall casting and sprite projection stay in sibling owners.
 
 ### doors.rs
 
-- This file models raycaster doors as animated grid occupants whose openness changes continuously while their tile identity stays stable.
-- Each door carries movement direction, travel progress, and a small phase machine so gameplay code can request transitions without manual timing.
-- The manager keeps doors in one indexed registry, making updates and spatial queries deterministic for the rest of the raycaster.
-- Because door openness is tracked separately from base map cells, rendering and collision code can read evolving passage state without duplicating logic.
+- This file owns `DoorDirection`, `DoorState`, `Door`, and `DoorManager` for animated doors in map cells.
+- It stores grid position, open amount, speed, slide axis, and phase state so doors evolve without retagging tiles.
+- Manager helpers add doors, switch them between opening and closing, advance animation, and query doors by tile.
+- Rendering and collision code can read one shared door registry, keeping passage state consistent across subsystems.
+- Open this file when door lifecycle semantics change; wall descriptors and scene construction stay in siblings.
 
 ### draw.rs
 
-- This file turns a prepared raycaster scene into software pixels when GPU command generation is not the chosen output path.
-- It fills ceilings, floors, walls, billboard sprites, and transient model meshes directly into image memory. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Draw order stays deliberately simple so layered surfaces read correctly even without a richer hardware depth workflow. Public callable behavior is centered on no named public items, while method-level behavior such as `draw_to_image` stays attached to the local data model and invariants.
-- The result is useful for offline images, debug previews, and tool-facing render outputs that need first-person content in CPU memory.
+- This file owns the software rasterization path that turns a prepared `RaycasterScene` into CPU-side `ImageData`.
+- It fills ceilings, floors, walls, sprites, and transient meshes in a fixed order using quad and triangle helpers.
+- The scene already carries geometry, UVs, lighting, and depth intent, so this file translates instead of recomputing.
+- It is the right owner for previews, captures, and tool outputs that need first-person imagery without renderer commands.
+- Open this file when CPU draw ordering or fill behavior changes; scene assembly and GPU translation live in siblings.
 
 ### grid_motion.rs
 
-- This file provides grid-locked locomotion rules for games that want raycaster movement to snap cleanly from tile to tile.
-- Facing direction is reduced to stable cardinal deltas so movement input stays predictable for dungeon crawlers and similar designs.
-- Collision checks are delegated through a caller-provided blocking rule, which lets map logic stay external while motion rules stay reusable.
+- This file owns grid-locked movement helpers for raycaster games that step actors one tile at a time.
+- It defines `GridMoveAction`, parses move tokens, and converts facing direction into cardinal world deltas.
+- `try_move` applies bounds and caller-provided blocking tests so locomotion rules stay reusable across maps.
+- Open this file when snapped movement semantics change; ray casting and wall visibility logic live in siblings.
 
 ### heightmap.rs
 
-- This file stores per-tile floor and ceiling offsets so a raycast map can express steps, pits, and varied room volumes. `raycaster/heightmap` delivers the heightmap implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Height data can be assigned cell by cell or across rectangular regions, which makes authored layouts and procedural stamping equally convenient.
-- Reads always yield a stable answer and invalid writes are ignored, keeping spatial queries predictable when tools or scripts probe edges.
+- This file owns `HeightMap`, the per-tile floor and ceiling override store for stepped raycaster spaces.
+- It stores map dimensions plus floor and ceiling arrays, then serves stable reads with ignored bad writes.
+- Helpers set individual cells or rectangles so authored tools and procedural passes share one height model.
+- Open this file when per-tile height semantics change; scene building and level rendering stay in siblings.
 
 ### level_render.rs
 
-- This file handles the column-wise drawing logic for stacked raycaster levels where openings can reveal space above or below the current slice.
-- It decides which neighboring cells remain visible through holes so multi-level layouts feel connected instead of collapsing into isolated layers.
-- Framebuffer output is written directly in software, with floor and ceiling sampling tuned for readable textured planes in narrow screen columns.
-- The file therefore acts as the specialized draw path for vertical level relationships that are more complex than the flat scene builder alone.
+- This file owns hole-visibility helpers and rendering config for stacked raycaster levels with openings.
+- It defines `TileHighlight` and `LevelRenderConfig`, then computes which holed cells stay visible from camera.
+- The visibility pass filters floor openings by distance so adjacent levels can render through holes efficiently.
+- These types support software column rendering paths where above and below slices need per-cell decisions.
+- Open this file when multi-level reveal rules change; generic ray hits and projection math belong to siblings.
 
 ### lighting.rs
 
-- This file applies simple but readable local lighting to raycast space using colored point emitters and ambient fill. `raycaster/lighting` delivers the lighting implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Visibility between a light and a sample point is checked against blocking tiles so illumination respects corridor walls and corners.
-- Contributions from multiple emitters are accumulated into one tint that later scene builders can stamp onto walls, floors, and sprites.
-- The model favors clear spatial mood and cheap evaluation over physically exact light transport. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `PointLight` plus local and global lighting helpers for colored illumination in raycaster space.
+- It stores point-light position, optional level ownership, radius, intensity, and color for cheap sample evaluation.
+- Helper functions test line of sight through walls, accumulate ambient and point light, and apply directional sun tint.
+- Scene builders reuse these lighting samples to shade walls, floors, sprites, and multilevel slices without light graphs.
+- Open this file when raycaster light semantics change; hit casting and wall feature payloads live in sibling owners.
 
 ### mod.rs
 
-- This module delivers the raycast feature stack that turns a 2D tile field into a readable first-person space with walls, floors, ceilings, sprites, and moving doors.
-- It combines DDA stepping, projection, scene building, visibility, lighting, and helper render paths so game code can ask for either gameplay queries or full presentation output.
-- Support code for elevation, multilevel layouts, picking, depth, and debug visualization lives beside the core marcher so the subsystem keeps one camera model end to end.
-- At the highest level, this is the part of the engine that gives Lua and Rust callers a classic grid-based 3D view without leaving the 2D runtime architecture.
-- `raycaster/mod` is the raycaster module index, declaring `build_scene`, `column_batch`, `dda`, `depth_buffer`, `doors`, and 18 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/raycaster/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `build_scene::{DirectionalSpriteTextures, LevelSprite, SceneBuildParams, WorldSprite}`, `column_batch::{ColumnBatch, ColumnData}`, `dda::Raycaster2D`, `depth_buffer::DepthBuffer`, and 17 more centralized for the raycaster subsystem.
-- The file documents how raycaster submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- Agents should read this index to choose the narrow owner file first, because it maps names such as `build_scene`, `column_batch`, `dda`, `depth_buffer`, `doors`, and 18 more to concrete implementation responsibilities.
+- This module re-exports the raycaster subsystem surface for casting, scene building, lighting, doors, and rendering.
+- It keeps navigation explicit by mapping which sibling files own DDA marching, column batches, height data, and adapters.
+- Public exports here route callers toward `Raycaster2D` for casting and scene types for prepared first-person output.
+- `projection.rs`, `depth_buffer.rs`, and `sprite_projection.rs` own screen-space math and occlusion data.
+- `doors.rs`, `wall_feature.rs`, and `heightmap.rs` hold cell state that changes how blocking tiles render.
+- `build_scene.rs`, `draw.rs`, and `render.rs` translate ray hits into either CPU pixels or engine render commands.
+- Visibility, segment, and grid-motion helpers stay here so gameplay queries can reuse the camera model.
+- Change this file when the public raycaster symbol map moves; change siblings when behavior or data rules change.
 
 ### multilevel.rs
 
-- This file extends the flat raycaster into stacked slices so one map position can participate in a multi-storey layout. `raycaster/multilevel` delivers the multilevel implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Each slice carries its own vertical span and tile layer, allowing bridges, overhead rooms, shafts, and similar structures to share horizontal space.
-- The representation stays close to the base raycaster model, which keeps level transitions understandable for rendering and gameplay code.
-- Special transitions can move the viewer between slices without inventing a separate world format or renderer. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- The design is meant to add vertical richness while preserving the core assumptions of the column-based pipeline. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- `raycaster/multilevel` delivers the multilevel implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `RaycasterLevel` and `MultiLevelGrid`, the stacked-slice model for multi-storey raycaster worlds.
+- It stores per-level walls, wall features, texture overrides, lowered floors, holes, vertical bounds, and caches.
+- Level helpers read or mutate wall, floor, ceiling, and hole data while rejecting out-of-bounds writes safely.
+- The runtime builder compiles a transient `Raycaster2D` view from level-owned cells for rendering and picking.
+- `MultiLevelGrid` tracks the active slice, caches compiled runtimes, and resolves visible lower or upper levels.
+- Ascend and descend checks use floor or ceiling holes so movement and visibility share one vertical rule set.
+- Open this file when stacked-level data or cross-level visibility changes; scene assembly lives in siblings.
 
 ### projection.rs
 
-- Projection mathematics converting ray-cast distance values into screen-space wall column heights and vertical draw bounds for 3D raycaster rendering.
+- This file owns the projection helpers that convert ray-hit distance into wall column height and draw bounds.
+- It also computes distance-based shading factors so raycaster rendering can fade geometry over viewing range.
+- Open this file when wall projection math changes; hit records and sprite payloads live in sibling files.
 
 ### ray_hit.rs
 
-- This file defines the hit record that carries everything a marched ray learned when it touched visible map geometry. `raycaster/ray_hit` delivers the ray hit implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `RayHit`, the per-ray result record produced when DDA traversal reaches visible geometry.
+- It stores corrected distance, raw distance, tile value, face side, texture coordinate, alpha, and hit point.
+- Open this file when ray-hit payload shape changes; projection math and scene construction live in siblings.
 
 ### render.rs
 
-- This file converts the prepared raycaster scene into renderer commands that the broader engine command stream already understands.
-- It emits textured or flat-colored quads in the ordering expected for ceilings, floors, walls, and billboard content. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Because the scene already carries geometry, UVs, light, and depth intent, this step mostly translates instead of recomputing presentation logic.
-- The file is therefore the handoff point where raycast-specific scene data becomes generic render work for the engine backend.
+- This file owns the render-command bridge that turns a prepared `RaycasterScene` into generic engine draw commands.
+- It emits textured quads or flat rectangles for ceilings, floors, walls, sprites, and transient meshes in scene order.
+- Because the scene already contains geometry, UVs, lighting, and depth intent, this file mostly translates existing data.
+- It is the handoff point where raycaster-specific presentation becomes backend-agnostic `RenderCommand` work.
+- Open this file when command translation or draw ordering changes; CPU rasterization and scene assembly live in siblings.
 
 ### scene.rs
 
-- This file defines the transient geometry language that the raycaster uses between spatial reasoning and final drawing. `raycaster/scene` delivers the scene implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Walls, floors, ceilings, sprites, and injected meshes all share a quad-oriented representation so later stages can sort and emit them uniformly.
-- Each record carries the texture routing, light tint, depth meaning, and UV state needed to survive the trip from world logic to renderer.
-- The scene container groups one frame of these surfaces into a single package sized to the active viewport. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- In practice it is the raycaster's staging area for everything the camera can currently see. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns `RaycasterScene` and its quad, sprite, mesh, pick, and build-stat record types for one frame.
+- It stores walls, floors, ceilings, billboard sprites, transient models, viewport size, and build counters.
+- Quad records carry corners, UVs, texture routing, light tint, depth, and perspective data for later draw paths.
+- Picking helpers resolve screen pixels against projected sprites and model triangles, with optional sprite alpha tests.
+- `EntityPickResult` and related enums define the stable payload returned when higher layers query scene selections.
+- This file is the staging boundary between raycaster world reasoning and renderer or CPU draw translation.
+- Open this file when prepared-scene data or picking semantics change; build and render flow live in siblings.
 
 ### scene_adapter.rs
 
-- Runtime scene-input adapter that maps static or physics-backed 2D transforms. `raycaster/scene_adapter` delivers the scene adapter implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- into raycaster sprite, light, and optional model descriptors. The file owns or coordinates data contracts including `ResolvedSceneTransform`, `SceneTransform`, `SceneAdapterSprite`, `SceneAdapterLight`, `ResolvedSceneModel`, and 2 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It exists so gameplay code can treat physics bodies as the source of truth. Public callable behavior is centered on no named public items, while method-level behavior such as `static_xy`, `body`, `resolve`, `new`, `clear`, `clear_sprites`, and 8 more stays attached to the local data model and invariants.
-- while still feeding the raycaster with pseudo-3D presentation inputs. Runtime integration reaches sibling engine areas through crate modules `physics`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- `raycaster/scene_adapter` delivers the scene adapter implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns transform adapters that turn static entries or live physics bodies into scene-facing raycaster inputs.
+- It stores `SceneTransform` sources plus resolved sprite, light, and optional model bindings sampled each frame.
+- Body-backed transforms apply local offsets and angle offsets so pseudo-3D attachments stay aligned with physics owners.
+- `SceneAdapter` aggregates bindings, clears tracked groups, and resolves live entries into world sprite or light data.
+- The adapter keeps gameplay code focused on 2D ownership while the raycaster consumes one normalized input surface.
+- This file is the boundary between physics or runtime state and the scene builder's input contracts.
+- Open this file when source-to-scene adaptation changes; prepared geometry and lighting evaluation live in siblings.
 
 ### segment.rs
 
-- This file provides a minimal 2D segment representation for ray-style queries that are easier to express against explicit line geometry.
-- It computes nearest segment intersections from an origin and direction so callers can reason about wall-like boundaries outside the grid marcher.
-- The focus is geometric clarity for helper queries, not a full alternate rendering pipeline. Public callable behavior is centered on `cast_ray_2d`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns `Segment` and `cast_ray_2d`, the explicit line-geometry helper for non-grid ray queries.
+- It stores endpoint pairs and finds the nearest segment hit along a ray within a caller-supplied limit.
+- Open this file when segment-cast semantics change; visibility polygons and DDA traversal live in siblings.
 
 ### sprite_manager.rs
 
-- This file manages world-space billboard content that should appear inside the raycast view without becoming part of the wall grid.
-- It keeps sprite placement, identity, and visibility data in one registry so gameplay systems can add props, pickups, or actors cheaply.
-- When the camera needs them, sprites are exposed in depth-aware order that fits alpha-friendly first-person rendering. Public callable behavior is centered on no named public items, while method-level behavior such as `select_for_viewer`, `new`, `add`, `add_directional`, `remove`, `set_position`, and 6 more stays attached to the local data model and invariants.
-- The registry therefore acts as the dynamic object layer that rides on top of static map geometry. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- `raycaster/sprite_manager` delivers the sprite manager implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `DirectionalSpriteTextures`, `WorldSprite`, and `SpriteManager`, the billboard sprite registry.
+- It stores sprite identity, world position, texture choice, directional variants, scale, and visibility in one owner.
+- Directional texture selection compares viewer angle to facing so billboards can swap front, side, or back art.
+- Manager helpers add, remove, move, retarget, hide, clear, and distance-sort visible sprites for camera use.
+- The registry keeps dynamic object presentation separate from wall cells while matching the raycaster depth pipeline.
+- Open this file when billboard registry or facing-selection semantics change; scene projection stays elsewhere.
 
 ### sprite_projection.rs
 
-- This file stores the screen-facing projection result for a billboard after world position has been interpreted through the raycaster camera.
+- This file owns `SpriteProjection`, the screen-space result record produced for one raycaster billboard sprite.
+- It stores screen x, uniform scale, camera distance, and visibility so later draw code can sort and clip safely.
+- Open this file when billboard projection payload changes; projection math and sprite drawing live in siblings.
 
 ### tile_picker.rs
 
-- This file maps a screen interaction back into raycaster grid space so UI clicks can target the world the player is looking at.
-- It replays the essential camera and stepping assumptions of the view transform instead of relying on a separate picking representation.
-- Screen size, camera pose, and tile scale are all part of the picker state, which keeps repeated queries stable across a frame.
-- The result reports both tile identity and hit character so callers can tell which cell was reached and from which side it was approached.
-- This makes the file the practical bridge between first-person view coordinates and gameplay selection on the underlying map.
-- `raycaster/tile_picker` delivers the tile picker implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The file owns or coordinates data contracts including `PickSurface`, `PickWallSection`, `ScreenPickParams`, `TilePicker`, `PickResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `horizon`, `projection_distance`, `new`, `set_camera`, `set_screen_size`, and 3 more stays attached to the local data model and invariants.
+- This file owns screen-to-world picking for the raycaster, mapping a pixel back onto wall, floor, or ceiling space.
+- It defines `PickSurface`, `PickWallSection`, `ScreenPickParams`, `TilePicker`, and `PickResult` payloads.
+- `TilePicker` keeps camera pose, screen size, grid size, and tile scale for repeated first-person selection queries.
+- Helper math derives ray angle, corrected distance, horizon, projection depth, and plane intersections from the camera.
+- Wall picking reuses DDA stepping so hit ordering matches the same traversal semantics used for rendering and visibility.
+- Feature-aware logic distinguishes half-height walls, window bands, and door panels, returning the hit solid section.
+- Floor and ceiling picking projects the pixel onto horizontal planes and rejects cells hidden by closer walls or holes.
+- `Raycaster2D::pick_screen` resolves single-level maps, while `MultiLevelGrid::pick_screen` chooses the owning slice.
+- This file is the boundary between first-person UI input and gameplay selection on underlying grid or multilevel data.
+- Open this file when selection payloads or pick precedence change; scene building and ray hits live in siblings.
 
 ### visibility.rs
 
-- This file computes a radial visibility fan from a source point against segment obstacles in the plane. `raycaster/visibility` delivers the visibility implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Rays are aimed around segment endpoints with slight angular offsets so the resulting contour closes gaps that naive sampling would miss.
-- The output is shaped for immediate drawing or further masking work wherever a 2D field of view needs explicit polygon points.
+- This file owns `field_of_view`, the radial visibility-polygon builder that casts around segment endpoints.
+- It samples slight angular offsets, reuses segment casting, and returns points ready for drawing or masking.
+- Open this file when 2D visibility contour generation changes; segment hits and grid raycasting live in siblings.
 
 ### visualization.rs
 
-- This file provides software visualizers that expose how the raycaster sees, marches, shades, and composes space without requiring the main renderer.
-- It can paint overhead maps, first-person wall bands, line-of-sight traces, depth previews, and sweep atlases directly into image buffers.
-- Procedural material coloring is embedded here so diagnostic or demo output can still look spatially rich without loading authored textures.
-- The helpers are useful when tuning collision, sampling, map layout, or visibility because they make invisible intermediate state immediately legible.
-- Outputs stay in plain image memory, which makes them easy to save, inspect in tools, or present inside UI overlays. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Several views deliberately trade physical correctness for fast explanation, prioritizing readable spatial evidence over final-game polish.
+- This file owns software diagnostic views that render raycaster internals directly into `ImageData` buffers.
+- It attaches debug rendering methods to `Raycaster2D` for top-down maps, wall bands, depth views, and sight traces.
+- Helpers reuse live ray casts and line-of-sight logic so visual evidence matches the subsystem's marching behavior.
+- Camera sweep and textured preview outputs let tools inspect sampling and material interpretation without the renderer.
+- Procedural colouring stays local here so explanations remain readable even when authored textures are unavailable.
+- The outputs live in plain image memory, making them easy to save, diff, or embed inside editor and UI overlays.
+- Open this file when debug-view semantics change; core casting and scene assembly live in sibling owners.
 
 ### wall_feature.rs
 
-- This file defines per-cell wall feature descriptors that refine how a blocking tile should render and behave. `raycaster/wall_feature` delivers the wall feature implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Features let one tile become a half-height barrier, a window with a visible opening, or a sliding door without changing the base 2D map format.
-- The data stays compact and cell-local so scene building, collision, and editor-facing APIs can all consult the same description.
-- `raycaster/wall_feature` delivers the wall feature implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `WallFeatureKind` and `WallFeature`, the cell-local descriptors for wall behavior refinement.
+- It models half-height walls, window openings, and sliding doors without changing the base tile map schema.
+- Constructors clamp feature parameters into safe ranges so tools and scene builders share stable semantics.
+- Query helpers answer movement, visibility, and light blocking from the same payload used by rendering code.
+- Open this file when per-cell wall behavior changes; door state progression and scene assembly live in siblings.
 
 
 

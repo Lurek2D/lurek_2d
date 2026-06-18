@@ -1,8 +1,9 @@
-//! This file implements the runtime path for executing games and scripts without opening a window or interactive frontend. `runtime/headless` delivers the headless implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It exists for automation, tests, batch jobs, and command-line workflows that still need the engine lifecycle to run correctly.
-//! Startup wiring here prepares the Lua environment, script roots, and output behavior so headless sessions still feel like real engine sessions.
-//! Frame stepping follows the normal update rhythm closely enough that gameplay logic can be exercised without a graphical loop.
-//! Error mapping is also handled here because command-line callers need process-oriented outcomes while tests may need structured failures.
+//! This file owns no-window runtime execution for automation, tests, eval snippets, and batch Lua workflows.
+//! `HeadlessOptions` captures inputs, while the main entry points map engine errors to process-oriented outcomes.
+//! Startup wiring creates shared state, headless Lua VM bindings, package paths, and stdout-backed `print` behavior.
+//! Frame stepping calls the usual lurek callbacks with configured dt and optional callback timeout enforcement.
+//! Timeout helpers own hook-based abort logic so runaway Lua code fails cleanly during unattended execution.
+//! Open it when non-GUI runtime flow changes; config, modes, and shared state contracts live in sibling files.
 
 use crate::lua_api::create_headless_vm;
 use crate::repl::value_to_string;

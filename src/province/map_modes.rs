@@ -1,7 +1,8 @@
-//! Map-mode configuration layer for province rendering where the same geometry must support multiple semantic views such as political, terrain, or visibility overlays.
-//! The file treats each mode as authored data registered at runtime, allowing game code to decide which province property should drive visible color and presentation.
-//! That indirection keeps the renderer generic while still letting projects define radically different strategic lenses over the same province set.
-//! Mode lookup and color resolution live here so rendering code can ask for final style intent instead of interpreting per-mode config itself.
+//! Stores province map-mode definitions that decide how fills are colored when the renderer asks for thematic overlays.
+//! Owns MapModeConfig and MapModeRegistry data, including fill-color lookup rules and fallback behavior per province.
+//! Provides the styling boundary between raw province attributes and render-time color selection for alternate views.
+//! This file matters when new map modes, fallback color semantics, or province-style integration rules are added.
+//! Neighboring changes usually involve ProvinceStyle fields, registry storage, and renderer mode selection logic.
 
 use std::collections::HashMap;
 

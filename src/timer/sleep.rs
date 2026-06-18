@@ -1,4 +1,6 @@
-//! This file provides the blocking sleep primitive used by timer-facing runtime code. `timer/sleep` delivers the sleep implementation for the timer subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `src/timer/sleep.rs` owns the blocking sleep helper used when runtime code needs wall-clock delay on the current thread.
+//! It intentionally stays minimal: non-positive durations are ignored, and positive values forward to `std::thread::sleep`.
+//! Read this file when blocking-delay semantics, no-op guards, or platform-facing sleep behavior need to change.
 
 /// Block the calling thread for `seconds` and return nothing; no-op for values <= 0.0.
 pub fn sleep(seconds: f64) {

@@ -1,6 +1,7 @@
-//! This file defines nine-slice scaling logic for UI panels and framed elements that must resize without destroying border fidelity.
-//! It splits one source region into corners, edges, and center pieces whose destination layout can adapt to arbitrary target sizes.
-//! Corner preservation and controlled edge stretching are the core visual promises of this file. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `patches` stays attached to the local data model and invariants.
+//! This file owns `NineSlice` and `Patch` tuples for scalable panels whose borders must survive resizing cleanly.
+//! It stores the texture key, edge inset sizes, and source texture dimensions used to split nine source regions.
+//! The `patches` method returns source and destination quads so callers can stretch edges and center without corner drift.
+//! Open this file when panel-scaling geometry changes; atlas lookup, sprite state, and batching live in siblings.
 
 use crate::runtime::resource_keys::TextureKey;
 

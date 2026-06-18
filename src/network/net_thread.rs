@@ -1,11 +1,14 @@
-//! Background network thread that owns all blocking I/O for HTTP, TCP, and WebSocket work. `network/net_thread` delivers the net thread implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Uses MPSC request and response channels to keep the game thread isolated from latency. The file owns or coordinates data contracts including `NetworkRequest`, `NetworkResponse`, `TcpEvent`, `WsEvent`, `NetworkRuntime`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Drives transport activity through typed request and response enums. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `next_request_id`, `send`, `poll`, `shutdown`, `is_running`, and 14 more stays attached to the local data model and invariants.
-//! Models connection state with explicit TCP and WebSocket event types. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Spawns, polls, and shuts down the runtime while preserving request ordering. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Routes completed results back with correlation ids for outstanding work. The file boundary separates network implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! Keeps the blocking transport surface off the main loop. State changes, validation paths, and helper routines in `src/network/net_thread.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! `network/net_thread` delivers the net thread implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns the background network runtime that keeps blocking HTTP, TCP, and WebSocket work off the game loop.
+//! `NetworkRequest` and `NetworkResponse` define the typed command and completion protocol between threads.
+//! `TcpEvent` and `WsEvent` live here because the runtime normalizes lifecycle callbacks emitted by backend managers.
+//! `NetworkRuntime` stores the request sender, response receiver, join handle, ids, auth token, and activity counters.
+//! Public queue helpers stay here because request-id allocation and active-request accounting are runtime concerns.
+//! Thread startup and shutdown also belong here because this file owns the `lurek-network` worker thread lifecycle.
+//! Its event loop polls backend managers, drains requests, and drives auth refresh plus matchmaking polling state.
+//! `handle_request` remains local because it routes HTTP, TCP, WebSocket, auth, and matchmake commands.
+//! Auth and matchmake session structs stay here because they track transient runtime state between helper-thread callbacks.
+//! Metrics and access-token getters also belong here since they summarize live runtime status for callers.
+//! Open it when cross-thread networking flow changes; backend socket mechanics live in their sibling transport owners.
 
 use super::http;
 use super::tcp::TcpConnectionManager;

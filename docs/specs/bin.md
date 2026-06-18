@@ -16,11 +16,10 @@
 
 ## Summary
 
-- Defines how users actually start Lurek2D: either as an interactive desktop run or as a non-interactive CLI workflow.
-- Enables automation-oriented use cases like validation, packaging, and screenshot batches without opening a game window.
-- Gives one consistent entry layer so teams can switch between local playtesting and pipeline tooling with minimal friction.
+- This spec covers executable startup modes.
+- `lurek_headless` is for automation and capture runs, while `lurekc` is for interactive startup.
+- Read it as the boundary between tool execution and live play.
 
-This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -30,14 +29,17 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ### lurek_headless.rs
 
-- Implements the headless CLI runner used for validation, packaging, and screenshot batch workflows. `bin/lurek_headless` delivers the lurek headless implementation for the bin subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Dispatches subcommands into deterministic offline operations without opening an interactive runtime window. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Runs game validation tooling and archive packaging against target directories for CI and release prep. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Captures batch screenshots across multiple games to support visual smoke checks in automation pipelines. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/bin/lurek_headless.rs` owns the non-interactive CLI used for validation, packaging, and screenshot batch workflows.
+- It parses subcommands and dispatches offline operations without opening the normal interactive engine window.
+- Validation command wiring, archive packing, recursive ZIP assembly, and batch screenshot orchestration all live here.
+- This file is the entrypoint boundary for headless automation tasks, while engine runtime behavior remains elsewhere.
+- Read it when CLI command set, archive layout, validator invocation, or screenshot-batch behavior needs to change.
 
 ### lurekc.rs
 
-- Defines the console-suppressed desktop launcher that delegates to the shared engine bootstrap. `bin/lurekc` delivers the lurekc implementation for the bin subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- `src/bin/lurekc.rs` owns the console-suppressed desktop launcher that forwards startup into the shared entrypoint.
+- It exists mainly to provide the Windows GUI binary variant while keeping real bootstrap logic in the main library crate.
+- Read this file when binary launch behavior or platform-specific subsystem flags change, not when runtime logic changes.
 
 
 

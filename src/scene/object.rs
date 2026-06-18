@@ -1,6 +1,7 @@
-//! Simple 2D scene object entity storing position, sprite reference, and visibility state for basic game drawable management.
-//! Provides mutation methods to update position, sprite name, and visibility flag during gameplay without reconstructing the object.
-//! Integrates with Lua through `register()` to expose constructor and property setters so scripts can create and control scene objects.
+//! `src/scene/object.rs` owns the lightweight scene object entity exposed to Lua for simple positioned sprite state.
+//! It defines `SceneObject` plus Lua registration helpers, keeping position, sprite, and visibility mutation together.
+//! This file is the small object-state boundary for simple scene scripts, separate from stack control and rendering flow.
+//! Read it when scene-object fields, Lua API shape, or basic object mutation behavior needs to change.
 
 use std::cell::RefCell;
 use std::rc::Rc;

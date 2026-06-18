@@ -1,6 +1,7 @@
-//! Defines cross-platform system cursor shape variants used by runtime cursor state. `cursor/system_cursor` delivers the system cursor implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Maps engine-facing cursor variants to platform-native icon representations. The file owns or coordinates data contracts including `SystemCursor`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports case-insensitive string parsing for config and script-driven selection. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str` stays attached to the local data model and invariants.
+//! `src/cursor/system_cursor.rs` owns the engine-facing enum of native system cursor shapes and string conversions.
+//! It defines `SystemCursor`, keeping parseable cursor names and canonical string identifiers under one small owner.
+//! Config and script name parsing plus stable string export both live here, separate from runtime cursor policy.
+//! Read this file when supported native cursor variants or string-mapping behavior need to change.
 
 /// System cursor shapes available on all platforms.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

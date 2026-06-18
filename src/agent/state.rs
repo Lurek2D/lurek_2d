@@ -1,8 +1,10 @@
-//! Defines runtime state contracts that shape outbound agent requests from script-facing configuration. `agent/state` delivers the state container and transition helpers for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Aggregates endpoint, model, prompt policy, timeout, and retry controls into deterministic payload inputs. The file owns or coordinates data contracts including `AgentState`, `SystemSkill`, `AISystemState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Builds direct and system-routed request variants with consistent field and option mapping. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_name`, `set_description`, `set_max_retries`, `set_timeout`, `set_option`, and 21 more stays attached to the local data model and invariants.
-//! Composes AI-system context from instructions and skill fragments matched to prompt intent signals. Runtime integration reaches sibling engine areas through crate modules `agent`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Keeps mutable control state separate from transport execution to preserve predictable behavior boundaries. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `AgentState`, `SystemSkill`, and `AISystemState`, the mutable config layer behind agent requests.
+//! `AgentState` stores endpoint, model, prompt, format, options, skills, retries, and timeout for one caller.
+//! Request builders turn that state into stable `AgentRequest` payloads, with optional external system-block override.
+//! `AISystemState` holds shared system prompts, named instruction blocks, and keyword-matched skills for routing.
+//! Context assembly merges explicit instructions and matched skills into deterministic prompt text for downstream agents.
+//! This file separates configuration from transport execution so higher layers can mutate policy without network coupling.
+//! Open it when request-shaping rules change; background delivery and memory behavior live in sibling modules.
 
 use crate::agent::AgentRequest;
 use std::collections::HashMap;

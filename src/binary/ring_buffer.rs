@@ -1,7 +1,8 @@
-//! Implements a fixed-capacity circular queue with overwrite-on-full FIFO behavior. `binary/ring_buffer` delivers the ring buffer implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports push, pop, peek, and indexed access over the current logical element window. The file owns or coordinates data contracts including `RingBuffer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Preserves deterministic oldest-to-newest traversal for iteration and collection flows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push`, `pop`, `peek`, `peek_newest`, `get`, and 9 more stays attached to the local data model and invariants.
-//! Provides copy-optimized extraction helpers for compatible element type constraints. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `RingBuffer`, the fixed-capacity FIFO container that overwrites the oldest item when full.
+//! It stores slot storage, head index, configured capacity, and current length for deterministic queue rotation.
+//! Core helpers cover push, pop, peeking, indexed access, clearing, and oldest-to-newest iteration of entries.
+//! Copy-aware extraction methods let callers collect values or references without repeating circular index math.
+//! Open it when transient queue buffering changes; binary codecs, views, and schema packing live in siblings.
 
 /// Hold circular queue storage with overwrite semantics.
 ///

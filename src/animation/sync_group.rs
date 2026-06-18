@@ -1,6 +1,6 @@
-//! Defines synchronization groups for animation instances that must maintain shared playback phase. `animation/sync_group` delivers the sync group implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Tracks unique membership so timing alignment stays stable across coordinated animated entities. The file owns or coordinates data contracts including `AnimSyncGroup`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Serves as lightweight grouping state for systems that enforce multi-entity animation sync. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `remove`, `clear`, `member_count`, `members` stays attached to the local data model and invariants.
+//! This file owns `AnimSyncGroup`, the membership list used to keep multiple animation instances phase-aligned.
+//! It stores unique slotmap keys and exposes small mutation helpers so synchronization systems share one contract.
+//! Open it when coordination-group semantics change; actual playback state and stepping live in sibling files.
 
 use slotmap::DefaultKey;
 /// Set of animation keys that should stay in sync.

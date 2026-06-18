@@ -1,9 +1,11 @@
-//! Unified pathfinding module collecting grid-based (A*, Dijkstra, BFS, JPS) and graph-based (topological, bidirectional, HPA*) algorithms with unified API.
-//! Supports multiple navigation surface types (rectangular grids, hexagonal, isometric, navmeshes, province graphs) enabling diverse game world representations.
-//! Provides async path-request dispatch through thread pool enabling long-running queries without blocking game loop or frame timing.
-//! Includes debug rendering utilities for visualizing pathfinding structures, computed distances, flow fields, and path results during development.
-//! `pathfind/mod` is the pathfind module index, declaring `ai_flow_field`, `astar`, `async_pool`, `bidir`, `flow_field`, and 15 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/pathfind/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `ai_flow_field::FlowField as SimpleFlowField`, `astar::{astar, line_of_sight, smooth_path}`, `async_pool::{AsyncPathEvent, AsyncPathRequest, PathEventStatus, PathThreadPool}`, `bidir::bidirectional_astar`, and 15 more centralized for the pathfind subsystem.
+//! Exports the pathfinding subsystem surface that groups grid search, async execution, graph routing, and debug views.
+//! Acts as the navigation index for A*, bidirectional, HPA, flow fields, influence maps, and province graph helpers.
+//! Keeps public module boundaries explicit so callers can find whether a pathing concern belongs to data, search, or draw.
+//! Open this file when adding or retiring pathfinding owners or when re-export policy for runtime helpers needs changes.
+//! The exports here connect generic tile grids, hex and iso variants, navmeshes, and province graph traversal utilities.
+//! Agents should start here when tracing navigation behavior because it reveals the authoritative file split by feature.
+//! This index owns visibility and re-export contracts rather than live state, queues, caches, or search data itself.
+//! Neighboring work usually spans NavGrid, async request handling, path solvers, and debug rendering adapters below.
 
 /// AI-oriented flow field with steering integration.
 pub mod ai_flow_field;

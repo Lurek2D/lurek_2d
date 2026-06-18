@@ -1,7 +1,8 @@
-//! This file implements the scene module's depth-ordering utility for draw work that must respect painter-style layering. `scene/depth_sorter` delivers the depth sorter implementation for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It chooses among multiple sorting strategies so small and large batches can both be handled without one rigid algorithm for every case.
-//! Entries carry enough information to sort callbacks and object-style drawables through the same pipeline. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_stable`, `is_stable`, `add`, `add_object`, `sort`, and 5 more stays attached to the local data model and invariants.
-//! Stable ordering can be preserved where visual flicker matters, while faster paths remain available when the batch shape allows it.
+//! `src/scene/depth_sorter.rs` owns adaptive depth sorting for scene draw entries that must respect painter-style layering.
+//! It defines `DepthEntry` and `DepthSorter`, keeping sortable draw metadata and sorting strategy selection together.
+//! Unstable, stable, radix, and parallel sort paths all live here, so batch-shape tuning stays local to draw ordering.
+//! This file also handles entry staging, dirty tracking, and sorted output access for scene render preparation.
+//! Read it when depth ordering policy, sort strategy thresholds, or draw-entry batching behavior needs to change.
 
 /// Minimum entry count that enables the 8-bit radix sort path over unstable sort.
 const RADIX_THRESHOLD: usize = 256;

@@ -1,7 +1,7 @@
-//! Implements color blending helpers for interpolation and compositing-style channel math. `color/blend` delivers the blend implementation for the color subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides clamped linear interpolation between RGBA values for smooth visual transitions. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Keeps operations lightweight and deterministic for per-frame use in effects and tween flows. Public callable behavior is centered on `lerp_color`, `multiply`, `screen`, `overlay`, `additive`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Serves as the core blend-utility layer consumed by rendering-adjacent systems. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/color/blend.rs` owns lightweight RGBA blend operators and interpolation helpers used by rendering-side color math.
+//! `lerp_color`, `multiply`, `screen`, `overlay`, `additive`, and `alpha_blend` live here under one blend-focused owner.
+//! These functions keep compositing and transition rules separate from color representation, simplifying effect code reuse.
+//! Read this file when blend equations, clamping rules, or alpha-compositing behavior for runtime visuals need to change.
 
 use super::color_core::Color;
 

@@ -1,8 +1,9 @@
-//! Implements multi-codec compression and decompression for buffer and stream style workflows. `binary/compress` delivers the compress implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports deflate, gzip, zlib, and lz4 variants through one unified format selection surface. The file owns or coordinates data contracts including `CompressFormat`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides full-buffer and chunked processing paths for different memory and throughput constraints. Public callable behavior is centered on `compress`, `decompress`, `compress_chunks`, `decompress_chunks`, `compress_stream`, and 1 more, while method-level behavior such as `parse_str` stays attached to the local data model and invariants.
-//! Applies bounded compression-level normalization to keep codec settings within valid operating ranges. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Adapts chunk lists into stream readers for incremental processing integration. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns multi-codec compression and decompression helpers for whole buffers, chunks, and stream adapters.
+//! `CompressFormat` normalizes user codec choice across deflate, gzip, zlib, and LZ4 entry points.
+//! Full-buffer helpers wrap stream implementations so callers can compress or restore byte vectors directly.
+//! Chunk helpers flatten borrowed slice lists through `ChunkReader`, preserving incremental read-based call sites.
+//! Stream helpers handle codec-specific encoder and decoder wiring plus bounded compression-level normalization.
+//! Open it when binary size or transport semantics change; hashing, text encoding, and schema packing live nearby.
 
 use std::io::{Cursor, Read, Write};
 #[derive(Debug, Clone, Copy, PartialEq)]

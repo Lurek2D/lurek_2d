@@ -1,8 +1,9 @@
-//! Province-routing helper layer for asking strategic map questions about reachability, shortest paths, and isolated clusters across province adjacencies.
-//! The file offers both unweighted and weighted traversal styles so games can move from simple neighbor hops to cost-aware movement without swapping data models.
-//! Connectivity and component helpers make the map graph useful for analysis, not just for single-route requests. Public callable behavior is centered on `build_adjacency_map`, `find_route_bfs`, `find_route_dijkstra`, `connected_components`, `is_connected`, and 2 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! These routines stay separate from the core registry so graph algorithms do not crowd the state store itself. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Functionally this file delivers travel and connectivity reasoning over the province adjacency network. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Computes province-level traversal data so gameplay systems can ask for paths, components, and neighbor aggregates.
+//! Owns adjacency-map builders plus BFS, Dijkstra, connected-component, and isolation helpers over province graphs.
+//! Provides the query boundary between raw neighbor relationships and higher-level movement or analytics operations.
+//! Also aggregates owner-tagged values across province groups, keeping route analysis close to topology utilities.
+//! Use this file when province path cost rules, graph traversal outputs, or connectivity helpers need adjustment.
+//! Neighboring edits usually involve ProvinceRegistry adjacency data and gameplay systems that consume path results.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};

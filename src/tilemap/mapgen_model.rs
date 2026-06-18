@@ -1,6 +1,6 @@
-//! Core data types for procedural map generation, centered on the Edge enum representing cardinal block boundaries (North, East, South, West).
-//! Supports bidirectional Edge-to-string conversion enabling parsing from config files and serialization for save persistence.
-//! Enables consistent edge-matching logic across procedural generators that tile blocks based on edge constraints and adjacency rules.
+//! Defines the core map-generation model types, especially cardinal edges used by block matching and adjacency rules.
+//! Provides string conversion for edge values so config parsing and persistence share one canonical representation.
+//! Open this file when procedural edge semantics or serialized edge naming stops matching generator expectations.
 
 /// Cardinal edge of a map block, used as a side-matching key.
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]

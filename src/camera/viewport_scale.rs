@@ -1,7 +1,7 @@
-//! Implements runtime viewport-scale state used by resize and projection update workflows. `camera/viewport_scale` delivers the viewport scale implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores computed scale factors, offsets, and scaled dimensions after each window-size change. The file owns or coordinates data contracts including `ViewportScale`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides bidirectional conversion helpers between logical game space and screen pixel coordinates. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `resize`, `get_game_dimensions`, `get_scaled_dimensions`, `get_offset`, `get_scale`, and 3 more stays attached to the local data model and invariants.
-//! Serves as a compact scaling container for systems that need fast coordinate remapping. Runtime integration reaches sibling engine areas through crate modules `camera`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/camera/viewport_scale.rs` owns compact runtime scaling state for game-to-screen transforms from scale modes.
+//! It defines `ViewportScale`, keeping computed scales, offsets, and scaled dimensions under one lightweight container.
+//! Resize recomputation and bidirectional coordinate conversion live here for callers that need cached transform data.
+//! Read this file when stored scaling fields or fast coordinate-remap behavior needs to change.
 
 use crate::camera::viewport::ScaleMode;
 

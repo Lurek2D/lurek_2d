@@ -1,5 +1,9 @@
-//! Multi-layer parallax scrolling system with per-layer speed, tiling, and draw-batch accumulation. `parallax/mod` is the parallax module index, declaring `draw`, `layer`, `presets`, `render`, `tile_iter` so agents can identify which files own each feature slice before opening implementation code.
-//! Provides preset constructors for common depth planes and tile iteration helpers for rendering. `src/parallax/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `layer::{ParallaxDrawBatch, ParallaxLayer}` centralized for the parallax subsystem.
+//! `src/parallax/mod.rs` is the module index for parallax state, draw helpers, presets, rendering, and tile iteration.
+//! It declares files for layer ownership, renderer bridging, bitmap export, presets, and tiled viewport coverage helpers.
+//! This file reexports `ParallaxLayer` and `ParallaxDrawBatch` so callers can use the subsystem without deep imports.
+//! No scrolling state or camera math lives here; it only defines the public boundary and file ownership map.
+//! Read this index first when tracing parallax features, because it shows where layer logic ends and helpers begin.
+//! Changes here affect module reachability and API shape, not scroll behavior, batching, or render-command generation.
 
 /// Stateless draw-call helpers: converts layer data into renderer `RenderCommand` payloads.
 pub mod draw;

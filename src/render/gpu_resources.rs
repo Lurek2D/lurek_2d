@@ -1,9 +1,11 @@
-//! Manages persistent GPU resource lifetimes, allocations, and buffer uploads. `render/gpu_resources` delivers the gpu resources implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Handles dynamic capacity adjustment for growing vertex and index buffers. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Caches textures, fonts, and canvases inside slotmap collection structures. Public callable behavior is centered on no named public items, while method-level behavior such as `grow_capacity`, `ensure_geometry_buffer_capacity`, `ensure_instance_buffer_capacity`, `create_sampler`, `create_texture_bind_group`, `create_gpu_texture_raw`, and 8 more stays attached to the local data model and invariants.
-//! Prunes unused graphics resources automatically to prevent GPU memory leaks. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Resizes vertex and index buffers exponentially to minimize pipeline stalls. External integration uses `slotmap`, `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Uploads static draw geometries to permanent GPU buffers for cached rendering. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Owns persistent GPU resource lifetimes, uploads, and resizing for textures, fonts, canvases, and buffers.
+//! Grows vertex, index, and instance buffers on demand so render workloads can scale without manual sizing.
+//! Caches texture and sampler bind groups so compatible resources reuse stable GPU-side descriptors.
+//! Creates raw textures and canvas resources while hiding wgpu allocation details from higher render layers.
+//! Prunes stale resources to keep GPU memory usage bounded during long sessions or heavy content churn.
+//! Uploads static geometry into dedicated buffers so later frames can reuse cached meshes efficiently.
+//! Acts as the resource-allocation boundary rather than the owner of draw ordering or pass sequencing.
+//! Open this file when GPU buffers, textures, samplers, or resource cleanup behavior looks incorrect.
 
 use crate::render::gpu_state::{DepthStencilTarget, GpuTexture};
 use crate::render::shader::Shader;

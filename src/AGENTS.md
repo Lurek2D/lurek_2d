@@ -13,6 +13,7 @@
 ## Rules
 - Keep gameplay logic and state in Rust modules; keep `src/lua_api/` thin.
 - Every `.rs` file needs `//!` file docs stating purpose, owned state, and boundary.
+- Follow `docs/architecture/rust_file_docstring_guidelines.md` for qualitative file-level `//!` writing rules.
 - Public structs, enums, fields, methods, and Lua-facing helpers need factual `///` docs.
 - Method docs must state units, defaults, bounds, errors, and side effects when relevant.
 - Do not add `#[cfg(test)]`, `mod tests`, or inline test fixtures under `src/`.

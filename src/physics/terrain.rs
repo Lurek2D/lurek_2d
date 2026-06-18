@@ -1,8 +1,10 @@
-//! Destructible terrain map layer that turns editable solid cells into physics-ready world geometry without making callers manage collider lifecycles manually.
-//! The file tracks terrain in chunks so local edits stay local, allowing flush operations to rebuild only the regions that actually changed.
-//! Fill tools support live terrain authoring and destruction patterns such as circles, rectangles, blanket writes, and other broad modifications during play.
-//! Row merging keeps the generated static-body footprint compact, which matters when large tile fields must remain interactive without exploding collider counts.
-//! Serialization and image output make the terrain usable for save systems, tooling, previews, and data exchange outside the immediate simulation step.
+//! This file owns `TerrainMap`, a chunked solid-cell grid that rebuilds static physics bodies only where edits occur.
+//! It stores map dimensions, cell scale, world offsets, per-cell solidity, spawned chunk body ids, and dirty chunks.
+//! Editing helpers flip single cells or fill circles, rectangles, and whole maps so gameplay can carve or restore terrain.
+//! Flush logic removes stale chunk colliders, merges horizontal solid runs, and respawns compact static bodies in `World`.
+//! Collapse and debris helpers support destructible terrain flows by pruning unsupported cells and spawning fragments.
+//! Image and byte serialization make the same terrain usable for previews, saves, reloads, and external authoring tools.
+//! Open this file when terrain editing or sync semantics change; body simulation and contact solving live in siblings.
 
 use super::body::{Body, BodyType};
 use super::world::World;

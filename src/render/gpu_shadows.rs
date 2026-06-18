@@ -1,9 +1,11 @@
-//! Manages 1D shadow map rendering, dynamic light lists, and compute dispatches. `render/gpu_shadows` delivers the gpu shadows implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Gathers occluder edge geometry and transforms it into GPU edge storage buffers. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Dispatches shadow compute shaders per light source to map distances into the shadow atlas. Public callable behavior is centered on `collect_shadow_edges`, while method-level behavior such as `ensure_light_resources`, `ensure_shadow_edge_capacity`, `dispatch_shadow_map_gpu`, `aabb_visible_2d` stays attached to the local data model and invariants.
-//! Performs viewport culling on light sources before queuing commands. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `light`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Binds and manages GPU buffers, bind groups, and pipelines for light passes. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Filters occluding shapes by light bitmasks and culls lines outside light radii. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Owns GPU shadow-map preparation, light culling, edge extraction, and compute dispatch for dynamic shadows.
+//! Collects occluder edge geometry and uploads it into GPU buffers consumed by shadow compute passes.
+//! Dispatches one-dimensional shadow map work per visible light source so light distance fields stay current.
+//! Performs viewport and radius culling before queueing shadow work, reducing unnecessary compute load.
+//! Manages the bind groups, buffers, and pipelines that connect light data to the shadow atlas workflow.
+//! Filters occluders by light masks so only relevant blocking geometry contributes to a given light pass.
+//! Acts as the shadow-runtime boundary rather than the owner of general draw command interpretation.
+//! Open this file when shadow edges, light culling, or compute-driven shadow atlas updates behave incorrectly.
 
 use crate::math::Mat3;
 use crate::render::gpu_light::MAX_SHADOW_LIGHTS;

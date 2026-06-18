@@ -16,16 +16,11 @@
 
 ## Summary
 
-- This module gives users structured runtime logging with severity control and flexible output routing.
-- It supports tagged messages and key-value fields for machine-friendly and human-friendly diagnostics.
-- Global level gates reduce noise and overhead by filtering early.
-- Sink management supports console, memory, file, rotating-file, and callback outputs.
-- Multiple output formats enable both readable logs and ingestion-ready streams.
-- Memory sink access supports in-game debug panels and test assertions.
-- File rotation controls support long sessions without unbounded log growth.
-- For users, this module centralizes diagnostics flow instead of scattering print logic across scripts.
+- The `log` module is the common script-facing path for runtime diagnostics, so users can emit messages through one consistent logging surface instead of mixing ad hoc print styles.
+- It keeps message formatting, structured fields, severity, and sink routing together, which lets debugging output scale from quick local traces to more deliberate retained logs.
+- That consistency matters when logs must be filtered, archived, or correlated across several subsystems instead of read as isolated console noise.
+- Read it as the standard language for script diagnostics when several systems need to be debugged through the same output flow.
 
-This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -36,23 +31,30 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 ### facade.rs
 
-- Provides the structured logging facade used to emit level-tagged messages with fields. `log/facade` delivers the public facade over lower-level subsystem helpers for the log subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Handles runtime level queries and updates while enforcing fast level gating before dispatch. The file owns or coordinates data contracts including `LogFields`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Exposes compact log-entry helpers consumed by Lua and Rust call sites. Public callable behavior is centered on `log_structured`, `set_level`, `get_level`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- `src/log/facade.rs` owns the caller-facing structured logging helpers that emit tagged messages with optional fields.
+- It defines `LogFields` plus level get and set helpers, keeping fast logging entry points separate from sink internals.
+- Open this file when log message shaping, default tags, or global log-level control behavior need to change.
 
 ### mod.rs
 
-- High-level logging module that combines facade APIs with sink implementations. `log/mod` is the log module index, declaring `facade`, `sinks` so agents can identify which files own each feature slice before opening implementation code.
-- Re-exports level control and sink types for centralized runtime log configuration. `src/log/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `facade::{get_level, log_structured, set_level, LogFields}`, `sinks::{MemoryEntry, RotatingFileSink, Sink, SinkLevel, SinkRegistry}` centralized for the log subsystem.
+- `src/log/mod.rs` is the module index that exposes structured logging helpers and sink infrastructure.
+- It reexports level control, structured dispatch, and sink types so runtime code uses one stable logging surface.
+- No active sink registry lives here; this file only declares child modules and defines which logging symbols are public.
+- Read this index when wiring diagnostics, because it shows where caller-facing logging ends and backend sinks begin.
+- Changes here reshape the logging boundary, since reexports decide what runtime and Lua-facing code may import.
+- This module keeps facade APIs and sink implementations separated, which makes logging ownership easier to trace.
 
 ### sinks.rs
 
-- Implements logging sink backends, severity filters, and output formatting infrastructure. `log/sinks` delivers the sinks implementation for the log subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Defines sink-level enums and parsing rules used to gate message delivery. The file owns or coordinates data contracts including `SinkLevel`, `MemoryEntry`, `RotatingFileSink`, `SinkKind`, `Sink`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides in-memory capture sinks for runtime inspection and diagnostic tooling. Public callable behavior is centered on no named public items, while method-level behavior such as `severity_rank`, `as_str`, `open`, `write_with_rotation`, `flush`, `file`, and 17 more stays attached to the local data model and invariants.
-- Supports plain, JSON, and NDJSON output styles for machine and human consumers. Runtime integration reaches sibling engine areas through crate modules `binary`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Manages timestamp and optional color formatting for readable terminal and file logs. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Implements rotating file sinks with size limits and backup retention control. The file boundary separates log implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- `src/log/sinks.rs` owns sink backends, sink-level filtering, output formatting, and the registry that dispatches logs.
+- It defines `SinkLevel`, `MemoryEntry`, `RotatingFileSink`, `SinkKind`, `Sink`, and `SinkRegistry` under one owner.
+- File, rotating-file, memory, and callback sinks all live here, keeping backend-specific write behavior in one place.
+- Plain text, JSON, and NDJSON formatting are implemented here along with timestamps, ANSI color, and tag filtering.
+- Rotation policy, buffered file writes, memory capture, and per-sink acceptance rules are handled inside this file.
+- The registry also dispatches structured and unstructured messages to every sink, which makes fan-out behavior explicit.
+- Read it when retention, formatting, file-rotation rules, or backend selection for runtime diagnostics must change.
+- Higher layers should treat this file as the sink boundary, while caller-facing log entry helpers stay in `facade.rs`.
+- This is also where machine-oriented output contracts live, so tooling changes should start here before call sites.
 
 
 

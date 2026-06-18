@@ -1,13 +1,18 @@
-//! This file provides the central retained-mode UI context that owns widget state and lifecycle. `ui/context` delivers the context implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It stores all widget variants in one indexed arena so references stay compact and stable. The file owns or coordinates data contracts including `UiBindingValue`, `GuiEvent`, `WidgetKind`, `GuiContext`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It runs recursive layout to compute absolute rectangles from parent-relative placement data. Public callable behavior is centered on no named public items, while method-level behavior such as `base`, `base_mut`, `children`, `children_mut`, `new`, `clear`, and 79 more stays attached to the local data model and invariants.
-//! It manages focus traversal and keyboard navigation for consistent interaction behavior. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It routes mouse and key events through controlled dispatch paths tied to active widgets. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! It drives drag-and-drop with safety checks that prevent invalid parent-child cycles. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! It advances alpha and position transitions so UI motion remains smooth and deterministic. State changes, validation paths, and helper routines in `src/ui/context.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! It maintains data bindings that synchronize widget values with script-owned state keys. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
-//! It tracks render signatures to detect dirtiness without expensive full-tree comparisons. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
-//! It queues interface events so Lua can consume interactions in a frame-coherent order. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
+//! Owns the central retained UI context that stores widget arenas, events, bindings, and per-frame lifecycle state.
+//! Maintains stable widget identity through indexed storage so tree references survive updates and scripted mutation.
+//! Runs recursive layout passes that turn parent-relative placement data into absolute rectangles for render and hit tests.
+//! Routes mouse and keyboard input through explicit dispatch paths tied to focus, hover, capture, and active widgets.
+//! Tracks drag, drop, and resize interactions while preventing invalid parent-child cycles or unsafe reparenting.
+//! Queues UI events in frame order so Lua and gameplay systems observe interactions as a coherent transaction stream.
+//! Advances alpha, position, and other transition state so motion and visibility changes remain deterministic.
+//! Stores binding values that synchronize widget state with script-visible keys without leaking control internals.
+//! Computes dirtiness and render signatures so unchanged subtrees avoid unnecessary rebuild and traversal work.
+//! Owns dialog geometry helpers that keep body, footer, and chrome rectangles aligned with the active viewport.
+//! Exposes children, base-state, and widget-lookup helpers used by layout, render, and control code paths.
+//! Integrates math, runtime, and logging concerns only where they support safe UI orchestration and diagnostics.
+//! Acts as the operational boundary between widget definitions and the live tree that receives layout and input.
+//! Open this file when focus, event routing, bindings, drag logic, or retained-tree lifecycle behavior breaks.
+//! It is the first owner to inspect for UI state bugs because most widget interaction semantics converge here.
 
 use crate::log_msg;
 use crate::math::Rect;

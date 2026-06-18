@@ -1,9 +1,11 @@
-//! This file provides the concrete interactive controls used by the retained-mode UI layer. `ui/controls` delivers the controls implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It defines buttons, text inputs, toggles, selectors, and numeric widgets with shared behavior. The file owns or coordinates data contracts including `Button`, `Label`, `TextInput`, `CheckBox`, `Slider`, and 8 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It embeds common widget base state so style, layout, and interaction remain consistent. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_text`, `set_max_length`, `insert_text`, `backspace`, `move_cursor_left`, and 16 more stays attached to the local data model and invariants.
-//! It validates and clamps editable values to enforce reliable control invariants. Runtime integration reaches sibling engine areas through crate modules `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It normalizes selection behavior when list-like data mutates at runtime. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! It keeps control construction explicit so type identity is always unambiguous. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Defines the concrete interactive controls that sit on top of shared widget state inside the retained UI system.
+//! Owns buttons, labels, text inputs, checkboxes, sliders, radios, combos, lists, tabs, and spin-style widgets.
+//! Keeps control construction explicit so type identity, defaults, and base widget integration stay unambiguous.
+//! Implements text editing helpers that clamp cursor motion, insertion, deletion, and maximum-length constraints.
+//! Normalizes selection and numeric-value handling so dynamic option lists do not violate control invariants.
+//! Provides the control-layer boundary between generic widget nodes and user-facing interactive primitives.
+//! Feeds consistent layout, style, and interaction semantics into the context and renderer without extra adapters.
+//! Open this file when editable values, selection rules, or control defaults behave differently than expected.
 
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Clickable push button with a text label.

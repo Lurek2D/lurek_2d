@@ -1,7 +1,8 @@
-//! This file provides API compliance validation for Lua calls targeting the lurek namespace. `validator/api_check` delivers the api check implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It scans call sites against registered signatures to catch unknown endpoints early. The file owns or coordinates data contracts including `ApiComplianceRule`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It detects argument-shape mismatches that often signal migration or integration drift. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_defaults` stays attached to the local data model and invariants.
-//! It emits structured violations with location data for actionable feedback in pipelines. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `ApiComplianceRule`, the validator check that scans Lua content for known `lurek.*` calls.
+//! It stores the allowlist of supported API prefixes and uses it to flag unknown namespaces at source lines.
+//! Default construction seeds built-in engine module names so projects get API drift detection without setup.
+//! The validate path searches textual call sites, extracts module segments, and emits structured warnings.
+//! Open this file when accepted public API names change; asset, import, and custom rule logic live in siblings.
 
 use super::report::{Severity, Violation};
 use super::rule::ValidationRule;

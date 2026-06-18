@@ -17,29 +17,20 @@
 
 ## Summary
 
-- This module gives users a high-volume particle simulation system for gameplay VFX and atmospheric effects.
-- Pool-based runtime management keeps large particle counts efficient and stable.
-- Emitters support continuous, burst, and warm-up driven spawning patterns.
-- Shape controls support varied spawn distributions, including custom callback-defined emission.
-- Force models include gravity, drag, turbulence, orbit, and attractor behavior.
-- Bounce and bounds controls shape movement within scene constraints.
-- Keyframe-driven color, alpha, and size interpolation support expressive lifetime animation.
-- Trail systems provide ribbon-style motion accents for fast-moving effects.
-- Sub-emitter support enables chained effects like secondary bursts on particle death.
-- Physics collision integration supports particle responses to world colliders.
-- Preset constructors speed up authoring for common effects such as fire, smoke, and rain.
-- Render paths support textured and non-textured particle output.
-- Debug draw-to-image tools help tune effects and capture evidence artifacts.
-- Lifecycle chart output improves observability of spawn and decay dynamics.
-- Optional emitter seeds make particle playback deterministic for tests, evidence, and replay capture.
-- Runtime telemetry snapshots expose pool pressure, sub-emitter activity, attractor load, and age for dashboard workflows.
-- The module is useful for combat impacts, weather, ambient motion, and UI accents.
-- For users, it centralizes particle behavior rather than scattering custom emitter logic.
-- It balances artistic flexibility with deterministic, test-friendly controls.
-- Overall, users get a production-ready VFX runtime in one script API.
-- This enables richer scenes with less effect-specific boilerplate.
+- The `particle` module is the pooled visual-effects system for users who want smoke, sparks, rain, trails, bursts, and other transient visuals to behave like one reusable runtime feature.
+- Emitters, particle state, force application, lifetimes, presets, trails, and render bridges all live together here, so effects can be authored as configurations instead of one-off update loops.
+- Pooling is central to the design because short-lived effects appear in large numbers and need predictable reuse instead of constant allocation churn.
+- Emission rules, spawn shapes, attractors, turbulence, and per-particle lifetime state give the module enough range to cover both ambient effects and gameplay feedback.
+- Per-particle state is not only position and color. Lifetime, velocity, size evolution, rotation, and other update-time values determine how an effect feels over time and are part of the same runtime model.
+- Sub-emitters, trails, and simple collision hooks matter because many practical effects need layered motion and lightweight grounding in world space.
+- Force handling is especially important because many effects are really motion systems: wind, gravity-like influence, turbulence, and attractors all shape how a burst reads to the player.
+- Spawn-shape variety matters too, since emitters often need circles, lines, cones, boxes, or directional releases rather than a single point source.
+- Presets and visualization support make the system useful for iteration, docs, tests, and content authoring as well as for final shipped visuals.
+- Reusable presets keep effects expressive without letting transient visuals sprawl into dozens of bespoke mini-systems.
+- The module is useful for combat hits, weather, ambience, UI flourishes, projectiles, and other procedural or semi-procedural effect workflows.
+- `render` draws the result and `physics` may inform light collision behavior, but `particle` owns effect spawning, pooled update logic, and transient visual behavior over time.
+- Read `particle` as the subsystem that decides how short-lived procedural effects are described, updated, reused, and inspected.
 
-This module primarily collaborates with `color`, `image`, `math`, `physics`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -54,88 +45,101 @@ This module primarily collaborates with `color`, `image`, `math`, `physics`, `re
 
 ### config.rs
 
-- Runtime configuration for particle emitters and their tunable behavior. `particle/config` delivers the configuration schema and defaults for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Carries spawn distribution, insertion order, state, and coordinate mode settings. The file owns or coordinates data contracts including `AreaDistribution`, `InsertMode`, `EmitterState`, `EmissionShape`, `RelativeMode`, and 3 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Describes emission shapes from point and circle to cone, star, spiral, and custom callbacks. Public callable behavior is centered on no named public items, while method-level behavior such as `sanitize`, `normalized`, `from_toml_str` stays attached to the local data model and invariants.
-- Includes attractor and bounce helper types for motion control. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Covers world-space versus emitter-attached spawning rules. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Packs every serializable knob into one config object for scripts and data files. The file boundary separates particle implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns the particle configuration schema, including emission rates, lifetimes, forces, shapes, and sub-emitters.
+- It defines enums and helper structs for area distribution, insert order, emitter state, spawn shapes, and relative mode.
+- `ParticleConfig` centralizes every serializable knob so scripts and data files can describe one emitter without code.
+- Sanitization lives here because malformed inputs must be clamped before the emitter update loop consumes them.
+- Default values also live here so callers get a stable fountain-like baseline even when configs omit most fields.
+- Shape-specific normalization for rings, rays, shrapnel, and nested death emitters is handled here, not during rendering.
+- `from_toml_str` and `normalized` make this file the boundary between external config text and runtime-safe values.
+- Open it when option semantics change; spawning, pool simulation, and render-command generation live elsewhere.
 
 ### emission.rs
 
-- Spawn-offset sampling for particle emission shapes and area distributions. `particle/emission` delivers the emission implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports uniform, normal, ellipse, border, rectangle, ring, cone, star, and spiral modes. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Handles area-angle rotation so emitted particles respect the configured shape. Public callable behavior is centered on `emission_offset`, `emission_shape_offset`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Keeps emission math separate from the particle runtime. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns spawn-offset sampling for particle emission areas and explicit emission shapes like circles and stars.
+- `emission_offset` handles area distributions and area rotation, while `emission_shape_offset` handles shape geometry.
+- Uniform, normal, ellipse, border, cone, spiral, and star sampling live here so emitters reuse one spawn policy.
+- No particle pool state is stored here; the file is pure geometry and RNG mapping used during emitter spawn steps.
+- Open it when spawn distributions change; emitter integration and config ownership live in sibling particle files.
 
 ### emitter.rs
 
-- Live particle emitter that owns the active particle pool, physics stepping, and sub-system list. `particle/emitter` delivers the emitter implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Integrates gravity, drag, orbit, turbulence, and other per-frame forces. The file owns or coordinates data contracts including `ParticleSystemStats`, `ParticleSystem`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Spawns particles continuously or in bursts using fractional accumulation and ordered insertion modes. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `emit`, `count`, `reset`, `start`, and 23 more stays attached to the local data model and invariants.
-- Applies attractors and axis-aligned bounce boundaries to active particles. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `particle`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Runs child emitters on particle death when sub-systems are configured. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Tracks active, paused, and stopped states with lifetime-based auto-stop. The file boundary separates particle implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns `ParticleSystem`, the live particle pool plus emitter timers, attractors, bounds, and child sub-systems.
+- It advances particles each frame by applying gravity, damping, orbit, turbulence, attractors, bounce bounds, and decay.
+- Continuous emission and burst spawning live here because fractional accumulation, insert mode, and RNG mutate state.
+- Death handling also lives here, including pending death records, recycled child systems, and death-emitter bursts.
+- Render-instance construction is local because size, color, texture, and shape all derive from live particle state.
+- State transitions for active, paused, and stopped emitters are managed here with warm-up, reset, and movement helpers.
+- Attractor and bounds mutators stay here so callers change runtime forces without reaching into particle internals.
+- `ParticleSystemStats` also lives here because only this file can summarize direct and nested live counts coherently.
+- Open it when pool ownership or per-frame behavior changes; config schema, spawn math, and previews live elsewhere.
 
 ### math.rs
 
-- Keyframe interpolation for particle size, colour, and alpha over normalized lifetime. `particle/math` delivers the math implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Offers uniform and normal random helpers for emission variance. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Clamps interpolation inputs and falls back cleanly on empty keyframe sets. Public callable behavior is centered on `next_u64`, `rand_f32`, `interpolate_sizes`, `interpolate_colors`, `interpolate_alphas`, and 4 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Supports the numeric shaping layer used by emitter animation. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns particle interpolation and deterministic random helpers used by emission and per-particle animation math.
+- It reexports `lerp`, advances the local PRNG, and provides uniform, normal, and ranged random sampling utilities.
+- Size, color, and alpha interpolation live here so emitter updates and visualizers share one lifetime-evaluation policy.
+- Fallback and clamping behavior are defined here to keep malformed configs from destabilizing particle playback.
+- Open it when numeric sampling or keyframe interpolation changes; emitter state and config schema live in sibling files.
 
 ### mod.rs
 
-- Particle emitter lifecycle for spawn, simulation, and pooled recycling. `particle/mod` is the particle module index, declaring `config`, `emission`, `emitter`, `math`, `particle`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
-- Collects emission, physics, trail, rendering, and preset helpers under one namespace. `src/particle/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `config::{ AreaDistribution, EmissionShape, EmitterState, InsertMode, ParticleConfig, RelativeMode, }`, `emitter::ParticleSystem`, `math::{interpolate_alphas, interpolate_colors, interpolate_sizes, lerp}`, `particle::Particle`, and 2 more centralized for the particle subsystem.
-- Keeps particle effects modular while exposing a single runtime surface. The file documents how particle submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- `particle/mod` is the particle module index, declaring `config`, `emission`, `emitter`, `math`, `particle`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/particle/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `config::{ AreaDistribution, EmissionShape, EmitterState, InsertMode, ParticleConfig, RelativeMode, }`, `emitter::ParticleSystem`, `math::{interpolate_alphas, interpolate_colors, interpolate_sizes, lerp}`, `particle::Particle`, and 2 more centralized for the particle subsystem.
-- The file documents how particle submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- This module is the particle index, wiring emitter state, config contracts, spawn math, rendering, trails, and presets.
+- It reexports `ParticleSystem`, `ParticleConfig`, shapes, trails, interpolation helpers, and the core `Particle` record.
+- `emitter.rs` owns live pool updates, `config.rs` owns tunables, and `render.rs` bridges particle state to commands.
+- `emission.rs`, `math.rs`, and `shapes.rs` provide reusable spawn and interpolation primitives shared across emitters.
+- `trail.rs`, `visualization.rs`, and `physics_collision.rs` cover ribbons, debug images, and world bounce integration.
+- This file owns visibility and navigation only; simulation rules and data ownership stay in sibling implementation files.
 
 ### particle.rs
 
-- Per-particle runtime state for position, velocity, lifetime, rotation, and acceleration. `particle/particle` delivers the particle implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores spawn origin and shape seed for force calculations and deterministic geometry. The file owns or coordinates data contracts including `Particle`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Keeps the minimum state needed by the emitter loop. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns the per-particle runtime record storing motion, lifetime, rotation, and spawn-relative acceleration data.
+- `Particle` is the mutable unit consumed by the emitter loop, render interpolation, and collision or trail helpers.
+- Open it when particle field semantics change; pool management, spawning, and rendering behavior live in siblings.
 
 ### physics_collision.rs
 
-- Bounce particles off rapier colliders using AABB overlap probes. `particle/physics_collision` delivers the physics collision implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns the simple particle-to-world bounce bridge that probes Rapier AABBs and reflects particle velocities.
+- It reads `ParticleSystem` positions plus the physics `World`, then applies restitution and a small hit separation step.
+- Open it when particle/world collision policy changes; emitter integration and general physics ownership live elsewhere.
 
 ### presets.rs
 
-- Ready-made ParticleConfig constructors for common visual effects. `particle/presets` delivers the presets implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Covers fire, smoke, rain, snow, sparks, and other standard patterns. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Returns self-contained configs with tuned lifetime, speed, color ramp, and shape. Public callable behavior is centered on `fire`, `smoke`, `rain`, `snow`, `sparks`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Lets callers start from a stable preset and override fields afterward. Runtime integration reaches sibling engine areas through crate modules `particle`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns ready-made `ParticleConfig` constructors for common effects such as fire, smoke, rain, snow, and sparks.
+- Each function returns a fully populated config with tuned lifetimes, speeds, colors, sizes, and emission shapes.
+- The presets are data-oriented so callers can clone them and override fields without touching emitter internals.
+- No live particle state is stored here; this file is the catalog layer for reusable effect starting points.
+- Open it when shared effect defaults change; config schema and emitter execution live in sibling files.
 
 ### render.rs
 
-- Render-command generation for particle systems and trails. `particle/render` delivers the rendering adapter and draw-command integration for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Expands textured particle batches into individual draw calls when needed. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Keeps untextured particles batched for efficiency. Public callable behavior is centered on `expand_particle_commands`, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
+- This file owns the renderer bridge that turns particle systems and trails into engine `RenderCommand` values.
+- It exposes helpers on `ParticleSystem` and `Trail`, then expands textured batches into quad or image draw commands.
+- Untextured particles remain batched here so the adapter preserves renderer efficiency without changing emitter state.
+- Open it when particle command translation changes; pool updates, preview images, and config ownership live elsewhere.
 
 ### shapes.rs
 
-- Geometric shape primitives that control how individual particles are rendered. `particle/shapes` delivers the shapes implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Covers fills, directional shapes, and composite outlines with inline parameters. The file owns or coordinates data contracts including `ParticleShape`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Gives emitters a compact vocabulary for particle silhouette design. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns the `ParticleShape` enum that describes how a single particle should be drawn by the renderer.
+- It keeps square, circle, spark, shrapnel, ray, ring, and capsule variants with the parameters each shape needs.
+- Open it when particle silhouette vocabulary changes; emitter logic and render-command expansion live in sibling files.
 
 ### trail.rs
 
-- Ribbon trail built from a deque of aged world-space points. `particle/trail` delivers the trail implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Retires points automatically when they exceed the configured lifetime. The file owns or coordinates data contracts including `TrailPoint`, `Trail`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Tapers width and interpolates color from head to tail. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_point`, `update`, `set_width`, `set_lifetime`, `get_lifetime`, and 8 more stays attached to the local data model and invariants.
-- Can render as triangle-strip commands or as a CPU-rasterized image. Runtime integration reaches sibling engine areas through crate modules `color`, `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns ribbon trails built from aged world-space points, including width taper, color fade, and age cleanup.
+- `Trail` stores the live point list plus width, colors, and minimum distance rules that suppress redundant samples.
+- Update and push helpers live here because trail aging and head insertion are independent from particle pool ownership.
+- The file also builds triangle ribbon commands and a simple image preview, keeping trail rendering beside trail geometry.
+- Open it when ribbon behavior changes; generic particle rendering and emitter simulation live in sibling files.
 
 ### visualization.rs
 
-- Particle visualization helpers that render live ParticleSystem state to ImageData bitmaps. `particle/visualization` delivers the visualization implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Includes a generic renderer plus themed presets for explosions, rain, and spark trails. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports compositing particles over an existing background or painting in place. Public callable behavior is centered on `draw_to_image`, `draw_explosion_to_image`, `draw_rain_to_image`, `draw_spark_trail_to_image`, `draw_over_image`, and 2 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Adds a chart-style lifetime view for inspecting particle counts over time. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Keeps render inspection separate from the particle simulation core. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns bitmap visualization helpers that render `ParticleSystem` state into `ImageData` for previews and debug.
+- It includes generic previews plus themed explosion, rain, spark, overlay, paint, and lifecycle chart renderers.
+- Color, alpha, and size interpolation are reused here so debug output matches the runtime particle config semantics.
+- The functions are intentionally read-only over `ParticleSystem`, with no authority to spawn, kill, or reorder particles.
+- Lifecycle chart drawing also lives here because it is an inspection surface rather than part of the renderer bridge.
+- Open it when particle preview imagery changes; pool simulation and render-command batching live in sibling files.
 
 
 

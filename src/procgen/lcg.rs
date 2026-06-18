@@ -1,6 +1,6 @@
-//! Shared deterministic random number primitive for procedural systems that need repeatable variation from a tiny, dependable core.
-//! The file exposes seeded stepping and simple sampling utilities so higher-level generators can stay reproducible without each carrying its own RNG implementation.
-//! Functionally this file delivers the compact source of randomness that keeps the rest of the procgen stack aligned around seeds.
+//! This file owns the tiny deterministic LCG used by multiple generators that need repeatable pseudo-random stepping.
+//! `Lcg` stores only the current state, making seeded advancement and normalized float sampling its core contract.
+//! Open it when baseline RNG semantics change; higher-level noise and layout generators live in sibling modules.
 
 /// 64-bit LCG RNG seeded deterministically; used throughout `procgen` for reproducible results.
 pub struct Lcg {

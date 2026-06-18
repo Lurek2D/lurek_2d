@@ -1,8 +1,10 @@
-//! Provides flownet node modeling with capacity, inventory, policy, and flow-direction configuration. `flownet/node` delivers the node implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Defines overflow behavior modes that govern how nodes handle arrivals beyond available space. The file owns or coordinates data contracts including `OverflowPolicy`, `FlowMode`, `ConversionRule`, `Supply`, `Demand`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Encodes push and pull flow semantics used by simulation to move items across the graph. Public callable behavior is centered on no named public items, while method-level behavior such as `to_str`, `new`, `get_type`, `set_type`, `get_capacity`, `set_capacity`, and 27 more stays attached to the local data model and invariants.
-//! Stores conversion, supply, and demand records for transformation and economic-style mechanics. Runtime integration reaches sibling engine areas through crate modules `flownet`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Exposes node-level queue and tag operations needed for runtime orchestration. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns node state, including capacity, flow mode, overflow policy, queue state, tags, supplies, and demands.
+//! It defines the local contracts for `OverflowPolicy`, `FlowMode`, `ConversionRule`, `Supply`, `Demand`, and `Node`.
+//! Push and pull timers, reservations, and item filters live here because node policy drives later simulation decisions.
+//! Conversion, queue, and tag helpers live on `Node` so graph and simulation code can mutate one stable inventory owner.
+//! Supply and demand records are stored here because fulfillment and conversion rules need node-local economic state.
+//! This file does not move items between containers; `core.rs` owns graph mutation and `simulation.rs` owns tick execution.
+//! Open it when node behavior changes; edges, items, pathfinding, and graph serialization are implemented elsewhere.
 
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::str::FromStr;

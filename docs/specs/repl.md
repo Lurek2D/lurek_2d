@@ -16,13 +16,10 @@
 
 ## Summary
 
-- The repl module gives users an embeddable headless Lua REPL for live runtime inspection and quick experimentation.
-- Session state includes bounded history so command context stays manageable over long usage.
-- Colon-prefixed commands support console-style control behavior alongside Lua evaluation.
-- Completion scans keywords and live globals, including top-level and dot-path suggestions.
-- Value formatting produces readable output suited to interactive debugging sessions.
+- The `repl` module is the interactive evaluation surface for users who want to inspect or execute Lua code live inside a running engine context.
+- Session state, commands, completion, and value rendering work together so ad hoc evaluation feels like a usable runtime console instead of a raw `eval` hook.
+- Read it as the runtime console boundary. Other modules expose state worth inspecting, but `repl` owns how that state is queried, evaluated, formatted, and returned.
 
-This module is mostly self-contained inside the `Core Runtime` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -32,32 +29,40 @@ This module is mostly self-contained inside the `Core Runtime` group. Cross-modu
 
 ### commands.rs
 
-- This file defines the small command language for colon-prefixed REPL control actions. `repl/commands` delivers the commands implementation for the repl subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It keeps command intent separate from evaluation logic so parsing and execution stay cleanly divided. The file owns or coordinates data contracts including `ReplCommand`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- The result is a lightweight vocabulary for session management layered on top of ordinary Lua input. Public callable behavior is centered on no named public items, while method-level behavior such as `display_text` stays attached to the local data model and invariants.
+- `src/repl/commands.rs` defines the colon-command vocabulary that controls REPL behavior without entering plain Lua code.
+- `ReplCommand` captures help, quit, clear, reset, and file-load intents so session control stays typed and explicit.
+- Open this file when REPL control syntax or command result text changes, not when Lua evaluation semantics change.
 
 ### completer.rs
 
-- This file implements completion for interactive REPL input so partially typed commands can expand into useful candidates.
-- Suggestions come from both a static knowledge base of Lua and engine names and the live global environment of the current VM.
-- Dot-path completion is resolved step by step, which makes nested tables and engine namespaces feel navigable from the prompt.
-- Candidate output is normalized and deduplicated so the REPL can present stable suggestions instead of noisy raw table keys.
+- `src/repl/completer.rs` provides interactive completion for REPL input, combining static names with live Lua globals.
+- It resolves dotted table paths step by step, so nested namespaces like `lurek.render` can suggest meaningful members.
+- Static completions keep core Lua and engine symbols available even before a runtime has populated additional globals.
+- Normalization, sorting, and deduplication live here so prompt UIs receive stable suggestions instead of raw table noise.
+- Open this file when completion scope, Lua table traversal, or suggestion ranking behavior needs to change.
 
 ### mod.rs
 
-- This module provides the headless REPL stack for evaluating Lua, formatting results, and assisting interactive input. `repl/mod` is the repl module index, declaring `commands`, `completer`, `session`, `value` so agents can identify which files own each feature slice before opening implementation code.
-- It keeps the feature independent from rendering concerns so terminals, tests, and tools can all reuse the same session core.
+- `src/repl/mod.rs` is the REPL module index, exposing the headless interactive stack used by CLI, tools, and tests.
+- It reexports command parsing, completion, session state, and value formatting so callers build a REPL from one surface.
+- No execution state lives here; this file defines the public boundary while implementation stays split by concern below.
+- Read this index when wiring REPL features, because it shows which pieces are public and how they are grouped.
+- This module keeps evaluation independent from rendering, so terminals and automation can share one session core.
+- Changes here alter the REPL boundary, since reexports decide what runtime code and developer tools may import.
 
 ### session.rs
 
-- This file implements the stateful heart of the REPL, where input is recorded, classified, and evaluated against a caller-supplied Lua VM.
-- It distinguishes between command-style control input and ordinary Lua text so one prompt can manage both session behavior and code execution.
-- Expression-first evaluation keeps interactive probing ergonomic while still falling back to statement execution for longer snippets.
-- Command history is bounded and owned by the session, which keeps repeated use predictable without leaking VM references across calls.
+- `src/repl/session.rs` owns REPL session state, classifying each input line as a command, expression, or statement.
+- `ReplSession` stores bounded history, dispatches colon commands, and evaluates Lua code against a caller-supplied VM.
+- Expression-first execution lives here so quick probing stays ergonomic while statements still work for larger snippets.
+- `ReplResult` also lives here, keeping displayable outcomes for values, success, errors, and commands under one owner.
+- Open this file when history policy, command dispatch, file loading, or evaluation flow needs to change.
 
 ### value.rs
 
-- This file turns raw Lua values into stable human-readable text for REPL output and other headless inspection paths. `repl/value` delivers the value implementation for the repl subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- `src/repl/value.rs` converts raw Lua values into stable display text for REPL output and other inspection paths.
+- It centralizes fallback labels for tables, functions, userdata, threads, and Lua errors so output stays consistent.
+- Open this file when printable value formatting changes, not when session flow or command parsing behavior changes.
 
 
 

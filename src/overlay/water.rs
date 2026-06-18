@@ -1,6 +1,7 @@
-//! Animated water distortion overlay with configurable amplitude, frequency, and speed. `overlay/water` delivers the water implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Adds shallow-water tint and depth-based color shift with independent blend strengths. The file owns or coordinates data contracts including `WaterOverlayState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Advances the wave pattern through a time-accumulating update loop. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `reset` stays attached to the local data model and invariants.
+//! This file owns `WaterOverlayState`, the animated water-distortion and tint model used by the overlay subsystem.
+//! It stores distortion amplitude, wave frequency, speed, shallow tint, deep color shift, blend strengths, and time.
+//! Update helpers only advance animation when enabled and can reset every parameter back to the default water profile.
+//! Open this file when water overlay semantics change; controller orchestration and atmosphere layers live in siblings.
 
 #[derive(Debug, Clone)]
 /// Stores parameters for animated water distortion and tint overlays.

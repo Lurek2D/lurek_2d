@@ -1,8 +1,10 @@
-//! This file provides the autotile sheet model that turns neighborhood context into final tile picks. `tilemap/autotile_sheet` delivers the autotile sheet implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It keeps multiple atlas layouts coherent so different terrain styles share one usage contract. The file owns or coordinates data contracts including `AutoTileLayout`, `AutoTileSheet`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It centralizes bitmask interpretation and rule matching in a single graphics selection layer. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_layout`, `get_tile_count`, `get_tile_width`, `get_tile_height`, `apply_to_tileset`, and 7 more stays attached to the local data model and invariants.
-//! It resolves corner relationships carefully so terrain seams stay clean across transitions. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It supports quarter-tile composition when rendering needs sub-tile assembly for smooth blends. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Defines the autotile sheet model that turns neighborhood bitmasks into final atlas tile selections.
+//! Owns supported autotile layouts and the shared contract used by different terrain or border art styles.
+//! Centralizes bitmask interpretation so terrain seam logic stays in one graphics-selection owner.
+//! Resolves corner and edge relationships carefully so transitions remain visually clean across map joins.
+//! Supports quarter-tile composition for layouts that assemble one final tile from smaller atlas regions.
+//! Bridges tileset geometry with adjacency rules instead of mixing autotile policy into general map storage.
+//! Open this file when terrain transitions, mask lookup, or autotile atlas mapping behaves incorrectly.
 
 use super::tileset::TileSet;
 use crate::math::Rect;

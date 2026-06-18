@@ -1,6 +1,7 @@
-//! Provides canonical speaker identity records used by dialogue flow to resolve who is talking at each step. `dialog/speaker` delivers the speaker implementation for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Centralizes speaker lookup in a stable registry keyed by durable identifiers shared across a session. The file owns or coordinates data contracts including `Speaker`, `SpeakerRegistry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Keeps narrative content decoupled from presentation metadata like portraits, voices, and character tags. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `get`, `remove`, `count`, `contains`, and 1 more stays attached to the local data model and invariants.
+//! `src/dialog/speaker.rs` owns canonical speaker records and the registry used to resolve who is speaking.
+//! It stores speaker identity, display name, portrait path, voice id, and tags in one stable lookup boundary.
+//! Conversation content depends on this file for character metadata, while sequencing and branching stay in sibling files.
+//! Read it when speaker lookup, metadata fields, or registry ownership for dialog characters needs to change.
 
 use std::collections::HashMap;
 

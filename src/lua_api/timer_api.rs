@@ -1,4 +1,4 @@
-//! `src/lua_api/timer_api.rs` registers the `lurek.timer` Lua boundary for timer behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.timer` Lua API for timer userdata, callback removal, scheduling, and timer control.
 
 use super::SharedState;
 use crate::timer::Scheduler;

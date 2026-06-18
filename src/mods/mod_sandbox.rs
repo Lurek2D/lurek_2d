@@ -1,7 +1,8 @@
-//! Sandbox wrapper that restricts mod Lua access to declared capabilities. `mods/mod_sandbox` delivers the mod sandbox implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Applies per-mod permission filtering over the shared lurek namespace. The file owns or coordinates data contracts including `HookPoint`, `ModSandbox`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Converts undeclared API calls into Lua errors instead of crashes. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str`, `new`, `permissive`, `allow_api`, `block_op`, and 5 more stays attached to the local data model and invariants.
-//! Limits file-system access to each mod's own content directory. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/mods/mod_sandbox.rs` defines the capability sandbox that filters what a mod may call, read, write, or hook into.
+//! It owns allowed API namespaces, blocked operations, hook permissions, memory and network flags, and read-path policy.
+//! `HookPoint` parsing and canonical names live here so manifest declarations and runtime checks use one hook vocabulary.
+//! This file does not load mods or resolve dependencies; it only describes and answers capability checks for mod execution.
+//! Read it when sandbox defaults, hook permissions, or file and API access rules for mods need to change.
 
 use std::collections::HashSet;
 

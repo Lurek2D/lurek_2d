@@ -1,7 +1,8 @@
-//! Implements dataframe processing helpers for frequency summaries and table-quality diagnostics. `dataframe/query/processing` delivers the processing implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Builds value-count tables with optional percentage columns for distribution inspection. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Produces missing-value reports and duplicate-row extraction over full-row or keyed comparisons. Public callable behavior is centered on no named public items, while method-level behavior such as `value_counts`, `missing_report`, `duplicate_rows`, `date_parts` stays attached to the local data model and invariants.
-//! Appends parsed ISO date parts into structured year, month, and day output columns. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns practical dataframe diagnostics such as value counts, missingness reports, duplicate rows, and dates.
+//! `value_counts` and `missing_report` summarize column quality, while `duplicate_rows` surfaces repeated row keys.
+//! `date_parts` also lives here because ISO date expansion is a cleanup step used before richer analytics and SQL.
+//! Private duplicate-key and row-key helpers stay local because they serve only this file's duplicate detection flow.
+//! Open it when data quality helpers change; grouping math, rolling windows, and storage contracts live in siblings.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 

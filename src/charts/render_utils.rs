@@ -1,9 +1,10 @@
-//! CPU-based rasterization toolkit providing pixel-level drawing operations (points, lines, circles, filled rectangles, buffer fills) for software chart rendering.
-//! Implements Bresenham line algorithm, per-pixel distance-based circle fill, and normalized coordinate mapping from data-space to screen-space pixels.
-//! Computes automatic value range bounds across multiple series to establish default axis domains avoiding degenerate zero-width ranges.
-//! Maintains consistent low-level drawing semantics across all chart renderer implementations enabling uniform image generation behavior.
-//! Clamps coordinates to buffer bounds, handling edge cases like zero-sized ranges and out-of-bounds pixel access silently.
-//! `charts/render_utils` delivers the render utils implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns the shared CPU rasterization helpers that every chart renderer uses to draw into RGBA byte buffers.
+//! It implements pixel writes, Bresenham lines, filled rectangles, filled circles, and whole-buffer background clears.
+//! Auto-range and world-to-screen mapping live here so cartesian renderers share one default axis-domain policy.
+//! Annotation helpers also live here, adding titles, ticks, legends, axis labels, and category captions onto images.
+//! Small text-formatting and color-box helpers stay local because chart annotations depend on ImageData label drawing.
+//! Open it when low-level raster rules or shared chart annotation behavior changes across multiple renderer files.
+//! Edit the individual chart file instead when changing series storage, stacking, bucketing, or matrix-specific semantics.
 
 use crate::charts::config::{ChartConfig, ChartSeries};
 use crate::image::ImageData;

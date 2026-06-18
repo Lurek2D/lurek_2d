@@ -1,9 +1,12 @@
-//! Implements logging sink backends, severity filters, and output formatting infrastructure. `log/sinks` delivers the sinks implementation for the log subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Defines sink-level enums and parsing rules used to gate message delivery. The file owns or coordinates data contracts including `SinkLevel`, `MemoryEntry`, `RotatingFileSink`, `SinkKind`, `Sink`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides in-memory capture sinks for runtime inspection and diagnostic tooling. Public callable behavior is centered on no named public items, while method-level behavior such as `severity_rank`, `as_str`, `open`, `write_with_rotation`, `flush`, `file`, and 17 more stays attached to the local data model and invariants.
-//! Supports plain, JSON, and NDJSON output styles for machine and human consumers. Runtime integration reaches sibling engine areas through crate modules `binary`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Manages timestamp and optional color formatting for readable terminal and file logs. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Implements rotating file sinks with size limits and backup retention control. The file boundary separates log implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! `src/log/sinks.rs` owns sink backends, sink-level filtering, output formatting, and the registry that dispatches logs.
+//! It defines `SinkLevel`, `MemoryEntry`, `RotatingFileSink`, `SinkKind`, `Sink`, and `SinkRegistry` under one owner.
+//! File, rotating-file, memory, and callback sinks all live here, keeping backend-specific write behavior in one place.
+//! Plain text, JSON, and NDJSON formatting are implemented here along with timestamps, ANSI color, and tag filtering.
+//! Rotation policy, buffered file writes, memory capture, and per-sink acceptance rules are handled inside this file.
+//! The registry also dispatches structured and unstructured messages to every sink, which makes fan-out behavior explicit.
+//! Read it when retention, formatting, file-rotation rules, or backend selection for runtime diagnostics must change.
+//! Higher layers should treat this file as the sink boundary, while caller-facing log entry helpers stay in `facade.rs`.
+//! This is also where machine-oriented output contracts live, so tooling changes should start here before call sites.
 
 use crate::binary::RingBuffer;
 use std::collections::BTreeMap;

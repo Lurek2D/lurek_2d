@@ -1,7 +1,7 @@
-//! Named block group for themed procedural generation passes. `mapblock/group` delivers the group implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Carries weighted selection metadata for controlled randomness. The file owns or coordinates data contracts including `MapGroup`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Lets scripts reference semantic groups instead of numeric ids. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_block`, `get_block`, `get_block_mut`, `block_count`, `remove_block`, and 8 more stays attached to the local data model and invariants.
-//! Supports biome-style or region-style content curation. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns named collections of blocks and scripts used as one authored theme or generation content pack.
+//! `MapGroup` stores its display name plus ordered `MapBlock` and `MapScript` arrays for later weighted selection.
+//! Lookup and mutation helpers stay here because grouping content is an authoring concern, not a placement algorithm.
+//! Open it when content organization changes; block geometry, step execution, and output conversion live in siblings.
 
 use super::block::MapBlock;
 use super::script::MapScript;

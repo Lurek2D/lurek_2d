@@ -1,8 +1,9 @@
-//! General-purpose graph structure for gameplay relationships, navigation-like topologies, and any domain that benefits from explicit nodes connected by weighted or labelled edges.
-//! The file stores graph state as stable integer-addressed nodes and adjacency lists, which keeps structural edits straightforward while preserving identities scripts can hold onto.
-//! Directed and undirected operation live behind one representation, including automatic reverse-edge behavior when a connection should semantically exist in both directions.
-//! Traversal helpers expose breadth-first and depth-first walks as first-class capabilities so callers can inspect reachability, discover neighborhoods, or derive ordered visits without rebuilding utility code.
-//! Connectivity checks, node metadata, and edge labels make the graph more than a bare container by supporting practical gameplay queries around ownership, routes, influence, or dependency webs.
+//! This file owns the general graph container used to model labeled nodes and weighted edges with stable integer ids.
+//! `GraphNode` and `GraphEdge` define stored topology, while `Graph` keeps nodes, edges, adjacency, and id allocators.
+//! Directed and undirected edge insertion stay here because reverse-edge behavior is part of graph-owned structure rules.
+//! Traversal helpers such as BFS, DFS, neighbor lookup, and connectivity checks also belong with the adjacency cache.
+//! Node and edge removal remain local because index repair and adjacency rebuilds are internal consistency concerns.
+//! Open it when topology semantics change; tries, blackboards, and state coordinators live in sibling modules.
 
 use std::collections::{HashMap, HashSet, VecDeque};
 

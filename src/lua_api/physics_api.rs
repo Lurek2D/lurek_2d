@@ -1,4 +1,4 @@
-//! `src/lua_api/physics_api.rs` registers the `lurek.physics` Lua boundary for physics behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.physics` Lua API for bodies, shapes, raycasts, queries, events, and debug settings.
 
 use super::SharedState;
 use crate::math::Vec2;

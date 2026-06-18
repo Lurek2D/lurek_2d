@@ -1,9 +1,12 @@
-//! Provides full globe frame emission that converts world map state into ordered render commands. `globe/draw` delivers the draw implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Draws projected regions with fog, lighting, overlays, and optional texture contribution. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Renders borders, atmosphere, and arcs to preserve geographic structure and visual depth cues. Public callable behavior is centered on `emit_globe_frame`, `project_arc`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Integrates marker and label drawing with animation and LOD-aware visibility rules. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Applies camera projection and world parameters consistently across all rendered primitives. External integration uses `super`, `slotmap`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Supports layered heat and style effects so thematic map signals remain legible. The file boundary separates globe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Generates the full globe render command stream from topology, camera, overlays, fog, markers, labels, and arcs.
+//! Owns the projected-region draw policy that blends lighting, atmosphere, borders, heat layers, textures, and fog.
+//! Projects region geometry and arcs through the current orbit camera so every primitive shares one spatial frame.
+//! Also renders markers and labels with LOD checks, pulse effects, and optional icon textures for strategic views.
+//! Provides the presentation boundary between globe state stores and the generic renderer command vocabulary.
+//! This file is where thematic overlays, marker glyphs, night shading, and atmospheric effects are coordinated.
+//! Neighboring changes usually involve projection math, fog semantics, resource keys, and region style contracts.
+//! Open this owner when the globe looks wrong even though source data is correct and available to the renderer.
+//! It is the right file for draw ordering bugs because no sibling module owns the final command assembly pipeline.
 
 use super::sphere::great_circle_path;
 use crate::globe::fog::FogStore;

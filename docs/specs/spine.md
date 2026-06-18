@@ -16,22 +16,15 @@
 
 ## Summary
 
-- This module gives users skeletal 2D animation with bones, slots, skins, and timeline playback.
-- Bone hierarchies support pose propagation from local transforms to world-space outputs.
-- Slot and skin systems separate rig structure from visual attachment variants.
-- Timeline sampling supports smooth and stepped interpolation styles.
-- Event keyframes support trigger points for gameplay or audio synchronization.
-- IK constraints support target-driven limb posing with bend-direction control.
-- Animation blending supports transition-friendly pose mixing.
-- Runtime APIs support play, stop, seek-style updates, and clip management.
-- JSON import support bridges Spine and DragonBones authored content into runtime rigs.
-- Render conversion paths flatten pose data into draw-friendly outputs.
-- Debug image generation helps inspect skeleton state and hierarchy behavior.
-- Feature gating keeps module usage explicit for builds that need skeletal animation.
-- The module is useful for character animation, articulated props, and procedural pose adjustments.
-- For users, it centralizes rig playback and control without custom per-character math.
+- The `spine` module is the skeletal-animation surface for users who want bone-based rigs, slots, skins, and timeline-driven pose changes inside the engine.
+- Bones, IK constraints, importers, skeleton state, slots, timelines, and render bridges work together so the same module can load authored rigs, pose them at runtime, and expose the result to the rest of the visual stack.
+- That matters because skeletal animation is more than playback: projects also need skin changes, attachment control, hierarchy updates, and pose solving that stay coherent across several animation clips.
+- Import support makes the module practical for authored content workflows, while runtime skeleton control keeps it useful for gameplay-driven animation changes after import.
+- Runtime events, attachment swaps, and skin changes are especially important because skeletal content often needs to react to equipment, status, or scripted actions without reauthoring the rig itself.
+- Constraint solving is a major part of the value, because believable skeletal motion often depends on live bone relationships rather than on clip playback alone.
+- That keeps authored rigs flexible when gameplay needs live attachment or pose changes.
+- Read `spine` as the owner of skeletal rig state and timeline evaluation. Rendering displays the posed result, but `spine` defines how bones, slots, skins, and constraints move together.
 
-This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -43,59 +36,71 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ### bone.rs
 
-- This file defines the skeletal bone unit that carries local pose data and resolved world transform state. `spine/bone` delivers the bone implementation for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Parent linkage is part of the model so chains of motion can propagate naturally through a hierarchy. The file owns or coordinates data contracts including `Bone`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- The type exists as the core transform-bearing element for the rest of the spine animation system. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_parent` stays attached to the local data model and invariants.
+- This file owns `Bone`, the transform-bearing unit that stores one rig node's local pose and resolved world pose.
+- It keeps parent linkage, local translation, rotation, scale, and accumulated world-space outputs in one record.
+- Constructors cover root and child bones so importer and runtime code can build hierarchies without extra defaults.
+- Open this file when bone transform payloads change; skeleton playback and rendering live in sibling owners.
 
 ### ik.rs
 
-- This file implements the focused inverse-kinematics solver used when a short bone chain should reach toward a target automatically.
-- It computes joint angles from geometric constraints instead of relying only on keyed animation values. The file owns or coordinates data contracts including `IKConstraint`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Bend direction is part of the constraint so mirrored or elbow-up versus elbow-down poses can be chosen intentionally. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_target`, `solve` stays attached to the local data model and invariants.
-- The file adds procedural responsiveness to otherwise keyframed skeletal motion. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `IKConstraint`, the two-bone inverse-kinematics solver used to aim short chains at a target.
+- It stores chain indices, target position, and bend direction so procedural posing can complement keyed clips.
+- `solve` uses law-of-cosines geometry to update root and elbow local rotations when referenced bones exist.
+- This is the right owner for elbow-up versus elbow-down behavior or target-solving semantics across skeletal rigs.
+- Open this file when IK math changes; timeline sampling and skeleton playback state live in siblings.
 
 ### importer.rs
 
-- Imports standard Spine and DragonBones JSON skeleton shapes into runtime Skeleton data. `spine/importer` delivers the importer implementation for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The importer focuses on common production fields for bones, slots, skins, and basic timelines. The file owns or coordinates data contracts including `SpineImportError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It intentionally rejects malformed or unsupported structures with explicit, stable errors. Public callable behavior is centered on `skeleton_from_json_str`, `skeleton_from_json_value`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- `spine/importer` delivers the importer implementation for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The file owns or coordinates data contracts including `SpineImportError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Public callable behavior is centered on `skeleton_from_json_str`, `skeleton_from_json_value`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns Spine and DragonBones JSON import for the skeletal runtime, turning payloads into `Skeleton` data.
+- It defines `SpineImportError` plus parsing for bones, slots, skins, animations, and event channels across both formats.
+- Bone and slot parsing resolve names into indices so the runtime receives parent-linked rigs instead of loose strings.
+- Animation parsing maps translate, rotate, scale, and event data into `SkeletonAnimation` timelines with stable units.
+- DragonBones and Spine variants share helpers for numeric extraction, duration handling, and error reporting.
+- The importer rejects malformed or unsupported structures early so asset issues fail before runtime playback.
+- This file is the boundary between third-party skeletal data formats and engine-owned rig, clip, and skin structures.
+- Open this file when supported JSON schema or import policy changes; runtime skeleton behavior lives in siblings.
 
 ### mod.rs
 
-- This module provides the engine's skeletal animation runtime built around bones, slots, timelines, constraints, and posed rendering support.
-- It turns hierarchical transform animation into a reusable feature system for articulated 2D characters and props. `src/spine/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bone::Bone`, `ik::IKConstraint`, `importer::{skeleton_from_json_str, skeleton_from_json_value, SpineImportError}`, `skeleton::{BoneParams, Skeleton}`, and 2 more centralized for the spine subsystem.
+- This module re-exports the spine subsystem surface for bones, slots, timelines, IK, import, and rendering.
+- It keeps navigation explicit by mapping which sibling files own transform hierarchy, clip timing, import, or drawing.
+- Public exports here route callers toward `Skeleton` as the runtime owner and importer functions for asset loading.
+- `bone.rs`, `slot.rs`, and `ik.rs` hold the core rig pieces, while `timeline.rs` owns keyframe evaluation semantics.
+- `skeleton.rs` coordinates playback and pose updates, and `render.rs` turns posed rigs into engine draw commands.
+- Change this file when the public spine symbol map moves; change siblings when rig behavior or data rules change.
 
 ### render.rs
 
-- This file converts a posed skeleton into renderer-facing commands for debug or simplified skeletal visualization. `spine/render` delivers the rendering adapter and draw-command integration for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Bone and slot state are flattened here into ordinary draw operations so the rest of the renderer does not need skeleton awareness.
-- The output emphasizes readable structure over full attachment rendering complexity. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
+- This file owns the draw-command bridge that turns a posed `Skeleton` into generic debug render commands.
+- It flattens bone transforms and slot attachments into circles and outlines for a skeleton-agnostic renderer.
+- The output favors readable rig structure over full attachment rendering, making it useful for tooling and inspection.
+- Open this file when skeleton-to-command translation changes; pose updates and slot ownership live in siblings.
 
 ### skeleton.rs
 
-- This file implements the main skeleton container that holds the full moving rig, visual attachment points, animations, and runtime playback state.
-- Bones and slots are managed together here because final pose evaluation must understand both transform hierarchy and attachment ownership.
-- Animation playback advances in this file, including looping, clamping, blending, and application of sampled values onto the rig.
-- Constraint solving and skin switching are also coordinated here so procedural adjustments and visual variants act on the same live structure.
-- World transforms are recomputed in hierarchy order, which keeps every downstream query grounded in one authoritative pose.
-- Debug drawing support is included because skeletal systems are much easier to tune when their invisible structure can be inspected directly.
+- This file owns `Skeleton`, the main runtime container for bones, slots, animations, IK constraints, skins, and playback.
+- It stores root transform, pose arrays, registered clips, skin mappings, and current animation state in one owner.
+- Helpers add or find bones and slots, switch skins, start or stop animations, and expose attachment or pose queries.
+- Animation updates sample timelines here, then IK solving and hierarchy traversal recompute the final world-space pose.
+- World transform updates require parent-before-child order, making this file the owner of pose propagation invariants.
+- Debug image helpers live here so rig tuning can inspect the same live structure that gameplay and rendering use.
+- Open this file when skeletal runtime semantics change; importer parsing and draw-command translation live in siblings.
 
 ### slot.rs
 
-- This file defines the slot concept that binds visible attachments to bones without making the bone itself a rendering record.
-- Slots carry appearance and ordering intent so one skeleton can swap visuals or reorder layers without changing its transform hierarchy.
-- The type is the visual attachment bridge between pose evaluation and rendered character parts. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
+- This file owns `Slot`, the attachment record that links drawable content and tint state to one skeleton bone.
+- It stores slot identity, bone index, tint channels, optional attachment name, and draw-order intent for the rig.
+- Open this file when attachment payloads change; bone transforms and skeleton playback coordination live in siblings.
 
 ### timeline.rs
 
-- This file defines the animation timeline machinery that turns keyed values over time into sampled pose changes for a skeleton.
-- Interpolation curves live here so motion can feel stepped, smooth, weighted, or otherwise shaped between authored keys. The file owns or coordinates data contracts including `EasingType`, `BoneProperty`, `Keyframe`, `BoneTimeline`, `EventKeyframe`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Bone-property timelines are stored and evaluated here because timing semantics should remain consistent across all clips.
-- Event keyframes share the same temporal framework, which lets animation playback trigger gameplay or audio markers at controlled moments.
-- Full animation clips are assembled from many timelines and can be sampled, blended, reversed, or parsed from serialized sources.
+- This file owns the keyframe system for skeletal animation, including easing curves, events, timelines, and clips.
+- It stores sorted keys per bone property and evaluates them into sampled values so every clip shares one timing model.
+- `BoneTimeline` interpolates translation, rotation, and scale, while `EasingType` defines the curve between keys.
+- `SkeletonAnimation` groups timelines plus event markers, then applies, blends, reverses, or serializes pose data.
+- Event collection and pose snapshots live here so runtime playback and tooling can inspect the same temporal model.
+- This file is the timing boundary between imported animation data and mutable bone fields on a live skeleton.
+- Open this file when clip sampling semantics change; skeleton state and importer parsing live in sibling owners.
 
 
 

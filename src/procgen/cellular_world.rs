@@ -1,8 +1,10 @@
-//! Cellular material simulation world for sand-box style phenomena where local rules create visible motion such as falling grains, flowing liquid, rising gas, and spreading fire.
-//! The file keeps material state on a fixed grid and advances that state through explicit interaction rules instead of a continuous physics solver.
-//! Alternating sweep direction helps the simulation avoid obvious left-right bias, which keeps repeated ticks from producing one-sided artifacts.
-//! Fill helpers make the grid directly paintable by gameplay code and tools, allowing immediate authoring of test setups, explosions, or scripted reactions.
-//! Byte serialization and image export let the same simulation serve runtime effects, save systems, and visual previews. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns the falling-material sandbox that simulates sand, water, rock, fire, gas, and empty space on a grid.
+//! `CellType` defines the material vocabulary, while `CellularWorld` owns cells, fire lifetimes, tick parity, and RNG.
+//! Paint helpers such as rectangle and circle fills stay here because direct authoring of test or gameplay setups is local.
+//! Step logic also belongs here since per-material movement, spread, and bias reduction define world-update semantics.
+//! Serialization, region export, palette rendering, and cell queries remain local because they expose owned grid state.
+//! Open it when material interaction rules change; static cave generation lives in `cellular.rs` instead.
+//! This file is the runtime simulation owner, not a generic renderer, physics system, or authored content container.
 
 /// Cell material type used in `CellularWorld`.
 #[repr(u8)]

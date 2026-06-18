@@ -1,7 +1,8 @@
-//! This file provides canonical tween progress state shared across animation handle types. `tween/state` delivers the state container and transition helpers for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It tracks elapsed time, duration, pause state, and resolved easing behavior in one unit. The file owns or coordinates data contracts including `TweenState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It resolves easing names case-insensitively with aliases that match common script habits. Public callable behavior is centered on `resolve_easing`, `builtin_easing_names`, while method-level behavior such as `new`, `tick`, `reset`, `t_raw`, `t_eased`, `lerp`, and 1 more stays attached to the local data model and invariants.
-//! It exposes built-in easing catalog data for tooling, validation, and autocomplete features. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `TweenState`, the shared timing record that tracks duration, elapsed time, pause state, and easing.
+//! It resolves easing names through the math catalog, including aliases exposed to scripts and tooling lookups.
+//! Methods here convert raw clock progress into eased progress, linear interpolation, reset behavior, and completion tests.
+//! The exported `builtin_easing_names` list gives validators, docs, and completion code one canonical set of names.
+//! Open this file when tween timing semantics or accepted easing identifiers change across multiple animation owners.
 
 use crate::math::easing;
 

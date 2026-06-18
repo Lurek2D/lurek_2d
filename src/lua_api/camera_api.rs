@@ -1,4 +1,4 @@
-//! Lua bindings for `lurek.camera`. `src/lua_api/camera_api.rs` registers the `lurek.camera` Lua boundary for camera behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.camera` Lua API for camera userdata, follow easing, zoom easing, and view controls.
 
 use super::SharedState;
 use crate::camera::{Camera2D, CameraEasing, CameraPath, CameraRig2D, CameraWalker, ZoomTween};

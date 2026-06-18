@@ -1,8 +1,9 @@
-//! Implements one-shot threaded dataframe jobs for file loading and SQL query execution. `dataframe/task` delivers the task implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Captures worker-side data snapshots to avoid large payload transfer through script boundaries. The file owns or coordinates data contracts including `DataFrameTask`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides poll, wait, progress, result, and error lifecycle helpers for async task management. Public callable behavior is centered on no named public items, while method-level behavior such as `spawn_csv_file`, `spawn_json_file`, `spawn_dataframe_query`, `spawn_database_query`, `spawn_database_query_params`, `is_done`, and 4 more stays attached to the local data model and invariants.
-//! Executes dataframe and database operations on worker threads with bounded state handoff. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Serves as the asynchronous execution layer used by Lua-facing dataframe task APIs. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns one-shot background dataframe jobs for file loading and SQL execution over cloned snapshots.
+//! `DataFrameTask` stores the receiver, cached outcome, and coarse progress shared between the caller and worker thread.
+//! Spawn helpers live here because progress updates, thread naming, and result wrapping are task-lifecycle concerns.
+//! The file bridges `file_io.rs` and `sql.rs` into async work without moving engine-facing polling into those owners.
+//! Error formatting also stays here so task callers always get stable strings regardless of storage backend details.
+//! Open it when async dataframe execution changes; table mutation, parsing, and lazy planning live in siblings.
 
 use crate::dataframe::file_io::{self, DataFrameFileError, DataFrameFileStore};
 use crate::dataframe::frame::{CellValue, DataFrame, Database};

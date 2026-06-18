@@ -18,26 +18,17 @@
 
 ## Summary
 
-- This module gives users stack-based scene flow control for menus, gameplay states, overlays, and transitions.
-- Push/pop/switch operations provide explicit runtime state navigation primitives.
-- Overlay support allows stacked scene behavior without fully replacing underlying context.
-- Lifecycle callbacks coordinate enter, leave, pause, resume, and ready phases consistently.
-- Preload hooks support deferred scene initialization to reduce transition stutter.
-- Shared scene data APIs support parameter passing without global-variable sprawl.
-- Registered scene names support lookup, reuse, and navigation by symbolic identifiers.
-- Transition helpers support fade, slide, wipe, and iris style visual changes.
-- Transition queues allow staged cinematic scene changes.
-- Serialization helpers capture stack and shared data snapshots for save/load workflows.
-- Process/update/render toggle controls support selective scene execution policies.
-- Active-scene and layer queries support debug overlays and tooling integration.
-- Built-in depth sorter supports painter-order rendering for mixed drawables.
-- Stable-sort support prevents equal-depth flicker artifacts.
-- This module is useful for game-state architecture, UI layering, and narrative flow systems.
-- For users, it centralizes scene lifecycle semantics instead of scattered ad-hoc table swaps.
-- It improves maintainability of complex navigation and transition behavior.
-- Overall, users get a robust orchestration layer for stateful game flow.
+- The `scene` module is the high-level flow coordinator for users who want menus, gameplay states, overlays, pause layers, and transitions to behave like one ordered stack instead of a collection of unrelated toggles.
+- Scene stacks, shared scene data, lifecycle callbacks, transitions, depth sorting, object containers, and render bridges all matter here because changing “where the player currently is” usually affects simulation, UI, rendering, and progression at the same time.
+- Push, pop, replace, and overlay semantics are a core part of the module's value. They let a project build layered state changes such as pause menus above gameplay, cutscenes above maps, or modal flows above existing screens without throwing away the underlying context.
+- Lifecycle hooks matter because scenes are not just labels. They need entry, exit, pause, resume, preload, and ready-style behavior so resources and logic can react properly when control moves from one scene to another.
+- Shared data and symbolic scene registration extend the feature from visual navigation into game-flow management, which is essential for systems where scenes need to hand state to one another or be re-entered with parameters.
+- Transition support makes the module useful for pacing and presentation as well as for logic. Fade, slide, wipe, iris, or other transition forms become part of one unified scene-change model instead of a separate ad hoc rendering trick.
+- Depth sorting and object-container support connect the scene module back to the world it presents, giving small scene-local object workflows and painter-style draw ordering a clear home.
+- Render and serialization hooks matter because scenes are often both user-facing and stateful. Projects may want to capture, restore, preview, or stack them deterministically.
+- The module's stack semantics provide a durable answer to “what is active now, what is suspended underneath it, and how do we return cleanly,” which is one of the hardest recurring problems in game flow architecture.
+- Read `scene` as the owner of game-flow structure. Other systems perform the actual content work inside a scene, but this module decides how those scenes are organized, layered, transitioned, and handed off over time.
 
-This module primarily collaborates with `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -50,47 +41,58 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### depth_sorter.rs
 
-- This file implements the scene module's depth-ordering utility for draw work that must respect painter-style layering. `scene/depth_sorter` delivers the depth sorter implementation for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It chooses among multiple sorting strategies so small and large batches can both be handled without one rigid algorithm for every case.
-- Entries carry enough information to sort callbacks and object-style drawables through the same pipeline. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_stable`, `is_stable`, `add`, `add_object`, `sort`, and 5 more stays attached to the local data model and invariants.
-- Stable ordering can be preserved where visual flicker matters, while faster paths remain available when the batch shape allows it.
+- `src/scene/depth_sorter.rs` owns adaptive depth sorting for scene draw entries that must respect painter-style layering.
+- It defines `DepthEntry` and `DepthSorter`, keeping sortable draw metadata and sorting strategy selection together.
+- Unstable, stable, radix, and parallel sort paths all live here, so batch-shape tuning stays local to draw ordering.
+- This file also handles entry staging, dirty tracking, and sorted output access for scene render preparation.
+- Read it when depth ordering policy, sort strategy thresholds, or draw-entry batching behavior needs to change.
 
 ### mod.rs
 
-- This module provides scene-stack flow control, scene rendering helpers, transition behavior, and depth ordering support for multi-state games.
-- It gives the engine a structured way to move between menus, gameplay, overlays, and other major runtime states. `src/scene/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `depth_sorter::DepthSorter`, `stack::{SceneId, SceneStack}`, `transition::{ActiveTransition, EasingType, TransitionType}` centralized for the scene subsystem.
+- `src/scene/mod.rs` is the module index that exposes scene stack flow, rendering helpers, transitions, and depth sorting.
+- It reexports `SceneStack`, transition types, and depth ordering helpers while keeping object and render details modular.
+- No scene stack state lives here; this file only declares child modules and defines which scene symbols are public.
+- Read this index when wiring scene flow, because it shows where stack policy, rendering, and transition visuals separate.
+- Changes here reshape the scene boundary, since reexports decide what runtime code may import without deep paths.
+- This module keeps stack control, transition state, render bridges, and object utilities split by clear ownership.
 
 ### object.rs
 
-- Simple 2D scene object entity storing position, sprite reference, and visibility state for basic game drawable management.
-- Provides mutation methods to update position, sprite name, and visibility flag during gameplay without reconstructing the object.
-- Integrates with Lua through `register()` to expose constructor and property setters so scripts can create and control scene objects.
+- `src/scene/object.rs` owns the lightweight scene object entity exposed to Lua for simple positioned sprite state.
+- It defines `SceneObject` plus Lua registration helpers, keeping position, sprite, and visibility mutation together.
+- This file is the small object-state boundary for simple scene scripts, separate from stack control and rendering flow.
+- Read it when scene-object fields, Lua API shape, or basic object mutation behavior needs to change.
 
 ### object_container.rs
 
-- Provides `LSceneObjectContainer` userdata wrapping the pure-Lua scene-objects. `scene/object_container` delivers the object container implementation for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- library. Supports add/remove/clear operations, per-frame update and draw cycles,. The file owns or coordinates data contracts including `LSceneObjectContainer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- and layer-based depth sorting for painter-style rendering, plus object query. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_container` stays attached to the local data model and invariants.
+- `src/scene/object_container.rs` owns the Rust wrapper around the embedded Lua scene-object container library.
+- It defines `LSceneObjectContainer`, keeping registry-key lifetime management and Lua table retrieval in one owner.
+- Read this file when Rust-to-Lua container embedding or library bootstrap behavior for scene objects needs changes.
 
 ### render.rs
 
-- This file bridges the current scene stack state into renderer-facing output and scene snapshots. `scene/render` delivers the rendering adapter and draw-command integration for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- `src/scene/render.rs` owns the render-facing bridge from current scene-stack state into commands and image snapshots.
+- It extends `SceneStack` with render-command and image helpers, keeping render adaptation separate from stack state.
+- Read it when active-scene rendering output, snapshot behavior, or scene-to-renderer bridging logic needs to change.
 
 ### stack.rs
 
-- This file implements the actual scene stack that decides which scenes are present, active, paused, resumed, or removed over time.
-- It supports classic push and pop navigation as well as replacements, overlays, named lookup, and explicit clearing of flow state.
-- Scene lifecycle callbacks are coordinated here so transitions between states follow one consistent pattern instead of ad hoc caller logic.
-- Transition queuing is integrated into the stack because movement between scenes often has both control-flow and visual timing aspects.
-- Shared scene data also lives at this layer, giving separate scenes a structured way to pass values without global sprawl.
-- Layer and overlay handling let multiple scenes coexist when needed while still preserving a clear notion of current stack order.
+- `src/scene/stack.rs` owns the scene stack that decides which scenes exist, which one is current, and how flow changes.
+- It defines `SceneId` and `SceneStack`, keeping stack order, overlays, layers, transitions, and scene ids together.
+- Push, pop, switch, clear, pop-until, and overlay entry points live here so scene navigation policy stays centralized.
+- The file also owns transition queuing, active transition updates, and the rules that reveal scenes after stack changes.
+- Named scene registration and lightweight cross-scene data slots live here so callers avoid ad hoc global routing state.
+- Per-scene execution flags for process, physics, late, and update passes are stored here with stack-owned defaults.
+- Rendering helpers expose active and ordered scene ids, while transition math and frame drawing remain in other files.
+- Read this file when scene lifetime, overlay semantics, layer priority, registry behavior, or shared scene state changes.
 
 ### transition.rs
 
-- This file defines the time-based visual language for moving from one scene state to another without abrupt swaps. `scene/transition` delivers the transition implementation for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It combines transition kinds, easing behavior, and active progress tracking so scene changes can carry controlled visual momentum.
-- Parsing support is included here because scripts often describe transitions through compact names rather than direct Rust types.
-- The file turns those names and durations into concrete animated progress over time. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/scene/transition.rs` owns the visual transition types and active progress state used when moving between scenes.
+- It defines `TransitionType`, `EasingType`, and `ActiveTransition`, keeping names, easing curves, and timers together.
+- Parsing from script strings, linear and eased progress, completion checks, and elapsed-time updates all live here.
+- This file is the transition-visual boundary for scene changes, while stack policy decides when a transition starts.
+- Read it when transition vocabulary, easing behavior, or active transition timing semantics need to change.
 
 
 

@@ -1,4 +1,4 @@
-//! Lua bindings for `lurek.log`. `src/lua_api/log_api.rs` registers the `lurek.log` Lua boundary for log behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.log` Lua API for structured logging, field and tag parsing, and runtime log dispatch.
 
 use super::SharedState;
 use crate::log as log_domain;

@@ -18,41 +18,20 @@
 
 ## Summary
 
-- The procgen module provides deterministic synthesis of maps, structures, names, and procedural data fields.
-- Seeded randomness is centralized so outputs are reproducible across runs and test pipelines.
-- Noise primitives include Perlin, Simplex, and Worley generation.
-- Fractal combinations support richer terrain and texture-like scalar fields.
-- Domain warping and tileable variants support seamless looping and stylized maps.
-- Parallel generation paths support large grid workloads.
-- Heightmap generation converts sampled fields into usable elevation surfaces.
-- Optional erosion passes add terrain smoothing and channel-like shaping.
-- Biome classification maps elevation, moisture, and temperature into discrete categories.
-- Biome outputs include visual-friendly color mapping.
-- BSP dungeon generation creates partitioned room-and-corridor structures.
-- Room-scatter generation provides alternative stochastic dungeon layouts.
-- Prefab stamping blends authored motifs into procedural results.
-- Cellular automata generation supports cave-like map structures.
-- Cellular worlds support emergent sand/liquid/gas/fire style simulations.
-- Flood-fill helpers support region extraction and connectivity tooling.
-- Poisson disk sampling supports evenly spaced placement patterns.
-- Voronoi support partitions space into nearest-seed regions.
-- L-systems support grammar-based branching structures and turtle output.
-- Wave Function Collapse supports adjacency-constrained tile synthesis.
-- WFC includes weighted tile selection and contradiction retry behavior.
-- World graph generation supports region topology and route analysis.
-- Graph tools include shortest-path and spanning-tree utilities.
-- Markov name generation supports synthetic naming from sample corpora.
-- The module exposes both low-level primitives and high-level generators.
-- It is designed for both rapid prototyping and production content pipelines.
-- The module owns generation logic, not gameplay interpretation.
-- It does not own renderer policy, but supports preview-oriented outputs.
-- Determinism and parameterization are core quality goals.
-- APIs are script-friendly and suitable for automated regression checks.
-- The module remains in Foundations for broad reuse across genres.
-- Overall, procgen is the data-synthesis backbone for procedural world workflows.
-- It lets teams scale content variety without proportional authoring cost.
+- The `procgen` module is the engine's procedural-content creation toolkit for users who want maps, regions, structures, names, distributions, and generated support data to be produced inside the engine from reusable algorithms.
+- Its strength is range. Noise, BSP, cellular methods, Voronoi-style construction, flood fill, L-systems, room placement, graph assembly, wave-function-collapse style constraints, biome logic, and naming helpers all coexist because procedural work rarely stays inside one algorithm family.
+- That breadth matters because procedural generation in games usually spans several scales at once, from local texture or room shape up to region connectivity and readable generated labels.
+- The module is useful not only for final world output but also for support structures that other systems consume, such as region maps, connectivity data, biome assignments, or candidate placements.
+- Constructive algorithms are especially valuable because they let projects generate spaces and structures with visible design logic rather than only sampling randomness.
+- Constraint-driven approaches such as wave-function-collapse style generation matter for projects that need local rules and authored tile compatibility without fully hand-building every map.
+- Graph and region-generation helpers broaden the module into larger-scale world assembly. Generated content is often about how areas relate to one another, not only about local texture or room shape.
+- Naming helpers show that the scope is not restricted to geometry. Procedural content also includes readable labels, faction or place names, and other text-like generated outputs that help a world feel authored and coherent.
+- Rendering and visualization support are therefore part of the practical story, since generated results often need to be previewed, compared, or debugged.
+- Support for both small local algorithms and larger assembly logic makes the toolkit useful across scales, from decorative patterns up to multi-region world structures with interacting constraints.
+- The module is especially helpful in hybrid projects where authored and generated content mix. Reusable procgen primitives can augment designed spaces or fill in gaps without forcing an all-or-nothing procedural pipeline.
+- Downstream modules render, navigate, or simulate the output, but `procgen` owns the samplers, constructive rules, and algorithmic helpers that create it.
+- Read `procgen` as the engine's creation toolkit for algorithmic content.
 
-This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -62,139 +41,157 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 ### biome.rs
 
-- Biome classification layer for turning raw environmental values such as elevation, moisture, and temperature into readable world-region identities.
-- The file defines the terrain vocabulary itself and the threshold rules that decide when a sampled point should become ocean, coast, forest, desert, tundra, or another high-level biome.
-- Classifier logic stays stateless so single points and full maps can be categorized with the same predictable rule set. Public callable behavior is centered on `biome_map_to_rgba`, while method-level behavior such as `as_str`, `color_rgba`, `new`, `default_rules`, `classify`, `classify_map`, and 1 more stays attached to the local data model and invariants.
-- Color mapping lives beside the rules, which makes the biome model useful both for gameplay semantics and for direct visualization in tools or previews.
-- Threshold tuning is part of the authored surface, allowing different world flavors to emerge without changing the classification algorithm.
+- This file owns biome classification rules that turn height, moisture, and temperature samples into named world regions.
+- `BiomeType` defines the terrain vocabulary, while `BiomeRules` stores the thresholds that drive every decision.
+- `BiomeClassifier` stays stateless so single-point queries and full-map classification share one predictable rule set.
+- Color helpers also belong here because biome identity and preview rendering use the same canonical mapping table.
+- Map-wide classification remains local since missing-sample defaults and per-cell rule dispatch are biome semantics.
+- Open it when climate thresholds change; height, noise, and region graphs live in sibling procgen modules.
 
 ### bsp.rs
 
-- BSP dungeon generator for layouts that should feel structured, room-based, and reproducible rather than hand-authored tile by tile.
-- The file recursively splits a rectangular space into partitions, chooses usable leaves for rooms, and then links those rooms with corridors that preserve navigable flow.
-- Configuration controls the personality of the result through size, depth, padding, and seed rather than scattering generation policy across unrelated helpers.
-- Prefab stamping extends the base dungeon with authored patterns that can be placed into qualifying rooms without sacrificing determinism.
-- The implementation stays algorithmic and headless, which makes it suitable for offline generation, tests, and data-driven tooling.
+- This file owns the BSP dungeon generator that recursively splits a rectangle into rooms and corridor connections.
+- `BspOpts` defines size, depth, padding, and seed, while `BspDungeon` stores the generated rooms and corridors.
+- `BspRoom`, `BspPrefabStamp`, and `PlacedBspPrefab` live here because room geometry and prefab placement are local.
+- Recursive partitioning and leaf-room carving stay here since split policy is the core authored BSP behavior.
+- Prefab stamping also belongs here because room-fit checks and centered placement depend on BSP room ownership.
+- Open it when partitioned-dungeon rules change; scatter rooms and world graphs live in sibling modules.
 
 ### cellular.rs
 
-- Cave-style map generator that uses cellular automata to turn noisy initial occupancy into organic cavern shapes. `procgen/cellular` delivers the cellular implementation for the procgen subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The file exposes birth and survival style rules together with seeded randomization so cave density and texture can be tuned while staying reproducible.
-- Edge treatment is baked into the model to keep map borders naturally enclosed rather than porous or artificially clean. Public callable behavior is centered on `cellular_automata`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns the cellular-automata cave generator that evolves random occupancy into enclosed cavern maps.
+- `CellularOpts` stores fill probability, rule thresholds, iterations, and seed for one reproducible generation run.
+- Neighbor counting and border-as-solid behavior stay here because they define the resulting cave texture directly.
+- Open it when cave evolution rules change; flood fill and sandbox material simulation live in sibling modules.
 
 ### cellular_world.rs
 
-- Cellular material simulation world for sand-box style phenomena where local rules create visible motion such as falling grains, flowing liquid, rising gas, and spreading fire.
-- The file keeps material state on a fixed grid and advances that state through explicit interaction rules instead of a continuous physics solver.
-- Alternating sweep direction helps the simulation avoid obvious left-right bias, which keeps repeated ticks from producing one-sided artifacts.
-- Fill helpers make the grid directly paintable by gameplay code and tools, allowing immediate authoring of test setups, explosions, or scripted reactions.
-- Byte serialization and image export let the same simulation serve runtime effects, save systems, and visual previews. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns the falling-material sandbox that simulates sand, water, rock, fire, gas, and empty space on a grid.
+- `CellType` defines the material vocabulary, while `CellularWorld` owns cells, fire lifetimes, tick parity, and RNG.
+- Paint helpers such as rectangle and circle fills stay here because direct authoring of test or gameplay setups is local.
+- Step logic also belongs here since per-material movement, spread, and bias reduction define world-update semantics.
+- Serialization, region export, palette rendering, and cell queries remain local because they expose owned grid state.
+- Open it when material interaction rules change; static cave generation lives in `cellular.rs` instead.
+- This file is the runtime simulation owner, not a generic renderer, physics system, or authored content container.
 
 ### color.rs
 
-- Scalar-to-color conversion helpers for procedural outputs that need to become immediate pixel data. `procgen/color` delivers the color implementation for the procgen subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns the scalar-to-RGBA conversion helper used to turn normalized procedural values into grayscale pixels.
+- The conversion stays here because clamping and flat buffer layout are color-export concerns, not noise semantics.
+- Open it when scalar preview encoding changes; terrain generation and sampled grids live in sibling modules.
 
 ### flood_fill.rs
 
-- Grid flood-fill helper for discovering connected regions from a seed without needing heavier map analysis infrastructure.
-- The file works over flat byte grids and uses threshold comparison to decide whether propagation should include or exclude a cell.
-- Above-threshold and below-threshold modes make the same routine usable for holes, landmasses, islands, basins, and similar binary region problems.
+- This file owns the flat-grid flood-fill helper used to find connected regions above or below a byte threshold.
+- Seed validation, 4-neighbor expansion, and threshold matching stay here because they define reachable-mask output.
+- It returns a byte mask rather than world objects, keeping the file focused on grid-region extraction only.
+- Open it when connectivity rules change; caves, rooms, and cellular worlds live in sibling procgen modules.
 
 ### heightmap.rs
 
-- Heightmap model for turning procedural fields into normalized terrain elevation that other systems can sample, erode, render, or classify.
-- The file builds maps from layered noise or other grid sources and keeps results in a form that is easy to query by cell or export by row-major order.
-- A simple erosion pass gives the generated terrain a way to soften sharp differences and hint at water-shaped structure without introducing a heavyweight terrain solver.
-- Deterministic seeding keeps terrain reproduction reliable for saves, testing, and content pipelines. Runtime integration reaches sibling engine areas through crate modules `procgen`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the normalized heightmap model used to build terrain fields from noise or binary cellular sources.
+- `HeightmapOpts` stores noise parameters and erosion passes, while `Heightmap` owns width, height, and cell storage.
+- Generation from FBM noise stays here because map options, normalization, and seed-driven reproducibility are local.
+- Simple erosion also belongs here since it mutates terrain cells in-place and defines the file's smoothing behavior.
+- RGBA export and sampled access remain local because they expose the heightmap as usable terrain data to callers.
 
 ### lcg.rs
 
-- Shared deterministic random number primitive for procedural systems that need repeatable variation from a tiny, dependable core.
-- The file exposes seeded stepping and simple sampling utilities so higher-level generators can stay reproducible without each carrying its own RNG implementation.
-- Functionally this file delivers the compact source of randomness that keeps the rest of the procgen stack aligned around seeds.
+- This file owns the tiny deterministic LCG used by multiple generators that need repeatable pseudo-random stepping.
+- `Lcg` stores only the current state, making seeded advancement and normalized float sampling its core contract.
+- Open it when baseline RNG semantics change; higher-level noise and layout generators live in sibling modules.
 
 ### lsystem.rs
 
-- L-system generator for recursive symbolic growth where simple rewrite rules can unfold into plants, roads, fractals, or other branching structures.
-- The file keeps axiom, productions, and iteration depth explicit so generated strings remain deterministic and inspectable rather than hidden inside opaque helpers.
-- Turtle interpretation turns those symbols into drawable line segments, giving the grammar an immediate geometric payoff.
-- Stack-based branching support enables structures that fork and return, which is essential for tree-like and fractal forms.
+- This file owns the L-system rewriter that expands symbolic grammars into deterministic strings and line segments.
+- `LSystem` stores the axiom, production rules, and iteration count so generated forms remain easy to inspect.
+- String generation stays here because rewrite application order and unmapped-character preservation are local rules.
+- Turtle interpretation also belongs here since segment emission depends on bracket stacks and heading updates.
 
 ### mod.rs
 
-- Procedural generation module that gathers deterministic algorithms for terrain, dungeons, graphs, names, tilings, simulations, and sampling into one reusable content toolbox.
-- It combines low-level random and noise primitives with higher-order generators so callers can move from seeded numbers to full spatial structure without leaving the module.
-- The subsystem covers both static generation and evolving grid simulation, which makes it useful for worlds that must be authored once or kept alive over time.
-- Functionally this file is the high-level entry point for reproducible content synthesis across maps, layouts, regions, patterns, and emergent cellular effects.
-- `procgen/mod` is the procgen module index, declaring `biome`, `bsp`, `cellular`, `cellular_world`, `color`, and 13 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/procgen/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `biome::{biome_map_to_rgba, BiomeClassifier, BiomeRules, BiomeType}`, `bsp::{ bsp_dungeon, bsp_dungeon_with_prefabs, BspDungeon, BspOpts, BspPrefabStamp, BspRoom, PlacedBspPrefab, }`, `cellular::{cellular_automata, CellularOpts}`, `cellular_world::{default_palette, CellType, CellularWorld}`, and 13 more centralized for the procgen subsystem.
+- This module is the procgen index, exposing noise, terrain, dungeon, graph, naming, and sampling generators.
+- It exports low-level primitives such as LCG, noise, flood fill, and scalar coloring for other generators to reuse.
+- It also exports higher-level builders such as BSP dungeons, room dungeons, WFC grids, and world-region graphs.
+- `mod.rs` owns visibility and reexport boundaries, not generated state, so feature responsibility stays in siblings.
+- Open this file to map which source owns caves, biomes, naming, Voronoi regions, or sandbox material simulation.
+- `noise.rs`, `heightmap.rs`, and `biome.rs` cover scalar-field generation plus terrain and climate interpretation.
+- `bsp.rs`, `rooms.rs`, `wfc.rs`, and `world_graph.rs` cover discrete layout, tiling, and connectivity generation.
+- `cellular.rs`, `cellular_world.rs`, `poisson.rs`, and `voronoi.rs` cover evolving grids and spatial sampling.
 
 ### namegen.rs
 
-- Markov-style name generator for producing plausible invented words from example corpora without hand-authoring every outcome.
-- The file learns local character transitions from source words and then samples new sequences with configurable order to balance familiarity against novelty.
-- Deterministic seeding keeps generated names stable when needed for saves, tests, or curated content batches. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `generate`, `generate_n` stays attached to the local data model and invariants.
-- Length constraints and bounded retries make batch generation practical rather than endlessly exploratory. Runtime integration reaches sibling engine areas through crate modules `procgen`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the Markov-style name generator that learns character transitions from example word corpora.
+- `NameGen` stores chain order, learned successor tables, and the internal seeded RNG used during sampling.
+- Batch generation and bounded retries stay here because name length constraints are part of generator semantics.
+- Open it when invented-name rules change; grammar rewriting and terrain synthesis live in sibling modules.
 
 ### noise.rs
 
-- Core noise engine for procedural generation where continuous variation, repeatable randomness, and composable sampling functions are the raw material behind richer content.
-- The file gathers the module's foundational field generators in one place so scripts and higher-level Rust systems can sample coherent structure instead of inventing ad hoc randomness.
-- Perlin support spans multiple dimensions and both stateless helpers and seeded generator state, which makes it useful for quick probes as well as sustained content workflows.
-- Simplex support broadens that sampling surface with smoother alternatives better suited to some animated or layered fields.
-- Worley distance fields add cell-like spatial texture, enabling region partitioning, cracked patterns, and other feature-point-driven looks.
-- Fractal combinators turn base noise into richer terrain-scale structure by layering octaves into smoother hills, harsher ridges, or turbulent distortions.
-- Domain warping further bends otherwise regular fields so generated output feels less axis-bound and more organically varied.
-- Height-map generation helpers keep the module tied to practical terrain production rather than remaining a pile of isolated math routines.
+- This file owns the core procedural-noise engine used to sample continuous scalar fields across many generators.
+- `DistType`, `NoiseKind`, and `FractalType` define the selectable metrics and algorithms used by higher layers.
+- `MapGenOptions` stores map-scale, octave, lacunarity, persistence, and offset parameters for grid generation.
+- The free functions cover Perlin, Simplex, FBM, periodic tiling, and map helpers for quick stateless sampling.
+- `NoiseGenerator` owns the seeded permutation table plus methods for Perlin, Simplex, Worley, and fractal variants.
+- Worley distance evaluation also belongs here because feature-point hashing and metric choice are core noise rules.
+- Domain warping remains local since warped coordinates are derived directly from the generator's own sample methods.
+- Sequential and rayon-backed parallel map generation stay here because both consume the same map option contract.
+- This file is the scalar-field foundation for terrain, caves, textures, and regions, not a gameplay policy owner.
+- Open it when low-level sampling semantics change; biome thresholds and dungeon layout live in sibling modules.
+- Its main value is consolidating seeded field generation so procgen callers share one reproducible math surface.
 
 ### poisson.rs
 
-- Even-spacing point sampler for procedural placement problems where randomness should look natural without collapsing into visible clustering.
-- The file implements Bridson-style Poisson disk generation with acceleration structures and seeded control so distribution quality and reproducibility both stay strong.
-- Functionally this file delivers scattered-but-separated 2D points for trees, loot, enemies, landmarks, and other placement-heavy content.
-- `procgen/poisson` delivers the poisson implementation for the procgen subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns the Poisson disk sampler used to place 2D points with minimum separation and seeded randomness.
+- The Bridson-style active list, acceleration grid, and distance checks stay here because they define point quality.
+- It returns accepted coordinates only, keeping the file focused on sparse placement rather than map interpretation.
+- Open it when scatter-placement semantics change; Voronoi and world-graph generation live in sibling modules.
 
 ### render.rs
 
-- Lightweight projection layer for sampled noise grids that need storage, cell access, and quick grayscale export without depending on higher rendering systems.
-- The file keeps tileable Perlin-backed values in a compact grid form and exposes them in a way that is useful for previews, tooling, and texture-oriented workflows.
-- Functionally this file delivers a small bridge from procedural scalar fields to inspectable pixel-ready grid data. Public callable behavior is centered on no named public items, while method-level behavior such as `from_perlin`, `to_rgba_bytes` stays attached to the local data model and invariants.
+- This file owns the sampled noise-grid wrapper used to store tileable scalar fields and export them as pixels.
+- `NoiseGrid` stores width, height, and cells, while `from_perlin` builds values from periodic Perlin sampling.
+- RGBA conversion also belongs here because preview-oriented export is part of the grid wrapper's contract.
 
 ### rooms.rs
 
-- Room-scatter dungeon generator for layouts that start from independent room candidates and then stitch them into a traversable interior.
-- The file focuses on non-overlapping room placement, giving each accepted space a clear rectangular identity before corridor carving connects the overall layout.
-- L-shaped corridor logic keeps navigation simple and readable while still creating believable links between dispersed rooms.
-- Flat tile-grid output makes the generator easy to consume by map systems, tests, and script-side post-processing. Runtime integration reaches sibling engine areas through crate modules `procgen`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Prefab stamping layers authored motifs on top of procedural geometry so hand-designed shapes can appear inside otherwise generated rooms.
+- This file owns the random-room dungeon generator that places non-overlapping rectangles and links them by corridors.
+- `RoomsOpts` stores map size, room limits, size ranges, and seed, while `RoomsDungeon` owns rooms, links, and grid.
+- `Room`, `RoomPrefabStamp`, and `PlacedRoomPrefab` live here because room geometry and prefab stamping are local.
+- Room-overlap checks and L-shaped corridor carving stay here because they define the scatter-dungeon layout rules.
+- Grid stamping also belongs here since prefab masks overwrite owned room interiors inside the produced tile map.
+- Open it when room-based dungeon semantics change; BSP splitting and WFC tiling live in sibling modules.
 
 ### voronoi.rs
 
-- Voronoi field generator for dividing space into nearest-seed regions and measuring how each cell relates to its closest feature points.
-- The file returns both ownership and distance information, which makes it useful for region maps, borders, crackle patterns, and cell-based world partitioning.
-- Optional warp support roughens otherwise clean geometric boundaries so the resulting regions can feel less synthetic. Public callable behavior is centered on `voronoi_diagram`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Functionally this file delivers region tessellation data for map segmentation and distance-based procedural effects. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the Voronoi diagram helper that assigns each cell to its nearest feature point and distance fields.
+- `VoronoiOpts` stores optional domain-warp parameters so clean tessellation can be roughened without new APIs.
+- The diagram routine stays here because nearest-point ownership and first or second distance extraction are local.
+- Hash-based warp noise also belongs here since boundary distortion is part of Voronoi output semantics.
 
 ### wfc.rs
 
-- Constraint-based tile generator for patterns that should emerge from local adjacency rules rather than from direct handcrafted placement.
-- The file treats each cell as a shrinking set of possible tiles and propagates neighbor constraints until a consistent arrangement collapses into concrete choices.
-- Weighted selection gives the same ruleset room for stylistic bias so some tiles appear more often without breaking compatibility logic.
-- Retry behavior acknowledges that contradictions are part of this style of generation and turns them into controlled regeneration rather than silent corruption.
+- This file owns the Wave Function Collapse generator that resolves tile grids from weighted adjacency constraints.
+- `WfcTile`, `WfcRules`, `WfcOpts`, and `WfcGrid` define the tile vocabulary, rule set, run inputs, and result cells.
+- Entropy-style cell choice and weighted collapse stay here because tile selection policy is core WFC behavior.
+- Constraint propagation also belongs here since neighbor pruning and contradiction detection define valid outcomes.
+- Retry logic remains local because contradiction recovery is part of the generator contract, not caller plumbing.
 
 ### wfc_llm.rs
 
-- LLM-assisted helper layer for turning natural-language intent into concrete WFC tiles, weights, and adjacency rules. `procgen/wfc_llm` delivers the wfc llm implementation for the procgen subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The file handles prompt shaping and response parsing so language-model output can become structured generator input rather than loose text.
-- Keeping that translation here isolates the experimental boundary between authored prompts and deterministic procedural systems.
+- This file owns the JSON parsing bridge from LLM-produced tile specs into concrete WFC options and constraints.
+- It converts loose response objects into `WfcTile`, `WfcRules`, and `WfcOpts` so generation stays deterministic.
+- Adjacency parsing remains local because malformed or partial LLM output must collapse into one structured boundary.
+- Open it when AI-assisted tiling input changes; the actual collapse algorithm lives in `wfc.rs`.
 
 ### world_graph.rs
 
-- World-graph generation and traversal layer for overworld-style structures where places are discrete nodes connected by weighted travel links.
-- The file defines the region and edge model itself, then builds pathfinding and reachability logic directly on top of that shared representation.
-- A* and bounded Dijkstra cover shortest routes and local travel envelopes, which makes the graph useful for quests, logistics, and map progression.
-- Minimum spanning tree support gives generation and analysis code a way to reason about essential connectivity independent of redundant routes.
-- Random graph construction turns the same structure into a content generator, placing regions spatially and wiring them into plausible networks.
+- This file owns the world-region graph used to store places, travel links, and route-finding helpers on top of them.
+- `WorldRegion` and `WorldEdge` define the stored topology, while `WorldGraph` owns regions, edges, and ids.
+- A* pathfinding and bounded Dijkstra stay here because route cost semantics are derived from graph-owned edges.
+- Kruskal MST support also belongs here since essential connectivity analysis depends on the same shared topology.
+- Random graph generation remains local because spatial placement and nearest-neighbor linking build this graph type.
+- Open it when overworld connectivity changes; Voronoi fields and dungeon interiors live in sibling modules.
 
 
 

@@ -1,8 +1,10 @@
-//! Cinematic dialog sequencer with typewriter reveal effect. `dialog/sequencer` delivers the sequencer implementation for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides node-based dialog playback with:. The file owns or coordinates data contracts including `DialogNode`, `SequencerState`, `DialogSequencer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Typewriter character-by-character reveal. Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `new`, `load`, `start`, `update`, `advance`, and 12 more stays attached to the local data model and invariants.
-//! Choice branching with option selection. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Lifecycle callbacks (line, choice, end, custom events). External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/dialog/sequencer.rs` plays authored dialog nodes as a runtime sequence with typewriter reveal and choices.
+//! It owns `DialogNode`, `SequencerState`, and `DialogSequencer`, including labels, jumps, waits, calls, and events.
+//! Current line text, reveal progress, active choice prompt, option labels, and label lookup tables are stored here.
+//! Node advancement, skip behavior, speed control, and choice selection live here so playback policy stays centralized.
+//! Wait, event, call, label, and jump nodes are interpreted here so scripted playback rules remain local to the sequencer.
+//! This file is the runtime playback boundary for authored dialog scripts; it does not score topics or manage speakers.
+//! Read it when reveal timing, node execution flow, choice UX state, or jump semantics for dialog playback change.
 
 use std::collections::HashMap;
 

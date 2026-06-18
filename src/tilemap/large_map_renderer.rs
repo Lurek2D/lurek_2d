@@ -1,8 +1,9 @@
-//! This file provides chunk-oriented rendering support for tilemaps that exceed single-pass scale. `tilemap/large_map_renderer` delivers the large map renderer implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It partitions the full grid into fixed blocks with dirty tracking for incremental refresh. The file owns or coordinates data contracts including `MapChunk`, `LargeMapRenderer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It uses camera and viewport state to cull work at chunk granularity before draw emission. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_map_data`, `set_tile`, `get_tile`, `get_map_size`, `set_chunk_size`, and 13 more stays attached to the local data model and invariants.
-//! It supports per-tile mutation with automatic invalidation so updates stay localized. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It applies optional zoom-aware detail reduction to keep large-world rendering responsive. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Owns chunk-oriented rendering support for tilemaps that are too large for one monolithic redraw strategy.
+//! Partitions the full grid into fixed chunks with dirty tracking so small edits trigger only local refresh work.
+//! Uses camera and viewport state to cull at chunk granularity before generating tile-oriented draw output.
+//! Supports per-tile mutation with automatic invalidation so edits stay localized across large-world scenes.
+//! Optionally reduces detail with zoom-aware logic to keep massive maps responsive during interactive viewing.
+//! Open this file when chunk invalidation, visible-chunk culling, or large-map redraw performance is wrong.
 
 use std::collections::HashMap;
 

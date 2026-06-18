@@ -1,7 +1,8 @@
-//! Implements layered animation blending where multiple clip outputs combine into one final pose. `animation/blend` delivers the blend implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Applies per-layer influence weights to shape how strongly each source contributes over time. The file owns or coordinates data contracts including `BlendMask`, `BlendLayer`, `BlendLayerSet`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports optional bone masks for partial-body mixing without disturbing unrelated motion regions. Public callable behavior is centered on no named public items, while method-level behavior such as `all`, `from_bones`, `includes`, `new`, `len`, `is_empty`, and 7 more stays attached to the local data model and invariants.
-//! Maintains ordered layer stacking so blend precedence stays explicit and predictable. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns blend-layer data used to combine multiple animation clips into one ordered composite pose.
+//! `BlendMask` restricts layers to named bones, while `BlendLayer` stores clip name, weight, and mask state.
+//! `BlendLayerSet` centralizes ordered layer storage, uniqueness checks, weight changes, and mask replacement.
+//! It is data-oriented rather than evaluative, leaving actual pose mixing to downstream systems that consume layers.
+//! Open it when layer or mask semantics change; playback and render export live in sibling animation files.
 
 /// Bone mask for restricting a blend layer to selected bones.
 #[derive(Debug, Clone, Default)]

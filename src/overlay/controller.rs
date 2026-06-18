@@ -1,9 +1,12 @@
-//! Central overlay controller owning every screen-space effect state block. `overlay/controller` delivers the controller implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Updates weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning each frame. The file owns or coordinates data contracts including `OverlayStats`, `Overlay`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Spawns and simulates weather particles for rain, snow, hail, dust, leaves, ash, and pollen. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `trigger_flash`, `trigger_shake`, `trigger_fade`, `trigger_lightning`, and 19 more stays attached to the local data model and invariants.
-//! Triggers flash, shake, fade, and lightning events through a simple runtime API. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Reports shake offset, flash alpha, lightning alpha, and active state to callers. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Builds render commands for flash, fade, lightning, and vignette overlays. The file boundary separates overlay implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns `Overlay` and `OverlayStats`, the main screen-space overlay runtime that coordinates every layer.
+//! It stores dimensions plus ambient, weather, flash, shake, fade, clouds, fog, haze, vignette, grain, and water.
+//! `update` advances enabled subsystems, including ambient tint refresh, timed decay, cloud scrolling, and water time.
+//! Local weather helpers clamp intensity, cap particles, spawn mode-specific particles, and cull entries off-screen.
+//! Trigger helpers start flashes, shakes, fades, and lightning with sanitized durations and bounded runtime inputs.
+//! Sync helpers copy or resolve ambient color between overlay state and the light world using named merge modes.
+//! Query helpers expose shake offsets, flash and lightning alpha, dimensions, active-state checks, and telemetry snapshots.
+//! Render helpers build full-screen commands for flash, fade, lightning, and vignette, then draw debug image panels.
+//! Open this file when overlay orchestration changes; focused state structs and transition definitions live in siblings.
 
 use super::ambient::AmbientState;
 use super::atmosphere::{

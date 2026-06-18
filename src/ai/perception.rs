@@ -1,8 +1,10 @@
-//! Implements sensory intake as a multi-channel stream of world cues with persistent awareness state. `ai/perception` delivers the perception implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Captures visual, auditory, and custom signals in a unified format suitable for agent reasoning. The file owns or coordinates data contracts including `StimulusType`, `Stimulus`, `DetectedStimulus`, `StimulusWorld`, `Sensor`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Applies range and confidence dynamics so perception strength evolves instead of flipping abruptly. Public callable behavior is centered on no named public items, while method-level behavior such as `from_str`, `as_str`, `new`, `add`, `add_visual`, `add_auditory`, and 12 more stays attached to the local data model and invariants.
-//! Maintains temporal awareness memory that can fade, refresh, or intensify based on new evidence. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Separates sensing configuration from stimulus flow to keep tuning independent from event production. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Owns the perception stream that stores stimuli, sensor tuning, awareness memory, and multi-channel detection rules.
+//! Defines visual, auditory, and custom stimulus types plus the world container that adds, decays, and removes them.
+//! Lets sensors test sight cones, hearing ranges, and custom labels, then produce detected cues with distance data.
+//! Also updates alertness over time so awareness can rise from repeated contact and decay after stimuli disappear.
+//! Provides the sensing boundary between world cue production and agent logic that needs filtered evidence only.
+//! This file matters when awareness, detection ranges, or cue classification stop matching authored AI expectations.
+//! Open this owner when perception memory or stimulus lifetimes are wrong before touching higher-level planners.
 
 use std::collections::HashMap;
 /// Stimulus classification used by the sensor world.

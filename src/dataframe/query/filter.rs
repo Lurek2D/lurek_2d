@@ -1,9 +1,11 @@
-//! Implements primary row and column query transforms for dataframe selection and restructuring. `dataframe/query/filter` delivers the filter implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Applies predicate-based filtering with comparison and text containment operator semantics. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides ordering, slicing, projection, and uniqueness extraction over tabular datasets. Public callable behavior is centered on no named public items, while method-level behavior such as `filter`, `par_filter`, `sort`, `head`, `tail`, `slice`, and 22 more stays attached to the local data model and invariants.
-//! Supports grouping and join composition for cross-frame and keyed relational-style operations. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Includes deterministic sampling, nil handling, and batch append utilities for data preparation. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Computes common aggregate statistics and descriptive summary frames across numeric columns. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns primary row and column transforms such as filter, sort, slice, select, join, sample, and describe.
+//! Predicate filtering lives here, including comparison operators and text `contains`, plus rayon-backed row scanning.
+//! Grouping and joins also stay here because they reshape row sets before higher-level SQL or analytics layers run.
+//! Sampling, nil dropping, batch row append, and numeric column extraction belong here as practical table utilities.
+//! Descriptive stats and basic reducers live here because they summarize generic numeric columns without SQL grammar.
+//! `extract_rows` and `collect_numbers` are local shared seams because most query helpers need direct row reuse.
+//! The file is the main structural transform owner, not the payload codec or typed vectorized execution boundary.
+//! Open it when core query behavior changes; windows, grouped correlation, and SQL parsing live in sibling files.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 use crate::dataframe::rng::Xorshift64;

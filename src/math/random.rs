@@ -1,7 +1,8 @@
-//! Seedable pseudo-random generator wrapper for deterministic gameplay and replay. `math/random` delivers the random implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Produces uniform integer, float, and Gaussian samples from one stateful source. The file owns or coordinates data contracts including `RandomGenerator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Serializes and restores seed state so saves can resume the same sequence. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_seed`, `random`, `random_int`, `random_float`, `random_normal`, and 14 more stays attached to the local data model and invariants.
-//! Gives higher-level systems a simple random facade without exposing backend details. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the seedable random-generator wrapper used for deterministic integers, floats, normals, and dice rolls.
+//! `RandomGenerator` stores the backend RNG plus persisted seed so runtime sampling and save restoration share one owner.
+//! Dice helpers stay here because exploding, kept, advantaged, and summed rolls are just structured RNG consumers.
+//! State serialization also belongs here since replay-safe continuation is part of the generator's contract.
+//! Open it when generic RNG behavior changes; weighted loot policy lives in `loot_table.rs`, not here.
 
 use fastrand::Rng;
 

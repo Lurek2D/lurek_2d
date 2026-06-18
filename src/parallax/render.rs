@@ -1,6 +1,6 @@
-//! Converts parallax layer state into flat RenderCommand lists for the renderer. `parallax/render` delivers the rendering adapter and draw-command integration for the parallax subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Batches tile positions into draw-image sequences with color and blend pre-applied. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Bridges parallax camera math to the GPU submission pipeline. Public callable behavior is centered on `batch_to_render_commands`, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
+//! `src/parallax/render.rs` converts `ParallaxDrawBatch` and `ParallaxLayer` state into flat renderer command lists.
+//! It owns the final bridge from tiled layer batches to `RenderCommand` sequences, including tint, blend, and effects.
+//! Read it when parallax draw submission, batch flattening, or layer-to-renderer integration behavior needs to change.
 
 use crate::parallax::layer::{ParallaxDrawBatch, ParallaxLayer};
 use crate::render::renderer::RenderCommand;

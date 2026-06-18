@@ -1,7 +1,8 @@
-//! Behavior tree runtime for composing game and AI decisions as explicit node graphs that evaluate in a stable left-to-right order.
-//! The file provides structural node storage for sequences, selectors, parallels, repeaters, inverters, and named leaf actions without hiding execution flow behind opaque callbacks.
-//! It keeps build-time graph authoring and tick-time run state close together so trees can be assembled, reset, and stepped with predictable control over parent-child relationships.
-//! Repeat counters, running markers, and root selection live alongside compact integer node addressing, which keeps behavior updates easy to reason about and cheap to traverse.
+//! This file owns the behavior-tree builder and runtime structs used to model ordered AI decisions as node graphs.
+//! `BehaviorTree` allocates sequence, selector, parallel, inverter, repeat, and leaf nodes with stable `NodeId`s.
+//! `BtNode` and `NodeKind` define tree structure, while `root` and child links keep traversal data in one owner.
+//! `BtRunState` stores running-node markers and repeat counters so tick execution can resume without hidden globals.
+//! Open it when decision-tree topology changes; blackboards, FSMs, and schedulers live in sibling pattern modules.
 
 /// Tick result returned by a behavior tree node.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

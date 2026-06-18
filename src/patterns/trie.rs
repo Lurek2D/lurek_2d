@@ -1,7 +1,8 @@
-//! Prefix trie storage for string-centric gameplay data where whole-key lookup and shared-prefix discovery should both be fast and structurally related.
-//! The file models words as character paths, letting inserts and exact searches coexist naturally with prefix queries that expand into many matching keys.
-//! Removal includes branch pruning so the structure sheds dead paths instead of accumulating empty nodes after content churn.
-//! Depth-first key collection turns the trie into a practical retrieval tool for completions, dictionaries, filters, and lookup-heavy scripting workflows.
+//! This file owns the prefix trie used to store string keys for exact lookup, prefix tests, and completion queries.
+//! `TrieNode` keeps child edges and end markers, while `Trie` owns root storage and public mutation or search helpers.
+//! Insertion, exact search, prefix search, and removal stay here because path creation and pruning are trie semantics.
+//! Depth-first key collection also belongs here since completion output derives directly from trie-owned descendants.
+//! Open it when string-index semantics change; bidirectional maps and graphs live in sibling pattern modules.
 
 /// Internal trie node holding child edges and end-of-word marker.
 #[derive(Debug, Default)]

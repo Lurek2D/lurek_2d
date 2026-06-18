@@ -1,4 +1,6 @@
-//! This file provides drift-safe microsecond accumulation for scaled runtime timekeeping. `timer/accumulator` delivers the accumulator implementation for the timer subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `src/timer/accumulator.rs` owns the microsecond accumulation helper used to turn scaled frame deltas into stable totals.
+//! It clamps negative inputs, carries fractional micros forward, and updates elapsed counters without drift.
+//! Open this file when time-scaling math, drift behavior, or elapsed-microsecond accumulation rules need to change.
 
 /// Advance `elapsed_micros` by `dt_seconds * scale`, accumulating fractional.
 /// microseconds in `carry_micros` to avoid drift; clamps negative inputs to zero.

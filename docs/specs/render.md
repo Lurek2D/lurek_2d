@@ -19,68 +19,26 @@
 
 ## Summary
 
-- The render module is the central GPU execution backend for all visual output in Lurek2D.
-- It receives deferred draw intent and resolves it into deterministic frame submission.
-- The backend is implemented on wgpu and manages device, queue, and surface lifecycle.
-- Primitive rendering covers lines, circles, ellipses, rectangles, and rounded rectangles.
-- CPU-side tessellation builds vertex and index data for dynamic geometry.
-- Flat-color and textured paths are separated to reduce unnecessary state churn.
-- Command batching groups compatible draws to lower submission overhead.
-- Pipeline caching avoids repeat creation for equivalent render configurations.
-- Pipeline keys include blend mode, vertex layout, stencil mode, and shader variant.
-- GPU resource management tracks textures, samplers, fonts, and buffer lifetimes.
-- Buffer growth policy favors amortized resizing for throughput stability.
-- Slotmap-based IDs keep resource handles stable across frames.
-- Off-screen canvases support layered composition and intermediate render targets.
-- Decal surfaces support persistent paint-like world overlays.
-- Draw-layer scheduling preserves deterministic z-ordered callback execution.
-- Mesh paths support custom geometry beyond built-in primitives.
-- Text rendering supports bitmap atlases and runtime font rasterization.
-- Glyph metrics and wrapping remain consistent with final draw output.
-- Font atlas dirty tracking minimizes upload work to changed regions.
-- Shader integration supports custom WGSL with typed uniform mapping.
-- Shader compilation and registry caching are isolated from command generation logic.
-- Runtime uniforms can include frame time, resolution, and frame index values.
-- Post-processing uses ping-pong fullscreen passes for chained effects.
-- Effects include blur, bloom, CRT-like passes, grading, and distortion variants.
-- No-effect paths degrade to fast copy behavior for minimal overhead.
-- Stencil support enables masks, portals, and constrained draw regions.
-- Scissor and viewport normalization reduce validation and bounds errors.
-- Blend mode support includes alpha, additive, multiply, and replace behavior.
-- Sampler control supports nearest/linear filtering and wrap behavior.
-- Lighting integration includes bounded GPU-side light buffer handling.
-- Shadow pass resources are integrated with frame scheduling.
-- Screenshot readback supports tooling and regression workflows.
-- Resize handling recreates swapchain-dependent resources safely.
-- Draw command validation catches invalid resource/target usage early.
-- Fallback textures and shaders avoid hard failures on missing assets.
-- Diagnostics expose draw-call and render-phase timing information.
-- Renderer tests cover key pipeline and postfx contracts.
-- Integration with image/font/light/runtime remains explicit and acyclic.
-- The module owns visual execution, not gameplay policy.
-- It is the authoritative source for frame composition behavior.
-- Deterministic command ordering is a core invariant.
-- Safe GPU resource lifetime management is another core invariant.
-- Graceful fallback behavior is required for robustness under partial content.
-- The module supports iGPU-focused performance goals at 60 FPS targets.
-- API breadth is centralized in one backend to avoid duplicated render logic.
-- Feature modules emit intent; render executes it.
-- This separation keeps architecture clean and testable.
-- CPU and GPU diagnostic paths remain aligned with core semantics.
-- The render boundary is stable for integration with future feature modules.
-- It enables sophisticated visuals without forcing feature modules to own GPU details.
-- Overall, render is the Platform Services visual foundation.
-- It is the final convergence point of scene, UI, effects, and text pipelines.
-- The module is performance-critical and observability-oriented by design.
-- Reliability under dynamic content churn is prioritized in its contracts.
-- This makes it suitable for both gameplay and tooling presentation workloads.
-- Render remains a first-class subsystem, not a thin adapter.
-- It carries the execution responsibility for the full visual stack.
-- Its interfaces are built for long-term maintainability and extensibility.
-- In practice, every frame quality issue eventually converges here.
-- The module provides the controls needed to diagnose and fix those issues.
+- The `render` module is the engine's central visual execution layer, responsible for turning high-level drawing intent from many other systems into concrete frame output on GPU-backed and software-backed paths.
+- Its most important user-facing role is normalization. Different modules can describe sprites, shapes, text, overlays, tiles, provinces, lights, effects, or custom geometry in their own terms while still relying on one shared renderer to decide how those requests become final pixels.
+- This makes `render` less like one feature among many and more like the final translation authority for visual state. Other modules decide what should exist visually, but `render` decides how that existence is encoded, ordered, shaded, and emitted.
+- The module spans several rendering families at once: sprite and texture drawing, text output, shape drawing, mesh and geometry support, canvas-like targets, shader pipelines, post-processing, lighting, shadows, decals, screenshots, and software-render evidence paths.
+- GPU resource ownership is a core part of that responsibility. Buffers, textures, samplers, shader modules, bind groups, pipelines, intermediate targets, typed GPU-side records, and staging resources live here so the rest of the engine does not fragment backend management.
+- Centralizing those resources matters because otherwise each visual feature would invent its own backend conventions, lifetime rules, and upload paths. `render` provides one stable home for those concerns and reduces backend duplication.
+- Rendering commands and pipeline structures give the engine a common language between feature modules and execution code. This shared command vocabulary is what allows gameplay-facing APIs to remain expressive while still mapping onto a disciplined backend.
+- The module is broader than simple 2D quad drawing. Mesh support, OBJ loading, tessellation, decals, shape batching, and specialized pipelines show that it can represent both standard 2D workflows and richer geometric or stylized visual features without leaving the engine's main render authority.
+- Text and font integration are part of the same visual surface, not a parallel universe. Menus, labels, debug overlays, editor tools, and evidence images all need text rendering that cooperates with layers, transforms, clipping, and final composition.
+- Post-processing support matters after scene composition has already happened. Once a view exists, users often want bloom-like treatments, color transforms, blur-like effects, or custom shader passes, and `render` provides the controlled place where those frame-wide or target-specific effects belong.
+- Lighting and shadow support connect scene-level illumination data to actual frame execution. Neighboring modules define lights, occluders, and light-world state, but `render` owns how those concepts become shaded images, masks, and composited outputs.
+- Camera-aware and viewport-aware composition are part of the same boundary. Data coming from tilemaps, particles, raycasters, provinces, overlays, and UI all eventually has to agree on transforms, clipping regions, target sizes, and layer order, and `render` is where that agreement is enforced.
+- Software-render and capture paths are a major practical capability, not an afterthought. They make it possible to generate deterministic screenshots, evidence images, docs artifacts, test outputs, and headless previews without relying on an interactive GPU session.
+- The module therefore serves both runtime presentation and development workflow needs. It is equally relevant when the goal is shipping a frame to the screen and when the goal is extracting a reproducible image for debugging or documentation.
+- Render-target management matters for the same reason, because complex scenes often need offscreen surfaces, intermediate passes, and controlled composition order to stay inspectable and stable.
+- The renderer is therefore not just a drawer of primitives, but the arbiter of when and where visual work becomes final output.
+- That backend discipline is what lets several higher-level modules share one frame pipeline without each inventing its own incompatible render lifecycle.
+- For users, the important boundary is that `render` does not usually define domain meaning. It does not decide enemy AI, tile adjacency, or UI layout policy. Instead, it owns the visual execution model that allows those domains to appear consistently.
+- Read `render` as the final visual translation layer of the engine. Feature modules describe visual state and intent, and `render` turns that intent into frames, captures, shadows, text, effects, and finished composited output.
 
-This module primarily collaborates with `font`, `image`, `light`, `math`, `runtime`, `sprite`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -95,196 +53,241 @@ This module primarily collaborates with `font`, `image`, `light`, `math`, `runti
 
 ### canvas.rs
 
-- Canvas metadata representation for off-screen rendering targets. `render/canvas` delivers the canvas implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `Canvas`, the minimal metadata record for fixed-size off-screen render targets.
+- It stores only pixel dimensions and logs creation, leaving GPU allocation and rendering behavior to larger owners.
+- Open this file when canvas identity changes; renderer pipelines and image effects remain in sibling modules.
 
 ### decal_surface.rs
 
-- Paint-target surface descriptor for persistent world decals. `render/decal_surface` delivers the decal surface implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores the durable dimensions (width and height) needed for later GPU texture allocation. The file owns or coordinates data contracts including `DecalSurface`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Represents canvas-like surfaces where impact marks, splats, and footprints can be drawn. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_dimensions`, `get_width`, `get_height` stays attached to the local data model and invariants.
+- Defines the metadata record for persistent decal draw surfaces that later become GPU-backed paint targets.
+- Stores durable width and height only, leaving allocation and rendering behavior to heavier renderer owners.
+- Open this file when decal surface identity or dimensions change rather than GPU upload or paint logic.
 
 ### draw_layer.rs
 
-- Stores deferred draw-layer callbacks sorted by depth (Z-order). `render/draw_layer` delivers the draw layer implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Enables gameplay code and UI components to enqueue layered draw commands cheaply. The file owns or coordinates data contracts including `LayerEntry`, `DrawLayer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Postpones immediate GPU commands to allow sorting before final render dispatch. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `queue`, `flush`, `clear`, `get_count` stays attached to the local data model and invariants.
+- Owns deferred draw-layer callbacks that are queued first and flushed later in depth-sorted order.
+- Lets gameplay and UI code enqueue layered draw work cheaply without issuing immediate GPU commands.
+- Acts as the ordering boundary between ad hoc producers and the final render dispatch pass.
+- Open this file when layer sorting, queueing, flushing, or layer counts behave incorrectly.
 
 ### extracted_blocks.rs
 
-- Implements procedural geometry generation and tessellation for all primitive 2D shapes. `render/extracted_blocks` delivers the extracted blocks implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Generates vertex/index lists for arcs, circles, ellipses, sectors, and rounded rectangles. The file owns or coordinates data contracts including `GpuTexture`, `RenderStats`, `GpuShader`, `LightGpuState`, `GpuRenderer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Translates abstract blending modes requested by Lua into explicit wgpu descriptors. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Handles thick-line calculations by expanding stroke segments to screen-aligned quads. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Uses adaptive step sizes for curved geometry to trade off segment count vs visual smoothness. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Implements custom geometry builders for solid shapes, hollow wireframes, and textured sprites. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Implements CPU-side geometry generation for primitive 2D shapes before vertices and indices reach GPU buffers.
+- Builds triangles for arcs, circles, ellipses, sectors, rounded rectangles, and other reusable draw primitives.
+- Expands thick strokes into quads so line width and outline visuals stay explicit instead of shader-implied.
+- Translates abstract blend requests into concrete wgpu state descriptors used by the higher renderer pipeline.
+- Uses adaptive step counts for curves so smoothness scales with shape size without exploding segment counts.
+- Supports solid, wireframe, and textured geometry builders instead of forcing one tessellation path for all.
+- Keeps shape-construction policy separate from GPU orchestration so render passes can stay focused on dispatch.
+- Acts as the geometry boundary between high-level draw commands and raw vertex/index streams.
+- Open this file when primitive tessellation, stroke expansion, or curve segmentation produces wrong geometry.
 
 ### font.rs
 
-- Handles text asset rendering from bundled bitmap atlases to dynamic font rasterization. `render/font` delivers the font implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Packs glyph metrics, atlas placement, and UV offset maps under a unified interface. The file owns or coordinates data contracts including `GlyphInfo`, `Font`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Bundles Courier New regular and bold bitmap fonts at multiple point sizes for default text. Public callable behavior is centered on no named public items, while method-level behavior such as `builtin_slot_by_name`, `from_png_bytes`, `from_font_bytes`, `load_all_sizes`, `load_all_bold`, `nearest_size`, and 13 more stays attached to the local data model and invariants.
-- Uses fontdue to dynamically rasterize custom TTF/OTF font bytes at runtime. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Supports automatic word wrapping, alignment calculations, and pen advance metrics. External integration uses `fontdue`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Extends character mapping to support retro drawing symbols and C1 box characters. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Owns font assets, glyph metrics, and atlas layout used by text rendering across runtime UI and debug views.
+- Supports bundled Courier New atlases at multiple sizes alongside dynamic fontdue rasterization from bytes.
+- Maps characters to atlas cells, UV coordinates, advances, and fallback substitutions under one font contract.
+- Provides nearest-size lookup so callers can request practical font points without managing raw atlas sets.
+- Handles wrapping, alignment metrics, and pen movement needed by layout and draw code above this layer.
+- Extends character mapping with retro symbols and box characters used by terminal or pixel-art interfaces.
+- Acts as the text-asset boundary rather than the owner of final UI or renderer command emission.
+- Open this file when glyph lookup, atlas data, wrapping, or dynamic font loading behaves incorrectly.
 
 ### gpu_light.rs
 
-- Enforces memory boundaries and layout constraints for the deferred shadow mapping pass. `render/gpu_light` delivers the gpu light implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Maximum capacity limits on light sources are defined here to guarantee stable frame times. The file owns or coordinates data contracts including `LightGpuState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- The structures defined here instruct the renderer how to process additive light passes. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Defines GPU-side light pass limits and layouts that keep deferred lighting and shadow memory bounded.
+- Holds the light-state contract used by the renderer to size additive passes and shadow-related resources.
+- Keeps light-capacity and layout policy separate from the frame loop that consumes those resources.
+- Open this file when light buffer limits or deferred-light layout assumptions need coordinated changes.
 
 ### gpu_pipeline.rs
 
-- Manages creation and caching of wgpu render pipeline objects to prevent redundancy. `render/gpu_pipeline` delivers the gpu pipeline implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Groups pipelines by geometry layout, blend mode, and stencil operation flags. The file owns or coordinates data contracts including `GeometryKind`, `GpuStencilMode`, `PipelineKey`, `PipelineSelectionKey`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Selects default built-in shaders when custom overrides are absent from keys. Public callable behavior is centered on `blend_state_for`, `uniform_wgsl_type`, `custom_uniform_declarations`, `custom_fragment_call_args`, `build_custom_color_shader_source`, and 6 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Pays pipeline compilation cost only once per unique rendering configuration. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Configures stencil operations, depth-stencil states, and stencil mode mapping. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Standardizes blend states for alpha, additive, multiplicative, and replace modes. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Builds and caches wgpu render pipelines so repeated material and geometry combinations compile only once.
+- Keys pipelines by geometry kind, blend state, stencil mode, and custom shader selection inputs.
+- Chooses built-in shader paths when callers do not supply overrides, keeping fallback behavior centralized.
+- Generates helper WGSL fragments and uniform declarations needed by custom color and texture pipelines.
+- Standardizes alpha, additive, multiplicative, and replace blend policies for the whole render subsystem.
+- Configures depth and stencil state mapping so pipeline creation reflects the front-end render command model.
+- Acts as the pipeline-construction boundary rather than the owner of per-frame draw traversal.
+- Open this file when render state caching, blend mapping, or custom shader pipeline assembly is incorrect.
 
 ### gpu_renderer.rs
 
-- Primary hardware-accelerated 2D rendering orchestrator for Lurek2D. `render/gpu_renderer` delivers the gpu renderer implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Integrates with wgpu to manage device, queue, swapchain, and graphics resources. The file owns or coordinates data contracts including `GpuRenderer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Translates Lua-side render commands into structured draw calls and pipeline states. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `resize`, `render_frame` stays attached to the local data model and invariants.
-- Controls multi-pass rendering flow including scenes, shadows, decals, and post-fx. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Aggressively coalesces contiguous draw calls sharing material parameters and textures. External integration uses `slotmap`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Implements static geometry caching to bypass tessellation and CPU upload overhead. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- Implements GPU-side instancing to render repetitive sprite grids and particle buffers. State changes, validation paths, and helper routines in `src/render/gpu_renderer.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- Renders primitive vector shapes, dynamic outlines, rounded quads, and ellipses. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
-- Resolves text rendering by drawing character quads lookup from font atlases. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
-- Manages offscreen canvases as render targets to enable composite camera views. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
+- Owns the main hardware renderer that turns front-end render commands into concrete wgpu draw submission.
+- Manages device, queue, swapchain, canvases, textures, and persistent GPU state under one frame orchestrator.
+- Drives multi-pass flow for scene color, shadows, decals, text, province maps, and post-processing output.
+- Coalesces compatible draw calls so repeated materials and textures do not force unnecessary pipeline churn.
+- Uploads and reuses static geometry to bypass repeated tessellation and reduce CPU-side frame overhead.
+- Supports GPU instancing for repeated sprites, particles, and grid-like content that share one draw shape.
+- Resolves text rendering by expanding glyph quads from atlas data and batching them with other draw work.
+- Maintains offscreen canvases as render targets so composite views and multi-surface workflows stay possible.
+- Handles resize, viewport updates, and target-dimension logic that keep swapchain-backed output coherent.
+- Owns readback orchestration for surfaces when screenshots or software-visible capture need GPU results.
+- Bridges lighting, shadows, geometry, and resource owners instead of embedding their detailed policies here.
+- Acts as the runtime boundary between the engine's render command language and low-level wgpu execution.
+- Concentrates helper routines near state so render-frame changes remain auditable despite subsystem breadth.
+- Open this file when full-frame GPU output is wrong and the fault is not isolated to one narrow helper owner.
+- It is the right owner for render orchestration bugs because most GPU passes and resource handoffs converge here.
 
 ### gpu_resources.rs
 
-- Manages persistent GPU resource lifetimes, allocations, and buffer uploads. `render/gpu_resources` delivers the gpu resources implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Handles dynamic capacity adjustment for growing vertex and index buffers. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Caches textures, fonts, and canvases inside slotmap collection structures. Public callable behavior is centered on no named public items, while method-level behavior such as `grow_capacity`, `ensure_geometry_buffer_capacity`, `ensure_instance_buffer_capacity`, `create_sampler`, `create_texture_bind_group`, `create_gpu_texture_raw`, and 8 more stays attached to the local data model and invariants.
-- Prunes unused graphics resources automatically to prevent GPU memory leaks. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Resizes vertex and index buffers exponentially to minimize pipeline stalls. External integration uses `slotmap`, `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Uploads static draw geometries to permanent GPU buffers for cached rendering. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Owns persistent GPU resource lifetimes, uploads, and resizing for textures, fonts, canvases, and buffers.
+- Grows vertex, index, and instance buffers on demand so render workloads can scale without manual sizing.
+- Caches texture and sampler bind groups so compatible resources reuse stable GPU-side descriptors.
+- Creates raw textures and canvas resources while hiding wgpu allocation details from higher render layers.
+- Prunes stale resources to keep GPU memory usage bounded during long sessions or heavy content churn.
+- Uploads static geometry into dedicated buffers so later frames can reuse cached meshes efficiently.
+- Acts as the resource-allocation boundary rather than the owner of draw ordering or pass sequencing.
+- Open this file when GPU buffers, textures, samplers, or resource cleanup behavior looks incorrect.
 
 ### gpu_shaders.rs
 
-- Defines raw binary structures and types representing compiled user WGSL shaders. `render/gpu_shaders` delivers the gpu shaders implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Maps uniform value types to their corresponding GPU buffer layout variants. The file owns or coordinates data contracts including `ShaderUniformKind`, `GpuShader`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Caches compiled wgpu pipelines within shader structures to prevent reconstruction. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Defines the GPU shader data structures that store compiled WGSL artifacts and uniform-kind metadata.
+- Maps runtime uniform value classes onto the raw buffer layout variants expected by the render backend.
+- Keeps compiled shader and pipeline cache state local so higher layers can treat shaders as reusable assets.
+- Open this file when shader uniform typing or cached compiled shader state stops matching render needs.
 
 ### gpu_shadows.rs
 
-- Manages 1D shadow map rendering, dynamic light lists, and compute dispatches. `render/gpu_shadows` delivers the gpu shadows implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Gathers occluder edge geometry and transforms it into GPU edge storage buffers. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Dispatches shadow compute shaders per light source to map distances into the shadow atlas. Public callable behavior is centered on `collect_shadow_edges`, while method-level behavior such as `ensure_light_resources`, `ensure_shadow_edge_capacity`, `dispatch_shadow_map_gpu`, `aabb_visible_2d` stays attached to the local data model and invariants.
-- Performs viewport culling on light sources before queuing commands. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `light`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Binds and manages GPU buffers, bind groups, and pipelines for light passes. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Filters occluding shapes by light bitmasks and culls lines outside light radii. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Owns GPU shadow-map preparation, light culling, edge extraction, and compute dispatch for dynamic shadows.
+- Collects occluder edge geometry and uploads it into GPU buffers consumed by shadow compute passes.
+- Dispatches one-dimensional shadow map work per visible light source so light distance fields stay current.
+- Performs viewport and radius culling before queueing shadow work, reducing unnecessary compute load.
+- Manages the bind groups, buffers, and pipelines that connect light data to the shadow atlas workflow.
+- Filters occluders by light masks so only relevant blocking geometry contributes to a given light pass.
+- Acts as the shadow-runtime boundary rather than the owner of general draw command interpretation.
+- Open this file when shadow edges, light culling, or compute-driven shadow atlas updates behave incorrectly.
 
 ### gpu_state.rs
 
-- Implements the GPU resource registry to track persistent mesh and buffer lifetimes. `render/gpu_state` delivers the gpu state implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores texture, canvas, and font allocations within structured slotmaps. The file owns or coordinates data contracts including `GpuTexture`, `DepthStencilTarget`, `PendingSurfaceReadback`, `RenderStats`, `StaticGeometryCacheEntry`, and 2 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Caches static draw geometry descriptors, avoiding frame allocations. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Manages depth-stencil buffer views matching current canvas dimensions. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Defines the registry of live GPU allocations, cached geometry, readback state, and frame statistics.
+- Stores textures, fonts, canvases, depth targets, and other handles in structured collections with stable keys.
+- Keeps static geometry cache records and pending surface readbacks separate from the main renderer loop.
+- Acts as the persistent state boundary for GPU resources shared across multiple render passes.
+- Open this file when cached handles, depth targets, or readback bookkeeping state behaves incorrectly.
 
 ### gpu_tess.rs
 
-- GPU tessellator converting high-level 2D vector shapes (rectangles, circles, arcs, text glyphs, sprites, meshes) into vertex and index buffers.
-- Implements dynamic segment-count adaptation for circles and ellipses based on screen-space radius ensuring smooth curves at any zoom level.
-- Tessellates stroked lines as screen-aligned rectangular quads with configurable line width supporting dashed borders and outline styles.
-- Packs ColorVertex and TexVertex buffers with positions, UV coordinates, tint colors, and transform data for unified pipeline ingestion.
-- Applies 3x3 model-view transformations per vertex enabling local coordinate systems and nested transform hierarchies. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Computes scissor rectangles and culls geometry outside viewport bounds reducing GPU workload and preventing render artifacts.
+- Converts high-level 2D draw shapes into GPU-ready vertices and indices for the hardware renderer pipeline.
+- Tessellates rectangles, circles, arcs, glyph quads, sprites, and meshes under one geometry conversion owner.
+- Adapts curve segment counts to screen-space radius so curved shapes stay smooth across different zoom levels.
+- Builds stroked lines as quads with explicit widths, supporting borders, outlines, and dashed style variants.
+- Packs position, uv, tint, and transform data into ColorVertex and TexVertex streams expected by GPU code.
+- Applies local transforms per vertex so nested coordinate systems do not need pre-flattened geometry upstream.
+- Computes scissor rectangles and culls out-of-bounds geometry to reduce wasted GPU work and visual artifacts.
+- Acts as the GPU tessellation boundary between front-end draw intent and raw vertex buffer contents.
+- Open this file when hardware path geometry, scissor math, or shape triangulation behaves incorrectly.
 
 ### gpu_types.rs
 
-- Defines raw binary structures representing GPU vertex layouts. `render/gpu_types` delivers the gpu types implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Packs memory layouts tightly using bytemuck to ensure copy compliance. The file owns or coordinates data contracts including `ColorVertex`, `TexVertex`, `LightVertex`, `ShadowEdgeGpu`, `ShadowComputeParams`, and 7 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Groups properties like position, texture coordinates, color tints, and normals. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Encapsulates command batching metadata for coalescing draw dispatches. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Tracks instance transformation data for hardware instancing buffers. External integration uses `bytemuck`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Defines the bytemuck-safe raw GPU structs used for vertices, uniforms, shadow edges, and draw batching.
+- Packs positions, colors, uv data, normals, and instance transforms into layouts copied directly to buffers.
+- Keeps binary layout contracts centralized so renderer, shader, and upload code agree on memory shape.
+- Stores batching metadata that later passes use to coalesce draw dispatches with compatible GPU state.
+- Acts as the binary-ABI boundary between Rust-side render state and WGSL-visible buffer contents.
+- Open this file when GPU struct layout, bytemuck compatibility, or instance data packing is incorrect.
 
 ### image_effect.rs
 
-- Compact descriptor for post-processing steps in a shader pipeline. `render/image_effect` delivers the image effect implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- Defines the compact post-processing effect descriptor used to name and parameterize one shader-based step.
+- Keeps effect identity and lightweight setup separate from the heavier postfx pipeline that executes it.
+- Open this file when per-effect descriptor shape changes rather than full post-processing runtime behavior.
 
 ### mesh.rs
 
-- Defines reusable 2D mesh data for complex vector drawing and models. `render/mesh` delivers the mesh implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores vertex coordinates, UV maps, colors, and topology information. The file owns or coordinates data contracts including `MeshDrawMode`, `MeshVertex`, `Mesh`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Bridges custom loaded model assets and procedural vector geometries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_vertices`, `from_vertex_rows`, `set_vertex`, `get_vertex`, `set_vertex_map`, and 4 more stays attached to the local data model and invariants.
-- Supports multiple drawing topologies including triangle lists and fans. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Defines reusable 2D mesh data for custom vector geometry, imported models, and textured draw content.
+- Stores vertex positions, colors, uv maps, topology mode, and optional texture binding under one asset type.
+- Supports multiple draw topologies so callers can express lists, strips, fans, or related mesh patterns.
+- Acts as the mesh-asset boundary between content generation and later tessellation or draw submission code.
+- Open this file when mesh vertex data, topology choice, or texture attachment behavior looks incorrect.
 
 ### mod.rs
 
-- Unified entry point for the Lurek2D render module stack. `render/mod` is the render module index, declaring `canvas`, `decal_surface`, `draw_layer`, `font`, `gpu_light`, and 17 more so agents can identify which files own each feature slice before opening implementation code.
-- Exposes submodules for canvases, decal surfaces, shapes, and font managers. `src/render/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `canvas::Canvas`, `decal_surface::DecalSurface`, `draw_layer::DrawLayer`, `font::Font`, and 10 more centralized for the render subsystem.
-- Declares modules for the GPU-accelerated renderer and compiled pipelines. The file documents how render submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- Unifies draw interfaces, shader uniform mappings, and shader passes. Agents should read this index to choose the narrow owner file first, because it maps names such as `canvas`, `decal_surface`, `draw_layer`, `font`, `gpu_light`, and 17 more to concrete implementation responsibilities.
-- Bridges game runtime draw buffers to backend hardware rendering layers. Re-export decisions in this file define the stable Rust boundary consumed by sibling modules, Lua bindings, generated specs, and examples that mention render features.
-- Conforms to the binding rules, exposing all public rendering APIs. The module stays implementation-light by delegating behavior to child files, which preserves a clear boundary between navigation metadata and executable subsystem logic.
+- Exports the render subsystem surface that groups canvases, GPU owners, fonts, shapes, shaders, and pipelines.
+- Acts as the render ownership index so callers can map a rendering concern to its concrete Rust owner file.
+- Centralizes module visibility and re-exports instead of storing live frame state or issuing draw work itself.
+- Connects front-end draw commands, geometry assets, shader tools, and GPU execution modules into one stack.
+- Provides the first navigation point when tracing whether a render issue belongs to shaders, resources, or passes.
+- Keeps the public render surface coherent while allowing narrow files like mesh or image_effect to stay focused.
+- Open this file first when adding a render owner or changing shared render API re-export policy.
+- Use it to locate the right implementation file before editing orchestration, resources, geometry, or shaders.
 
 ### obj_loader.rs
 
-- Parses Wavefront OBJ and material MTL files for rendering projection. `render/obj_loader` delivers the obj loader implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Translates 3D geometric models into 2D canvas coordinates and meshes. The file owns or coordinates data contracts including `ObjError`, `Vec3`, `Vec2`, `ObjFace`, `ObjMaterial`, and 3 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Projects vertices from world positions to viewport dimensions using virtual cameras. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `dot`, `len`, `normalise`, `sub`, `cross`, and 12 more stays attached to the local data model and invariants.
-- Performs linear diffuse color mapping and resolves texture path assets. Runtime integration reaches sibling engine areas through crate modules `image`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Implements software-based CPU rasterization for thumbnail rendering and validation. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Normalizes OBJ face indices, resolving negative and 1-based index offsets. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- Filters back-facing triangles to optimize rendering output. State changes, validation paths, and helper routines in `src/render/obj_loader.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- Computes face normals to calculate light reflection and shading coefficients. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+- Loads Wavefront OBJ and MTL data into reusable mesh structures and CPU-projected renderable geometry.
+- Parses faces, materials, vertices, normals, and texture coordinates while normalizing OBJ indexing rules.
+- Projects source geometry into viewport-friendly coordinates using simple camera-style transforms.
+- Computes normals and back-face filtering so software preview and shading logic can make stable decisions.
+- Resolves diffuse colors and texture paths from materials without forcing those rules into generic mesh owners.
+- Includes CPU raster-style support used for thumbnailing, validation, or headless geometry inspection.
+- Keeps OBJ-specific parsing and error handling separate from runtime GPU pipeline or tilemap import paths.
+- Acts as the model-import boundary between external Wavefront assets and internal 2D mesh representations.
+- Open this file when OBJ parsing, index normalization, material mapping, or projection output is incorrect.
+- Read this owner before general mesh changes when the bug is limited to imported model content.
 
 ### postfx_pipeline.rs
 
-- Manages post-processing effects and screen-space shader rendering passes. `render/postfx_pipeline` delivers the postfx pipeline implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Connects offscreen canvas textures to full-screen fragment shader operations. The file owns or coordinates data contracts including `PostFxTexture`, `PostFxPipeline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Groups effect parameters, texture bindings, and samplers dynamically. Public callable behavior is centered on `params_to_uniform`, while method-level behavior such as `new`, `register_custom`, `apply` stays attached to the local data model and invariants.
-- Renders multi-pass post-fx chains like blur, CRT warp, and color correction. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Coalesces texture swap passes, minimizing frame allocation overhead. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Configures pipeline states, blend modes, and write masks for screen passes. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- Compiles and stores default fallback post-processing WGSL shaders. State changes, validation paths, and helper routines in `src/render/postfx_pipeline.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- Reuses texture descriptors, adapting resources to window dimensions. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+- Owns post-processing pipeline setup and execution for screen-space shader passes over offscreen textures.
+- Connects canvas textures, samplers, and effect uniforms to fullscreen draw operations executed after scene render.
+- Groups effect parameters and swap textures so multi-pass blur, CRT, or color-correction chains stay organized.
+- Configures pipeline states, write masks, and fallback shaders needed by default and custom postfx passes.
+- Minimizes allocation churn by reusing descriptors and intermediate textures sized to current output targets.
+- Stores custom post-processing registrations separately from the frame renderer so effect catalogs stay modular.
+- Acts as the screen-pass boundary between a finished scene texture and final composited presentation output.
+- Keeps shader-source and uniform conversion concerns local instead of spreading them across the main renderer.
+- Open this file when post-processing order, texture swaps, or effect application behavior is incorrect.
+- Use this owner for postfx bugs before changing the broader GPU renderer orchestration path.
 
 ### province_map_pipeline.rs
 
-- Provides the specialized GPU pipeline for drawing detailed province maps. `render/province_map_pipeline` delivers the province map pipeline implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Binds map-specific data like region IDs, border structures, and height fields. The file owns or coordinates data contracts including `ProvinceMapUniforms`, `ProvinceMapPipeline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Renders fullscreen map views using custom fragments WGSL shader passes. Public callable behavior is centered on no named public items, while method-level behavior such as `full_map`, `new`, `create_data_bind_group`, `update_uniforms` stays attached to the local data model and invariants.
-- Configures pipeline layout options, mapping texture samplers and buffers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Packs viewport ranges, map size, zoom factor, and animation times into uniforms. External integration uses `bytemuck`, `wgpu`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Defines the specialized GPU pipeline used to render detailed province-map views with dedicated shader inputs.
+- Binds region ids, border data, height-like fields, and viewport parameters needed by province-focused passes.
+- Packages uniforms for zoom, map size, viewport range, and time so province visuals update coherently.
+- Keeps province-specific bind groups and pipeline layout separate from the general-purpose render backend.
+- Acts as the province-map boundary between geographic data textures and shader-driven fullscreen presentation.
+- Open this file when province shader inputs, uniforms, or fullscreen province-map output behaves incorrectly.
 
 ### renderer.rs
 
-- Defines Lurek2D's front-end render command language and vocabulary. `render/renderer` delivers the renderer implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Gathers draw operations, layout state structures, and drawing enum descriptors. The file owns or coordinates data contracts including `CompareMode`, `StencilAction`, `StencilMode`, `DepthMode`, `TextAlign`, and 16 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Encapsulates shapes, typography, sprites, and particle states into dynamic variants. Public callable behavior is centered on `adaptive_circle_ellipse_segments`, while method-level behavior such as `new` stays attached to the local data model and invariants.
-- Declares enums for color blend modes, text alignment, and draw modes. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Specifies vertex colors, gradients, and custom outline thickness bounds. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Standardizes structures for texture repeat modes and sampler filters. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Defines the front-end render command language consumed by the software and GPU renderer implementations.
+- Owns draw-mode enums, blend and stencil policy types, text alignment, gradients, and related draw metadata.
+- Packages shapes, sprites, particles, typography, and effect requests into structured command variants.
+- Standardizes sampler filters, repeat modes, depth behavior, and outline settings used across render paths.
+- Keeps the abstract rendering vocabulary separate from the backends that later execute or rasterize commands.
+- Provides adaptive circle and ellipse segment helpers used when front-end callers request curved primitives.
+- Acts as the semantic boundary between gameplay draw intent and the lower-level renderer implementations.
+- Open this file when command schema, blend semantics, or draw-mode vocabulary needs coordinated changes.
+- Read this owner first when multiple backends disagree, because they all interpret the command types defined here.
 
 ### shader.rs
 
-- Manages user-facing shader compilation and parsing of WGSL sources. `render/shader` delivers the shader implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Wraps WGSL source code into normalized pipeline templates for the renderer. The file owns or coordinates data contracts including `ShaderFragmentInput`, `Shader`, `UniformValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Inspects fragment inputs to ensure only supported attributes are bound. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `send`, `has_uniform`, `ordered_uniforms`, `wrapper_source`, `fragment_entry_name`, and 1 more stays attached to the local data model and invariants.
-- Represents shader uniform values in typed forms for per-frame upload. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Preserves the ordering of uniform variables to guarantee stable GPU buffer layouts. External integration uses `std`, `wgpu`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Owns user-facing shader parsing, validation, and uniform bookkeeping for custom WGSL-driven render effects.
+- Wraps incoming WGSL source into renderer-ready templates so fragment entry points match engine expectations.
+- Inspects fragment inputs and uniform declarations to reject unsupported bindings before runtime use.
+- Represents uniform values in typed forms that later upload code can preserve in stable buffer order.
+- Keeps wrapper generation and ordered-uniform logic local instead of scattering shader policy through backends.
+- Acts as the custom-shader boundary between authored WGSL text and engine-managed pipeline integration.
+- Open this file when shader source validation, wrapper rewriting, or uniform ordering behaves incorrectly.
 
 ### shape.rs
 
-- Stores reusable vector shape definitions as replayable command sequences. `render/shape` delivers the shape implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Packages stroke and fill operations into named assets for UI reuse. The file owns or coordinates data contracts including `ShapeCommand`, `CompoundShape`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Retains color and outline thickness attributes along with path commands. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_command`, `clear`, `command_count` stays attached to the local data model and invariants.
-- Minimizes scene building overhead by avoiding dynamic shape rebuilding. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Defines reusable vector shape assets as replayable command sequences with fill and stroke information.
+- Packages path-like draw commands into named compound shapes that UI and gameplay code can reuse cheaply.
+- Keeps shape recording separate from later tessellation so the same asset can feed multiple render paths.
+- Acts as the vector-shape asset boundary rather than the owner of GPU conversion or final draw dispatch.
+- Open this file when reusable shape definitions, command storage, or outline attributes behave incorrectly.
 
 ### software_capture.rs
 
-- CPU-side screenshot fallback for queued 2D render commands. `render/software_capture` delivers the software capture implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Replays a practical subset of `RenderCommand` values into `ImageData`. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Exists to support evidence capture in headless/unit environments where GPU readback is unavailable. Public callable behavior is centered on `capture_commands_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- `render/software_capture` delivers the software capture implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Public callable behavior is centered on `capture_commands_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- Implements CPU-side screenshot capture by replaying supported render commands into mutable ImageData output.
+- Exists as a fallback path for tests, headless evidence, and environments where GPU readback is unavailable.
+- Replays a practical subset of RenderCommand values so visual assertions can run without a live graphics device.
+- Includes local transform, pixel write, stencil, and line helpers needed to rasterize queued commands in software.
+- Keeps capture logic separate from the main GPU renderer so test-friendly output does not complicate frame code.
+- Acts as the software-capture boundary between front-end render commands and headless image generation.
+- Provides one owner for CPU replay semantics, making screenshot differences easier to debug in non-GPU runs.
+- Open this file when headless capture output differs from expected draw behavior or misses command coverage.
+- Use this owner before GPU renderer changes when only software screenshot evidence appears incorrect.
 
 
 

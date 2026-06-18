@@ -1,4 +1,6 @@
-//! Defines radial falloff profiles that shape brightness between light center and radius boundary. `light/falloff` delivers the falloff implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `FalloffMode`, the enum that shapes radial brightness inside a light's effective radius.
+//! It distinguishes linear, smooth, and constant profiles so lights can vary edge softness without new code paths.
+//! Open this file when radial falloff semantics change; attenuation math and full light state live in sibling files.
 
 /// Radial intensity falloff shape applied on top of attenuation distance decay.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

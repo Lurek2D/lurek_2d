@@ -1,4 +1,6 @@
-//! Compact descriptor for post-processing steps in a shader pipeline. `render/image_effect` delivers the image effect implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Defines the compact post-processing effect descriptor used to name and parameterize one shader-based step.
+//! Keeps effect identity and lightweight setup separate from the heavier postfx pipeline that executes it.
+//! Open this file when per-effect descriptor shape changes rather than full post-processing runtime behavior.
 
 use std::collections::HashMap;
 /// One named shader pass in a post-processing chain; carries float uniform parameters.

@@ -1,8 +1,10 @@
-//! Graph algorithm implementations for directed flow networks including connectivity analysis, cycle detection, topological sorting, and minimum spanning trees.
-//! Implements white-gray-black DFS cycle detection, Kruskal MST construction, greedy graph coloring, and connected component enumeration for structural analysis.
-//! Provides O(V+E) traversals and ordering computations used by planning systems, diagnostics workflows, and topology validation on large flownet models.
-//! Operates directly on shared graph adjacency state without duplicating node or edge data, ensuring efficient memory usage and performance.
-//! Enables inspection and tuning of flownet topology behavior through bipartite detection, reachability checks, and deterministic node ordering guarantees.
+//! This file owns structural graph-analysis helpers such as components, cycle checks, topological order, and coloring.
+//! It builds temporary adjacency views from shared graph indexes instead of duplicating persistent topology ownership.
+//! `mst_kruskal` lives here because spanning-forest analysis is an offline topology query, not part of simulation ticks.
+//! `is_bipartite` and `color_graph` support diagnostics and planner inspection without mutating nodes, edges, or items.
+//! `astar_graph` stays here because heuristic routing with caller positions is separate from edge-cost path search.
+//! These helpers read `Graph` state and return derived answers; they never own transit, demand, or save side effects.
+//! Open it when analytic queries change; shortest-path execution and per-tick movement rules live in sibling files.
 
 use super::core::Graph;
 use std::collections::{HashMap, HashSet, VecDeque};

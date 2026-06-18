@@ -1,8 +1,10 @@
-//! This file provides deferred window management operations staged for safe event-loop apply. `window/management` delivers the management implementation for the window subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It controls title, size, position, display target, and icon updates through queued state. The file owns or coordinates data contracts including `ModeInfo`, `WindowConfigRequest`, `FileDialogFilter`, `FileDialogOptions`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It manages fullscreen and vsync mode changes across desktop and exclusive variants. Public callable behavior is centered on `set_title`, `focus`, `set_fullscreen`, `is_fullscreen`, `set_vsync`, and 31 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! It exposes minimize, maximize, restore, close, and attention requests for app lifecycle flow. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It provides focus, visibility, and pointer-presence queries for runtime interaction logic. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/window/management.rs` owns deferred window-control operations that mutate `WindowState` through staged requests.
+//! It defines `ModeInfo`, `WindowConfigRequest`, and file-dialog option types used to batch desktop window changes.
+//! Title, size, position, display target, fullscreen mode, vsync, focus, visibility, and attention helpers live here.
+//! This file also handles DPI conversions, logical-to-physical dimension queries, and grouped mode updates for callers.
+//! Native dialogs and file-picking options are built here so OS-facing window utilities stay near other management helpers.
+//! Read it when window lifecycle commands, staged mutation policy, or message box and file dialog behavior must change.
+//! This is the runtime boundary for desktop window control; monitor discovery and viewport math live in sibling files.
 
 use crate::runtime::shared_state::{FullscreenType, WindowState};
 /// Snapshot of the window's current mode returned by `get_mode`.

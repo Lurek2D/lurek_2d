@@ -1,4 +1,6 @@
-//! Collision event buffering for the moments when physical contact needs to become stable gameplay information instead of transient solver state.
+//! This file owns `CollisionInfo`, the stable collision payload used when contact results leave solver internals.
+//! It stores penetration depth and collision normal so gameplay systems can react without raw engine state.
+//! Open this file when exported contact payload fields change; overlap helpers and body simulation live elsewhere.
 
 use crate::math::Vec2;
 

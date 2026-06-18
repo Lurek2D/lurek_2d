@@ -1,11 +1,14 @@
-//! This file provides the theming system that maps widget type and state to visual style data. `ui/theme` delivers the theme implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It stores colors, typography, borders, shadows, gradients, and alignment in reusable records. The file owns or coordinates data contracts including `ThemeToken`, `WidgetStyle`, `Theme`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It resolves requested styles with controlled fallback so partial themes remain functional. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_style`, `set_class_style`, `get_style`, `get_style_with_class`, `get_token`, and 2 more stays attached to the local data model and invariants.
-//! It ships practical defaults that cover standard widgets without requiring custom setup. Runtime integration reaches sibling engine areas through crate modules `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It keeps style records clonable for cheap per-screen forks and variation experiments. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! It supports semantic theme tokens so shared visual meanings stay consistent across widgets. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! It integrates directly with render-time style resolution inside the UI drawing pipeline. State changes, validation paths, and helper routines in `src/ui/theme.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! It includes debug-oriented raster helpers for quick visual verification of style states. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! Defines the UI theming system that maps widget kind and state onto colors, borders, spacing, and text style.
+//! Stores widget styles, class styles, and semantic tokens so one theme can drive many screens consistently.
+//! Resolves requested style records through fallback lookup so incomplete themes still render usable interfaces.
+//! Keeps style records cheap to clone, which makes per-screen theme forks practical without deep mutation costs.
+//! Ships default dark theme values that cover standard widgets without forcing custom setup before first use.
+//! Supports semantic tokens so shared meanings like accent, error, or muted visuals stay stable across controls.
+//! Feeds render-time style resolution directly, making this the owner for visual defaults rather than draw code.
+//! Includes image helpers used to visualize theme states when verifying widget styling outside the live runtime.
+//! Acts as the styling boundary between retained widget state and the colors or metrics chosen for presentation.
+//! Open this file when visuals drift by state or class even though layout and control logic still behave correctly.
+//! Read this owner before renderer changes when the problem looks like bad token lookup or missing theme fallback.
 
 use crate::ui::widget::{WidgetState, WidgetType};
 use std::collections::HashMap;

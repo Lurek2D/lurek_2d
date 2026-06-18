@@ -1,4 +1,4 @@
-//! `src/lua_api/ui_api.rs` registers the `lurek.ui` Lua boundary for ui behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.ui` Lua API for widget userdata, render-to-image helpers, dialogs, and typed widgets.
 
 use super::dataframe_api::LuaDataFrame;
 use super::render_api::LuaFont;

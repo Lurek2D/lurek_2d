@@ -1,4 +1,6 @@
-//! Canvas metadata representation for off-screen rendering targets. `render/canvas` delivers the canvas implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `Canvas`, the minimal metadata record for fixed-size off-screen render targets.
+//! It stores only pixel dimensions and logs creation, leaving GPU allocation and rendering behavior to larger owners.
+//! Open this file when canvas identity changes; renderer pipelines and image effects remain in sibling modules.
 
 use crate::log_msg;
 use crate::runtime::log_messages::CV01;

@@ -1,7 +1,8 @@
-//! Full-screen transition effects for fade, wipe, iris wipe, and dissolve. `overlay/transition` delivers the transition implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports string-based kind parsing with canonical name round-tripping. The file owns or coordinates data contracts including `TransitionKind`, `ScreenTransition`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Runs with time-based forward and reverse playback modes. Public callable behavior is centered on no named public items, while method-level behavior such as `from_str`, `name`, `new`, `play`, `reverse`, `update`, and 3 more stays attached to the local data model and invariants.
-//! Exposes normalized progress for renderer consumption. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `TransitionKind` and `ScreenTransition`, the full-screen transition playback model for overlay rendering.
+//! It parses string names into fade, wipe, iris wipe, or dissolve modes and round-trips canonical lowercase names.
+//! Runtime state stores transition color, duration, elapsed time, active status, and reverse-playback direction.
+//! Update helpers advance clamped progress and expose `is_active` plus `is_done` for renderer-facing control.
+//! Open this file when transition semantics change; short-lived flash and fade state live in sibling overlay files.
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 /// Enumerates supported full-screen transition styles.

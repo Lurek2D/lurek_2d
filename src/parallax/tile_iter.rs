@@ -1,6 +1,7 @@
-//! Computes visible tile positions for repeating parallax layers inside a screen rect and cull margin. `parallax/tile_iter` delivers the tile iter implementation for the parallax subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Walks one axis at a time and combines X and Y into a full grid with bounded growth. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Emits only the single origin position for non-repeating layers. Public callable behavior is centered on `collect_tiled_positions`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! `src/parallax/tile_iter.rs` computes visible tile origins for repeating parallax layers inside a screen-sized window.
+//! It owns cull-margin expansion, axis stepping, repeat handling, and the hard cap that prevents runaway tile growth.
+//! Non-repeating layers also pass through here, returning a single origin so batch builders use one tiling code path.
+//! Read it when visible tile coverage, repeat math, cull bounds, or batching limits for parallax layers need changes.
 
 /// Fraction of a tile width/height added on each side of the screen as a visibility margin.
 const CULL_MARGIN_TILES: f32 = 1.5;

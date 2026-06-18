@@ -1,4 +1,4 @@
-//! `src/lua_api/province_api.rs` registers the `lurek.province` Lua boundary for province behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.province` Lua API for province maps, markers, tints, borders, and province registries.
 
 use super::SharedState;
 use crate::image::ProvinceGrid;

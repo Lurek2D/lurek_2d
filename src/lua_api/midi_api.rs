@@ -1,4 +1,4 @@
-//! `src/lua_api/midi_api.rs` registers the `lurek.midi` Lua boundary for midi behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.midi` Lua API for MIDI-facing runtime helpers and thin script bindings over playback.
 
 use super::SharedState;
 use crate::lua_api::audio_api::LuaMidiPlayer;

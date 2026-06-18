@@ -1,7 +1,8 @@
-//! Provides export builders that transform normalized doc entries into IDE-oriented JSON payloads. `docs/export` delivers the export implementation for the docs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Produces completion, hover, and signature datasets in shapes tailored to extension and tooling consumers. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports compact or rich payload modes to match different integration and footprint constraints. Public callable behavior is centered on `export_completions`, `export_hover`, `export_signatures`, `export_all`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Writes single or bundled artifacts through stable serialization paths for predictable output handling. Runtime integration reaches sibling engine areas through crate modules `docs`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/docs/export.rs` transforms normalized doc entries into JSON payloads for completions, hovers, and signatures.
+//! It owns completion-kind mapping, hover and signature builders, pretty JSON writing, and bundled export directory output.
+//! Compact and richer payload variants are assembled here so IDE-facing consumers can choose size versus detail tradeoffs.
+//! This file is the serialization boundary for docs artifacts; it does not own entry collection or quality scoring.
+//! Read it when docs JSON shape, file output behavior, or editor integration payload rules need to change.
 
 use crate::docs::entry::DocEntry;
 use std::collections::HashMap;

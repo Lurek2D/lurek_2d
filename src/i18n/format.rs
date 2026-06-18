@@ -1,7 +1,8 @@
-//! Formats locale-facing numbers and dates into human-readable strings for UI presentation. `i18n/format` delivers the format implementation for the i18n subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Chooses decimal and thousands separators from locale prefixes to match regional reading habits. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Converts epoch-based day counts and timestamps into calendar components and formatted date output. Public callable behavior is centered on `locale_separators`, `format_number`, `format_date`, `days_to_ymd`, `month_name_tables`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Supplies ISO, short, and long date renderings for compact HUD and verbose panel contexts. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/i18n/format.rs` owns locale-aware number and date formatting helpers used to render translated data for display.
+//! It selects decimal and thousands separators, formats fixed-precision numbers, and renders dates from epoch day math.
+//! Calendar conversion and month-name tables also live here, keeping locale-facing output rules away from catalog storage.
+//! This file is the rendering boundary for locale-shaped dates and numbers after translation lookup has already happened.
+//! Read this file when separator policy, date presentation, or number-format rendering behavior for UI text must change.
 
 /// Return decimal and thousands separators for a locale prefix.
 pub fn locale_separators(locale: &str) -> (char, char) {

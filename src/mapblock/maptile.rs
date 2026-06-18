@@ -1,6 +1,7 @@
-//! Atomic tile payload composed from configurable slot values and metadata. `mapblock/maptile` delivers the maptile implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Encodes tile-slot identifiers that point at tileset entries for rendering and logic. The file owns or coordinates data contracts including `MapTile`, `TileSlot`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Distinguishes slot roles so ordered drawing stays consistent. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_empty`, `set_slot`, `get_slot`, `clear_slot` stays attached to the local data model and invariants.
+//! This file owns the atomic tile payload used inside block layers, including per-slot tileset and gid assignments.
+//! `MapTile` stores an ordered slot vector, while `TileSlot` carries one `(tileset_id, gid)` pair or an empty state.
+//! Slot mutation helpers live here because writing, clearing, and emptiness checks belong to the smallest tile owner.
+//! Open it when slot semantics change; layer grids, block footprints, and export assembly live in sibling files.
 
 /// A single tile in a map block layer. Contains multiple configurable slots.
 #[derive(Debug, Clone, Default)]

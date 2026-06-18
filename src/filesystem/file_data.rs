@@ -1,6 +1,6 @@
-//! Provides a lightweight file payload container pairing logical paths with loaded raw bytes. `filesystem/file_data` delivers the file data implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Exposes basic size, emptiness, and UTF-8 decode helpers for convenient caller-side consumption. The file owns or coordinates data contracts including `FileData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Delivers the shared data object returned by filesystem read operations. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `len`, `is_empty`, `as_str` stays attached to the local data model and invariants.
+//! `src/filesystem/file_data.rs` owns the lightweight payload object returned by filesystem reads and cache lookups.
+//! It stores a logical path with raw bytes and exposes size, emptiness, and UTF-8 decoding helpers for callers.
+//! Read it when file payload shape, decode helpers, or shared read-result contracts in the filesystem need changes.
 
 /// Cached file bytes paired with the logical path they came from.
 pub struct FileData {

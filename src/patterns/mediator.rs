@@ -1,6 +1,7 @@
-//! Mediator registry for coordinating communication through named channels when systems should meet through a broker rather than pointing at each other directly.
-//! The file assigns durable handler identities per channel so registration, removal, counting, and inspection all speak the same compact vocabulary.
-//! By storing channel membership centrally it becomes easy to clear one lane of traffic or reset the whole routing surface without leaking per-subscriber bookkeeping into callers.
+//! This file owns the channel-based mediator registry used to coordinate handlers through a central broker surface.
+//! `Mediator` stores per-channel handler ids and the next allocator so registration and removal share one authority.
+//! Channel listing and count helpers stay here because handler membership is mediator-owned coordination state.
+//! Open it when brokered routing semantics change; event buses and observers live in sibling pattern modules.
 
 use std::collections::HashMap;
 #[derive(Debug, Default, Clone)]

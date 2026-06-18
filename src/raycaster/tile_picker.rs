@@ -1,11 +1,13 @@
-//! This file maps a screen interaction back into raycaster grid space so UI clicks can target the world the player is looking at.
-//! It replays the essential camera and stepping assumptions of the view transform instead of relying on a separate picking representation.
-//! Screen size, camera pose, and tile scale are all part of the picker state, which keeps repeated queries stable across a frame.
-//! The result reports both tile identity and hit character so callers can tell which cell was reached and from which side it was approached.
-//! This makes the file the practical bridge between first-person view coordinates and gameplay selection on the underlying map.
-//! `raycaster/tile_picker` delivers the tile picker implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! The file owns or coordinates data contracts including `PickSurface`, `PickWallSection`, `ScreenPickParams`, `TilePicker`, `PickResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `horizon`, `projection_distance`, `new`, `set_camera`, `set_screen_size`, and 3 more stays attached to the local data model and invariants.
+//! This file owns screen-to-world picking for the raycaster, mapping a pixel back onto wall, floor, or ceiling space.
+//! It defines `PickSurface`, `PickWallSection`, `ScreenPickParams`, `TilePicker`, and `PickResult` payloads.
+//! `TilePicker` keeps camera pose, screen size, grid size, and tile scale for repeated first-person selection queries.
+//! Helper math derives ray angle, corrected distance, horizon, projection depth, and plane intersections from the camera.
+//! Wall picking reuses DDA stepping so hit ordering matches the same traversal semantics used for rendering and visibility.
+//! Feature-aware logic distinguishes half-height walls, window bands, and door panels, returning the hit solid section.
+//! Floor and ceiling picking projects the pixel onto horizontal planes and rejects cells hidden by closer walls or holes.
+//! `Raycaster2D::pick_screen` resolves single-level maps, while `MultiLevelGrid::pick_screen` chooses the owning slice.
+//! This file is the boundary between first-person UI input and gameplay selection on underlying grid or multilevel data.
+//! Open this file when selection payloads or pick precedence change; scene building and ray hits live in siblings.
 
 use super::dda::Raycaster2D;
 use super::doors::DoorDirection;

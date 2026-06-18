@@ -1,4 +1,4 @@
-//! Registers the public `lurek.graph` Lua API for FLOWNET graph creation, mutation, routing, and simulation. `src/lua_api/flownet_api.rs` registers the `lurek.flownet` Lua boundary for flownet behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.flownet` Lua API for graph routing, simulation, validation, and flow-network userdata.
 
 use crate::flownet::pathfinding::PathResult;
 use crate::flownet::{ConversionRule, FlowMode, Graph, GraphEvent, ItemPosition, OverflowPolicy};

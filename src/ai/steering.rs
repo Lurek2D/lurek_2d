@@ -1,9 +1,12 @@
-//! Provides continuous movement intent synthesis for agents that steer instead of teleporting state. `ai/steering` delivers the steering implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Combines concurrent influences into one force signal while preserving controllable blending semantics. The file owns or coordinates data contracts including `Force`, `SteeringEntity`, `CombineMode`, `SteeringBase`, `SteeringBehaviorType`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports reactive pursuit, evasion, spacing, and exploratory drift as composable motion textures. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `as_str`, `base`, `base_mut`, `kind`, `calculate`, and 20 more stays attached to the local data model and invariants.
-//! Integrates waypoint progression so authored path flow and emergent steering can coexist smoothly. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Applies bounded output shaping to keep acceleration pressure stable for frame-to-frame integration. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Treats path following as a first-class influence that can lead or defer to behavior priorities. The file boundary separates ai implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Owns the continuous steering runtime that turns many movement influences into one bounded force for an agent.
+//! Defines seek, flee, arrive, wander, pursue, evade, flock, and custom behavior variants with shared base state.
+//! Combines behavior outputs under weighted or priority blending so path following and reactive forces can coexist.
+//! Stores waypoint path progress, named entity context, and last-force output beside the behavior collection itself.
+//! Provides the movement boundary between high-level intent and low-level velocity updates driven every frame.
+//! This file matters when acceleration shaping, blend semantics, or path-follow steering interaction is incorrect.
+//! Neighboring changes usually involve agent movement data, context steering, ORCA, and authored path waypoints.
+//! Open this owner when motion quality is wrong even though the chosen decision and destination are already correct.
+//! It is the right file for steering-force bugs because no sibling module owns the final force synthesis contract.
 
 use std::collections::HashMap;
 

@@ -17,27 +17,16 @@
 
 ## Summary
 
-- This module gives users a built-in diagnostics console for performance, logging, profiling, and live inspection.
-- Frame statistics expose FPS and timing percentiles so regressions are visible during normal play sessions.
-- CPU and GPU timing capture helps separate render bottlenecks from gameplay-script bottlenecks.
-- Hierarchical profiling zones let teams measure nested code paths instead of guessing hotspots.
-- Structured log controls support severity filtering and optional file mirroring for reproducible debug traces.
-- REPL-style evaluation enables quick runtime checks and small fixes without full restart cycles.
-- Watch expressions provide lightweight observability for high-value variables during tuning.
-- File watching helps hot-reload loops react quickly to changed assets or scripts.
-- Snapshot APIs combine multiple debug signals into one pull for overlays and tooling panes.
-- The module improves iteration speed by shortening the observe-change-verify loop.
-- It is useful for both solo debugging and team workflows where traceability matters.
-- Script-level access keeps diagnostics close to gameplay code instead of hidden in engine internals.
-- Users can gate profiling collection to control overhead when needed.
-- For QA, retained history surfaces support post-failure triage without immediate repro.
-- For content teams, watch-based updates reduce restart fatigue during frequent edits.
-- Overall, this module turns diagnostics into a routine workflow rather than an emergency tool.
-- It helps projects stay performance-aware throughout development, not only at the end.
-- The practical result is faster root-cause discovery and cleaner release stabilization.
-- Users gain visibility, control, and repeatable evidence from one integrated debug surface.
+- The `devtools` module is the live diagnostics surface for users who need to inspect runtime behavior while the game is still running.
+- Frame stats, profiling, structured logs, REPL evaluation, file watching, and value display work together so performance issues, script mistakes, and content regressions can be investigated through one integrated toolset.
+- That matters because debugging is rarely one signal at a time: the same workflow often needs timings, logs, on-the-fly evaluation, and change detection to explain what is actually happening.
+- Retained history, snapshots, and bounded diagnostic state make the module useful for both immediate interactive debugging and later post-failure analysis.
+- Live overlays and runtime command surfaces are especially valuable because they shorten the loop between observation and intervention; the user can inspect a problem, evaluate state, and react without leaving the running session.
+- The module also helps establish observability discipline. Instead of scattering temporary debug prints and one-off consoles through the codebase, it provides a durable home for inspection-facing workflows.
+- This is especially important in long-running sessions, where trends and retained evidence matter more than a single instant snapshot.
+- It is therefore useful both during active feature development and during regression hunts, where reliable runtime evidence matters more than ad hoc local instrumentation.
+- Read it as the developer-facing observability hub of the engine. Other modules expose their own behavior, but `devtools` is where that behavior becomes inspectable in a practical runtime workflow.
 
-This module primarily collaborates with `filesystem`, `repl`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -48,50 +37,62 @@ This module primarily collaborates with `filesystem`, `repl`. Its responsibility
 
 ### frame_stats.rs
 
-- Implements bounded rolling frame-timing history used for live performance telemetry. `devtools/frame_stats` delivers the frame stats implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Computes aggregate metrics including FPS, mean, min, max, and percentile summaries. The file owns or coordinates data contracts including `FrameStats`, `FrameSnapshot`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Produces immutable snapshot views for diagnostics overlays and developer reporting paths. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `record`, `set_capacity`, `snapshot` stays attached to the local data model and invariants.
-- Serves as the frame-statistics data source for devtools performance introspection. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `FrameStats` and `FrameSnapshot`, the rolling metrics source for live performance telemetry.
+- It stores a bounded deque of frame deltas, trims history on writes, and clamps capacity updates to sane limits.
+- Snapshot generation sorts retained samples and derives FPS, average, min, max, and percentile timing summaries.
+- The zero snapshot path keeps empty-history behavior explicit for overlays and diagnostic reporting callers.
+- Open this file when frame-metric semantics change; logging, profiling, and watchers live in sibling modules.
 
 ### logger.rs
 
-- Implements structured developer logging with severity levels and bounded in-memory retention. `devtools/logger` delivers the logger implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Parses level labels case-insensitively and applies configurable minimum-level filtering. The file owns or coordinates data contracts including `LogLevel`, `LogEntry`, `Logger`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports optional category filtering and tail-style retrieval over retained log entries. Public callable behavior is centered on no named public items, while method-level behavior such as `from_str`, `as_str`, `new`, `elapsed`, `push`, `tail`, and 2 more stays attached to the local data model and invariants.
-- Mirrors accepted records to stderr and optional append-only file outputs. Runtime integration reaches sibling engine areas through crate modules `devtools`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `LogLevel`, `LogEntry`, and `Logger`, the bounded developer logging stack for runtime diagnostics.
+- It parses severity labels, timestamps accepted records, mirrors output to stderr, and can append to a log file.
+- History helpers retain recent entries, return configurable tails, and filter categories by lowercase prefix match.
+- The logger uses `TimeAnchor` for relative timestamps so devtools records share one stable elapsed-time reference.
+- Open this file when log retention or filtering changes; clocks, profiling, and file watching live in siblings.
 
 ### lua_display.rs
 
-- Implements Lua value pretty-print conversion for REPL and debug-facing display output. `devtools/lua_display` delivers the lua display implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns Lua value display formatting used by the REPL and other developer-facing text output paths.
+- It converts primitive `mlua::Value` variants to readable strings and uses placeholders for opaque runtime kinds.
+- Open this file when debug text rendering changes; command history and evaluation flow live in sibling modules.
 
 ### mod.rs
 
-- Defines the devtools module boundary for profiling, logging, REPL, and file-watch diagnostics. `devtools/mod` is the devtools module index, declaring `frame_stats`, `logger`, `lua_display`, `profiler`, `repl`, and 2 more so agents can identify which files own each feature slice before opening implementation code.
-- Groups developer instrumentation utilities into one cohesive runtime helper surface. `src/devtools/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `frame_stats::{FrameSnapshot, FrameStats}`, `logger::{LogEntry, LogLevel, Logger}`, `profiler::{ProfileZone, Profiler}`, `repl::ReplConsole`, and 1 more centralized for the devtools subsystem.
+- This module re-exports devtools support for frame stats, logging, profiling, REPL helpers, timing, and file watching.
+- It is the navigation map for developer instrumentation surfaces rather than the owner of runtime capture state.
+- `frame_stats.rs` owns rolling frame metrics, while `profiler.rs` records hierarchical timing trees across frames.
+- `logger.rs` and `repl.rs` cover diagnostic text capture and command evaluation used by developer workflows.
+- `lua_display.rs`, `time_anchor.rs`, and `watcher.rs` provide value formatting, clocks, and change detection.
+- Change this file when public devtools exports move; change sibling files when the underlying behavior changes.
 
 ### profiler.rs
 
-- Implements hierarchical runtime profiling with nested push-pop zone timing semantics. `devtools/profiler` delivers the profiler implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Computes total and exclusive durations per zone for accurate hotspot attribution. The file owns or coordinates data contracts including `ProfileZone`, `Profiler`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Captures per-frame profiling trees into bounded rolling history collections. Public callable behavior is centered on no named public items, while method-level behavior such as `total_time`, `self_time`, `flatten`, `new`, `elapsed`, `push`, and 4 more stays attached to the local data model and invariants.
-- Supports indexed frame access and flattened traversal for aggregate performance reporting. Runtime integration reaches sibling engine areas through crate modules `devtools`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `ProfileZone` and `Profiler`, the hierarchical timing capture model used for runtime profiling.
+- It records nested push-pop zones, computes total and exclusive time, and keeps bounded frame history in memory.
+- Frame finalization closes open zones, stores root trees, and supports reverse-style frame indexing for inspection.
+- Flattening helpers expose pre-order traversals so reporting code can aggregate hotspots without tree rewriting.
+- Open this file when profiling capture semantics change; frame stats, logging, and clocks live in sibling files.
 
 ### repl.rs
 
-- Implements a compatibility wrapper around the release-safe REPL session core. `devtools/repl` delivers the repl implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Preserves devtools console API shape with bounded command-history behavior. The file owns or coordinates data contracts including `ReplConsole`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Returns evaluation outcomes as success markers, value strings, or formatted errors. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `eval`, `history`, `clear`, `len`, `is_empty` stays attached to the local data model and invariants.
+- This file owns `ReplConsole`, the devtools wrapper around the shared `ReplSession` evaluation implementation.
+- It preserves bounded history, delegates line evaluation, and exposes history, length, and clear operations.
+- Open this file when developer console behavior changes; Lua value formatting and session core live in siblings.
 
 ### time_anchor.rs
 
-- Implements a monotonic timing anchor used to compute elapsed seconds on demand. `devtools/time_anchor` delivers the time anchor implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `TimeAnchor`, the monotonic clock wrapper used to measure elapsed devtools time in seconds.
+- It stores one `Instant` and exposes lightweight construction plus elapsed reads for loggers and profilers.
+- Open this file when shared elapsed-time semantics change; higher-level history and capture logic lives in siblings.
 
 ### watcher.rs
 
-- Implements watched-file tracking with mtime snapshots for change-detection workflows. `devtools/watcher` delivers the watcher implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Polls registered paths and reports deterministic modified-path sets per update tick. The file owns or coordinates data contracts including `FileWatcher`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Integrates optional native notify backend when feature-gated devtools plugin support is enabled. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `watch`, `unwatch`, `watched_paths`, `poll`, `clear`, and 1 more stays attached to the local data model and invariants.
-- Supports path registration, stale marking, and complete watch-state reset operations. Runtime integration reaches sibling engine areas through crate modules `filesystem`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `FileWatcher`, the watched-path tracker used to detect file changes for hot-reload workflows.
+- It stores path-to-mtime state, polls for modifications, removals, and stale markers, and returns changed paths.
+- When the `devtools-plugin` feature is enabled, it also bridges the native `notify` backend into the same API.
+- Watch, unwatch, clear, and force-changed operations keep registration and reset behavior local to one owner.
+- Open this file when change-detection semantics move; filesystem mtimes and devtools callers live in siblings.
 
 
 

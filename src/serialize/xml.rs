@@ -1,6 +1,7 @@
-//! This file handles XML decoding for hierarchical data sources that arrive as elements, attributes, text nodes, and repeated children.
-//! It recursively reshapes document structure into the engine's generic serial tree without requiring callers to speak DOM directly.
-//! Attribute and child-content handling are kept together here so engine importers see one consistent XML-to-value mapping.
+//! This file owns XML decoding into the shared `SerialValue` tree for element, attribute, text, and child structure.
+//! It reshapes each node into a map containing tag name, optional attrs, optional text, and optional child sequences.
+//! The mapping keeps XML hierarchy explicit so importers can inspect one predictable tree instead of raw DOM APIs.
+//! Open this file when XML-to-value rules change; generic dispatch and non-XML codecs live in sibling modules.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

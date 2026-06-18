@@ -1,8 +1,9 @@
-//! Provides procedural audio synthesis primitives for waveform generation and envelope-shaped note rendering. `dsp/synthesis` delivers the synthesis implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Defines stable oscillator forms and parsing paths that map script choices to deterministic sample output. The file owns or coordinates data contracts including `Waveform`, `AdsrEnvelope`, `Synthesizer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Applies ADSR gain shaping so rendered notes include natural attack, sustain behavior, and release tails. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `as_str`, `render`, `new`, `trigger_on`, `trigger_off`, and 8 more stays attached to the local data model and invariants.
-//! Combines oscillator and envelope models into renderable buffers ready for playback and further processing. Runtime integration reaches sibling engine areas through crate modules `audio`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Delivers the synthesis layer used for generated sound effects and lightweight musical content. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/dsp/synthesis.rs` owns procedural waveform generation and ADSR-shaped note rendering for synthesized audio.
+//! It defines `Waveform`, `AdsrEnvelope`, and `Synthesizer`, keeping oscillator choice and envelope behavior in one owner.
+//! Waveform parsing, note rendering, trigger state, and envelope sampling live here so generated sound stays deterministic.
+//! It combines oscillator output and optional envelope shaping into `SoundData` buffers ready for later DSP stages.
+//! This file is the synthesis boundary for lightweight generated audio; it does not own effects, meters, or image output.
+//! Read it when oscillator shapes, ADSR semantics, or synthesized buffer generation behavior needs to change.
 
 use crate::audio::sound_data::SoundData;
 

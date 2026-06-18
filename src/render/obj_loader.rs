@@ -1,11 +1,13 @@
-//! Parses Wavefront OBJ and material MTL files for rendering projection. `render/obj_loader` delivers the obj loader implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Translates 3D geometric models into 2D canvas coordinates and meshes. The file owns or coordinates data contracts including `ObjError`, `Vec3`, `Vec2`, `ObjFace`, `ObjMaterial`, and 3 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Projects vertices from world positions to viewport dimensions using virtual cameras. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `dot`, `len`, `normalise`, `sub`, `cross`, and 12 more stays attached to the local data model and invariants.
-//! Performs linear diffuse color mapping and resolves texture path assets. Runtime integration reaches sibling engine areas through crate modules `image`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Implements software-based CPU rasterization for thumbnail rendering and validation. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Normalizes OBJ face indices, resolving negative and 1-based index offsets. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! Filters back-facing triangles to optimize rendering output. State changes, validation paths, and helper routines in `src/render/obj_loader.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! Computes face normals to calculate light reflection and shading coefficients. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! Loads Wavefront OBJ and MTL data into reusable mesh structures and CPU-projected renderable geometry.
+//! Parses faces, materials, vertices, normals, and texture coordinates while normalizing OBJ indexing rules.
+//! Projects source geometry into viewport-friendly coordinates using simple camera-style transforms.
+//! Computes normals and back-face filtering so software preview and shading logic can make stable decisions.
+//! Resolves diffuse colors and texture paths from materials without forcing those rules into generic mesh owners.
+//! Includes CPU raster-style support used for thumbnailing, validation, or headless geometry inspection.
+//! Keeps OBJ-specific parsing and error handling separate from runtime GPU pipeline or tilemap import paths.
+//! Acts as the model-import boundary between external Wavefront assets and internal 2D mesh representations.
+//! Open this file when OBJ parsing, index normalization, material mapping, or projection output is incorrect.
+//! Read this owner before general mesh changes when the bug is limited to imported model content.
 
 use crate::image::ImageData;
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};

@@ -1,9 +1,9 @@
-//! Defines the charts module boundary for CPU-rasterized data-visualization rendering. `charts/mod` is the charts module index, declaring `area`, `bar`, `config`, `heatmap`, `histogram`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-//! Groups chart types, shared config contracts, and utility drawing primitives into one surface. `src/charts/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `area::AreaChart`, `bar::BarChart`, `config::{ChartConfig, ChartDataFrameOptions, ChartMargin, ChartSeries}`, `heatmap::HeatmapChart`, and 4 more centralized for the charts subsystem.
-//! Serves as the composition entry for runtime chart image generation from raw series or DataFrames. The file documents how charts submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! `charts/mod` is the charts module index, declaring `area`, `bar`, `config`, `heatmap`, `histogram`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/charts/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `area::AreaChart`, `bar::BarChart`, `config::{ChartConfig, ChartDataFrameOptions, ChartMargin, ChartSeries}`, `heatmap::HeatmapChart`, and 4 more centralized for the charts subsystem.
-//! The file documents how charts submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! This module is the charts index, wiring concrete chart renderers, shared config types, and raster helpers.
+//! It exports area, bar, line, pie, scatter, histogram, and heatmap owners from one navigation entry point.
+//! Shared option contracts live in `config.rs`, while `render_utils.rs` owns the CPU drawing primitives used by all charts.
+//! This file owns only module visibility and reexports, not chart state, buffers, dataframe ingestion, or render math.
+//! Open it when chart ownership, public names, or reexport boundaries move between sibling implementation files.
+//! For behavior changes, edit the renderer file that owns the chart type instead of growing coordination logic here.
 
 /// Area chart: filled regions below line series for cumulative value display.
 pub mod area;

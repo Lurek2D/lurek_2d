@@ -1,4 +1,6 @@
-//! Provides stateless generational id packing that combines slot and generation into one compact handle. `ecs/generational_id` delivers the generational id implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns stateless packing of entity slot and generation into one compact handle used across ECS.
+//! `GenerationalId` encodes a 24-bit slot plus 8-bit generation and exposes direct unpack helpers for both parts.
+//! Open it when entity-id layout changes; typed wrappers, world storage, and queries live in sibling ECS files.
 
 /// Stateless namespace for encoding and decoding packed entity identifiers.
 ///

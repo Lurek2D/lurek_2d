@@ -18,34 +18,17 @@
 
 ## Summary
 
-- The runtime module is the shared execution core that coordinates engine state across systems.
-- It owns the central mutable state container used during startup and per-frame updates.
-- Shared state includes timing, input snapshots, window-related state, and feature handles.
-- Resource pools for textures, fonts, canvases, shaders, and meshes are coordinated here.
-- Resource budgets and usage stats are tracked to support observability and policy.
-- Configuration models are typed and loaded from TOML with controlled defaults.
-- Runtime modes separate windowed execution from headless execution paths.
-- Reload revision tracking supports controlled runtime configuration refresh.
-- Error contracts provide stable codes and snapshot-oriented diagnostics.
-- Log message identifiers standardize machine-readable diagnostics across modules.
-- Message catalogs support lazy lookup and fallback behavior.
-- Frame profiling captures phase timing for update/render callback visibility.
-- Typed resource keys provide stable cross-module handles.
-- Host/environment queries expose platform and process context to script APIs.
-- Runtime services include clipboard and locale integration points.
-- Higher-level modules depend on runtime as source-of-truth.
-- The module avoids owning game-domain policy.
-- It owns lifecycle policy, state ownership, and core diagnostics.
-- Deterministic state progression is a central invariant.
-- Stable error/reporting contracts are another core invariant.
-- Runtime is the root integration layer for engine execution behavior.
-- It defines common contracts that keep module interactions coherent.
-- The module is essential for startup, frame loop, and host-facing integration stability.
-- Overall, runtime is the Core Runtime anchor for the dependency graph.
-- It keeps shared execution behavior explicit, observable, and maintainable.
-- Without it, resource and lifecycle ownership would fragment across subsystems.
+- The `runtime` module is the shared engine-state surface that many other modules depend on before they expose their own user-facing features.
+- Its role is to keep the rest of the engine coherent. Configuration, shared state, execution mode, error vocabulary, resource keys, logging support, and OS-aware helpers live here so the engine has one common operating language.
+- This central vocabulary matters because large engines become fragile when every subsystem invents its own concepts for startup state, environment mode, resource identity, logging, or global context.
+- Mode handling is especially important because the same engine may run in normal interactive play, headless automation, docs generation, tests, screenshots, or other specialized workflows that need different assumptions.
+- Shared state, resource-key helpers, and runtime-wide error types give other modules a stable way to coordinate without dissolving into ad hoc registries and inconsistent failure reporting.
+- Logging and environment-aware helpers belong here for the same reason: runtime-wide diagnostics and platform context should be centralized rather than redefined in each subsystem.
+- That shared operating layer is what makes higher-level systems easier to compose. Modules such as `audio`, `image`, `filesystem`, `input`, and `camera` can all depend on one common startup and execution contract.
+- Headless support is especially important because non-interactive execution should feel first-class for CI, docs, evidence capture, and automation instead of like a reduced afterthought.
+- `runtime` should stabilize common policy and state, but it should not absorb the domain logic of the modules that depend on it.
+- Read `runtime` as the shared operating layer of the engine.
 
-This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`, `image`, `input`, `light`, `lua_api`, and adjacent engine modules. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -73,81 +56,92 @@ This module primarily collaborates with `audio`, `camera`, `event`, `filesystem`
 
 ### config.rs
 
-- This file defines the typed runtime configuration model that turns human-edited TOML into engine startup policy. `runtime/config` delivers the configuration schema and defaults for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It gathers window, renderer, module, performance, and environment-facing options into one coherent structure. The file owns or coordinates data contracts including `Config`, `RuntimeConfig`, `RenderConfig`, `WindowConfig`, `TuiConfig`, and 4 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Default values and user overrides meet here, which lets the engine begin from a known baseline and then absorb project-specific changes.
-- Module toggles are not merely flags in this file. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- They also participate in dependency validation so invalid feature combinations degrade into a supported runtime shape. External integration uses `serde`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Serialization support matters here because configuration is both loaded from disk and, in some workflows, written back or inspected programmatically.
+- This file owns the typed runtime configuration schema that turns `conf.toml` into deterministic startup policy.
+- It stores top-level config plus mode, window, render, module, performance, TUI, CLI, and headless sections.
+- Default implementations define the baseline engine shape used when projects omit config or provide partial data.
+- Module validation lives here because feature toggles must disable unsupported dependency combinations centrally.
+- Headless-profile helpers also live here so no-window startup can force a supported subset of enabled modules.
+- Load helpers merge file overrides over defaults, log read or parse problems, and preserve a usable config result.
+- Serde support is part of the boundary because this data moves between disk, runtime defaults, and inspections.
+- Open it when startup policy changes; shared mutable state and execution modes consume these contracts elsewhere.
 
 ### error.rs
 
-- This file centralizes engine failure reporting so subsystems can surface problems through one shared error vocabulary. `runtime/error` delivers the error implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Variants are grouped by operational meaning as well as by source, which helps logs, tools, and UI distinguish recovery paths.
-- Stable codes and snapshot forms exist here because runtime failures must remain readable both to humans and to external automation.
-- The convenience result alias keeps the rest of the codebase aligned with the same error contract. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the engine-wide runtime error vocabulary used by startup, subsystems, tooling, and Lua bridges.
+- `EngineError` stores typed failure variants, while codes, categories, and recovery hints standardize diagnostics.
+- `ErrorSnapshot` provides a serializable view so UI overlays, logs, and external tools can consume the same data.
+- `EngineResult` keeps callers on one shared error contract instead of fragmenting result types by subsystem.
+- Open it when failure taxonomy changes; shared state and message lookup consume this contract elsewhere.
 
 ### headless.rs
 
-- This file implements the runtime path for executing games and scripts without opening a window or interactive frontend. `runtime/headless` delivers the headless implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It exists for automation, tests, batch jobs, and command-line workflows that still need the engine lifecycle to run correctly.
-- Startup wiring here prepares the Lua environment, script roots, and output behavior so headless sessions still feel like real engine sessions.
-- Frame stepping follows the normal update rhythm closely enough that gameplay logic can be exercised without a graphical loop.
-- Error mapping is also handled here because command-line callers need process-oriented outcomes while tests may need structured failures.
+- This file owns no-window runtime execution for automation, tests, eval snippets, and batch Lua workflows.
+- `HeadlessOptions` captures inputs, while the main entry points map engine errors to process-oriented outcomes.
+- Startup wiring creates shared state, headless Lua VM bindings, package paths, and stdout-backed `print` behavior.
+- Frame stepping calls the usual lurek callbacks with configured dt and optional callback timeout enforcement.
+- Timeout helpers own hook-based abort logic so runaway Lua code fails cleanly during unattended execution.
+- Open it when non-GUI runtime flow changes; config, modes, and shared state contracts live in sibling files.
 
 ### log_messages.rs
 
-- This file defines the stable identifier layer for engine logs so messages can be grouped, filtered, and recognized across versions.
-- Codes are organized by subsystem domain rather than by source file, which makes operational analysis easier than raw string logs alone.
-- The constant catalog gives every log site a compact symbolic handle that remains readable in terminals and machine parsers.
-- Log level overrides also live here because message identity and message visibility are tightly related runtime concerns.
-- The supporting macro turns those codes into consistent formatted output without forcing every call site to rebuild the same pattern.
-- Stability is a design goal of this file. The file boundary separates runtime implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns the stable log identifier catalog used across runtime and subsystem logging sites.
+- It defines one symbolic code set grouped by domain so operators can filter and recognize repeated conditions.
+- The `log_msg!` macro formats ids through the message catalog, keeping call sites compact and output consistent.
+- Log-level overrides also live here because message identity and runtime log visibility are operationally linked.
+- Large constant sections are intentional: they are the compatibility surface that tools and humans both rely on.
+- Subsystem ranges cover startup, GPU, filesystem, animation, ECS, save, networking, and many later extensions.
+- Open this file when adding or changing a stable runtime log code, not when editing the prose catalog text.
+- Use `messages.rs` for human-readable strings and this file for durable ids, macro wiring, and level helpers.
+- Open it when logging contracts change; runtime modules across the repo depend on these shared identifiers.
 
 ### messages.rs
 
-- This file loads and resolves the embedded message catalog that backs structured runtime text. `runtime/messages` delivers the messages implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Lookup behavior is lazy so the engine pays setup cost only when message resolution is actually needed. The file owns or coordinates data contracts including `MessageCatalog`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Nested catalog data is flattened through recursive extraction so callers can ask for stable identifiers without knowing storage shape.
-- Fallback behavior is defined here as well, ensuring missing catalog entries degrade into readable raw keys instead of silent blanks.
+- This file owns the embedded runtime message catalog that resolves stable identifiers into display text.
+- It parses TOML once, flattens nested tables into one map, and exposes lookup helpers with readable fallback.
+- Catalog initialization is lazy so message resolution does not impose setup cost until the runtime needs it.
+- Open it when runtime text lookup changes; log ids and shared error reporting live in sibling files.
 
 ### mod.rs
 
-- This module provides the foundational runtime layer that the rest of the engine stands on during startup and per-frame execution.
-- Configuration, shared mutable state, error contracts, operating modes, and resource handle types are gathered here. `src/runtime/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `config::Config`, `error::{EngineError, EngineResult, ErrorCategory, ErrorSnapshot}`, `headless::{run_headless, run_headless_checked, HeadlessOptions}`, `messages::MessageCatalog`, and 2 more centralized for the runtime subsystem.
-- At the highest level this is the engine's coordination core, not a gameplay feature module. The file documents how runtime submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- `runtime/mod` is the runtime module index, declaring `config`, `error`, `headless`, `log_messages`, `messages`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/runtime/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `config::Config`, `error::{EngineError, EngineResult, ErrorCategory, ErrorSnapshot}`, `headless::{run_headless, run_headless_checked, HeadlessOptions}`, `messages::MessageCatalog`, and 2 more centralized for the runtime subsystem.
-- The file documents how runtime submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- This module is the runtime index, re-exporting config, shared state, modes, errors, messages, and headless flow.
+- It is the navigation point for startup policy, shared engine state, process modes, and stable runtime contracts.
+- `shared_state.rs` owns the mutable cross-system hub, while `config.rs` owns TOML-backed startup configuration.
+- `error.rs` owns failure vocabulary, `mode.rs` owns startup mode parsing, and `headless.rs` runs no-window sessions.
+- `messages.rs` and `log_messages.rs` own runtime text lookup plus stable log identifiers and formatting helpers.
+- Change this file when public runtime exports move; change siblings when startup or shared-state rules change.
 
 ### mode.rs
 
-- This file defines the small mode vocabulary that tells the engine which style of runtime entry path to follow. `runtime/mode` delivers the mode implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- String conversion rules are kept close to the enum so configuration parsing and CLI parsing agree on accepted names. The file owns or coordinates data contracts including `RuntimeMode`, `RuntimeModeParseError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Parse errors remain explicit here because mode selection failures should be readable before the rest of startup proceeds.
-- The file therefore turns user-facing startup labels into one typed branch point for the runtime. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the startup mode vocabulary that selects GUI, TUI, CLI, or headless runtime entry paths.
+- `RuntimeMode` and its parse error keep config files and CLI parsing aligned on the same accepted mode tokens.
+- String conversion stays beside the enum so user-facing labels remain stable across logs, config, and tooling.
+- Open it when runtime entry-mode semantics change; shared state and startup execution live in sibling files.
 
 ### os.rs
 
-- This file exposes the runtime's view of the host operating system for startup policy and script-facing platform checks. `runtime/os` delivers the os implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Detection is compile-time oriented rather than probe-heavy, which keeps the answer stable and cheap for every call site.
-- Startup code relies on this information for platform-shaped defaults such as paths and environment-sensitive behavior. Public callable behavior is centered on `get_os_name`, `get_processor_count`, `get_memory_size`, `open_url`, `get_preferred_locales`, and 1 more, while method-level behavior such as `as_str` stays attached to the local data model and invariants.
-- Lua-visible platform queries also depend on the same source so scripts and Rust agree on the current host label. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the runtime-facing OS helpers used for platform labels, browser launch, locales, and host info.
+- It exposes compile-time OS naming, logical processor count, memory size, URL opening, and locale preferences.
+- Power-state reporting also lives here so Lua and Rust read one host abstraction instead of ad hoc probes.
+- URL launching is validated here because runtime callers need one policy gate for allowed external schemes.
+- Open it when platform-query semantics change; startup config and shared state live in sibling runtime files.
 
 ### resource_keys.rs
 
-- This file defines the typed handle keys used to reference runtime-managed resources without exposing storage internals. `runtime/resource_keys` delivers the resource keys implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The handles are cheap to copy and safe to hold across frames, which is essential for Lua userdata and engine-facing APIs.
-- It is the type-safety layer that lets many resource pools share one slotmap-style ownership pattern. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns the slotmap key types used to reference runtime-managed resources without exposing pool internals.
+- It defines cheap copyable handles for textures, fonts, canvases, meshes, shaders, buses, and related objects.
+- Open it when runtime resource identity changes; actual pools and eviction policy live in shared state.
 
 ### shared_state.rs
 
-- This file defines the shared mutable runtime container that lets otherwise separate engine systems coordinate during startup and each frame.
-- It gathers cross-cutting state for windowing, timing, resources, input, rendering, async work, and several feature subsystems into one borrowable hub.
-- Resource pools live here because textures, canvases, fonts, shaders, meshes, and similar assets need one authoritative ownership home.
-- Frame-local render state also accumulates here so gameplay code can enqueue visual intent without talking directly to the GPU backend.
-- Input aggregation and timing data share the same structure because many systems consume them repeatedly throughout a frame.
-- Memory budget enforcement belongs here as well, since eviction decisions depend on a global view of runtime-managed assets.
+- This file owns `SharedState`, the mutable runtime hub that lets separate engine systems coordinate each frame.
+- It stores render commands, resource pools, timers, window state, input snapshots, and many subsystem handles.
+- Resource ownership for textures, fonts, canvases, meshes, shaders, particles, and related assets lives here.
+- Frame-level services include timing, default fonts, render settings, screenshot requests, and debug overlays.
+- Async file operations, filesystem identity, and poll helpers live here so background I/O shares one runtime hub.
+- Budget enforcement and LRU eviction stay here because they require a global view of runtime-managed resources.
+- Window, fullscreen, scaling, and error snapshot state also live here for Lua bindings and app-loop coordination.
+- Helper methods cover construction, timer stepping, resource touching, memory stats, async requests, and fonts.
+- Open it when cross-system runtime ownership changes; app, Lua bindings, and headless flow depend on this file.
 
 
 

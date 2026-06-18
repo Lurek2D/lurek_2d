@@ -1,4 +1,6 @@
-//! This file provides per-region discovery cost metadata used by reveal progression logic. `visibility/cost` delivers the cost implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `DiscoveryCost`, the per-region metadata that controls how expensive or gated revelation should be.
+//! It stores a base reveal cost plus adjacency requirements so progression systems can tune map exploration pressure.
+//! Open this file when discovery gating changes; live visibility state and ownership sharing remain in sibling files.
 
 /// Configuration for how expensive it is to discover a region.
 #[derive(Debug, Clone, Copy)]

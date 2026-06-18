@@ -1,6 +1,7 @@
-//! Implements an owned mutable byte buffer with indexed access and conversion helpers. `binary/byte_data` delivers the byte data implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports UTF-8 encoding and tolerant text decoding from arbitrary byte content. The file owns or coordinates data contracts including `ByteData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Exposes immutable and mutable slice views for efficient downstream processing. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_bytes`, `from_string`, `len`, `is_empty`, `get_byte`, and 5 more stays attached to the local data model and invariants.
+//! This file owns `ByteData`, the basic owned byte container used by higher-level binary helpers and Lua wrappers.
+//! It stores bytes in one growable vector and exposes length, emptiness, indexed mutation, and clone accessors.
+//! String conversion helpers bridge UTF-8 text to raw bytes so packers and codecs can share one simple buffer type.
+//! Open it when raw buffer ownership semantics change; typed views, writers, and schema formats live in siblings.
 
 #[derive(Debug, Clone)]
 /// Hold owned raw bytes with convenience conversion helpers.

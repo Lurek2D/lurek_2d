@@ -1,7 +1,7 @@
-//! This file implements sprite batching for cases where many textured quads share one source texture and should travel together through rendering.
-//! It accumulates per-instance transform and source-region data so callers can build dense draw groups without issuing one command per sprite.
-//! Capacity limits are part of the design because some workloads want explicit control over how much batch data is retained per frame.
-//! The file is the performance-oriented collection layer of the sprite subsystem. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `SpriteBatch` and `BatchEntry`, the single-texture accumulation layer for grouped sprite draws.
+//! It stores the batch texture binding, per-entry source quads, transforms, pivots, and an optional capacity limit.
+//! Helpers add entries, expose the borrowed entry slice, and clear retained frame data without rebuilding allocations.
+//! Open this file when grouped submission shape changes; sprite state, atlas parsing, and animation live in siblings.
 
 use crate::runtime::resource_keys::TextureKey;
 

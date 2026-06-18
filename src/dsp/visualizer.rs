@@ -1,7 +1,8 @@
-//! Provides DSP visualization utilities that convert audio buffers into readable waveform and spectrogram images. `dsp/visualizer` delivers the visualizer implementation for the dsp subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Extracts amplitude and frequency structure into pixel-space summaries for quick offline inspection. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Handles multi-channel input normalization so visual output stays coherent across source formats. Public callable behavior is centered on `waveform_to_png`, `spectrogram_to_png`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Maps signal magnitude to consistent color intensity for comparable visual diagnostics over time. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/dsp/visualizer.rs` converts decoded audio buffers into waveform and spectrogram PNG diagnostics.
+//! It owns mono reduction, windowing, DFT-style magnitude sampling, and pixel-color mapping for offline visual inspection.
+//! Waveform and spectrogram export live here so audio-image tooling stays separate from playback, synthesis, and effects.
+//! This file is the visual diagnostics boundary for DSP assets; it does not own meters or generated sample output.
+//! Read it when DSP image export, heatmap encoding, or waveform rendering rules for inspection tools need changes.
 
 use image::{ImageBuffer, Rgba};
 use rodio::{Decoder, Source};

@@ -1,5 +1,9 @@
-//! This module delivers the runtime time backbone for clocks, accumulation, sleeping, and scheduling. `timer/mod` is the timer module index, declaring `clock`, `scheduler`, `sleep` so agents can identify which files own each feature slice before opening implementation code.
-//! It keeps frame progression measurable and controllable across gameplay and engine services. `src/timer/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `clock::Clock`, `scheduler::Scheduler`, `sleep::sleep` centralized for the timer subsystem.
+//! `src/timer/mod.rs` is the module index that exposes clocks, scheduling, sleep helpers, and accumulation support.
+//! It reexports `Clock`, `Scheduler`, and `sleep` so runtime code and Lua bindings consume one stable timing surface.
+//! No live timer state lives here; this file only declares child modules and chooses which timing symbols become public.
+//! Read this index when wiring frame progression, because it shows where clock metrics, delayed work, and sleeps are split.
+//! Changes here reshape the timing boundary, since reexports decide what engine code may import without deep module paths.
+//! This module keeps accumulation internals private while exposing the timing tools other engine systems are meant to use.
 
 /// Exposes the accumulator module.
 pub(crate) mod accumulator;

@@ -1,11 +1,13 @@
-//! This file provides scripted procedural generation for tile worlds built from reusable block pieces. `tilemap/mapgen` delivers the mapgen implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It models block edges and matching rules so assembled regions connect with coherent boundaries. The file owns or coordinates data contracts including `MapBlock`, `MapGroup`, `StepType`, `ScriptStep`, `MapScript`, and 5 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It groups reusable content and scripts into named generation palettes for targeted world styles. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_tile`, `get_tile`, `set_side`, `get_side`, `get_width`, and 45 more stays attached to the local data model and invariants.
-//! It defines step-driven operations for fill, placement, scatter, flood spread, and path carving. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It orchestrates generation with seeded randomness so outputs are repeatable and testable. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! It supports both single-map and multi-region production with independent deterministic seeds. The file boundary separates tilemap implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! It applies zone and orientation metadata so generated content matches downstream render expectations. State changes, validation paths, and helper routines in `src/tilemap/mapgen.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! It controls how layers receive writes, enabling unified or split composition strategies. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! Implements scripted procedural tilemap generation built from reusable blocks, groups, and step sequences.
+//! Models block edges and matching rules so assembled regions connect with coherent boundaries and orientations.
+//! Groups reusable content into named palettes that let projects target distinct world styles with one runtime.
+//! Defines fill, place, scatter, flood, carve, and related generation steps under one deterministic script owner.
+//! Uses seeded randomness so outputs remain repeatable for tests, content iteration, and offline batch generation.
+//! Supports both single-map and multi-region production with independent seeds and layered write strategies.
+//! Applies zone, side, and orientation metadata so downstream rendering and gameplay read generated maps correctly.
+//! Controls how writes land on layers, allowing unified or split composition without duplicating generation logic.
+//! Acts as the procedural-authoring boundary instead of pushing rule assembly into the base map storage type.
+//! Open this file when generation scripts, edge matching, seeded outputs, or layered placement behave incorrectly.
 
 pub use super::mapgen_model::Edge;
 use super::tilemap::TileMap;

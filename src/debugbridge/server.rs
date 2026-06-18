@@ -1,8 +1,10 @@
-//! Implements the non-blocking TCP server loop for debugbridge client connectivity and dispatch. `debugbridge/server` delivers the server implementation for the debugbridge subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Accepts client sessions and parses JSON-RPC messages into runtime and built-in command handlers. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Delivers queued responses and broadcast events across connected debugger endpoints. Public callable behavior is centered on `server_thread`, `handle_client_message`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Handles handshake, protocol version checks, and nonce-based authentication workflows. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supports eval, ping, performance, print-history, and screenshot-oriented protocol requests. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/debugbridge/server.rs` owns the non-blocking TCP loop that accepts debugger clients and reads line-delimited JSON.
+//! `server_thread` manages client sockets, flushes queued responses, and fans out broadcast events from bridge state.
+//! `handle_client_message` validates JSON requests, enforces nonce and protocol checks, and dispatches supported methods.
+//! Built-in commands such as ping, status, performance, print history, hot reload, and screenshots are handled here.
+//! Runtime-bound operations like eval, globals, locals, and call-stack inspection are queued for later engine execution.
+//! Read this file when debugger transport behavior, authorization rules, or per-method response payloads need to change.
+//! This is the network edge of debugbridge; shared queues stay in `bridge.rs`, while protocol flow and I/O live here.
 
 use super::bridge::{BridgeShared, PendingRequest, PendingResponse};
 use std::io::{BufRead, BufReader, Write};

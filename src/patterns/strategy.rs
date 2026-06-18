@@ -1,6 +1,7 @@
-//! Strategy registry for features that swap among named behaviors or algorithms while keeping the selection surface explicit and data-driven.
-//! The file assigns stable ids to registered strategies and tracks which one is currently active so callers can inspect or switch policy without hidden branching.
-//! Registration and removal are treated as first-class operations, which fits systems where available strategies change with content, upgrades, or scripting.
+//! This file owns the named strategy registry used to swap among algorithms while keeping selection data explicit.
+//! `Strategy` stores registered names, assigned ids, the current choice, and removal logic inside one owner.
+//! Registration and current-selection helpers stay here because available policies may change during runtime.
+//! Open it when algorithm-selection semantics change; factories and service lookup live in sibling modules.
 
 use std::collections::HashMap;
 #[derive(Debug, Default, Clone)]

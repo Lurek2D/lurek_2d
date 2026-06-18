@@ -1,7 +1,8 @@
-//! Stores reusable vector shape definitions as replayable command sequences. `render/shape` delivers the shape implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Packages stroke and fill operations into named assets for UI reuse. The file owns or coordinates data contracts including `ShapeCommand`, `CompoundShape`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Retains color and outline thickness attributes along with path commands. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_command`, `clear`, `command_count` stays attached to the local data model and invariants.
-//! Minimizes scene building overhead by avoiding dynamic shape rebuilding. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Defines reusable vector shape assets as replayable command sequences with fill and stroke information.
+//! Packages path-like draw commands into named compound shapes that UI and gameplay code can reuse cheaply.
+//! Keeps shape recording separate from later tessellation so the same asset can feed multiple render paths.
+//! Acts as the vector-shape asset boundary rather than the owner of GPU conversion or final draw dispatch.
+//! Open this file when reusable shape definitions, command storage, or outline attributes behave incorrectly.
 
 use super::renderer::DrawMode;
 /// One drawing operation stored inside a `CompoundShape`.

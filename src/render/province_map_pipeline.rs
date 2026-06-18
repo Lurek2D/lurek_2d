@@ -1,8 +1,9 @@
-//! Provides the specialized GPU pipeline for drawing detailed province maps. `render/province_map_pipeline` delivers the province map pipeline implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Binds map-specific data like region IDs, border structures, and height fields. The file owns or coordinates data contracts including `ProvinceMapUniforms`, `ProvinceMapPipeline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Renders fullscreen map views using custom fragments WGSL shader passes. Public callable behavior is centered on no named public items, while method-level behavior such as `full_map`, `new`, `create_data_bind_group`, `update_uniforms` stays attached to the local data model and invariants.
-//! Configures pipeline layout options, mapping texture samplers and buffers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Packs viewport ranges, map size, zoom factor, and animation times into uniforms. External integration uses `bytemuck`, `wgpu`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Defines the specialized GPU pipeline used to render detailed province-map views with dedicated shader inputs.
+//! Binds region ids, border data, height-like fields, and viewport parameters needed by province-focused passes.
+//! Packages uniforms for zoom, map size, viewport range, and time so province visuals update coherently.
+//! Keeps province-specific bind groups and pipeline layout separate from the general-purpose render backend.
+//! Acts as the province-map boundary between geographic data textures and shader-driven fullscreen presentation.
+//! Open this file when province shader inputs, uniforms, or fullscreen province-map output behaves incorrectly.
 
 use bytemuck::{Pod, Zeroable};
 use wgpu::util::DeviceExt;

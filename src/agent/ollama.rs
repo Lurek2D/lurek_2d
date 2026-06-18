@@ -1,8 +1,9 @@
-//! Provides backend infrastructure control for local Ollama service lifecycle and operational health checks. `agent/ollama` delivers the ollama implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Handles start, stop, restart, and version discovery to keep runtime integration state observable. The file owns or coordinates data contracts including `ModelInfo`, `OllamaPullResult`, `OllamaManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Exposes model inventory queries and availability checks for capability-aware script decisions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `base_url`, `model_names`, `is_running`, `version`, `list_models`, and 8 more stays attached to the local data model and invariants.
-//! Supports model deletion and asynchronous pull workflows with pollable completion tracking. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Isolates backend process management from prompt orchestration to keep runtime layering clean. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `OllamaManager`, plus model and pull result structs for local backend lifecycle control.
+//! It checks server reachability, reports versions, lists local models, and tests whether specific models are present.
+//! Process helpers start, stop, and restart `ollama serve`, keeping child-process ownership inside one runtime owner.
+//! Pull operations run in background threads, track in-flight work, and return pollable completion results by id.
+//! Deletion and model-name helpers expose maintenance APIs without mixing them into prompt submission code.
+//! Open this file when local backend control changes; synchronous chat calls and async prompt transport live nearby.
 
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};

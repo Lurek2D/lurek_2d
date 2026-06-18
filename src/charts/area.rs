@@ -1,8 +1,10 @@
-//! Implements area-chart rasterization where series are rendered as filled regions over plot space. `charts/area` delivers the area implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports overlapping and stacked accumulation modes for comparative and compositional data views. The file owns or coordinates data contracts including `AreaChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Maps data coordinates into pixel coordinates through shared chart-space transform helpers. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_series`, `add_layer`, `add_layer_from_dataframe`, `draw_to_image`, `clear`, and 4 more stays attached to the local data model and invariants.
-//! Produces RGBA buffers that downstream systems upload as textures for runtime presentation. Runtime integration reaches sibling engine areas through crate modules `charts`, `color`, `dataframe`, `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Integrates optional DataFrame extraction paths for column-driven area plotting workflows. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns stacked area-chart rendering, keeping ordered series, optional y override, and streaming trim behavior.
+//! It accepts direct series, named layers, or dataframe columns, then converts them into cumulative filled plot regions.
+//! Stacking math and trapezoid fill rasterization live here because each layer depends on the prior series baseline.
+//! Shared helpers from `render_utils` provide axes, transforms, legends, and buffer fills, but not area composition rules.
+//! `draw_to_image`, `append_point`, and `set_max_points` make this file the owner for runtime chart streaming updates.
+//! `y_max` lives here so stacked datasets can clamp the vertical domain without changing shared range helpers.
+//! Open it when filled-region accumulation changes; plain polylines, bars, and scatter markers are owned by siblings.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
 use crate::charts::render_utils::{

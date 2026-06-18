@@ -1,8 +1,10 @@
-//! Provides mutable globe state that aggregates topology, camera, fog, overlays, and interaction data. `globe/registry` delivers the lookup registry and handle ownership for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Owns region storage operations together with markers, labels, layers, arcs, and heat visual layers. The file owns or coordinates data contracts including `Globe`, `GlobeRegistry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Integrates camera projection and picking paths so selection and rendering share one state container. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_region`, `remove_region`, `get_region`, `get_region_mut`, `region_count`, and 33 more stays attached to the local data model and invariants.
-//! Emits full-frame render commands from current globe state for deterministic map visualization. Runtime integration reaches sibling engine areas through crate modules `globe`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Caches sector and reachability information to support strategic lookup and path-cost workflows. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Owns the mutable globe runtime state that aggregates topology, semantic regions, fog, overlays, camera, and arcs.
+//! Stores markers, labels, layers, heat layers, sectors, viewer selection, and reachability cache beside globe spec.
+//! Provides mutation and lookup APIs for regions and provinces, plus picking, dragging, marker queries, and frame emit.
+//! Acts as the integration boundary where projection, picking, draw emission, and gameplay-facing globe state meet.
+//! Also advances simulation time and auto-rotation, keeping temporal globe behavior close to the authoritative store.
+//! This file matters when globe state semantics, sector grouping, or cached reachability rules need coordinated edits.
+//! Open this owner when multiple globe features drift together, because it is the main state hub for the subsystem.
 
 use crate::globe::draw::emit_globe_frame;
 use crate::globe::fog::FogStore;

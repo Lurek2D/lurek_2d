@@ -1,7 +1,8 @@
-//! Ordered priority queue for gameplay scheduling and selection tasks that need highest-priority work first without losing deterministic order among ties.
-//! The file assigns each entry its own identity and insertion sequence so queue mutation remains inspectable even when multiple items share the same score.
-//! Push, pop, peek, and targeted removal operate on one consistently sorted store rather than spreading priority semantics across separate containers and side maps.
-//! Functionally this delivers stable urgency-based ordering for task systems, AI planners, turn resolution, and any script logic that needs predictable priority arbitration.
+//! This file owns the stable priority queue used to order items by urgency while preserving FIFO ties by sequence.
+//! `PriorityItem` stores ids, priority, label, and sequence, while `PriorityQueue` owns sorting and head compaction.
+//! Push, pop, peek, and removal stay here because tie-breaking and consumed-front cleanup are local queue semantics.
+//! The live-slice and compact helpers also belong here since they hide storage details behind stable public ordering.
+//! Open it when scheduling order changes; rings, command history, and weighted picks live in sibling modules.
 
 /// A single entry in the queue with a stable tie-breaking sequence number.
 ///

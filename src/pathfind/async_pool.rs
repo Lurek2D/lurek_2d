@@ -1,9 +1,11 @@
-//! Prioritized async path-query service for off-thread A* execution. `pathfind/async_pool` delivers the async pool implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports cancellation, version-based stale-result suppression, and optional partial-path streaming. The file owns or coordinates data contracts including `PathResult`, `PathEventStatus`, `AsyncPathEvent`, `AsyncPathRequest`, `PathThreadPool`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Keeps worker lifecycle and queue management isolated from Lua bindings and gameplay code. Public callable behavior is centered on no named public items, while method-level behavior such as `legacy`, `new`, `submit_query`, `submit`, `poll_events`, `poll`, and 4 more stays attached to the local data model and invariants.
-//! `pathfind/async_pool` delivers the async pool implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! The file owns or coordinates data contracts including `PathResult`, `PathEventStatus`, `AsyncPathEvent`, `AsyncPathRequest`, `PathThreadPool`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Public callable behavior is centered on no named public items, while method-level behavior such as `legacy`, `new`, `submit_query`, `submit`, `poll_events`, `poll`, and 4 more stays attached to the local data model and invariants.
+//! Runs prioritized off-thread path queries so expensive A* work can happen without blocking the main game loop.
+//! Owns async request and event payloads, worker queue state, cancellation tables, and owner-version supersession.
+//! Streams partial or final path results back to callers, including cancelled, failed, complete, and superseded states.
+//! Provides the execution boundary between synchronous path solvers and systems that need queued background navigation.
+//! Tracks per-owner live requests so newer versions can invalidate stale work before outdated routes reach gameplay.
+//! This file is the right owner for queue ordering, thread-count policy, pending counts, and worker shutdown rules.
+//! Neighboring changes usually involve NavGrid snapshots, A* budget behavior, and Lua or gameplay request adapters.
+//! Open this file when path jobs need new lifecycle semantics or when streamed progress events stop matching callers.
 
 use crate::pathfind::{astar, NavGrid};
 use std::cmp::Ordering;

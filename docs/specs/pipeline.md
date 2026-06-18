@@ -18,22 +18,15 @@
 
 ## Summary
 
-- This module gives users dependency-aware workflow orchestration for multi-step runtime jobs.
-- Work is modeled as graph-connected steps, enabling explicit ordering and clear prerequisites.
-- Graph validation catches missing dependencies and circular links before execution.
-- Parallel group computation reveals which independent steps can run concurrently.
-- Step policies support delays, retries, conditions, optionality, and metadata tagging.
-- Sync execution is available for blocking workflows with immediate result collection.
-- Async execution supports frame-by-frame progression for non-blocking runtime integration.
-- Progress and event callbacks expose run state for UI and monitoring hooks.
-- Result models capture completed, skipped, failed, cancelled, and timing outcomes.
-- Error modes allow abort-on-failure or continue-on-failure execution strategies.
-- Sub-pipeline embedding supports modular composition of larger workflow graphs.
-- ASCII graph export supports quick debugging and author verification.
-- The module is useful for content pipelines, setup sequences, and orchestration-heavy tools.
-- For users, it replaces fragile ad-hoc sequencing with explicit, reusable workflow contracts.
+- The `pipeline` module is the engine's workflow-orchestration surface for users who want multi-step processing to behave like explicit directed workflows instead of like loosely nested call sequences.
+- Its core value is that staged work becomes data. Steps, dependencies, scheduler policy, inputs, outputs, and result handling can be represented and advanced as pipeline state rather than being hidden inside bespoke control flow.
+- DAG structure matters because many real workflows are dependency-aware rather than purely linear. Some work can happen only after prerequisite steps complete, while other work may run in parallel or branch according to upstream results.
+- This makes the module useful for asset processing, validation chains, analytics jobs, build-like tasks, scripted tool workflows, content transforms, and any other domain where several operations must be coordinated explicitly.
+- Scheduler logic is important because a pipeline is not only about storing steps; it is also about deciding when those steps are eligible, blocked, complete, or failed.
+- Result handling matters for the same reason. Multi-step workflows usually need explicit output capture, pass-through state, intermediate artifacts, and error-aware progression rather than simple immediate returns.
+- The pipeline model gives users a stable vocabulary for reasoning about work as stages instead of accidental nested call structure.
+- Read `pipeline` as the engine feature for explicit staged workflows with clear execution semantics.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Edge/Integration group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -43,36 +36,45 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### dag.rs
 
-- Dependency-ordered pipeline graph that models work as named steps linked by explicit prerequisites instead of implicit call ordering.
-- The file gives the module its structural brain by storing step topology, validating references, and determining which work can safely happen before or beside other work.
-- Topological sorting and cycle detection keep invalid orchestration from reaching runtime execution, which matters when workflows are composed dynamically from scripts or tools.
-- Parallel grouping exposes natural concurrency boundaries without abandoning dependency correctness, letting unrelated branches advance together when the graph permits it.
-- Sub-pipeline merging makes larger workflows composable by folding one graph into another under namespaced identities and inherited outer dependencies.
+- `src/pipeline/dag.rs` owns the dependency graph that stores steps, validates references, and computes run order.
+- It defines `ErrorMode` and `Pipeline`, keeping registration, dependency checks, cycle detection, and queries together.
+- Topological ordering and parallel-group discovery live here, so structural execution rules stay separate from timing.
+- This file resolves dependency satisfaction, sub-pipeline merging, reset behavior, and final result collection logic.
+- ASCII diagram rendering also lives here, making graph inspection and tooling-friendly pipeline introspection explicit.
+- It is the structural boundary for workflow orchestration; step metadata, timers, and result summaries depend on it.
+- Read this file when dependency semantics, cycle handling, merge behavior, or execution-order rules must change.
 
 ### mod.rs
 
-- Workflow orchestration module for building dependency-aware task graphs, advancing them over time, and collecting explicit run outcomes.
-- It ties together graph structure, per-step policy, frame-driven scheduling, and result reporting into one coherent surface for asynchronous or staged work.
+- `src/pipeline/mod.rs` is the module index that exposes graph structure, step contracts, scheduling, and run results.
+- It reexports `Pipeline`, `ErrorMode`, `PipelineStep`, `StepStatus`, `PipelineScheduler`, and result types together.
+- No live pipeline graph or timers live here; this file only declares child modules and defines public visibility.
+- Read this index when wiring workflows, because it shows where structure, timing, step policy, and outcomes split.
+- Changes here reshape the pipeline boundary, since reexports decide which orchestration tools other systems import.
+- This module keeps dependency graphs, step schemas, scheduler timers, and outcome reporting separated by responsibility.
 
 ### result.rs
 
-- Pipeline outcome model for turning many individual step endings into one readable picture of how a workflow actually finished.
-- The file records lifecycle state, per-step timing, errors, and completion data so callers can inspect success, failure, skips, and duration after a run.
-- Convenience queries keep common result questions cheap and direct instead of forcing every user to re-interpret raw status fields.
+- `src/pipeline/result.rs` owns the aggregated outcome model used to summarize how a pipeline run finished overall.
+- It defines `PipelineStatus` and `PipelineResult`, keeping final lifecycle state, per-step buckets, and errors together.
+- Success checks and summary formatting also live here, so caller-facing run interpretation stays out of graph code.
+- Read this file when result-state semantics, summary text, or outcome aggregation behavior for completed runs changes.
 
 ### scheduler.rs
 
-- Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies. `pipeline/scheduler` delivers the scheduler implementation for the pipeline subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The file counts down configured delays, tracks overall runtime progress, and reports which waiting steps are now allowed to begin.
-- Waiting membership is tracked explicitly in scheduler-owned timers, so async readiness does not depend on mutating pipeline definition structs at runtime.
-- Keeping this timing logic separate from the graph keeps execution pacing explicit without diluting structural dependency rules.
+- `src/pipeline/scheduler.rs` owns frame-driven delay timers that decide when waiting pipeline steps become ready to run.
+- `PipelineScheduler` tracks elapsed time, running state, and per-step countdowns without duplicating graph rules.
+- Waiting-step synchronization and ready-step reporting live here, keeping pacing policy distinct from validation.
+- This file keeps timer state separate from pipeline definitions, which preserves cleaner orchestration data.
+- Read this file when delay countdowns, readiness emission, or scheduler reset behavior for pipeline execution changes.
 
 ### step.rs
 
-- Pipeline step model for expressing one unit of work together with the policy that controls when and how it should run. `pipeline/step` delivers the step implementation for the pipeline subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The file combines identity, dependencies, delays, retries, timeout-like settings, metadata, and callback hooks into a single authored execution record.
-- Status tracking gives each step a visible lifecycle from pending through terminal outcomes, which keeps orchestration state legible during async progress.
-- Error policy at step level lets important and optional work coexist inside the same pipeline without flattening all failures into one rule.
+- `src/pipeline/step.rs` owns the schema for one pipeline step, including lifecycle state and per-step failure policy.
+- It defines `StepStatus`, `ErrorPolicy`, and `PipelineStep`, keeping authored work-unit metadata under one owner.
+- Dependency names, delays, retry settings, optionality, tags, metadata, and runtime status fields all live in this file.
+- Read it when step contract fields, status vocabulary, reset behavior, or per-step error handling semantics need changes.
+- This file is the step-schema boundary for pipelines, while graph structure and delay scheduling stay in sibling files.
 
 
 

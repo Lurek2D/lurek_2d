@@ -1,11 +1,16 @@
-//! This file assembles the full per-frame raycaster scene from camera state, grid hits, texture routing, and lighting inputs.
-//! It turns wall contacts into screen-space quads whose geometry already matches the perspective rules expected by the render stage.
-//! Floor and ceiling strips are expanded into textured spans with stable UVs so long corridors and open rooms keep coherent surface motion.
-//! Lowered cells become pits with visible bottoms, side faces, and transitions that preserve depth cues instead of flattening into one plane.
-//! Roofed regions are darkened differently from open regions so covered space reads denser even before dynamic lights are applied.
-//! Point lights, ambient light, and distance falloff are blended here so every emitted surface leaves this file with its final light tint.
-//! Billboard sprites are projected into the same camera space as walls, which keeps monsters, props, and pickups aligned with corridor depth.
-//! Static meshes can be injected beside billboarded elements without asking later stages to reconstruct world-space context.
+//! This file owns `RaycasterScene::build` and `build_multilevel`, which turn camera state into prepared scene geometry.
+//! It defines scene-build inputs such as `SceneBuildParams`, `LoweredFloorCell`, `WorldSprite`, and `LevelSprite`.
+//! Wall hits are converted here into perspective-correct quads with texture routing, cell values, depths, and light tint.
+//! Floor and ceiling tiles expand into screen-space spans with stable UVs, texture overrides, and roof-aware lighting.
+//! Lowered-floor cells generate pits, bottoms, and side faces so vertical relief survives scene translation cleanly.
+//! Lighting sampling blends ambient, point, and global light here, with a cache that keeps repeated queries affordable.
+//! Roofed cells, ceiling holes, and multilevel visibility rules influence which surfaces are emitted and how they render.
+//! Billboard sprites use the same camera model as walls, including directional texture selection from viewer angle.
+//! Multilevel builds group sprites and lights per slice, compile level runtimes on demand, and merge visible slices.
+//! Texture lookup callbacks keep resource routing outside the builder while geometry and lighting policy stay centralized.
+//! This file is the staging boundary between grid-owned ray data and the renderer-facing `RaycasterScene` surface.
+//! It is the right owner for changing surface emission, pit geometry, or light application without renderer rewrites.
+//! Open this file when scene assembly semantics change; casting, picking, and draw translation live in siblings.
 
 use crate::color::Color;
 use crate::math::Vec2;

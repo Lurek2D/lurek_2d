@@ -1,4 +1,6 @@
-//! This file provides the rule trait contract that all validator checks implement. `validator/rule` delivers the rule implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `ValidationRule`, the trait contract every validator check implements against file content.
+//! It defines the required rule identity, human description, default severity, and validation entrypoint shape.
+//! Open this file when rule plugin boundaries change; concrete checks, configs, and reports live in siblings.
 
 use super::report::{Severity, Violation};
 use std::path::Path;

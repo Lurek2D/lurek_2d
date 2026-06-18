@@ -11,6 +11,8 @@
 - File filters handle extensions, path substring exclusions, and hidden-file policy.
 - JSON and structured-log helpers support data-oriented searches beside plain text.
 
+This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
 ## Functions
 
 ### `lurek.grep.jsonSearch`

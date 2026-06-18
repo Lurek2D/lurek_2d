@@ -16,19 +16,15 @@
 
 ## Summary
 
-- This module gives users core runtime timing for frame deltas, elapsed time, and scheduler-driven callbacks.
-- Drift-safe accumulation keeps long-session timing stable and reduces rounding artifacts.
-- APIs expose raw delta, smoothed delta, average delta, FPS, and frame counters.
-- Physics timestep controls support fixed-step tuning and max-step safety limits.
-- Sleep and high-resolution time helpers support profiling and synchronization use cases.
-- Scheduler APIs support one-shot, repeating, named, and frame-based events.
-- Pause/resume/cancel controls support runtime-safe timer lifecycle management.
-- Time-scale controls support localized speed adjustments for scheduled events.
-- Coroutine wait helpers support frame or second delays in script flows.
-- Real-time timer paths support out-of-timescale callback scheduling.
-- For users, this module centralizes timing semantics and deferred execution behavior.
+- The `timer` module is the shared time-management surface for users who need clocks, delayed callbacks, repeating work, and timing queries to behave consistently.
+- Clocks, accumulators, schedulers, and sleep helpers work together so the same module can cover frame deltas, elapsed-time tracking, wall-time waits, and callback scheduling.
+- That matters because several systems rely on time, but they do not all need time in the same way; some need smooth frame metrics, others need deferred events, and others need accumulated timing without drift.
+- Scheduling support is especially important because many features need explicit future work rather than only current elapsed time. Delayed callbacks, repeating intervals, and cancelable timer handles give gameplay and tooling code a structured way to express that work.
+- Deterministic accumulation also matters for scripted sequences, cooldowns, UI feedback, analytics sampling, and automated tests where time should be queryable and comparable instead of buried in scattered frame math.
+- The module is therefore useful both as a low-level clock source and as a coordination surface for anything that must happen later, repeatedly, or after a measured duration.
+- That common layer also reduces drift between systems, because UI, gameplay, automation, and diagnostics can all schedule work against the same timing vocabulary.
+- Read it as the common timing layer for the engine. Neighboring modules depend on time, but `timer` is where time becomes a reusable, queryable, and schedulable runtime resource.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -38,32 +34,42 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### accumulator.rs
 
-- This file provides drift-safe microsecond accumulation for scaled runtime timekeeping. `timer/accumulator` delivers the accumulator implementation for the timer subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- `src/timer/accumulator.rs` owns the microsecond accumulation helper used to turn scaled frame deltas into stable totals.
+- It clamps negative inputs, carries fractional micros forward, and updates elapsed counters without drift.
+- Open this file when time-scaling math, drift behavior, or elapsed-microsecond accumulation rules need to change.
 
 ### clock.rs
 
-- This file provides the core frame clock that drives delta, elapsed time, and fps metrics. `timer/clock` delivers the clock implementation for the timer subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It computes stable per-frame timing and rolling averages for smoother runtime decisions. The file owns or coordinates data contracts including `Clock`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It maintains one-second fps windows so performance telemetry stays readable and comparable. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `tick`, `delta`, `total`, `fps`, `frame_count`, and 2 more stays attached to the local data model and invariants.
-- It exposes one tick-driven timeline that other subsystems can trust each frame. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/timer/clock.rs` owns the frame clock that measures delta time, total elapsed time, frame count, and FPS.
+- `Clock` stores both raw instants and derived metrics so the runtime can query current timing without recomputing it.
+- `tick` updates one-second FPS windows and a rolling delta buffer, giving callers both live and averaged frame timing.
+- This file is the owner of clock semantics such as elapsed-versus-total reporting and zero-state initialization behavior.
+- Read it when frame measurement policy, FPS smoothing, or public timing queries for the runtime loop must change.
 
 ### mod.rs
 
-- This module delivers the runtime time backbone for clocks, accumulation, sleeping, and scheduling. `timer/mod` is the timer module index, declaring `clock`, `scheduler`, `sleep` so agents can identify which files own each feature slice before opening implementation code.
-- It keeps frame progression measurable and controllable across gameplay and engine services. `src/timer/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `clock::Clock`, `scheduler::Scheduler`, `sleep::sleep` centralized for the timer subsystem.
+- `src/timer/mod.rs` is the module index that exposes clocks, scheduling, sleep helpers, and accumulation support.
+- It reexports `Clock`, `Scheduler`, and `sleep` so runtime code and Lua bindings consume one stable timing surface.
+- No live timer state lives here; this file only declares child modules and chooses which timing symbols become public.
+- Read this index when wiring frame progression, because it shows where clock metrics, delayed work, and sleeps are split.
+- Changes here reshape the timing boundary, since reexports decide what engine code may import without deep module paths.
+- This module keeps accumulation internals private while exposing the timing tools other engine systems are meant to use.
 
 ### scheduler.rs
 
-- This file provides a scheduler for time-based and frame-based deferred execution flows. `timer/scheduler` delivers the scheduler implementation for the timer subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It supports one-shot and repeating events with stable identifiers for external control. The file owns or coordinates data contracts including `ScheduledEvent`, `FrameEvent`, `Scheduler`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It handles named event replacement so restartable behaviors stay clean and predictable. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `after`, `after_named`, `every`, `every_named`, `after_frames`, and 22 more stays attached to the local data model and invariants.
-- It applies global time scaling while preserving safe clamping boundaries for runtime stability. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It exposes pause, resume, interval mutation, and remaining-time inspection for live orchestration. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It removes expired events efficiently to keep update costs steady at larger event counts. The file boundary separates timer implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- `src/timer/scheduler.rs` owns delayed and repeating timer events for both wall-time seconds and frame-count triggers.
+- It defines `ScheduledEvent`, `FrameEvent`, and `Scheduler`, keeping timer data and control operations under one owner.
+- Named scheduling, replacement, cancellation, pause, resume, interval mutation, and remaining-time queries live here.
+- The scheduler applies a global time scale to second-based updates while frame-based events stay on counts.
+- `update` and `update_frames` advance queues, emit fired IDs, and remove expired entries from both timer tracks.
+- This file is where runtime timer policy lives; higher layers should treat it as the scheduling boundary.
+- Open it when event lifetime rules, time-scale semantics, or timer-control APIs for gameplay orchestration need changes.
 
 ### sleep.rs
 
-- This file provides the blocking sleep primitive used by timer-facing runtime code. `timer/sleep` delivers the sleep implementation for the timer subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- `src/timer/sleep.rs` owns the blocking sleep helper used when runtime code needs wall-clock delay on the current thread.
+- It intentionally stays minimal: non-positive durations are ignored, and positive values forward to `std::thread::sleep`.
+- Read this file when blocking-delay semantics, no-op guards, or platform-facing sleep behavior need to change.
 
 
 

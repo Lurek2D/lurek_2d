@@ -1,7 +1,8 @@
-//! Parses stylesheet sources into ordered selector rules and normalized declaration maps for HTML layout. `html/style` delivers the style implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Validates supported properties while collecting non-fatal warnings for unknown or malformed inputs. The file owns or coordinates data contracts including `CssRule`, `CssParseResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Normalizes declaration keys and values so later cascade merges operate on stable property naming. Public callable behavior is centered on `parse_stylesheets`, `parse_declarations`, `parse_length`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Resolves pixel, percent, and unitless length text into float values against caller-provided bases. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/html/style.rs` owns stylesheet parsing, declaration normalization, and CSS length parsing for HTML layout.
+//! It defines `CssRule` and `CssParseResult`, keeping selector rules, declaration maps, and parse warnings in one owner.
+//! Supported-property filtering and normalized property names live here so later cascade merges operate on stable keys.
+//! This file is the CSS-rule parsing boundary for HTML; it does not own selector matching, DOM nodes, or layout state.
+//! Read it when CSS property support, declaration parsing, or px and percent length semantics need changes.
 
 use crate::html::element::normalise_name;
 use std::collections::BTreeMap;

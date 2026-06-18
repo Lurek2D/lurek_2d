@@ -107,6 +107,6 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | Module | Namespace | Purpose |
 |---|---|---|
 | [AGENTS](Module-AGENTS) | `lurek.AGENTS` | Lurek2D runtime module. |
-| [engine](Module-engine) | `lurek.engine` | File: src/lua_api/engine_api.rs Registers the public lurek.engine namespace for engine timing, profiling, and memory diagnostics. |
-| [svg](Module-svg) | `lurek.svg` | Lua bindings for the vector SVG graphics module. |
-| [runtime](Module-system) | `lurek.runtime` | File: src/lua_api/system_api.rs Registers the public lurek.runtime namespace for host, process, and runtime utility helpers. |
+| [engine](Module-engine) | `lurek.engine` | Registers the lurek.engine Lua API for engine timing, profiling, memory inspection, and runtime metrics. |
+| [svg](Module-svg) | `lurek.svg` | Registers the lurek.svg Lua API for vector SVG graphics, userdata wrappers, and script-side SVG control. |
+| [runtime](Module-system) | `lurek.runtime` | Registers the lurek.system Lua API for host utilities, process helpers, and runtime environment queries. |

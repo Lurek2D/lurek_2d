@@ -1,6 +1,6 @@
-//! This file provides the visibility state model that describes player knowledge per region. `visibility/state` delivers the state container and transition helpers for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It encodes hidden, discovered, visible, and extensible custom levels in one ordered enum. The file owns or coordinates data contracts including `VisibilityState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It standardizes information progression so reveal logic and fog rendering stay consistent. Public callable behavior is centered on no named public items, while method-level behavior such as `level`, `from_level`, `is_known`, `is_visible` stays attached to the local data model and invariants.
+//! This file owns `VisibilityState`, the ordered knowledge enum used to describe what one player knows about one region.
+//! It encodes hidden, discovered, visible, and custom levels so reveal logic and fog rendering share one progression model.
+//! Open this file when knowledge-level semantics change; event emission and grid storage live in sibling modules.
 
 /// Visibility state for a region from a specific player's perspective.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

@@ -1,7 +1,7 @@
-//! Provides flownet item records that carry typed payload identity through nodes and transit edges. `flownet/item` delivers the item implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Tracks location state as node-bound, in-transit, or unplaced to drive simulation decisions. The file owns or coordinates data contracts including `ItemPosition`, `GraphItem`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Stores decay lifetime, priority, and alive status for scheduling and cleanup behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `kill`, `is_alive`, `get_type`, `set_type`, `get_decay_time`, and 7 more stays attached to the local data model and invariants.
-//! Delivers the movable unit model consumed by demand, conversion, and transport mechanics. Runtime integration reaches sibling engine areas through crate modules `flownet`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns flownet item records, covering identity, decay lifetime, priority, and current placement state.
+//! `ItemPosition` tracks whether an item is on a node, moving through an edge, or temporarily left unplaced.
+//! `GraphItem` exposes the mutable payload state that simulation, routing, and conversion rules inspect every tick.
+//! Open it when item lifecycle fields or placement semantics change; graph mutation and simulation live in siblings.
 
 use crate::flownet::types::ItemId;
 

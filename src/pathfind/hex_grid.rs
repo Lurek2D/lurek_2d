@@ -1,8 +1,10 @@
-//! Hex grid with configurable flat-top or pointy-top offset layout. `pathfind/hex_grid` delivers the hex grid implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores blocked flags and movement costs for weighted pathfinding. The file owns or coordinates data contracts including `HexLayout`, `HexGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Runs A* search for shortest paths between hex cells. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_blocked`, `set_cost`, `is_blocked`, `find_path`, `line_of_sight`, and 4 more stays attached to the local data model and invariants.
-//! Exposes line-of-sight, field-of-view, and movement-range queries. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Uses cube-coordinate math for distance, interpolation, and rounding. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Implements weighted pathfinding on hex maps with selectable flat-top or pointy-top offset coordinate layouts.
+//! Owns blocked flags, movement costs, neighbor offset rules, cube-coordinate conversion, and hex-line generation.
+//! Runs A* between hexes, then also exposes line of sight, field of view, and movement budget range queries.
+//! Provides the boundary between hex topology math and gameplay systems that need pathing over six-neighbor boards.
+//! Uses cube rounding and interpolation so visibility and distance logic stay aligned with the chosen hex layout.
+//! This file matters when hex adjacency, path cost semantics, or range calculations no longer match map behavior.
+//! Open this owner for hex-specific navigation fixes before changing rectangular grid, iso, or navmesh code paths.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

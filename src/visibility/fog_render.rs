@@ -1,4 +1,6 @@
-//! This file provides fog rendering configuration that maps visibility state to visual intensity. `visibility/fog_render` delivers the fog render implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `FogConfig`, the render-facing fog settings that translate visibility state into screen intensity.
+//! It stores discovered and hidden opacity plus transition controls so presentation can follow one visibility policy.
+//! Open this file when fog presentation rules change; state transitions and region ownership live in sibling files.
 
 /// Configuration for how fog is rendered visually.
 #[derive(Debug, Clone, Copy)]

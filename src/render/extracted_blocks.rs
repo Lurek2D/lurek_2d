@@ -1,9 +1,12 @@
-//! Implements procedural geometry generation and tessellation for all primitive 2D shapes. `render/extracted_blocks` delivers the extracted blocks implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Generates vertex/index lists for arcs, circles, ellipses, sectors, and rounded rectangles. The file owns or coordinates data contracts including `GpuTexture`, `RenderStats`, `GpuShader`, `LightGpuState`, `GpuRenderer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Translates abstract blending modes requested by Lua into explicit wgpu descriptors. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Handles thick-line calculations by expanding stroke segments to screen-aligned quads. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Uses adaptive step sizes for curved geometry to trade off segment count vs visual smoothness. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Implements custom geometry builders for solid shapes, hollow wireframes, and textured sprites. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Implements CPU-side geometry generation for primitive 2D shapes before vertices and indices reach GPU buffers.
+//! Builds triangles for arcs, circles, ellipses, sectors, rounded rectangles, and other reusable draw primitives.
+//! Expands thick strokes into quads so line width and outline visuals stay explicit instead of shader-implied.
+//! Translates abstract blend requests into concrete wgpu state descriptors used by the higher renderer pipeline.
+//! Uses adaptive step counts for curves so smoothness scales with shape size without exploding segment counts.
+//! Supports solid, wireframe, and textured geometry builders instead of forcing one tessellation path for all.
+//! Keeps shape-construction policy separate from GPU orchestration so render passes can stay focused on dispatch.
+//! Acts as the geometry boundary between high-level draw commands and raw vertex/index streams.
+//! Open this file when primitive tessellation, stroke expansion, or curve segmentation produces wrong geometry.
 
 /// Flat-shaded vertex with `position` and per-vertex `color`.
 #[repr(C)]

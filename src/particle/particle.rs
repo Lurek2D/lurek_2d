@@ -1,6 +1,6 @@
-//! Per-particle runtime state for position, velocity, lifetime, rotation, and acceleration. `particle/particle` delivers the particle implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores spawn origin and shape seed for force calculations and deterministic geometry. The file owns or coordinates data contracts including `Particle`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Keeps the minimum state needed by the emitter loop. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! This file owns the per-particle runtime record storing motion, lifetime, rotation, and spawn-relative acceleration data.
+//! `Particle` is the mutable unit consumed by the emitter loop, render interpolation, and collision or trail helpers.
+//! Open it when particle field semantics change; pool management, spawning, and rendering behavior live in siblings.
 
 /// Per-particle state owned by the `ParticleSystem` pool.
 #[derive(Clone, Debug)]

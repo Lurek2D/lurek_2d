@@ -1,7 +1,8 @@
-//! Non-blocking TCP connection pool for the background network thread. `network/tcp` delivers the tcp implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Uses round-robin polling across all active streams with event-based notification. The file owns or coordinates data contracts including `TcpConnectionManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports connect, send, close, and bulk-poll operations with automatic cleanup. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `connect`, `send`, `close`, `poll_all`, `close_all`, and 1 more stays attached to the local data model and invariants.
-//! Keeps stream management simple for the threaded network runtime. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the non-blocking TCP connection pool used by the background network runtime thread.
+//! `TcpConnectionManager` stores live streams, handles connect and send, and polls all sockets round-robin.
+//! Lifecycle events are emitted through `NetworkResponse` because the manager reports data, closes, and errors only.
+//! Cleanup and missing-connection errors stay here since stream ownership belongs below the main runtime loop.
+//! Open it when TCP polling changes; request routing, WebSockets, and ENet host logic live in sibling files.
 
 use super::net_thread::{NetworkResponse, TcpEvent};
 use log::{debug, warn};

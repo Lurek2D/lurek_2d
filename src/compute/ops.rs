@@ -1,9 +1,12 @@
-//! Implements the primary array-operations engine for arithmetic, comparison, logic, and reduction flows. `compute/ops` delivers the ops implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports scalar-array and array-array binary operations with bounded broadcast compatibility. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides global and axis-based reductions including sum, mean, min, max, and related aggregates. Public callable behavior is centered on `get_par_threshold`, `set_par_threshold`, `add`, `add_scalar`, `sub`, and 51 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Exposes in-place mutation variants for additive, subtractive, multiplicative, and divisive updates. Runtime integration reaches sibling engine areas through crate modules `compute`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Includes reshape, transpose, cloning, thresholding, and conditional selection utilities. External integration uses `rayon`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Handles integer and floating operation variants through dtype-aware dispatch behavior. The file boundary separates compute implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! `src/compute/ops.rs` owns arithmetic, comparisons, reductions, reshaping, and in-place updates for arrays.
+//! It implements scalar and array binary ops, limited broadcasting, dtype-aware bitwise paths, and axis-based reductions.
+//! The file also stores the global parallel-dispatch threshold that decides when Rayon-backed execution should be used.
+//! Reshape, transpose, masks, thresholding, argmin or argmax, and boolean-style any or all helpers all live here.
+//! This file is the primitive numeric-ops boundary for compute arrays; it does not own storage layout or FFT transforms.
+//! Broadcast checks, axis validation, dtype checks, and mutation rules are enforced here before numeric work begins.
+//! In-place add, sub, mul, and div updates are centralized here so aliasing behavior stays explicit.
+//! Bitwise operations stay here because they share the same shape and dtype validation rules as scalar arithmetic paths.
+//! Read it when core array math, reduction semantics, broadcast policy, or parallel dispatch behavior needs changes.
 
 use crate::compute::array::{DataType, NdArray};
 use rayon::prelude::*;

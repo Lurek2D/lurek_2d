@@ -1,6 +1,7 @@
-//! Enforces memory boundaries and layout constraints for the deferred shadow mapping pass. `render/gpu_light` delivers the gpu light implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Maximum capacity limits on light sources are defined here to guarantee stable frame times. The file owns or coordinates data contracts including `LightGpuState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! The structures defined here instruct the renderer how to process additive light passes. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Defines GPU-side light pass limits and layouts that keep deferred lighting and shadow memory bounded.
+//! Holds the light-state contract used by the renderer to size additive passes and shadow-related resources.
+//! Keeps light-capacity and layout policy separate from the frame loop that consumes those resources.
+//! Open this file when light buffer limits or deferred-light layout assumptions need coordinated changes.
 
 /// Resolution of the shadow atlas in pixels.
 pub const SHADOW_MAP_RES: usize = 256;

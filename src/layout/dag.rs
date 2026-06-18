@@ -1,7 +1,8 @@
-//! Provides staged layered layout for directed graphs where flow direction and rank readability are primary goals. `layout/dag` delivers the dag implementation for the layout subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Organizes nodes into bands, reorders local neighborhoods to reduce crossings, and then assigns stable screen coordinates.
-//! Applies spacing and margin policy from shared layout config so outputs align with other module strategies. Public callable behavior is centered on `layout_dag`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Prefers deterministic structure over visual drift to keep dependency and progression maps legible across updates. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/layout/dag.rs` lays out directed graphs in layers so flow direction, rank order, and dependency reading stay clear.
+//! It owns layer assignment, cyclic fallback placement, barycenter-based crossing reduction, and per-layer coordinates.
+//! Shared `LayoutConfig` spacing and margins are applied here so DAG results align with the rest of the layout module.
+//! This file is the layered-graph algorithm boundary; it does not own shared types, force simulation, or tree recursion.
+//! Read it when rank construction, crossing reduction, deterministic fallback, or DAG coordinate rules need changes.
 
 use super::types::*;
 use std::collections::{HashMap, HashSet, VecDeque};

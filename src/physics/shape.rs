@@ -1,8 +1,9 @@
-//! Physics shape definition layer that gives the subsystem a compact language for circles, rectangles, polygons, edges, and chained outlines.
-//! The file keeps geometry authoring, validation, and collider conversion close together so malformed inputs can be rejected before they become unstable runtime fixtures.
-//! Parsing and regular-polygon construction make the surface practical for scripts, tools, and data-driven content that describe shape intent rather than raw engine objects.
-//! Standalone shapes carry material and sensor settings alongside geometry, which lets authored collision pieces travel with the properties that affect how they behave in the world.
-//! Local bounding logic keeps each shape queryable without needing a live body, which is useful for previews, authoring tools, and lightweight reasoning.
+//! This file owns `Shape` and `StandaloneShape`, the geometry vocabulary used by bodies and standalone collision pieces.
+//! It stores circles, rectangles, polygons, edges, and chains, then converts valid inputs into Rapier colliders.
+//! Parsing helpers and regular-polygon generation let scripts or data describe intent without building raw engine types.
+//! Standalone shapes keep density, friction, restitution, and sensor flags next to geometry for authored test fixtures.
+//! Local bounding-box helpers make shapes inspectable in tools and previews without a live body or physics world.
+//! Open this file when geometry semantics change; body ownership and world stepping remain in sibling files.
 
 use crate::math::Vec2;
 use rapier2d::prelude::*;

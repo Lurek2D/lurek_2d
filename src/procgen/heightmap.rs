@@ -1,7 +1,8 @@
-//! Heightmap model for turning procedural fields into normalized terrain elevation that other systems can sample, erode, render, or classify.
-//! The file builds maps from layered noise or other grid sources and keeps results in a form that is easy to query by cell or export by row-major order.
-//! A simple erosion pass gives the generated terrain a way to soften sharp differences and hint at water-shaped structure without introducing a heavyweight terrain solver.
-//! Deterministic seeding keeps terrain reproduction reliable for saves, testing, and content pipelines. Runtime integration reaches sibling engine areas through crate modules `procgen`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the normalized heightmap model used to build terrain fields from noise or binary cellular sources.
+//! `HeightmapOpts` stores noise parameters and erosion passes, while `Heightmap` owns width, height, and cell storage.
+//! Generation from FBM noise stays here because map options, normalization, and seed-driven reproducibility are local.
+//! Simple erosion also belongs here since it mutates terrain cells in-place and defines the file's smoothing behavior.
+//! RGBA export and sampled access remain local because they expose the heightmap as usable terrain data to callers.
 
 use crate::procgen::noise::{FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
 use crate::procgen::scalar_map_to_rgba_bytes;

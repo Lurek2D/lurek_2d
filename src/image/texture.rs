@@ -1,7 +1,8 @@
-//! Manages CPU texture ingestion and staging before GPU-side renderer upload and sampling. `image/texture` delivers the texture implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Decodes files and raw buffers into validated RGBA payloads keyed in slot-map storage. The file owns or coordinates data contracts including `TextureColorSpace`, `Texture`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Applies premultiplied-alpha conversion paths to align blending behavior with render expectations. Public callable behavior is centered on `premultiply_alpha_rgba8_in_place`, while method-level behavior such as `parse_color_space`, `load`, `load_with_color_space`, `from_rgba`, `from_rgba_with_color_space` stays attached to the local data model and invariants.
-//! Tracks texture color-space intent so pipelines can distinguish sRGB and linear content. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Loads CPU-side texture data from files or raw RGBA bytes before the renderer turns them into GPU resources.
+//! Stores width, height, color space, and pixel bytes together so upload code can stay thin and predictable.
+//! Parses sRGB and linear color-space labels, rejecting unknown tags before they leak into renderer behavior.
+//! Provides alpha premultiplication on RGBA8 bytes for pipelines that expect premultiplied blend semantics.
+//! Open this file when texture ingest, color-space tagging, or premultiply handling causes visual mismatches.
 
 use crate::log_msg;
 use crate::render::renderer::TextureData;

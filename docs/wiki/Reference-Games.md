@@ -1382,7 +1382,7 @@ Playable grand-strategy province slice with semi-historical countries, campaign 
 
 Real-time hex logistics prototype with ship-based construction, local building storage, and physical resource drones.
 
-**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [math](Module-math), [render](Module-render), [timer](Module-timer), [window](Module-window)
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [math](Module-math), [render](Module-render), [tilemap](Module-tilemap), [timer](Module-timer), [window](Module-window)
 
 ### [hex_strategy](../tree/main/content/games/strategy/hex_strategy)
 

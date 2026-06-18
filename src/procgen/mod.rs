@@ -1,9 +1,11 @@
-//! Procedural generation module that gathers deterministic algorithms for terrain, dungeons, graphs, names, tilings, simulations, and sampling into one reusable content toolbox.
-//! It combines low-level random and noise primitives with higher-order generators so callers can move from seeded numbers to full spatial structure without leaving the module.
-//! The subsystem covers both static generation and evolving grid simulation, which makes it useful for worlds that must be authored once or kept alive over time.
-//! Functionally this file is the high-level entry point for reproducible content synthesis across maps, layouts, regions, patterns, and emergent cellular effects.
-//! `procgen/mod` is the procgen module index, declaring `biome`, `bsp`, `cellular`, `cellular_world`, `color`, and 13 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/procgen/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `biome::{biome_map_to_rgba, BiomeClassifier, BiomeRules, BiomeType}`, `bsp::{ bsp_dungeon, bsp_dungeon_with_prefabs, BspDungeon, BspOpts, BspPrefabStamp, BspRoom, PlacedBspPrefab, }`, `cellular::{cellular_automata, CellularOpts}`, `cellular_world::{default_palette, CellType, CellularWorld}`, and 13 more centralized for the procgen subsystem.
+//! This module is the procgen index, exposing noise, terrain, dungeon, graph, naming, and sampling generators.
+//! It exports low-level primitives such as LCG, noise, flood fill, and scalar coloring for other generators to reuse.
+//! It also exports higher-level builders such as BSP dungeons, room dungeons, WFC grids, and world-region graphs.
+//! `mod.rs` owns visibility and reexport boundaries, not generated state, so feature responsibility stays in siblings.
+//! Open this file to map which source owns caves, biomes, naming, Voronoi regions, or sandbox material simulation.
+//! `noise.rs`, `heightmap.rs`, and `biome.rs` cover scalar-field generation plus terrain and climate interpretation.
+//! `bsp.rs`, `rooms.rs`, `wfc.rs`, and `world_graph.rs` cover discrete layout, tiling, and connectivity generation.
+//! `cellular.rs`, `cellular_world.rs`, `poisson.rs`, and `voronoi.rs` cover evolving grids and spatial sampling.
 
 /// Biome classification types and rules-based classifier.
 pub mod biome;

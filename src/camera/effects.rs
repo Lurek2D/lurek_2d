@@ -1,8 +1,9 @@
-//! Implements transient camera-motion effects layered on top of the base follow transform state. `camera/effects` delivers the effects implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides pulse-based zoom bursts for impact moments and short-lived cinematic emphasis. The file owns or coordinates data contracts including `ZoomPulse`, `CameraSway`, `CameraBreathing`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Adds oscillatory sway offsets with tunable frequency and damping for dynamic camera motion feel. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `trigger`, `update`, `current_delta`, `is_active`, `start`, and 2 more stays attached to the local data model and invariants.
-//! Supplies breathing-style zoom modulation for subtle ambient life during low-action periods. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Keeps each effect independently updateable so compositions remain modular and controllable. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/camera/effects.rs` owns transient motion effects layered on top of base camera transform and follow state.
+//! It defines `ZoomPulse`, `CameraSway`, and `CameraBreathing`, keeping effect timing and amplitudes together.
+//! Pulse-based zoom bursts, positional sway, and breathing modulation all live here under independent effect states.
+//! Each effect updates from elapsed time and reports current deltas, keeping effect math separate from transform storage.
+//! This file is the effect-state boundary for cameras; follow logic, view state, and projection helpers stay elsewhere.
+//! Read it when oscillation rules, damping, pulse timing, or effect composition behavior needs to change.
 
 use std::f32::consts::PI;
 

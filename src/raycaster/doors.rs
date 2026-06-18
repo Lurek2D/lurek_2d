@@ -1,7 +1,8 @@
-//! This file models raycaster doors as animated grid occupants whose openness changes continuously while their tile identity stays stable.
-//! Each door carries movement direction, travel progress, and a small phase machine so gameplay code can request transitions without manual timing.
-//! The manager keeps doors in one indexed registry, making updates and spatial queries deterministic for the rest of the raycaster.
-//! Because door openness is tracked separately from base map cells, rendering and collision code can read evolving passage state without duplicating logic.
+//! This file owns `DoorDirection`, `DoorState`, `Door`, and `DoorManager` for animated doors in map cells.
+//! It stores grid position, open amount, speed, slide axis, and phase state so doors evolve without retagging tiles.
+//! Manager helpers add doors, switch them between opening and closing, advance animation, and query doors by tile.
+//! Rendering and collision code can read one shared door registry, keeping passage state consistent across subsystems.
+//! Open this file when door lifecycle semantics change; wall descriptors and scene construction stay in siblings.
 
 /// Slide axis of a door: horizontal (slides along X) or vertical (slides along Y).
 #[derive(Debug, Clone, Copy, PartialEq)]

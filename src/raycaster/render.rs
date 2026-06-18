@@ -1,7 +1,8 @@
-//! This file converts the prepared raycaster scene into renderer commands that the broader engine command stream already understands.
-//! It emits textured or flat-colored quads in the ordering expected for ceilings, floors, walls, and billboard content. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Because the scene already carries geometry, UVs, light, and depth intent, this step mostly translates instead of recomputing presentation logic.
-//! The file is therefore the handoff point where raycast-specific scene data becomes generic render work for the engine backend.
+//! This file owns the render-command bridge that turns a prepared `RaycasterScene` into generic engine draw commands.
+//! It emits textured quads or flat rectangles for ceilings, floors, walls, sprites, and transient meshes in scene order.
+//! Because the scene already contains geometry, UVs, lighting, and depth intent, this file mostly translates existing data.
+//! It is the handoff point where raycaster-specific presentation becomes backend-agnostic `RenderCommand` work.
+//! Open this file when command translation or draw ordering changes; CPU rasterization and scene assembly live in siblings.
 
 use crate::raycaster::scene::RaycasterScene;
 use crate::render::renderer::{DrawMode, RenderCommand};

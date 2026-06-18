@@ -1,7 +1,8 @@
-//! Provides spherical geometry helpers for converting between latitude-longitude and unit-vector space. `globe/sphere` delivers the sphere implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Computes great-circle distance and interpolation for geodesic path and arc construction. The file owns or coordinates data contracts including `Mat3x3`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supplies ray-sphere intersection tests used by projection and picking style calculations. Public callable behavior is centered on `lat_lon_to_unit`, `unit_to_lat_lon`, `great_circle_distance`, `great_circle_path`, `ray_sphere_intersect`, and 3 more, while method-level behavior such as `identity`, `from_cols`, `mul_vec`, `mul_mat`, `transpose` stays attached to the local data model and invariants.
-//! Defines lightweight 3x3 rotation matrices and multiplication helpers for globe transforms. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Provides the spherical geometry toolkit used by globe projection, picking, lighting, and arc construction code.
+//! Owns lat-lon to unit-vector conversion, great-circle distance and interpolation, and ray-sphere intersection math.
+//! Also defines the lightweight 3x3 rotation matrix helpers used to compose camera, tilt, and spin transforms.
+//! Acts as the math boundary between generic vector utilities and globe-specific spherical coordinate operations.
+//! Open this owner when globe coordinate conversion or geodesic path behavior changes independently of rendering.
 
 use crate::math::Vec3;
 

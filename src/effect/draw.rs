@@ -1,4 +1,6 @@
-//! Provides lightweight stack-preview rendering that converts effect activity into a quick diagnostic image. `effect/draw` delivers the draw implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns the lightweight `PostFxStack` preview renderer that turns stack activity into a diagnostic image.
+//! It fills a simple image differently when any effect is enabled, giving tools a cheap visual state indicator.
+//! Open this file when effect-stack preview semantics change; stack storage and render commands live in siblings.
 
 use super::stack::PostFxStack;
 use crate::image::ImageData;

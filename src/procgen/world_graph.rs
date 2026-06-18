@@ -1,8 +1,9 @@
-//! World-graph generation and traversal layer for overworld-style structures where places are discrete nodes connected by weighted travel links.
-//! The file defines the region and edge model itself, then builds pathfinding and reachability logic directly on top of that shared representation.
-//! A* and bounded Dijkstra cover shortest routes and local travel envelopes, which makes the graph useful for quests, logistics, and map progression.
-//! Minimum spanning tree support gives generation and analysis code a way to reason about essential connectivity independent of redundant routes.
-//! Random graph construction turns the same structure into a content generator, placing regions spatially and wiring them into plausible networks.
+//! This file owns the world-region graph used to store places, travel links, and route-finding helpers on top of them.
+//! `WorldRegion` and `WorldEdge` define the stored topology, while `WorldGraph` owns regions, edges, and ids.
+//! A* pathfinding and bounded Dijkstra stay here because route cost semantics are derived from graph-owned edges.
+//! Kruskal MST support also belongs here since essential connectivity analysis depends on the same shared topology.
+//! Random graph generation remains local because spatial placement and nearest-neighbor linking build this graph type.
+//! Open it when overworld connectivity changes; Voronoi fields and dungeon interiors live in sibling modules.
 
 use crate::procgen::lcg::Lcg;
 use std::cmp::Ordering;

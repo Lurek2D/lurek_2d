@@ -1,4 +1,6 @@
-//! Defines compositing modes that control how each light contribution merges into accumulated lighting. `light/blend_mode` delivers the blend mode implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `LightBlendMode`, the enum that describes how one light contributes to the accumulated buffer.
+//! It defines additive, subtractive, and mix-style compositing so light accumulation policy stays explicit in data.
+//! Open this file when light compositing semantics change; per-light state and world processing live in siblings.
 
 /// Blend mode for how a light's contribution is combined with the light accumulation buffer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

@@ -1,8 +1,9 @@
-//! Implements Monte Carlo Tree Search as a reusable decision kernel for branching action spaces. `ai/mcts` delivers the mcts implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Executes the full selection, expansion, rollout, and backpropagation rhythm under fixed budgets. The file owns or coordinates data contracts including `MCTSConfig`, `MCTSEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Uses exploration pressure to balance known strong branches against uncertain alternatives. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `config`, `search` stays attached to the local data model and invariants.
-//! Stores tree state in compact node arenas for iterative simulation throughput. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Returns action preference grounded in sampled outcomes rather than handcrafted deterministic rules. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Implements Monte Carlo Tree Search as a reusable decision kernel for sampled action selection under uncertainty.
+//! Owns the arena-backed node tree, UCT scoring, rollout budget, RNG state, and selection or expansion workflow.
+//! Runs full selection, expansion, rollout, and backpropagation, then returns the most visited root action choice.
+//! Provides the sampled planning boundary between abstract action generators and a concrete chosen action id.
+//! This file matters when rollout budgets, exploration pressure, or visit accounting stop producing sane choices.
+//! Open this owner when search-policy behavior changes without affecting deterministic planners like GOAP or HTN.
 
 /// Configuration for one MCTS search run.
 pub struct MCTSConfig {

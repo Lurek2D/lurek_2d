@@ -1,13 +1,17 @@
-//! Central physics simulation world that owns the living state of rigid bodies, colliders, joints, queries, events, and solver progression for the engine.
-//! The file wraps Rapier into an engine-shaped runtime surface where spawning, stepping, sleeping, destruction, and body mutation all speak one consistent game-facing vocabulary.
-//! Fixed-timestep accumulation is part of that surface, which keeps motion and contact results deterministic enough for frame-rate-independent gameplay code.
-//! Collision collection lives beside stepping so begin, end, and overlap information emerges as stable post-step data rather than scattered callbacks fired from deep inside the solver.
-//! Spatial queries such as raycasts, point tests, and area checks share the same authoritative world state, which lets gameplay systems ask where things are without duplicating geometry.
-//! Joint support turns the world from a loose body container into a mechanical playground where links, motors, ropes, sliders, and welded constraints become first-class scene behaviors.
-//! Break thresholds and one-way platform handling add gameplay-oriented control over how contacts and constraints should behave under stress or directional motion.
-//! Trigger zones extend the world beyond classic rigid-body simulation by letting areas override gravity, damping, and enter-exit signaling as bodies move through space.
-//! Pixels-per-meter conversion keeps authored screen-scale intent aligned with simulation-scale correctness, reducing the friction between gameplay numbers and solver numbers.
-//! Debug shape extraction and line drawing make the same world inspectable, so developers can see the geometry and contact surfaces that drive runtime outcomes.
+//! This file owns `World`, the Rapier-backed runtime that stores live bodies, colliders, joints, and zones.
+//! It mirrors authored `Body` data into Rapier sets, keeps stable ids, and tracks tombstones for removed slots.
+//! Stepping syncs scripted state into Rapier, runs the solver pipeline, then writes motion back into body mirrors.
+//! Collision handling buffers begin and end contact pairs plus overlap events so gameplay reads post-step results.
+//! Contact and stats helpers summarize active manifolds, sleeping bodies, collider counts, and joint counts.
+//! Spatial query helpers provide filtered raycasts, AABB scans, and point tests against the same world state.
+//! Fixture APIs let one body carry multiple colliders, while rebuild paths refresh filters and materials after edits.
+//! Joint APIs create revolute, rope, prismatic, weld, wheel, friction, motor, and mouse constraints with stable ids.
+//! Joint utilities also expose motor speeds, limits, break thresholds, connected bodies, and explicit destruction paths.
+//! Zone integration applies priority-ordered gravity and damping overrides, then emits enter and leave events per body.
+//! One-way platform handling and sleep controls adapt raw solver behavior to platformer-style gameplay expectations.
+//! Meter conversion helpers keep pixel-authored content aligned with simulation units without spreading scale math.
+//! Debug extraction exposes shape snapshots and image drawing support so tools can inspect runtime geometry easily.
+//! Open this file when runtime ownership or physics behavior changes; pure shape and zone definitions live nearby.
 
 use super::body::{Body, BodyShape, BodyType};
 use super::shape::Shape;

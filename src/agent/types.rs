@@ -1,7 +1,7 @@
-//! Defines shared data contracts for agent requests, responses, and cross-layer failure representation. `agent/types` delivers the shared type definitions and data contracts for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Aligns state construction, async transport, and callback dispatch on one stable payload vocabulary. The file owns or coordinates data contracts including `AgentError`, `AgentRequest`, `AgentResponse`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Encodes retry semantics and error categories so runtime behavior is consistent across entry points. Public callable behavior is centered on no named public items, while method-level behavior such as `code`, `is_transient`, `message`, `is_ok`, `text` stays attached to the local data model and invariants.
-//! Serves as the canonical contract layer that keeps agent submodules interoperable and predictable. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `AgentError`, `AgentRequest`, and `AgentResponse`, the shared payload contract for agent I/O.
+//! It keeps callback ids, prompt envelopes, response bodies, and stable error codes aligned across runtime layers.
+//! Error helpers classify retryable failures and expose Lua-safe codes without coupling callers to transport details.
+//! Open this file when request or response structure changes; client execution and state assembly live in siblings.
 
 /// Error variants for LLM agent requests; used by [`AgentClient`] and [`AgentState`].
 #[derive(Debug, thiserror::Error)]

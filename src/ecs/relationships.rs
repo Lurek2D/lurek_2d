@@ -1,8 +1,9 @@
-//! Provides typed relationship modeling for unordered pair links and directed named connections between entities. `ecs/relationships` delivers the relationships implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Defines relationship categories with constrained level labels and validated default values. The file owns or coordinates data contracts including `RelationType`, `Relationship`, `RelationshipManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Stores affinity metrics and per-type state in canonical pair records for stable lookups. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `has_level`, `define_type`, `remove_type`, `get_type`, `type_names`, and 16 more stays attached to the local data model and invariants.
-//! Supports directed link sets that capture one-way ownership or routing semantics. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Exposes query and mutation helpers that keep relationship operations centralized and consistent. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns typed relationship definitions, pair records, and directed named links between entities.
+//! `RelationType` validates allowed level labels, while `Relationship` stores canonical unordered pair state.
+//! `RelationshipManager` centralizes type registration, numeric affinity updates, levels, and relation removal.
+//! Directed link helpers track one-way targets separately from pair records, covering routing or ownership edges.
+//! Entity-removal cleanup lives here so pair maps and directed link buckets cannot retain stale ids after kills.
+//! Open it when graph semantics change; the universe owns lifecycle and component rows in sibling ECS files.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{RL01, RL02, RL03};

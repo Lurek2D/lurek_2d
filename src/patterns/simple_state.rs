@@ -1,6 +1,7 @@
-//! Minimal named-state tracker for systems that only need one active mode at a time without the heavier transition model of a full state machine.
-//! The file focuses on managing the known state set and the current selection, which keeps switching semantics explicit and validation cheap.
-//! Enumeration and counting support make the registry easy to inspect from scripts and tooling that want to reason about available modes.
+//! This file owns the lightweight named-state registry used when one current mode is enough and full FSM rules are not.
+//! `SimpleState` stores the declared states set and current selection so callers can inspect and switch active modes.
+//! Add, remove, and current-state helpers stay here because state membership and validation are local semantics.
+//! Open it when flat mode tracking changes; guarded transitions and history live in `state_machine.rs` instead.
 
 use std::collections::HashSet;
 

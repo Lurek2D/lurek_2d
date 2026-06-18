@@ -1,8 +1,9 @@
-//! Provides the canonical post-effect type catalog that defines all built-in processing identities. `effect/effect_type` delivers the effect type implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Maps stable Lua-facing names to typed variants for predictable script and engine interoperability. The file owns or coordinates data contracts including `PostFxEffectType`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supplies debug labels and parsing helpers that normalize user input into supported effect forms. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `built_in_names`, `name`, `debug_label`, `default_params` stays attached to the local data model and invariants.
-//! Defines default parameter sets so each effect starts from consistent baseline behavior. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Separates built-in variants from custom-shader paths while preserving one shared lookup model. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `PostFxEffectType`, the canonical catalog of built-in and custom post-processing identities.
+//! It maps stable lowercase names to enum variants so scripts and engine code resolve the same effect repertoire.
+//! Debug labels and built-in-name helpers centralize human-readable identifiers without duplicating lookup tables.
+//! Default-parameter builders also live here, giving each effect type a consistent scalar starting configuration.
+//! The enum separates built-in effects from custom shaders while preserving one shared naming and parsing surface.
+//! Open this file when supported effect kinds change; per-instance state and preset recipes live in sibling files.
 
 use std::collections::HashMap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -1,8 +1,9 @@
-//! Generates geometry-focused debug images that visualize shape algorithms and spatial relationships. `image/visualization/geometry` delivers the geometry implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Renders polygon galleries, primitive fills, and line rasterization examples for correctness checks. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Shows convex hull and centroid style outputs to inspect geometric post-processing behavior. Public callable behavior is centered on `polygon_gallery_to_image`, `spiral_to_image`, `filled_primitives_to_image`, `draw_geometry_shapes_to_image`, `draw_geometry_intersections_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Illustrates intersection outcomes between segments, circles, and lines with clear overlays. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Draws spiral and ring patterns to stress sampling consistency and color-mapping utilities. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Renders geometry demonstrations into images for validating rasterized shapes and math helper behavior.
+//! Draws polygon galleries, spirals, and filled primitive samples so tool output can prove drawing basics.
+//! Uses math helpers like convex hull, centroids, Bresenham lines, and angles to create visual test fixtures.
+//! Shows segment, circle, and line intersections with explicit markers so spatial edge cases stay inspectable.
+//! Keeps geometry visualization separate from math implementations, making screenshots a consumer not an owner.
+//! Open this file when geometry proof images are wrong even though lower-level math functions may still pass.
 
 use super::hsv_to_rgb_viz;
 use crate::image::ImageData;

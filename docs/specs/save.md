@@ -16,16 +16,12 @@
 
 ## Summary
 
-- The save module gives users a centralized save-state manager for persistent progress across slots.
-- Systems register collector and restorer callbacks so each subsystem contributes and rebuilds its own state segment.
-- Save operations assemble one coherent payload from all registered sections.
-- Load operations replay restorers so runtime state returns predictably.
-- Dirty tracking and auto-save timers support low-friction periodic persistence.
-- Compression reduces save-file size for content-heavy projects.
-- Schema versioning and migration callbacks support forward compatibility of older saves.
-- Persistence stays controlled and extensible instead of ad-hoc.
+- The `save` module is the persistence-lifecycle surface for users who want game state to be stored, versioned, and restored as a managed workflow instead of a raw file dump.
+- Save managers, metadata, migration support, schema versions, and summary information work together so save files can evolve over time without every project rolling its own compatibility rules.
+- That matters because persistence is usually more than writing bytes: projects also need naming, summaries, migration paths, validation, and a clear distinction between save metadata and payload content.
+- Read `save` as the owner of save and load policy. Serialization modules decide how data is encoded, but `save` decides how game-state persistence is packaged, versioned, and coordinated for users.
+- `save` owns persistence policy, while lower-level formats handle encoding details.
 
-This module primarily collaborates with `binary`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -36,17 +32,23 @@ This module primarily collaborates with `binary`, `runtime`. Its responsibility 
 
 ### mod.rs
 
-- This module provides the save-system surface for collecting game state, storing it by slot, and restoring it later. `save/mod` is the save module index, declaring `save_manager` so agents can identify which files own each feature slice before opening implementation code.
-- It combines persistence, compression, backup rotation, and migration support under one gameplay-facing feature stack. `src/save/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `save_manager::{ compress_save_content, decompress_save_content, parse_save_table, serialize_table, serialize_value, SaveManager, SaveValue, SlotMeta, }` centralized for the save subsystem.
+- `src/save/mod.rs` is the save module index, exposing the persistence surface that gameplay and Lua bindings consume.
+- It reexports `SaveManager`, slot metadata, serialization helpers, compression helpers, and the save value tree.
+- No runtime state lives here; this file keeps the public save boundary stable while logic stays in `save_manager.rs`.
+- Read this index when a caller needs save APIs, because it shows which persistence symbols are intentionally public.
+- The module groups table serialization, compressed slot payload handling, and manager-driven save orchestration together.
+- Changes here alter the persistence boundary, since reexports decide what the engine and Lua layer may import.
 
 ### save_manager.rs
 
-- This file implements the practical save manager that coordinates collection, serialization, persistence, and restoration of game state.
-- Registered sections let different gameplay systems contribute their own data while still producing one coherent slot payload.
-- Dirty tracking and auto-save timing live here so disk writes happen when needed instead of on every frame or every small state change.
-- Schema versioning and migration routing are also handled here, which lets older saves evolve forward as projects change over time.
-- Serialization and compression are part of the same flow so slot files remain structured, compact, and easy to validate on load.
-- The file is therefore the operational core of persistence for games built on the engine. The file boundary separates save implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- `src/save/save_manager.rs` owns slot persistence: registration, dirty tracking, schema versioning, and restore flow.
+- `SaveManager` decides which Lua tables join a slot, when writes should happen, and which migrations must run.
+- The file also defines `SaveValue` and `SlotMeta`, so payload structure and save-select metadata share one owner.
+- Compression, decompression, table serialization, and parsing live here to keep format logic near persistence policy.
+- Auto-save timing and slot path construction are handled locally, keeping higher runtime layers free of save bookkeeping.
+- The internal parser reads the restricted Lua table format emitted here, keeping load behavior aligned with save output.
+- Neighboring systems matter here mainly at the runtime and binary utility boundary, not in modules that register state.
+- Open this file when save format, migration routing, compression policy, or slot lifecycle behavior needs to change.
 
 
 

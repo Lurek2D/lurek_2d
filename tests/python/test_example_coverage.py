@@ -42,12 +42,31 @@ class ExampleCoverageLintTests(unittest.TestCase):
             """
             --@api: lurek.render.print
             do
-                lurek.render.print("hello", 0, 0)
-                lurek.render.print("world", 0, 8)
+                local x = 0
+                local y = 0
+                local color = { r = 1, g = 1, b = 1, a = 1 }
+                lurek.render.setColor(color.r, color.g, color.b, color.a)
+                lurek.render.print("hello", x, y)
             end
             """,
         )
         self.assertEqual(codes, [])
+
+    def test_comments_do_not_count_toward_body_length(self) -> None:
+        codes = self.lint_codes(
+            "comments.lua",
+            """
+            --@api: lurek.render.print
+            do
+                -- explain the scene text
+                local x = 0
+                local y = 0
+                lurek.render.print("hello", x, y)
+                -- another comment should not satisfy the minimum
+            end
+            """,
+        )
+        self.assertIn("E4", codes)
 
     def test_flags_top_level_do_without_marker(self) -> None:
         codes = self.lint_codes(

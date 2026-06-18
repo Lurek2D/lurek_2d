@@ -1,8 +1,9 @@
-//! Defines long-lived personality dimensions that shape how agents weight and express decisions. `ai/traits` delivers the traits implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Combines base profile values with temporary modifiers to model evolving behavioral flavor. The file owns or coordinates data contracts including `TraitModifier`, `TraitProfile`, `TraitArchetypes`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Updates modifier lifecycles over time so transient influences fade in a controlled manner. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_expired`, `tick`, `from_archetype`, `set`, `get`, and 12 more stays attached to the local data model and invariants.
-//! Supports archetypal presets and deterministic variation for reproducible character differentiation. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supplies stable temperament context consumed by planners, scorers, and tactical selectors. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Owns persistent personality trait profiles and temporary modifiers that shape how other AI systems score choices.
+//! Stores base values, expiring additive modifiers, and optional archetype provenance used to initialize a profile.
+//! Supports deterministic archetype jitter, modifier aging, interpolation, and source-based modifier removal.
+//! Provides the temperament boundary between authored character identity and tactical systems that read trait values.
+//! Also maintains the archetype registry so reusable presets stay separate from one-off agent mutation logic.
+//! Open this owner when personality baselines, modifier lifetimes, or archetype contracts need shared changes.
 
 use std::collections::HashMap;
 

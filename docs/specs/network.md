@@ -17,37 +17,20 @@
 
 ## Summary
 
-- This module gives users multiplayer transport and networking utilities for real-time and service-backed game features.
-- ENet host support covers server, client, and mixed-host runtime roles.
-- Peer lifecycle handling includes connect, disconnect, channel messaging, and round-trip diagnostics.
-- Background runtime threading keeps blocking network operations off the frame-critical loop.
-- MPSC queues support safe handoff between game logic and transport workers.
-- TCP and WebSocket pools support persistent connection workflows.
-- HTTP helpers support request-response integrations for backend service calls.
-- SSE support enables long-lived push-style event ingestion from remote endpoints.
-- MessagePack support provides compact serialization for runtime payloads.
-- Snapshot helpers support entity-state packing and unpacking workflows.
-- Prediction helpers support dead-reckoning style client smoothing.
-- Reconciliation helpers support blending predicted and authoritative states.
-- Lobby discovery supports LAN game discovery flows.
-- Room management helpers support create/list/join/leave coordination.
-- Relay ticket and punch-probe helpers support NAT traversal signaling.
-- Runtime APIs expose thread counts, status, and event polling surfaces.
-- RPC layer support enables request-response and notify-style message patterns.
-- Network state sync helpers support authority-aware replicated key/value updates.
-- The module is useful for co-op gameplay, dedicated servers, and tool-to-runtime communication.
-- For users, it centralizes diverse transports under one consistent Lua-facing namespace.
-- It reduces custom socket plumbing and integration duplication.
-- It supports both low-latency gameplay channels and web-service integrations.
-- The practical result is faster multiplayer feature implementation.
-- It also improves observability of network behavior and failure modes.
-- Overall, users get a broad, production-oriented networking toolkit.
-- This makes scaling from local tests to internet sessions more manageable.
-- It aligns transport, serialization, synchronization, and lobby concerns in one module.
-- That alignment reduces cross-layer mismatch bugs in multiplayer stacks.
-- Users gain flexibility to mix UDP gameplay and HTTP/WebSocket service traffic.
+- The `network` module is the engine's communication and session surface for users who need game state, tool messages, service calls, telemetry, or multiplayer traffic to move between processes or machines.
+- Its scope is intentionally broad because real communication needs are broad. Raw TCP, HTTP-style requests, websockets, SSE-like streams, lobbies, host state, relays, RPC, sync structures, and worker-thread coordination all appear in one engine-facing family.
+- That breadth is a practical advantage because projects often need several kinds of communication at once. A multiplayer game may also need service APIs, diagnostics channels, content downloads, and background coordination without wanting four unrelated networking stacks.
+- Message and transport types are central to the contract because networking is not just about opening a socket; it is also about how payloads are described, routed, retried, synchronized, and surfaced to the rest of the engine.
+- Session and host helpers matter because communication often begins before any gameplay packet is exchanged. Discovery, lobby state, connection negotiation, and participant tracking are all part of real multiplayer or remote-tool workflows.
+- RPC-style and sync-oriented surfaces broaden the feature into structured state exchange, while background thread support keeps network activity off the main loop.
+- This asynchronous model matters for responsiveness, retries, timeouts, and long-lived connections where the network layer must remain active even while other systems continue to update.
+- HTTP, websocket, and streaming surfaces keep the module useful outside classic multiplayer for tooling, editor integrations, remote control, telemetry, and service-backed workflows.
+- Error typing and connection-state tracking are equally valuable because networking only becomes usable at scale when disconnects, retries, and degraded states are visible rather than hidden in transport internals.
+- The module is therefore useful for online play, local-network coordination, service-backed tools, live dashboards, remote assistants, telemetry sinks, and any feature that depends on structured communication beyond the current process.
+- That breadth is one reason the subsystem belongs in the engine rather than in ad hoc project code.
+- Domain modules define what should be exchanged, while `network` owns how those exchanges are carried, coordinated, monitored, and kept off the blocking path.
+- Read `network` as the engine feature that turns remote communication into a reusable runtime capability.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -57,120 +40,137 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### constants.rs
 
-- Numeric limits for peer connections, channels, and buffer sizes. `network/constants` delivers the constants implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns shared numeric limits for peers, channels, timeouts, and socket buffer sizes in networking.
+- It centralizes defaults such as `DEFAULT_PEERS`, `DEFAULT_CHANNELS`, and transport buffer capacities.
+- Open it when protocol ceilings change; host logic, runtime polling, and message framing live in siblings.
 
 ### error.rs
 
-- Unified error type for all network subsystem failures. `network/error` delivers the error implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Covers socket I/O, ENet, HTTP, WebSocket, TCP, and threading faults. The file owns or coordinates data contracts including `NetworkError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Integrates with thiserror for automatic Display and From implementations. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns the unified `NetworkError` enum used to surface IO, protocol, address, and thread failures.
+- It maps transport-specific problems into one error boundary so higher layers do not depend on backend details.
+- Open it when network failure categories change; host state, runtime flow, and message codecs live elsewhere.
 
 ### host.rs
 
-- ENet host wrapper owning a non-blocking UDP socket and peer slots for one endpoint. `network/host` delivers the host implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Classifies the host role as server, client, or combined host for session routing. The file owns or coordinates data contracts including `HostRole`, `EnetLease`, `NetworkHost`, `NetworkEvent`, `PeerStats`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Runs the event poll loop that yields connect, disconnect, and receive events. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `service`, `connect`, `send`, `send_bytes`, `broadcast`, and 31 more stays attached to the local data model and invariants.
-- Manages connection lifecycle, packet delivery, and reset flows. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Exposes peer diagnostics such as round-trip time, state, address, and statistics. External integration uses `super`, `rusty_enet`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Lets callers tune bandwidth and channel limits at runtime. The file boundary separates network implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns the ENet host wrapper that binds one UDP socket and manages peer slots for a network endpoint.
+- `NetworkHost` stores the inner ENet host, local address, host role, and reconnection leases for peer resumption.
+- `HostRole`, `NetworkEvent`, `EnetLease`, and `PeerStats` live here because they describe host-owned peer lifecycle.
+- Service, connect, send, broadcast, ping, and disconnect flows stay here because ENet peer control is this boundary.
+- Lease registration and cleanup also belong here since reconnect tokens are indexed by peer ownership state.
+- Bandwidth, channel, address, and connection metrics remain local because they report or tune host-level behavior.
+- Server and client convenience constructors stay here because role assignment and binding strategy are host concerns.
+- Open it when ENet peer ownership changes; lobbies, wire values, and background TCP or WebSocket workers do not.
 
 ### http.rs
 
-- Synchronous HTTP client built on ureq for common request verbs. `network/http` delivers the http implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports per-request timeout configuration through the agent builder. The file owns or coordinates data contracts including `HttpResponse`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Returns a unified response object with status, body, headers, and error text. Public callable behavior is centered on `execute_request`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Keeps the API small so game code can fetch remote data without async setup. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns synchronous HTTP execution used by matchmaking, auth flows, and simple remote fetches.
+- `HttpResponse` stores status, body, headers, and error text so callers receive one uniform completion payload.
+- `execute_request` and its agent helper stay here because timeout, headers, and body dispatch are HTTP concerns.
+- The file keeps network-runtime callers free from ureq details while still returning raw response bytes.
+- Open it when blocking request behavior changes; sockets, lobbies, and background orchestration live elsewhere.
 
 ### lobby.rs
 
-- LAN lobby discovery via timed UDP broadcast on a fixed port. `network/lobby` delivers the lobby implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Encodes and parses lobby advertisements in a compact key-value wire format. The file owns or coordinates data contracts including `LobbyInfo`, `RoomInfo`, `PlayerState`, `RoomState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Maintains an in-process room registry for create, join, leave, and list flows. Public callable behavior is centered on `broadcast_lobby`, `discover_lobbies`, `create_room`, `list_rooms`, `join_room`, and 5 more, while method-level behavior such as `to_wire`, `from_wire` stays attached to the local data model and invariants.
-- Sends one broadcast datagram across all interfaces when scanning starts. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Deduplicates discovered lobbies by host and port during the scan window. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns LAN lobby discovery plus in-process room registries used for local multiplayer coordination.
+- `LobbyInfo` handles UDP advertisement parsing, while `RoomInfo` and `RoomState` track join counts and players.
+- Broadcast and discovery stay here because UDP room announcements are separate from ENet host or relay ownership.
+- The basic and extended registries also belong here because create, join, leave, ready, and host election are room data.
+- Player ready-state helpers remain local so pre-match coordination uses one authoritative room-state owner.
+- Open it when room lifecycle changes; relay tokens, sockets, and background workers live in sibling files.
 
 ### message.rs
 
-- Wire-format value type mirroring Lua's dynamic type system for peer messaging. `network/message` delivers the message implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Uses MessagePack serialization and deserialization for packed transport. The file owns or coordinates data contracts including `NetValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides zero-allocation size estimation before a message is sent. Public callable behavior is centered on `pack`, `unpack`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns the dynamic wire value format used to move Lua-like data across network transports.
+- `NetValue` models nil, scalars, arrays, and maps, while `pack` and `unpack` convert that shape with MessagePack.
+- Payload size and nesting guards stay here because transport-neutral framing safety belongs with the wire model.
+- Open it when cross-peer value semantics change; sockets, hosts, and sync policies live in sibling files.
 
 ### mod.rs
 
-- Multiplayer networking across TCP, WebSocket, relay, and HTTP helpers. `network/mod` is the network module index, declaring `constants`, `error`, `host`, `http`, `lobby`, and 9 more so agents can identify which files own each feature slice before opening implementation code.
-- Hosts the host/client model, lobby flow, peer management, and game-state sync. `src/network/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `sse::{SseEvent, SseStream}` centralized for the network subsystem.
-- Runs the background async runtime for non-blocking socket I/O. The file documents how network submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- `network/mod` is the network module index, declaring `constants`, `error`, `host`, `http`, `lobby`, and 9 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/network/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `sse::{SseEvent, SseStream}` centralized for the network subsystem.
-- The file documents how network submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- This module is the network index, exposing transports, host ownership, sync helpers, and background workers.
+- It reexports only `SseEvent` and `SseStream`, while the rest of the surface stays partitioned by transport owner.
+- `host.rs` owns ENet peers, `net_thread.rs` owns blocking IO workers, and `message.rs` owns portable wire values.
+- `http.rs`, `tcp.rs`, `websocket.rs`, and `sse.rs` implement request or socket backends used by the runtime.
+- `lobby.rs`, `relay.rs`, `rpc.rs`, `net_sync.rs`, and `netstate.rs` cover higher-level multiplayer coordination.
+- Open this file to navigate subsystem boundaries; actual transport logic and state live in sibling modules.
 
 ### net_sync.rs
 
-- Entity snapshot capture and wire serialization for networked state. `network/net_sync` delivers the net sync implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports linear dead-reckoning prediction between ticks. The file owns or coordinates data contracts including `EntitySnapshot`, `SyncSnapshot`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Handles server-authoritative reconciliation with a configurable blend factor. Public callable behavior is centered on `predict_linear`, `reconcile`, `reconcile_with_policy`, while method-level behavior such as `to_netvalue`, `from_netvalue` stays attached to the local data model and invariants.
-- Gives the multiplayer stack a compact sync model for replicated actors. Runtime integration reaches sibling engine areas through crate modules `network`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- `network/net_sync` delivers the net sync implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns compact entity-snapshot and sync-snapshot models used for networked state replication.
+- `EntitySnapshot` stores tick, position, and velocity, while `SyncSnapshot` encodes full, delta, and corrective syncs.
+- NetValue conversion lives here because snapshot wire shape belongs with the replicated state contracts themselves.
+- Prediction and reconciliation helpers also stay here because smoothing policy is part of sync semantics, not transport.
+- The distance-based reconcile policy is local because soft and hard correction thresholds shape state convergence.
+- Open it when replicated actor semantics change; hosts, sockets, and Lua netstate bindings live in siblings.
 
 ### net_thread.rs
 
-- Background network thread that owns all blocking I/O for HTTP, TCP, and WebSocket work. `network/net_thread` delivers the net thread implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Uses MPSC request and response channels to keep the game thread isolated from latency. The file owns or coordinates data contracts including `NetworkRequest`, `NetworkResponse`, `TcpEvent`, `WsEvent`, `NetworkRuntime`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Drives transport activity through typed request and response enums. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `next_request_id`, `send`, `poll`, `shutdown`, `is_running`, and 14 more stays attached to the local data model and invariants.
-- Models connection state with explicit TCP and WebSocket event types. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Spawns, polls, and shuts down the runtime while preserving request ordering. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Routes completed results back with correlation ids for outstanding work. The file boundary separates network implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- Keeps the blocking transport surface off the main loop. State changes, validation paths, and helper routines in `src/network/net_thread.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- `network/net_thread` delivers the net thread implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns the background network runtime that keeps blocking HTTP, TCP, and WebSocket work off the game loop.
+- `NetworkRequest` and `NetworkResponse` define the typed command and completion protocol between threads.
+- `TcpEvent` and `WsEvent` live here because the runtime normalizes lifecycle callbacks emitted by backend managers.
+- `NetworkRuntime` stores the request sender, response receiver, join handle, ids, auth token, and activity counters.
+- Public queue helpers stay here because request-id allocation and active-request accounting are runtime concerns.
+- Thread startup and shutdown also belong here because this file owns the `lurek-network` worker thread lifecycle.
+- Its event loop polls backend managers, drains requests, and drives auth refresh plus matchmaking polling state.
+- `handle_request` remains local because it routes HTTP, TCP, WebSocket, auth, and matchmake commands.
+- Auth and matchmake session structs stay here because they track transient runtime state between helper-thread callbacks.
+- Metrics and access-token getters also belong here since they summarize live runtime status for callers.
+- Open it when cross-thread networking flow changes; backend socket mechanics live in their sibling transport owners.
 
 ### netstat.rs
 
-- Engine module for network statistics. `network/netstat` delivers the netstat implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides runtime metrics such as bytes sent/received and latency. The file owns or coordinates data contracts including `NetStat`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- This is a generic, genre‑agnostic API. Public callable behavior is centered on `register`, while method-level behavior such as `new`, `update`, `snapshot` stays attached to the local data model and invariants.
+- This file owns a small network-statistics userdata that reports sent bytes, received bytes, and latency.
+- `NetStat` stores the counters, while `register` publishes Lua constructors and mutation helpers under `lurek`.
+- The file is a thin state carrier for scripting, not a transport implementation or runtime worker boundary.
+- Open it when scripting metrics change; host telemetry and socket polling live in other network owners.
 
 ### netstate.rs
 
-- Network state synchronization manager for replicated state across peers. `network/netstate` delivers the netstate implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides `LNetworkState` userdata wrapping the pure-Lua netstate protocol. The file owns or coordinates data contracts including `LNetworkState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports authority-based writes, per-key versioning, turn-based coordination,. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
-- and callback-driven change notifications. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the Rust userdata wrapper around the Lua netstate library used for replicated keyed game state.
+- `LNetworkState` stores a registry key and forwards set, get, poll, turn, and callback methods into Lua tables.
+- Registry access stays here because the lifetime boundary between Rust userdata and Lua netstate is this owner.
+- It is a binding shim, not the sync algorithm itself, nor the transport runtime that delivers packets.
+- Open it when Lua-facing state-sync methods change; snapshot policies and socket work live in siblings.
 
 ### relay.rs
 
-- Relay ticket encoding and decoding for room and peer identification. `network/relay` delivers the relay implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Builds UDP hole-punch probe payloads with a magic prefix. The file owns or coordinates data contracts including `RelayTicket`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides lightweight helpers for relay-based NAT traversal signalling. Public callable behavior is centered on `encode_ticket`, `decode_ticket`, `make_punch_probe`, `parse_punch_probe`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns relay-ticket and punch-probe helpers used for room identity and simple NAT traversal signalling.
+- `RelayTicket` plus encode, decode, and probe helpers stay here because they define the relay wire token shape.
+- Open it when relay token formats change; lobbies, hosts, and background transport workers live in siblings.
 
 ### rpc.rs
 
-- Remote Procedure Call (RPC) manager for networked function invocation. `network/rpc` delivers the rpc implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides request/response patterns, fire-and-forget notifications, and broadcasts. The file owns or coordinates data contracts including `LNetworkRpc`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- over network connections. Manages pending calls with timeout, automatic request ID. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
-- generation, and response callback dispatch. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the Rust userdata wrapper around the Lua RPC manager used for remote function invocation.
+- `LNetworkRpc` stores a registry key and forwards register, call, notify, broadcast, and timeout methods.
+- Registry-table retrieval stays here because the Rust-to-Lua lifetime boundary is this file's core contract.
+- It is a binding layer for RPC scripting, not the socket transport, host ownership, or auth runtime.
+- Open it when Lua-facing RPC controls change; transport workers and wire values live in sibling modules.
 
 ### sse.rs
 
-- Server-Sent Events stream reader for HTTP event endpoints. `network/sse` delivers the sse implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Uses a background thread to parse frames and forward them through a channel. The file owns or coordinates data contracts including `SseEvent`, `SseStream`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Offers non-blocking polling plus a blocking collect helper for batched reads. Public callable behavior is centered on no named public items, while method-level behavior such as `connect`, `next`, `close`, `is_open`, `collect` stays attached to the local data model and invariants.
-- Keeps live event streams separate from the main game thread. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Fits long-lived event feeds that should not stall gameplay. External integration uses `log`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns long-lived Server-Sent Events readers that stream HTTP event feeds on a helper thread.
+- `SseEvent` stores parsed id, event name, and data, while `SseStream` manages the channel and close flags.
+- Connect-time thread spawning and line parsing stay here because SSE framing is distinct from request-response HTTP.
+- Non-blocking `next` and blocking `collect` helpers also belong here as stream-consumption policies for callers.
+- Drop-time shutdown is local because the reader thread lifecycle is part of owning one live SSE connection.
+- Open it when event-stream behavior changes; standard HTTP requests and socket transports live in siblings.
 
 ### tcp.rs
 
-- Non-blocking TCP connection pool for the background network thread. `network/tcp` delivers the tcp implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Uses round-robin polling across all active streams with event-based notification. The file owns or coordinates data contracts including `TcpConnectionManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports connect, send, close, and bulk-poll operations with automatic cleanup. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `connect`, `send`, `close`, `poll_all`, `close_all`, and 1 more stays attached to the local data model and invariants.
-- Keeps stream management simple for the threaded network runtime. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the non-blocking TCP connection pool used by the background network runtime thread.
+- `TcpConnectionManager` stores live streams, handles connect and send, and polls all sockets round-robin.
+- Lifecycle events are emitted through `NetworkResponse` because the manager reports data, closes, and errors only.
+- Cleanup and missing-connection errors stay here since stream ownership belongs below the main runtime loop.
+- Open it when TCP polling changes; request routing, WebSockets, and ENet host logic live in sibling files.
 
 ### websocket.rs
 
-- Pool of active WebSocket connections keyed by caller-assigned id. `network/websocket` delivers the websocket implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Spawns background threads for TLS and TCP handshakes so connect never blocks the game loop. The file owns or coordinates data contracts including `WebSocketManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Polls live sockets for text, binary, and close frames without blocking. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_empty`, `connect`, `send`, `close`, `poll_all`, and 1 more stays attached to the local data model and invariants.
-- Sends text or binary frames and performs graceful close with drain semantics. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Posts connection lifecycle events through an MPSC channel. External integration uses `super`, `log`, `std`, `tungstenite`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns the WebSocket connection pool used by the background runtime for framed duplex messaging.
+- `WebSocketManager` stores live sockets and pending handshakes, while `PendingConnect` tracks helper-thread results.
+- Connect-time worker spawning stays here because TLS handshakes and tungstenite setup must not block the game loop.
+- Frame send, close, and poll logic also live here because text, binary, and close-event handling is backend-specific.
+- Pending-connect promotion belongs here since open or error events are derived from handshake completion state.
+- Open it when WebSocket lifecycle changes; request routing, TCP sockets, and message values live elsewhere.
 
 
 

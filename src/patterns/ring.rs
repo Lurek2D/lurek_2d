@@ -1,7 +1,8 @@
-//! Fixed-capacity ring buffer for rolling gameplay history where the newest samples matter most but recent context still needs to remain queryable in order.
-//! The file stores tagged entries in arrival order and automatically evicts the oldest data once capacity is reached, keeping the window fresh without manual trimming.
-//! Numeric and string payload support makes the structure useful for both measured telemetry and symbolic event trails. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_number`, `push_string`, `iter`, `latest`, `oldest`, and 6 more stays attached to the local data model and invariants.
-//! Aggregate helpers and ordered iteration turn the buffer into a practical runtime history tool instead of a passive overwrite container.
+//! This file owns the fixed-capacity ring buffer used to keep the newest tagged history while evicting stale entries.
+//! `RingEntry` stores numeric or string payloads, while `Ring` tracks capacity, push ids, totals, and entry order.
+//! Automatic front eviction stays here because overwrite policy is part of the buffer contract, not caller behavior.
+//! Aggregate helpers such as sum and average also belong here since numeric rollups derive from ring-owned contents.
+//! Open it when rolling-history semantics change; funnels, throttles, and queues live in sibling pattern modules.
 
 use std::collections::VecDeque;
 

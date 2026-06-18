@@ -1,9 +1,9 @@
-//! Defines the binary utility module boundary for byte serialization, transformation, and integrity workflows. `binary/mod` is the binary module index, declaring `bin_pack`, `byte_data`, `compress`, `data_writer`, `dataview`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-//! Groups packing, encoding, compression, hashing, and buffer primitives under one coherent toolbox. `src/binary/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bin_pack::{read as bin_read, write as bin_write, BinValue}`, `byte_data::ByteData`, `compress::{ compress, compress_chunks, compress_stream, decompress, decompress_chunks, decompress_stream, CompressFormat, }`, `data_writer::DataWriter`, and 5 more centralized for the binary subsystem.
-//! Serves as the composition root for engine-side binary data manipulation operations. The file documents how binary submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! `binary/mod` is the binary module index, declaring `bin_pack`, `byte_data`, `compress`, `data_writer`, `dataview`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/binary/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bin_pack::{read as bin_read, write as bin_write, BinValue}`, `byte_data::ByteData`, `compress::{ compress, compress_chunks, compress_stream, decompress, decompress_chunks, decompress_stream, CompressFormat, }`, `data_writer::DataWriter`, and 5 more centralized for the binary subsystem.
-//! The file documents how binary submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! This module is the public binary toolkit index, re-exporting byte containers, codecs, hashes, and packing surfaces.
+//! It is the entry point for callers that need one import path for raw buffers, typed views, writers, and ring helpers.
+//! `byte_data.rs`, `data_writer.rs`, and `dataview.rs` own buffer storage, mutation, and typed read access concerns.
+//! `encode.rs`, `compress.rs`, and `hash.rs` provide reversible text codecs, compression codecs, and digest utilities.
+//! `pack.rs` and `bin_pack.rs` own two schema formats for struct-like layouts and tokenized typed payload streams.
+//! Change this file when public binary exports move; change sibling files when buffer semantics or formats change.
 
 /// Token-based binary reader and writer for structured byte payloads.
 pub mod bin_pack;

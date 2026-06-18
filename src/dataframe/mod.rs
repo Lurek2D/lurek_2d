@@ -1,5 +1,9 @@
-//! Defines the dataframe module boundary for typed tabular storage, query execution, and serialization flows. `dataframe/mod` is the dataframe module index, declaring `file_io`, `frame`, `lazy`, `query`, `rng`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-//! Groups core frame models, lazy operations, SQL parsing, threaded tasks, and vectorized processing layers. `src/dataframe/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `frame::{CellValue, ColRef, ColumnSchema, DataFrame, DataFrameRowIter, Database}`, `lazy::LazyQuery`, `task::DataFrameTask`, `vectorized::{BinaryOp, CmpOp, ColumnStore, ReduceOp, ScalarOp, VecFrame}` centralized for the dataframe subsystem.
+//! This module is the dataframe index, exposing frame storage, query helpers, serializers, SQL, tasks, and vectors.
+//! It reexports `DataFrame`, `Database`, `LazyQuery`, `DataFrameTask`, and vectorized enums as the public surface.
+//! `frame.rs` owns typed cells and table state, while `query/` extends that state with filtering and analytics flows.
+//! `serial.rs` and `file_io.rs` cover payload conversion and caller-supplied transport, not table mutation semantics.
+//! `sql.rs`, `lazy.rs`, and `task.rs` add planning and execution layers over the same tabular core contracts.
+//! Open this file to navigate module boundaries and exports; actual data behavior, parsing, and math live in siblings.
 
 /// Storage-agnostic dataframe and database file persistence helpers.
 pub mod file_io;

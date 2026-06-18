@@ -1,8 +1,9 @@
-//! Province-level A* pathfinding across adjacency graphs with configurable move costs. `pathfind/graph_path` delivers the graph path implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Adds Dijkstra-based reachability flooding for budget-limited travel. The file owns or coordinates data contracts including `ProvincePath`, `ProvinceCostFn`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Models blocked provinces and edge-tag costs in the search cost. Public callable behavior is centered on `find_province_path`, `province_reachable`, while method-level behavior such as `new` stays attached to the local data model and invariants.
-//! Uses a min-heap priority queue node for standard BinaryHeap ordering. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Applies a Euclidean centroid heuristic for admissible A* search. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Runs province-level graph pathfinding over adjacency maps with configurable province and edge-tag move costs.
+//! Owns ProvincePath results, ProvinceCostFn rules, blocked-province handling, and centroid-based A* heuristics.
+//! Computes cheapest province routes and budget-limited reachability, keeping graph traversal near cost semantics.
+//! Provides the boundary between province topology data and higher-level systems that need traversable region paths.
+//! This file matters when province blocking, tag surcharges, or centroid heuristic assumptions need revision.
+//! Open this owner before touching province registries when only path cost policy or graph search behavior changed.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};

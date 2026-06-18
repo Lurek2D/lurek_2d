@@ -1,6 +1,7 @@
-//! This file defines the skeletal bone unit that carries local pose data and resolved world transform state. `spine/bone` delivers the bone implementation for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Parent linkage is part of the model so chains of motion can propagate naturally through a hierarchy. The file owns or coordinates data contracts including `Bone`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! The type exists as the core transform-bearing element for the rest of the spine animation system. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_parent` stays attached to the local data model and invariants.
+//! This file owns `Bone`, the transform-bearing unit that stores one rig node's local pose and resolved world pose.
+//! It keeps parent linkage, local translation, rotation, scale, and accumulated world-space outputs in one record.
+//! Constructors cover root and child bones so importer and runtime code can build hierarchies without extra defaults.
+//! Open this file when bone transform payloads change; skeleton playback and rendering live in sibling owners.
 
 /// Single bone in the skeleton tree with local and accumulated world-space transform.
 #[derive(Debug, Clone)]

@@ -1,4 +1,4 @@
-//! `src/lua_api/image_api.rs` registers the `lurek.image` Lua boundary for image behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.image` Lua API for image userdata, dimension checks, GIF options, and image transforms.
 
 use super::SharedState;
 use crate::image::serial;

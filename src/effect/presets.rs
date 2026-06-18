@@ -1,7 +1,8 @@
-//! Provides built-in post-effect presets that package curated visual moods into ready-to-use chains. `effect/presets` delivers the presets implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Builds effect sets with viewport-aware stack initialization for immediate runtime application. The file owns or coordinates data contracts including `EffectPreset`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Exposes canonical preset names so scripts can select consistent looks with stable identifiers. Public callable behavior is centered on `preset_names`, `build_preset`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Encapsulates preset assembly logic to keep stylistic recipes centralized and reusable. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `EffectPreset` and the named recipe builders that assemble curated post-effect chains for callers.
+//! It exposes canonical preset names, constructs effect lists, and prepares `PostFxStack` ordering for target dimensions.
+//! Each builder encodes one visual recipe, such as retro TV, horror, dream, neon, or aged sepia composition.
+//! Preset assembly stays centralized here so scripts can request stable looks without duplicating parameter tuning.
+//! Open this file when built-in effect recipes change; effect types, instances, and stack behavior live in siblings.
 
 use super::effect::PostFxEffect;
 use super::effect_type::PostFxEffectType;

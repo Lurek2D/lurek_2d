@@ -1,7 +1,8 @@
-//! This file turns a prepared raycaster scene into software pixels when GPU command generation is not the chosen output path.
-//! It fills ceilings, floors, walls, billboard sprites, and transient model meshes directly into image memory. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Draw order stays deliberately simple so layered surfaces read correctly even without a richer hardware depth workflow. Public callable behavior is centered on no named public items, while method-level behavior such as `draw_to_image` stays attached to the local data model and invariants.
-//! The result is useful for offline images, debug previews, and tool-facing render outputs that need first-person content in CPU memory.
+//! This file owns the software rasterization path that turns a prepared `RaycasterScene` into CPU-side `ImageData`.
+//! It fills ceilings, floors, walls, sprites, and transient meshes in a fixed order using quad and triangle helpers.
+//! The scene already carries geometry, UVs, lighting, and depth intent, so this file translates instead of recomputing.
+//! It is the right owner for previews, captures, and tool outputs that need first-person imagery without renderer commands.
+//! Open this file when CPU draw ordering or fill behavior changes; scene assembly and GPU translation live in siblings.
 
 use crate::image::ImageData;
 use crate::raycaster::scene::RaycasterScene;

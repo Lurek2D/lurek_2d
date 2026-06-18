@@ -1,4 +1,6 @@
-//! Provides Lua table deep-copy behavior for ECS operations that require independent state snapshots. `ecs/lua_table` delivers the lua table implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns recursive Lua table cloning used when ECS snapshots and blueprints must not share nested state.
+//! `deep_copy_table` preserves keys and non-table values while recursively duplicating child tables by value.
+//! Open it when Lua-owned ECS copy semantics change; entity storage and queries live in sibling ECS files.
 
 use mlua::{Lua, Result as LuaResult, Table, Value as LuaValue};
 

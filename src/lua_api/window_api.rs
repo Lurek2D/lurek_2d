@@ -1,4 +1,4 @@
-//! Registers the public `lurek.window` API used by scripts to inspect and request desktop window changes. `src/lua_api/window_api.rs` registers the `lurek.window` Lua boundary for window behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.window` Lua API for displays, window config requests, dialogs, and window inspection.
 
 use super::SharedState;
 use crate::window;

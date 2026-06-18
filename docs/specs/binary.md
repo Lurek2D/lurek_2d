@@ -17,26 +17,16 @@
 
 ## Summary
 
-- Gives scripts low-level byte control for save formats, protocol payloads, and compact runtime data exchange.
-- Supports mutable binary buffers for write-heavy flows and typed read views for safe structured parsing.
-- Enables bit-level edits and indexed byte access when gameplay systems need precise binary patch operations.
-- Provides format-string pack and unpack paths so teams can define wire/file layouts without hand-rolled serializers.
-- Handles endian selection and padding concerns for cross-platform compatibility and legacy format interoperability.
-- Offers data-writer primitives for building binary payloads incrementally with explicit cursor control.
-- Exposes TOML encode/decode helpers that bridge textual config and binary-centric pipelines.
-- Includes MsgPack conversion to move rich Lua values through compact transport or storage channels.
-- Provides compression and decompression across multiple codecs for bandwidth and disk footprint reduction.
-- Supports chunked compression paths for stream-like workflows where full-buffer loading is undesirable.
-- Adds base64 and hex transforms for systems that require text-safe binary representation.
-- Includes cryptographic and checksum hashing to verify integrity or fingerprint content deterministically.
-- Supplies ring-buffer utilities for rolling windows, streaming queues, and fixed-memory pipelines.
-- Helps users keep binary tooling in-engine instead of relying on external preprocessors.
-- Serves as the practical bridge between high-level Lua logic and byte-accurate data contracts.
-- Reduces serialization bugs by centralizing common conversion, packing, and validation patterns.
-- Improves debugging by exposing readable conversion outputs and deterministic hash/checksum results.
-- Lets gameplay and tooling scripts share one consistent binary workflow surface across the project.
+- The `binary` module is the byte-oriented data surface for users who need exact control over compact formats, protocol payloads, and structured runtime interchange.
+- Mutable byte containers, typed views, sequential writers, and pack-style helpers work together so a script can both inspect existing binary data and build new payloads without inventing its own low-level buffer rules.
+- Compression, encoding, hashes, checksums, and ring-buffer helpers matter because real binary workflows usually involve transport safety, storage reduction, and integrity checks alongside raw reads and writes.
+- MsgPack, TOML bridges, and schema-like packing utilities make the module useful for both debug tooling and production-facing data paths such as saves, networking, and cached assets.
+- Exact offset control, byte-order awareness, and sequential write semantics are especially valuable when interoperating with protocols or compact save formats where structure must be reproduced precisely.
+- The module therefore acts as the engine's low-level data construction kit whenever higher-level structured formats are too heavy or too opaque for the problem at hand.
+- In practice this makes `binary` a bridge between human-meaningful data models and the compact byte layouts that transport, persistence, and caching layers often demand.
+- That precision is what makes the module dependable for interoperability work, where one misplaced offset or endian assumption can invalidate an entire payload.
+- Read `binary` as the shared byte-language of the engine: other modules decide what the data means, but `binary` owns how that data is packed, transformed, verified, and moved around safely.
 
-This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -46,77 +36,87 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 
 ### bin_pack.rs
 
-- Implements token-driven binary pack and unpack flows over whitespace-delimited format descriptions. `binary/bin_pack` delivers the bin pack implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports endian-aware serialization of scalar values, strings, booleans, and raw byte payloads. The file owns or coordinates data contracts including `BinValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Applies value coercion rules so heterogeneous input variants can be normalized at write time. Public callable behavior is centered on `write`, `read`, `measure_size`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Handles fixed-width and variable-width token semantics including prefixed and null-terminated strings. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Provides padding support for alignment-sensitive binary structure construction. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Performs bounds-checked reads and returns structured failures on truncated source buffers. The file boundary separates binary implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns the tokenized packing layer that reads whitespace-separated type names for binary layouts.
+- `BinValue` represents explicit scalar, boolean, string, and raw byte values consumed by parsed tokens.
+- Format parsing normalizes endianness selectors and operation tokens before any read, write, or sizing work.
+- The `write` path serializes typed values into bytes, including padding, prefixed strings, and C strings.
+- The `read` path decodes bytes back into typed variants, advancing an offset cursor and checking token spans.
+- `measure_size` computes only fixed-width layouts, rejecting `str` and `cstr` because they remain data-sized.
+- Coercion helpers accept compatible numeric and boolean inputs so callers can feed mixed variants safely.
+- Open it when token-schema semantics change; char-format packing and raw buffer helpers live in siblings.
 
 ### byte_data.rs
 
-- Implements an owned mutable byte buffer with indexed access and conversion helpers. `binary/byte_data` delivers the byte data implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports UTF-8 encoding and tolerant text decoding from arbitrary byte content. The file owns or coordinates data contracts including `ByteData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Exposes immutable and mutable slice views for efficient downstream processing. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_bytes`, `from_string`, `len`, `is_empty`, `get_byte`, and 5 more stays attached to the local data model and invariants.
+- This file owns `ByteData`, the basic owned byte container used by higher-level binary helpers and Lua wrappers.
+- It stores bytes in one growable vector and exposes length, emptiness, indexed mutation, and clone accessors.
+- String conversion helpers bridge UTF-8 text to raw bytes so packers and codecs can share one simple buffer type.
+- Open it when raw buffer ownership semantics change; typed views, writers, and schema formats live in siblings.
 
 ### compress.rs
 
-- Implements multi-codec compression and decompression for buffer and stream style workflows. `binary/compress` delivers the compress implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports deflate, gzip, zlib, and lz4 variants through one unified format selection surface. The file owns or coordinates data contracts including `CompressFormat`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides full-buffer and chunked processing paths for different memory and throughput constraints. Public callable behavior is centered on `compress`, `decompress`, `compress_chunks`, `decompress_chunks`, `compress_stream`, and 1 more, while method-level behavior such as `parse_str` stays attached to the local data model and invariants.
-- Applies bounded compression-level normalization to keep codec settings within valid operating ranges. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Adapts chunk lists into stream readers for incremental processing integration. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns multi-codec compression and decompression helpers for whole buffers, chunks, and stream adapters.
+- `CompressFormat` normalizes user codec choice across deflate, gzip, zlib, and LZ4 entry points.
+- Full-buffer helpers wrap stream implementations so callers can compress or restore byte vectors directly.
+- Chunk helpers flatten borrowed slice lists through `ChunkReader`, preserving incremental read-based call sites.
+- Stream helpers handle codec-specific encoder and decoder wiring plus bounded compression-level normalization.
+- Open it when binary size or transport semantics change; hashing, text encoding, and schema packing live nearby.
 
 ### data_writer.rs
 
-- Implements sequential binary writing over a growable buffer with explicit cursor control. `binary/data_writer` delivers the data writer implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports little-endian and big-endian emission for integers, floats, and string payloads. The file owns or coordinates data contracts including `DataWriter`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Allows seeking within the buffer to overwrite or append structured binary segments. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_capacity`, `tell`, `len`, `is_empty`, `seek`, and 13 more stays attached to the local data model and invariants.
-- Zero-fills gaps when seeking past current length to keep layout deterministic. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `DataWriter`, the sequential binary emitter used to build mutable byte layouts with a cursor.
+- It stores one growable buffer plus write position, allowing append and in-place overwrite flows from one owner.
+- Endian-specific helpers write integers and floats, while string helpers emit length-prefixed UTF-8 payloads.
+- Seeking past current length zero-fills the gap, which keeps patched binary layouts deterministic for readers.
+- Open it when raw write semantics change; typed reading, compression, and schema packing live in siblings.
 
 ### dataview.rs
 
-- Implements a read-only typed view over shared byte storage with offset and length windows. `binary/dataview` delivers the dataview implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides bounds-checked scalar decoding for integer and floating-point primitive types. The file owns or coordinates data contracts including `DataView`, `LuaDataView`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports validated sub-view creation for structured parsing of nested binary regions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `new_slice`, `get_size`, `get_u8`, `get_i8`, `get_u16`, and 5 more stays attached to the local data model and invariants.
-- Keeps shared ownership cheap through Arc-backed buffer references in multi-consumer paths. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `DataView`, the shared read-only byte window used for typed inspection of existing buffers.
+- It stores an Arc-backed buffer with offset and size bounds so subviews can share storage without copying.
+- Scalar getters decode little-endian integers and floats while rejecting out-of-range reads with explicit errors.
+- `LuaDataView` wraps the validated view for Lua ownership, separating scripting handles from raw storage.
+- Open it when typed read semantics change; writers, packers, and byte ownership helpers live in siblings.
 
 ### encode.rs
 
-- Implements textual encoding and decoding of opaque bytes via base64 and hexadecimal formats. `binary/encode` delivers the encode implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Selects algorithms through stable enum variants parsed from user-facing format labels. The file owns or coordinates data contracts including `EncodeFormat`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Returns normalized failures for malformed textual payloads during decode operations. Public callable behavior is centered on `encode`, `decode`, while method-level behavior such as `parse_str` stays attached to the local data model and invariants.
+- This file owns reversible Base64 and hexadecimal conversions for bytes moving through text-only boundaries.
+- `EncodeFormat` parses user codec labels, and the helpers expose one small surface for encode and decode work.
+- Open it when textual binary transport changes; hashing, compression, and structured packing live in siblings.
 
 ### hash.rs
 
-- Implements digest and checksum computation over byte payloads for integrity and fingerprint workflows. `binary/hash` delivers the hash implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports MD5, SHA-1, SHA-256, and SHA-512 cryptographic hash algorithm variants. The file owns or coordinates data contracts including `HashAlgorithm`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides CRC32 checksum generation for fast non-cryptographic validation scenarios. Public callable behavior is centered on `hash`, `crc32`, while method-level behavior such as `parse_str` stays attached to the local data model and invariants.
+- This file owns digest and checksum helpers that turn arbitrary bytes into deterministic hash strings or CRC32.
+- `HashAlgorithm` normalizes user-facing algorithm names for MD5, SHA-1, SHA-256, and SHA-512 selection.
+- The main helpers compute lowercase hex digests from buffers without introducing streaming or file I/O concerns.
+- Open it when binary identity or integrity semantics change; compression and packing behavior live in siblings.
 
 ### mod.rs
 
-- Defines the binary utility module boundary for byte serialization, transformation, and integrity workflows. `binary/mod` is the binary module index, declaring `bin_pack`, `byte_data`, `compress`, `data_writer`, `dataview`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-- Groups packing, encoding, compression, hashing, and buffer primitives under one coherent toolbox. `src/binary/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bin_pack::{read as bin_read, write as bin_write, BinValue}`, `byte_data::ByteData`, `compress::{ compress, compress_chunks, compress_stream, decompress, decompress_chunks, decompress_stream, CompressFormat, }`, `data_writer::DataWriter`, and 5 more centralized for the binary subsystem.
-- Serves as the composition root for engine-side binary data manipulation operations. The file documents how binary submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- `binary/mod` is the binary module index, declaring `bin_pack`, `byte_data`, `compress`, `data_writer`, `dataview`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/binary/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bin_pack::{read as bin_read, write as bin_write, BinValue}`, `byte_data::ByteData`, `compress::{ compress, compress_chunks, compress_stream, decompress, decompress_chunks, decompress_stream, CompressFormat, }`, `data_writer::DataWriter`, and 5 more centralized for the binary subsystem.
-- The file documents how binary submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- This module is the public binary toolkit index, re-exporting byte containers, codecs, hashes, and packing surfaces.
+- It is the entry point for callers that need one import path for raw buffers, typed views, writers, and ring helpers.
+- `byte_data.rs`, `data_writer.rs`, and `dataview.rs` own buffer storage, mutation, and typed read access concerns.
+- `encode.rs`, `compress.rs`, and `hash.rs` provide reversible text codecs, compression codecs, and digest utilities.
+- `pack.rs` and `bin_pack.rs` own two schema formats for struct-like layouts and tokenized typed payload streams.
+- Change this file when public binary exports move; change sibling files when buffer semantics or formats change.
 
 ### pack.rs
 
-- Implements struct-style format packing and unpacking for compact binary schema workflows. `binary/pack` delivers the pack implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Parses tokenized format strings covering numeric types, strings, and explicit padding markers. The file owns or coordinates data contracts including `PackValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports endian switching through prefix directives for cross-platform wire compatibility. Public callable behavior is centered on `pack`, `unpack`, `get_packed_size`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Handles both fixed and variable-width string representations during serialization and decode. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Applies numeric widening and coercion rules so value variants map safely onto target tokens. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Performs strict bounds checks on reads with token-aware failure context for truncated input. The file boundary separates binary implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns the character-format packing layer that serializes and parses compact struct-like layouts.
+- `PackValue` carries signed, unsigned, floating, string, and raw byte variants consumed by the interpreter.
+- The `pack` path walks one-character tokens to write padding, endian-selected scalars, and variable strings.
+- The `unpack` path mirrors those tokens, advances an offset cursor, and returns values plus the next offset.
+- Supported tokens cover integer widths, floats, doubles, length-prefixed bytes, null-terminated bytes, and pad.
+- Coercion helpers widen numeric variants and accept strings or raw bytes where the format expects payload data.
+- Bounds helpers attach token-specific underflow errors so truncated buffers fail with structural context.
+- Open it when compact schema rules change; tokenized `bin_pack` and raw buffer utilities live in siblings.
 
 ### ring_buffer.rs
 
-- Implements a fixed-capacity circular queue with overwrite-on-full FIFO behavior. `binary/ring_buffer` delivers the ring buffer implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports push, pop, peek, and indexed access over the current logical element window. The file owns or coordinates data contracts including `RingBuffer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Preserves deterministic oldest-to-newest traversal for iteration and collection flows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push`, `pop`, `peek`, `peek_newest`, `get`, and 9 more stays attached to the local data model and invariants.
-- Provides copy-optimized extraction helpers for compatible element type constraints. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `RingBuffer`, the fixed-capacity FIFO container that overwrites the oldest item when full.
+- It stores slot storage, head index, configured capacity, and current length for deterministic queue rotation.
+- Core helpers cover push, pop, peeking, indexed access, clearing, and oldest-to-newest iteration of entries.
+- Copy-aware extraction methods let callers collect values or references without repeating circular index math.
+- Open it when transient queue buffering changes; binary codecs, views, and schema packing live in siblings.
 
 
 

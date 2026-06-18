@@ -1,7 +1,8 @@
-//! Implements watched-file tracking with mtime snapshots for change-detection workflows. `devtools/watcher` delivers the watcher implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Polls registered paths and reports deterministic modified-path sets per update tick. The file owns or coordinates data contracts including `FileWatcher`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Integrates optional native notify backend when feature-gated devtools plugin support is enabled. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `watch`, `unwatch`, `watched_paths`, `poll`, `clear`, and 1 more stays attached to the local data model and invariants.
-//! Supports path registration, stale marking, and complete watch-state reset operations. Runtime integration reaches sibling engine areas through crate modules `filesystem`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `FileWatcher`, the watched-path tracker used to detect file changes for hot-reload workflows.
+//! It stores path-to-mtime state, polls for modifications, removals, and stale markers, and returns changed paths.
+//! When the `devtools-plugin` feature is enabled, it also bridges the native `notify` backend into the same API.
+//! Watch, unwatch, clear, and force-changed operations keep registration and reset behavior local to one owner.
+//! Open this file when change-detection semantics move; filesystem mtimes and devtools callers live in siblings.
 
 use crate::filesystem::watcher::read_mtime;
 #[cfg(feature = "devtools-plugin")]

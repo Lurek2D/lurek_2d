@@ -1,7 +1,7 @@
-//! High-level search engine: wires configuration, file filter, and pattern matcher. `grep/engine` delivers the engine implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Delegates file discovery to `FileFilter` and matching to the lightweight `Matcher`. The file owns or coordinates data contracts including `GrepEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Work is split across a small std-thread worker set sized from `GrepConfig::thread_count`. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `search_literal`, `search_regex`, `search_multi`, `search_files`, `count`, and 1 more stays attached to the local data model and invariants.
-//! Returned results are deterministically sorted and capped by `GrepConfig::max_results`. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `GrepEngine`, the high-level search facade that combines config, filters, matchers, and workers.
+//! It builds literal, regex-like, and multi-literal searches, then delegates filesystem scanning to `ParallelSearch`.
+//! Result capping happens here so every entry point obeys `GrepConfig::max_results` before callers inspect matches.
+//! Open this file when top-level grep workflows change; pattern evaluation and raw file traversal live in siblings.
 
 use super::config::GrepConfig;
 use super::filter::FileFilter;

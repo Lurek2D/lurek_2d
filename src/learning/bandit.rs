@@ -1,8 +1,9 @@
-//! Implements multi-armed bandit optimization with per-arm reward history and posterior statistics. `learning/bandit` delivers the bandit implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports epsilon-greedy, UCB-style, and Thompson-style selection strategies in one component. The file owns or coordinates data contracts including `BanditArm`, `BanditStrategy`, `Bandit`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Tracks pull counts and cumulative rewards to adapt action choice under uncertain payoffs. Public callable behavior is centered on no named public items, while method-level behavior such as `mean_reward`, `new`, `arm_count`, `select`, `update`, `best_arm`, and 1 more stays attached to the local data model and invariants.
-//! Uses deterministic random helpers for reproducible sampling during probabilistic strategies. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Exposes reward ingestion, arm selection, and reset operations for online learning loops. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns multi-armed bandit state, covering arm statistics, strategy selection, and reward updates over time.
+//! `BanditArm` stores pull counts and reward totals, while `BanditStrategy` names epsilon-greedy, UCB1, and Thompson modes.
+//! Action selection lives here because exploration policy, posterior sampling, and UCB math depend on arm state.
+//! Reward ingestion and reset logic also stay here so online learning loops mutate one consistent bandit state owner.
+//! Deterministic RNG and Beta or Gamma samplers are local because probabilistic arm choice is part of bandit semantics.
+//! Open it when exploration strategy changes; Q-learning, genomes, and neural model execution live in sibling files.
 
 /// A single bandit arm with accumulated reward statistics.
 #[derive(Clone)]

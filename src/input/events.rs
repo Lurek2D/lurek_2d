@@ -1,4 +1,6 @@
-//! Declares normalized input event names and payload types emitted from the platform event loop. `input/events` delivers the event data and dispatch contracts for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns the canonical string constants for keyboard, mouse, wheel, and text input event names.
+//! It centralizes the Lua-facing event vocabulary so the platform loop and consumers use one stable naming surface.
+//! Open this file when event-name contracts change; device state and dispatch behavior live in sibling files.
 
 /// Lua event name emitted when a keyboard key transitions to pressed.
 pub const EVENT_KEY_PRESSED: &str = "keypressed";

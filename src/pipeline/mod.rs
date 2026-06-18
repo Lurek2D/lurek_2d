@@ -1,5 +1,9 @@
-//! Workflow orchestration module for building dependency-aware task graphs, advancing them over time, and collecting explicit run outcomes.
-//! It ties together graph structure, per-step policy, frame-driven scheduling, and result reporting into one coherent surface for asynchronous or staged work.
+//! `src/pipeline/mod.rs` is the module index that exposes graph structure, step contracts, scheduling, and run results.
+//! It reexports `Pipeline`, `ErrorMode`, `PipelineStep`, `StepStatus`, `PipelineScheduler`, and result types together.
+//! No live pipeline graph or timers live here; this file only declares child modules and defines public visibility.
+//! Read this index when wiring workflows, because it shows where structure, timing, step policy, and outcomes split.
+//! Changes here reshape the pipeline boundary, since reexports decide which orchestration tools other systems import.
+//! This module keeps dependency graphs, step schemas, scheduler timers, and outcome reporting separated by responsibility.
 
 /// DAG, `Pipeline` struct, and `ErrorMode` for dependency-ordered step execution.
 pub mod dag;

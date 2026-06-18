@@ -1,7 +1,8 @@
-//! Scripted step language that drives procedural mapblock generation flow. `mapblock/script` delivers the script implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Encodes fill, targeted placement, random placement, and repeat operations. The file owns or coordinates data contracts including `StepType`, `ScriptStep`, `MapScript`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Stores ordered step sequences consumed directly by the execution engine. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_step`, `add_step_simple`, `get_step`, `get_step_mut`, `step_count`, and 5 more stays attached to the local data model and invariants.
-//! Supports data-driven authoring and runtime construction of generation programs. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the authored step language that drives mapblock generation passes and post-placement paint actions.
+//! `StepType` names the generation verbs, `ScriptStep` stores their parameters, and `MapScript` keeps ordered steps.
+//! Default step values live here because random rotation, mirroring, chance, level, and slot settings shape execution.
+//! Script mutation helpers also stay here so authoring and runtime construction share one stable step-data owner.
+//! Open it when generation verbs change; block legality, candidate search, and result assembly live in siblings.
 
 /// Type of procedural map generation step executed by the build script.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

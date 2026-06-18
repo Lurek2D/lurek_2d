@@ -1,7 +1,7 @@
-//! Agent orchestration logic extracted from Lua runtime glue. `agent/orchestration` delivers the orchestration implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Owns batch-task data contracts, callback ID packing, and system-context assembly. The file owns or coordinates data contracts including `AgentBatchTask`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! This module is runtime-agnostic and intentionally free of `mlua` types. Public callable behavior is centered on `pack_batch_callback_id`, `unpack_batch_callback_id`, `build_system_context`, `make_system_task`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! `agent/orchestration` delivers the orchestration implementation for the agent subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns agent batch-task assembly, callback-id packing, and system-context composition for routed prompts.
+//! It stays free of `mlua` types so Lua runtimes and tests can share one orchestration layer without glue churn.
+//! Helpers merge AI-system prompts, named instruction blocks, and optional agent descriptions into one system block.
+//! Open this file when batch routing changes; transport threads and mutable agent state live in sibling files.
 
 use crate::agent::{AISystemState, AgentState};
 use std::collections::HashMap;

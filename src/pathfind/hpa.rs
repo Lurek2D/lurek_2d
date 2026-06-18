@@ -1,9 +1,11 @@
-//! Hierarchical Pathfinding A* over a chunked NavGrid abstraction. `pathfind/hpa` delivers the hpa implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Partitions the grid into fixed-size chunks and detects entrance nodes at boundaries. The file owns or coordinates data contracts including `AbstractEdge`, `AbstractNode`, `Chunk`, `AbstractGraph`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Builds an abstract graph of chunk-to-chunk edges with computed costs. Public callable behavior is centered on `build_abstract`, `hpa_star`, `is_reachable`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Runs abstract A* search with an octile heuristic. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Refines abstract waypoints back into full grid-level paths per segment. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Supports BFS reachability checks over chunk connectivity. The file boundary separates pathfind implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Builds the hierarchical pathfinding layer that partitions a NavGrid into chunks and entrance-based abstract nodes.
+//! Owns chunk metadata, abstract nodes, abstract edges, and the scans that detect cross-chunk entrances on borders.
+//! Constructs an abstract graph with intra-chunk edge costs, then uses abstract A* before refining to grid paths.
+//! Provides the scale boundary between low-level tile walkability and long-distance routing that needs fewer expands.
+//! Also exposes reachability checks over chunk connectivity so callers can reject impossible goals before refinement.
+//! This file is where chunk size, entrance placement, abstract heuristics, and refinement strategy are coordinated.
+//! Neighboring edits usually involve NavGrid dirty tracking, base A* behavior, and systems consuming long routes.
+//! Open this owner when large-map path performance changes or when abstract graph correctness needs investigation.
 
 use crate::runtime::log_messages::{HP01, HP02, HP03};
 

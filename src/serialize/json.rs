@@ -1,6 +1,7 @@
-//! This file provides JSON translation to and from the engine's intermediate serial value tree. `serialize/json` delivers the json implementation for the serialize subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It preserves the normal JSON shape of scalars, arrays, and objects while exposing that data through one engine-wide representation.
-//! Pretty and compact output choices live here because readable config and compact payloads are both common JSON use cases.
+//! This file owns JSON translation between `serde_json::Value` and the engine's shared `SerialValue` tree.
+//! It parses input text, converts scalars, arrays, and objects, and emits compact or pretty JSON output on demand.
+//! Ordered maps and JSON-specific success logging live here so structure and instrumentation stay format-local.
+//! Open this file when JSON mapping rules change; codec dispatch and Lua bridging remain in sibling modules.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

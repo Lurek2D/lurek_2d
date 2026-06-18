@@ -1,5 +1,9 @@
-//! This module delivers the motion interpolation stack used for scripted and systemic animation. `tween/mod` is the tween module index, declaring `engine`, `handle`, `interpolator`, `spring`, `state`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
-//! It combines timed easing, spring dynamics, and composition primitives in one cohesive surface. `src/tween/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `engine::TweenEngine`, `handle::{LuaTween, LuaTweenParallel, LuaTweenSequence, ParallelEntry, SequenceStep}`, `interpolator::{Tween, TweenValue}`, `spring::{SpringAxis, SpringSystem}`, and 2 more centralized for the tween subsystem.
+//! This module re-exports the tween runtime surface so callers can reach engines, handles, springs, and chains.
+//! It keeps `src/tween` navigation shallow by naming which sibling files own ticking, interpolation, easing, and flow.
+//! Public exports here route scripts and internal runtime code toward `TweenEngine` for active animation scheduling.
+//! It also exposes `LuaTween`, `LuaTweenSequence`, and `LuaTweenParallel` as the Lua-facing control shapes.
+//! State-oriented helpers such as `TweenState`, `Tween`, `SpringSystem`, and `TweenChain` stay discoverable here.
+//! Change this file when the tween subsystem boundary or public symbol map changes, not when animation logic changes.
 
 /// Core tween engine that ticks and manages active tween instances.
 pub mod engine;

@@ -1,8 +1,10 @@
-//! Single parallax layer definition with scroll factor, autoscroll, tiling, opacity, and tint. `parallax/layer` delivers the layer implementation for the parallax subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Carries draw-batch state so render submission stays separated from configuration. The file owns or coordinates data contracts including `ParallaxLayerStats`, `ParallaxDrawBatch`, `ParallaxLayer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Computes camera-relative pixel offsets with optional scroll clamping. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `build_draw_calls`, `stats_for_view`, `reset_autoscroll`, `set_tiling`, and 9 more stays attached to the local data model and invariants.
-//! Delegates tile repetition to tile_iter for viewport coverage. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supports motion-stretch blur injection based on autoscroll velocity. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/parallax/layer.rs` owns the `ParallaxLayer` model and the batch-building logic that drives parallax rendering.
+//! It stores scroll factors, offsets, autoscroll, tiling, tint, opacity, z depth, clamps, and shader effects together.
+//! `ParallaxDrawBatch` and `ParallaxLayerStats` live here because both are derived directly from layer state.
+//! Camera-relative offsets, tile sizing, motion-stretch scaling, and visible tile collection are coordinated in this file.
+//! The file exposes update, configuration, statistics, and batch-construction helpers without talking to the renderer.
+//! Tile enumeration is delegated to `tile_iter`, while command flattening and bitmap export stay in sibling helper files.
+//! Read it when scroll behavior, effect chaining, batch contents, layer telemetry, or parallax state ownership changes.
 
 use crate::render::BlendMode;
 use crate::render::ShaderPassDescriptor;

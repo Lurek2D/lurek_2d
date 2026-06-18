@@ -1,8 +1,10 @@
-//! Dependency-ordered pipeline graph that models work as named steps linked by explicit prerequisites instead of implicit call ordering.
-//! The file gives the module its structural brain by storing step topology, validating references, and determining which work can safely happen before or beside other work.
-//! Topological sorting and cycle detection keep invalid orchestration from reaching runtime execution, which matters when workflows are composed dynamically from scripts or tools.
-//! Parallel grouping exposes natural concurrency boundaries without abandoning dependency correctness, letting unrelated branches advance together when the graph permits it.
-//! Sub-pipeline merging makes larger workflows composable by folding one graph into another under namespaced identities and inherited outer dependencies.
+//! `src/pipeline/dag.rs` owns the dependency graph that stores steps, validates references, and computes run order.
+//! It defines `ErrorMode` and `Pipeline`, keeping registration, dependency checks, cycle detection, and queries together.
+//! Topological ordering and parallel-group discovery live here, so structural execution rules stay separate from timing.
+//! This file resolves dependency satisfaction, sub-pipeline merging, reset behavior, and final result collection logic.
+//! ASCII diagram rendering also lives here, making graph inspection and tooling-friendly pipeline introspection explicit.
+//! It is the structural boundary for workflow orchestration; step metadata, timers, and result summaries depend on it.
+//! Read this file when dependency semantics, cycle handling, merge behavior, or execution-order rules must change.
 
 use crate::log_msg;
 use crate::pipeline::result::{PipelineResult, PipelineStatus};

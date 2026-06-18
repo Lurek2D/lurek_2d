@@ -1,8 +1,9 @@
-//! Records and replays input timelines as frame-indexed event sequences for automation and debugging. `input/recorder` delivers the recorder implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Captures sparse frame data so silent periods do not inflate stored replay size. The file owns or coordinates data contracts including `InputEvent`, `RecordedFrame`, `InputRecording`, `InputRecorder`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Serializes recordings through versioned JSON envelopes for stable persistence and interchange. Public callable behavior is centered on no named public items, while method-level behavior such as `to_json`, `from_json`, `new`, `start_recording`, `record_frame`, `stop_recording`, and 7 more stays attached to the local data model and invariants.
-//! Tracks recorder lifecycle state for live capture, loading, seeking, and playback progression. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supports deterministic test scenarios by emitting recorded events on their original frame numbers. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `InputEvent`, `RecordedFrame`, `InputRecording`, and `InputRecorder` replay state.
+//! It stores sparse frame activity, total frame counts, playback cursors, and recorder lifecycle booleans.
+//! Serialization uses a versioned JSON envelope so persisted recordings can be validated on load and save.
+//! Recording helpers append per-frame events and mouse positions, while playback re-emits events on original frames.
+//! The owner boundary is about deterministic capture and replay, not about collecting raw device state itself.
+//! Open this file when replay schema or playback semantics change; live device polling lives in sibling files.
 
 /// A single input event with a kind tag and a key/button name.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]

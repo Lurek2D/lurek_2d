@@ -1,7 +1,8 @@
-//! Core province domain types for expressing identity, border semantics, style, and snapshot state with names that match the map system's real concepts.
-//! The file gives province ids stronger meaning than plain integers while also defining the compact style and border structures that other province layers share.
-//! Snapshot forms matter because callers often need a stable read-only view of province state without borrowing the full mutable registry.
-//! By concentrating these definitions here, the module keeps shared province vocabulary consistent across import, rendering, routing, and Lua exposure.
+//! Defines shared province value types used across registry, rendering, routing, and import code paths together.
+//! Owns identifiers, border configuration structs, style payloads, and lightweight province snapshot structures.
+//! Provides the data contract boundary for province styling and border-pair semantics that many files depend on.
+//! This file is the right owner for shape-independent province schema changes that should stay reusable everywhere.
+//! Neighboring work often touches registry mutation APIs, renderer color logic, and border indexing expectations.
 
 use std::collections::HashMap;
 

@@ -1,5 +1,9 @@
-//! Defines the cursor module boundary for system, custom, animated, contextual, and effect-driven cursor behavior. `cursor/mod` is the cursor module index, declaring `animated_cursor`, `config`, `context`, `custom_cursor`, `system_cursor`, and 2 more so agents can identify which files own each feature slice before opening implementation code.
-//! Groups cursor state types, visual effects, and configuration contracts into one cohesive runtime surface. `src/cursor/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `animated_cursor::{AnimatedCursor, PulseConfig}`, `config::CursorConfig`, `context::{CursorContext, CursorManager}`, `custom_cursor::CustomCursor`, and 3 more centralized for the cursor subsystem.
+//! `src/cursor/mod.rs` is the module index that exposes cursor state types, policy managers, and visual cursor effects.
+//! It reexports system, custom, and animated cursor types plus context, trail, zoom, and config helpers together.
+//! No active cursor state lives here; this file only declares child modules and defines which cursor symbols are public.
+//! Read this index when wiring pointer features, because it shows where cursor assets, policy, and effects are separated.
+//! Changes here reshape the cursor boundary, since reexports decide what runtime code may import without deep paths.
+//! This module keeps cursor images, context switching, trail effects, and zoom-lens state split by clear ownership.
 
 /// Animated cursor with frame sequences, timing, and pulse effects.
 pub mod animated_cursor;

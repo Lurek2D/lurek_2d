@@ -1,6 +1,7 @@
-//! This file translates TOML documents into the engine's intermediate serial tree and back again. `serialize/toml` delivers the toml implementation for the serialize subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It exists mainly for human-edited structured configuration where readability and stable nesting matter more than raw compactness.
-//! Conversion details between the external TOML value model and the engine's generic serial model are localized here. Public callable behavior is centered on `parse_toml`, `from_toml`, `encode_toml`, `to_toml`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! This file owns TOML translation between human-edited configuration text and the shared `SerialValue` tree.
+//! It parses raw TOML, converts value trees in both directions, and encodes table-shaped output back to text.
+//! Datetime values are normalized into strings, while nulls are rejected because TOML has no native null value.
+//! Open this file when TOML mapping rules change; generic codec dispatch and other formats live in sibling files.
 
 use super::lua_table::SerialValue;
 use indexmap::IndexMap;

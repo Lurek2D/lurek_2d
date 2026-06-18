@@ -1,6 +1,6 @@
-//! This file defines the small command language for colon-prefixed REPL control actions. `repl/commands` delivers the commands implementation for the repl subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It keeps command intent separate from evaluation logic so parsing and execution stay cleanly divided. The file owns or coordinates data contracts including `ReplCommand`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! The result is a lightweight vocabulary for session management layered on top of ordinary Lua input. Public callable behavior is centered on no named public items, while method-level behavior such as `display_text` stays attached to the local data model and invariants.
+//! `src/repl/commands.rs` defines the colon-command vocabulary that controls REPL behavior without entering plain Lua code.
+//! `ReplCommand` captures help, quit, clear, reset, and file-load intents so session control stays typed and explicit.
+//! Open this file when REPL control syntax or command result text changes, not when Lua evaluation semantics change.
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 /// Special colon command recognised by `ReplSession`.

@@ -1,7 +1,8 @@
-//! Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies. `pipeline/scheduler` delivers the scheduler implementation for the pipeline subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! The file counts down configured delays, tracks overall runtime progress, and reports which waiting steps are now allowed to begin.
-//! Waiting membership is tracked explicitly in scheduler-owned timers, so async readiness does not depend on mutating pipeline definition structs at runtime.
-//! Keeping this timing logic separate from the graph keeps execution pacing explicit without diluting structural dependency rules.
+//! `src/pipeline/scheduler.rs` owns frame-driven delay timers that decide when waiting pipeline steps become ready to run.
+//! `PipelineScheduler` tracks elapsed time, running state, and per-step countdowns without duplicating graph rules.
+//! Waiting-step synchronization and ready-step reporting live here, keeping pacing policy distinct from validation.
+//! This file keeps timer state separate from pipeline definitions, which preserves cleaner orchestration data.
+//! Read this file when delay countdowns, readiness emission, or scheduler reset behavior for pipeline execution changes.
 
 use crate::pipeline::dag::Pipeline;
 use crate::pipeline::step::StepStatus;

@@ -1,7 +1,8 @@
-//! Implements guarded invocation of named `lurek.*` callbacks from engine-side runtime flow. `app/lua_callbacks` delivers the lua callbacks implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides checked and logging variants so callers choose explicit error propagation behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports optional timeout enforcement via instruction hooks to stop runaway callback execution. Public callable behavior is centered on `call_lua_callback`, `call_lua_callback_checked`, `has_lua_callback`, `call_lua_callback_with_timeout`, `call_lua_callback_checked_with_timeout`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Serves as the callback safety boundary between frame orchestration and Lua script handlers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns guarded `lurek.*` callback invocation helpers used by the desktop app runtime and UI bridges.
+//! It exposes logging and checked variants, probes callback presence, and resolves functions from the active Lua VM.
+//! Optional timeout wrappers install instruction hooks so runaway callbacks abort with a named runtime error.
+//! The file is the safety boundary between host events and Lua execution, keeping timeout policy in one owner.
+//! Open it when callback guard semantics change; frame orchestration and input dispatch live in sibling modules.
 
 use mlua::prelude::*;
 use mlua::HookTriggers;

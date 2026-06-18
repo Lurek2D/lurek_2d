@@ -1,4 +1,4 @@
-//! `src/lua_api/audio_api.rs` registers the `lurek.audio` Lua boundary for audio behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.audio` Lua API for sound playback, source handles, beat clocks, and audio data parsing.
 
 use super::SharedState;
 use crate::audio::sound_data::SoundData;

@@ -1,9 +1,11 @@
-//! Provides globe region-loading workflows from TOML, raster grids, and generated Voronoi seed sources. `globe/loader` delivers the asset or data loading path for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Parses lightweight structured input into normalized region records with geometry and adjacency data. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Converts intermediate builder state into shared globe region types used across the subsystem. Public callable behavior is centered on `load_from_toml_str`, `load_from_toml_file`, `load_from_png_file`, `load_from_province_grid`, `generate_voronoi_provinces`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Extracts bounds and neighbor hints from image-driven province maps for quick content bootstrapping. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, `province`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Handles primitive parsing and validation to keep load-time failures explicit and actionable. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Supports both in-memory string input and file-based ingestion paths for tooling flexibility. The file boundary separates globe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Loads globe regions from TOML, PNG-derived province grids, and generated Voronoi seeds into shared region data.
+//! Owns TOML parsing helpers, intermediate record normalization, validation messages, and region conversion logic.
+//! Converts input geometry into Region and RegionPart values with centroids, neighbors, colors, textures, and attrs.
+//! Also bootstraps approximate globe regions from ProvinceGrid contours so content can start from painted province maps.
+//! Provides the ingestion boundary between authoring assets and the normalized globe structures used at runtime.
+//! This file is where parse errors, shape normalization, and asset-to-region field mapping are coordinated together.
+//! Neighboring changes usually involve ProvinceGrid polygon output, Voronoi generation, and shared globe type contracts.
+//! Open this owner when content formats change or when load-time diagnostics need more exact, source-level coverage.
 
 use crate::globe::types::{Region, RegionId, RegionPart};
 use crate::math::voronoi::voronoi_from_points;

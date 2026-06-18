@@ -1,7 +1,8 @@
-//! Debug visualization for pathfinding structures as colored RenderCommand lists. `pathfind/render` delivers the rendering adapter and draw-command integration for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Draws NavGrid cells, FlowField arrows, and InfluenceMap heat overlays. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Returns batches ready for overlay drawing in the renderer. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
-//! Gives developers a direct view into navigation data. Runtime integration reaches sibling engine areas through crate modules `pathfind`, `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Adds debug rendering adapters that turn pathfinding state into renderer commands for inspection overlays.
+//! Owns NavGrid tile shading, FlowField arrow drawing, and InfluenceMap heat visualization command generation.
+//! Provides the presentation boundary between pathfinding data structures and the generic RenderCommand stream.
+//! This file is the right owner when debug overlay colors, glyph shapes, or sampling rules need adjustment.
+//! Neighboring changes usually involve render command capabilities and the path structures being visualized.
 
 use crate::pathfind::flow_field::FlowField;
 use crate::pathfind::influence_map::InfluenceMap;

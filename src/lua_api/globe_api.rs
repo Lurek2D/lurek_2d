@@ -1,4 +1,4 @@
-//! `src/lua_api/globe_api.rs` registers the `lurek.globe` Lua boundary for globe behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.globe` Lua API for globe state, markers, regions, colors, and latitude-longitude validation.
 
 use super::SharedState;
 use crate::globe::export::export_regions_to_obj;

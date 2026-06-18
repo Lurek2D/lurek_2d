@@ -1,13 +1,18 @@
-//! This file provides UI render emission for GPU commands and headless pixel raster outputs. `ui/render` delivers the rendering adapter and draw-command integration for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It draws the full retained widget catalog with consistent visual behavior across states. The file owns or coordinates data contracts including `TextLine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It resolves theme style data per widget and applies alpha-aware color composition. Public callable behavior is centered on `push_scissor`, `pop_scissor`, while method-level behavior such as `build_render_commands_with_fonts`, `build_render_commands`, `generate_render_commands`, `draw_to_image` stays attached to the local data model and invariants.
-//! It emits shared primitives for shadows, fills, borders, gradients, and highlights. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `runtime`, `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It handles control-specific visuals such as sliders, checks, radios, combos, and switches. External integration uses `slotmap`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! It renders hierarchical content like trees and menus while preserving structural readability. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! It supports color-picker internals with hue-space conversion used during visual generation. State changes, validation paths, and helper routines in `src/ui/render.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! It threads context, font, and output carriers through one deterministic render traversal. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
-//! It merges generic and type-specific child sources so nested widgets render in correct order. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
-//! It measures and aligns text with active font context to keep typography placement stable. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
+//! Turns retained UI state into render commands and headless pixel output for screenshots, docs, and tests.
+//! Resolves theme style data per widget state and applies alpha-aware fills, borders, shadows, and highlights.
+//! Emits control-specific visuals for sliders, checkboxes, radios, combos, switches, and progress indicators.
+//! Measures, lays out, and draws text with active font context so labels and values stay aligned across widgets.
+//! Renders tree, menu, and other hierarchical content while preserving ordering and structural readability.
+//! Supports CPU image output for offline verification so UI visuals can be checked without a live GPU frame.
+//! Includes hue conversion and color-picker helpers needed by visual controls inside the retained widget catalog.
+//! Merges generic children and type-specific children into one deterministic traversal for stable render ordering.
+//! Threads context, fonts, scissor state, and output carriers through a single render pass boundary.
+//! Keeps widget drawing policy local so the central context does not need to understand visual implementation details.
+//! Acts as the presentation boundary between retained widget state and the renderer command language.
+//! Exposes draw-to-image behavior that tooling and tests rely on when comparing visual regressions frame to frame.
+//! Integrates only the math and render helpers required to translate widget rectangles into concrete draw output.
+//! Open this file when a widget exists and lays out correctly but still draws with the wrong visual behavior.
+//! It is the right owner for UI paint bugs because control semantics stay elsewhere and visuals converge here.
 
 use crate::math::Rect;
 use crate::render::renderer::{DrawMode, GradientDirection, RenderCommand};

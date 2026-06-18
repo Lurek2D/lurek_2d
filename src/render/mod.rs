@@ -1,9 +1,11 @@
-//! Unified entry point for the Lurek2D render module stack. `render/mod` is the render module index, declaring `canvas`, `decal_surface`, `draw_layer`, `font`, `gpu_light`, and 17 more so agents can identify which files own each feature slice before opening implementation code.
-//! Exposes submodules for canvases, decal surfaces, shapes, and font managers. `src/render/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `canvas::Canvas`, `decal_surface::DecalSurface`, `draw_layer::DrawLayer`, `font::Font`, and 10 more centralized for the render subsystem.
-//! Declares modules for the GPU-accelerated renderer and compiled pipelines. The file documents how render submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! Unifies draw interfaces, shader uniform mappings, and shader passes. Agents should read this index to choose the narrow owner file first, because it maps names such as `canvas`, `decal_surface`, `draw_layer`, `font`, `gpu_light`, and 17 more to concrete implementation responsibilities.
-//! Bridges game runtime draw buffers to backend hardware rendering layers. Re-export decisions in this file define the stable Rust boundary consumed by sibling modules, Lua bindings, generated specs, and examples that mention render features.
-//! Conforms to the binding rules, exposing all public rendering APIs. The module stays implementation-light by delegating behavior to child files, which preserves a clear boundary between navigation metadata and executable subsystem logic.
+//! Exports the render subsystem surface that groups canvases, GPU owners, fonts, shapes, shaders, and pipelines.
+//! Acts as the render ownership index so callers can map a rendering concern to its concrete Rust owner file.
+//! Centralizes module visibility and re-exports instead of storing live frame state or issuing draw work itself.
+//! Connects front-end draw commands, geometry assets, shader tools, and GPU execution modules into one stack.
+//! Provides the first navigation point when tracing whether a render issue belongs to shaders, resources, or passes.
+//! Keeps the public render surface coherent while allowing narrow files like mesh or image_effect to stay focused.
+//! Open this file first when adding a render owner or changing shared render API re-export policy.
+//! Use it to locate the right implementation file before editing orchestration, resources, geometry, or shaders.
 
 /// CPU-side canvas API: paint-style pixel and shape commands on an `ImageData` surface.
 pub mod canvas;

@@ -17,23 +17,16 @@
 
 ## Summary
 
-- This module gives users a sandboxed file service that keeps script I/O inside controlled game paths.
-- Path normalization and traversal checks help keep behavior consistent and safe across desktop platforms.
-- Virtual mount support lets teams overlay directories under logical prefixes, while ZIP mounts remain standalone handle-based archive views.
-- This is useful for mods, DLC-style content packs, and environment-specific asset overrides.
-- ZIP archive handles read files on demand without promising full GameFS overlay integration.
-- Sync file handles support common stream patterns such as read, write, append, seek, and line iteration.
-- Async read/write operations move heavy transfer work off the main thread.
-- Poll-based watcher features enable hot-reload loops for assets and config updates.
-- JSON helpers and temporary file utilities reduce boilerplate in tooling scripts.
-- Metadata and recursive listing APIs support content indexing and diagnostics.
-- Mount introspection helps users reason about effective storage topology at runtime.
-- The module unifies persistence, asset lookup, and automation-friendly file access in one namespace.
-- For users, this means fewer custom path hacks and fewer platform-specific surprises.
-- It supports both gameplay persistence and build/test tooling workflows.
-- Overall, it is the core storage abstraction for safe and flexible runtime file operations.
+- The `filesystem` module is the sandboxed storage surface for users who need file access without giving every script raw platform path power.
+- Path normalization, traversal checks, mounts, archive access, synchronous handles, and asynchronous IO combine into one controlled runtime view of storage.
+- That matters because asset lookup, save data, mod content, hot reload, and tooling workflows all need file access, but they should not each invent their own safety and path rules.
+- Watchers, metadata queries, recursive listing, and convenience helpers make the module useful for diagnostics and content tooling as well as for normal gameplay persistence.
+- Mount and archive support are especially important because real projects often mix loose files, packaged assets, save locations, and mod roots under one conceptual storage view.
+- The sandboxed design is the key policy boundary: `filesystem` exists so scripts can do meaningful file work while the engine still controls what paths are valid, portable, and safe to expose.
+- Async reads and watch-style helpers also make the module practical for hot-reload and content-iteration workflows where storage changes need to become observable runtime events.
+- This gives the engine one place to reason about what storage operations are allowed, observable, and portable across several execution environments.
+- Read `filesystem` as the place where byte-oriented storage becomes safe, portable, and composable for the rest of the engine.
 
-This module primarily collaborates with `dataframe`, `runtime`. Its responsibility should stay inside the Core Runtime group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -44,52 +37,63 @@ This module primarily collaborates with `dataframe`, `runtime`. Its responsibili
 
 ### async_loader.rs
 
-- Provides background file I/O through a dedicated worker thread and bounded request channel. `filesystem/async_loader` delivers the async loader implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports non-blocking read and write scheduling with opaque handles for later status polling. The file owns or coordinates data contracts including `LoadHandle`, `LoadResult`, `LoadStatus`, `WriteResult`, `WriteStatus`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Stores results in thread-safe maps so callers can retrieve outcomes without blocking producers. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `request_load`, `request_write`, `poll`, `pending_results`, `poll_write` stays attached to the local data model and invariants.
-- Enforces queue capacity limits to keep memory and scheduling pressure under control. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Handles worker lifecycle shutdown cleanly when the loader is dropped. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- `src/filesystem/async_loader.rs` owns the background worker queue for asynchronous file reads and writes.
+- It stores request ids, bounded channels, result maps, and the worker thread that executes resolved path operations.
+- Load and write status enums live here so callers can schedule work and poll outcomes without blocking game threads.
+- Queue saturation, spawn failure reporting, and worker shutdown behavior are handled here as part of the I/O contract.
+- This file does not resolve logical paths itself; higher layers must hand it already validated host filesystem targets.
+- Read it when async I/O scheduling, poll semantics, queue limits, or worker lifecycle behavior needs to change.
 
 ### file_data.rs
 
-- Provides a lightweight file payload container pairing logical paths with loaded raw bytes. `filesystem/file_data` delivers the file data implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Exposes basic size, emptiness, and UTF-8 decode helpers for convenient caller-side consumption. The file owns or coordinates data contracts including `FileData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Delivers the shared data object returned by filesystem read operations. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `len`, `is_empty`, `as_str` stays attached to the local data model and invariants.
+- `src/filesystem/file_data.rs` owns the lightweight payload object returned by filesystem reads and cache lookups.
+- It stores a logical path with raw bytes and exposes size, emptiness, and UTF-8 decoding helpers for callers.
+- Read it when file payload shape, decode helpers, or shared read-result contracts in the filesystem need changes.
 
 ### file_handle.rs
 
-- Provides buffered file-handle behavior for mode-aware read, write, and append stream operations. `filesystem/file_handle` delivers the file handle implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Resolves logical game paths through GameFS before touching host filesystem resources. The file owns or coordinates data contracts including `FileMode`, `FileHandle`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Exposes byte and line reading utilities with EOF-aware iteration semantics. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_mode`, `as_str`, `open`, `read`, `read_line`, `write`, and 8 more stays attached to the local data model and invariants.
-- Supports seek, tell, flush, and explicit close workflows for predictable stream control. Runtime integration reaches sibling engine areas through crate modules `filesystem`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Enforces access-mode checks so invalid operation mixes fail with clear runtime errors. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- `src/filesystem/file_handle.rs` owns buffered stream handles for mode-aware reading, writing, appending, and seeking.
+- It stores the active access mode, resolved host path, logical path, buffered reader or writer, and captured file size.
+- Mode parsing, access checks, EOF probing, flushing, closing, and line reads all live here with one handle contract.
+- This file opens paths through `GameFS`, but it does not decide mount precedence or save-directory sandbox policy.
+- Drop-based cleanup also lives here so buffered writes flush predictably when a handle leaves scope or closes early.
+- Read it when stream semantics, mode validation, cursor behavior, or buffered file access contracts need changes.
 
 ### mod.rs
 
-- Provides the high-level filesystem module boundary for virtual mounts, async loading, and file handle access. `filesystem/mod` is the filesystem module index, declaring `async_loader`, `file_data`, `file_handle`, `vfs`, `watcher`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
-- Connects path resolution, buffered I/O, watch support, and archive overlays into one storage surface. `src/filesystem/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `async_loader::{AsyncLoader, LoadHandle, LoadResult, LoadStatus, WriteResult, WriteStatus}`, `file_data::FileData`, `file_handle::{FileHandle, FileMode}`, `vfs::{FileInfo, FileType, GameFS, MountLayer}` centralized for the filesystem subsystem.
+- `src/filesystem/mod.rs` is the module index for virtual paths, file data, handles, watchers, async I/O, and ZIP mounts.
+- It declares the files that own path resolution, buffered stream access, archive overlays, watch polling, and worker I/O.
+- This file reexports the main filesystem types so callers can use storage services without importing deep internal paths.
+- No path normalization, mount state, or worker queues live here; it only defines visibility and subsystem boundaries.
+- Read this index first when tracing filesystem behavior, because it shows where sandboxing, streams, and mounts split.
+- Changes here affect reachability and API shape, not traversal checks, file polling, or read and write semantics.
 
 ### vfs.rs
 
-- Provides the core virtual filesystem implementation rooted at a game directory and save space. `filesystem/vfs` delivers the vfs implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Resolves read and write paths through mount overlays and base-root fallback rules. The file owns or coordinates data contracts including `FileInfo`, `FileType`, `MountLayer`, `GameFS`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Enforces traversal rejection and write confinement to preserve sandboxed filesystem behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `new`, `base_dir`, `read_string`, `read_bytes`, `write_string`, and 35 more stays attached to the local data model and invariants.
-- Exposes metadata, glob, list, copy, move, and removal operations under one coherent API. Runtime integration reaches sibling engine areas through crate modules `dataframe`, `filesystem`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Supports layered directory and archive mounts with deterministic conflict resolution order. External integration uses `serde_json`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Builds file-handle and async-loader integration points over canonical resolved paths. The file boundary separates filesystem implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- `src/filesystem/vfs.rs` owns the virtual filesystem rooted at the game directory, save area, and mounted overlays.
+- It stores base-dir identity, mount layers, and file metadata contracts while exposing the main `GameFS` API surface.
+- Path normalization, traversal rejection, read-path resolution, and save-write confinement are enforced in this file.
+- Read, write, list, glob, stat, copy, move, remove, JSON, and directory helpers all live here behind one sandbox owner.
+- Mounted directories and overlays are merged here with deterministic precedence and virtual directory support.
+- This file also builds integration points for `FileHandle`, `AsyncLoader`, and dataframe file-store persistence flows.
+- Filesystem identity, save-directory helpers, and temp-file creation stay here so storage policy remains centralized.
+- This file is the authoritative path and mount boundary; ZIP entry reads and buffered streams stay elsewhere.
+- Read it when sandbox rules, mount behavior, path resolution, or high-level filesystem operations need to change.
 
 ### watcher.rs
 
-- Provides poll-based file watch behavior that detects mtime changes for registered paths. `filesystem/watcher` delivers the watcher implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Maintains cached modification snapshots and reports deterministic change sets per poll cycle. The file owns or coordinates data contracts including `FileWatcher`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports watch, unwatch, and forced invalidation workflows for runtime refresh control. Public callable behavior is centered on `read_mtime`, while method-level behavior such as `new`, `watch`, `unwatch`, `is_watching`, `poll`, `len`, and 2 more stays attached to the local data model and invariants.
+- `src/filesystem/watcher.rs` polls watched paths and reports which files changed since the previous snapshot.
+- It owns watch registration, cached mtimes, deterministic poll ordering, and forced invalidation for refresh flows.
+- This file is the change-detection helper for filesystem clients; it does not resolve paths or read file contents.
+- Read it when watch semantics, change polling, or refresh-trigger contracts for filesystem consumers need changes.
 
 ### zip_mount.rs
 
-- Provides ZIP-backed virtual mount behavior that maps normalized virtual paths to archive entries. `filesystem/zip_mount` delivers the zip mount implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Builds an index for fast repeated lookups while reading files on demand without full extraction. The file owns or coordinates data contracts including `ZipMount`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Enforces traversal-safe path handling before archive access to maintain sandbox guarantees. Public callable behavior is centered on `normalise`, `is_traversal`, while method-level behavior such as `new`, `read_file`, `contains`, `list_files` stays attached to the local data model and invariants.
-- Supports listing and existence checks over mounted archive content through a unified interface. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/filesystem/zip_mount.rs` mounts a ZIP archive as a virtual read-only path prefix inside the filesystem layer.
+- It owns archive indexing, normalized virtual-path lookup, traversal rejection, and on-demand entry reads from ZIP data.
+- Contains and list operations live here so archive-backed mounts can behave like directory sources to higher layers.
+- This file is the archive overlay boundary; it does not manage save writes, async queues, or mutable stream handles.
+- Read it when virtual archive paths, ZIP lookup behavior, or sandbox checks for mounted content need to change.
 
 
 

@@ -17,19 +17,13 @@
 
 ## Summary
 
-- This module gives users layered parallax control for creating depth in 2D scenes.
-- Layers can move at different scroll factors relative to camera movement.
-- Autoscroll support enables moving skies, fog drift, and ambient motion backgrounds.
-- Clamp options keep layer motion within designed world bounds.
-- Tiling logic maintains seamless coverage across the viewport.
-- Preset layers provide quick-start setups for common depth planes.
-- Motion-stretch options add velocity-driven style cues.
-- Per-layer effect chains support stylized post-processing on background planes.
-- Layer and set telemetry expose tile counts, effect pressure, and autoscroll state for runtime dashboards.
-- Layer sets help organize multiple planes into reusable scene groups.
-- For users, this module turns depth presentation into a configurable runtime system.
+- The `parallax` module is the layered-background surface for users who want depth, motion, and atmospheric scene composition without full 3D world simulation.
+- Layer definitions, presets, tiling behavior, and render helpers work together so several background planes can move at different rates relative to the camera and create a stronger sense of depth.
+- Drawing support and image export matter because parallax content may be used both in live rendering and in tooling or preview workflows.
+- The module is useful for skies, distant scenery, decorative world layers, and motion-rich menu or transition backdrops that should stay cheaper and simpler than full interactive geometry.
+- Camera-relative speed policy matters because background depth reads differently in side views, menus, and travel scenes, and the module keeps those offsets tunable instead of hardcoded.
+- Read it as the place where depth-illusion backgrounds become reusable scene content rather than a one-off renderer trick.
 
-This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -41,38 +35,47 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ### draw.rs
 
-- Rasterises a single parallax layer into an ImageData bitmap. `parallax/draw` delivers the draw implementation for the parallax subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- `src/parallax/draw.rs` rasterizes a single `ParallaxLayer` into `ImageData` for export, previews, or tooling use.
+- It owns only the bitmap fill path, translating visibility, tint, and opacity into a flat image without tiling logic.
+- Read it when parallax image export, solid-fill preview behavior, or layer-to-bitmap bridging needs to change.
 
 ### layer.rs
 
-- Single parallax layer definition with scroll factor, autoscroll, tiling, opacity, and tint. `parallax/layer` delivers the layer implementation for the parallax subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Carries draw-batch state so render submission stays separated from configuration. The file owns or coordinates data contracts including `ParallaxLayerStats`, `ParallaxDrawBatch`, `ParallaxLayer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Computes camera-relative pixel offsets with optional scroll clamping. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `build_draw_calls`, `stats_for_view`, `reset_autoscroll`, `set_tiling`, and 9 more stays attached to the local data model and invariants.
-- Delegates tile repetition to tile_iter for viewport coverage. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Supports motion-stretch blur injection based on autoscroll velocity. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- `src/parallax/layer.rs` owns the `ParallaxLayer` model and the batch-building logic that drives parallax rendering.
+- It stores scroll factors, offsets, autoscroll, tiling, tint, opacity, z depth, clamps, and shader effects together.
+- `ParallaxDrawBatch` and `ParallaxLayerStats` live here because both are derived directly from layer state.
+- Camera-relative offsets, tile sizing, motion-stretch scaling, and visible tile collection are coordinated in this file.
+- The file exposes update, configuration, statistics, and batch-construction helpers without talking to the renderer.
+- Tile enumeration is delegated to `tile_iter`, while command flattening and bitmap export stay in sibling helper files.
+- Read it when scroll behavior, effect chaining, batch contents, layer telemetry, or parallax state ownership changes.
 
 ### mod.rs
 
-- Multi-layer parallax scrolling system with per-layer speed, tiling, and draw-batch accumulation. `parallax/mod` is the parallax module index, declaring `draw`, `layer`, `presets`, `render`, `tile_iter` so agents can identify which files own each feature slice before opening implementation code.
-- Provides preset constructors for common depth planes and tile iteration helpers for rendering. `src/parallax/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `layer::{ParallaxDrawBatch, ParallaxLayer}` centralized for the parallax subsystem.
+- `src/parallax/mod.rs` is the module index for parallax state, draw helpers, presets, rendering, and tile iteration.
+- It declares files for layer ownership, renderer bridging, bitmap export, presets, and tiled viewport coverage helpers.
+- This file reexports `ParallaxLayer` and `ParallaxDrawBatch` so callers can use the subsystem without deep imports.
+- No scrolling state or camera math lives here; it only defines the public boundary and file ownership map.
+- Read this index first when tracing parallax features, because it shows where layer logic ends and helpers begin.
+- Changes here affect module reachability and API shape, not scroll behavior, batching, or render-command generation.
 
 ### presets.rs
 
-- Ready-made parallax layer constructors for common depth planes. `parallax/presets` delivers the presets implementation for the parallax subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Covers far background, mid background, and foreground fog presets. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Bakes scroll factor, repeat, z-order, opacity, and blend mode into each preset. Public callable behavior is centered on `far_background`, `mid_background`, `foreground_fog`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- `src/parallax/presets.rs` defines ready-made `ParallaxLayer` constructors for common background and fog depth planes.
+- It owns opinionated defaults for scroll factors, repeat flags, z ordering, opacity, blend modes, and motion stretch.
+- Read it when stock parallax layer recipes or their visual tuning should change without touching core layer behavior.
 
 ### render.rs
 
-- Converts parallax layer state into flat RenderCommand lists for the renderer. `parallax/render` delivers the rendering adapter and draw-command integration for the parallax subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Batches tile positions into draw-image sequences with color and blend pre-applied. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Bridges parallax camera math to the GPU submission pipeline. Public callable behavior is centered on `batch_to_render_commands`, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
+- `src/parallax/render.rs` converts `ParallaxDrawBatch` and `ParallaxLayer` state into flat renderer command lists.
+- It owns the final bridge from tiled layer batches to `RenderCommand` sequences, including tint, blend, and effects.
+- Read it when parallax draw submission, batch flattening, or layer-to-renderer integration behavior needs to change.
 
 ### tile_iter.rs
 
-- Computes visible tile positions for repeating parallax layers inside a screen rect and cull margin. `parallax/tile_iter` delivers the tile iter implementation for the parallax subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Walks one axis at a time and combines X and Y into a full grid with bounded growth. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Emits only the single origin position for non-repeating layers. Public callable behavior is centered on `collect_tiled_positions`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- `src/parallax/tile_iter.rs` computes visible tile origins for repeating parallax layers inside a screen-sized window.
+- It owns cull-margin expansion, axis stepping, repeat handling, and the hard cap that prevents runaway tile growth.
+- Non-repeating layers also pass through here, returning a single origin so batch builders use one tiling code path.
+- Read it when visible tile coverage, repeat math, cull bounds, or batching limits for parallax layers need changes.
 
 
 

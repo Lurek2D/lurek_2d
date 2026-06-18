@@ -1,9 +1,11 @@
-//! Weighted loot sampling and pity tracking for deterministic drop systems. `math/loot_table` delivers the loot table implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Uses the alias method for O(1) draws after an O(n) build step. The file owns or coordinates data contracts including `LootEntry`, `LootTable`, `PityTracker`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Keeps the raw weight table and RNG state serializable for save files. Public callable behavior is centered on `sample_with_pity`, while method-level behavior such as `new`, `with_seed`, `set_seed`, `add`, `remove`, `set_weight`, and 14 more stays attached to the local data model and invariants.
-//! Supports guaranteed outcomes once a pity threshold is reached. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Lets callers combine normal sampling with tracked fail counters. External integration uses `std`, `toml`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Preserves fast runtime lookups without hiding the probability model. The file boundary separates math implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns weighted loot sampling, alias-table construction, save-state restoration, and pity-drop tracking.
+//! `LootEntry` defines one drop, `LootTable` owns weights and sampling state, and `PityTracker` tracks miss streaks.
+//! Walker-Vose alias construction stays here because O(1) draw preparation is central to the table's runtime contract.
+//! Mutation helpers such as add, remove, merge, and set_weight also belong here since they invalidate built sampling data.
+//! Binary save and restore logic remain local because entries, alias arrays, and RNG state are owned by this structure.
+//! TOML loading also belongs here since serialized table definitions are part of the table's authoring-facing boundary.
+//! `sample_with_pity` remains local because guaranteed-drop forcing depends on both table sampling and pity state rules.
+//! Open it when drop-table semantics change; general RNG helpers live in `random.rs`, not in this file.
 
 use crate::math::random::RandomGenerator;
 use std::collections::HashMap;

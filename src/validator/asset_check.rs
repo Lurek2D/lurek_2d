@@ -1,7 +1,7 @@
-//! This file provides static asset path validation for script references to game resources. `validator/asset_check` delivers the asset check implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It finds load-site path strings and checks their existence against the configured root. The file owns or coordinates data contracts including `AssetExistenceRule`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It reports missing files before runtime so broken builds fail early and clearly. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
-//! It integrates with validator runs used by both local checks and CI quality gates. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `AssetExistenceRule`, the validator check that verifies referenced asset paths exist on disk.
+//! It stores the asset root and extracts string arguments from sprite, audio, font, and image load patterns.
+//! Validation joins discovered paths against the root, then emits error violations with concrete fix suggestions.
+//! Open this file when asset-reference patterns or path resolution policy changes; orchestration stays elsewhere.
 
 use super::report::{Severity, Violation};
 use super::rule::ValidationRule;

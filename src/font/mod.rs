@@ -1,5 +1,9 @@
-//! Provides the high-level font module boundary for glyph data, layout shaping, and registry access. `font/mod` is the font module index, declaring `bitmap_font`, `metrics`, `registry`, `shaping` so agents can identify which files own each feature slice before opening implementation code.
-//! Connects bitmap atlas handling, metrics evaluation, and wrap logic into one typography service surface. `src/font/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bitmap_font::{BitmapFont, BitmapFontAtlas, AVAILABLE_SIZES}`, `metrics::{GlyphMetrics, TextMetrics}`, `registry::{FontHandle, FontRegistry, FontStyle}`, `shaping::{shape_text, LineBreak, ShapedText, TextAlign, WordWrap}` centralized for the font subsystem.
+//! `src/font/mod.rs` is the font module index, exposing atlas, metrics, registry, and shaping surfaces in one place.
+//! It reexports the public text stack so renderers, UI systems, and bindings can reach font services through one boundary.
+//! No runtime font state lives here; this file defines visibility and navigation while implementation stays in child files.
+//! Read this index when wiring text features, because it shows which font symbols are intentionally public and stable.
+//! Changes here alter the typography boundary, since reexports decide what the engine and Lua-facing layers may import.
+//! This module groups loading, measurement, shaping, and lookup concerns without collapsing them into one file.
 
 /// Bitmap font atlas data and glyph lookup.
 pub mod bitmap_font;

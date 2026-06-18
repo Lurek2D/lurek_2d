@@ -1,9 +1,11 @@
-//! Province import pipeline for turning external cartography assets into live engine-native registry data without manual per-province construction.
-//! The file reads color maps, metadata tables, and optional structured definitions as one coordinated ingestion process instead of a loose collection of converters.
-//! Marker sanitization is part of that process because capital and label hint pixels must be interpreted semantically and then repaired back into ordinary province ownership.
-//! Neighbor search logic resolves ambiguous marker ownership from surrounding color context, which is essential for real authored maps that encode helper pixels inside regions.
-//! CSV and TOML parsing bind visual source data to game ids, names, terrain, and other metadata expected by the runtime registry.
-//! Deterministic color derivation and label extraction keep imported provinces visually usable even when the source assets provide only partial semantic structure.
+//! Implements the province metadata import pipeline that turns marker art, CSV tables, and TOML into registry state.
+//! Owns marker sanitization rules, metadata import options, and summaries describing skipped rows or inferred values.
+//! Parses RGB to game-id mappings, province property tables, and label or capital hints before mutating the registry.
+//! Derives political colors and province attributes from imported records so gameplay data attaches to painted regions.
+//! Provides the ingestion boundary between external authoring assets and the authoritative ProvinceRegistry contents.
+//! This file is the right place for changes to import validation, marker cleanup, or asset-to-registry field mapping.
+//! Neighboring systems include image loading, registry mutators, and province labels that consume imported metadata.
+//! Open this owner when province authoring files change format or when import diagnostics need more exact coverage.
 
 use crate::image::ImageData;
 use crate::province::registry::ProvinceRegistry;

@@ -1,9 +1,12 @@
-//! This file defines the shared mutable runtime container that lets otherwise separate engine systems coordinate during startup and each frame.
-//! It gathers cross-cutting state for windowing, timing, resources, input, rendering, async work, and several feature subsystems into one borrowable hub.
-//! Resource pools live here because textures, canvases, fonts, shaders, meshes, and similar assets need one authoritative ownership home.
-//! Frame-local render state also accumulates here so gameplay code can enqueue visual intent without talking directly to the GPU backend.
-//! Input aggregation and timing data share the same structure because many systems consume them repeatedly throughout a frame.
-//! Memory budget enforcement belongs here as well, since eviction decisions depend on a global view of runtime-managed assets.
+//! This file owns `SharedState`, the mutable runtime hub that lets separate engine systems coordinate each frame.
+//! It stores render commands, resource pools, timers, window state, input snapshots, and many subsystem handles.
+//! Resource ownership for textures, fonts, canvases, meshes, shaders, particles, and related assets lives here.
+//! Frame-level services include timing, default fonts, render settings, screenshot requests, and debug overlays.
+//! Async file operations, filesystem identity, and poll helpers live here so background I/O shares one runtime hub.
+//! Budget enforcement and LRU eviction stay here because they require a global view of runtime-managed resources.
+//! Window, fullscreen, scaling, and error snapshot state also live here for Lua bindings and app-loop coordination.
+//! Helper methods cover construction, timer stepping, resource touching, memory stats, async requests, and fonts.
+//! Open it when cross-system runtime ownership changes; app, Lua bindings, and headless flow depend on this file.
 
 use crate::audio::Mixer;
 use crate::camera::Camera;

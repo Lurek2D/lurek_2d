@@ -1,8 +1,9 @@
-//! This file provides tilemap render-command emission with camera-aware culling across map layers. `tilemap/render` delivers the rendering adapter and draw-command integration for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It maps tile IDs to debug colors so rendering can proceed even without atlas texture sampling. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It applies per-layer visibility and tint state when composing command output for the renderer. Public callable behavior is centered on no named public items, while method-level behavior such as `build_render_commands`, `generate_render_commands` stays attached to the local data model and invariants.
-//! It respects orthogonal, isometric, and hexagonal map orientation so debug rendering matches map space. Runtime integration reaches sibling engine areas through crate modules `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It keeps draw generation predictable so map visualization remains stable during updates. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Generates tilemap render commands with camera-aware culling across layers and supported map orientations.
+//! Maps tile ids to fallback debug colors so maps can still visualize without relying on atlas sampling.
+//! Applies per-layer visibility and tint while composing deterministic draw output for the shared renderer.
+//! Handles orthogonal, isometric, and hex layouts so debug and runtime visualization match map geometry.
+//! Acts as the tilemap-to-render boundary rather than mixing draw emission into the base TileMap owner.
+//! Open this file when tile draw order, culling, tint, or orientation-specific render output is incorrect.
 
 use super::coords::{to_screen_hex, to_screen_iso};
 use super::mapgen::MapOrientation;

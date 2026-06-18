@@ -1,9 +1,11 @@
-//! This file provides declarative UI loading from TOML definitions into live widget trees. `ui/layout_loader` delivers the layout loader implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It maps textual widget kinds onto concrete context constructors with consistent defaults. The file owns or coordinates data contracts including `DialogActionDef`, `WidgetDef`, `LayoutDef`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It applies generic and type-specific properties so authored layouts become runtime-ready. Public callable behavior is centered on `load_layout_def`, `load_layout_toml`, `render_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! It supports recursive child structures that mirror retained parent-child composition. Runtime integration reaches sibling engine areas through crate modules `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It offers headless image rendering for snapshot checks and offline layout verification. External integration uses `serde`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! It enables fast iteration on UI structure without hardcoding full trees in Lua scripts. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Loads declarative TOML layout definitions into live widget trees built on the retained UI context.
+//! Maps textual widget kinds onto concrete constructors so authored layouts resolve to the same runtime widgets.
+//! Applies shared base properties and per-type fields to convert authored structure into usable live controls.
+//! Supports recursive child definitions that mirror the same parent-child composition used by code-built screens.
+//! Provides headless render-to-image helpers so declarative layouts can be snapshotted and verified offline.
+//! Keeps serde and parsing concerns local instead of spreading authored-layout decoding through widget modules.
+//! Acts as the data-driven boundary between TOML layout content and concrete UI tree construction.
+//! Open this file when authored layout files load with wrong structure, defaults, or snapshot rendering output.
 
 use crate::ui::context::{GuiContext, WidgetKind};
 use crate::ui::extras::{DialogAction, DialogActionRole};

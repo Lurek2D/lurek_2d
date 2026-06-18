@@ -1,4 +1,6 @@
-//! This file bridges the current scene stack state into renderer-facing output and scene snapshots. `scene/render` delivers the rendering adapter and draw-command integration for the scene subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `src/scene/render.rs` owns the render-facing bridge from current scene-stack state into commands and image snapshots.
+//! It extends `SceneStack` with render-command and image helpers, keeping render adaptation separate from stack state.
+//! Read it when active-scene rendering output, snapshot behavior, or scene-to-renderer bridging logic needs to change.
 
 use super::stack::SceneStack;
 use crate::image::ImageData;

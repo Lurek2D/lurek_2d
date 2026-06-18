@@ -1,4 +1,4 @@
-//! `src/lua_api/scene_api.rs` registers the `lurek.scene` Lua boundary for scene behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.scene` Lua API for scene userdata, target resolution, and script scene transitions.
 
 use super::SharedState;
 use crate::scene::depth_sorter::DepthSorter;

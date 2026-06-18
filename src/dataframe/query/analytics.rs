@@ -1,7 +1,8 @@
-//! Implements statistical analytics helpers over dataframe columns and derived numeric distributions. `dataframe/query/analytics` delivers the analytics implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides percentile extraction through interpolation on ordered numeric sample sequences. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports z-score and min-max normalization for consistent feature scaling workflows. Public callable behavior is centered on `percentile`, while method-level behavior such as `zscore_col`, `normalize_col`, `outliers`, `mode_val`, `entropy` stays attached to the local data model and invariants.
-//! Includes outlier detection, mode estimation, and entropy-style spread characterization helpers. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns statistical dataframe helpers for percentiles, scaling, outlier scans, mode lookup, and entropy.
+//! `percentile` is the standalone export, while `DataFrame` methods add z-score, min-max normalization, and outliers.
+//! These transforms stay here because they operate on numeric distributions rather than on structural table rewrites.
+//! Mode and entropy also belong here as descriptive analytics over column value frequencies and rendered cell labels.
+//! Open it when statistical helpers change; joins, grouping, rolling windows, and SQL parsing live in siblings.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 /// Compute percentile by linear interpolation over sorted values.

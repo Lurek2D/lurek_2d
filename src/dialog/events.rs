@@ -1,4 +1,6 @@
-//! Defines the dialogue event vocabulary used to publish lifecycle milestones and selection outcomes. `dialog/events` delivers the event data and dispatch contracts for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `src/dialog/events.rs` defines the event vocabulary emitted by the dialog system during conversation progress.
+//! It owns lifecycle and selection payloads for start, advance, topic choice, branch choice, ending, and variable writes.
+//! Read it when dialog event names, payload shapes, or script-facing milestone contracts need to change.
 
 /// Events emitted by the dialog system for script integration.
 #[derive(Debug, Clone)]

@@ -1,8 +1,10 @@
-//! Jump Point Search optimized A* on uniform-cost 8-directional grids. `pathfind/jps` delivers the jps implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Prunes symmetric neighbours to skip large open areas. The file owns or coordinates data contracts including `JpsGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Identifies forced neighbours and jump points along cardinal and diagonal directions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_blocked`, `is_blocked`, `find_path` stays attached to the local data model and invariants.
-//! Reconstructs a full tile-by-tile path from the jump points. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Uses an octile heuristic and a min-heap open list. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Implements Jump Point Search on uniform eight-way grids so large open areas can be searched with fewer expansions.
+//! Owns blocked-cell storage, jump detection, forced-neighbor rules, pruned successor generation, and path expansion.
+//! Searches by leaping between jump points, then reconstructs the full tile path that callers expect to consume.
+//! Provides the optimization boundary between plain grid A* and symmetry-pruned search for cost-uniform maps.
+//! This file is the right owner when forced-neighbor logic, jump recursion, or successor pruning needs correction.
+//! Neighboring changes usually involve uniform grid assumptions and tooling that compares JPS routes to baseline A*.
+//! Open this owner when open-area path performance regresses or when jump-point reconstruction becomes inconsistent.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

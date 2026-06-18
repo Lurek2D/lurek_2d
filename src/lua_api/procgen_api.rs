@@ -1,4 +1,4 @@
-//! `src/lua_api/procgen_api.rs` registers the `lurek.procgen` Lua boundary for procgen behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.procgen` Lua API for generators, noise settings, option parsing, and procgen userdata.
 
 use super::SharedState;
 use crate::agent::chat::{ollama_generate_json, read_global_config};

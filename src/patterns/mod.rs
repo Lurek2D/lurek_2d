@@ -1,9 +1,11 @@
-//! Foundational gameplay pattern toolbox that packages decision flow, state coordination, messaging, reuse, and selection primitives into small reusable building blocks.
-//! The module supplies behavior trees, simple and guarded state machines, observer and event distribution layers, mediator routing, factories, service lookup, and undo-oriented command history.
-//! It also delivers practical supporting structures such as graphs, tries, rings, priority ordering, bidirectional lookup, weighted picks, throttling windows, buffered funnels, and object reuse pools.
-//! At module level this is the high-level kit for assembling decoupled game logic systems in Lua and Rust without re-implementing common orchestration patterns for each feature.
-//! `patterns/mod` is the patterns module index, declaring `behavior_tree`, `bimap`, `blackboard`, `collections`, `command_stack`, and 16 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/patterns/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `behavior_tree::{BehaviorTree, BtNode, BtRunState, BtStatus, NodeId, NodeKind}`, `bimap::BiMap`, `blackboard::{Blackboard, BlackboardValue}`, `collections::{QueueMeta, StackMeta}`, and 17 more centralized for the patterns subsystem.
+//! This module is the patterns index, exposing coordination, selection, history, and reuse primitives for engine code.
+//! It exports behavior trees, state machines, observers, event buses, mediators, factories, and service discovery tools.
+//! It also exports support structures such as graphs, tries, rings, weighted picks, priority queues, and object pools.
+//! `mod.rs` owns visibility and reexport boundaries, not runtime state, so feature ownership stays in sibling files.
+//! Open this file to map which source owns undo history, typed shared state, cadence control, or batching behavior.
+//! `behavior_tree.rs`, `blackboard.rs`, and `state_machine.rs` cover decision and state orchestration primitives.
+//! `event_bus.rs`, `observer.rs`, `mediator.rs`, and `service_locator.rs` cover decoupled communication surfaces.
+//! `graph.rs`, `trie.rs`, `ring.rs`, and `weighted_random.rs` cover storage and selection helpers for gameplay data.
 
 /// Behavior tree execution engine with composite and leaf nodes.
 pub mod behavior_tree;

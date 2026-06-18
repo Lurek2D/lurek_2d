@@ -1,9 +1,12 @@
-//! Grid-based minimap model with configurable terrain colors and fog-of-war. `minimap/minimap` delivers the minimap implementation for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Tracks world cells, visible state, and overlay layers in one structure. The file owns or coordinates data contracts including `MinimapIcon`, `Minimap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Stores object markers, pings, and path shapes for live HUD feedback. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `grid_width`, `grid_height`, `grid_size`, `display_width`, `display_height`, and 86 more stays attached to the local data model and invariants.
-//! Supports terrain and political color modes for strategic presentation. Runtime integration reaches sibling engine areas through crate modules `camera`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Manages zoom, pan, camera tracking, and viewport framing. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Projects screen and grid coordinates in both directions for interaction. The file boundary separates minimap implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! `src/minimap/minimap.rs` owns the `Minimap` state object that stores terrain, fog, markers, overlays, and view settings.
+//! It is the main data and behavior boundary for minimap grids, terrain palettes, owner colors, icons, layers, and paths.
+//! Object types, live objects, pings, marker animations, and viewport outlines are updated here with local state.
+//! Camera tracking, pan and zoom, hover lookup, and grid-to-screen coordinate conversion also live in this implementation.
+//! The file exposes mutation APIs for terrain, fog, objects, markers, overlays, paths, layers, and display configuration.
+//! Export helpers such as `draw_to_image` and render-command entry points are defined here for sibling use.
+//! Internal helpers resolve active cell colors and owner mappings so terrain and political display modes stay consistent.
+//! This file does not import province data or compute raycast visibility; dedicated adapters handle those translations.
+//! Read it when minimap ownership, per-frame updates, view math, or public state mutation behavior needs to change.
 
 use super::types::{
     ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapMarker, MinimapObject,

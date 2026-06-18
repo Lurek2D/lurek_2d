@@ -16,14 +16,11 @@
 
 ## Summary
 
-- The vector module provides runtime SVG loading, querying, mutation, and rendering integration.
-- It parses documents into stable element IDs with hierarchy traversal support.
-- Runtime APIs expose color, visibility, and transform overrides per element.
-- Reset APIs restore defaults without reloading source files.
-- Bounds and sampled points support gameplay and tooling workflows.
-- Subtree canvas caching reduces repeated draw cost for complex vector groups.
+- The `vector` module is the engine surface for scalable vector artwork, aimed at users who want SVG-style content to stay editable and resolution-independent for as long as possible.
+- It keeps vector parsing, scene representation, and runtime conversion behavior together so vector assets can live inside the normal content flow instead of being forced into a separate external pipeline.
+- This is especially useful for icons, diagrams, UI art, and tooling surfaces that should survive scaling without raster-specific asset duplication.
+- Read it as the point where scalable art becomes usable in the rest of the engine without losing the distinction between vector source data and final rendered output.
 
-This module primarily collaborates with `math`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -35,17 +32,24 @@ This module primarily collaborates with `math`, `render`, `runtime`. Its respons
 
 ### mod.rs
 
-- High-level vector graphics module that implements SVG loading, parsing, state management, and GP-accelerated rendering. `vector/mod` is the vector module index, declaring `svg_image` so agents can identify which files own each feature slice before opening implementation code.
-- Bridges parsed XML vector trees and Lurek2D's RenderCommand drawing pipeline. `src/vector/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `svg_image::{SvgElement, SvgImage, SvgPath}` centralized for the vector subsystem.
+- `src/vector/mod.rs` is the vector module index, exposing SVG document types and loading surfaces for runtime rendering.
+- It reexports `SvgElement`, `SvgImage`, and `SvgPath` so callers reach vector scene data through one stable boundary.
+- No parsed vector state lives here; this file defines visibility while parsing logic stays in `svg_image.rs`.
+- Read this index when wiring vector features, because it shows which SVG-facing contracts are public and shared.
+- Changes here alter the vector boundary, since reexports decide what runtime systems and bindings may import directly.
+- This module keeps scene representation and vector loading separate from higher-level render and Lua binding layers.
 
 ### svg_image.rs
 
-- Implements the main SVG document parser, layout representation, and rendering bridge. `vector/svg_image` delivers the svg image implementation for the vector subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Traverses the usvg tree, flattens it, and manages per-element runtime state. The file owns or coordinates data contracts including `SvgPath`, `SvgElement`, `SvgImage`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides hierarchy queries (parent, children, count), bounding box extraction,. Public callable behavior is centered on no named public items, while method-level behavior such as `from_bytes`, `render`, `get_element_accumulated_transform`, `get_element_points`, `get_adjacencies`, `cache_to_canvas`, and 10 more stays attached to the local data model and invariants.
-- color/visibility/transform reads and resets, and GPU canvas caching for vector subtrees. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- All mutation methods follow the same error contract: return `Err` when the element ID is absent. External integration uses `std`, `usvg`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- `vector/svg_image` delivers the svg image implementation for the vector subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- `src/vector/svg_image.rs` owns SVG parsing, normalized scene representation, and runtime rendering for vector content.
+- It defines `SvgPath`, `SvgElement`, and `SvgImage`, keeping geometry, hierarchy state, and canvas handles together.
+- Raw SVG bytes are parsed here into a tree of groups and paths, then normalized into engine-owned element maps and IDs.
+- Element transforms, visibility, color overrides, and cached subtree canvases are managed here as runtime vector state.
+- Render submission also lives here, so parsed vector data emits `RenderCommand` sequences without a separate adapter.
+- Hierarchy queries, point flattening, bounds extraction, and adjacency detection are handled here for gameplay and tools.
+- Open this file when SVG parse policy, element state semantics, canvas caching, or vector rendering must change.
+- Neighboring systems matter here mainly at the math, render, and runtime boundaries that supply transforms and commands.
+- This file is the owner boundary for vector scene behavior; higher layers should treat it as the source of SVG state.
 
 
 

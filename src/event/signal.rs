@@ -1,7 +1,8 @@
-//! Provides named signal subscription storage with support for exact and wildcard pattern matching. `event/signal` delivers the signal implementation for the event subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Allocates stable handle ids so listeners can be removed or inspected through explicit lifecycle control. The file owns or coordinates data contracts including `Subscription`, `Signal`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Resolves matching subscribers with deterministic behavior for both direct names and glob-style patterns. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `subscribe`, `remove`, `clear`, `clear_all`, `get_handles`, and 5 more stays attached to the local data model and invariants.
-//! Exposes snapshot-friendly query helpers that aid runtime diagnostics and tooling inspection. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/event/signal.rs` owns named and wildcard signal subscriptions, along with stable handles for listener lifecycle.
+//! It defines `Subscription` and `Signal`, keeping registration maps, reverse lookups, and wildcard state under one owner.
+//! Subscribe, remove, clear, count, and wildcard matching live here so signal routing stays explicit and inspectable.
+//! The local glob matcher implements `*` and `?` handling, which keeps wildcard semantics independent from external crates.
+//! Read this file when subscription storage, wildcard rules, or runtime diagnostics for signal listeners need to change.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{SG01, SG02};

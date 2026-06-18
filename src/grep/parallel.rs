@@ -1,7 +1,8 @@
-//! Parallel file search: distributes work across a small std-thread worker set. `grep/parallel` delivers the parallel implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Files are collected eagerly, chunked deterministically, and merged after workers finish. The file owns or coordinates data contracts including `ParallelSearch`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Thread count comes from `GrepConfig`; `0` is clamped to a single worker. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `search`, `search_files` stays attached to the local data model and invariants.
-//! Matching remains literal-first and filesystem-oriented rather than a streaming validator engine. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `ParallelSearch`, the filesystem worker layer that splits grep work across deterministic chunks.
+//! It gathers candidate files, reads them through `FileReader`, applies `Matcher`, and merges sorted `FileMatch` output.
+//! Directory scans recurse through subfolders, skip hidden entries when configured, and keep file ordering predictable.
+//! Chunk workers run inside scoped threads, so search stays std-only and shares readers without async machinery.
+//! Open this file when traversal or worker behavior changes; top-level query setup and pattern logic live in siblings.
 
 use super::filter::FileFilter;
 use super::matcher::Matcher;

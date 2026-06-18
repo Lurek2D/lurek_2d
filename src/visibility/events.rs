@@ -1,4 +1,6 @@
-//! This file provides event types emitted when visibility state transitions occur. `visibility/events` delivers the event data and dispatch contracts for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `VisibilityEvent`, the event payload emitted when regions are revealed, hidden, forgotten, or regrouped.
+//! It gives callers stable event variants for reacting to state changes without inspecting grid internals directly.
+//! Open this file when visibility notifications change; stored state and ownership logic live in sibling modules.
 
 /// Events emitted by the visibility system when regions change state.
 #[derive(Debug, Clone, PartialEq)]

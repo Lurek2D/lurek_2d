@@ -1,8 +1,10 @@
-//! Provides flownet pathfinding operations that compute cheapest routes across weighted directed edges. `flownet/pathfinding` delivers the pathfinding implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Respects edge activity, cooldown, and type filters so route output matches simulation constraints. The file owns or coordinates data contracts including `PathResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports distance and reachability queries for planning and demand-matching workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `find_path`, `find_path_for_item`, `get_distance`, `get_reachable`, `get_neighbors` stays attached to the local data model and invariants.
-//! Builds predecessor maps and reconstructs ordered node and edge paths for execution. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Uses priority-queue traversal for efficient shortest-path expansion under dynamic graph state. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns shortest-path queries and reachability over flownet graphs, returning ordered node and edge routes.
+//! `PathResult` is the durable route contract used by demand matching and any caller that needs executable path state.
+//! Dijkstra traversal lives here because route cost depends on edge activity, weights, cooldowns, and bidirectional flags.
+//! `find_path_for_item` adds type-filter and cooldown checks so planned movement matches the same constraints as sending.
+//! `get_distance`, `get_reachable`, and `get_neighbors` are read-only graph queries that never mutate containers or timers.
+//! Path reconstruction stays here because predecessor maps are an internal search detail, not work for `core.rs`.
+//! Open it when route semantics change; topology analytics, simulation ticks, and graph storage live in sibling files.
 
 use super::core::Graph;
 use std::cmp::Ordering;

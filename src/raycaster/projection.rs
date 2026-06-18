@@ -1,4 +1,6 @@
-//! Projection mathematics converting ray-cast distance values into screen-space wall column heights and vertical draw bounds for 3D raycaster rendering.
+//! This file owns the projection helpers that convert ray-hit distance into wall column height and draw bounds.
+//! It also computes distance-based shading factors so raycaster rendering can fade geometry over viewing range.
+//! Open this file when wall projection math changes; hit records and sprite payloads live in sibling files.
 
 /// Project a wall column at `distance` using `fov` and `screen_height`;.
 /// return `(wall_height, draw_start_y, draw_end_y)` in screen pixels.

@@ -1,4 +1,6 @@
-//! Defines the console-suppressed desktop launcher that delegates to the shared engine bootstrap. `bin/lurekc` delivers the lurekc implementation for the bin subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `src/bin/lurekc.rs` owns the console-suppressed desktop launcher that forwards startup into the shared entrypoint.
+//! It exists mainly to provide the Windows GUI binary variant while keeping real bootstrap logic in the main library crate.
+//! Read this file when binary launch behavior or platform-specific subsystem flags change, not when runtime logic changes.
 
 #![cfg_attr(windows, windows_subsystem = "windows")]
 use std::process::ExitCode;

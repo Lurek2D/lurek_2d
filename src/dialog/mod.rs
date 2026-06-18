@@ -1,5 +1,9 @@
-//! Provides the high-level dialog module surface that unifies authored conversation flow with runtime progression state. `dialog/mod` is the dialog module index, declaring `condition`, `events`, `sequencer`, `speaker`, `state`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
-//! Connects speaker identity, gating logic, selection models, and lifecycle events into one coherent interaction layer. `src/dialog/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `condition::{DialogueCondition, GateContext}`, `events::DialogueEvent`, `sequencer::{DialogNode as SequencerNode, DialogSequencer, SequencerState}`, `speaker::{Speaker, SpeakerRegistry}`, and 2 more centralized for the dialog subsystem.
+//! `src/dialog/mod.rs` is the module index for dialogue gating, events, speakers, runtime state, sequencers, and trees.
+//! It declares the files that own branch conditions, event vocabulary, speaker data, playback state, and selection logic.
+//! This file reexports the dialog-facing types so callers can assemble conversations without importing deep internal paths.
+//! No live conversation state or authored graph data lives here; it only defines visibility and subsystem boundaries.
+//! Read this index first when tracing dialog behavior, because it shows where gating, playback, and authored data split.
+//! Changes here affect module reachability and API shape, not sequencing rules, branch scoring, or runtime progression.
 
 /// Gate conditions that guard dialog branch and topic selection.
 pub mod condition;

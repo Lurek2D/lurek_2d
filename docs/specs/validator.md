@@ -16,18 +16,12 @@
 
 ## Summary
 
-- The validator module provides static pre-runtime checks for Lua project quality.
-- It runs composable rules through a central validation engine.
-- Built-in checks cover API usage, import resolution, and asset path existence.
-- Violations include severity, location, identifier, and human-readable message.
-- Report models support filtering and summary views for large result sets.
-- Parallel execution support improves throughput on large script sets.
-- Single-thread fallback preserves predictable behavior in constrained environments.
-- TOML-defined rules support data-driven policy extension.
-- Lua-backed rule adapters support project-specific checks without engine rebuild.
-- The module performs static analysis only and does not execute scripts.
+- The `validator` module is the content-checking surface for users who want assets, imports, and API usage to be verified as a structured workflow instead of informal manual review.
+- Rule types, execution policy, engine orchestration, and report structures work together so several validation checks can be run through one reusable framework.
+- That matters because a project often needs to catch different classes of mistakes, such as missing assets or invalid `lurek.*` usage, before those problems become runtime failures.
+- The module is useful for CI, local tool runs, content authoring passes, and mod or package checks where automated feedback should be consistent and machine-readable.
+- Read it as the engine's validation coordinator. Individual rules know what they are checking, but `validator` owns how those rules are configured, executed, and reported.
 
-This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -37,72 +31,85 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### api_check.rs
 
-- This file provides API compliance validation for Lua calls targeting the lurek namespace. `validator/api_check` delivers the api check implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It scans call sites against registered signatures to catch unknown endpoints early. The file owns or coordinates data contracts including `ApiComplianceRule`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It detects argument-shape mismatches that often signal migration or integration drift. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_defaults` stays attached to the local data model and invariants.
-- It emits structured violations with location data for actionable feedback in pipelines. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `ApiComplianceRule`, the validator check that scans Lua content for known `lurek.*` calls.
+- It stores the allowlist of supported API prefixes and uses it to flag unknown namespaces at source lines.
+- Default construction seeds built-in engine module names so projects get API drift detection without setup.
+- The validate path searches textual call sites, extracts module segments, and emits structured warnings.
+- Open this file when accepted public API names change; asset, import, and custom rule logic live in siblings.
 
 ### asset_check.rs
 
-- This file provides static asset path validation for script references to game resources. `validator/asset_check` delivers the asset check implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It finds load-site path strings and checks their existence against the configured root. The file owns or coordinates data contracts including `AssetExistenceRule`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It reports missing files before runtime so broken builds fail early and clearly. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
-- It integrates with validator runs used by both local checks and CI quality gates. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `AssetExistenceRule`, the validator check that verifies referenced asset paths exist on disk.
+- It stores the asset root and extracts string arguments from sprite, audio, font, and image load patterns.
+- Validation joins discovered paths against the root, then emits error violations with concrete fix suggestions.
+- Open this file when asset-reference patterns or path resolution policy changes; orchestration stays elsewhere.
 
 ### config.rs
 
-- This file provides configuration structures that shape validator execution policy. `validator/config` delivers the configuration schema and defaults for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `ValidatorConfig`, the execution policy record that shapes how validator scans should run.
+- It stores worker count, maximum file size, early-stop behavior, and hint inclusion defaults in one place.
+- Open this file when validator runtime policy changes; rule logic and report formatting belong to siblings.
 
 ### engine.rs
 
-- This file provides the validation orchestrator that runs rule sets over project content. `validator/engine` delivers the engine implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It composes built-in and custom rules into one execution plan shaped by config. The file owns or coordinates data contracts including `ValidationEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It dispatches checks across files and aggregates findings into structured reports. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_asset_rule`, `add_import_rule`, `add_api_rule`, `add_pattern_rule`, `load_toml_rules`, and 5 more stays attached to the local data model and invariants.
-- It serves as the main engine entry used by runtime tooling and validation commands. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `ValidationEngine`, the orchestrator that assembles rule sets and runs them over Lua files.
+- It stores root path, execution config, and registered rules, then delegates walking and parallel work to siblings.
+- Builder-style helpers install built-in asset, import, API, Lua-pattern, and TOML-defined rule sources.
+- Run methods cover whole-root scans, explicit file lists, and single-file checks while returning uniform reports.
+- Open this file when validator orchestration changes; rules, reports, and file walking belong to siblings.
 
 ### import_check.rs
 
-- This file provides import resolution checks for Lua require targets in project scripts. `validator/import_check` delivers the import check implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It scans textual require patterns and resolves module paths against configured lookup roots. The file owns or coordinates data contracts including `ImportResolutionRule`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It surfaces missing dependencies before runtime to reduce integration surprises. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
-- It keeps the check static and safe by avoiding script execution during analysis. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `ImportResolutionRule`, the validator check that resolves Lua `require` targets against roots.
+- It stores configured module paths and extracts import names from common `require(...)` and quoted shorthands.
+- Resolution converts dotted module names into filesystem paths and accepts both file and init module layouts.
+- Validation skips engine-provided `lurek.*` imports, then emits warnings for unresolved project dependencies.
+- Open this file when module resolution policy changes; API checks and asset existence rules live in siblings.
 
 ### mod.rs
 
-- This module delivers the validation surface for script content, assets, imports, and API usage. `validator/mod` is the validator module index, declaring `api_check`, `asset_check`, `config`, `engine`, `import_check`, and 5 more so agents can identify which files own each feature slice before opening implementation code.
-- It combines built-in and custom rule paths into one extensible quality-check pipeline. `src/validator/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `config::ValidatorConfig`, `engine::ValidationEngine`, `report::{Severity, ValidationReport, Violation}`, `rule::ValidationRule` centralized for the validator subsystem.
+- This module re-exports the validator subsystem surface for rules, reports, config, execution, and extensions.
+- It keeps navigation explicit by mapping which sibling files own API checks, asset checks, imports, and walkers.
+- Public exports here route callers toward `ValidationEngine` for orchestration and `ValidatorConfig` for policy.
+- `report.rs` owns severities and violation records, while `rule.rs` defines the trait every checker implements.
+- `rules_lua.rs` and `rules_toml.rs` extend the subsystem with data-defined checks without engine call-site churn.
+- Change this file when the validator symbol map moves; change siblings when scan behavior or rule logic changes.
 
 ### parallel.rs
 
-- This file provides parallel execution plumbing for validator rule application across files. `validator/parallel` delivers the parallel implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It enumerates candidate inputs and partitions work over worker threads efficiently. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It merges per-file violations into unified reports without unstable ordering surprises. Public callable behavior is centered on `validate_parallel`, `collect_lua_files`, `collect_files_with_ext`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- It supports configurable thread control, including single-thread fallback execution. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns parallel validator helpers that collect candidate files and apply registered rules across them.
+- It chunks file lists, runs worker threads with shared violation aggregation, and records elapsed report time.
+- Directory walkers gather Lua files or arbitrary extensions while skipping hidden folders during recursion.
+- Open this file when scan concurrency or file enumeration changes; rule semantics and report types live elsewhere.
 
 ### report.rs
 
-- This file provides typed report models for storing and presenting validation outcomes. `validator/report` delivers the report implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It defines violation records with severity, location, identity, and human-readable message. The file owns or coordinates data contracts including `Severity`, `Violation`, `ValidationReport`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It supports filtering and summary views so large result sets remain actionable. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str`, `new`, `with_line`, `with_column`, `with_suggestion`, and 7 more stays attached to the local data model and invariants.
-- It standardizes severity ordering for consistent thresholding and pipeline behavior. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `Severity`, `Violation`, and `ValidationReport`, the typed result model for validator output.
+- It stores rule identity, location, message, suggestion, aggregate counts, and elapsed time in stable records.
+- Helper methods parse severity names, attach line or column metadata, and slice violations by file or level.
+- The ordering on `Severity` defines how higher-level code decides whether a run is warning-only or errorful.
+- Open this file when validator result semantics change; scan orchestration and concrete checks belong to siblings.
 
 ### rule.rs
 
-- This file provides the rule trait contract that all validator checks implement. `validator/rule` delivers the rule implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `ValidationRule`, the trait contract every validator check implements against file content.
+- It defines the required rule identity, human description, default severity, and validation entrypoint shape.
+- Open this file when rule plugin boundaries change; concrete checks, configs, and reports live in siblings.
 
 ### rules_lua.rs
 
-- This file provides Lua-backed custom rule adapters for extending validator coverage. `validator/rules_lua` delivers the rules lua implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It stores pattern and callback metadata that bridges script-defined checks into Rust flow. The file owns or coordinates data contracts including `LuaPatternRule`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It converts callback outputs into typed violations compatible with native reporting. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_invert` stays attached to the local data model and invariants.
-- It lets teams add project-specific rules without recompiling engine validator code. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `LuaPatternRule`, the data-backed validator rule that turns simple patterns into violations.
+- It stores rule id, description, search pattern, message, severity, and inversion mode for required checks.
+- Validation either flags matching lines or emits one file-level violation when an expected pattern is absent.
+- Open this file when custom rule behavior changes; TOML loading and engine registration live in siblings.
 
 ### rules_toml.rs
 
-- This file provides TOML-driven rule loading for data-defined validation extensions. `validator/rules_toml` delivers the rules toml implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It parses rule entries into runtime rule objects used by the validation engine. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It supports loading from files and raw TOML text for flexible integration points. Public callable behavior is centered on `load_rules_from_toml`, `load_rules_from_file`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- It enables configurable policy checks without adding new compiled rule types. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns TOML rule loading helpers that decode declarative validator rules into `LuaPatternRule` values.
+- It parses `[[rule]]` sections, carries severity and invert flags forward, and builds rules without compilation.
+- Loaders support both raw TOML text and on-disk files so validator setup can reuse one parsing path.
+- The parser handles a narrow key syntax, keeping validation policy simple and predictable for project authors.
+- Open this file when TOML rule schema changes; runtime pattern execution and report models live in siblings.
 
 
 

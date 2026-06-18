@@ -1,8 +1,10 @@
-//! Stateful MIDI transport for file playback through rendered PCM. `midi/player` delivers the player implementation for the midi subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Holds parsed song metadata and playback position in one controller object. The file owns or coordinates data contracts including `MidiData`, `MidiPlayer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Handles play, pause, resume, seek, stop, and duration queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `load`, `load_data`, `is_loaded`, `file_path`, `play`, and 38 more stays attached to the local data model and invariants.
-//! Tracks per-channel mix state such as volume, mute, solo, and instrument selection. Runtime integration reaches sibling engine areas through crate modules `audio`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supports per-track muting plus tempo, looping, and output format control. External integration uses `rodio`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/midi/player.rs` owns MIDI transport state, loaded song metadata, and rodio-backed playback control.
+//! It defines `MidiData` and `MidiPlayer`, keeping file metadata, mix settings, output format, and playhead state together.
+//! Transport methods for load, play, stop, pause, resume, seek, looping, and volume changes are implemented here.
+//! Per-channel mute, solo, volume, instrument selection, and per-track mute controls also live in this controller.
+//! This file leaves `load_data` disabled and `render_to_pcm` empty, so transport structure exists before synthesis.
+//! Read it when MIDI runtime behavior, bus routing, output sample rules, or metadata queries need to change.
+//! Higher layers should treat this file as the transport boundary, while SoundFont asset ownership stays in `state.rs`.
 
 use crate::audio::PlayState;
 use crate::log_msg;

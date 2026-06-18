@@ -1,9 +1,11 @@
-//! Implements heatmap rasterization for matrix-style ML and dashboard views. `charts/heatmap` delivers the heatmap implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Maps matrix values to a configurable color ramp and annotates row/column labels. The file owns or coordinates data contracts including `HeatmapChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports direct matrix updates, per-cell streaming changes, and dataframe pivot ingestion. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `resize`, `set_matrix`, `set_matrix_from_dataframe`, `set_cell`, `clear`, and 8 more stays attached to the local data model and invariants.
-//! `charts/heatmap` delivers the heatmap implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! The file owns or coordinates data contracts including `HeatmapChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `resize`, `set_matrix`, `set_matrix_from_dataframe`, `set_cell`, `clear`, and 8 more stays attached to the local data model and invariants.
+//! This file owns heatmap rendering, including matrix dimensions, cell values, row and column labels, and color range.
+//! It accepts direct matrices, dataframe pivots, or single-cell updates, then stores a dense row-major value buffer.
+//! Value-range selection and low-to-high color interpolation live here because each cell shade depends on matrix extrema.
+//! Label trimming, value formatting, and optional cell text are local so matrix presentation stays coupled to cell layout.
+//! The renderer draws grid lines, frame borders, legends, and scale labels after filling cells into the RGBA buffer.
+//! `set_matrix_from_dataframe` performs pivot-style aggregation here, combining repeated row-column pairs into one cell.
+//! `set_show_values` and `set_color_range` make this file the owner for dashboard readability and scale semantics.
+//! Open it when matrix ingestion or color-mapping changes; generic cartesian annotation and shared config live elsewhere.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions};
 use crate::charts::render_utils::{draw_line, draw_rect_filled, fill_buffer, set_pixel};

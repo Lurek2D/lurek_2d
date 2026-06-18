@@ -1,8 +1,9 @@
-//! This file turns a texture divided into repeated cells into a navigable sprite-sheet structure for frame-based animation and lookup.
-//! Frame rectangles are precomputed so callers can move through rows, columns, ranges, and named groups without recalculating geometry each time.
-//! Directional layout helpers matter here because many character sheets encode facing and animation state as a regular grid convention.
-//! Preset constructors keep common authoring patterns, such as RPG-style character sheets, easy to adopt without custom math in game code.
-//! Debug visualization is included because sheet layout mistakes are easier to catch when the frame grid can be rendered and inspected directly.
+//! This file owns `SpriteSheet`, `FrameGroup`, and `ColumnFrames` for frame extraction from grids or atlas frames.
+//! It stores frame dimensions, grid counts, precomputed rects, named groups, and optional directional layout data.
+//! Helpers expose rows, columns, ranges, named groups, and direction-specific frames without recomputing rectangles.
+//! The `draw_to_image` path renders a debug view of the frame grid so authors can inspect layout and group starts.
+//! Constructors cover uniform sheets, RPGMaker-style direction sheets, and atlas-backed sheets mapped into groups.
+//! Open this file when frame indexing or grouping semantics change; playback and per-instance state live elsewhere.
 
 use crate::log_msg;
 use crate::math::Rect;

@@ -1,11 +1,15 @@
-//! Provides the central flownet graph container that owns nodes, edges, items, and adjacency indexes. `flownet/core` delivers the core implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Manages full CRUD lifecycles with cascading cleanup to keep topology and item state coherent. The file owns or coordinates data contracts including `GraphStats`, `Graph`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Tracks outgoing and incoming connectivity for efficient route and neighborhood queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `move_item_to_unplaced`, `move_item_to_node_inventory`, `move_item_to_node_queue`, `move_item_to_edge_transit`, `kill_item_and_detach`, and 29 more stays attached to the local data model and invariants.
-//! Coordinates item creation, placement, transit, and removal under node and edge constraints. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supports subgraph extraction and aggregate statistics for analysis and tooling pipelines. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Exposes directional query helpers that simplify traversal and simulation planning logic. The file boundary separates flownet implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! Includes debug-friendly serialization and preview output for inspection and persistence workflows. State changes, validation paths, and helper routines in `src/flownet/core.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! Keeps id allocation and storage ownership centralized for deterministic graph mutation behavior. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! This file owns `Graph`, the flownet container storing nodes, edges, items, id counters, and adjacency indexes.
+//! It provides the authoritative CRUD path for nodes, edges, and items, including cascading cleanup and id assignment.
+//! Item placement helpers live here because inventories, queues, and transit buffers must stay mutually consistent.
+//! Send validation also lives here so edge activity, cooldown, filters, and current item position are checked in one place.
+//! Outgoing and incoming edge indexes are maintained here to keep pathfinding, analytics, and simulation queries cheap.
+//! `subgraph` cloning lives here because it remaps nodes, edges, items, and container ownership into a coherent snapshot.
+//! Aggregate counts from `GraphStats` are computed here because only this file sees the full graph-wide ownership picture.
+//! `draw_to_image` provides a quick preview boundary, but the richer renderer integration lives in sibling `render.rs`.
+//! Serialization and deserialization live here because persistence rebuilds nodes, edges, items, and references together.
+//! Legacy and versioned snapshot loaders are validated here so broken references fail before other flownet code runs.
+//! This file does not advance time; `simulation.rs` owns per-tick behavior and `supply_demand.rs` owns fulfillment policy.
+//! Open it when graph ownership or persistence changes; node contracts and routing algorithms are implemented elsewhere.
 
 use super::edge::Edge;
 use super::item::{GraphItem, ItemPosition};

@@ -1,7 +1,8 @@
-//! Weighted random selector for content and gameplay systems that want probability-driven picks while still keeping the candidate set editable at runtime.
-//! The file stores named weighted entries and supports structural mutation so drops, spawns, behaviors, or narrative beats can rebalance without rebuilding the container.
-//! It covers both single draws and multi-pick selection without replacement, which makes the same structure useful for one-off rolls and curated batches.
-//! Revision tracking gives outside code a reliable signal that probabilities or membership changed, helping caches and derived tables stay honest.
+//! This file owns the mutable weighted selector used to pick entries by probability while keeping the table editable.
+//! `WeightedEntry` stores ids, weights, and labels, while `WeightedRandom` owns entries, revision, and id allocation.
+//! Add, remove, set-weight, and total-weight stay here because probability-table maintenance is local selector state.
+//! Single-pick and multi-pick helpers also belong here since no-replacement sampling uses local scratch rules.
+//! Open it when probability selection changes; queues, tries, and object pools live in sibling pattern modules.
 
 /// A single candidate with a weight and debug label.
 #[derive(Debug, Clone)]

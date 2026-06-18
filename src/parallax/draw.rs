@@ -1,4 +1,6 @@
-//! Rasterises a single parallax layer into an ImageData bitmap. `parallax/draw` delivers the draw implementation for the parallax subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `src/parallax/draw.rs` rasterizes a single `ParallaxLayer` into `ImageData` for export, previews, or tooling use.
+//! It owns only the bitmap fill path, translating visibility, tint, and opacity into a flat image without tiling logic.
+//! Read it when parallax image export, solid-fill preview behavior, or layer-to-bitmap bridging needs to change.
 
 use super::layer::ParallaxLayer;
 use crate::image::ImageData;

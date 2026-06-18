@@ -17,15 +17,7 @@
 
 ## Summary
 
-- The cinematic module provides scriptable timelines for cutscenes and other authored sequences.
-- It supports parallel tracks so motion, camera movement, audio, and signal events can progress together.
-- Tween tracks animate Lua object properties over time with easing functions.
-- Camera tracks move and zoom cameras along scripted paths.
-- Audio tracks schedule music and sound effects with precise timing.
-- Signal tracks fire named events at specific times for gameplay triggers and branching logic.
-- Playback can be played, paused, seeked, looped, and branched through labels.
-
-This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+The `cinematic` module is the timeline authoring surface for cutscenes, scripted reveals, and other multi-system sequences. It lets motion, camera, audio, tween, and signal tracks advance against one playhead so designers can choreograph timing instead of hand-synchronizing callbacks. Playback controls such as play, pause, seek, loop, labels, and branching keep the same timeline useful for both fixed sequences and reactive presentation logic.a
 
 ## Imports
 
@@ -35,22 +27,28 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### cinematic_legacy.rs
 
-- Legacy cut-based cinematic timeline. `cinematic/cinematic_legacy` delivers the cinematic legacy implementation for the cinematic subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides backward compatibility for the simple cut-based API. The file owns or coordinates data contracts including `Cut`, `Cinematic`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- New code should use CinematicTimeline from timeline.rs instead. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_cut`, `cuts`, `play`, `clear` stays attached to the local data model and invariants.
+- `src/cinematic/cinematic_legacy.rs` owns the older cut-based cinematic API kept for backward-compatible sequences.
+- It defines `Cut` and `Cinematic`, storing ordered descriptive events without richer multi-track timeline behavior.
+- Playback here is intentionally minimal and descriptive, keeping compatibility semantics separate from timeline features.
+- Read this file when legacy cut storage or compatibility behavior must change, not when extending timeline playback.
 
 ### mod.rs
 
-- Cinematic engine module — pure Rust logic, no Lua dependencies. `cinematic/mod` is the cinematic module index, declaring `cinematic_legacy`, `timeline` so agents can identify which files own each feature slice before opening implementation code.
-- Legacy Cut-based timeline (Cinematic struct) for backward compatibility. `src/cinematic/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `cinematic_legacy::{Cinematic, Cut}`, `timeline::{CinematicClip, CinematicTimeline, ClipType, TimelineState, Track}` centralized for the cinematic subsystem.
+- `src/cinematic/mod.rs` is the module index that exposes both the legacy cut API and the newer timeline system.
+- It reexports `Cinematic`, `Cut`, `CinematicTimeline`, `ClipType`, `Track`, and `TimelineState` in one surface.
+- No active playback state lives here; this file only declares child modules and defines public cinematic symbols.
+- Read this index when wiring sequence features, because it shows where legacy support ends and timeline playback begins.
+- Changes here reshape the cinematic boundary, since reexports decide what runtime code may import without deep paths.
+- This module keeps the simple legacy cut model separate from the multi-track timeline owner for newer cinematic flows.
 
 ### timeline.rs
 
-- Cinematic timeline system with multi-track support. `cinematic/timeline` delivers the timeline implementation for the cinematic subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides a scriptable timeline of clips and tracks that can be played, paused, scrubbed, and looped. The file owns or coordinates data contracts including `CinematicClip`, `ClipType`, `Track`, `TimelineState`, `CinematicTimeline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports Tween, Camera, Audio, and Signal track types with frame-accurate scheduling. Public callable behavior is centered on no named public items, while method-level behavior such as `end_time`, `new`, `add_clip`, `clips_at`, `as_str`, `add_track`, and 19 more stays attached to the local data model and invariants.
-- Clips are applied in time order, and playback state is driven by update(dt) each frame. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- `cinematic/timeline` delivers the timeline implementation for the cinematic subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- `src/cinematic/timeline.rs` owns the multi-track cinematic timeline used for timed clips, playback state, and branching.
+- It defines `CinematicClip`, `ClipType`, `Track`, `TimelineState`, and `CinematicTimeline` under one playback owner.
+- Track creation, clip insertion, duration recalculation, play or pause control, seeking, and completion checks live here.
+- Label storage and branch jumps also live here, keeping authored timeline flow control next to the state it manipulates.
+- Active-clip queries also live here, so runtime systems can inspect which camera, audio, tween, or signal apply.
+- Read this file when timeline scheduling, clip categories, branching semantics, or playback-state behavior changes.
 
 
 

@@ -1,4 +1,6 @@
-//! Scalar-to-color conversion helpers for procedural outputs that need to become immediate pixel data. `procgen/color` delivers the color implementation for the procgen subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns the scalar-to-RGBA conversion helper used to turn normalized procedural values into grayscale pixels.
+//! The conversion stays here because clamping and flat buffer layout are color-export concerns, not noise semantics.
+//! Open it when scalar preview encoding changes; terrain generation and sampled grids live in sibling modules.
 
 /// Convert a normalised float slice to a flat grayscale RGBA buffer; clamps each value to 0.0–1.0.
 pub fn scalar_map_to_rgba_bytes(values: &[f32]) -> Vec<u8> {

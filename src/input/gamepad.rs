@@ -1,8 +1,10 @@
-//! Manages gamepad device state per slot, including buttons, axes, and connection lifecycle changes. `input/gamepad` delivers the gamepad implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Tracks per-frame deltas for press and release transitions so polling remains deterministic. The file owns or coordinates data contracts including `GamepadVibrationRequest`, `GamepadState`, `GamepadMappings`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Queues rumble requests with normalized motor strengths for runtime delivery to OS backends. Public callable behavior is centered on `gilrs_button_to_string`, `gilrs_axis_to_string`, `virtual_dpad`, while method-level behavior such as `new`, `begin_frame`, `update_button`, `was_button_pressed`, `was_button_released`, `update_axis`, and 19 more stays attached to the local data model and invariants.
-//! Parses and stores mapping profiles using GUID-keyed formats compatible with common controller data. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Bridges backend-specific button and axis identities into stable engine-facing naming. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `GamepadState`, `GamepadVibrationRequest`, and `GamepadMappings`, the runtime gamepad model.
+//! It stores connection flags, per-button hold and transition sets, axis values, GUIDs, names, and rumble capability.
+//! Frame helpers clear transient deltas, while update methods record button and axis changes from backend polling.
+//! Virtual D-pad conversion and gilrs name mappers also live here so backend-specific identities normalize once.
+//! The mappings store parses SDL2-style controller database lines, keeps them by GUID, and can read or write files.
+//! The file is the owner for device state and mapping schema, while app-side polling and rumble dispatch live higher.
+//! Open it when gamepad semantics change; combo logic, recording, and window-event orchestration live in siblings.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{GD01, GD02, GD03};

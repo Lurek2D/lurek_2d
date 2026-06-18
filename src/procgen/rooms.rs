@@ -1,8 +1,9 @@
-//! Room-scatter dungeon generator for layouts that start from independent room candidates and then stitch them into a traversable interior.
-//! The file focuses on non-overlapping room placement, giving each accepted space a clear rectangular identity before corridor carving connects the overall layout.
-//! L-shaped corridor logic keeps navigation simple and readable while still creating believable links between dispersed rooms.
-//! Flat tile-grid output makes the generator easy to consume by map systems, tests, and script-side post-processing. Runtime integration reaches sibling engine areas through crate modules `procgen`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Prefab stamping layers authored motifs on top of procedural geometry so hand-designed shapes can appear inside otherwise generated rooms.
+//! This file owns the random-room dungeon generator that places non-overlapping rectangles and links them by corridors.
+//! `RoomsOpts` stores map size, room limits, size ranges, and seed, while `RoomsDungeon` owns rooms, links, and grid.
+//! `Room`, `RoomPrefabStamp`, and `PlacedRoomPrefab` live here because room geometry and prefab stamping are local.
+//! Room-overlap checks and L-shaped corridor carving stay here because they define the scatter-dungeon layout rules.
+//! Grid stamping also belongs here since prefab masks overwrite owned room interiors inside the produced tile map.
+//! Open it when room-based dungeon semantics change; BSP splitting and WFC tiling live in sibling modules.
 
 use crate::procgen::lcg::Lcg;
 

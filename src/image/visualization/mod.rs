@@ -1,9 +1,11 @@
-//! High-level visualization module wiring that groups image-debug renderers by domain. `image/visualization/mod` is the image module index, declaring `animation`, `audio`, `camera`, `easing`, `facade`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
-//! Re-exports category entry points to provide one flat surface for visualization consumers. `src/image/visualization/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `animation::*`, `audio::*`, `camera::*`, `easing::*`, and 6 more centralized for the image subsystem.
-//! Shares internal facade utilities while keeping submodule responsibilities clearly separated. The file documents how image submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! `image/visualization/mod` is the image module index, declaring `animation`, `audio`, `camera`, `easing`, `facade`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/image/visualization/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `animation::*`, `audio::*`, `camera::*`, `easing::*`, and 6 more centralized for the image subsystem.
-//! The file documents how image submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! Exports the image-visualization surface that groups debug renderers for animation, audio, camera, and UI.
+//! Acts as the index for raster helpers that turn engine data into screenshots and proof images for tooling.
+//! Re-exports the facade helper internally so sibling visualization files can share one HSV color conversion.
+//! Points readers to geometry, graph, image-op, noise, and procgen views instead of mixing those concerns here.
+//! Keeps visualization module visibility centralized, which makes spec generation and ownership tracing simpler.
+//! Open this file first when adding a new debug image module or when public visualization exports must change.
+//! This index owns composition of visualization helpers rather than the sampled drawing logic inside each file.
+//! Use it to see the complete visualization feature set before editing a specific owner like camera or audio.
 
 /// Animation visualizations. This module is publicly re-exported.
 pub mod animation;

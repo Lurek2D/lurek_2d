@@ -1,6 +1,7 @@
-//! Pattern kinds: literal, regex, glob, fuzzy, and multi-literal match strategies. `grep/pattern` delivers the pattern implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! `PatternKind` is the discriminant stored in `Matcher` to select dispatch logic. The file owns or coordinates data contracts including `PatternKind`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! `Literal` and `MultiLiteral` use Aho-Corasick for sub-linear multi-pattern search. Public callable behavior is centered on no named public items, while method-level behavior such as `literal`, `regex`, `glob`, `fuzzy`, `multi_literal` stays attached to the local data model and invariants.
+//! This file owns `PatternKind`, the enum that names every grep match strategy before a `Matcher` executes it.
+//! It stores literal, regex-like, glob, fuzzy, and multi-literal variants so search intent stays explicit in data.
+//! Constructor helpers create each variant without exposing enum field details to higher-level engine call sites.
+//! Open this file when supported pattern families change; evaluation logic and file traversal live in sibling files.
 
 /// Kind of search pattern: literal, regex, glob, fuzzy, or multi-literal.
 #[derive(Debug, Clone)]

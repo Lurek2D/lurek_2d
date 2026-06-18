@@ -1,4 +1,4 @@
-//! `src/lua_api/raycaster_api.rs` registers the `lurek.raycaster` Lua boundary for raycaster behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.raycaster` Lua API for raycast scenes, textures, level parsing, and raycaster userdata.
 
 use super::SharedState;
 use crate::color::Color;

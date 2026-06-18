@@ -1,4 +1,4 @@
-//! `src/lua_api/validator_api.rs` registers the `lurek.validator` Lua boundary for validator behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.validator` Lua API for validator userdata, report conversion, and validation helpers.
 
 use super::SharedState;
 use crate::validator::{

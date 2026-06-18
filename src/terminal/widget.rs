@@ -1,9 +1,11 @@
-//! This file defines the widget vocabulary used by the terminal so character-grid interfaces can be composed from reusable interactive parts.
-//! Shared widget state is centralized here because labels, buttons, lists, text boxes, borders, and panels all need common positioning and visibility rules.
-//! Each widget kind extends that shared base with behavior suited to text-mode UI rather than pixel-perfect retained graphics widgets.
-//! Border and panel concepts live here because framed layout is a fundamental part of terminal-style interface composition.
-//! Text-bearing widgets are shaped around cell coordinates and constrained widths, which keeps them honest to the grid they inhabit.
-//! List widgets manage items and selection semantics here so terminal state can treat them as one coherent interactive object.
+//! This file owns the terminal widget model used to build labels, buttons, text boxes, lists, borders, and panels.
+//! `BorderStyle` defines frame glyph choices, while `WidgetBase` centralizes position, size, visibility, and tags.
+//! `WidgetKind` stores kind-specific data for text, selection, scroll, border styling, and panel child membership.
+//! `Widget` constructors create grid-aligned UI parts with size clamping that matches terminal row limits.
+//! Mutation helpers keep text, color, max-length, selection, border style, and title updates in one owner.
+//! List helpers manage item addition, removal, scroll, and 1-based selection semantics used by input handlers.
+//! Kind-check helpers let callers branch on widget behavior without matching all enum payloads at each call site.
+//! Open it when terminal UI object semantics change; event dispatch and rendering integration live in state.
 
 use super::cell::DEFAULT_FG;
 use super::terminal_state::{MAX_COLS, MAX_ROWS};

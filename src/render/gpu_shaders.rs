@@ -1,6 +1,7 @@
-//! Defines raw binary structures and types representing compiled user WGSL shaders. `render/gpu_shaders` delivers the gpu shaders implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Maps uniform value types to their corresponding GPU buffer layout variants. The file owns or coordinates data contracts including `ShaderUniformKind`, `GpuShader`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Caches compiled wgpu pipelines within shader structures to prevent reconstruction. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Defines the GPU shader data structures that store compiled WGSL artifacts and uniform-kind metadata.
+//! Maps runtime uniform value classes onto the raw buffer layout variants expected by the render backend.
+//! Keeps compiled shader and pipeline cache state local so higher layers can treat shaders as reusable assets.
+//! Open this file when shader uniform typing or cached compiled shader state stops matching render needs.
 
 use crate::render::gpu_pipeline::PipelineKey;
 use crate::runtime::resource_keys::ShaderKey;

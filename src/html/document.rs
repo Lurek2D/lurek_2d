@@ -1,9 +1,12 @@
-//! Orchestrates the full HTML document lifecycle from source text to interactive, drawable UI state. `html/document` delivers the document implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Builds and rebuilds element trees while preserving viewport constraints and accumulated stylesheet inputs. The file owns or coordinates data contracts including `HtmlDocumentOptions`, `HtmlDrawCommand`, `HtmlDocument`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Resolves selector-driven style cascades into computed per-element visual properties for later layout. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_options`, `supports`, `generation`, `root`, `element`, and 39 more stays attached to the local data model and invariants.
-//! Runs block-style layout passes with dirty tracking so structural and style edits trigger fresh geometry. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supports focused and hovered interaction state used by pointer routing, keyboard input, and text editing. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Exposes traversal and lookup paths for id, selector, ancestry, and document-order element queries. The file boundary separates html implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! `src/html/document.rs` owns the full HTML document lifecycle from source text to interactive and drawable UI state.
+//! It defines `HtmlDocumentOptions`, `HtmlDrawCommand`, and `HtmlDocument`, keeping HTML, CSS, tree, and viewport together.
+//! Parsing and CSS rebuild orchestration live here so reloads refresh rules, warnings, and element storage coherently.
+//! Layout, dirty tracking, draw-command emission, and computed style lookup all live here as the document runtime boundary.
+//! Focus, hover, pointer routing, key input, text entry, and hit testing are coordinated here for HTML controls.
+//! Query, ancestry, text collection, id lookup, and document-order traversal helpers also live here for inspection.
+//! This file is the owner of whole-document state; it does not parse selectors or CSS declarations internally from scratch.
+//! Element insertion, subtree removal, attribute edits, and inline-style updates are routed here so mutations stay synced.
+//! Read it when HTML rebuild flow, layout policy, interaction state, or draw output behavior for documents needs changes.
 
 use crate::html::element::{normalise_name, HtmlElement, HtmlElementId, HtmlRect};
 use crate::html::parser::{escape_attribute, escape_text, parse_into};

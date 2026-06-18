@@ -1,8 +1,9 @@
-//! Provides background file I/O through a dedicated worker thread and bounded request channel. `filesystem/async_loader` delivers the async loader implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports non-blocking read and write scheduling with opaque handles for later status polling. The file owns or coordinates data contracts including `LoadHandle`, `LoadResult`, `LoadStatus`, `WriteResult`, `WriteStatus`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Stores results in thread-safe maps so callers can retrieve outcomes without blocking producers. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `request_load`, `request_write`, `poll`, `pending_results`, `poll_write` stays attached to the local data model and invariants.
-//! Enforces queue capacity limits to keep memory and scheduling pressure under control. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Handles worker lifecycle shutdown cleanly when the loader is dropped. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/filesystem/async_loader.rs` owns the background worker queue for asynchronous file reads and writes.
+//! It stores request ids, bounded channels, result maps, and the worker thread that executes resolved path operations.
+//! Load and write status enums live here so callers can schedule work and poll outcomes without blocking game threads.
+//! Queue saturation, spawn failure reporting, and worker shutdown behavior are handled here as part of the I/O contract.
+//! This file does not resolve logical paths itself; higher layers must hand it already validated host filesystem targets.
+//! Read it when async I/O scheduling, poll semantics, queue limits, or worker lifecycle behavior needs to change.
 
 use std::collections::HashMap;
 use std::path::PathBuf;

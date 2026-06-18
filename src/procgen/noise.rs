@@ -1,11 +1,14 @@
-//! Core noise engine for procedural generation where continuous variation, repeatable randomness, and composable sampling functions are the raw material behind richer content.
-//! The file gathers the module's foundational field generators in one place so scripts and higher-level Rust systems can sample coherent structure instead of inventing ad hoc randomness.
-//! Perlin support spans multiple dimensions and both stateless helpers and seeded generator state, which makes it useful for quick probes as well as sustained content workflows.
-//! Simplex support broadens that sampling surface with smoother alternatives better suited to some animated or layered fields.
-//! Worley distance fields add cell-like spatial texture, enabling region partitioning, cracked patterns, and other feature-point-driven looks.
-//! Fractal combinators turn base noise into richer terrain-scale structure by layering octaves into smoother hills, harsher ridges, or turbulent distortions.
-//! Domain warping further bends otherwise regular fields so generated output feels less axis-bound and more organically varied.
-//! Height-map generation helpers keep the module tied to practical terrain production rather than remaining a pile of isolated math routines.
+//! This file owns the core procedural-noise engine used to sample continuous scalar fields across many generators.
+//! `DistType`, `NoiseKind`, and `FractalType` define the selectable metrics and algorithms used by higher layers.
+//! `MapGenOptions` stores map-scale, octave, lacunarity, persistence, and offset parameters for grid generation.
+//! The free functions cover Perlin, Simplex, FBM, periodic tiling, and map helpers for quick stateless sampling.
+//! `NoiseGenerator` owns the seeded permutation table plus methods for Perlin, Simplex, Worley, and fractal variants.
+//! Worley distance evaluation also belongs here because feature-point hashing and metric choice are core noise rules.
+//! Domain warping remains local since warped coordinates are derived directly from the generator's own sample methods.
+//! Sequential and rayon-backed parallel map generation stay here because both consume the same map option contract.
+//! This file is the scalar-field foundation for terrain, caves, textures, and regions, not a gameplay policy owner.
+//! Open it when low-level sampling semantics change; biome thresholds and dungeon layout live in sibling modules.
+//! Its main value is consolidating seeded field generation so procgen callers share one reproducible math surface.
 
 use rayon::prelude::*;
 

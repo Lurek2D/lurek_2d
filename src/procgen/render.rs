@@ -1,6 +1,6 @@
-//! Lightweight projection layer for sampled noise grids that need storage, cell access, and quick grayscale export without depending on higher rendering systems.
-//! The file keeps tileable Perlin-backed values in a compact grid form and exposes them in a way that is useful for previews, tooling, and texture-oriented workflows.
-//! Functionally this file delivers a small bridge from procedural scalar fields to inspectable pixel-ready grid data. Public callable behavior is centered on no named public items, while method-level behavior such as `from_perlin`, `to_rgba_bytes` stays attached to the local data model and invariants.
+//! This file owns the sampled noise-grid wrapper used to store tileable scalar fields and export them as pixels.
+//! `NoiseGrid` stores width, height, and cells, while `from_perlin` builds values from periodic Perlin sampling.
+//! RGBA conversion also belongs here because preview-oriented export is part of the grid wrapper's contract.
 
 use crate::procgen::noise::perlin_noise_periodic;
 use crate::procgen::scalar_map_to_rgba_bytes;

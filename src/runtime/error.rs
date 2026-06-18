@@ -1,7 +1,8 @@
-//! This file centralizes engine failure reporting so subsystems can surface problems through one shared error vocabulary. `runtime/error` delivers the error implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Variants are grouped by operational meaning as well as by source, which helps logs, tools, and UI distinguish recovery paths.
-//! Stable codes and snapshot forms exist here because runtime failures must remain readable both to humans and to external automation.
-//! The convenience result alias keeps the rest of the codebase aligned with the same error contract. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the engine-wide runtime error vocabulary used by startup, subsystems, tooling, and Lua bridges.
+//! `EngineError` stores typed failure variants, while codes, categories, and recovery hints standardize diagnostics.
+//! `ErrorSnapshot` provides a serializable view so UI overlays, logs, and external tools can consume the same data.
+//! `EngineResult` keeps callers on one shared error contract instead of fragmenting result types by subsystem.
+//! Open it when failure taxonomy changes; shared state and message lookup consume this contract elsewhere.
 
 use thiserror::Error;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -16,15 +16,11 @@
 
 ## Summary
 
-- The font module gives users a stable typography layer for loading fonts and measuring text reliably.
-- It supports vector and bitmap font workflows, making UI and retro text rendering equally practical.
-- Registry-based lookup keeps font usage consistent across menus, HUDs, and overlays.
-- Measurement and shaping helpers provide kerning-aware dimensions for accurate layout decisions.
-- Wrap modes support fitting long text into constrained UI regions without manual splitting.
-- Script APIs expose line height, glyph availability, and metadata for fallback logic.
-- The module keeps text layout predictable and easier to iterate on.
+- The `font` module is the shared typography layer for users who need predictable text behavior in UI, HUDs, overlays, or retro-style screens.
+- It covers loading and registering fonts, so scripts can reuse named font resources instead of rebuilding text setup at every draw site.
+- Measurement and shaping are just as important as loading here: glyph metrics, wrapping, line sizing, and related text geometry helpers let layout code make reliable decisions before anything is rendered.
+- Read this module as the place where text data becomes stable and reusable. Rendering and UI systems still decide where text appears, but `font` keeps lookup and measurement consistent.
 
-This module is mostly self-contained inside the `Platform Services` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -34,36 +30,43 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 
 ### bitmap_font.rs
 
-- Provides bitmap-font loading and atlas-backed glyph lookup for pre-rasterized text rendering workflows. `font/bitmap_font` delivers the bitmap font implementation for the font subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Parses descriptor data to build codepoint-to-glyph mappings with stable UV and metric records. The file owns or coordinates data contracts including `BitmapFontAtlas`, `BitmapFont`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Preserves kerning and sizing information needed for accurate spacing during layout and shaping. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `glyph_info`, `contains_glyph`, `line_height`, `point_size`, `is_bold` stays attached to the local data model and invariants.
-- Delivers fixed-size sprite font support for pipelines that prefer atlas sampling over runtime rasterization. Runtime integration reaches sibling engine areas through crate modules `font`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/font/bitmap_font.rs` owns atlas-backed bitmap font data, glyph lookup, and fixed-size raster font metadata.
+- It defines `BitmapFontAtlas` and `BitmapFont`, keeping glyph tables, point size, bold state, and line height together.
+- Supported codepoint range and available baked sizes live here, so callers can reason about which bitmap assets exist.
+- Open this file when atlas layout, glyph presence rules, or bitmap font identity and sizing behavior need to change.
 
 ### metrics.rs
 
-- Provides glyph and line metric structures used to measure text blocks in logical pixel space. `font/metrics` delivers the metrics implementation for the font subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Computes single-line and multiline dimensions with kerning-aware advance accumulation. The file owns or coordinates data contracts including `GlyphMetrics`, `LineMetrics`, `TextMetrics`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Tracks per-line width and source ranges so layout systems can map metrics back to input text. Public callable behavior is centered on `measure_text`, `measure_line`, `char_advance`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Exposes aggregate text bounds including line count and total height for UI sizing flows. Runtime integration reaches sibling engine areas through crate modules `font`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/font/metrics.rs` owns glyph and text measurement data used to size strings, lines, and wrapped text blocks.
+- It defines `GlyphMetrics`, `LineMetrics`, and `TextMetrics`, keeping measurement outputs under one typography owner.
+- `measure_text`, `measure_line`, and `char_advance` live here so width and height calculations stay out of shaping.
+- Per-line source ranges are tracked here, letting downstream layout code map measured spans back to original text.
+- Open this file when text sizing semantics, fallback advances, or metric structures for rendering and UI need changes.
 
 ### mod.rs
 
-- Provides the high-level font module boundary for glyph data, layout shaping, and registry access. `font/mod` is the font module index, declaring `bitmap_font`, `metrics`, `registry`, `shaping` so agents can identify which files own each feature slice before opening implementation code.
-- Connects bitmap atlas handling, metrics evaluation, and wrap logic into one typography service surface. `src/font/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bitmap_font::{BitmapFont, BitmapFontAtlas, AVAILABLE_SIZES}`, `metrics::{GlyphMetrics, TextMetrics}`, `registry::{FontHandle, FontRegistry, FontStyle}`, `shaping::{shape_text, LineBreak, ShapedText, TextAlign, WordWrap}` centralized for the font subsystem.
+- `src/font/mod.rs` is the font module index, exposing atlas, metrics, registry, and shaping surfaces in one place.
+- It reexports the public text stack so renderers, UI systems, and bindings can reach font services through one boundary.
+- No runtime font state lives here; this file defines visibility and navigation while implementation stays in child files.
+- Read this index when wiring text features, because it shows which font symbols are intentionally public and stable.
+- Changes here alter the typography boundary, since reexports decide what the engine and Lua-facing layers may import.
+- This module groups loading, measurement, shaping, and lookup concerns without collapsing them into one file.
 
 ### registry.rs
 
-- Provides the runtime font registry that stores, resolves, and returns loaded font handles by name. `font/registry` delivers the lookup registry and handle ownership for the font subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Maps style and size metadata onto cached font assets for consistent lookup semantics. The file owns or coordinates data contracts including `FontStyle`, `FontHandle`, `FontRegistry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports registration and replacement flows while maintaining stable handle-based access patterns. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `register`, `get`, `get_by_name`, `default_font`, `list_fonts` stays attached to the local data model and invariants.
-- Centralizes font ownership so rendering systems consume one authoritative source of text assets. Runtime integration reaches sibling engine areas through crate modules `font`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/font/registry.rs` owns runtime font registration, handle allocation, and lookup by name for loaded bitmap fonts.
+- It defines `FontStyle`, `FontHandle`, and `FontRegistry`, keeping public font identity separate from raw font storage.
+- Replacement, default-font selection, and registration order live here so text consumers share one asset authority.
+- Open this file when font ownership, lookup semantics, or public handle metadata for runtime text assets must change.
+- Neighboring systems should treat this file as the font boundary for asset access, not the place for shaping or metrics.
 
 ### shaping.rs
 
-- Provides text-shaping and wrapping behavior that transforms raw strings into render-ready line layouts. `font/shaping` delivers the shaping implementation for the font subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports no-wrap, word-wrap, and character-wrap strategies to match varied language and UI needs. The file owns or coordinates data contracts including `TextAlign`, `WordWrap`, `LineBreak`, `ShapedLine`, `ShapedText`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Computes aligned line placement using measured advances and target width constraints. Public callable behavior is centered on `shape_text`, `wrap_words`, `wrap_characters`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Emits shaped line collections with offsets and widths for downstream rendering stages. Runtime integration reaches sibling engine areas through crate modules `font`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/font/shaping.rs` owns line shaping, alignment, and wrapping that turns raw strings into render-ready text layout.
+- It defines alignment and wrap enums plus shaped output types, keeping text layout contracts under one owner.
+- `shape_text`, `wrap_words`, and `wrap_characters` live here so layout decisions stay separate from glyph measurement.
+- This file computes per-line widths and horizontal offsets, giving renderers positioned lines instead of raw source text.
+- Open this file when wrapping policy, alignment behavior, or shaped line structure needs to change for UI or rendering.
 
 
 

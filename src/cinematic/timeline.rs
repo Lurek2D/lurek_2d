@@ -1,8 +1,9 @@
-//! Cinematic timeline system with multi-track support. `cinematic/timeline` delivers the timeline implementation for the cinematic subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides a scriptable timeline of clips and tracks that can be played, paused, scrubbed, and looped. The file owns or coordinates data contracts including `CinematicClip`, `ClipType`, `Track`, `TimelineState`, `CinematicTimeline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports Tween, Camera, Audio, and Signal track types with frame-accurate scheduling. Public callable behavior is centered on no named public items, while method-level behavior such as `end_time`, `new`, `add_clip`, `clips_at`, `as_str`, `add_track`, and 19 more stays attached to the local data model and invariants.
-//! Clips are applied in time order, and playback state is driven by update(dt) each frame. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! `cinematic/timeline` delivers the timeline implementation for the cinematic subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `src/cinematic/timeline.rs` owns the multi-track cinematic timeline used for timed clips, playback state, and branching.
+//! It defines `CinematicClip`, `ClipType`, `Track`, `TimelineState`, and `CinematicTimeline` under one playback owner.
+//! Track creation, clip insertion, duration recalculation, play or pause control, seeking, and completion checks live here.
+//! Label storage and branch jumps also live here, keeping authored timeline flow control next to the state it manipulates.
+//! Active-clip queries also live here, so runtime systems can inspect which camera, audio, tween, or signal apply.
+//! Read this file when timeline scheduling, clip categories, branching semantics, or playback-state behavior changes.
 
 use std::collections::HashMap;
 

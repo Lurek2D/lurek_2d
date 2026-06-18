@@ -1,7 +1,8 @@
-//! Command history storage for features that need explicit undo and redo flow instead of ad hoc reversal logic spread across many systems.
-//! The file tracks a linear timeline with a movable cursor, letting callers push new actions, walk backward through applied work, and replay discarded steps in order.
-//! Batch grouping keeps multi-step edits together as one logical unit, which matters for editors, tactics actions, and scripted transactions that should reverse atomically.
-//! Size limits and eviction rules keep history bounded without losing the current navigation model or forcing clients to hand-roll trimming behavior.
+//! This file owns the linear undo and redo history used to track named commands with a movable replay cursor.
+//! `CommandStack` stores entries, redo truncation, cursor position, batch depth, and max-size eviction in one owner.
+//! `CommandEntry` plus batch helpers stay here because command ids and grouped reversal boundaries are local history data.
+//! Peek and step helpers also belong here since they expose navigation across applied and redoable work without callbacks.
+//! Open it when history semantics change; event routing, state machines, and pools live in sibling pattern modules.
 
 /// Metadata record for a single pushed command.
 #[derive(Debug, Clone)]

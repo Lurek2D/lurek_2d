@@ -1,6 +1,7 @@
-//! Pure view-transform helpers for moving between screen space, map space, and province-cell space without tying camera math to registry ownership.
-//! The file handles fitting, anchored zoom, and coordinate conversion in a way that stays numerically safe even when dimensions or inputs are degenerate.
-//! Keeping these transforms pure makes them easy to reuse from rendering, picking, and tooling without hidden mutable state.
+//! Provides province map camera math for fitting, panning, zoom anchoring, and screen-to-map coordinate conversion.
+//! Owns stateless helpers that convert between screen positions, map space, and province cell coordinates safely.
+//! Forms the boundary between generic input or viewport handling and province-specific grid-space interactions.
+//! Open this file when map interaction math, zoom focus behavior, or screen-to-cell selection rules must change.
 
 /// Return (cam_x, cam_y, zoom) that fits the full map centred on screen; clamps zoom to ≥ 0.0001.
 pub fn fit_camera_to_screen(

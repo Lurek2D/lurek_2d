@@ -1,7 +1,8 @@
-//! Physics debug rendering layer for turning invisible simulation state into visible lines, outlines, and motion cues that developers can inspect frame by frame.
-//! The file translates bodies and shapes into render-friendly snapshots without changing the simulation, letting diagnostics live beside gameplay rather than inside it.
-//! Type-based coloring keeps static, dynamic, kinematic, and sensor objects readable at a glance when scenes grow dense. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands`, `draw_to_image` stays attached to the local data model and invariants.
-//! Velocity arrows and shape outlines expose both form and movement so developers can see why contacts, tunnels, or odd impulses are happening.
+//! This file owns the physics debug-render bridge that turns simulation state into engine commands and preview images.
+//! It walks world bodies, colors them by body type, draws shape outlines, and adds velocity arrows for movers.
+//! The image path rasterizes the same data into `ImageData`, making physics inspection available without the renderer.
+//! This is the right owner for visualization semantics, not stepping logic, contact generation, or body storage rules.
+//! Open it when debug draw output changes; runtime world integration and authored shapes live in sibling files.
 
 use crate::image::ImageData;
 use crate::physics::body::{BodyShape, BodyType};

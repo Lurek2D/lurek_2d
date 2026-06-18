@@ -1,5 +1,9 @@
-//! This module provides the headless REPL stack for evaluating Lua, formatting results, and assisting interactive input. `repl/mod` is the repl module index, declaring `commands`, `completer`, `session`, `value` so agents can identify which files own each feature slice before opening implementation code.
-//! It keeps the feature independent from rendering concerns so terminals, tests, and tools can all reuse the same session core.
+//! `src/repl/mod.rs` is the REPL module index, exposing the headless interactive stack used by CLI, tools, and tests.
+//! It reexports command parsing, completion, session state, and value formatting so callers build a REPL from one surface.
+//! No execution state lives here; this file defines the public boundary while implementation stays split by concern below.
+//! Read this index when wiring REPL features, because it shows which pieces are public and how they are grouped.
+//! This module keeps evaluation independent from rendering, so terminals and automation can share one session core.
+//! Changes here alter the REPL boundary, since reexports decide what runtime code and developer tools may import.
 
 /// REPL command parsing and command result types.
 pub mod commands;

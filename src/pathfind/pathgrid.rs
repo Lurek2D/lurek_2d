@@ -1,8 +1,9 @@
-//! Grid-based A* pathfinding with 8-directional movement and variable cell costs. `pathfind/pathgrid` delivers the pathgrid implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Uses Bresenham line-of-sight for path smoothing after search. The file owns or coordinates data contracts including `Cell`, `PathGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Converts cell indices to world-space centres with configurable cell size. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `in_bounds`, `set_walkable`, `is_walkable`, `set_cost`, `get_cost`, and 3 more stays attached to the local data model and invariants.
-//! Prevents diagonal corner cutting through blocked corners. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Uses an octile heuristic for consistent cost estimation. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Implements a world-space path grid whose cells carry walkability and float costs for eight-way A* searches.
+//! Owns Cell records, octile search nodes, line-of-sight smoothing, and cell-center conversion for world outputs.
+//! Returns paths as world coordinates, making this file the adapter between tile search and movement-space waypoints.
+//! Also blocks diagonal corner cutting so smoothed routes still respect impassable geometry at cell boundaries.
+//! This file matters when world coordinate conversion, smoothing rules, or per-cell cost handling need adjustment.
+//! Open this owner before changing generic A* helpers when the bug only affects world-space path grid consumers.
 
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;

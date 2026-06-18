@@ -1,9 +1,10 @@
-//! This file provides a scheduler for time-based and frame-based deferred execution flows. `timer/scheduler` delivers the scheduler implementation for the timer subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It supports one-shot and repeating events with stable identifiers for external control. The file owns or coordinates data contracts including `ScheduledEvent`, `FrameEvent`, `Scheduler`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It handles named event replacement so restartable behaviors stay clean and predictable. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `after`, `after_named`, `every`, `every_named`, `after_frames`, and 22 more stays attached to the local data model and invariants.
-//! It applies global time scaling while preserving safe clamping boundaries for runtime stability. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It exposes pause, resume, interval mutation, and remaining-time inspection for live orchestration. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! It removes expired events efficiently to keep update costs steady at larger event counts. The file boundary separates timer implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! `src/timer/scheduler.rs` owns delayed and repeating timer events for both wall-time seconds and frame-count triggers.
+//! It defines `ScheduledEvent`, `FrameEvent`, and `Scheduler`, keeping timer data and control operations under one owner.
+//! Named scheduling, replacement, cancellation, pause, resume, interval mutation, and remaining-time queries live here.
+//! The scheduler applies a global time scale to second-based updates while frame-based events stay on counts.
+//! `update` and `update_frames` advance queues, emit fired IDs, and remove expired entries from both timer tracks.
+//! This file is where runtime timer policy lives; higher layers should treat it as the scheduling boundary.
+//! Open it when event lifetime rules, time-scale semantics, or timer-control APIs for gameplay orchestration need changes.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{TI01, TI02, TI03, TI04};

@@ -1,7 +1,7 @@
-//! Object pool state for reuse-heavy systems that would rather recycle stable ids than continuously allocate and discard short-lived gameplay resources.
-//! The file separates idle and active membership, supports prewarming, and enforces optional capacity so callers can shape reuse policy without inventing their own lifecycle bookkeeping.
-//! Acquire and release flow is designed around predictable id turnover, which suits bullets, particles, temporary actors, and other bursty populations.
-//! Functionally this delivers the reuse scheduler behind allocation-sensitive gameplay loops that want bounded churn and explicit ownership transitions.
+//! This file owns the reusable object-id pool used to recycle active and idle slots under an optional capacity limit.
+//! `ObjectPool` tracks free ids, checked-out ids, next allocation, and prewarm behavior inside one lifecycle owner.
+//! Acquire, release, and release-all stay here because active-versus-idle membership rules define pool semantics.
+//! Open it when reuse policy changes; rings, funnels, and history stacks live in sibling pattern modules.
 
 /// Capacity-bounded pool tracking idle and active object ids.
 #[derive(Debug)]

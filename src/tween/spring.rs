@@ -1,7 +1,8 @@
-//! This file provides damped spring simulation for motion that should feel physical and responsive. `tween/spring` delivers the spring implementation for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It models spring parameters and settle rules so values converge smoothly toward targets. The file owns or coordinates data contracts including `SpringAxis`, `SpringSystem`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It groups named spring axes under shared defaults for coordinated multi-field behaviors. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `is_settled`, `reset`, `set_target`, `add_axis`, and 1 more stays attached to the local data model and invariants.
-//! It integrates state each tick and snaps on settle to remove micro-jitter residue. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `SpringAxis` and `SpringSystem`, which provide damped spring motion for one field or named axis sets.
+//! It stores per-axis position, velocity, target, stiffness, damping, precision, and settled state for each simulation.
+//! Update methods integrate motion each tick, snap settled axes to their targets, and expose queries or target changes.
+//! The system wrapper groups multiple axes under shared defaults so higher layers can drive coordinated spring motion.
+//! Open this file when physical-feel parameters or settle behavior change, not when keyframe easing rules change.
 
 use std::collections::HashMap;
 

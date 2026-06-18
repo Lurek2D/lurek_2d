@@ -1,8 +1,9 @@
-//! Provides buffered file-handle behavior for mode-aware read, write, and append stream operations. `filesystem/file_handle` delivers the file handle implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Resolves logical game paths through GameFS before touching host filesystem resources. The file owns or coordinates data contracts including `FileMode`, `FileHandle`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Exposes byte and line reading utilities with EOF-aware iteration semantics. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_mode`, `as_str`, `open`, `read`, `read_line`, `write`, and 8 more stays attached to the local data model and invariants.
-//! Supports seek, tell, flush, and explicit close workflows for predictable stream control. Runtime integration reaches sibling engine areas through crate modules `filesystem`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Enforces access-mode checks so invalid operation mixes fail with clear runtime errors. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/filesystem/file_handle.rs` owns buffered stream handles for mode-aware reading, writing, appending, and seeking.
+//! It stores the active access mode, resolved host path, logical path, buffered reader or writer, and captured file size.
+//! Mode parsing, access checks, EOF probing, flushing, closing, and line reads all live here with one handle contract.
+//! This file opens paths through `GameFS`, but it does not decide mount precedence or save-directory sandbox policy.
+//! Drop-based cleanup also lives here so buffered writes flush predictably when a handle leaves scope or closes early.
+//! Read it when stream semantics, mode validation, cursor behavior, or buffered file access contracts need changes.
 
 use crate::filesystem::GameFS;
 use crate::runtime::error::{EngineError, EngineResult};

@@ -1,6 +1,7 @@
-//! Reinforcement learning environment abstractions following Gym-style conventions enabling training of generic agents on Lurek2D game tasks.
-//! Defines SpaceSpec descriptors for action and observation spaces with shape, bounds, and discrete action counts supporting policy network design.
-//! Implements FrameStack buffer accumulating historical observations into temporal context vectors required by recurrent and attention-based policies.
+//! This file owns small RL environment data helpers, namely `SpaceSpec` descriptors and the `FrameStack` history buffer.
+//! `SpaceSpec` describes observation or action bounds, while `FrameStack` flattens recent frames into context vectors.
+//! Padding and reset behavior live here because frame-history ownership belongs with the stack rather than with learners.
+//! Open it when observation-surface semantics change; policies, value tables, and neural blocks live in sibling files.
 
 /// Space descriptor shared by observation and action spaces.
 #[derive(Debug, Clone)]

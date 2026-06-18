@@ -1,4 +1,4 @@
-//! `src/lua_api/tween_api.rs` registers the `lurek.tween` Lua boundary for tween behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.tween` Lua API for tween userdata, chain control, progress queries, and ticking.
 
 use super::SharedState;
 use crate::tween::{

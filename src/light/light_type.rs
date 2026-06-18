@@ -1,4 +1,6 @@
-//! Defines geometric light models used by the 2D lighting pipeline. `light/light_type` delivers the light type implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `LightType`, the geometric light-kind enum used to distinguish point, directional, and spot lights.
+//! It keeps illumination shape explicit inside `Light2D` so worlds and renderers branch on one stable discriminant.
+//! Open this file when supported light geometries change; shadow, falloff, and world behavior live in siblings.
 
 /// Discriminant for the geometric illumination model used by a `Light2D`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

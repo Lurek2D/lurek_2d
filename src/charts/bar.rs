@@ -1,8 +1,9 @@
-//! Implements bar-chart rasterization for categorical comparison through grouped or stacked layouts. `charts/bar` delivers the bar implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports configurable bar width, spacing, and orientation behavior across multiple value series. The file owns or coordinates data contracts including `BarChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Converts scaled chart coordinates into pixel-aligned rectangle fills for each rendered segment. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `push_series`, `add_series`, `add_series_data`, `add_category`, `add_categories_from_dataframe`, and 6 more stays attached to the local data model and invariants.
-//! Produces RGBA image buffers suitable for per-frame upload and display in runtime overlays. Runtime integration reaches sibling engine areas through crate modules `charts`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Serves as the rectangular-series rendering backend for the charts bar API path. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns grouped bar-chart rendering, including per-series storage, category labels, bar width, and inter-bar gap.
+//! It accepts direct series buffers or dataframe-derived categories, then maps each category slot into rectangle fills.
+//! Baseline handling for positive and negative bars lives here so column charts always anchor correctly around zero.
+//! Shared helpers provide buffer clearing, axes, labels, and legends, while this file owns group spacing and bar geometry.
+//! Category labels are stored beside the series here because annotation needs renderer-owned ordering for each group.
+//! Open it when bar grouping or category ingestion changes; line, area, pie, and heatmap behavior lives in siblings.
 
 use crate::charts::config::{ChartConfig, ChartSeries};
 use crate::charts::render_utils::{

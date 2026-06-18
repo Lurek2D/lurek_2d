@@ -1,7 +1,8 @@
-//! Implements pie-style chart rasterization where values are mapped to proportional angular slices. `charts/pie` delivers the pie implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Computes normalized slice spans and renders arc-filled sectors into RGBA output buffers. The file owns or coordinates data contracts including `PieSlice`, `PieChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports optional donut-hole shaping and label metadata for ring-style visual presentation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_segment`, `add_segments_from_dataframe`, `draw_to_image`, `add_slice`, `clear`, and 2 more stays attached to the local data model and invariants.
-//! Integrates DataFrame-derived value extraction for tabular-to-pie plotting workflows. Runtime integration reaches sibling engine areas through crate modules `charts`, `color`, `dataframe`, `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns pie-chart state as named slices plus configuration needed to turn proportions into filled sectors.
+//! It converts dataframe rows or direct segment calls into normalized angle spans and rasterizes them into RGBA buffers.
+//! Legend annotations are delegated to `render_utils`, while this file owns slice accumulation, totals, and arc membership.
+//! Empty or nonpositive values short-circuit rendering here so downstream image consumers avoid invalid sector math.
+//! Open it when pie segment ingestion or angular fill behavior changes; cartesian axes and shared config live elsewhere.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions};
 use crate::charts::render_utils::{annotate_pie_chart, fill_buffer, set_pixel};

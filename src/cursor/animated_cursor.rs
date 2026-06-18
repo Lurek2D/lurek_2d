@@ -1,7 +1,8 @@
-//! Implements animated cursor state using frame sequences and time-based frame advancement. `cursor/animated_cursor` delivers the animated cursor implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports optional pulse scaling driven by oscillation parameters independent of frame stepping. The file owns or coordinates data contracts including `PulseConfig`, `CursorFrame`, `AnimatedCursor`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Maintains deterministic timing behavior through per-frame duration tracking. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_frame`, `update`, `current_frame`, `current_scale`, `set_pulse`, and 4 more stays attached to the local data model and invariants.
-//! Integrates as an active cursor-state variant within context-aware cursor orchestration. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/cursor/animated_cursor.rs` owns frame-based animated cursor playback and optional pulse-scaling behavior.
+//! It defines `PulseConfig`, `CursorFrame`, and `AnimatedCursor`, keeping frame timing and pulse state together.
+//! Frame advancement, looping policy, current-frame lookup, and pulse-derived scale calculation all live here.
+//! This file is the animation-state boundary for cursors, while raw image data and context policy stay elsewhere.
+//! Read it when frame timing, looping semantics, pulse behavior, or animated cursor playback rules need to change.
 
 use super::custom_cursor::CustomCursor;
 

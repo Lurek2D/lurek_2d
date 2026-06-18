@@ -1,8 +1,10 @@
-//! Implements histogram rasterization for distribution analysis and dashboard telemetry. `charts/histogram` delivers the histogram implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Buckets numeric samples into configurable bins and renders grouped bars for one or more series. The file owns or coordinates data contracts including `HistogramSeries`, `HistogramChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports streaming sample windows, dataframe ingestion, explicit ranges, and density mode. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_series`, `add_series_from_dataframe`, `replace_series`, `append_value`, `clear`, and 8 more stays attached to the local data model and invariants.
-//! `charts/histogram` delivers the histogram implementation for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! The file owns or coordinates data contracts including `HistogramSeries`, `HistogramChart`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! This file owns histogram rendering, including named sample series, bin count, explicit x range, and density mode.
+//! It ingests raw numeric slices or dataframe columns, filters non-finite samples, and trims streaming windows locally.
+//! Bucketization lives here because each render derives bar counts from sample distribution instead of `(x, y)` pairs.
+//! Density normalization also lives here so histogram output can switch between absolute counts and relative frequencies.
+//! Shared chart helpers provide axes, labels, legends, and rectangle fills, while this file owns bin geometry decisions.
+//! `append_value`, `set_bin_count`, and `set_range` make this the file to edit for live telemetry distribution views.
+//! Open it when sample bucketing changes; heatmap matrices, pies, and cartesian line-series renderers live in siblings.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions};
 use crate::charts::render_utils::{

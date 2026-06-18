@@ -1,7 +1,7 @@
-//! Defines convex polygon occluders that block light and contribute to shadow casting. `light/occluder` delivers the occluder implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores local vertices with world offset and opacity controls for flexible scene placement. The file owns or coordinates data contracts including `Occluder`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports runtime vertex replacement from typed points or flat coordinate inputs. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_vertices`, `from_flat_coords`, `get_vertices`, `set_position`, `get_position`, and 6 more stays attached to the local data model and invariants.
-//! Applies layer-mask and enable flags to scope occluder influence across light groups. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `Occluder`, the convex polygon shadow caster used by `LightWorld` to block and mask lighting.
+//! It stores local vertices, world offset, opacity, layer mask, and enabled state for runtime shadow participation.
+//! Construction helpers validate vertex counts and support both typed point lists and flat coordinate arrays.
+//! Open this file when shadow-geometry semantics change; light collection logic and filter presets live in siblings.
 
 use crate::math::Vec2;
 

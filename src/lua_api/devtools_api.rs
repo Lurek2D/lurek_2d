@@ -1,4 +1,4 @@
-//! `src/lua_api/devtools_api.rs` registers the `lurek.devtools` Lua boundary for devtools behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.devtools` Lua API for profiling zones, debug tables, and developer-facing runtime tools.
 
 use crate::devtools::{FileWatcher, FrameStats, Logger, ProfileZone, Profiler, ReplConsole};
 use crate::runtime::SharedState;

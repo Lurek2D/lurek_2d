@@ -1,7 +1,8 @@
-//! Pipeline step model for expressing one unit of work together with the policy that controls when and how it should run. `pipeline/step` delivers the step implementation for the pipeline subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! The file combines identity, dependencies, delays, retries, timeout-like settings, metadata, and callback hooks into a single authored execution record.
-//! Status tracking gives each step a visible lifecycle from pending through terminal outcomes, which keeps orchestration state legible during async progress.
-//! Error policy at step level lets important and optional work coexist inside the same pipeline without flattening all failures into one rule.
+//! `src/pipeline/step.rs` owns the schema for one pipeline step, including lifecycle state and per-step failure policy.
+//! It defines `StepStatus`, `ErrorPolicy`, and `PipelineStep`, keeping authored work-unit metadata under one owner.
+//! Dependency names, delays, retry settings, optionality, tags, metadata, and runtime status fields all live in this file.
+//! Read it when step contract fields, status vocabulary, reset behavior, or per-step error handling semantics need changes.
+//! This file is the step-schema boundary for pipelines, while graph structure and delay scheduling stay in sibling files.
 
 use std::collections::HashMap;
 

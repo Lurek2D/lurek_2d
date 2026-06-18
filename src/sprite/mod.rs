@@ -1,5 +1,9 @@
-//! This module provides the engine's core 2D sprite asset and batching helpers around individual sprites, sheets, atlases, and scalable panels.
-//! It covers both how textured regions are described and how many of them are organized for animation, UI, or efficient drawing.
+//! This module gathers the sprite subsystem surface for single sprites, sheets, atlases, panels, and batches.
+//! It keeps navigation explicit by pointing readers to the file that owns clip playback, lookup, scaling, or batching.
+//! Re-exports here make `Sprite`, `SpriteSheet`, `SpriteAtlas`, `NineSlice`, and `SpriteBatch` easy to reach.
+//! `animator.rs` owns frame-timed clip playback, while `atlas.rs` and `sprite_sheet.rs` own region lookup models.
+//! `sprite.rs` stays the minimal per-instance draw state owner, and `sprite_batch.rs` holds grouped submission data.
+//! Change this file when the public sprite symbol map moves, not when rendering or animation rules change.
 
 /// Stateful clip animator used by the `lurek.sprite` API.
 pub mod animator;

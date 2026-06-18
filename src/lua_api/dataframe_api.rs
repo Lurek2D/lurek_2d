@@ -1,4 +1,4 @@
-//! `src/lua_api/dataframe_api.rs` registers the `lurek.dataframe` Lua boundary for dataframe behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.dataframe` Lua API for rows, schemas, cells, validation, and file-backed table import.
 
 use super::SharedState;
 use crate::dataframe::file_io::{self, DataFrameFileError};

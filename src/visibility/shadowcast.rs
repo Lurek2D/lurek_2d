@@ -1,8 +1,10 @@
-//! This file provides recursive shadowcasting field-of-view for tile-grid visibility queries. `visibility/shadowcast` delivers the shadowcast implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It computes current sight masks while preserving explored history across update frames. The file owns or coordinates data contracts including `TileFov`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It accepts blocker predicates at compute time for flexible integration with world state. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `width`, `height`, `range`, `set_range`, `compute`, and 7 more stays attached to the local data model and invariants.
-//! It serializes visible and explored masks so FOV state can persist across save boundaries. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It supports deterministic octant traversal suitable for stealth and roguelike mechanics. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `TileFov`, the tile-grid field-of-view runtime that computes current sight and remembered exploration.
+//! It stores dimensions, range, wall-lighting policy, and per-cell visible or explored masks for one observer context.
+//! `compute` runs deterministic recursive shadowcasting across eight octants using a caller-supplied blocker predicate.
+//! Helpers expose width, height, range, visible cells, explored state, and callback iteration over current sight.
+//! Save and restore logic serializes packed visibility masks so field-of-view memory can survive persistence boundaries.
+//! Internal bit-pack helpers keep the blob compact, while private casting code isolates slope math from public APIs.
+//! Open this file when tile FOV behavior changes; shared region-state visibility logic lives in sibling modules.
 
 /// Per-cell visibility state for a single observer on a tile grid.
 pub struct TileFov {

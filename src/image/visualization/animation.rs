@@ -1,7 +1,8 @@
-//! Renders animation timelines and frame grids into debug images for rapid visual inspection. `image/visualization/animation` delivers the animation implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Highlights current playback position against surrounding frames to expose timing behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Draws state-oriented overlays for running, paused, and resumed playback diagnostics. Public callable behavior is centered on `draw_animation_frame_grid_to_image`, `draw_animation_playback_to_image`, `animation_playback_control_to_image`, `draw_animation_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Provides quick wrappers with sensible cell sizing for tool and test screenshot generation. Runtime integration reaches sibling engine areas through crate modules `animation`, `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Renders animation state into debug images that show frame grids, playback steps, and control-state panels.
+//! Highlights the current frame inside generated grids so asset review can spot sequencing mistakes quickly.
+//! Builds timeline strips from snapshot indices, making playback history visible without a live renderer.
+//! Draws run, idle, pause, resume, and summary labels so screenshot-based tests can verify animation states.
+//! Open this file when animation debug imagery is wrong even though the underlying Animation data is correct.
 
 use crate::animation::Animation;
 use crate::image::ImageData;

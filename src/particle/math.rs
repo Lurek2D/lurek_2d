@@ -1,7 +1,8 @@
-//! Keyframe interpolation for particle size, colour, and alpha over normalized lifetime. `particle/math` delivers the math implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Offers uniform and normal random helpers for emission variance. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Clamps interpolation inputs and falls back cleanly on empty keyframe sets. Public callable behavior is centered on `next_u64`, `rand_f32`, `interpolate_sizes`, `interpolate_colors`, `interpolate_alphas`, and 4 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Supports the numeric shaping layer used by emitter animation. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns particle interpolation and deterministic random helpers used by emission and per-particle animation math.
+//! It reexports `lerp`, advances the local PRNG, and provides uniform, normal, and ranged random sampling utilities.
+//! Size, color, and alpha interpolation live here so emitter updates and visualizers share one lifetime-evaluation policy.
+//! Fallback and clamping behavior are defined here to keep malformed configs from destabilizing particle playback.
+//! Open it when numeric sampling or keyframe interpolation changes; emitter state and config schema live in sibling files.
 
 pub use crate::math::lerp;
 

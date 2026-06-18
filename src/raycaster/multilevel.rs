@@ -1,9 +1,10 @@
-//! This file extends the flat raycaster into stacked slices so one map position can participate in a multi-storey layout. `raycaster/multilevel` delivers the multilevel implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Each slice carries its own vertical span and tile layer, allowing bridges, overhead rooms, shafts, and similar structures to share horizontal space.
-//! The representation stays close to the base raycaster model, which keeps level transitions understandable for rendering and gameplay code.
-//! Special transitions can move the viewer between slices without inventing a separate world format or renderer. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! The design is meant to add vertical richness while preserving the core assumptions of the column-based pipeline. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! `raycaster/multilevel` delivers the multilevel implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `RaycasterLevel` and `MultiLevelGrid`, the stacked-slice model for multi-storey raycaster worlds.
+//! It stores per-level walls, wall features, texture overrides, lowered floors, holes, vertical bounds, and caches.
+//! Level helpers read or mutate wall, floor, ceiling, and hole data while rejecting out-of-bounds writes safely.
+//! The runtime builder compiles a transient `Raycaster2D` view from level-owned cells for rendering and picking.
+//! `MultiLevelGrid` tracks the active slice, caches compiled runtimes, and resolves visible lower or upper levels.
+//! Ascend and descend checks use floor or ceiling holes so movement and visibility share one vertical rule set.
+//! Open this file when stacked-level data or cross-level visibility changes; scene assembly lives in siblings.
 
 use super::build_scene::LoweredFloorCell;
 use super::dda::Raycaster2D;

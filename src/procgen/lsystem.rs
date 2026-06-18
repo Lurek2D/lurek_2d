@@ -1,7 +1,7 @@
-//! L-system generator for recursive symbolic growth where simple rewrite rules can unfold into plants, roads, fractals, or other branching structures.
-//! The file keeps axiom, productions, and iteration depth explicit so generated strings remain deterministic and inspectable rather than hidden inside opaque helpers.
-//! Turtle interpretation turns those symbols into drawable line segments, giving the grammar an immediate geometric payoff.
-//! Stack-based branching support enables structures that fork and return, which is essential for tree-like and fractal forms.
+//! This file owns the L-system rewriter that expands symbolic grammars into deterministic strings and line segments.
+//! `LSystem` stores the axiom, production rules, and iteration count so generated forms remain easy to inspect.
+//! String generation stays here because rewrite application order and unmapped-character preservation are local rules.
+//! Turtle interpretation also belongs here since segment emission depends on bracket stacks and heading updates.
 
 use std::collections::HashMap;
 

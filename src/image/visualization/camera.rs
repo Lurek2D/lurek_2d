@@ -1,9 +1,11 @@
-//! Produces camera-debug imagery that visualizes framing, motion, and transform behavior in world space. `image/visualization/camera` delivers the camera implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Draws viewport boxes, crosshairs, and coordinate guides for position and anchor verification. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Compares multiple zoom factors to reveal scale-dependent composition and clipping effects. Public callable behavior is centered on `draw_camera_debug_to_image`, `draw_camera_zoom_comparison_to_image`, `camera_rotation_to_image`, `camera_bounds_to_image`, `camera_follow_to_image`, and 6 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Renders rotation-aware grids that expose world-to-screen mapping under angular transforms. Runtime integration reaches sibling engine areas through crate modules `camera`, `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Displays bounds and follow trails to inspect dead-zone tuning and target-tracking responses. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Visualizes shake offsets against center references for temporal stability checks. The file boundary separates image implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Produces camera-debug images that visualize viewport framing, zoom, follow logic, rotation, and shake.
+//! Draws world grids, viewport rectangles, and center markers so camera position and scale stay inspectable.
+//! Builds zoom-comparison panels that reveal how viewport size changes across multiple authored zoom values.
+//! Renders rotated point sets through Camera2D transforms to expose world-to-screen mapping behavior clearly.
+//! Shows bounds lists, follow trails, targets, dead zones, and shake traces inside standalone image reports.
+//! Includes wrapper helpers that package the same camera diagnostics under alternative call shapes for tests.
+//! Depends on Camera2D and ImageData only, keeping these visual probes separate from runtime scene rendering.
+//! Open this file when camera visualization is misleading or when movement diagnostics need new image evidence.
 
 use super::hsv_to_rgb_viz;
 use crate::camera::Camera2D;

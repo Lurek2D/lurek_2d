@@ -1,7 +1,8 @@
-//! Defines shared chart configuration contracts used across all chart rendering variants. `charts/config` delivers the configuration schema and defaults for the charts subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores dimensions, margins, titles, palette defaults, and optional legend or axis metadata. The file owns or coordinates data contracts including `ChartMargin`, `ChartConfig`, `ChartSeries`, `ChartDataFrameOptions`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides common series and DataFrame mapping structures consumed by concrete chart specs. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Serves as the canonical option layer for consistent chart behavior and appearance. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns chart configuration structs, margins, palettes, and dataframe import limits used by every renderer.
+//! `ChartConfig` defines image size, axis colors, titles, labels, grid policy, legend space, and streaming point limits.
+//! `ChartSeries` carries named colored `(x, y)` samples, while `ChartMargin` and defaults stabilize plot layout math.
+//! `ChartDataFrameOptions` keeps tabular import limits local so chart renderers share one narrow ingestion contract.
+//! Open this file when cross-chart option semantics change; per-chart rasterization and annotation live in sibling files.
 
 /// Default palette of 8 distinct colors for auto-assigning series (RGBA, 0.0–1.0).
 pub const DEFAULT_PALETTE: &[[f32; 4]; 8] = &[

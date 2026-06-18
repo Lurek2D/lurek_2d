@@ -1,7 +1,8 @@
-//! Observer-style notification store for reactive game state where changes on named keys should wake interested listeners without binding readers to writers.
-//! The file keeps subscriptions grouped by key while still supporting wildcard reach, so systems can watch a narrow property or an entire stream of change events.
-//! Persistent and one-shot modes share one dispatch model, which simplifies lifecycle handling and ensures cleanup happens in the same place that notifications are tracked.
-//! Clear operations, listener ids, and stored observer entries make the structure suitable for long-running scenes where subscriptions need explicit ownership and maintenance.
+//! This file owns the keyed observer store used to watch named changes without binding readers directly to writers.
+//! `ObserverEntry` records subscription ids, keys, and once flags, while `Observer` groups watchers by key string.
+//! Wildcard matching and once-only cleanup stay here because dispatch membership is observer-owned state bookkeeping.
+//! Subscription counts and clear helpers also belong here since long-lived scenes need explicit maintenance controls.
+//! Open it when reactive watch semantics change; event buses and mediators live in sibling coordination modules.
 
 use std::collections::HashMap;
 #[derive(Debug, Clone)]

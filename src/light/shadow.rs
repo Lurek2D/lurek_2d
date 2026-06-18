@@ -1,4 +1,6 @@
-//! Defines shadow filtering quality presets used by soft-shadow evaluation paths. `light/shadow` delivers the shadow implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `ShadowFilter`, the preset enum that selects soft-shadow kernel quality for light rendering paths.
+//! It distinguishes no filtering, five-tap PCF, and thirteen-tap PCF so shadow softness cost stays explicit in data.
+//! Open this file when shadow-filter semantics change; per-light state and occluder ownership live in sibling files.
 
 /// Shadow filter quality preset controlling the soft-shadow sample kernel.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

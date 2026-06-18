@@ -1,8 +1,9 @@
-//! Provides debug-visualization translation from live AI state into drawable diagnostic artifacts. `ai/render` delivers the rendering adapter and draw-command integration for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Turns control-graph structure into spatial layouts that remain readable during runtime inspection. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Encodes execution status into visual signals so behavior flow can be understood at a glance. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands`, `draw_to_image` stays attached to the local data model and invariants.
-//! Supports both command-stream overlays and image snapshots for tooling and reporting paths. Runtime integration reaches sibling engine areas through crate modules `ai`, `image`, `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Keeps rendering concerns decoupled from decision logic while preserving faithful state representation. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Adds AI debug rendering adapters that translate FSM and behavior-tree state into commands or image snapshots.
+//! Owns layout helpers for state boxes, transition lines, behavior-tree node graphs, and status indicator visuals.
+//! Provides the presentation boundary between live AI state structures and generic renderer or image debug surfaces.
+//! Supports both command-stream overlays and raster output so tooling and in-engine inspection share one owner.
+//! This file is the right place for visualization-only changes that should not alter decision logic behavior itself.
+//! Open this owner when AI debug views are misleading even though the underlying state machines still evaluate well.
 
 use crate::ai::behavior_tree::{BTNode, BTStatus, BehaviorTree};
 use crate::ai::fsm::StateMachine;

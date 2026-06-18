@@ -1,5 +1,9 @@
-//! Cinematic engine module — pure Rust logic, no Lua dependencies. `cinematic/mod` is the cinematic module index, declaring `cinematic_legacy`, `timeline` so agents can identify which files own each feature slice before opening implementation code.
-//! Legacy Cut-based timeline (Cinematic struct) for backward compatibility. `src/cinematic/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `cinematic_legacy::{Cinematic, Cut}`, `timeline::{CinematicClip, CinematicTimeline, ClipType, TimelineState, Track}` centralized for the cinematic subsystem.
+//! `src/cinematic/mod.rs` is the module index that exposes both the legacy cut API and the newer timeline system.
+//! It reexports `Cinematic`, `Cut`, `CinematicTimeline`, `ClipType`, `Track`, and `TimelineState` in one surface.
+//! No active playback state lives here; this file only declares child modules and defines public cinematic symbols.
+//! Read this index when wiring sequence features, because it shows where legacy support ends and timeline playback begins.
+//! Changes here reshape the cinematic boundary, since reexports decide what runtime code may import without deep paths.
+//! This module keeps the simple legacy cut model separate from the multi-track timeline owner for newer cinematic flows.
 
 /// Legacy cut-based timeline (single-track, descriptive cuts).
 pub mod cinematic_legacy;

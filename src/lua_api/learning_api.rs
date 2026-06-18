@@ -1,4 +1,4 @@
-//! `src/lua_api/learning_api.rs` registers the `lurek.learning` Lua boundary for learning behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.learning` Lua API for RL spaces, tensors, observations, and environment callbacks.
 
 use super::SharedState;
 use crate::learning::{

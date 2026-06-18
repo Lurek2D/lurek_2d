@@ -1,8 +1,9 @@
-//! Implements attention primitives used by sequence-learning stacks in the learning subsystem. `learning/attention` delivers the attention implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides positional encodings and multi-head attention flows over row-major tensor buffers. The file owns or coordinates data contracts including `PositionalEncoding`, `MultiHeadAttention`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Computes query-key-value interactions and head projection paths for contextual token mixing. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `apply`, `forward` stays attached to the local data model and invariants.
-//! Integrates with shared evolutionary-layer contracts so parameters can be flattened and restored. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Targets CPU inference and training-style experiments without external deep-learning runtimes. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns positional encoding and multi-head self-attention over row-major `[sequence, model]` tensor buffers.
+//! `PositionalEncoding` stores a precomputed sinusoid table, while `MultiHeadAttention` stores QKV and output projections.
+//! Self-attention forward math lives here because score scaling, softmax normalization, and head concatenation matter.
+//! The block also implements `EvolutionaryLayer` so attention weights can be flattened and restored by external optimizers.
+//! Local `linear` and `softmax_in_place` helpers stay here because they only serve attention projection internals.
+//! Open it when token-mixing behavior changes; transformer composition, tensors, and training loops live in siblings.
 
 use crate::learning::tensor::LurekTensor;
 use crate::learning::EvolutionaryLayer;

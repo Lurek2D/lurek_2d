@@ -1,7 +1,8 @@
-//! This file implements the stateful heart of the REPL, where input is recorded, classified, and evaluated against a caller-supplied Lua VM.
-//! It distinguishes between command-style control input and ordinary Lua text so one prompt can manage both session behavior and code execution.
-//! Expression-first evaluation keeps interactive probing ergonomic while still falling back to statement execution for longer snippets.
-//! Command history is bounded and owned by the session, which keeps repeated use predictable without leaking VM references across calls.
+//! `src/repl/session.rs` owns REPL session state, classifying each input line as a command, expression, or statement.
+//! `ReplSession` stores bounded history, dispatches colon commands, and evaluates Lua code against a caller-supplied VM.
+//! Expression-first execution lives here so quick probing stays ergonomic while statements still work for larger snippets.
+//! `ReplResult` also lives here, keeping displayable outcomes for values, success, errors, and commands under one owner.
+//! Open this file when history policy, command dispatch, file loading, or evaluation flow needs to change.
 
 use crate::repl::commands::ReplCommand;
 use crate::repl::completer::complete_prefix;

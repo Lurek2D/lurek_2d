@@ -1,9 +1,11 @@
-//! Defines the full per-light data model covering transform, color, energy, and shading behavior. `light/light2d` delivers the light2d implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Encapsulates light geometry, blend mode, falloff, attenuation, and layer-mask participation. The file owns or coordinates data contracts including `Light2DAttenuationPatch`, `Light2DOptionsPatch`, `Light2D`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Stores spot-cone, shadow, normal-map, and volumetric options in one configurable runtime object. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_position`, `get_position`, `set_radius`, `get_radius`, `set_color`, and 48 more stays attached to the local data model and invariants.
-//! Provides constructor defaults tuned for immediate point-light usage without extra setup. Runtime integration reaches sibling engine areas through crate modules `color`, `light`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Exposes field access patterns used by world management and Lua-facing controls. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Supports optional flicker and grouping metadata for batched animation and edits. The file boundary separates light implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns `Light2D` and its patch structs, the complete per-light data model used by the lighting system.
+//! It stores transform, radius, color, energy, attenuation, masks, shadows, type, flicker, grouping, and normal-map data.
+//! Constructor defaults create a ready point light, while many getters and setters expose stable field-level control.
+//! `Light2DOptionsPatch` and `Light2DAttenuationPatch` let callers update selected options without rebuilding a light.
+//! Spot angles, shadow settings, volumetrics, blend mode, falloff, and attenuation all live in this one ownership unit.
+//! Debug rendering for falloff comparisons also lives here because it depends on the same light-specific option semantics.
+//! This file is the boundary for one light's authored and runtime state, not for scene collection orchestration.
+//! Open it when per-light option semantics change; world storage and occluder ownership live in sibling files.
 
 use crate::color::Color;
 use crate::light::attenuation::Attenuation;

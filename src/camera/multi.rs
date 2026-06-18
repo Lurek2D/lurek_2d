@@ -1,7 +1,7 @@
-//! Implements multi-camera rig management over named camera instances for concurrent view setups. `camera/multi` delivers the multi implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides preset layout helpers for split-screen, minimap, and picture-in-picture arrangements. The file owns or coordinates data contracts including `CameraRig2D`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports deterministic iteration and bulk mutation flows for multi-pass rendering integration. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `has_camera`, `remove_camera`, `ensure_camera`, `camera_mut`, `camera`, and 6 more stays attached to the local data model and invariants.
-//! Serves as the orchestration layer for scenarios requiring more than one active camera view. Runtime integration reaches sibling engine areas through crate modules `camera`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/camera/multi.rs` owns multi-camera rig management for named camera instances used by split and overlay layouts.
+//! It defines `CameraRig2D`, keeping camera lookup, creation, layout presets, and bulk updates under one owner.
+//! Split-screen, minimap, and picture-in-picture viewport arrangements live here, separate from single-camera logic.
+//! Read this file when rig layout policy, named camera lifecycle, or multi-view update behavior needs to change.
 
 use crate::camera::types::Camera2D;
 use std::collections::HashMap;

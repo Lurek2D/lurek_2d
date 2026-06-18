@@ -1,8 +1,9 @@
-//! Implements window-style dataframe computations over ordered row sequences and bounded spans. `dataframe/query/window` delivers the window implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides rolling mean, sum, min, and max evaluation with configurable window lengths. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Computes dense-style ranking with stable tie handling across repeated numeric values. Public callable behavior is centered on no named public items, while method-level behavior such as `with_rolling_mean`, `with_rolling_sum`, `with_rolling_min`, `with_rolling_max`, `with_rank`, `with_pct_change`, and 1 more stays attached to the local data model and invariants.
-//! Supports row-over-row percent-change derivation for trend and momentum analysis. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Builds cumulative running totals across ordered rows for progressive metric inspection. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns ordered window helpers that append rolling, ranking, percent-change, and cumulative output columns.
+//! Rolling mean, sum, min, and max stay here because bounded span semantics depend on row order and window width.
+//! `with_rank` also belongs here because tie handling and sort direction define ordered analytic behavior on a column.
+//! `with_pct_change` and `with_cumsum` are local because both derive each row from earlier rows in sequence order.
+//! These methods mutate the receiver by appending output columns, rather than returning detached summary frames.
+//! Open it when row-order analytics change; grouping, SQL execution, and serialization live in sibling owners.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 impl DataFrame {

@@ -1,9 +1,11 @@
-//! Implements musical time tracking that maps wall-clock progression to beats, bars, and pulses. `audio/beat_clock` delivers the beat clock implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports tempo and meter changes while preserving coherent phase continuity over runtime updates. The file owns or coordinates data contracts including `BeatClockOpts`, `JudgementWindows`, `JudgementResult`, `BeatClockEvents`, `BeatPosition`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides tap-tempo and quantized scheduling utilities for rhythm-aware gameplay coordination. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `new_with_opts`, `start`, `stop`, `reset`, `is_running`, and 32 more stays attached to the local data model and invariants.
-//! Applies latency and swing parameters to shape musical timing feel without audio-thread coupling. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Exposes deterministic query surfaces for beat index, measure position, and subdivision boundaries. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Keeps timing logic pure and playback-agnostic so multiple systems can consume one clock source. The file boundary separates audio implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns `BeatClock` and its support types, the pure musical-timing model used across rhythm features.
+//! It stores BPM, meter, elapsed beat position, tap-tempo history, ramps, swing, latency, and scheduled beat markers.
+//! Options and judgement structs define default subdivision, hit windows, and the typed results returned by timing checks.
+//! Tick and update helpers advance the clock, emit beat and bar crossings, and preserve continuity across BPM ramps.
+//! Query helpers expose beat, bar, phase, nearest grid points, time remaining, and effective beat after compensation.
+//! Judgement, quantisation, crossed-step, and scheduling helpers support rhythm gameplay without coupling to playback I/O.
+//! The file stays playback-agnostic, acting as a shared timing source instead of owning audio streams or sinks.
+//! Open it when music-time semantics change; decode, buses, and actual playback routing live in sibling files.
 
 /// Runtime options used when creating a beat clock.
 #[derive(Clone, Copy, Debug)]

@@ -1,7 +1,8 @@
-//! Implements the headless CLI runner used for validation, packaging, and screenshot batch workflows. `bin/lurek_headless` delivers the lurek headless implementation for the bin subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Dispatches subcommands into deterministic offline operations without opening an interactive runtime window. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Runs game validation tooling and archive packaging against target directories for CI and release prep. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Captures batch screenshots across multiple games to support visual smoke checks in automation pipelines. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/bin/lurek_headless.rs` owns the non-interactive CLI used for validation, packaging, and screenshot batch workflows.
+//! It parses subcommands and dispatches offline operations without opening the normal interactive engine window.
+//! Validation command wiring, archive packing, recursive ZIP assembly, and batch screenshot orchestration all live here.
+//! This file is the entrypoint boundary for headless automation tasks, while engine runtime behavior remains elsewhere.
+//! Read it when CLI command set, archive layout, validator invocation, or screenshot-batch behavior needs to change.
 
 use std::env;
 use std::fs::{self, File};

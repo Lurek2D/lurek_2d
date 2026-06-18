@@ -1,5 +1,9 @@
-//! This module provides the save-system surface for collecting game state, storing it by slot, and restoring it later. `save/mod` is the save module index, declaring `save_manager` so agents can identify which files own each feature slice before opening implementation code.
-//! It combines persistence, compression, backup rotation, and migration support under one gameplay-facing feature stack. `src/save/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `save_manager::{ compress_save_content, decompress_save_content, parse_save_table, serialize_table, serialize_value, SaveManager, SaveValue, SlotMeta, }` centralized for the save subsystem.
+//! `src/save/mod.rs` is the save module index, exposing the persistence surface that gameplay and Lua bindings consume.
+//! It reexports `SaveManager`, slot metadata, serialization helpers, compression helpers, and the save value tree.
+//! No runtime state lives here; this file keeps the public save boundary stable while logic stays in `save_manager.rs`.
+//! Read this index when a caller needs save APIs, because it shows which persistence symbols are intentionally public.
+//! The module groups table serialization, compressed slot payload handling, and manager-driven save orchestration together.
+//! Changes here alter the persistence boundary, since reexports decide what the engine and Lua layer may import.
 
 mod save_manager;
 pub use save_manager::{

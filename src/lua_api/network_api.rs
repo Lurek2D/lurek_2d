@@ -1,4 +1,4 @@
-//! `src/lua_api/network_api.rs` registers the `lurek.network` Lua boundary for network behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.network` Lua API for net values, rooms, stats, snapshots, and network event bridging.
 
 use super::SharedState;
 use crate::network::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_CHANNELS, MAX_PEERS};

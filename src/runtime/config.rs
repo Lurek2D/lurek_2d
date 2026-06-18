@@ -1,9 +1,11 @@
-//! This file defines the typed runtime configuration model that turns human-edited TOML into engine startup policy. `runtime/config` delivers the configuration schema and defaults for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It gathers window, renderer, module, performance, and environment-facing options into one coherent structure. The file owns or coordinates data contracts including `Config`, `RuntimeConfig`, `RenderConfig`, `WindowConfig`, `TuiConfig`, and 4 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Default values and user overrides meet here, which lets the engine begin from a known baseline and then absorb project-specific changes.
-//! Module toggles are not merely flags in this file. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! They also participate in dependency validation so invalid feature combinations degrade into a supported runtime shape. External integration uses `serde`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Serialization support matters here because configuration is both loaded from disk and, in some workflows, written back or inspected programmatically.
+//! This file owns the typed runtime configuration schema that turns `conf.toml` into deterministic startup policy.
+//! It stores top-level config plus mode, window, render, module, performance, TUI, CLI, and headless sections.
+//! Default implementations define the baseline engine shape used when projects omit config or provide partial data.
+//! Module validation lives here because feature toggles must disable unsupported dependency combinations centrally.
+//! Headless-profile helpers also live here so no-window startup can force a supported subset of enabled modules.
+//! Load helpers merge file overrides over defaults, log read or parse problems, and preserve a usable config result.
+//! Serde support is part of the boundary because this data moves between disk, runtime defaults, and inspections.
+//! Open it when startup policy changes; shared mutable state and execution modes consume these contracts elsewhere.
 
 #[allow(unused_imports)]
 use crate::log_msg;

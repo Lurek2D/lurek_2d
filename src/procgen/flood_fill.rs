@@ -1,6 +1,7 @@
-//! Grid flood-fill helper for discovering connected regions from a seed without needing heavier map analysis infrastructure.
-//! The file works over flat byte grids and uses threshold comparison to decide whether propagation should include or exclude a cell.
-//! Above-threshold and below-threshold modes make the same routine usable for holes, landmasses, islands, basins, and similar binary region problems.
+//! This file owns the flat-grid flood-fill helper used to find connected regions above or below a byte threshold.
+//! Seed validation, 4-neighbor expansion, and threshold matching stay here because they define reachable-mask output.
+//! It returns a byte mask rather than world objects, keeping the file focused on grid-region extraction only.
+//! Open it when connectivity rules change; caves, rooms, and cellular worlds live in sibling procgen modules.
 
 /// Flood-fill from `(sx, sy)` over `data` and return a flat mask where 1 = reached cell.
 ///

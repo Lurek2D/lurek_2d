@@ -1,7 +1,7 @@
-//! GPU bridge for translating rich province registry state into tightly packed records suitable for direct shader consumption.
-//! The file strips province visuals down to a deterministic binary layout so rendering can upload stable arrays rather than reinterpret high-level Rust structures on the fly.
-//! Sorted record building keeps province ordering predictable across runs, which matters for synchronization and debugging.
-//! Functionally this file delivers the structured handoff from province data ownership to GPU-ready style buffers. Runtime integration reaches sibling engine areas through crate modules `province`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Maps province registry data into flat GPU-friendly records that shaders and upload code can consume without Rust state.
+//! Owns ProvinceGpuRecord and BorderStyleGpuRecord layouts plus builders that normalize colors, flags, and style bits.
+//! Provides the translation boundary between rich province metadata and tightly packed buffers for renderer-side lookup.
+//! Use this file when GPU record shape, packing rules, or registry fields required by province shaders are changing.
 
 use crate::province::border_index::ProvinceBorderIndex;
 use crate::province::registry::ProvinceRegistry;

@@ -16,12 +16,11 @@
 
 ## Summary
 
-- The midi module provides MIDI-focused playback and synthesis control backed by SoundFont rendering.
-- It exposes transport operations such as load, play, pause, stop, seek, and loop.
-- Channel and track controls support mute, solo, volume shaping, and instrument-level adjustment.
-- The module gives users scriptable MIDI sequencing that plugs cleanly into the engine audio runtime.
+- The `midi` module is the playback surface for projects that want symbolic music control instead of treating every track as a pre-rendered audio file.
+- It brings MIDI transport, playback state, and SoundFont-backed synthesis into one namespace.
+- That makes it useful for rhythm systems, adaptive music, and score-driven tooling.
+- Read this module as the bridge between authored MIDI content and audible output.
 
-This module primarily collaborates with `audio`, `runtime`. Its responsibility should stay inside the `Platform Services` group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -32,22 +31,29 @@ This module primarily collaborates with `audio`, `runtime`. Its responsibility s
 
 ### mod.rs
 
-- MIDI subsystem for device discovery, event routing, and sequenced playback. `midi/mod` is the midi module index, declaring `player`, `state` so agents can identify which files own each feature slice before opening implementation code.
-- Bridges live MIDI input, software rendering, and hardware output from one module. `src/midi/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `player::MidiPlayer`, `state::MidiState` centralized for the midi subsystem.
+- `src/midi/mod.rs` is the module index that exposes MIDI playback state and SoundFont storage through one boundary.
+- It reexports `MidiPlayer` and `MidiState` so runtime code and Lua-facing layers consume one stable MIDI surface.
+- No transport or synthesis state lives here; this file only declares child modules and chooses what becomes public.
+- Read this index when wiring audio features, because it shows where playback control ends and asset state begins.
+- Changes here reshape the MIDI boundary, since reexports decide what engine code may import without deep paths.
+- This module keeps transport behavior and SoundFont ownership separate, which makes future MIDI work easier to place.
 
 ### player.rs
 
-- Stateful MIDI transport for file playback through rendered PCM. `midi/player` delivers the player implementation for the midi subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Holds parsed song metadata and playback position in one controller object. The file owns or coordinates data contracts including `MidiData`, `MidiPlayer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Handles play, pause, resume, seek, stop, and duration queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `load`, `load_data`, `is_loaded`, `file_path`, `play`, and 38 more stays attached to the local data model and invariants.
-- Tracks per-channel mix state such as volume, mute, solo, and instrument selection. Runtime integration reaches sibling engine areas through crate modules `audio`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Supports per-track muting plus tempo, looping, and output format control. External integration uses `rodio`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- `src/midi/player.rs` owns MIDI transport state, loaded song metadata, and rodio-backed playback control.
+- It defines `MidiData` and `MidiPlayer`, keeping file metadata, mix settings, output format, and playhead state together.
+- Transport methods for load, play, stop, pause, resume, seek, looping, and volume changes are implemented here.
+- Per-channel mute, solo, volume, instrument selection, and per-track mute controls also live in this controller.
+- This file leaves `load_data` disabled and `render_to_pcm` empty, so transport structure exists before synthesis.
+- Read it when MIDI runtime behavior, bus routing, output sample rules, or metadata queries need to change.
+- Higher layers should treat this file as the transport boundary, while SoundFont asset ownership stays in `state.rs`.
 
 ### state.rs
 
-- Storage for loaded MIDI SoundFont data and its source path. `midi/state` delivers the state container and transition helpers for the midi subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Validates SoundFont files before they enter the playback pipeline. The file owns or coordinates data contracts including `MidiState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Exposes query and clear helpers for runtime availability checks. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_soundfont`, `has_soundfont`, `clear_soundfont`, `soundfont_path`, `soundfont_data` stays attached to the local data model and invariants.
+- `src/midi/state.rs` owns the loaded SoundFont bytes and optional source path used by the MIDI subsystem.
+- `MidiState` validates the RIFF and `sfbk` headers before accepting data, so bad SoundFont files fail early here.
+- Availability checks, path lookup, raw byte access, and unload behavior all live here under one small state owner.
+- Open this file when SoundFont lifetime, validation rules, or metadata exposure for synthesis setup must change.
 
 
 

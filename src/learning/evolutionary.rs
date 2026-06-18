@@ -1,4 +1,6 @@
-//! Defines the shared trait contract for layers exposing flat trainable parameter buffers. `learning/evolutionary` delivers the evolutionary implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns the shared `EvolutionaryLayer` trait used by learning blocks that expose flat trainable parameters.
+//! It defines the minimal contract for counting, importing, and exporting weights so optimizers can treat layers uniformly.
+//! Open it when parameter-boundary semantics change; concrete layer math and training logic live in sibling files.
 
 /// Contract for layers usable in neuroevolution workflows.
 pub trait EvolutionaryLayer {

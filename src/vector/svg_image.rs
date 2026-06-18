@@ -1,9 +1,12 @@
-//! Implements the main SVG document parser, layout representation, and rendering bridge. `vector/svg_image` delivers the svg image implementation for the vector subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Traverses the usvg tree, flattens it, and manages per-element runtime state. The file owns or coordinates data contracts including `SvgPath`, `SvgElement`, `SvgImage`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides hierarchy queries (parent, children, count), bounding box extraction,. Public callable behavior is centered on no named public items, while method-level behavior such as `from_bytes`, `render`, `get_element_accumulated_transform`, `get_element_points`, `get_adjacencies`, `cache_to_canvas`, and 10 more stays attached to the local data model and invariants.
-//! color/visibility/transform reads and resets, and GPU canvas caching for vector subtrees. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! All mutation methods follow the same error contract: return `Err` when the element ID is absent. External integration uses `std`, `usvg`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! `vector/svg_image` delivers the svg image implementation for the vector subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `src/vector/svg_image.rs` owns SVG parsing, normalized scene representation, and runtime rendering for vector content.
+//! It defines `SvgPath`, `SvgElement`, and `SvgImage`, keeping geometry, hierarchy state, and canvas handles together.
+//! Raw SVG bytes are parsed here into a tree of groups and paths, then normalized into engine-owned element maps and IDs.
+//! Element transforms, visibility, color overrides, and cached subtree canvases are managed here as runtime vector state.
+//! Render submission also lives here, so parsed vector data emits `RenderCommand` sequences without a separate adapter.
+//! Hierarchy queries, point flattening, bounds extraction, and adjacency detection are handled here for gameplay and tools.
+//! Open this file when SVG parse policy, element state semantics, canvas caching, or vector rendering must change.
+//! Neighboring systems matter here mainly at the math, render, and runtime boundaries that supply transforms and commands.
+//! This file is the owner boundary for vector scene behavior; higher layers should treat it as the source of SVG state.
 
 use crate::math::Vec2;
 use crate::render::renderer::{DrawMode, PathSegment, RenderCommand};

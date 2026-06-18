@@ -1,6 +1,6 @@
-//! Global ambient tint state driven by a time-of-day curve. `overlay/ambient` delivers the ambient implementation for the overlay subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Maps day phases into scene-wide color changes for lighting control. The file owns or coordinates data contracts including `AmbientState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supplies the ambient baseline consumed by the overlay renderer. Public callable behavior is centered on no named public items, while method-level behavior such as `compute_color_from_time` stays attached to the local data model and invariants.
+//! This file owns `AmbientState`, the time-of-day tint model used to compute a scene-wide overlay ambient color.
+//! It stores enable state, current RGBA tint, and hour-of-day input, then maps day phases to explicit color bands.
+//! Open this file when ambient tint semantics change; the overlay controller and light sync live in sibling modules.
 
 #[derive(Debug, Clone)]
 /// Stores ambient tint settings applied across the whole screen.

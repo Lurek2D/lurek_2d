@@ -1,9 +1,10 @@
-//! Implements transformer-style blocks composed from attention, normalization, and feed-forward stages. `learning/transformer` delivers the transformer implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Defines encoder and decoder building units operating over engine-native tensor structures. The file owns or coordinates data contracts including `LayerNorm`, `TransformerEncoderBlock`, `TransformerDecoderBlock`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Applies residual pathways and normalization flows for stable sequence representation updates. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `forward_vec`, `forward_tensor`, `forward` stays attached to the local data model and invariants.
-//! Stores trainable parameters in flat vectors to align with evolutionary optimization tooling. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Coordinates multi-stage forward execution across attention and projection subcomponents. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Provides reusable transformer primitives for sequence learning and inference experiments. The file boundary separates learning implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns transformer blocks built from attention, normalization, residual paths, and feed-forward projections.
+//! `LayerNorm`, encoder blocks, and decoder blocks store the trainable weights needed for CPU transformer execution.
+//! Encoder flow lives here because residual addition, normalization order, and feed-forward staging are block semantics.
+//! The decoder also lives here, including the cross-attention proxy that mixes encoder means into decoder context.
+//! Flat parameter packing is implemented here so evolutionary tooling can import and export transformer block weights.
+//! Local tensor helpers such as `add_tensors`, `linear`, and `row_mean` stay here because they serve block internals only.
+//! Open it when sequence-block behavior changes; raw attention, tensors, and engine orchestration live in sibling files.
 
 use crate::learning::attention::MultiHeadAttention;
 use crate::learning::tensor::LurekTensor;

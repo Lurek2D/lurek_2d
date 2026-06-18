@@ -19,49 +19,24 @@
 
 ## Summary
 
-- The physics module provides 2D rigid-body simulation, collision, and query services for gameplay systems.
-- It supports dynamic, static, kinematic, and sensor body roles.
-- The world steps on a fixed timestep to keep simulation deterministic across frame rates.
-- Bodies carry type, transform, collision filtering, and motion configuration.
-- Shape support includes circles, rectangles, polygons, edges, and chain boundaries.
-- Shape material settings include density, friction, and restitution.
-- Continuous collision detection is available for fast-moving bodies.
-- Broad and narrow phase collision processing is owned by the world runtime.
-- Contact events are captured and exposed as stable post-step records.
-- Lua callbacks can subscribe to begin-contact and end-contact transitions.
-- Spatial queries include raycast, point test, and area overlap helpers.
-- Lightweight geometry helpers are available outside the full world object.
-- Joint support enables hinges, sliders, ropes, welds, and motorized constraints.
-- Joint limits and break thresholds support mechanical gameplay behaviors.
-- Sleeping policies reduce CPU load for resting bodies.
-- Wake/sleep controls are script-accessible when deterministic activation is required.
-- Layer/mask filtering controls collision participation between groups.
-- Zone systems apply local gravity and damping overrides by area.
-- Zone priorities and masks resolve overlapping environmental effects.
-- Terrain integration supports destructible cell maps linked to collider rebuilds.
-- Chunk-local terrain updates avoid global rebuild cost.
-- Merged terrain spans reduce static collider count.
-- Terrain supports serialization and diagnostic image export.
-- Debug rendering exposes bodies, vectors, and contact-oriented visuals.
-- Diagnostic colors help separate body categories in dense scenes.
-- Pixels-to-meters mapping keeps gameplay and solver scales coherent.
-- The module owns physical simulation and queries, not game-domain policy.
-- It collaborates with render/runtime/math/image through bounded interfaces.
-- Error handling and validation protect against invalid shape/world inputs.
-- APIs support both high-level helpers and detailed body control.
-- The module is suitable for platformers, top-down motion, and destructible worlds.
-- Contracts are tuned for deterministic tests and reproducible runtime behavior.
-- Physics remains a Platform Services backend used by many feature modules.
-- Overall, physics is the authoritative source of movement and collision truth.
-- It provides performance-aware simulation with practical debugging support.
-- It is designed for production stability under mixed gameplay workloads.
-- The module keeps integration explicit to reduce hidden side effects.
-- Invariants prioritize stable step ordering and predictable contact semantics.
-- Query results are aligned with the same world state used by solver progression.
-- This consistency is critical for AI, gameplay, and tool integrations.
-- Physics is a core technical pillar for interactive 2D experiences.
+- The `physics` module is the engine's 2D simulation authority for users who want motion, contact, shapes, joints, and collision queries to live inside one consistent world model instead of several unrelated helper systems.
+- Bodies, colliders, forces, terrain, joints, sensors, and collision layers all belong to the same simulation step, which makes movement and contact rules coherent across the engine.
+- The module supports dynamic, static, kinematic, and sensor-style roles so projects can mix actors, level geometry, triggers, platforms, and detection-only regions inside one physical space without switching subsystems.
+- This matters because practical game physics is rarely only about spawning bodies. Scripts also need to ask what overlaps what, where a sweep stops, which contacts are active, and how constraints or terrain affect motion over time.
+- Query support is therefore as important as simulation support. Raycasts, overlap checks, shape queries, sweep-style tests, and contact-oriented inspection let gameplay ask the physics world questions instead of only pushing bodies through it.
+- Shape support gives the system expressive range. Different collider forms and geometry choices let projects model characters, bullets, walls, pickups, platforms, and area effects with semantics that match their role.
+- Joint support matters because many worlds contain articulated or coupled behavior such as doors, hinges, chains, levers, and linked mechanisms rather than only isolated bodies.
+- Terrain integration extends the module beyond free-floating rigid objects. Many games need stable collision against authored ground, ramps, tile-derived obstacles, or other environment shapes, and the module keeps those interactions inside the same contact authority.
+- Contact information is one of the most important user-facing outputs. When things touch, systems often need normals, hit points, and begin/end-style state changes so gameplay can react meaningfully.
+- The module is therefore useful not only for passive simulation but also for explanation. A script can ask why motion stopped, what was hit, or what region a body is currently interacting with and get answers from the same spatial authority.
+- This makes `physics` a natural backbone for grounded movement, projectile logic, puzzle machinery, hazards, and any feature where authoritative 2D contact semantics matter more than ad hoc coordinate math.
+- Simulation progression over time is part of the contract too. Other systems can synchronize against the step loop because the module owns world advancement rules instead of leaving each feature to approximate them.
+- That shared step authority is what lets several systems trust the same answers about position, collision, and contact state instead of drifting into parallel approximations.
+- The module also keeps filtering and response policy close to world state, which helps projects express what should block, trigger, slide, or ignore contact without inventing separate spatial rule systems.
+- Debug visualization is a core capability because collision and tuning mistakes are much easier to fix when shapes, contacts, joints, sensors, and query paths can be inspected directly.
+- Other systems consume the results, but `physics` owns the source of truth for what counts as solid, colliding, constrained, or detectable in 2D space.
+- Read `physics` as the owner of motion and collision semantics for the engine's physical world.
 
-This module primarily collaborates with `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -74,78 +49,93 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`. It
 
 ### body.rs
 
-- Physics body description layer that gathers the state a simulation object needs before or while it lives inside the world.
-- The file defines the playable vocabulary of rigid body roles such as dynamic movers, fixed solids, script-driven kinematics, and overlap-only sensors.
-- It also binds those roles to supported geometry forms, material defaults, collision filtering, and transform helpers so a body can be reasoned about as one coherent unit.
-- Constructors emphasize ready-to-use authoring by filling in sensible density, friction, restitution, and motion settings rather than forcing every caller to spell out raw fields.
-- Geometry utilities keep body space and world space connected, which matters for bounds queries, spawn setup, editor tooling, and shape-aware logic outside the solver.
+- This file owns `BodyType`, `BodyShape`, and `Body`, the authored body descriptor used before and during world use.
+- It stores simulation role, primitive shape, material settings, filters, pose, velocity, and optional extended geometry.
+- Constructors cover rectangles, circles, polygons, edges, and chains so tools and gameplay code share one body surface.
+- Geometry helpers expose bounding boxes plus local or world point conversion without requiring a live solver context.
+- This file is the boundary between authored rigid-body intent and the runtime world that simulates those bodies.
+- Open it when body payloads or authoring semantics change; stepping, queries, and zones live in sibling owners.
 
 ### collision.rs
 
-- Collision event buffering for the moments when physical contact needs to become stable gameplay information instead of transient solver state.
+- This file owns `CollisionInfo`, the stable collision payload used when contact results leave solver internals.
+- It stores penetration depth and collision normal so gameplay systems can react without raw engine state.
+- Open this file when exported contact payload fields change; overlap helpers and body simulation live elsewhere.
 
 ### collision_helpers.rs
 
-- Lightweight geometry overlap helpers for code that needs quick collision answers without standing up a full physics world.
+- This file owns lightweight overlap helpers for AABBs, circles, and point tests without a full physics world.
+- It provides stateless boolean queries used by gameplay code that only needs immediate geometric answers.
+- Open this file when simple collision predicates change; buffered collision events and bodies live elsewhere.
 
 ### mod.rs
 
-- Platform-level 2D physics module that unifies authored bodies, geometric shapes, simulation stepping, spatial queries, terrain sync, and trigger-style environmental effects.
-- It exposes the major surfaces of the subsystem as one coherent toolbox, from lightweight helper tests through full world simulation and debug-oriented support structures.
-- Functionally this file is the high-level entry point for physical interaction, movement constraints, collision reporting, and physics-backed world state in Lurek2D.
-- `physics/mod` is the physics module index, declaring `body`, `collision`, `collision_helpers`, `render`, `shape`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/physics/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `types::BodyId`, `body::{Body, BodyShape, BodyType}`, `collision::CollisionInfo`, `collision_helpers::{test_aabb, test_circle_aabb, test_circles, test_point_aabb}`, and 5 more centralized for the physics subsystem.
-- The file documents how physics submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- This module re-exports the physics subsystem surface for bodies, shapes, zones, world stepping, and helpers.
+- It keeps navigation explicit by mapping which sibling files own body descriptors, geometry, debug output, or zones.
+- Public exports here route callers toward `World` for simulation and `Body` or `Shape` for authored physics state.
+- `collision.rs` and `collision_helpers.rs` own contact payloads and lightweight overlap checks outside full stepping.
+- `body.rs`, `shape.rs`, and `zone.rs` define the core authored inputs that later feed the runtime world owner.
+- Change this file when the public physics symbol map moves; change siblings when simulation data rules change.
 
 ### render.rs
 
-- Physics debug rendering layer for turning invisible simulation state into visible lines, outlines, and motion cues that developers can inspect frame by frame.
-- The file translates bodies and shapes into render-friendly snapshots without changing the simulation, letting diagnostics live beside gameplay rather than inside it.
-- Type-based coloring keeps static, dynamic, kinematic, and sensor objects readable at a glance when scenes grow dense. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands`, `draw_to_image` stays attached to the local data model and invariants.
-- Velocity arrows and shape outlines expose both form and movement so developers can see why contacts, tunnels, or odd impulses are happening.
+- This file owns the physics debug-render bridge that turns simulation state into engine commands and preview images.
+- It walks world bodies, colors them by body type, draws shape outlines, and adds velocity arrows for movers.
+- The image path rasterizes the same data into `ImageData`, making physics inspection available without the renderer.
+- This is the right owner for visualization semantics, not stepping logic, contact generation, or body storage rules.
+- Open it when debug draw output changes; runtime world integration and authored shapes live in sibling files.
 
 ### shape.rs
 
-- Physics shape definition layer that gives the subsystem a compact language for circles, rectangles, polygons, edges, and chained outlines.
-- The file keeps geometry authoring, validation, and collider conversion close together so malformed inputs can be rejected before they become unstable runtime fixtures.
-- Parsing and regular-polygon construction make the surface practical for scripts, tools, and data-driven content that describe shape intent rather than raw engine objects.
-- Standalone shapes carry material and sensor settings alongside geometry, which lets authored collision pieces travel with the properties that affect how they behave in the world.
-- Local bounding logic keeps each shape queryable without needing a live body, which is useful for previews, authoring tools, and lightweight reasoning.
+- This file owns `Shape` and `StandaloneShape`, the geometry vocabulary used by bodies and standalone collision pieces.
+- It stores circles, rectangles, polygons, edges, and chains, then converts valid inputs into Rapier colliders.
+- Parsing helpers and regular-polygon generation let scripts or data describe intent without building raw engine types.
+- Standalone shapes keep density, friction, restitution, and sensor flags next to geometry for authored test fixtures.
+- Local bounding-box helpers make shapes inspectable in tools and previews without a live body or physics world.
+- Open this file when geometry semantics change; body ownership and world stepping remain in sibling files.
 
 ### terrain.rs
 
-- Destructible terrain map layer that turns editable solid cells into physics-ready world geometry without making callers manage collider lifecycles manually.
-- The file tracks terrain in chunks so local edits stay local, allowing flush operations to rebuild only the regions that actually changed.
-- Fill tools support live terrain authoring and destruction patterns such as circles, rectangles, blanket writes, and other broad modifications during play.
-- Row merging keeps the generated static-body footprint compact, which matters when large tile fields must remain interactive without exploding collider counts.
-- Serialization and image output make the terrain usable for save systems, tooling, previews, and data exchange outside the immediate simulation step.
+- This file owns `TerrainMap`, a chunked solid-cell grid that rebuilds static physics bodies only where edits occur.
+- It stores map dimensions, cell scale, world offsets, per-cell solidity, spawned chunk body ids, and dirty chunks.
+- Editing helpers flip single cells or fill circles, rectangles, and whole maps so gameplay can carve or restore terrain.
+- Flush logic removes stale chunk colliders, merges horizontal solid runs, and respawns compact static bodies in `World`.
+- Collapse and debris helpers support destructible terrain flows by pruning unsupported cells and spawning fragments.
+- Image and byte serialization make the same terrain usable for previews, saves, reloads, and external authoring tools.
+- Open this file when terrain editing or sync semantics change; body simulation and contact solving live in siblings.
 
 ### types.rs
 
-- Small core type surface for the physics subsystem where stable identifiers need stronger meaning than a bare integer can provide.
-- The file wraps body identity in a dedicated type so physics handles remain cheap to pass around while still reading as deliberate domain values.
-- Functionally this delivers the low-friction type safety that keeps body references explicit across Rust and Lua-facing boundaries.
+- This file owns `BodyId`, the stable typed identifier used to reference bodies across the physics subsystem.
+- It wraps raw slot indices with conversions, display formatting, and Lua bridging so body handles stay explicit.
+- Open this file when body-handle representation changes; world storage and body descriptors live in sibling owners.
+- This is the right owner for changing Rust or Lua identity semantics without touching simulation behavior directly.
 
 ### world.rs
 
-- Central physics simulation world that owns the living state of rigid bodies, colliders, joints, queries, events, and solver progression for the engine.
-- The file wraps Rapier into an engine-shaped runtime surface where spawning, stepping, sleeping, destruction, and body mutation all speak one consistent game-facing vocabulary.
-- Fixed-timestep accumulation is part of that surface, which keeps motion and contact results deterministic enough for frame-rate-independent gameplay code.
-- Collision collection lives beside stepping so begin, end, and overlap information emerges as stable post-step data rather than scattered callbacks fired from deep inside the solver.
-- Spatial queries such as raycasts, point tests, and area checks share the same authoritative world state, which lets gameplay systems ask where things are without duplicating geometry.
-- Joint support turns the world from a loose body container into a mechanical playground where links, motors, ropes, sliders, and welded constraints become first-class scene behaviors.
-- Break thresholds and one-way platform handling add gameplay-oriented control over how contacts and constraints should behave under stress or directional motion.
-- Trigger zones extend the world beyond classic rigid-body simulation by letting areas override gravity, damping, and enter-exit signaling as bodies move through space.
-- Pixels-per-meter conversion keeps authored screen-scale intent aligned with simulation-scale correctness, reducing the friction between gameplay numbers and solver numbers.
-- Debug shape extraction and line drawing make the same world inspectable, so developers can see the geometry and contact surfaces that drive runtime outcomes.
+- This file owns `World`, the Rapier-backed runtime that stores live bodies, colliders, joints, and zones.
+- It mirrors authored `Body` data into Rapier sets, keeps stable ids, and tracks tombstones for removed slots.
+- Stepping syncs scripted state into Rapier, runs the solver pipeline, then writes motion back into body mirrors.
+- Collision handling buffers begin and end contact pairs plus overlap events so gameplay reads post-step results.
+- Contact and stats helpers summarize active manifolds, sleeping bodies, collider counts, and joint counts.
+- Spatial query helpers provide filtered raycasts, AABB scans, and point tests against the same world state.
+- Fixture APIs let one body carry multiple colliders, while rebuild paths refresh filters and materials after edits.
+- Joint APIs create revolute, rope, prismatic, weld, wheel, friction, motor, and mouse constraints with stable ids.
+- Joint utilities also expose motor speeds, limits, break thresholds, connected bodies, and explicit destruction paths.
+- Zone integration applies priority-ordered gravity and damping overrides, then emits enter and leave events per body.
+- One-way platform handling and sleep controls adapt raw solver behavior to platformer-style gameplay expectations.
+- Meter conversion helpers keep pixel-authored content aligned with simulation units without spreading scale math.
+- Debug extraction exposes shape snapshots and image drawing support so tools can inspect runtime geometry easily.
+- Open this file when runtime ownership or physics behavior changes; pure shape and zone definitions live nearby.
 
 ### zone.rs
 
-- Physics zone system for spatial rule overrides that should apply because a body is somewhere, not because it touched a solid object.
-- The file defines bounded areas that can replace normal gravity with directional pull, attraction, repulsion, or weightless behavior.
-- Priority and mask filtering let multiple zones coexist without turning area-based effects into ambiguous global state. Public callable behavior is centered on no named public items, while method-level behavior such as `contains`, `new_rect`, `set_circle`, `set_gravity_directional`, `set_gravity_point`, `set_gravity_repulsor`, and 5 more stays attached to the local data model and invariants.
-- Damping overrides make zones useful for liquids, mud, low-friction fields, or other environmental modifiers that change motion feel.
-- Enter and leave tracking turns zones into event sources as well as force fields, which is important for scripting and gameplay transitions.
+- This file owns `PhysicsZone`, `ZoneBoundary`, `ZoneGravityMode`, and tracker events for area-based rule overrides.
+- It stores zone shape, gravity behavior, damping overrides, priority, filters, and enabled state in one owner.
+- Zone helpers configure rectangles or circles, directional gravity, point attraction, repulsion, and zero-gravity fields.
+- The tracker caches body membership so enter and leave transitions can feed gameplay events as well as force changes.
+- This file is the boundary for area effects driven by position rather than by rigid contact against solid geometry.
+- Open it when zone semantics change; body descriptors and world stepping rules live in sibling owners.
 
 
 

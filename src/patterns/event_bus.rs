@@ -1,7 +1,8 @@
-//! Event bus routing for decoupled gameplay communication where systems publish named signals and interested listeners react without direct caller knowledge.
-//! The file organizes subscriptions by event name while preserving listener identity, priority order, and wildcard reach so dispatch can stay predictable as projects grow.
-//! One-shot listeners, targeted clearing, and ordered listener extraction make the bus practical both for transient reactions and for long-lived system wiring.
-//! Rather than executing script callbacks itself, it prepares the dispatch shape that higher layers can consume while keeping subscription state authoritative in one place.
+//! This file owns the named event-subscription store used to route listeners without direct caller-to-callee wiring.
+//! `EventBus` tracks ids, priorities, wildcard matches, and one-shot listeners so dispatch order stays inspectable.
+//! `Subscription` lives here because event name, priority, and once semantics define the bus-owned routing contract.
+//! Listener queries and once-drain helpers also belong here since they expose dispatch shape without invoking callbacks.
+//! Open it when publish-subscribe semantics change; observers and mediators live in sibling coordination modules.
 
 use std::collections::HashMap;
 

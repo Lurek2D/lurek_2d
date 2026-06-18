@@ -1,7 +1,8 @@
-//! Edge compatibility rules that decide whether neighboring blocks can connect. `mapblock/constraints` delivers the constraints implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Describes socket-style match data per edge for fine-grained placement checks. The file owns or coordinates data contracts including `EdgeConstraint`, `NeighborRules`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides opposite-edge helpers for two-sided adjacency validation. Public callable behavior is centered on `opposite_edge`, while method-level behavior such as `new`, `add_compatible`, `add_compatible_one_way`, `is_compatible`, `set_edge_required`, `set_interior_only`, and 4 more stays attached to the local data model and invariants.
-//! Keeps connection semantics data-driven instead of hard-coded. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns neighbor compatibility rules, edge requirements, and interior-only placement constraints for blocks.
+//! `EdgeConstraint` describes one socket on one edge segment, while `NeighborRules` stores compatibility and flags.
+//! Bidirectional and one-way compatibility registration lives here because adjacency policy is data, not generator code.
+//! `opposite_edge` also stays here so socket comparison logic can share one canonical edge-direction helper.
+//! Open it when placement legality changes; block geometry, candidate search, and scripted execution live in siblings.
 
 use super::block::Edge;
 use std::collections::{HashMap, HashSet};

@@ -1,4 +1,6 @@
-//! Reverse-index mapping from Global Tile ID (GID) to list of (x, y) grid coordinates for fast spatial tile lookups in tilemaps.
+//! This file owns the reverse-index maintenance helper that maps tile GIDs back to their grid positions.
+//! The function removes one coordinate from a GID bucket and deletes empty buckets to keep index state compact.
+//! Open this file when tile lookup bookkeeping changes; map storage and generation logic belong to siblings.
 
 use std::collections::HashMap;
 

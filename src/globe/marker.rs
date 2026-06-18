@@ -1,7 +1,8 @@
-//! Provides stable-id globe marker storage for pins and point annotations on planetary surfaces. `globe/marker` delivers the marker implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports marker insertion, removal, movement, and lookup by id or classification type. The file owns or coordinates data contracts including `MarkerStore`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Manages marker visibility and custom attributes for flexible runtime presentation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `remove`, `get`, `get_mut`, `move_to`, and 8 more stays attached to the local data model and invariants.
-//! Keeps marker collections deterministic for rendering and interaction queries. Runtime integration reaches sibling engine areas through crate modules `globe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Stores globe markers with stable ids so pins and point annotations can be added, moved, filtered, and rendered.
+//! Owns marker lookup, visibility, arbitrary string attrs, and typed grouping by marker classification name.
+//! Provides the state boundary between gameplay marker semantics and draw or picking code that consumes marker data.
+//! Keeps iteration and id assignment deterministic so UI, render, and sync systems see stable marker identity.
+//! Open this owner when marker lifecycle, filtering, or per-marker metadata behavior needs adjustment.
 
 use crate::globe::types::{Marker, MarkerStyle};
 use std::collections::HashMap;

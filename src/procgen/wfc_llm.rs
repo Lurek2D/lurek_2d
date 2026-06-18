@@ -1,6 +1,7 @@
-//! LLM-assisted helper layer for turning natural-language intent into concrete WFC tiles, weights, and adjacency rules. `procgen/wfc_llm` delivers the wfc llm implementation for the procgen subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! The file handles prompt shaping and response parsing so language-model output can become structured generator input rather than loose text.
-//! Keeping that translation here isolates the experimental boundary between authored prompts and deterministic procedural systems.
+//! This file owns the JSON parsing bridge from LLM-produced tile specs into concrete WFC options and constraints.
+//! It converts loose response objects into `WfcTile`, `WfcRules`, and `WfcOpts` so generation stays deterministic.
+//! Adjacency parsing remains local because malformed or partial LLM output must collapse into one structured boundary.
+//! Open it when AI-assisted tiling input changes; the actual collapse algorithm lives in `wfc.rs`.
 
 use crate::procgen::{WfcOpts, WfcRules, WfcTile};
 use std::collections::HashMap;

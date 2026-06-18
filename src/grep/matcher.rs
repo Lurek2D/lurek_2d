@@ -1,8 +1,9 @@
-//! Low-level pattern matcher: wraps the supported pattern kinds behind one helper. `grep/matcher` delivers the matcher implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! `Matcher` implements literal, simplified regex/glob, fuzzy, and multi-literal search. The file owns or coordinates data contracts including `Matcher`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Returns a `Vec<(usize, usize)>` of byte-span matches within the target string. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `matches_line`, `find_positions` stays attached to the local data model and invariants.
-//! Regex and glob support are lightweight custom matchers rather than full regex-crate semantics. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Fuzzy matching uses an edit-distance threshold per query. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `Matcher`, the text-evaluation layer that applies one `PatternKind` to lines and match spans.
+//! It dispatches literal, regex-like, glob, fuzzy, and multi-literal checks behind one consistent search interface.
+//! Literal searches can return byte ranges, while non-literal modes fall back to whole-line spans after a match check.
+//! Regex and glob support are custom lightweight implementations here, not full crate-backed regular expressions.
+//! Fuzzy matching uses an edit-distance threshold over sliding windows so near matches can be found in plain text.
+//! Open this file when pattern semantics change; enum construction and high-level grep orchestration live nearby.
 
 use super::pattern::PatternKind;
 

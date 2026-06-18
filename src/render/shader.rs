@@ -1,8 +1,10 @@
-//! Manages user-facing shader compilation and parsing of WGSL sources. `render/shader` delivers the shader implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Wraps WGSL source code into normalized pipeline templates for the renderer. The file owns or coordinates data contracts including `ShaderFragmentInput`, `Shader`, `UniformValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Inspects fragment inputs to ensure only supported attributes are bound. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `send`, `has_uniform`, `ordered_uniforms`, `wrapper_source`, `fragment_entry_name`, and 1 more stays attached to the local data model and invariants.
-//! Represents shader uniform values in typed forms for per-frame upload. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Preserves the ordering of uniform variables to guarantee stable GPU buffer layouts. External integration uses `std`, `wgpu`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Owns user-facing shader parsing, validation, and uniform bookkeeping for custom WGSL-driven render effects.
+//! Wraps incoming WGSL source into renderer-ready templates so fragment entry points match engine expectations.
+//! Inspects fragment inputs and uniform declarations to reject unsupported bindings before runtime use.
+//! Represents uniform values in typed forms that later upload code can preserve in stable buffer order.
+//! Keeps wrapper generation and ordered-uniform logic local instead of scattering shader policy through backends.
+//! Acts as the custom-shader boundary between authored WGSL text and engine-managed pipeline integration.
+//! Open this file when shader source validation, wrapper rewriting, or uniform ordering behaves incorrectly.
 
 use crate::log_msg;
 use crate::runtime::log_messages::SH01_SHADER_OK;

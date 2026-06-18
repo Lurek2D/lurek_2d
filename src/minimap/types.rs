@@ -1,7 +1,8 @@
-//! Shared minimap data types for colors, fog, overlays, and live markers. `minimap/types` delivers the shared type definitions and data contracts for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Defines the small enums and structs that other minimap files reuse. The file owns or coordinates data contracts including `ColorMode`, `FogLevel`, `MinimapObjectType`, `MinimapObject`, `MinimapPing`, and 5 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Carries per-object and per-path state for animated overlays. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_mode`, `as_str`, `from_u8` stays attached to the local data model and invariants.
-//! Separates raw layer bytes from higher-level minimap behavior. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/minimap/types.rs` defines the shared enums and data structs that every minimap state and render file reuses.
+//! It owns color mode, fog level, markers, pings, overlay geometry, raw layers, and object descriptors in one contract set.
+//! Small parsing and conversion helpers also live here so value semantics stay close to the types they interpret.
+//! This file carries data shapes only; it does not own minimap mutation, rendering order, or province import behavior.
+//! Read it when minimap payload fields, cross-file data contracts, or serialized marker and overlay semantics need changes.
 
 /// Whether minimap cells are coloured by terrain type or by political owner.
 #[derive(Debug, Clone, Copy, PartialEq)]

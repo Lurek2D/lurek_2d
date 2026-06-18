@@ -1,9 +1,11 @@
-//! Manages creation and caching of wgpu render pipeline objects to prevent redundancy. `render/gpu_pipeline` delivers the gpu pipeline implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Groups pipelines by geometry layout, blend mode, and stencil operation flags. The file owns or coordinates data contracts including `GeometryKind`, `GpuStencilMode`, `PipelineKey`, `PipelineSelectionKey`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Selects default built-in shaders when custom overrides are absent from keys. Public callable behavior is centered on `blend_state_for`, `uniform_wgsl_type`, `custom_uniform_declarations`, `custom_fragment_call_args`, `build_custom_color_shader_source`, and 6 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Pays pipeline compilation cost only once per unique rendering configuration. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Configures stencil operations, depth-stencil states, and stencil mode mapping. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Standardizes blend states for alpha, additive, multiplicative, and replace modes. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Builds and caches wgpu render pipelines so repeated material and geometry combinations compile only once.
+//! Keys pipelines by geometry kind, blend state, stencil mode, and custom shader selection inputs.
+//! Chooses built-in shader paths when callers do not supply overrides, keeping fallback behavior centralized.
+//! Generates helper WGSL fragments and uniform declarations needed by custom color and texture pipelines.
+//! Standardizes alpha, additive, multiplicative, and replace blend policies for the whole render subsystem.
+//! Configures depth and stencil state mapping so pipeline creation reflects the front-end render command model.
+//! Acts as the pipeline-construction boundary rather than the owner of per-frame draw traversal.
+//! Open this file when render state caching, blend mapping, or custom shader pipeline assembly is incorrect.
 
 use crate::render::gpu_shaders::ShaderUniformKind;
 use crate::render::gpu_tess::color_write_mask_from_bits;

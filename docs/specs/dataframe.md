@@ -18,36 +18,20 @@
 
 ## Summary
 
-- This module gives users an in-engine data workspace for tables, analytics, and report-style processing.
-- You can load, build, and transform tabular datasets without moving data into external tools.
-- It supports both DataFrame-style column operations and multi-table database-style organization.
-- SQL-like query support enables joins, filters, grouping, and projections in a familiar declarative form.
-- Lazy query pipelines allow staging transformations before collecting results, which helps control runtime cost.
-- Vectorized execution accelerates numeric-heavy column operations for larger datasets.
-- Background task APIs keep expensive parsing or query work off the frame-critical path.
-- Window functions support rolling metrics, ranking, cumulative totals, and percent-change analysis.
-- Pivot and grouping features make it practical to reshape gameplay telemetry into decision-ready views.
-- Statistical helpers like correlation, percentile, and normalization support balancing and anomaly detection.
-- Duplicate and missing-value diagnostics help validate imported content before it drives gameplay systems.
-- The module can serialize and parse common formats, including CSV and JSON, for workflow interoperability.
-- LVDF binary support gives teams a compact storage format for faster load and smaller disk footprint.
-- Text-table rendering helps users inspect results quickly in logs and debug consoles.
-- Database containers allow related tables to be queried together instead of manually merged in script code.
-- Typed value handling reduces brittle parsing and conversion logic in downstream gameplay scripts.
-- This module is useful for economy simulation, quest metrics, AI telemetry, and content QA pipelines.
-- It supports both exploratory analysis during development and deterministic processing in shipped logic.
-- Users can move from raw records to actionable summaries without leaving the runtime.
-- The practical value is fewer custom table utilities and more consistent data operations across teams.
-- It also shortens iteration loops by keeping ingest, transform, validate, and export in one namespace.
-- For performance-sensitive projects, parallel/vectorized paths reduce pressure on plain Lua loops.
-- For tool-facing scripts, async handles provide predictable status polling and error capture.
-- In short, the module turns tabular data work into a first-class gameplay and tooling capability.
-- It bridges content pipelines and runtime behavior with one coherent API model.
-- This makes data-driven development easier to maintain as project complexity grows.
-- Users gain both expressiveness and operational control for serious in-engine analytics workloads.
-- The outcome is better observability, cleaner pipelines, and faster balancing decisions.
+- The `dataframe` module is the engine's tabular-data workspace for users who want table-shaped information to be loaded, queried, transformed, summarized, and exported without leaving the runtime.
+- At its core are `DataFrame` and `Database` concepts that let a project work with both standalone tables and related multi-table collections, which is important because some workflows are local column operations while others look more like lightweight analytics databases.
+- Query behavior is deliberately broad. Filtering, sorting, slicing, grouping, joining, pivoting, window calculations, ranking, cumulative metrics, and percent-change analysis all live under the same module family so data processing can stay close to the game or tool using it.
+- SQL-like execution makes the feature practical for users who think declaratively, while direct frame methods keep it approachable for scripts that prefer explicit programmatic transformation.
+- Lazy pipelines are a major functional category because they let callers stage a sequence of operations and materialize only when needed, which helps organize larger data workflows without immediately paying every computation cost.
+- Vectorized execution extends the module from convenient table manipulation into more serious numeric workloads. Typed column stores and parallel operations make the same data model useful for both exploratory and performance-sensitive processing.
+- Import and export paths such as CSV, JSON, and LVDF matter because real projects move data between authoring tools, analytics views, gameplay state, and regression artifacts. The module is designed to sit in the middle of that movement rather than only at one endpoint.
+- Background task support is important from the user perspective because parsing and querying tables can become expensive; off-thread execution lets a project keep the same conceptual API while moving heavier work away from the frame-critical path.
+- Diagnostics such as missing-value reports, duplicate analysis, and descriptive statistics turn the module into a quality and validation aid, not only a storage surface. That is useful for telemetry, balancing, content audits, and data-heavy debugging.
+- Because joins, windows, grouping, and summary statistics live beside import/export, the module can support full analysis loops inside the engine: ingest data, clean it, compare it, visualize it elsewhere, and persist the refined result.
+- This makes `dataframe` a natural backbone for reporting-oriented tools and live dashboards where structured content and metrics need to be manipulated with more discipline than generic Lua tables provide.
+- That shared table model keeps ingest, analysis, export, and visualization steps connected.
+- Read `dataframe` as the engine feature that turns structured tables into a first-class runtime capability. Other systems provide the data or consume the results, but this module owns how tabular information is modeled, queried, transformed, analyzed, and persisted.
 
-This module is mostly self-contained inside the Foundations group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -57,122 +41,152 @@ This module is mostly self-contained inside the Foundations group. Cross-module 
 
 ### file_io.rs
 
-- Implements storage-agnostic persistence helpers for DataFrame and Database payload workflows. `dataframe/file_io` delivers the file io implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Defines narrow read and write abstraction traits decoupled from concrete filesystem backends. The file owns or coordinates data contracts including `DataFrameFileStore`, `DataFrameFileError`, `DataFrameFileResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Bridges CSV, JSON, and binary serializers with caller-provided storage transport operations. Public callable behavior is centered on `read_csv_dataframe`, `read_json_dataframe`, `write_csv_dataframe`, `write_json_dataframe`, `write_binary_dataframe`, and 2 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Preserves distinct error domains for storage, parsing, and format conversion failure handling. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns storage-agnostic persistence adapters for reading and writing dataframe and database payloads.
+- `DataFrameFileStore` defines the read and write contract, while `DataFrameFileError` preserves storage vs format errors.
+- CSV, JSON, and LVDF helpers live here because they bridge caller transport with `serial.rs` parsing and encoding.
+- Database JSON load and save also stay here so external persistence boundaries remain outside core table ownership.
+- Open it when IO error mapping or storage contracts change; schema, SQL, and row operations live in siblings.
 
 ### frame.rs
 
-- Implements the core DataFrame and Database runtime models with typed cell-value representation. `dataframe/frame` delivers the frame implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores table data in named column structures with stable row-wise access semantics. The file owns or coordinates data contracts including `CellValue`, `ColRef`, `ColumnSchema`, `DataFrame`, `DataFrameRowIter`, and 2 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports column resolution by name or index for flexible scripting and API integration paths. Public callable behavior is centered on no named public items, while method-level behavior such as `is_nil`, `as_number`, `as_text`, `as_bool`, `cmp_for_sort`, `new`, and 39 more stays attached to the local data model and invariants.
-- Provides row and column lifecycle operations including add, remove, rename, and mutation workflows. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Exposes slicing, cloning, iteration, and structural transformation helpers for table processing. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Maintains multi-table database containers that group frames under stable logical identifiers. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- Includes random-data generation and expression-evaluation helpers for synthetic and derived columns. State changes, validation paths, and helper routines in `src/dataframe/frame.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- Supports pivot-style reshaping with configurable aggregation behavior across grouping dimensions. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+- This file owns the tabular runtime core: `CellValue`, column selectors, schema metadata, `DataFrame`, and `Database`.
+- It stores column-major cell buffers plus ordered names, then exposes row reads, writes, adds, deletes, and cloning.
+- Column resolution by name or one-based index lives here because every dataframe extension depends on that contract.
+- Schema inspection and textual `explain` output also stay here so table shape and diagnostics share one owner.
+- Synthetic table generation is implemented here because typed sample cells and row assembly depend on core storage.
+- `with_eval` and its token parser live here because derived-column arithmetic reads direct row data from the table core.
+- Pivot-table assembly also belongs here because it rewrites row, column, and value keys into new frame structures.
+- Rolling mean, rolling sum, and rank-returning variants live here as pure table transforms that produce new frames.
+- `Database` ownership stays here because named table containers are the storage boundary used later by SQL execution.
+- `AggFn` is defined here so grouping, pivoting, and SQL summaries share one aggregation vocabulary across siblings.
+- Open it when table invariants change; serializers, query extras, lazy plans, and vectorized paths build on this file.
 
 ### lazy.rs
 
-- Implements deferred dataframe query planning through composable step-chain descriptions. `dataframe/lazy` delivers the lazy implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores filter, sort, select, window, and limit operations without immediate execution. The file owns or coordinates data contracts including `LazyQuery`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Materializes lazy plans on collect by applying steps over cloned source-frame state. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `tombstone`, `filter`, `sort`, `select`, `head`, and 6 more stays attached to the local data model and invariants.
-- Preserves deterministic step order and transformation semantics during pipeline realization. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns deferred dataframe pipelines, storing query steps until a caller materializes them with `collect`.
+- `LazyQuery` keeps a cloned source frame plus ordered filter, sort, select, slice, nil-drop, and limit operations.
+- Execution stays here because lazy semantics are defined by step ordering, cloning rules, and collect-time dispatch.
+- The file also adds `DataFrame::lazy()` so eager tables can hand off into deferred planning without Lua involvement.
+- Open it when pipeline semantics change; concrete row transforms, SQL parsing, and async jobs live in siblings.
 
 ### mod.rs
 
-- Defines the dataframe module boundary for typed tabular storage, query execution, and serialization flows. `dataframe/mod` is the dataframe module index, declaring `file_io`, `frame`, `lazy`, `query`, `rng`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-- Groups core frame models, lazy operations, SQL parsing, threaded tasks, and vectorized processing layers. `src/dataframe/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `frame::{CellValue, ColRef, ColumnSchema, DataFrame, DataFrameRowIter, Database}`, `lazy::LazyQuery`, `task::DataFrameTask`, `vectorized::{BinaryOp, CmpOp, ColumnStore, ReduceOp, ScalarOp, VecFrame}` centralized for the dataframe subsystem.
+- This module is the dataframe index, exposing frame storage, query helpers, serializers, SQL, tasks, and vectors.
+- It reexports `DataFrame`, `Database`, `LazyQuery`, `DataFrameTask`, and vectorized enums as the public surface.
+- `frame.rs` owns typed cells and table state, while `query/` extends that state with filtering and analytics flows.
+- `serial.rs` and `file_io.rs` cover payload conversion and caller-supplied transport, not table mutation semantics.
+- `sql.rs`, `lazy.rs`, and `task.rs` add planning and execution layers over the same tabular core contracts.
+- Open this file to navigate module boundaries and exports; actual data behavior, parsing, and math live in siblings.
 
 ### query/analytics.rs
 
-- Implements statistical analytics helpers over dataframe columns and derived numeric distributions. `dataframe/query/analytics` delivers the analytics implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides percentile extraction through interpolation on ordered numeric sample sequences. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports z-score and min-max normalization for consistent feature scaling workflows. Public callable behavior is centered on `percentile`, while method-level behavior such as `zscore_col`, `normalize_col`, `outliers`, `mode_val`, `entropy` stays attached to the local data model and invariants.
-- Includes outlier detection, mode estimation, and entropy-style spread characterization helpers. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns statistical dataframe helpers for percentiles, scaling, outlier scans, mode lookup, and entropy.
+- `percentile` is the standalone export, while `DataFrame` methods add z-score, min-max normalization, and outliers.
+- These transforms stay here because they operate on numeric distributions rather than on structural table rewrites.
+- Mode and entropy also belong here as descriptive analytics over column value frequencies and rendered cell labels.
+- Open it when statistical helpers change; joins, grouping, rolling windows, and SQL parsing live in siblings.
 
 ### query/filter.rs
 
-- Implements primary row and column query transforms for dataframe selection and restructuring. `dataframe/query/filter` delivers the filter implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Applies predicate-based filtering with comparison and text containment operator semantics. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides ordering, slicing, projection, and uniqueness extraction over tabular datasets. Public callable behavior is centered on no named public items, while method-level behavior such as `filter`, `par_filter`, `sort`, `head`, `tail`, `slice`, and 22 more stays attached to the local data model and invariants.
-- Supports grouping and join composition for cross-frame and keyed relational-style operations. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Includes deterministic sampling, nil handling, and batch append utilities for data preparation. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Computes common aggregate statistics and descriptive summary frames across numeric columns. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns primary row and column transforms such as filter, sort, slice, select, join, sample, and describe.
+- Predicate filtering lives here, including comparison operators and text `contains`, plus rayon-backed row scanning.
+- Grouping and joins also stay here because they reshape row sets before higher-level SQL or analytics layers run.
+- Sampling, nil dropping, batch row append, and numeric column extraction belong here as practical table utilities.
+- Descriptive stats and basic reducers live here because they summarize generic numeric columns without SQL grammar.
+- `extract_rows` and `collect_numbers` are local shared seams because most query helpers need direct row reuse.
+- The file is the main structural transform owner, not the payload codec or typed vectorized execution boundary.
+- Open it when core query behavior changes; windows, grouped correlation, and SQL parsing live in sibling files.
 
 ### query/grouping.rs
 
-- Implements grouping-oriented dataframe operations for keyed aggregation and cross-tab reshaping. `dataframe/query/grouping` delivers the grouping implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Aggregates grouped values with selectable reducers such as mean, sum, min, max, and count. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Builds pivoted result frames from row, column, and value key combinations. Public callable behavior is centered on no named public items, while method-level behavior such as `group_agg`, `par_group_agg`, `pivot`, `corr`, `correlation_matrix` stays attached to the local data model and invariants.
-- Computes pairwise Pearson correlation between selected numeric columns. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Generates full numeric correlation matrices for multivariate relationship inspection. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns keyed aggregation and reshaping helpers such as `group_agg`, `par_group_agg`, `pivot`, and `corr`.
+- It groups rows by one key, then applies shared `AggFn` reducers while preserving deterministic key output order.
+- Parallel grouped aggregation lives here because partitioning and per-group reduction are grouping-layer semantics.
+- Pivot construction also stays here because row and column key expansion is a reshape built on grouped identities.
+- Pearson correlation and correlation matrices belong here as cross-column relationship summaries over numeric groups.
+- This file extends query behavior after basic filtering, not storage ownership, payload parsing, or SQL tokenization.
+- Open it when keyed summaries change; rolling windows, row filters, and dataframe core state live in siblings.
 
 ### query/mod.rs
 
-- Defines the dataframe query module boundary for filtering, grouping, processing, analytics, and window logic. `dataframe/query/mod` is the dataframe module index, declaring `analytics`, `filter`, `grouping`, `processing`, `window` so agents can identify which files own each feature slice before opening implementation code.
-- Groups query submodules under one cohesive extension surface over core frame structures. `src/dataframe/query/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `analytics::percentile` centralized for the dataframe subsystem.
+- This module is the query index, grouping filter, processing, analytics, and window extensions over `DataFrame`.
+- It exposes `analytics`, `filter`, `grouping`, `processing`, and `window` from one focused table-transform surface.
+- `filter.rs` owns row selection and joins, `grouping.rs` owns keyed reshaping, and `window.rs` owns ordered spans.
+- `processing.rs` covers diagnostics and date helpers, while `analytics.rs` adds scaling, mode, and entropy utilities.
+- Only `percentile` is reexported here; all other behavior stays attached to `DataFrame` impl blocks in sibling files.
+- Open this file to navigate query ownership quickly; storage, codecs, and SQL grammar live outside this submodule.
 
 ### query/processing.rs
 
-- Implements dataframe processing helpers for frequency summaries and table-quality diagnostics. `dataframe/query/processing` delivers the processing implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Builds value-count tables with optional percentage columns for distribution inspection. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Produces missing-value reports and duplicate-row extraction over full-row or keyed comparisons. Public callable behavior is centered on no named public items, while method-level behavior such as `value_counts`, `missing_report`, `duplicate_rows`, `date_parts` stays attached to the local data model and invariants.
-- Appends parsed ISO date parts into structured year, month, and day output columns. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns practical dataframe diagnostics such as value counts, missingness reports, duplicate rows, and dates.
+- `value_counts` and `missing_report` summarize column quality, while `duplicate_rows` surfaces repeated row keys.
+- `date_parts` also lives here because ISO date expansion is a cleanup step used before richer analytics and SQL.
+- Private duplicate-key and row-key helpers stay local because they serve only this file's duplicate detection flow.
+- Open it when data quality helpers change; grouping math, rolling windows, and storage contracts live in siblings.
 
 ### query/window.rs
 
-- Implements window-style dataframe computations over ordered row sequences and bounded spans. `dataframe/query/window` delivers the window implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides rolling mean, sum, min, and max evaluation with configurable window lengths. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Computes dense-style ranking with stable tie handling across repeated numeric values. Public callable behavior is centered on no named public items, while method-level behavior such as `with_rolling_mean`, `with_rolling_sum`, `with_rolling_min`, `with_rolling_max`, `with_rank`, `with_pct_change`, and 1 more stays attached to the local data model and invariants.
-- Supports row-over-row percent-change derivation for trend and momentum analysis. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Builds cumulative running totals across ordered rows for progressive metric inspection. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns ordered window helpers that append rolling, ranking, percent-change, and cumulative output columns.
+- Rolling mean, sum, min, and max stay here because bounded span semantics depend on row order and window width.
+- `with_rank` also belongs here because tie handling and sort direction define ordered analytic behavior on a column.
+- `with_pct_change` and `with_cumsum` are local because both derive each row from earlier rows in sequence order.
+- These methods mutate the receiver by appending output columns, rather than returning detached summary frames.
+- Open it when row-order analytics change; grouping, SQL execution, and serialization live in sibling owners.
 
 ### rng.rs
 
-- Implements lightweight xorshift64 random generation used by dataframe-local sampling utilities. `dataframe/rng` delivers the rng implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Produces deterministic integer, float, and index outputs from a compact 64-bit state. The file owns or coordinates data contracts including `Xorshift64`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Remaps zero seed values to prevent degenerate all-zero generator behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `next_u64`, `next_f64`, `next_usize` stays attached to the local data model and invariants.
+- This file owns the local xorshift64 generator used by dataframe sampling and synthetic row generation helpers.
+- `Xorshift64` stores one 64-bit state word and exposes deterministic integer, float, and bounded index draws.
+- Open it when reproducible dataframe randomness changes; filtering, SQL, and typed storage live in sibling files.
 
 ### serial.rs
 
-- Implements serialization and parsing for dataframe and database payloads across multiple formats. `dataframe/serial` delivers the serial implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports CSV decode and encode with quoting, escaping, and type-inference behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides JSON array-object conversion between textual payloads and dataframe structures. Public callable behavior is centered on `from_csv`, `from_json`, `from_binary`, `database_from_json`, while method-level behavior such as `to_csv`, `to_json`, `to_binary`, `to_string_table` stays attached to the local data model and invariants.
-- Handles nested JSON values and arrays during parser traversal and value coercion. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Encodes and decodes compact LVDF binary format for efficient dataframe transport storage. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Supplies text-table rendering helpers for debugging and readable frame inspection outputs. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns dataframe payload codecs for CSV, JSON, LVDF binary bytes, debug tables, and database JSON maps.
+- `from_csv`, `from_json`, and `from_binary` rebuild `DataFrame` state, while methods serialize the same state back out.
+- CSV parsing and quoting live here because field escaping and type inference are payload concerns, not storage policy.
+- The JSON parser also stays here, including object walking, string escapes, nested value coercion, and array skipping.
+- LVDF encoding belongs here because binary tags, version bytes, and truncation checks define the wire representation.
+- `to_string_table` is local because readable inspection output depends on column widths but not on query semantics.
+- `database_from_json` and `Database::to_json` live here to keep table-map payload structure beside frame JSON codecs.
+- Open it when interchange formats change; caller transport, SQL planning, and row mutation live in sibling files.
+- This file is about conversion boundaries only, not lazy execution, grouping math, or background dataframe workers.
 
 ### sql.rs
 
-- Implements SQL-like query execution over dataframe and database table structures. `dataframe/sql` delivers the sql implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Tokenizes input query text into typed lexical units for downstream parser consumption. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Parses SELECT statements through recursive-descent grammar with explicit clause ordering. Public callable behavior is centered on `query_sql`, `explain_sql`, `query_sql_database`, `query_sql_database_params`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Builds expression trees for WHERE and HAVING filters including boolean and pattern operators. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Supports projection arithmetic with aliasing and function-call style aggregate expressions. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Executes grouping, aggregation, ordering, limits, and offsets over intermediate query results. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- Parses and applies join clauses for multi-table query paths within database containers. State changes, validation paths, and helper routines in `src/dataframe/sql.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- Implements LIKE-style wildcard matching semantics compatible with SQL-style pattern tokens. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+- This file owns the SQL-like execution layer that tokenizes, parses, plans, and runs SELECT queries over dataframes.
+- Its lexer and parser store tokens, select expressions, joins, arithmetic nodes, and boolean expression trees.
+- `query_sql` executes against one `DataFrame`, while database variants resolve `FROM` and `JOIN` tables from `Database`.
+- Parameter binding also lives here because `?` replacement and SQL literal escaping are part of query boundary safety.
+- Projection evaluation stays here because aliases, arithmetic columns, and aggregate calls are SELECT semantics.
+- WHERE, LIKE, IN, HAVING, ORDER BY, LIMIT, and OFFSET execution also belong here as statement-level behavior.
+- Group execution is implemented here because grouped SELECT lists and HAVING filters depend on parsed SQL structure.
+- Join application stays here because database queries must merge tables before the rest of statement execution runs.
+- `explain_sql` is local because the plan summary reflects parser state, clause presence, and selected projections.
+- Aggregate helpers also stay here so COUNT, SUM, AVG, MIN, and MAX reuse one evaluation path for grouped summaries.
+- LIKE wildcard matching and expression evaluation are local internals because they serve SQL semantics only.
+- Open it when query grammar changes; frame storage, payload codecs, and deferred pipelines live in sibling owners.
 
 ### task.rs
 
-- Implements one-shot threaded dataframe jobs for file loading and SQL query execution. `dataframe/task` delivers the task implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Captures worker-side data snapshots to avoid large payload transfer through script boundaries. The file owns or coordinates data contracts including `DataFrameTask`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides poll, wait, progress, result, and error lifecycle helpers for async task management. Public callable behavior is centered on no named public items, while method-level behavior such as `spawn_csv_file`, `spawn_json_file`, `spawn_dataframe_query`, `spawn_database_query`, `spawn_database_query_params`, `is_done`, and 4 more stays attached to the local data model and invariants.
-- Executes dataframe and database operations on worker threads with bounded state handoff. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Serves as the asynchronous execution layer used by Lua-facing dataframe task APIs. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns one-shot background dataframe jobs for file loading and SQL execution over cloned snapshots.
+- `DataFrameTask` stores the receiver, cached outcome, and coarse progress shared between the caller and worker thread.
+- Spawn helpers live here because progress updates, thread naming, and result wrapping are task-lifecycle concerns.
+- The file bridges `file_io.rs` and `sql.rs` into async work without moving engine-facing polling into those owners.
+- Error formatting also stays here so task callers always get stable strings regardless of storage backend details.
+- Open it when async dataframe execution changes; table mutation, parsing, and lazy planning live in siblings.
 
 ### vectorized.rs
 
-- Implements typed vectorized column storage for high-throughput dataframe-style numeric processing. `dataframe/vectorized` delivers the vectorized implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports float, integer, boolean, and text columns with optional validity-mask semantics. The file owns or coordinates data contracts including `ColumnStore`, `ScalarOp`, `BinaryOp`, `ReduceOp`, `CmpOp`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides scalar element-wise transforms across arithmetic and unary operation families. Public callable behavior is centered on no named public items, while method-level behavior such as `dtype_name`, `len`, `is_empty`, `is_valid`, `valid_f64s`, `filter`, and 18 more stays attached to the local data model and invariants.
-- Executes binary column operations with dtype-aware coercion and compatibility checks. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Computes reductions including sum, mean, min, max, variance, and related aggregate metrics. External integration uses `rayon`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Generates comparison masks for predicate-style filtering over typed column values. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- Supports bidirectional conversion between vectorized frames and generic dataframe representations. State changes, validation paths, and helper routines in `src/dataframe/vectorized.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- Applies parallelized multi-column operations and reductions via rayon-backed execution paths. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+- This file owns typed column stores and vectorized execution paths used for faster numeric dataframe workloads.
+- `ColumnStore` models float, int, bool, and text buffers with optional validity masks for nil-aware processing.
+- `VecFrame` stores ordered typed columns, converts to and from `DataFrame`, and resolves names for later operators.
+- Scalar, binary, reduction, and comparison enums live here because they define the operation vocabulary on typed data.
+- In-place scalar ops and clamps belong here because they mutate raw numeric buffers without going through cell wrappers.
+- Binary ops and reductions also stay here so numeric coercion, validity propagation, and dtype checks share one owner.
+- Mask construction and application are local because predicate filtering over typed buffers is a vectorized concern.
+- Column casting remains here because representation changes between float, int, and text are storage-level decisions.
+- Rayon-backed `par_reduce`, `par_scalar_op`, and `par_apply_column` live here as the parallel execution boundary.
+- Open it when typed execution changes; SQL parsing, generic frame semantics, and file codecs live in siblings.
 
 
 

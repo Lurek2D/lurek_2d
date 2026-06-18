@@ -1,4 +1,4 @@
-//! `src/lua_api/input_api.rs` registers the `lurek.input` Lua boundary for input behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.input` Lua API for key, mouse, and gamepad bindings, state queries, and axes.
 
 use super::SharedState;
 use crate::input::combo::{ComboDetector, ComboStep};

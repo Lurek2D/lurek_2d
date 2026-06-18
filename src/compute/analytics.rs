@@ -1,8 +1,9 @@
-//! Implements analytical operations over arrays including cumulative, differential, and distribution metrics. `compute/analytics` delivers the analytics implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides histogram generation with configurable domains and binning resolution control. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Computes percentile estimates with interpolation for robust quantile-style inspection workflows. Public callable behavior is centered on `cumsum`, `diff`, `histogram`, `percentile`, `covariance`, and 5 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Exposes pairwise statistics such as covariance and correlation for relationship analysis. Runtime integration reaches sibling engine areas through crate modules `compute`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Includes normalization helpers for range scaling and standardized z-score transformations. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/compute/analytics.rs` owns derived statistics, cumulative transforms, and distribution metrics over `NdArray`.
+//! It provides cumsum, finite differences, histograms, percentiles, covariance, correlation, scaling, and z-score helpers.
+//! Convolution and correlation helpers over 1D arrays also live here so analysis-style signal transforms stay nearby.
+//! This file is the metrics and summary boundary for compute arrays; it does not own storage or primitive arithmetic.
+//! Read it when statistical outputs, histogram semantics, normalization behavior, or analytic transforms need changes.
+//! Array shape and dtype expectations are enforced here before metrics run, keeping compute diagnostics deterministic.
 
 use crate::compute::array::NdArray;
 

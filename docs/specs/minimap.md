@@ -16,22 +16,16 @@
 
 ## Summary
 
-- This module gives users a tactical minimap system for HUD-level world awareness and navigation support.
-- Grid layers allow multiple map views such as terrain, ownership, and special tactical overlays.
-- Marker, ping, and path features provide live event cues and route visualization.
-- Object-type controls support per-category visibility and styling behavior.
-- Fog-of-war handling tracks explored versus hidden cells for information-driven gameplay.
-- Radius reveal helpers support scouting, sensor, and exploration mechanics.
-- Viewport overlays show active camera framing relative to map content.
-- Camera tracking keeps minimap focus aligned with moving targets.
-- Grid/screen conversion APIs support clickable minimaps and hover tooltips.
-- Raycaster overlay support enables visibility-aware minimaps for tile raycast games.
-- Image export paths make minimap state reusable in tooling and test evidence.
-- For users, this module centralizes map awareness UI in one scriptable system.
-- It reduces custom HUD glue and keeps tactical overlays consistent.
-- Overall, it turns minimaps into interactive gameplay surfaces rather than static decorations.
+- The `minimap` module is the HUD-scale map surface for users who want world state, fog, markers, and view tracking to become a compact readable overlay.
+- Core minimap state, render helpers, and adapters from province or raycaster data work together so the same module can represent several kinds of world information in one small map display.
+- Fog, owner colors, overlays, tracked objects, and camera-aware view markers matter because a minimap is not only a tiny texture: it is a summarized navigation and awareness tool for the player.
+- The module is useful wherever a project needs strategic orientation, local awareness, or debug-style map inspection without switching to a full map screen.
+- Marker and layer support are especially important because a minimap often needs to combine several categories of information at once: player position, objectives, faction territory, danger, or discovered landmarks.
+- In tool and strategy-heavy contexts, the minimap can also become a compact interaction surface or diagnostic lens rather than only a passive HUD element, which is why adapters and styling control matter.
+- Rotation, zoom, clipping, and icon policy matter too, because a compact map has to stay legible while world state and camera framing keep changing.
+- That legibility requirement is what makes minimap presentation a separate concern from the full map or terrain renderer.
+- Read it as the owner of compact map presentation. Other systems define terrain and visibility data, but `minimap` decides how that information is condensed, styled, and rendered for the user.
 
-This module primarily collaborates with `camera`, `image`, `province`, `raycaster`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -46,46 +40,57 @@ This module primarily collaborates with `camera`, `image`, `province`, `raycaste
 
 ### minimap.rs
 
-- Grid-based minimap model with configurable terrain colors and fog-of-war. `minimap/minimap` delivers the minimap implementation for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Tracks world cells, visible state, and overlay layers in one structure. The file owns or coordinates data contracts including `MinimapIcon`, `Minimap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Stores object markers, pings, and path shapes for live HUD feedback. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `grid_width`, `grid_height`, `grid_size`, `display_width`, `display_height`, and 86 more stays attached to the local data model and invariants.
-- Supports terrain and political color modes for strategic presentation. Runtime integration reaches sibling engine areas through crate modules `camera`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Manages zoom, pan, camera tracking, and viewport framing. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Projects screen and grid coordinates in both directions for interaction. The file boundary separates minimap implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- `src/minimap/minimap.rs` owns the `Minimap` state object that stores terrain, fog, markers, overlays, and view settings.
+- It is the main data and behavior boundary for minimap grids, terrain palettes, owner colors, icons, layers, and paths.
+- Object types, live objects, pings, marker animations, and viewport outlines are updated here with local state.
+- Camera tracking, pan and zoom, hover lookup, and grid-to-screen coordinate conversion also live in this implementation.
+- The file exposes mutation APIs for terrain, fog, objects, markers, overlays, paths, layers, and display configuration.
+- Export helpers such as `draw_to_image` and render-command entry points are defined here for sibling use.
+- Internal helpers resolve active cell colors and owner mappings so terrain and political display modes stay consistent.
+- This file does not import province data or compute raycast visibility; dedicated adapters handle those translations.
+- Read it when minimap ownership, per-frame updates, view math, or public state mutation behavior needs to change.
 
 ### mod.rs
 
-- Minimap subsystem for terrain layers, fog, markers, overlays, and export rendering. `minimap/mod` is the minimap module index, declaring `minimap`, `province_adapter`, `raycaster_overlay`, `render`, `types` so agents can identify which files own each feature slice before opening implementation code.
-- Connects the grid model with renderer output, province data, and raycaster-specific views. `src/minimap/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `minimap::Minimap`, `raycaster_overlay::{ build_minimap_tile_window, compute_tile_light, draw_player_arrow, extract_minimap, reveal_cells_from_rays, MinimapTileSample, }`, `types::{ ColorMode, FogLevel, LayerData, MarkerAnimation, MinimapMarker, MinimapObject, MinimapObjectType, MinimapPing, OverlayPath, OverlayShape, }` centralized for the minimap subsystem.
+- `src/minimap/mod.rs` is the module index for the minimap subsystem, covering state, render helpers, types, and adapters.
+- It declares the core `minimap` model, province adapter, renderer bridge, and raycaster overlay as separate files.
+- This file also reexports `Minimap`, overlay sampling helpers, and shared minimap types so callers avoid deep paths.
+- No runtime minimap state lives here; its job is to define the public boundary and keep subsystem ownership visible.
+- Read this index first when tracing minimap features, because it shows where data, rendering, and map import split.
+- Changes here affect module reachability and public surface, not minimap behavior, storage, or per-frame update rules.
 
 ### province_adapter.rs
 
-- Bridge between province world data and the minimap grid. `minimap/province_adapter` delivers the province adapter implementation for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Copies terrain, fog, and palette state into a minimap representation. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Clips to the smaller grid so size mismatches stay safe. Public callable behavior is centered on `apply_terrain`, `apply_visibility`, `apply_terrain_palette`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- `src/minimap/province_adapter.rs` maps province registry snapshots into minimap terrain colors and fog visibility grids.
+- It owns the translation layer between `ProvinceRegistry` data and `Minimap`, while clipping writes to shared bounds.
+- Terrain ids, visibility states, and political colors are copied here so province rules stay out of minimap core.
+- Read this file when province snapshots, fog mapping, or terrain palette import behavior for minimaps needs to change.
 
 ### raycaster_overlay.rs
 
-- Raycaster-specific minimap overlay renderer for tile-based visibility views. `minimap/raycaster_overlay` delivers the raycaster overlay implementation for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Builds a pixel-grid minimap from wall, floor, and lighting information. The file owns or coordinates data contracts including `MinimapTileSample`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Uses line-of-sight and Bresenham traversal to reveal reachable cells. Public callable behavior is centered on `compute_tile_light`, `build_minimap_tile_window`, `reveal_cells_from_rays`, `extract_minimap`, `draw_player_arrow`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Fills raw RGBA buffers for fast image output and preview rendering. Runtime integration reaches sibling engine areas through crate modules `raycaster`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Draws the player indicator as a compact orientation cue on top of the map. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- `src/minimap/raycaster_overlay.rs` builds minimap overlays from raycaster walls, visibility, and lighting data.
+- It owns light sampling, reveal collection, raw pixel extraction, visibility checks, and player arrow rasterization.
+- The file is specific to raycaster scenes, keeping minimap helpers for FOV-driven views out of the generic minimap model.
+- `MinimapTileSample` lives here because wall, visibility, and luminance samples are produced together by these helpers.
+- Read it when line-of-sight reveal rules, minimap preview pixels, or player-direction overlay drawing needs to change.
+- General minimap storage and HUD command rendering stay elsewhere; this file produces sampled overlay data and images.
 
 ### render.rs
 
-- Converts minimap state into an ordered render command stream. `minimap/render` delivers the rendering adapter and draw-command integration for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Draws terrain, fog, overlays, objects, pings, markers, and viewport guides. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Projects grid coordinates through the minimap transform into screen space. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
-- Keeps the drawing order stable so HUD elements stack predictably. Runtime integration reaches sibling engine areas through crate modules `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Supports zoom-dependent and animated presentation without mutating the world model. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- `src/minimap/render.rs` converts minimap state into ordered `RenderCommand` batches for HUD drawing.
+- It walks visible cells, fog, overlays, paths, viewport guides, pings, objects, and markers without mutating model state.
+- Screen projection from minimap grid space also happens here, using `Minimap` view settings to place each primitive.
+- This file owns draw ordering, fallback shapes, and icon emission so renderer integration stays out of state storage.
+- Read it when minimap visuals stack incorrectly, cell colors draw wrong, or HUD command generation needs new behavior.
+- Province imports and raycaster extraction stay elsewhere; this file only turns minimap state into rendering.
 
 ### types.rs
 
-- Shared minimap data types for colors, fog, overlays, and live markers. `minimap/types` delivers the shared type definitions and data contracts for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Defines the small enums and structs that other minimap files reuse. The file owns or coordinates data contracts including `ColorMode`, `FogLevel`, `MinimapObjectType`, `MinimapObject`, `MinimapPing`, and 5 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Carries per-object and per-path state for animated overlays. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_mode`, `as_str`, `from_u8` stays attached to the local data model and invariants.
-- Separates raw layer bytes from higher-level minimap behavior. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/minimap/types.rs` defines the shared enums and data structs that every minimap state and render file reuses.
+- It owns color mode, fog level, markers, pings, overlay geometry, raw layers, and object descriptors in one contract set.
+- Small parsing and conversion helpers also live here so value semantics stay close to the types they interpret.
+- This file carries data shapes only; it does not own minimap mutation, rendering order, or province import behavior.
+- Read it when minimap payload fields, cross-file data contracts, or serialized marker and overlay semantics need changes.
 
 
 

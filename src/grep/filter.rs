@@ -1,7 +1,8 @@
-//! File extension and path filters for narrowing the search scope. `grep/filter` delivers the filter implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! `FileFilter` accepts `include_extensions`, `exclude_extensions`, and glob patterns. The file owns or coordinates data contracts including `FileFilter`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! `FileFilter::matches(path)` is a pure predicate; no I/O at the filter stage. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `matches`, `lua_files`, `toml_files`, `game_content` stays attached to the local data model and invariants.
-//! Hidden files and directories starting with `.` are excluded by default. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `FileFilter`, the path-selection layer used to narrow grep scans before any file content is read.
+//! It stores allowed and blocked extensions, include and exclude substrings, a size cap, and hidden-file policy.
+//! `matches` is a pure path predicate, so discovery can reject files cheaply without loading bytes or parsing lines.
+//! Preset constructors provide ready-made filters for Lua, TOML, and broader game-content scans across repo assets.
+//! Open this file when file-selection rules change; text matching and parallel execution live in sibling modules.
 
 use std::path::Path;
 

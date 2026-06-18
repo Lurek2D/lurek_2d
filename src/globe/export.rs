@@ -1,8 +1,10 @@
-//! Provides globe geometry export helpers that convert region polygons into portable mesh text output. `globe/export` delivers the export implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Emits flat OBJ data with deterministic region object grouping for downstream tooling. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Delivers a simple export path for inspection, conversion, and offline map processing workflows. Public callable behavior is centered on `export_regions_to_obj`, `export_provinces_to_obj`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! `globe/export` delivers the export implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+//! Exports globe region geometry as portable OBJ text so maps can be inspected, converted, or processed offline.
+//! Owns region-loop traversal, hole stitching, polygon triangulation, and deterministic object and group naming.
+//! Writes both boundary line loops and optional filled meshes, preserving multipart regions and hole structure.
+//! Provides the outbound boundary between in-memory globe geometry and tool-friendly mesh text representations.
+//! This file is the right owner when export fidelity, triangulation choices, or naming conventions need revision.
+//! Neighboring edits usually involve RegionPart geometry, polygon utilities, and downstream content tool contracts.
+//! Open this owner when external mesh consumers fail even though the globe renders correctly inside the engine.
 
 use crate::globe::registry::Globe;
 use crate::globe::types::{Region, RegionPart};

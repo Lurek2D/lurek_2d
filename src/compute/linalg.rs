@@ -1,8 +1,10 @@
-//! Implements linear-algebra and geometric helper operations over compute array structures. `compute/linalg` delivers the linalg implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides vector normalization, cross-style products, and matrix-oriented transformation utilities. The file owns or coordinates data contracts including `LuDecomp`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Includes kernel builders and edge-oriented operators for signal and image-adjacent workflows. Public callable behavior is centered on `normalize_vec`, `cross2d`, `outer`, `rotate2d_matrix`, `affine2d`, and 6 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Solves linear systems with Gaussian elimination using pivoting for improved numerical stability. Runtime integration reaches sibling engine areas through crate modules `compute`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Computes LU decomposition with permutation tracking to support determinant-aware factorization. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/compute/linalg.rs` owns vector, matrix, and factorization helpers built on top of `NdArray` compute storage.
+//! It provides normalization, cross products, outer products, affine transforms, Sobel kernels, LU, and power iteration.
+//! Linear-system solving with pivoted elimination also lives here so decomposition and solve semantics stay paired.
+//! This file is the matrix-and-geometry boundary for compute arrays; it does not own primitive storage or elementwise ops.
+//! Read it when transform matrices, decomposition metadata, solver behavior, or geometric numeric helpers need changes.
+//! Spatial convolution is reused here for Sobel-style operations, linking edge-analysis helpers to the spatial subsystem.
+//! Factorization outputs such as `LuDecomp` stay here so callers can inspect permutation and determinant-sign metadata.
 
 use crate::compute::array::{DataType, NdArray};
 use crate::compute::spatial;

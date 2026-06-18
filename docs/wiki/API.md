@@ -17,8 +17,8 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9115 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32683 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (9084 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (32538 lines)
 
 ## Coverage
 
@@ -51,7 +51,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.dsp](Module-dsp) | 28 | 7 | Digital signal processing: real-time effects chains, offline batch processing, audio visualization. |
 | [lurek.ecs](Module-ecs) | 2 | 3 | Entity-Component-System: identity / data / behaviour separation for runtime composition. |
 | [lurek.effect](Module-effect) | 10 | 3 | Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes. |
-| [lurek.engine](Module-engine) | 13 | 0 | File: src/lua_api/engine_api.rs Registers the public lurek.engine namespace for engine timing, profiling, and memory diagnostics. |
+| [lurek.engine](Module-engine) | 13 | 0 | Registers the lurek.engine Lua API for engine timing, profiling, memory inspection, and runtime metrics. |
 | [lurek.event](Module-event) | 16 | 1 | Centralised event queue: OS input, window state, custom Lua events, automation injections. |
 | [lurek.filesystem](Module-filesystem) | 44 | 3 | Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory. |
 | [lurek.graph](Module-flownet) | 1 | 4 | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react. |
@@ -89,8 +89,8 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.serial](Module-serialize) | 15 | 0 | Format-agnostic text serialisation centred on the recursive SerialValue enum. |
 | [lurek.spine](Module-spine) | 4 | 2 | Hierarchical skeletal animation (own implementation; not the official Spine SDK â€” A-02 + licensing). |
 | [lurek.sprite](Module-sprite) | 8 | 5 | Sprite and sprite-batch rendering above the render command queue. |
-| [lurek.svg](Module-svg) | 1 | 1 | Lua bindings for the vector SVG graphics module. |
-| [lurek.runtime](Module-system) | 28 | 0 | File: src/lua_api/system_api.rs Registers the public lurek.runtime namespace for host, process, and runtime utility helpers. |
+| [lurek.svg](Module-svg) | 1 | 1 | Registers the lurek.svg Lua API for vector SVG graphics, userdata wrappers, and script-side SVG control. |
+| [lurek.runtime](Module-system) | 28 | 0 | Registers the lurek.system Lua API for host utilities, process helpers, and runtime environment queries. |
 | [lurek.terminal](Module-terminal) | 29 | 2 | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
 | [lurek.thread](Module-thread) | 7 | 4 | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared). |
 | [lurek.physics](Module-tilemap) | 29 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |

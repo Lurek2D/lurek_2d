@@ -1,11 +1,15 @@
-//! This file implements the terminal's main state machine, where the character grid, cursor, colors, histories, widgets, and input routing all meet.
-//! The core grid behaves like a persistent text surface rather than a transient print stream, allowing callers to treat terminal space as editable UI.
-//! Resize behavior preserves as much existing content as possible so the terminal remains usable across font or window changes.
-//! Scrollback and command history live here because they are part of the terminal's long-lived interactive memory rather than renderer output.
-//! Widget composition is layered on top of the cell grid in this file so buttons, lists, panels, and text boxes share one event and focus model.
-//! Keyboard, text, and mouse input are dispatched here because only this layer understands both raw terminal coordinates and focused widgets.
-//! Border and panel behaviors are also coordinated here, giving text-mode interfaces a richer structure than plain character dumps.
-//! Cell-level writing helpers remain part of this file because direct text painting and higher-level widgets must coexist on the same surface.
+//! This file owns `Terminal`, the main state machine for the character grid, cursor, widgets, and histories.
+//! It stores the row-major cell buffer, focus state, clipboard, command history, scrollback, and size overrides.
+//! Helper functions draw compact buttons, frames, cursor text, and bounded writes onto composed cell slices.
+//! Input handlers route keyboard, text, and mouse events to focused widgets and emit typed terminal events.
+//! Text-box editing covers cursor movement, selection replacement, clipboard shortcuts, and word deletes.
+//! List handling covers focus, selection, scrolling, and mouse hit resolution for terminal UI controls.
+//! Render composition overlays visible widgets on top of the base grid and reuses scratch buffers.
+//! Border rendering, panel child maintenance, and widget removal cleanup keep layered layouts consistent.
+//! Public grid APIs cover cell reads, writes, resizing, colored printing, default colors, and cursor moves.
+//! History APIs manage scrollback limits, command navigation, and durable memory beyond render output.
+//! Command builders translate the composed surface into batched render commands without duplicated logic.
+//! Open it when terminal interaction or surface semantics change; widgets and exporters depend on it.
 
 use super::cell::{TCell, DEFAULT_FG};
 use super::text_utils::{byte_index, char_count, truncate_chars};

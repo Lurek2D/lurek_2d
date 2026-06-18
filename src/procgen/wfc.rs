@@ -1,7 +1,8 @@
-//! Constraint-based tile generator for patterns that should emerge from local adjacency rules rather than from direct handcrafted placement.
-//! The file treats each cell as a shrinking set of possible tiles and propagates neighbor constraints until a consistent arrangement collapses into concrete choices.
-//! Weighted selection gives the same ruleset room for stylistic bias so some tiles appear more often without breaking compatibility logic.
-//! Retry behavior acknowledges that contradictions are part of this style of generation and turns them into controlled regeneration rather than silent corruption.
+//! This file owns the Wave Function Collapse generator that resolves tile grids from weighted adjacency constraints.
+//! `WfcTile`, `WfcRules`, `WfcOpts`, and `WfcGrid` define the tile vocabulary, rule set, run inputs, and result cells.
+//! Entropy-style cell choice and weighted collapse stay here because tile selection policy is core WFC behavior.
+//! Constraint propagation also belongs here since neighbor pruning and contradiction detection define valid outcomes.
+//! Retry logic remains local because contradiction recovery is part of the generator contract, not caller plumbing.
 
 use crate::procgen::lcg::Lcg;
 use std::collections::HashMap;

@@ -1,6 +1,7 @@
-//! JSON path search: query structured key-value paths within JSON files. `grep/json_search` delivers the json search implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! `search_json_path` scans a directory for JSON files and extracts values at a path. The file owns or coordinates data contracts including `JsonMatch`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! `search_json_file` operates on a single file; returns `Option<serde_json::Value>`. Public callable behavior is centered on `search_json_path`, `search_json_file`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! This file owns lightweight JSON-path search helpers that scan text or files for matching structured key paths.
+//! It returns `JsonMatch` records containing the queried path and extracted value for each matching source line.
+//! The implementation is heuristic and line-based, using simple `:` or `=` extraction instead of full tree walking.
+//! Open this file when structured JSON grep behavior changes; generic text matching and filters live in siblings.
 
 use std::path::Path;
 

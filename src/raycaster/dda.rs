@@ -1,9 +1,11 @@
-//! This file owns the grid-backed DDA marcher that turns a 2D tile map into ray hits, corrected distances, and wall sampling coordinates.
-//! It handles both single-hit and layered traversal so partially transparent cells can be marched through without losing the final solid contact.
-//! Wide fan casts for a whole screen are derived from the same stepping rules, which keeps column rendering consistent with ad hoc queries.
-//! Line-of-sight checks reuse the same grid logic, so lighting, AI, and visibility questions follow the same blocking semantics as rendering.
-//! The map storage stays simple and row-major, with safe fallback behavior for out-of-range reads and silent rejection of invalid writes.
-//! Sprite projection helpers live beside ray stepping so billboard placement uses the same camera conventions as wall casting.
+//! This file owns `Raycaster2D`, the grid-backed DDA engine that stores wall cells and answers ray or LOS queries.
+//! It stores map dimensions, row-major cells, wall alpha overrides, wall features, and synchronized door feature state.
+//! Core casting methods produce single hits, layered transparent hits, fan casts, and packed ray buffers from one model.
+//! Visibility helpers reuse the same blocking rules for line of sight, so lighting and AI stay aligned with rendering.
+//! Door synchronization translates `DoorManager` openness into wall features without replacing underlying tile identity.
+//! Sprite and floor helpers project billboards and sample floor rows with the same camera conventions as wall casting.
+//! Safe setters ignore invalid writes, and out-of-range reads fall back predictably for tools and runtime probes.
+//! Open this file when marching semantics or map-owned ray data change; debug views and scene building live in siblings.
 
 use super::doors::DoorManager;
 use super::ray_hit::RayHit;

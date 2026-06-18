@@ -1,8 +1,9 @@
-//! Implements shared state and queue structures for runtime-to-client debug bridge communication. `debugbridge/bridge` delivers the bridge implementation for the debugbridge subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores pending requests and responses exchanged between network server and runtime logic. The file owns or coordinates data contracts including `PendingRequest`, `PendingResponse`, `PrintEntry`, `BridgeShared`, `SharedBridge`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Tracks rolling performance metrics and bounded print history for debugger-side inspection. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `elapsed`, `get_performance`, `push_print`, `record_frame`, `set_max_print_history`, and 3 more stays attached to the local data model and invariants.
-//! Maintains session configuration and capability metadata used across active bridge connections. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Provides broadcast event queues for fan-out delivery to all connected debug clients. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/debugbridge/bridge.rs` owns the shared debug bridge state used by the runtime thread and debugger clients.
+//! It defines queued request and response records, print history rows, and the `BridgeShared` container that holds them.
+//! Request, response, and broadcast queues live here so networking code and runtime handlers exchange data through it.
+//! This file also tracks frame timing samples, client counts, capabilities, handshake nonce data, and screenshot requests.
+//! Open it when telemetry retention, queue semantics, print history policy, or bridge session metadata must change.
+//! Higher layers should treat this file as the synchronization and state boundary, not the place for TCP parsing logic.
 
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};

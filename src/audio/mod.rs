@@ -1,9 +1,9 @@
-//! Defines the audio module boundary that groups playback, routing, decode, and source-data primitives. `audio/mod` is the audio module index, declaring `bus`, `decoder`, `mixer`, `source`, `sound_data`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
-//! Exposes coherent core audio contracts while delegating specialized processing to adjacent modules. `src/audio/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bus::Bus`, `decoder::Decoder`, `mixer::Mixer`, `mixer::PlayState`, and 15 more centralized for the audio subsystem.
-//! Serves as the composition entry for engine-side runtime audio behavior and shared types. The file documents how audio submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! `audio/mod` is the audio module index, declaring `bus`, `decoder`, `mixer`, `source`, `sound_data`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/audio/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bus::Bus`, `decoder::Decoder`, `mixer::Mixer`, `mixer::PlayState`, and 15 more centralized for the audio subsystem.
-//! The file documents how audio submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! This module re-exports the audio subsystem for buses, decode, playback, sound buffers, pools, devices, and beat time.
+//! It is the navigation map for source playback, routing owners, import helpers, and music-timing support types.
+//! `mixer.rs` owns runtime playback and routing, while `bus.rs`, `source.rs`, and `pool.rs` hold focused audio data.
+//! `decoder.rs` and `sound_data.rs` cover decode, PCM buffers, synthesis, transforms, and export-ready sample output.
+//! `facade.rs` exposes playback device queries, and `beat_clock.rs` provides tempo, judgement, and quantized timing tools.
+//! Change this file when public audio exports move; change sibling files when playback or timing semantics change.
 
 /// `Bus` struct: named per-channel volume/pitch routing with effect chain and duck target.
 pub mod bus;

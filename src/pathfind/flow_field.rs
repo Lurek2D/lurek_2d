@@ -1,8 +1,9 @@
-//! Dijkstra-based flow field seeded from one or more goal cells over a NavGrid. `pathfind/flow_field` delivers the flow field implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores normalized direction vectors toward the nearest goal beside accumulated cost. The file owns or coordinates data contracts including `FlowField`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports variable unit sizes for clearance-aware pathfinding. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `calculate`, `calculate_multi`, `get_direction`, `get_direction_angle`, `get_cost_to_target`, and 6 more stays attached to the local data model and invariants.
-//! Converts world-space positions into tile lookups and steering velocities. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Includes debug visualisation for directions and obstacles. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Builds a NavGrid-backed flow field that points each reachable cell toward one or more target cells.
+//! Owns direction vectors, accumulated costs, target storage, and the shared-grid reference used for recomputation.
+//! Calculates steering data with unit-size aware walkability, then exposes direction, angle, cost, and velocity helpers.
+//! Also renders a debug image so field quality and blocked-cell effects can be inspected outside the live renderer.
+//! Provides the boundary between raw navigation costs and agent steering systems that need cheap per-frame guidance.
+//! Open this owner when target propagation, steering output, or debug visualization stops matching pathing intent.
 
 use crate::runtime::log_messages::{FF01, FF02, FF03};
 

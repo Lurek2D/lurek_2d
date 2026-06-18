@@ -1,8 +1,10 @@
-//! Implements slot-based directional reasoning that scores where motion should be pulled or resisted. `ai/context_steering` delivers the context steering implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Projects multiple influences into angular context so local movement stays responsive and legible. The file owns or coordinates data contracts including `ContextBehaviorKind`, `ContextBehavior`, `ContextSteering`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Mixes attraction, avoidance, drift, and boundary pressure as one continuous heading composition. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `slot_count`, `add_interest`, `add_danger`, `add_seek_target`, `add_wander`, and 8 more stays attached to the local data model and invariants.
-//! Resolves conflict by weighing directional appetite against threat, then extracting the safest momentum lane. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Preserves smooth steering continuity by keeping representation compact and frame-friendly. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Implements slot-based context steering that scores angular interest and danger before picking a movement lane.
+//! Owns directional ring buffers, behavior registrations, wander accumulation, and the chosen heading snapshot.
+//! Mixes seek, avoid, wander, fixed-direction, and boundary pressures into one compact frame-friendly sampler.
+//! Resolves conflicts by comparing interest against danger per slot instead of blending unsafe vectors directly.
+//! Provides the local movement boundary between authored context behaviors and the final chosen travel heading.
+//! This file matters when directional slot math or danger suppression yields jittery or obviously unsafe motion.
+//! Open this owner before generic steering when the bug is in lane choice rather than force combination policy.
 
 use std::f32::consts::{PI, TAU};
 /// Behavior kind used by context steering slots.

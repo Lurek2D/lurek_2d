@@ -1,13 +1,18 @@
-//! Implements the primary desktop runtime loop that binds windowing, rendering, input, and Lua execution. `app/app` delivers the app implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Owns application bootstrap from startup configuration through event-loop handoff and steady frame progression. The file owns or coordinates data contracts including `RunState`, `DropStartupTarget`, `LurekApp`, `App`, `AppRunOptions`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Manages graphics surface lifecycle, device provisioning, and resize-aware presentation reconfiguration. Public callable behavior is centered on `recompute_viewport`, `splash_window_title`, `fit_contain_size`, `classify_drop_startup_target`, `should_open_startup_picker_on_key`, while method-level behavior such as `new`, `resolve_present_mode`, `init_lua`, `run` stays attached to the local data model and invariants.
-//! Coordinates tick ordering so input, update callbacks, render callbacks, and presentation stay deterministic. Runtime integration reaches sibling engine areas through crate modules `event`, `filesystem`, `input`, `log_msg`, `lua_api`, `render`, and 2 more, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Routes platform events into runtime systems with consistent keyboard, mouse, touch, and controller handling. External integration uses `super`, `gilrs`, `mlua`, `slotmap`, `std`, and 1 more, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Integrates gamepad polling and feedback signaling as part of per-frame platform service orchestration. The file boundary separates app implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! Maintains viewport scaling and letterbox behavior so visual output remains stable across window sizes. State changes, validation paths, and helper routines in `src/app/app.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! Handles splash and fallback presentation paths before gameplay state is fully available. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
-//! Provides fatal-error rendering transition when execution cannot continue in normal game flow. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
-//! Controls screenshot timing and capture output as part of frame lifecycle responsibilities. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
+//! This file owns the desktop runtime loop, from startup target selection through steady frame execution and shutdown.
+//! It defines viewport helpers, splash-title utilities, startup-drop classification, and key rules for the splash screen.
+//! `RunState` models running, fatal-error, and restarting modes, while `LurekApp` stores the live host-side app state.
+//! That state includes window and surface handles, renderer and Lua ownership, hot-reload watchers, timing, and input.
+//! GPU setup, present-mode selection, surface configuration, resize clamping, and vsync switching are centralized here.
+//! Lua initialization also lives here, including VM creation, shared-state hookup, startup file loading, and callbacks.
+//! Per-frame control is split across tick, update, render, splash render, and error render paths with deterministic order.
+//! Window actions are deferred through local helpers so resize, focus, visibility, cursor, and fullscreen stay guarded.
+//! The file owns weather-free host input routing for keyboard, mouse, text, wheel, touch, drag-drop, and window events.
+//! Gamepad polling and vibration effects are handled here too, including slot assignment, naming, and feedback playback.
+//! Hot reload for scripts, assets, and config files is coordinated here through watcher refresh and polling helpers.
+//! Screenshot capture, auto-quit timers, perf logging, archive extraction, and restart flow are also app-level concerns.
+//! The `ApplicationHandler` impl binds winit lifecycle callbacks to safe runtime operations and guarded Lua dispatch.
+//! The outer `App` and `AppRunOptions` types provide bootstrap input, logger setup, and event-loop launch entrypoints.
+//! Open this file when desktop host orchestration changes; splash, errors, HUD, and callback helpers live in siblings.
 
 use super::debug_overlay::DebugOverlay;
 use super::error_screen::ErrorScreen;

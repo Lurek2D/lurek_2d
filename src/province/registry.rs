@@ -1,9 +1,11 @@
-//! Authoritative province registry that holds the full living state of a province map, from region identity and geometry to style, labels, and incremental change history.
-//! The file is the module's main source of truth, joining pixel-derived structure with higher-level metadata such as political color, terrain, fog, visibility, and custom attributes.
-//! Fast lookup paths matter here because gameplay, rendering, and tools all need to move quickly between coordinates, province ids, and region records.
-//! Adjacency ownership is stored as first-class topology rather than recomputed on demand, which keeps neighborhood and border reasoning efficient and consistent.
-//! Capital markers, label baselines, and province text live alongside style so visual presentation remains attached to the same province identity that game logic uses.
-//! Monotonic revisions and ordered change logs make the registry incrementally observable, which is important for sync, UI refresh, and Lua-facing event delivery.
+//! Owns the authoritative mutable province model that centralizes ids, geometry, styles, labels, and change tracking.
+//! Stores province records, border style tables, map modes, adjacency data, and per-province spans or bounds together.
+//! Builds registry state from ProvinceGrid inputs and then exposes lookup, mutation, and revision-aware event helpers.
+//! Provides the subsystem boundary where imported metadata and gameplay edits become durable province state changes.
+//! Tracks capitals, label placement, fog, terrain, ownership colors, custom attrs, and border presentation settings.
+//! Emits change log entries so renderers or tooling can react incrementally instead of rescanning the whole registry.
+//! Neighboring systems include import, rendering, routing, map modes, and GPU bridges that consume registry records.
+//! Open this file whenever province state semantics, mutation APIs, or revision contracts need coordinated updates.
 
 use crate::image::ProvinceGrid;
 use crate::province::events::ProvinceChange;

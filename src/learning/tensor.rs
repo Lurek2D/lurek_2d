@@ -1,7 +1,7 @@
-//! Lightweight tensor container with explicit row-major shape metadata and flat f32 data layout for CPU-based learning pipeline operations.
-//! Supports multi-dimensional indexing through flat_index() with shape validation and zero-based coordinate conversion for safe element access.
-//! Converts to tract Tensor format enabling interop with ONNX model inference engines for neural network evaluation on game tasks.
-//! Provides flatten(), gemm() operations enabling tensor transformations and basic linear algebra needed by learning layer computations.
+//! This file owns `LurekTensor`, the row-major tensor container used by ONNX, attention, convolution, and transformer code.
+//! It stores explicit shape metadata plus flat `f32` data, then offers indexing, flattening, zero allocation, and export.
+//! `gemm` also lives here because basic matrix multiply with optional bias is a shared primitive across learning layers.
+//! Open it when tensor layout or interop changes; model-specific forward logic lives in sibling learning files.
 
 use ndarray::ArrayD;
 use tract_onnx::prelude::{IntoTensor, Tensor};

@@ -1,7 +1,7 @@
-//! Quadratic attenuation model encapsulating distance-based light intensity falloff using constant, linear, and quadratic coefficients.
-//! Computes attenuation factors (1.0 / denominator) at arbitrary distances enabling physically-plausible light contribution evaluation in shaders.
-//! Prevents division-by-zero at zero distance by clamping denominator to >= 1.0 ensuring stable light brightness at light source origin.
-//! Includes debug visualization rendering attenuation curves to image buffers for interactive tuning of falloff behavior during lighting design.
+//! This file owns `Attenuation`, the quadratic distance-decay model used by lights to scale brightness over range.
+//! It stores constant, linear, and quadratic coefficients, then evaluates a stable inverse denominator factor.
+//! A debug image helper also plots multiple attenuation curves so designers can inspect and tune falloff behavior.
+//! Open this file when distance-decay semantics change; full light objects and world ownership live in siblings.
 
 /// Quadratic attenuation coefficients for distance-based light intensity falloff.
 #[derive(Debug, Clone, Copy, PartialEq)]

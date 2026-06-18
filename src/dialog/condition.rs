@@ -1,6 +1,7 @@
-//! Provides reusable gate rules that decide whether dialog options are eligible under the current runtime context. `dialog/condition` delivers the condition implementation for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Encodes state and threshold checks as portable data so narrative gating stays configurable and data-first. The file owns or coordinates data contracts including `GateContext`, `DialogueCondition`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports composable all-or-any logic for layered progression constraints across branching conversations. Public callable behavior is centered on no named public items, while method-level behavior such as `evaluate` stays attached to the local data model and invariants.
+//! `src/dialog/condition.rs` defines reusable gate rules that decide whether a dialog branch is currently eligible.
+//! It owns `GateContext` and `DialogueCondition`, including FSM, BT-status, utility-threshold, and composite checks.
+//! Condition evaluation lives here so authored gating rules stay data-driven and detached from tree traversal mechanics.
+//! Read it when branch availability rules, context fields, or condition semantics for dialog progression need changes.
 
 use std::collections::HashMap;
 

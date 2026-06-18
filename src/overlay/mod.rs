@@ -1,5 +1,9 @@
-//! Screen-space overlay subsystem for ambient lighting, atmosphere, and scene transitions. `overlay/mod` is the overlay module index, declaring `ambient`, `atmosphere`, `controller`, `screen_effects`, `transition`, and 2 more so agents can identify which files own each feature slice before opening implementation code.
-//! Groups the state and render paths for weather, water, flash, fog, and fade effects. `src/overlay/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `ambient::AmbientState`, `atmosphere::{ CloudState, FilmGrainState, FogState, HeatHazeState, LightningState, VignetteState, }`, `controller::Overlay`, `screen_effects::{FadeState, FlashState, ShakeState}`, and 3 more centralized for the overlay subsystem.
+//! This module re-exports the screen-overlay subsystem for ambient tint, weather, water, transitions, and controller state.
+//! It is the navigation map for long-lived overlay data, timed screen effects, and renderer-facing overlay ownership.
+//! `controller.rs` owns the main `Overlay` runtime, while `ambient.rs`, `weather.rs`, and `water.rs` hold state blocks.
+//! `screen_effects.rs` and `transition.rs` cover timed flashes, shakes, fades, and full-screen transition playback models.
+//! `atmosphere.rs` groups clouds, fog, haze, vignette, grain, and lightning so callers can compose atmospheric layers.
+//! Change this file when public overlay exports move; change sibling files when overlay simulation or render data changes.
 
 /// Ambient color state derived from time-of-day settings.
 pub mod ambient;

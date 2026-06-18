@@ -1,7 +1,8 @@
-//! Implements the GPU resource registry to track persistent mesh and buffer lifetimes. `render/gpu_state` delivers the gpu state implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores texture, canvas, and font allocations within structured slotmaps. The file owns or coordinates data contracts including `GpuTexture`, `DepthStencilTarget`, `PendingSurfaceReadback`, `RenderStats`, `StaticGeometryCacheEntry`, and 2 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Caches static draw geometry descriptors, avoiding frame allocations. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Manages depth-stencil buffer views matching current canvas dimensions. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Defines the registry of live GPU allocations, cached geometry, readback state, and frame statistics.
+//! Stores textures, fonts, canvases, depth targets, and other handles in structured collections with stable keys.
+//! Keeps static geometry cache records and pending surface readbacks separate from the main renderer loop.
+//! Acts as the persistent state boundary for GPU resources shared across multiple render passes.
+//! Open this file when cached handles, depth targets, or readback bookkeeping state behaves incorrectly.
 
 use crate::runtime::resource_keys::{InstanceBufferKey, StaticGeometryKey};
 

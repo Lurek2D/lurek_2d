@@ -1,9 +1,11 @@
-//! Provides the flownet simulation engine that advances transport, decay, conversion, and queue behavior per tick. `flownet/simulation` delivers the simulation implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Processes item lifetimes and removes expired entities while preserving graph consistency guarantees. The file owns or coordinates data contracts including `GraphEvent`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Moves transit items along edges and resolves arrivals using each node's overflow policy. Public callable behavior is centered on no named public items, while method-level behavior such as `update`, `step`, `update_parallel` stays attached to the local data model and invariants.
-//! Executes push and pull flow mechanics with rate-limited logic tied to node configuration. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Applies conversion rules that consume inputs and emit transformed output items at nodes. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Handles queued backpressure by promoting waiting items when capacity becomes available. The file boundary separates flownet implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns the per-tick flownet loop that advances decay, transit, cooldowns, flow, conversions, and queues.
+//! `GraphEvent` is declared here because update passes emit a stable stream of state transitions for observers and tests.
+//! Transit resolution lives here, including arrival handling, overflow-policy outcomes, queueing, and lost-item reporting.
+//! Push and pull phases use node timers and edge checks here so autonomous movement follows configured flow policies.
+//! Conversion processing also lives here because it consumes node inventories and produces new items during each tick.
+//! Queue promotion is local here because waiting items depend on processing time, capacity, and earlier arrival outcomes.
+//! `update_parallel` shares the same contract but parallelizes only decay; later stateful phases still run in order.
+//! Open it when runtime progression changes; graph CRUD, demand matching, and route queries live in sibling files.
 
 use super::core::Graph;
 use super::item::ItemPosition;

@@ -1,6 +1,7 @@
-//! Bridge between province world data and the minimap grid. `minimap/province_adapter` delivers the province adapter implementation for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Copies terrain, fog, and palette state into a minimap representation. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Clips to the smaller grid so size mismatches stay safe. Public callable behavior is centered on `apply_terrain`, `apply_visibility`, `apply_terrain_palette`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! `src/minimap/province_adapter.rs` maps province registry snapshots into minimap terrain colors and fog visibility grids.
+//! It owns the translation layer between `ProvinceRegistry` data and `Minimap`, while clipping writes to shared bounds.
+//! Terrain ids, visibility states, and political colors are copied here so province rules stay out of minimap core.
+//! Read this file when province snapshots, fog mapping, or terrain palette import behavior for minimaps needs to change.
 
 use crate::minimap::minimap::Minimap;
 use crate::minimap::types::FogLevel;

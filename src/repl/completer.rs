@@ -1,7 +1,8 @@
-//! This file implements completion for interactive REPL input so partially typed commands can expand into useful candidates.
-//! Suggestions come from both a static knowledge base of Lua and engine names and the live global environment of the current VM.
-//! Dot-path completion is resolved step by step, which makes nested tables and engine namespaces feel navigable from the prompt.
-//! Candidate output is normalized and deduplicated so the REPL can present stable suggestions instead of noisy raw table keys.
+//! `src/repl/completer.rs` provides interactive completion for REPL input, combining static names with live Lua globals.
+//! It resolves dotted table paths step by step, so nested namespaces like `lurek.render` can suggest meaningful members.
+//! Static completions keep core Lua and engine symbols available even before a runtime has populated additional globals.
+//! Normalization, sorting, and deduplication live here so prompt UIs receive stable suggestions instead of raw table noise.
+//! Open this file when completion scope, Lua table traversal, or suggestion ranking behavior needs to change.
 
 use mlua::prelude::*;
 

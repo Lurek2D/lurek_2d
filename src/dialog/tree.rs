@@ -1,8 +1,9 @@
-//! Provides the core dialogue graph model for authored topics, branches, nodes, and selectable progression paths. `dialog/tree` delivers the tree implementation for the dialog subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Applies runtime gate filtering so only context-compatible narrative candidates remain available. The file owns or coordinates data contracts including `DialogueBranch`, `DialogueTopic`, `DialogueNode`, `DialogueAI`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Combines base weights with utility-driven influence to rank candidates and pick strong conversation outcomes. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_fsm_state`, `set_bt_status`, `set_utility_score`, `clear_utility_scores`, `add_topic`, and 4 more stays attached to the local data model and invariants.
-//! Keeps decision flow transparent by storing gating and scoring inputs directly with authored records. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Serves as the planning backbone executed by dialogue state, scripting hooks, and event publication. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/dialog/tree.rs` owns the authored dialogue graph and the scoring logic that selects topics and branches.
+//! It defines topics, branches, and nodes while storing FSM state, BT status, and utility scores for gate-aware choice.
+//! Topic and branch ranking happen here so authored weights and runtime utility inputs produce one deterministic selector.
+//! This file is the planning layer for dialog content; it does not own typewriter playback or visited-state persistence.
+//! Gate checks and utility accumulation stay here so narrative selection remains close to the authored records it uses.
+//! Read it when branch scoring, topic selection, authored graph fields, or gating inputs for dialog AI need changes.
 
 use std::collections::HashMap;
 

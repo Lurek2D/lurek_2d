@@ -1,5 +1,9 @@
-//! Defines the application module boundary for lifecycle orchestration from startup to shutdown. `app/mod` is the app module index, declaring `app`, `debug_overlay`, `error_screen`, `frame_profile`, `lua_callbacks`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
-//! Groups runtime loop control, visual fallback paths, callback guards, and profiling helpers. `src/app/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `app::{App, AppRunOptions}`, `debug_overlay::DebugOverlay`, `error_screen::ErrorScreen` centralized for the app subsystem.
+//! This module re-exports the desktop app subsystem for runtime orchestration, splash, errors, callbacks, and HUD state.
+//! It is the navigation map for host-loop ownership, startup surfaces, callback guards, and frame-profile helpers.
+//! `app.rs` owns the main runtime loop, while `splash_screen.rs` and `error_screen.rs` cover startup and failure surfaces.
+//! `lua_callbacks.rs` holds guarded `lurek.*` invocation helpers, and `debug_overlay.rs` renders the diagnostics HUD.
+//! `frame_profile.rs` formats per-frame timing samples for logs, traces, and other small diagnostics surfaces.
+//! Change this file when public app exports move; change sibling files when runtime behavior or startup flows change.
 
 #[allow(clippy::module_inception)]
 /// Core application runtime: event loop bridge, frame lifecycle, and orchestration.

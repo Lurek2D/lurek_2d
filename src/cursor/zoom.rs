@@ -1,6 +1,7 @@
-//! Implements cursor-following zoom-lens state for magnified local inspection around pointer position. `cursor/zoom` delivers the zoom implementation for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores radius, magnification, and border settings used by post-process cursor-lens rendering. The file owns or coordinates data contracts including `CursorZoom`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Serves as the magnifier feature contract controlled through cursor config and scripting paths. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_magnification`, `set_radius`, `toggle` stays attached to the local data model and invariants.
+//! `src/cursor/zoom.rs` owns the magnifier-lens state used to zoom content around the active cursor position.
+//! It defines `CursorZoom`, keeping enable state, magnification, radius, and border styling in one owner.
+//! Magnification updates, radius clamping, and simple enable toggling all live here under one small feature contract.
+//! Read this file when cursor zoom limits, default lens styling, or toggle behavior for the magnifier feature changes.
 
 /// Cursor zoom/magnifier configuration.
 #[derive(Debug, Clone)]

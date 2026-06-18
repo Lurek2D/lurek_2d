@@ -1,9 +1,11 @@
-//! ENet host wrapper owning a non-blocking UDP socket and peer slots for one endpoint. `network/host` delivers the host implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Classifies the host role as server, client, or combined host for session routing. The file owns or coordinates data contracts including `HostRole`, `EnetLease`, `NetworkHost`, `NetworkEvent`, `PeerStats`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Runs the event poll loop that yields connect, disconnect, and receive events. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `service`, `connect`, `send`, `send_bytes`, `broadcast`, and 31 more stays attached to the local data model and invariants.
-//! Manages connection lifecycle, packet delivery, and reset flows. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Exposes peer diagnostics such as round-trip time, state, address, and statistics. External integration uses `super`, `rusty_enet`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Lets callers tune bandwidth and channel limits at runtime. The file boundary separates network implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns the ENet host wrapper that binds one UDP socket and manages peer slots for a network endpoint.
+//! `NetworkHost` stores the inner ENet host, local address, host role, and reconnection leases for peer resumption.
+//! `HostRole`, `NetworkEvent`, `EnetLease`, and `PeerStats` live here because they describe host-owned peer lifecycle.
+//! Service, connect, send, broadcast, ping, and disconnect flows stay here because ENet peer control is this boundary.
+//! Lease registration and cleanup also belong here since reconnect tokens are indexed by peer ownership state.
+//! Bandwidth, channel, address, and connection metrics remain local because they report or tune host-level behavior.
+//! Server and client convenience constructors stay here because role assignment and binding strategy are host concerns.
+//! Open it when ENet peer ownership changes; lobbies, wire values, and background TCP or WebSocket workers do not.
 
 use super::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_PEERS};
 use super::error::NetworkError;

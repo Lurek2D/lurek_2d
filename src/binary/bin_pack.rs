@@ -1,9 +1,11 @@
-//! Implements token-driven binary pack and unpack flows over whitespace-delimited format descriptions. `binary/bin_pack` delivers the bin pack implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports endian-aware serialization of scalar values, strings, booleans, and raw byte payloads. The file owns or coordinates data contracts including `BinValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Applies value coercion rules so heterogeneous input variants can be normalized at write time. Public callable behavior is centered on `write`, `read`, `measure_size`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Handles fixed-width and variable-width token semantics including prefixed and null-terminated strings. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Provides padding support for alignment-sensitive binary structure construction. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Performs bounds-checked reads and returns structured failures on truncated source buffers. The file boundary separates binary implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns the tokenized packing layer that reads whitespace-separated type names for binary layouts.
+//! `BinValue` represents explicit scalar, boolean, string, and raw byte values consumed by parsed tokens.
+//! Format parsing normalizes endianness selectors and operation tokens before any read, write, or sizing work.
+//! The `write` path serializes typed values into bytes, including padding, prefixed strings, and C strings.
+//! The `read` path decodes bytes back into typed variants, advancing an offset cursor and checking token spans.
+//! `measure_size` computes only fixed-width layouts, rejecting `str` and `cstr` because they remain data-sized.
+//! Coercion helpers accept compatible numeric and boolean inputs so callers can feed mixed variants safely.
+//! Open it when token-schema semantics change; char-format packing and raw buffer helpers live in siblings.
 
 use super::byte_data::ByteData;
 #[derive(Debug, Clone)]

@@ -1,4 +1,4 @@
-//! `src/lua_api/ecs_api.rs` registers the `lurek.ecs` Lua boundary for ecs behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.ecs` Lua API for ECS userdata, entity access, and thin binding helpers over ECS state.
 
 use super::SharedState;
 use crate::ecs::query_view::QueryView;

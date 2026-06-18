@@ -1,8 +1,9 @@
-//! Stateful per-unit pathfinder wrapping a shared NavGrid reference. `pathfind/unit_pathfinder` delivers the unit pathfinder implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Runs full A* searches with optional string-pull smoothing. The file owns or coordinates data contracts including `Waypoint`, `UnitPathfinder`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports partial paths, BFS reachability, and nearest-walkable searches. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `find_path`, `find_path_smooth`, `get_path_length`, `get_path_cost`, `find_partial_path`, and 10 more stays attached to the local data model and invariants.
-//! Caches recent routes with an LRU strategy and manual invalidation. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Exposes octile heuristic and Bresenham LOS helpers for local decisions. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Wraps a shared NavGrid in a stateful per-unit pathfinding service with cache-aware route and utility queries.
+//! Owns Waypoint output records, cache keys, cached path storage, and optional LRU-style eviction behavior.
+//! Calls baseline A* for full, smoothed, or partial routes, then exposes length, cost, LOS, and reachability helpers.
+//! Also searches for the nearest walkable fallback cell, keeping per-unit recovery logic close to shared grid access.
+//! Provides the boundary between raw navigation algorithms and gameplay units that need repeated path requests.
+//! Open this owner when route caching, per-unit helper semantics, or fallback walkability behavior needs changes.
 
 use crate::runtime::log_messages::{UP01, UP02, UP03};
 

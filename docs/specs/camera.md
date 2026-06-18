@@ -17,28 +17,19 @@
 
 ## Summary
 
-- Controls how players see the world by mapping game-space motion into stable, readable screen framing.
-- Enables smooth target following with dead zones, easing, and look-ahead to reduce jitter and improve readability.
-- Provides practical follow presets so teams can get a good camera feel quickly before deep tuning.
-- Supports world bounds to prevent exposing invalid map regions during traversal and high-speed movement.
-- Exposes direct positioning and rotation controls for scripted cinematics and authored transitions.
-- Includes zoom controls with constraints and damping so scale changes stay intentional and comfortable.
-- Adds screen shake for impact feedback while preserving controllable intensity and duration.
-- Adds sway and breathing effects for subtle motion language in exploration and menu-heavy scenes.
-- Supports zoom pulses and timed transitions for moment-to-moment emphasis during gameplay beats.
-- Provides world-to-screen and screen-to-world conversion for UI overlays, targeting, and interaction tools.
-- Handles resize-aware viewport behavior so camera output remains predictable across resolutions.
-- Supports scale modes like letterbox and pixel-perfect for different visual presentation goals.
-- Enables path-driven camera movement for intros, cutscenes, and guided tutorial sequences.
-- Allows multiple named cameras in one rig for split-screen, minimap, and inset workflows.
-- Lets systems switch active views cleanly without rebuilding render pipelines.
-- Gives gameplay, UI, and render code one shared camera contract instead of parallel ad-hoc logic.
-- Helps users build camera behavior that feels responsive, cinematic, and technically stable.
-- Acts as the core module for viewport control across single-camera and multi-camera game experiences.
-- Reduces implementation friction by packaging common camera patterns behind script-friendly APIs.
-- Improves player comfort by keeping motion framing, zoom, and rotation behavior consistent and bounded.
+- The `camera` module is the engine's shared view-control surface for users who need world motion to become readable player-facing framing.
+- Follow logic, dead zones, damping, bounds, zoom, rotation, path motion, and viewport policy all live here so projects can define how scene focus becomes visible framing.
+- This matters because camera behavior shapes feel and readability just as much as raw world state does.
+- Follow and constraint logic are central because a useful camera is rarely just a position; it must decide how tightly to track a target, how much to lag, and what world bounds or dead zones should still preserve readability.
+- Screen shake, sway, breathing, zoom pulses, and scripted paths extend the module from neutral viewing into gameplay feedback and cinematic presentation.
+- Screen-to-world and world-to-screen conversion are equally important because overlays, minimaps, targeting, and editor tools depend on the same view contract.
+- Split views, subviews, and viewport-aware framing broaden the feature beyond one player camera into inspection tools and multi-panel presentation workflows.
+- That conversion layer is one of the main reasons the module belongs outside gameplay code: several systems need the same answer to where the world appears on screen, and camera policy is what keeps those answers consistent.
+- Scripted path motion also makes the feature useful for guided pans, flyovers, tutorials, and tool previews where the point is not only to follow a target, but to author how attention moves through space.
+- The module is useful for gameplay cameras, cutscenes, split views, inspection tools, and any feature that needs stable framing semantics.
+- `render` shows the result and world systems choose what to focus, but `camera` owns how that focus is followed, constrained, and transformed into visible space.
+- Read `camera` as the authority for framing policy and coordinate conversion between world and screen.
 
-This module primarily collaborates with `math`, `render`, `tilemap`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -50,71 +41,77 @@ This module primarily collaborates with `math`, `render`, `tilemap`. Its respons
 
 ### effects.rs
 
-- Implements transient camera-motion effects layered on top of the base follow transform state. `camera/effects` delivers the effects implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides pulse-based zoom bursts for impact moments and short-lived cinematic emphasis. The file owns or coordinates data contracts including `ZoomPulse`, `CameraSway`, `CameraBreathing`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Adds oscillatory sway offsets with tunable frequency and damping for dynamic camera motion feel. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `trigger`, `update`, `current_delta`, `is_active`, `start`, and 2 more stays attached to the local data model and invariants.
-- Supplies breathing-style zoom modulation for subtle ambient life during low-action periods. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Keeps each effect independently updateable so compositions remain modular and controllable. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- `src/camera/effects.rs` owns transient motion effects layered on top of base camera transform and follow state.
+- It defines `ZoomPulse`, `CameraSway`, and `CameraBreathing`, keeping effect timing and amplitudes together.
+- Pulse-based zoom bursts, positional sway, and breathing modulation all live here under independent effect states.
+- Each effect updates from elapsed time and reports current deltas, keeping effect math separate from transform storage.
+- This file is the effect-state boundary for cameras; follow logic, view state, and projection helpers stay elsewhere.
+- Read it when oscillation rules, damping, pulse timing, or effect composition behavior needs to change.
 
 ### mod.rs
 
-- Defines the camera module boundary that groups transform state, effects, viewport, and rendering helpers. `camera/mod` is the camera module index, declaring `effects`, `multi`, `path`, `render`, `types`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
-- Exposes a coherent camera surface while keeping pathing, rigs, and scaling concerns modularized. `src/camera/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `effects::{CameraBreathing, CameraSway, ZoomPulse}`, `multi::CameraRig2D`, `path::{CameraPath, CameraTweenEasing, CameraZoomTween, ZoomTween}`, `types::{Camera, Camera2D, CameraEasing}`, and 4 more centralized for the camera subsystem.
-- Serves as the high-level composition root for runtime camera behavior across engine systems. The file documents how camera submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- `camera/mod` is the camera module index, declaring `effects`, `multi`, `path`, `render`, `types`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/camera/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `effects::{CameraBreathing, CameraSway, ZoomPulse}`, `multi::CameraRig2D`, `path::{CameraPath, CameraTweenEasing, CameraZoomTween, ZoomTween}`, `types::{Camera, Camera2D, CameraEasing}`, and 4 more centralized for the camera subsystem.
-- The file documents how camera submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- `src/camera/mod.rs` is the module index that exposes camera state, effects, paths, viewport logic, and render helpers.
+- It reexports core camera types plus effect, rig, tween, viewport, and walker APIs through one stable camera surface.
+- No live camera state is stored here; this file only declares child modules and defines which camera symbols are public.
+- Read this index when wiring view behavior, because it shows where transform state ends and specialized helpers begin.
+- Changes here reshape the camera boundary, since reexports decide what runtime code may import without deep paths.
+- This module keeps transforms, effects, scaling, and scripted movement split by responsibility for clearer ownership.
 
 ### multi.rs
 
-- Implements multi-camera rig management over named camera instances for concurrent view setups. `camera/multi` delivers the multi implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides preset layout helpers for split-screen, minimap, and picture-in-picture arrangements. The file owns or coordinates data contracts including `CameraRig2D`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports deterministic iteration and bulk mutation flows for multi-pass rendering integration. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `has_camera`, `remove_camera`, `ensure_camera`, `camera_mut`, `camera`, and 6 more stays attached to the local data model and invariants.
-- Serves as the orchestration layer for scenarios requiring more than one active camera view. Runtime integration reaches sibling engine areas through crate modules `camera`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/camera/multi.rs` owns multi-camera rig management for named camera instances used by split and overlay layouts.
+- It defines `CameraRig2D`, keeping camera lookup, creation, layout presets, and bulk updates under one owner.
+- Split-screen, minimap, and picture-in-picture viewport arrangements live here, separate from single-camera logic.
+- Read this file when rig layout policy, named camera lifecycle, or multi-view update behavior needs to change.
 
 ### path.rs
 
-- Implements waypoint-driven camera path interpolation for scripted movement and guided shots. `camera/path` delivers the path implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides zoom tweening with easing control for smooth focal transitions over fixed durations. The file owns or coordinates data contracts including `CameraPath`, `CameraTweenEasing`, `CameraZoomTween`, `ZoomTween`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Tracks segment progress across multi-point paths to produce continuous positional interpolation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `progress`, `reset`, `new_with_easing` stays attached to the local data model and invariants.
-- Supports reusable easing selection so authored camera motion keeps consistent temporal character. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/camera/path.rs` owns waypoint paths and zoom tweens used for scripted camera travel and focal transitions.
+- It defines `CameraPath`, `CameraTweenEasing`, `CameraZoomTween`, and `ZoomTween`, keeping timed interpolation together.
+- Waypoint progression, segment interpolation, tween progress, and easing-aware zoom updates all live in this file.
+- This is the path-and-tween boundary for authored camera motion, while base camera transforms and effects stay elsewhere.
+- Read it when path timing, easing selection, or scripted movement interpolation behavior needs to change.
 
 ### render.rs
 
-- Converts camera transform state into renderer command sequences for scene-space projection. `camera/render` delivers the rendering adapter and draw-command integration for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Emits ordered push, translate, rotate, scale, and pop operations for deterministic visual mapping. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Splits begin and end phases so callers can bracket arbitrary scene draw commands safely. Public callable behavior is centered on no named public items, while method-level behavior such as `append_begin_render_commands`, `begin_render_commands`, `end_render_command`, `generate_render_commands` stays attached to the local data model and invariants.
-- Serves as the render-bridge layer between camera math state and command-stream execution. Runtime integration reaches sibling engine areas through crate modules `camera`, `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/camera/render.rs` owns render-command generation that wraps scene drawing with camera transform operations.
+- It extends `Camera` and `Camera2D` with begin and end transform helpers, keeping render bridging separate from state.
+- Push, translate, rotate, scale, and pop command sequencing all live here so projection behavior stays explicit.
+- Read this file when camera-to-render-command mapping or bracketing behavior for scene draws needs to change.
 
 ### types.rs
 
-- Defines core camera state models that represent both minimal and fully featured 2D camera behavior. `camera/types` delivers the shared type definitions and data contracts for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Implements follow logic with dead-zone handling, smoothing response, and look-ahead displacement control. The file owns or coordinates data contracts including `CameraEasing`, `Camera`, `Camera2D`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Integrates transient effects such as shake, pulse, sway, and breathing into effective camera transforms. Public callable behavior is centered on no named public items, while method-level behavior such as `apply`, `new`, `view_matrix`, `set_position`, `set_zoom`, `set_rotation`, and 45 more stays attached to the local data model and invariants.
-- Maintains zoom and rotation state with damping and bounded constraint ranges for runtime stability. Runtime integration reaches sibling engine areas through crate modules `camera`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Provides viewport-aware world-to-screen and screen-to-world mapping through explicit conversion utilities. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Builds view matrices by composing position, rotation, zoom, and active effect contributions coherently. The file boundary separates camera implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- `src/camera/types.rs` owns core camera state models, follow behavior, constraints, and coordinate conversion logic.
+- It defines `CameraEasing`, `Camera`, and `Camera2D`, keeping transform storage and runtime camera logic together.
+- Follow smoothing, dead-zone handling, look-ahead, bounds clamping, and target tracking all live in this file.
+- Zoom and rotation damping plus min/max constraints are also implemented here, keeping stability rules near the state.
+- Shake, zoom pulse, sway, and breathing contributions are composed here into effective zoom, offsets, and view matrices.
+- Viewport-aware screen-to-world and world-to-screen conversions live here, along with visible-area and resize helpers.
+- This file is the main runtime owner of camera transform semantics; effects, paths, and render adapters depend on it.
+- Read it when follow policy, constraints, view-matrix composition, or coordinate mapping behavior needs to change.
 
 ### viewport.rs
 
-- Implements viewport scaling policies that map fixed game space into dynamic window dimensions. `camera/viewport` delivers the viewport implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Defines scale modes for aspect-preserving letterbox, free stretch, and pixel-perfect presentation. The file owns or coordinates data contracts including `ScaleMode`, `Viewport`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Stores computed scale and offset transforms recalculated on resize without recreating viewport state. Public callable behavior is centered on no named public items, while method-level behavior such as `compute_transforms`, `new`, `resize`, `get_scale`, `get_offset`, `get_game_dimensions`, and 4 more stays attached to the local data model and invariants.
-- Provides bidirectional coordinate conversion between screen pixels and logical game coordinates. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/camera/viewport.rs` owns viewport scaling policies that map fixed game space into variable window dimensions.
+- It defines `ScaleMode` and `Viewport`, keeping scaling mode selection, offsets, and coordinate remapping together.
+- Letterbox, stretch, and pixel-perfect transform computation all live here, separate from camera transform state.
+- Resize handling plus game-to-screen and screen-to-game conversion helpers are implemented directly in this file.
+- Read it when scale-mode policy or viewport transform behavior for resized windows needs to change.
 
 ### viewport_scale.rs
 
-- Implements runtime viewport-scale state used by resize and projection update workflows. `camera/viewport_scale` delivers the viewport scale implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores computed scale factors, offsets, and scaled dimensions after each window-size change. The file owns or coordinates data contracts including `ViewportScale`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides bidirectional conversion helpers between logical game space and screen pixel coordinates. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `resize`, `get_game_dimensions`, `get_scaled_dimensions`, `get_offset`, `get_scale`, and 3 more stays attached to the local data model and invariants.
-- Serves as a compact scaling container for systems that need fast coordinate remapping. Runtime integration reaches sibling engine areas through crate modules `camera`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/camera/viewport_scale.rs` owns compact runtime scaling state for game-to-screen transforms from scale modes.
+- It defines `ViewportScale`, keeping computed scales, offsets, and scaled dimensions under one lightweight container.
+- Resize recomputation and bidirectional coordinate conversion live here for callers that need cached transform data.
+- Read this file when stored scaling fields or fast coordinate-remap behavior needs to change.
 
 ### walker.rs
 
-- Tile-grid walker with smooth camera following. `camera/walker` delivers the walker implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides a walker that moves on a tile-based grid with collision detection and. The file owns or coordinates data contracts including `CameraWalker`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- integrates camera following behavior. The walker tracks both world-space and tile-space positions,. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_position`, `get_position`, `set_tile_position`, `get_tile_position`, `move_direction`, and 6 more stays attached to the local data model and invariants.
-- supports directional movement with tile collision checks, and smoothly updates an associated camera. Runtime integration reaches sibling engine areas through crate modules `camera`, `tilemap`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/camera/walker.rs` owns the tile-grid camera walker that couples collision-checked movement with a Camera2D.
+- It defines `CameraWalker`, keeping walker position, body dimensions, speed, tile metrics, and camera linkage together.
+- Tile-to-world placement, world-to-tile queries, directional movement, and solid-tile overlap checks all live here.
+- This file bridges tilemap collision probing and camera follow updates for top-down traversal and guided movement flows.
+- Read it when walker collision policy, movement stepping, or camera-follow coupling behavior needs to change.
 
 
 

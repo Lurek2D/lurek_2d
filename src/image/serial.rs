@@ -1,8 +1,9 @@
-//! Implements LIMG binary serialization for flat and layered images with versioned format guards. `image/serial` delivers the serial implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Encodes and decodes pixel payloads with compression to reduce storage and transfer overhead. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Validates magic headers, version bytes, and payload type tags before accepting input data. Public callable behavior is centered on `save_image`, `load_image`, `load_image_from_bytes`, `save_layered`, `load_layered`, and 4 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Preserves layer metadata such as names, opacity, and visibility across save-load round trips. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Exposes both in-memory byte APIs and filesystem helpers for flexible integration contexts. External integration uses `super`, `flate2`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Owns the custom LIMG binary format for saving and loading flat images and layered image documents.
+//! Writes file headers, version tags, and type markers so loaders can reject incompatible or corrupt payloads.
+//! Compresses and decompresses image bytes with zlib while keeping format checks local to one serialization owner.
+//! Supports both path-based and in-memory decode flows for tests, tools, and runtime asset import pipelines.
+//! Persists layered images with names, visibility flags, opacity values, and embedded RGBA layer payloads.
+//! Open this file when LIMG compatibility, compression, or layered-image round trips fail or drift in shape.
 
 use super::image_data::ImageData;
 use super::layers::LayeredImage;

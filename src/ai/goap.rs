@@ -1,8 +1,9 @@
-//! Delivers deliberative planning over symbolic world facts, actionable effects, and prioritized intentions. `ai/goap` delivers the goap implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Searches plan space with bounded best-first expansion to stay tractable under live-frame budgets. The file owns or coordinates data contracts including `GOAPAction`, `GOAPGoal`, `GOAPPlanner`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Reconstructs coherent action chains from explored nodes into executable intent trajectories. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `plan`, `plan_for_goal_idx`, `add_action`, `add_precondition`, `add_effect`, and 4 more stays attached to the local data model and invariants.
-//! Balances optimality pressure against hard iteration ceilings so runtime cost remains predictable. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Integrates Lua-side execution hooks while preserving engine-owned planning invariants. External integration uses `mlua`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Implements goal-oriented action planning over boolean world facts, action effects, and prioritized desired states.
+//! Owns GOAP actions, goals, bounded best-first search nodes, and the iteration cap that keeps planning tractable.
+//! Searches forward from the current world state, reconstructing ordered action names once a goal state is satisfied.
+//! Also exposes mutators for action preconditions, effects, and goal facts so planners can be assembled incrementally.
+//! Provides the deliberative planning boundary between symbolic world state and executable action chains.
+//! Open this owner when plan search cost, iteration ceilings, or goal satisfaction semantics need shared fixes.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{GP01, GP02, GP03};

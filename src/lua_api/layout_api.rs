@@ -1,4 +1,4 @@
-//! Lua bindings for `lurek.layout`. `src/lua_api/layout_api.rs` registers the `lurek.layout` Lua boundary for layout behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.layout` Lua API for graph layout parsing, config handling, and result table bridging.
 
 use super::SharedState;
 use crate::layout::{

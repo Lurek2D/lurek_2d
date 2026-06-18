@@ -1,7 +1,8 @@
-//! Implements local collision avoidance by projecting preferred motion into safe velocity space. `ai/orca` delivers the orca implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Builds pairwise movement constraints that encode short-horizon separation commitments between agents. The file owns or coordinates data contracts including `ORCAAgent`, `ORCASolver`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Resolves feasible velocity choices while preserving as much intent direction as safety allows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_agent`, `remove_agent`, `agent_count`, `compute` stays attached to the local data model and invariants.
-//! Keeps radius and speed bounds explicit so output remains physically plausible for runtime integration. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Implements ORCA-style local collision avoidance that projects preferred motion into safe velocity choices.
+//! Owns solver agents, pairwise half-plane constraints, time horizon tuning, and the linear projection step.
+//! Computes a safe velocity for every registered agent while respecting radius and max-speed bounds.
+//! Provides the crowd-avoidance boundary between desired steering intent and collision-safe local movement output.
+//! Open this owner when avoidance stability, neighbor constraints, or safe-velocity projection needs adjustment.
 
 /// One agent used by the ORCA solver.
 #[derive(Clone)]

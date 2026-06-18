@@ -1,6 +1,7 @@
-//! Render-command generation for particle systems and trails. `particle/render` delivers the rendering adapter and draw-command integration for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Expands textured particle batches into individual draw calls when needed. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Keeps untextured particles batched for efficiency. Public callable behavior is centered on `expand_particle_commands`, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
+//! This file owns the renderer bridge that turns particle systems and trails into engine `RenderCommand` values.
+//! It exposes helpers on `ParticleSystem` and `Trail`, then expands textured batches into quad or image draw commands.
+//! Untextured particles remain batched here so the adapter preserves renderer efficiency without changing emitter state.
+//! Open it when particle command translation changes; pool updates, preview images, and config ownership live elsewhere.
 
 use super::emitter::ParticleSystem;
 use super::trail::Trail;

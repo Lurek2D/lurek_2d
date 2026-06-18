@@ -1,8 +1,9 @@
-//! BSP dungeon generator for layouts that should feel structured, room-based, and reproducible rather than hand-authored tile by tile.
-//! The file recursively splits a rectangular space into partitions, chooses usable leaves for rooms, and then links those rooms with corridors that preserve navigable flow.
-//! Configuration controls the personality of the result through size, depth, padding, and seed rather than scattering generation policy across unrelated helpers.
-//! Prefab stamping extends the base dungeon with authored patterns that can be placed into qualifying rooms without sacrificing determinism.
-//! The implementation stays algorithmic and headless, which makes it suitable for offline generation, tests, and data-driven tooling.
+//! This file owns the BSP dungeon generator that recursively splits a rectangle into rooms and corridor connections.
+//! `BspOpts` defines size, depth, padding, and seed, while `BspDungeon` stores the generated rooms and corridors.
+//! `BspRoom`, `BspPrefabStamp`, and `PlacedBspPrefab` live here because room geometry and prefab placement are local.
+//! Recursive partitioning and leaf-room carving stay here since split policy is the core authored BSP behavior.
+//! Prefab stamping also belongs here because room-fit checks and centered placement depend on BSP room ownership.
+//! Open it when partitioned-dungeon rules change; scatter rooms and world graphs live in sibling modules.
 
 use crate::procgen::lcg::Lcg;
 

@@ -1,6 +1,7 @@
-//! Expands localized template text by replacing `{name}` placeholders with runtime values. `i18n/interpolation` delivers the interpolation implementation for the i18n subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Preserves unknown tokens and supports escaped braces so authored text stays readable under partial data. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides both map-driven and pair-list substitution flows for ergonomic caller integration. Public callable behavior is centered on `interpolate`, `interpolate_pairs`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! `src/i18n/interpolation.rs` owns placeholder expansion for localized templates that embed runtime values by name.
+//! It keeps brace escaping, missing-placeholder preservation, and pair-list helpers under one interpolation owner.
+//! Read this file when template token rules, escape behavior, or substitution semantics for localized strings change.
+//! This file is the template-expansion boundary for i18n text, while catalog lookup and plural logic stay elsewhere.
 
 use std::collections::HashMap;
 /// Replace `{name}` placeholders from a string map and keep unknown placeholders intact.

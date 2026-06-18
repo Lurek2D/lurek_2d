@@ -17,27 +17,15 @@
 
 ## Summary
 
-- This module gives users reusable 2D sprite primitives for atlases, sheets, batches, and UI panel slicing.
-- Atlas support maps semantic names to texture regions from common export formats.
-- Rotation and flip metadata handling keeps packed-atlas imports accurate.
-- Sprite-sheet utilities precompute frame regions for fast animation frame access.
-- Row/column access helpers support character-sheet and strip-based animation workflows.
-- Nine-slice support enables scalable UI panels without border distortion.
-- Lightweight sprite records support transform and tint usage with low overhead.
-- Batch support groups shared-texture quads for more efficient draw submission.
-- Normal-map fields allow lit-sprite workflows without changing base sprite usage.
-- Runtime atlas packing supports dynamic region allocation and optional nine-slice metadata.
-- Animator support provides named clip playback, stepping, and callback hooks.
-- This module is useful for character rendering, VFX sprites, and UI skinning.
-- For users, it centralizes texture-region management and sprite playback logic.
-- It reduces manual UV bookkeeping and per-frame draw boilerplate.
-- Overall, users get a practical 2D sprite toolkit with both runtime and pipeline integration.
-- The module helps bridge authored assets and efficient in-engine rendering behavior.
-- It supports both simple sprite use cases and advanced packed-content workflows.
-- This makes sprite-heavy projects easier to scale and maintain.
-- Users gain consistent APIs from import through playback to batching.
+- The `sprite` module is the engine's textured-2D surface for users who want single sprites, sheets, atlases, scalable panels, and batched instances to share one coherent runtime model.
+- It unifies several common 2D visual patterns that often become fragmented in smaller engines: stand-alone images, atlas regions, sheet-based animation helpers, batched draws, and resizable textured panels all belong to the same family here.
+- Atlas support matters because production assets are frequently packed, and a sprite system that does not understand regions and packing semantics quickly forces users into repetitive coordinate plumbing.
+- Sheet-oriented helpers broaden the feature into frame-driven presentation while still staying lighter-weight than the more general `animation` module.
+- Nine-slice and panel-oriented support matter because many projects mix game objects with UI-like scalable textured elements and still want one shared textured-visual layer.
+- Batching support gives the module practical performance value. When many sprites share material or texture context, the engine can treat them as a coordinated draw family rather than as unrelated one-off submissions.
+- `image` owns raw pixel assets and `render` performs final drawing, while `sprite` owns the runtime model for textured 2D instances, atlases, sheets, and related presentation helpers.
+- Read `sprite` as the common textured-2D layer above raw images and below higher-level gameplay or UI meaning.
 
-This module primarily collaborates with `animation`, `color`, `image`, `math`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -51,51 +39,59 @@ This module primarily collaborates with `animation`, `color`, `image`, `math`, `
 
 ### animator.rs
 
-- Stateful sprite-clip animator used by the Lua-facing `lurek.sprite` API. `sprite/animator` delivers the animator implementation for the sprite subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- This module owns playback state transitions and frame stepping rules. Lua. The file owns or coordinates data contracts including `SpriteClip`, `AnimatorEvent`, `SpriteAnimator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- bindings should stay thin and delegate update logic to this type. Public callable behavior is centered on no named public items, while method-level behavior such as `normalized`, `new`, `add_clip`, `play`, `pause`, `resume`, and 7 more stays attached to the local data model and invariants.
-- `sprite/animator` delivers the animator implementation for the sprite subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The file owns or coordinates data contracts including `SpriteClip`, `AnimatorEvent`, `SpriteAnimator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
+- This file owns `SpriteClip`, `AnimatorEvent`, and `SpriteAnimator` for named clip playback over sheet frames.
+- It stores clip definitions, selected clip state, current frame, elapsed time, and the playing flag in one owner.
+- Normalization rules clamp invalid clip ranges and fps so Lua or tool input cannot produce broken playback state.
+- The `update` loop emits frame, loop, and end events while advancing elapsed time in frame-sized playback steps.
+- Playback helpers add clips, switch current clips, pause, resume, stop, and report active frame or durations.
+- Open this file when clip-timing semantics change; sheet geometry and render submission belong to siblings.
 
 ### atlas.rs
 
-- This file handles named texture-atlas regions so packed art can be addressed by semantic names instead of raw pixel rectangles.
-- It stores atlas entries with the orientation and flip metadata needed to interpret packing-tool output correctly. The file owns or coordinates data contracts including `AtlasEntry`, `SpriteAtlas`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Parsers for common atlas JSON formats live here because importing packed textures is a content-pipeline concern rather than a render concern.
-- Lookup is structured for fast name access while still retaining ordered iteration when tools or UIs need to inspect atlas contents.
+- This file owns `AtlasEntry` and `SpriteAtlas`, the named-region model for packed sprite texture content.
+- It stores ordered entries, a name-to-index lookup map, and rotation or flip metadata needed to decode atlas output.
+- Parser functions turn TexturePacker and Aseprite JSON payloads into atlas records, so import policy lives here.
+- Lookup helpers support name access, index access, name listing, and atlas construction from engine texture regions.
+- Open this file when packed-region semantics or atlas import rules change, not single-sprite transform behavior.
 
 ### mod.rs
 
-- This module provides the engine's core 2D sprite asset and batching helpers around individual sprites, sheets, atlases, and scalable panels.
-- It covers both how textured regions are described and how many of them are organized for animation, UI, or efficient drawing.
+- This module gathers the sprite subsystem surface for single sprites, sheets, atlases, panels, and batches.
+- It keeps navigation explicit by pointing readers to the file that owns clip playback, lookup, scaling, or batching.
+- Re-exports here make `Sprite`, `SpriteSheet`, `SpriteAtlas`, `NineSlice`, and `SpriteBatch` easy to reach.
+- `animator.rs` owns frame-timed clip playback, while `atlas.rs` and `sprite_sheet.rs` own region lookup models.
+- `sprite.rs` stays the minimal per-instance draw state owner, and `sprite_batch.rs` holds grouped submission data.
+- Change this file when the public sprite symbol map moves, not when rendering or animation rules change.
 
 ### nine_slice.rs
 
-- This file defines nine-slice scaling logic for UI panels and framed elements that must resize without destroying border fidelity.
-- It splits one source region into corners, edges, and center pieces whose destination layout can adapt to arbitrary target sizes.
-- Corner preservation and controlled edge stretching are the core visual promises of this file. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `patches` stays attached to the local data model and invariants.
+- This file owns `NineSlice` and `Patch` tuples for scalable panels whose borders must survive resizing cleanly.
+- It stores the texture key, edge inset sizes, and source texture dimensions used to split nine source regions.
+- The `patches` method returns source and destination quads so callers can stretch edges and center without corner drift.
+- Open this file when panel-scaling geometry changes; atlas lookup, sprite state, and batching live in siblings.
 
 ### sprite.rs
 
-- This file defines the lightweight single-sprite record used when one textured image instance needs position, transform, and tint data.
-- It is intentionally small because many systems want sprite-like draw data without carrying atlas, animation, or batching machinery.
-- Optional normal-map metadata lives here as sprite-owned lighting data even when the renderer path is handled elsewhere. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_position`, `set_scale`, `set_rotation`, `set_color`, `set_normal_map`, and 5 more stays attached to the local data model and invariants.
-- The type is the simplest textured presentation unit in the sprite subsystem. Runtime integration reaches sibling engine areas through crate modules `color`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `Sprite`, the minimal textured instance record for transform, tint, and optional normal-map state.
+- It stores render-facing fields directly on one struct so systems can pass lightweight draw data without atlas owners.
+- Setters here mutate position, scale, rotation, color, and normal-map properties while math helpers stay delegated.
+- Open this file when per-sprite draw state changes; animation playback and grouped submission live elsewhere.
 
 ### sprite_batch.rs
 
-- This file implements sprite batching for cases where many textured quads share one source texture and should travel together through rendering.
-- It accumulates per-instance transform and source-region data so callers can build dense draw groups without issuing one command per sprite.
-- Capacity limits are part of the design because some workloads want explicit control over how much batch data is retained per frame.
-- The file is the performance-oriented collection layer of the sprite subsystem. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `SpriteBatch` and `BatchEntry`, the single-texture accumulation layer for grouped sprite draws.
+- It stores the batch texture binding, per-entry source quads, transforms, pivots, and an optional capacity limit.
+- Helpers add entries, expose the borrowed entry slice, and clear retained frame data without rebuilding allocations.
+- Open this file when grouped submission shape changes; sprite state, atlas parsing, and animation live in siblings.
 
 ### sprite_sheet.rs
 
-- This file turns a texture divided into repeated cells into a navigable sprite-sheet structure for frame-based animation and lookup.
-- Frame rectangles are precomputed so callers can move through rows, columns, ranges, and named groups without recalculating geometry each time.
-- Directional layout helpers matter here because many character sheets encode facing and animation state as a regular grid convention.
-- Preset constructors keep common authoring patterns, such as RPG-style character sheets, easy to adopt without custom math in game code.
-- Debug visualization is included because sheet layout mistakes are easier to catch when the frame grid can be rendered and inspected directly.
+- This file owns `SpriteSheet`, `FrameGroup`, and `ColumnFrames` for frame extraction from grids or atlas frames.
+- It stores frame dimensions, grid counts, precomputed rects, named groups, and optional directional layout data.
+- Helpers expose rows, columns, ranges, named groups, and direction-specific frames without recomputing rectangles.
+- The `draw_to_image` path renders a debug view of the frame grid so authors can inspect layout and group starts.
+- Constructors cover uniform sheets, RPGMaker-style direction sheets, and atlas-backed sheets mapped into groups.
+- Open this file when frame indexing or grouping semantics change; playback and per-instance state live elsewhere.
 
 
 

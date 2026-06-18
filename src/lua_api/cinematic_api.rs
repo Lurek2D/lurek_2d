@@ -1,4 +1,4 @@
-//! Lua API wrapper for the `cinematic` engine module. `src/lua_api/cinematic_api.rs` registers the `lurek.cinematic` Lua boundary for cinematic behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.cinematic` Lua API for cinematic timelines, userdata controls, and script-side playback.
 
 use crate::cinematic::{Cinematic, CinematicClip, CinematicTimeline, ClipType};
 use crate::runtime::SharedState;

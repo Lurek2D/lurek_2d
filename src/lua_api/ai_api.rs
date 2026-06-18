@@ -1,4 +1,4 @@
-//! `src/lua_api/ai_api.rs` registers the `lurek.ai` Lua boundary for ai behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.ai` Lua API for AI command helpers, option parsing, and thin bindings over engine logic.
 
 use super::SharedState;
 use crate::ai::{

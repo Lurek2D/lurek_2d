@@ -1,7 +1,7 @@
-//! This file loads and resolves the embedded message catalog that backs structured runtime text. `runtime/messages` delivers the messages implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Lookup behavior is lazy so the engine pays setup cost only when message resolution is actually needed. The file owns or coordinates data contracts including `MessageCatalog`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Nested catalog data is flattened through recursive extraction so callers can ask for stable identifiers without knowing storage shape.
-//! Fallback behavior is defined here as well, ensuring missing catalog entries degrade into readable raw keys instead of silent blanks.
+//! This file owns the embedded runtime message catalog that resolves stable identifiers into display text.
+//! It parses TOML once, flattens nested tables into one map, and exposes lookup helpers with readable fallback.
+//! Catalog initialization is lazy so message resolution does not impose setup cost until the runtime needs it.
+//! Open it when runtime text lookup changes; log ids and shared error reporting live in sibling files.
 
 use std::collections::HashMap;
 use std::sync::OnceLock;

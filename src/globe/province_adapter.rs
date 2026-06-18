@@ -1,4 +1,6 @@
-//! Provides a bridge that applies province-registry ownership and visibility state onto globe regions. `globe/province_adapter` delivers the province adapter implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Bridges ProvinceRegistry state into Globe data so political color and visibility can drive the strategic globe view.
+//! Copies province political colors into matching globe provinces, keeping style mirroring outside core globe storage.
+//! Also maps province visibility state into a viewer fog mask so globe fog can reflect province-driven discovery rules.
 
 use crate::globe::registry::Globe;
 use crate::globe::types::RegionId;

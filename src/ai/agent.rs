@@ -1,7 +1,8 @@
-//! Defines the full runtime shape of one AI actor as a single cohesive control unit. `ai/agent` delivers the agent implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Blends identity, movement, tactical priority, and decision style into one state heartbeat. The file owns or coordinates data contracts including `DecisionModel`, `Agent`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Keeps planner-facing memory, sensing, affect, motives, traits, and squad semantics aligned. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `as_str`, `new` stays attached to the local data model and invariants.
-//! Preserves stable cross-system handoff so world updates read one consistent behavioral snapshot. Runtime integration reaches sibling engine areas through crate modules `ai`, `patterns`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Defines the runtime state shape for one AI actor, combining identity, movement, decision mode, and support models.
+//! Owns the DecisionModel enum plus agent-side blackboard, tags, optional sensor, emotions, needs, and traits.
+//! Stores links into FSM, behavior-tree, and steering arenas so one agent can bind to multiple decision runtimes.
+//! Provides the per-actor boundary between shared AI systems and the concrete state they read and update.
+//! Open this owner when agent schema, decision-mode tagging, or cross-system state handoff needs to change.
 
 use crate::ai::emotion::EmotionModel;
 use crate::ai::needs::NeedSystem;

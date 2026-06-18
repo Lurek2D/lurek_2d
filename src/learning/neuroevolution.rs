@@ -1,6 +1,7 @@
-//! Bridges genetic optimization and neural models to run population-based weight search workflows. `learning/neuroevolution` delivers the neuroevolution implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Rebuilds networks from flat chromosomes using template layer specifications. The file owns or coordinates data contracts including `Neuroevolution`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Evaluates and records fitness before advancing generations through the underlying GA backend. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `pop_size`, `chromosome_to_net`, `set_fitness`, `evolve`, `best_network`, and 2 more stays attached to the local data model and invariants.
+//! This file owns the bridge between flat genetic chromosomes and concrete dense neural-network instances.
+//! `Neuroevolution` stores the GA backend plus a layer template used to rebuild `NeuralNet` instances from genomes.
+//! Fitness assignment and generation advancement live here because this wrapper coordinates model decoding with search.
+//! Open it when genome-to-network mapping changes; dense layer math and raw genetic operators live in sibling files.
 
 use crate::learning::{genetic::GeneticAlgorithm, neural_net::NeuralNet};
 /// GA-backed neural-network population manager.

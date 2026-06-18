@@ -1,6 +1,6 @@
-//! Implements textual encoding and decoding of opaque bytes via base64 and hexadecimal formats. `binary/encode` delivers the encode implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Selects algorithms through stable enum variants parsed from user-facing format labels. The file owns or coordinates data contracts including `EncodeFormat`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Returns normalized failures for malformed textual payloads during decode operations. Public callable behavior is centered on `encode`, `decode`, while method-level behavior such as `parse_str` stays attached to the local data model and invariants.
+//! This file owns reversible Base64 and hexadecimal conversions for bytes moving through text-only boundaries.
+//! `EncodeFormat` parses user codec labels, and the helpers expose one small surface for encode and decode work.
+//! Open it when textual binary transport changes; hashing, compression, and structured packing live in siblings.
 
 use base64::Engine;
 #[derive(Debug, Clone, Copy, PartialEq)]

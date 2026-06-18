@@ -1,7 +1,8 @@
-//! This file defines per-cell wall feature descriptors that refine how a blocking tile should render and behave. `raycaster/wall_feature` delivers the wall feature implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Features let one tile become a half-height barrier, a window with a visible opening, or a sliding door without changing the base 2D map format.
-//! The data stays compact and cell-local so scene building, collision, and editor-facing APIs can all consult the same description.
-//! `raycaster/wall_feature` delivers the wall feature implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `WallFeatureKind` and `WallFeature`, the cell-local descriptors for wall behavior refinement.
+//! It models half-height walls, window openings, and sliding doors without changing the base tile map schema.
+//! Constructors clamp feature parameters into safe ranges so tools and scene builders share stable semantics.
+//! Query helpers answer movement, visibility, and light blocking from the same payload used by rendering code.
+//! Open this file when per-cell wall behavior changes; door state progression and scene assembly live in siblings.
 
 use super::doors::DoorDirection;
 

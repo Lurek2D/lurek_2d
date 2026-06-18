@@ -1,9 +1,9 @@
-//! High-level input module that groups keyboard, mouse, gamepad, touch, and recording components. `input/mod` is the input module index, declaring `action_def`, `combo`, `gamepad`, `keyboard`, `mouse`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
-//! Re-exports action and state types so caller code can consume one coherent input surface. `src/input/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `action_def::{ActionDef, ActionMap}`, `combo::{ComboDetector, ComboProgress, ComboStep}`, `gamepad::virtual_dpad`, `gamepad::GamepadMappings`, and 9 more centralized for the input subsystem.
-//! Defines the composition boundary where platform events become gameplay-usable input state. The file documents how input submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! `input/mod` is the input module index, declaring `action_def`, `combo`, `gamepad`, `keyboard`, `mouse`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/input/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `action_def::{ActionDef, ActionMap}`, `combo::{ComboDetector, ComboProgress, ComboStep}`, `gamepad::virtual_dpad`, `gamepad::GamepadMappings`, and 9 more centralized for the input subsystem.
-//! The file documents how input submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! This module re-exports the input subsystem for keyboard, mouse, gamepad, touch, combos, events, and recording.
+//! It is the navigation map for device state owners, name translation helpers, and reusable input-facing type exports.
+//! `keyboard.rs`, `mouse.rs`, and `gamepad.rs` own the live per-device polling state used during runtime frames.
+//! `touch.rs`, `combo.rs`, and `recorder.rs` cover multitouch state, sequence detection, and replay persistence flows.
+//! `action_def.rs` stores action-map data, while `events.rs` centralizes the canonical Lua-facing event name constants.
+//! Change this file when public input exports move; change sibling files when device semantics or polling behavior changes.
 
 /// Extended action definition with category metadata for the binding system.
 pub mod action_def;

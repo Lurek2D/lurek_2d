@@ -16,22 +16,14 @@
 
 ## Summary
 
-- This module gives users an in-engine HTML/CSS UI layer for menus, HUDs, and tool panels.
-- Markup and stylesheet parsing produce a runtime DOM model that can be queried and mutated from scripts.
-- Layout computation applies box-model style rules to generate deterministic element geometry.
-- Selector support allows class/id/ancestry targeting for dynamic UI behavior.
-- Runtime style and attribute mutation makes reactive interfaces practical without rebuilding documents.
-- Input routing handles clicks, focus, keyboard, wheel, and text events on document and element scopes.
-- Event hooks support component-style interaction patterns directly in Lua.
-- Dirty/reflow management keeps relayout explicit when content or style changes.
-- Viewport APIs support responsive behavior across window sizes.
-- Render-command generation bridges computed layout into the engine draw pipeline.
-- The module is useful for interactive overlays, launcher-style screens, and debug UIs.
-- For users, it brings familiar web-style authoring ergonomics into game runtime workflows.
-- It reduces boilerplate for complex UI state handling and DOM-like interaction logic.
-- Overall, users get a script-controllable UI stack with both declarative styling and imperative control.
+- The `html` module is the in-engine document-style UI surface for users who want markup, styles, and DOM-like interaction inside the runtime.
+- Parsing, runtime document state, selectors, style resolution, layout, and event routing work together so a project can build menus, tool panels, and overlays with a web-like authoring model.
+- Dynamic mutation matters here because the module is not only for static documents: scripts can update attributes, styles, and content while still relying on the same layout and event system.
+- Input handling, dirty or reflow behavior, and render-command generation make the module practical as an actual interactive UI stack instead of a passive HTML parser.
+- This makes the module attractive for teams that want a document-style authoring workflow inside the engine, especially for tool panels or content-driven interfaces that benefit from familiar markup and selector concepts.
+- Style inheritance and selector resolution are especially valuable because document-driven interfaces only stay practical when broad presentation rules can change without rewriting every element.
+- Read it as the module that turns markup and CSS-like data into live engine UI. Rendering shows the result, but `html` owns how the document is parsed, laid out, mutated, and interacted with.
 
-This module primarily collaborates with `color`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -41,53 +33,65 @@ This module primarily collaborates with `color`. Its responsibility should stay 
 
 ### color.rs
 
-- Turns raw CSS color text into normalized RGBA values ready for render-side blending. `html/color` delivers the color implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Accepts hex codes, rgb/rgba, hsl/hsla forms, and named web colors used by authored styles. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Normalizes hue units and percentage channels so mixed input formats resolve to one stable shape. Public callable behavior is centered on `parse_css_color_rgba`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Applies alpha parsing with clamping semantics that keep transparent and opaque intent predictable. Runtime integration reaches sibling engine areas through crate modules `color`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/html/color.rs` owns CSS color parsing that turns author text into normalized RGBA values for HTML styling.
+- It handles hex, rgb or rgba, hsl or hsla, and named web colors while clamping channels into one stable output shape.
+- Hue normalization, percent handling, alpha parsing, and HSL-to-RGB conversion all live here as color-text semantics.
+- This file is the color-text boundary for HTML styles; it does not own DOM state, CSS rules, or selector matching.
+- Read it when supported color syntax, channel clamping, or normalized RGBA output rules for HTML styles need changes.
 
 ### document.rs
 
-- Orchestrates the full HTML document lifecycle from source text to interactive, drawable UI state. `html/document` delivers the document implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Builds and rebuilds element trees while preserving viewport constraints and accumulated stylesheet inputs. The file owns or coordinates data contracts including `HtmlDocumentOptions`, `HtmlDrawCommand`, `HtmlDocument`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Resolves selector-driven style cascades into computed per-element visual properties for later layout. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_options`, `supports`, `generation`, `root`, `element`, and 39 more stays attached to the local data model and invariants.
-- Runs block-style layout passes with dirty tracking so structural and style edits trigger fresh geometry. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Supports focused and hovered interaction state used by pointer routing, keyboard input, and text editing. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Exposes traversal and lookup paths for id, selector, ancestry, and document-order element queries. The file boundary separates html implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- `src/html/document.rs` owns the full HTML document lifecycle from source text to interactive and drawable UI state.
+- It defines `HtmlDocumentOptions`, `HtmlDrawCommand`, and `HtmlDocument`, keeping HTML, CSS, tree, and viewport together.
+- Parsing and CSS rebuild orchestration live here so reloads refresh rules, warnings, and element storage coherently.
+- Layout, dirty tracking, draw-command emission, and computed style lookup all live here as the document runtime boundary.
+- Focus, hover, pointer routing, key input, text entry, and hit testing are coordinated here for HTML controls.
+- Query, ancestry, text collection, id lookup, and document-order traversal helpers also live here for inspection.
+- This file is the owner of whole-document state; it does not parse selectors or CSS declarations internally from scratch.
+- Element insertion, subtree removal, attribute edits, and inline-style updates are routed here so mutations stay synced.
+- Read it when HTML rebuild flow, layout policy, interaction state, or draw output behavior for documents needs changes.
 
 ### element.rs
 
-- Defines the core DOM node shape used to store structure, attributes, text, and layout geometry. `html/element` delivers the element implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Keeps normalized attribute and inline-style maps in sync so style edits remain coherent with HTML state. The file owns or coordinates data contracts including `HtmlElementId`, `HtmlRect`, `HtmlElement`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides class token mutation paths that preserve deterministic ordering and membership checks. Public callable behavior is centered on `normalise_name`, while method-level behavior such as `contains`, `new`, `id`, `tag_name`, `parent`, `children`, and 14 more stays attached to the local data model and invariants.
-- Tracks parent-child linkage and removal flags to support stable traversal without index churn. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Carries axis-aligned rectangles for hit testing, layout output, and pointer targeting in UI flow. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- `src/html/element.rs` owns the core DOM element record used to store structure, attributes, text, and geometry.
+- It defines `HtmlElementId`, `HtmlRect`, and `HtmlElement`, including parent links, child ids, styles, and removal state.
+- Attribute normalization, class-token mutation, inline-style syncing, and hit-test rectangles all live in this file.
+- This file is the DOM-storage boundary for HTML; it does not parse source text or orchestrate whole-document layout.
+- Read it when element fields, attribute behavior, class handling, or geometry ownership for HTML nodes need changes.
+- Parent-child linkage and removal flags stay here so traversal can remain stable without reindexing the element store.
 
 ### mod.rs
 
-- High-level HTML module surface that composes parsing, styling, selection, and document orchestration. `html/mod` is the html module index, declaring `color`, `document`, `element`, `parser`, `selector`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
-- Re-exports stable document and element types used by runtime code interacting with HTML-driven UI. `src/html/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `color::parse_css_color_rgba`, `document::{HtmlDocument, HtmlDocumentOptions, HtmlDrawCommand}`, `element::{HtmlElement, HtmlElementId, HtmlRect}` centralized for the html subsystem.
+- `src/html/mod.rs` is the module index for HTML colors, DOM elements, parsing, selectors, styles, and documents.
+- It declares the files that own DOM storage, CSS parsing, selector matching, color parsing, and document orchestration.
+- This file reexports the main HTML types so callers can use document and element services without deep internal paths.
+- No DOM nodes, computed styles, or viewport state live here; it only defines visibility and subsystem boundaries.
+- Read this index first when tracing HTML behavior, because it shows where parsing, storage, and interaction split.
+- Changes here affect reachability and API shape, not selector semantics, layout rules, or text parsing behavior.
 
 ### parser.rs
 
-- Converts raw HTML text into document nodes with stable parent-child links and normalized attributes. `html/parser` delivers the text parsing and structured conversion for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Handles open, close, self-closing, void, and comment forms so authored markup maps to valid tree state. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Parses attribute key-value pairs with quote-aware scanning and consistent lowercase key normalization. Public callable behavior is centered on `parse_into`, `escape_text`, `escape_attribute`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Encodes and decodes common HTML entities to preserve readable text while keeping stored values canonical. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/html/parser.rs` owns HTML text parsing, entity handling, and tree construction into live element storage.
+- It handles open, close, self-closing, void, and comment tags while keeping parent-child links and text collapse stable.
+- Attribute parsing, quote-aware scanning, key normalization, and supported entity decoding all live here together.
+- This file is the text-to-DOM boundary for HTML content; it does not own CSS cascade, layout, or interactive state.
+- Read it when tag parsing, attribute decoding, or entity and text-normalization behavior for HTML input needs changes.
 
 ### selector.rs
 
-- Implements selector matching logic that maps CSS-like queries onto the live HTML element tree. `html/selector` delivers the selector implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Parses selector text into tag, id, class, and combinator fragments with deterministic chain ordering. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports descendant and direct-child relationships for ancestry-aware filtering semantics. Public callable behavior is centered on `matches_selector`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Walks parent links to evaluate multi-part selector chains against runtime element topology. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/html/selector.rs` owns CSS-like selector parsing and element matching against the live HTML tree.
+- It parses tag, id, class, descendant, and child relationships into ordered selector parts with stable chain semantics.
+- Parent-walk matching lives here so ancestry-aware filtering stays separate from DOM storage and CSS rule collection.
+- This file is the selector-evaluation boundary for HTML documents; it does not own parsed styles or element mutation.
+- Read it when selector syntax, combinator behavior, or tree-matching semantics for HTML queries need changes.
 
 ### style.rs
 
-- Parses stylesheet sources into ordered selector rules and normalized declaration maps for HTML layout. `html/style` delivers the style implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Validates supported properties while collecting non-fatal warnings for unknown or malformed inputs. The file owns or coordinates data contracts including `CssRule`, `CssParseResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Normalizes declaration keys and values so later cascade merges operate on stable property naming. Public callable behavior is centered on `parse_stylesheets`, `parse_declarations`, `parse_length`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Resolves pixel, percent, and unitless length text into float values against caller-provided bases. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/html/style.rs` owns stylesheet parsing, declaration normalization, and CSS length parsing for HTML layout.
+- It defines `CssRule` and `CssParseResult`, keeping selector rules, declaration maps, and parse warnings in one owner.
+- Supported-property filtering and normalized property names live here so later cascade merges operate on stable keys.
+- This file is the CSS-rule parsing boundary for HTML; it does not own selector matching, DOM nodes, or layout state.
+- Read it when CSS property support, declaration parsing, or px and percent length semantics need changes.
 
 
 

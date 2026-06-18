@@ -1,9 +1,11 @@
-//! Handles text asset rendering from bundled bitmap atlases to dynamic font rasterization. `render/font` delivers the font implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Packs glyph metrics, atlas placement, and UV offset maps under a unified interface. The file owns or coordinates data contracts including `GlyphInfo`, `Font`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Bundles Courier New regular and bold bitmap fonts at multiple point sizes for default text. Public callable behavior is centered on no named public items, while method-level behavior such as `builtin_slot_by_name`, `from_png_bytes`, `from_font_bytes`, `load_all_sizes`, `load_all_bold`, `nearest_size`, and 13 more stays attached to the local data model and invariants.
-//! Uses fontdue to dynamically rasterize custom TTF/OTF font bytes at runtime. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supports automatic word wrapping, alignment calculations, and pen advance metrics. External integration uses `fontdue`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Extends character mapping to support retro drawing symbols and C1 box characters. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Owns font assets, glyph metrics, and atlas layout used by text rendering across runtime UI and debug views.
+//! Supports bundled Courier New atlases at multiple sizes alongside dynamic fontdue rasterization from bytes.
+//! Maps characters to atlas cells, UV coordinates, advances, and fallback substitutions under one font contract.
+//! Provides nearest-size lookup so callers can request practical font points without managing raw atlas sets.
+//! Handles wrapping, alignment metrics, and pen movement needed by layout and draw code above this layer.
+//! Extends character mapping with retro symbols and box characters used by terminal or pixel-art interfaces.
+//! Acts as the text-asset boundary rather than the owner of final UI or renderer command emission.
+//! Open this file when glyph lookup, atlas data, wrapping, or dynamic font loading behaves incorrectly.
 
 /// Public re-exports of core font types for compatibility.
 pub use crate::font::GlyphMetrics as FontGlyphMetrics;

@@ -1,8 +1,9 @@
-//! Uniform-grid spatial hash for broad-phase collision and proximity search. `math/spatial_hash` delivers the spatial hash implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Buckets moving bounds into cells so query cost follows local density, not world size. The file owns or coordinates data contracts including `SpatialItem`, `SpatialHash`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports insert, remove, update, and deduplicated multi-shape queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `cell_size`, `item_count`, `insert`, `remove`, `update`, and 4 more stays attached to the local data model and invariants.
-//! Handles rectangle, circle, and segment probes with shared cell traversal logic. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Uses slab-style segment tests for fast box intersection checks. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns the uniform-grid spatial hash used to bucket AABBs for broad-phase neighbor and overlap searches.
+//! `SpatialItem` stores one registered box, while `SpatialHash` owns cell size, item storage, and bucket membership.
+//! Insert, remove, update, and clear stay here because bucket residency and cell-range mapping are local index rules.
+//! Rectangle, circle, and segment queries also belong here since they reuse one deduplicated bucket-traversal boundary.
+//! The slab-style segment-versus-AABB helper remains local because query correctness depends on the same grid owner.
+//! Open it when uniform-grid indexing changes; tree-based broad phase lives in `aabb_tree.rs` instead.
 
 use std::collections::{HashMap, HashSet};
 

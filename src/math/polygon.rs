@@ -1,8 +1,9 @@
-//! Polygon toolkit for clipping, hull building, triangulation, and winding cleanup. `math/polygon` delivers the polygon implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Handles simple and concave shapes with routines aimed at gameplay geometry. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides intersection and boolean-style operations for shape processing. Public callable behavior is centered on `triangulate`, `is_convex`, `polygon_clip`, `polygon_intersection`, `polygon_union`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Computes signed area and point-in-triangle tests for structural checks. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Normalizes vertex order so downstream consumers can rely on consistent winding. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns polygon operations such as triangulation, convexity checks, clipping, and simple boolean-style edits.
+//! Ear clipping stays here because triangulation depends on polygon winding, ear tests, and point-in-triangle checks.
+//! Intersection, union, and difference helpers also belong here since they manipulate polygon contours directly.
+//! Convex-hull and winding normalization remain local because downstream polygon operations rely on consistent ordering.
+//! This file is about polygon contour processing, not free-form segment queries or dedicated rectangle primitives.
+//! Open it when polygon-topology semantics change; generic geometry helpers live in sibling math modules.
 
 use crate::math::vec2::Vec2;
 

@@ -1,11 +1,13 @@
-//! This file provides the core layered tilemap data model used by simulation and rendering paths. `tilemap/tilemap` delivers the tilemap implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It stores per-cell tile IDs, per-layer state, tint metadata, and parallax movement factors. The file owns or coordinates data contracts including `TileLayer`, `SweepResult`, `TileMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It resolves global IDs through attached tilesets so tile ownership stays deterministic. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_tileset`, `get_tileset`, `get_tileset_count`, `add_layer`, `get_layer_count`, and 41 more stays attached to the local data model and invariants.
-//! It computes autotile neighborhood masks and substitution outputs for terrain continuity. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It performs swept collision checks against solid tiles for top-down and platform movement. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! It advances tile animation timelines from tileset frame data during runtime updates. The file boundary separates tilemap implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! It converts world and tile coordinates in both directions using map geometry settings. State changes, validation paths, and helper routines in `src/tilemap/tilemap.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! It emits culled draw commands for viewport-scoped visualization and debug rendering. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! Defines the core layered tilemap data model used by simulation, collision, generation, and rendering paths.
+//! Stores per-cell gids, per-layer visibility, tint, parallax, and geometry settings under one coherent runtime.
+//! Resolves global ids through attached tilesets so tile ownership and atlas lookup stay deterministic.
+//! Computes autotile neighborhood masks and substitution results that preserve terrain continuity across edits.
+//! Performs swept collision checks against solid tiles for movement systems that need stable tile-based blocking.
+//! Advances animated tile timelines from tileset frame data so visual state updates stay tied to map content.
+//! Converts between world and tile coordinates using the active map geometry instead of hardcoded projection math.
+//! Emits culled draw commands for viewport-scoped debug or runtime visualization without duplicating map scans.
+//! Acts as the operational boundary for layered tile storage rather than external import or large-map chunk policy.
+//! Open this file when layered map state, autotiling, collisions, or coordinate conversion behaves incorrectly.
 
 use super::mapgen::MapOrientation;
 use super::tilemap_collision::sweep_aabb_vs_aabb;

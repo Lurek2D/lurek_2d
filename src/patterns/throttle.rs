@@ -1,7 +1,8 @@
-//! Timing control primitives for gameplay actions that should be rate-limited or delayed instead of firing on every raw input or event edge.
-//! The file pairs throttle and debounce behaviors in one place because both solve cadence control while differing in whether they emit immediately or only after quiet time.
-//! Shared state around elapsed time, enable flags, fire counts, and reset flow makes these utilities practical for per-frame ticking and script-side inspection.
-//! Progress queries on throttle and trigger-cancel semantics on debounce cover the two common rhythms of spaced repetition and delayed confirmation.
+//! This file owns the throttle and debounce timers used to shape action cadence instead of firing on every input.
+//! `Throttle` tracks interval progress and fire counts, while `Debounce` tracks pending triggers and quiet-time waits.
+//! Update, reset, trigger, and cancel stay here because cadence semantics are local to these timing primitives.
+//! Progress queries also belong here since they expose internal timer state for scripts and frame-based controllers.
+//! Open it when rate-limiting behavior changes; funnels, rings, and event buses live in sibling pattern modules.
 
 /// Timer that fires at most once per `interval` seconds.
 #[derive(Debug, Clone)]

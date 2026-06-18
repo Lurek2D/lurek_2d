@@ -1,4 +1,6 @@
-//! Label-anchor helper for finding meaningful province centers from span geometry rather than relying on arbitrary bounding-box guesses.
+//! This file owns centroid calculation for province span data so label anchors come from occupied pixels.
+//! It accumulates weighted x and y sums per province id and ignores empty or zero-width spans during reduction.
+//! Open this file when province label anchor math changes; rendering and routing logic live in sibling owners.
 
 use std::collections::HashMap;
 

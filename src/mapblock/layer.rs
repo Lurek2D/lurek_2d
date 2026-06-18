@@ -1,7 +1,7 @@
-//! Per-level tile storage for multi-storey mapblock outputs. `mapblock/layer` delivers the layer implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Manages independent 2D block layers indexed by non-negative vertical levels. The file owns or coordinates data contracts including `BlockLayer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides bounds-aware tile access and mutation for placement operations. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `width`, `height`, `get_tile`, `get_tile_mut`, `set_tile_slot`, and 4 more stays attached to the local data model and invariants.
-//! Keeps slot counts and layer dimensions aligned with global config. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns one 2D block layer, storing width, height, slot count, and row-major `MapTile` cells.
+//! `BlockLayer` exposes bounds-checked tile reads, mutable access, slot writes, fill, clear, and slot-count inspection.
+//! Layer-wide mutation lives here because tile-grid indexing and reset behavior belong below `MapBlock` orchestration.
+//! Open it when per-layer tile storage changes; block footprints, placement logic, and export passes live in siblings.
 
 use super::maptile::MapTile;
 

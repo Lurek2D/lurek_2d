@@ -1,9 +1,12 @@
-//! This file defines the stable identifier layer for engine logs so messages can be grouped, filtered, and recognized across versions.
-//! Codes are organized by subsystem domain rather than by source file, which makes operational analysis easier than raw string logs alone.
-//! The constant catalog gives every log site a compact symbolic handle that remains readable in terminals and machine parsers.
-//! Log level overrides also live here because message identity and message visibility are tightly related runtime concerns.
-//! The supporting macro turns those codes into consistent formatted output without forcing every call site to rebuild the same pattern.
-//! Stability is a design goal of this file. The file boundary separates runtime implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns the stable log identifier catalog used across runtime and subsystem logging sites.
+//! It defines one symbolic code set grouped by domain so operators can filter and recognize repeated conditions.
+//! The `log_msg!` macro formats ids through the message catalog, keeping call sites compact and output consistent.
+//! Log-level overrides also live here because message identity and runtime log visibility are operationally linked.
+//! Large constant sections are intentional: they are the compatibility surface that tools and humans both rely on.
+//! Subsystem ranges cover startup, GPU, filesystem, animation, ECS, save, networking, and many later extensions.
+//! Open this file when adding or changing a stable runtime log code, not when editing the prose catalog text.
+//! Use `messages.rs` for human-readable strings and this file for durable ids, macro wiring, and level helpers.
+//! Open it when logging contracts change; runtime modules across the repo depend on these shared identifiers.
 
 use std::sync::atomic::{AtomicU8, Ordering};
 static LOG_LEVEL_OVERRIDE: AtomicU8 = AtomicU8::new(0);

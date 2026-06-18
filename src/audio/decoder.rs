@@ -1,7 +1,7 @@
-//! Implements full-file PCM decode for supported audio formats into a seekable in-memory sample buffer. `audio/decoder` delivers the decoder implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides random-access cursor movement for rewind, seek, and chunked iteration workflows. The file owns or coordinates data contracts including `Decoder`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Exposes duration and playback-position metrics derived from decoded sample metadata. Public callable behavior is centered on no named public items, while method-level behavior such as `from_file`, `decode`, `get_duration`, `seek`, `tell`, `is_seekable`, and 1 more stays attached to the local data model and invariants.
-//! Serves as the decode bridge between file assets and streaming or buffered playback paths. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `Decoder`, the full-file decode bridge from audio assets to seekable PCM chunk iteration.
+//! It decodes supported files into interleaved i16 PCM, tracks cursor position, and returns fixed-size sample chunks.
+//! Duration, seek, tell, and rewind helpers keep file-backed playback metadata local to one decode owner.
+//! Open this file when import semantics change; runtime sinks and in-memory f32 buffers live in sibling modules.
 
 use crate::log_msg;
 use crate::runtime::log_messages::AD01_AUDIO_DECODED;

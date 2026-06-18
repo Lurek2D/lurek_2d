@@ -1,8 +1,9 @@
-//! Shared blackboard storage for gameplay and AI systems that need a common language for state without hard-coding direct dependencies between producers and consumers.
-//! The file models values as a compact tagged set of common script-facing types and couples each write to revision tracking so readers can cheaply detect what changed and when.
-//! Parent-linked lookup lets a local board inherit broader context while still overriding specific keys, which makes squad, faction, and entity state layering practical.
-//! Typed getters, defaults, clears, and revision queries turn the store into more than a raw map by giving behavior code a disciplined way to read uncertain state.
-//! Functionally this is the coordination memory for systems that want shared facts, incremental change detection, and hierarchical fallback instead of tightly wired state plumbing.
+//! This file owns the shared blackboard store used by gameplay and AI code to exchange typed facts by string keys.
+//! `BlackboardValue` models bool, number, text, and nil entries so behavior code can share compact script-facing data.
+//! `Blackboard` tracks revisions per write, local key storage, and optional parent fallback for inherited context layers.
+//! Typed setters and getters stay here because coercion rules, defaults, and lookup order are part of board semantics.
+//! Clear, snapshot, key listing, and parent access also belong here since they expose the board as coordination memory.
+//! Open it when shared state semantics change; trees, FSMs, and transport code live in other owning modules.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{BB01, BB02, BB03};

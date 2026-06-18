@@ -1,7 +1,8 @@
-//! Provides ZIP-backed virtual mount behavior that maps normalized virtual paths to archive entries. `filesystem/zip_mount` delivers the zip mount implementation for the filesystem subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Builds an index for fast repeated lookups while reading files on demand without full extraction. The file owns or coordinates data contracts including `ZipMount`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Enforces traversal-safe path handling before archive access to maintain sandbox guarantees. Public callable behavior is centered on `normalise`, `is_traversal`, while method-level behavior such as `new`, `read_file`, `contains`, `list_files` stays attached to the local data model and invariants.
-//! Supports listing and existence checks over mounted archive content through a unified interface. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/filesystem/zip_mount.rs` mounts a ZIP archive as a virtual read-only path prefix inside the filesystem layer.
+//! It owns archive indexing, normalized virtual-path lookup, traversal rejection, and on-demand entry reads from ZIP data.
+//! Contains and list operations live here so archive-backed mounts can behave like directory sources to higher layers.
+//! This file is the archive overlay boundary; it does not manage save writes, async queues, or mutable stream handles.
+//! Read it when virtual archive paths, ZIP lookup behavior, or sandbox checks for mounted content need to change.
 
 use std::collections::HashMap;
 use std::io::Read;

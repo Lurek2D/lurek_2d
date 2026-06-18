@@ -1,8 +1,9 @@
-//! Defines raw binary structures representing GPU vertex layouts. `render/gpu_types` delivers the gpu types implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Packs memory layouts tightly using bytemuck to ensure copy compliance. The file owns or coordinates data contracts including `ColorVertex`, `TexVertex`, `LightVertex`, `ShadowEdgeGpu`, `ShadowComputeParams`, and 7 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Groups properties like position, texture coordinates, color tints, and normals. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Encapsulates command batching metadata for coalescing draw dispatches. Runtime integration reaches sibling engine areas through crate modules `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Tracks instance transformation data for hardware instancing buffers. External integration uses `bytemuck`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Defines the bytemuck-safe raw GPU structs used for vertices, uniforms, shadow edges, and draw batching.
+//! Packs positions, colors, uv data, normals, and instance transforms into layouts copied directly to buffers.
+//! Keeps binary layout contracts centralized so renderer, shader, and upload code agree on memory shape.
+//! Stores batching metadata that later passes use to coalesce draw dispatches with compatible GPU state.
+//! Acts as the binary-ABI boundary between Rust-side render state and WGSL-visible buffer contents.
+//! Open this file when GPU struct layout, bytemuck compatibility, or instance data packing is incorrect.
 
 use crate::render::gpu_pipeline::GeometryKind;
 use crate::render::renderer::BlendMode;

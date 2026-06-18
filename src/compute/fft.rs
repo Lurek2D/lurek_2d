@@ -1,7 +1,8 @@
-//! Implements radix-2 fast Fourier transform and inverse transform over power-of-two signal lengths. `compute/fft` delivers the fft implementation for the compute subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports forward real-to-complex conversion with automatic padding for nonconforming input sizes. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides inverse reconstruction paths from complex spectra back to real-domain samples. Public callable behavior is centered on `next_power_of_two`, `fft`, `ifft`, `fft_magnitude`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Exposes magnitude extraction helpers for frequency-domain inspection and feature analysis. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/compute/fft.rs` owns radix-2 Fourier transforms, inverse reconstruction, and magnitude extraction for 1D signals.
+//! It stores the internal complex scalar helpers, padding rules, bit-reversal logic, and in-place butterfly execution path.
+//! Automatic power-of-two padding and inverse scaling live here so FFT semantics stay deterministic across uneven inputs.
+//! This file is the spectral-transform boundary for compute; it does not own dense arrays, analytics, or spatial kernels.
+//! Read it when FFT sizing, inverse behavior, spectrum magnitude rules, or complex transform internals need changes.
 
 use std::f64::consts::PI;
 

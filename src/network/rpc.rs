@@ -1,7 +1,8 @@
-//! Remote Procedure Call (RPC) manager for networked function invocation. `network/rpc` delivers the rpc implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides request/response patterns, fire-and-forget notifications, and broadcasts. The file owns or coordinates data contracts including `LNetworkRpc`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! over network connections. Manages pending calls with timeout, automatic request ID. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
-//! generation, and response callback dispatch. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the Rust userdata wrapper around the Lua RPC manager used for remote function invocation.
+//! `LNetworkRpc` stores a registry key and forwards register, call, notify, broadcast, and timeout methods.
+//! Registry-table retrieval stays here because the Rust-to-Lua lifetime boundary is this file's core contract.
+//! It is a binding layer for RPC scripting, not the socket transport, host ownership, or auth runtime.
+//! Open it when Lua-facing RPC controls change; transport workers and wire values live in sibling modules.
 
 use mlua::prelude::*;
 

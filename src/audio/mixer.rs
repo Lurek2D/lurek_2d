@@ -1,11 +1,14 @@
-//! Implements the central audio mixer registry that owns sources, buses, streams, and listener state. `audio/mixer` delivers the mixer implementation for the audio subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Manages output stream lifecycle with graceful fallback behavior when device initialization is unavailable. The file owns or coordinates data contracts including `SourceType`, `PlayState`, `QueueableSource`, `Mixer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Controls source playback lifecycle including load, play, pause, stop, seek, clone, and release flows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `queue_buffer`, `free_buffer_count`, `stream_handle`, `load_source`, `play`, and 79 more stays attached to the local data model and invariants.
-//! Applies per-source parameters for gain, pitch, panning, looping, filters, and transition shaping. Runtime integration reaches sibling engine areas through crate modules `audio`, `dsp`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Integrates bus routing so grouped sources share higher-level volume, pitch, pause, and effect behavior. External integration uses `rodio`, `slotmap`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Supports queueable streaming sources with bounded buffer slots and free-space tracking semantics. The file boundary separates audio implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! Maintains spatial-audio state for listener and source transforms used in attenuation and motion cues. State changes, validation paths, and helper routines in `src/audio/mixer.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! Applies distance-model and doppler controls for runtime spatialization consistency. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! This file owns `Mixer`, `QueueableSource`, `SourceType`, and `PlayState`, the central runtime audio registry.
+//! It stores the rodio stream handle, loaded source entries, master volume, named buses, listener state, and meters.
+//! Per-source entries keep playback state, cached bytes, sink handles, gain, pitch, looping, filters, and spatial data.
+//! Load and play helpers create source entries, build sinks, cache static bytes, and apply bus-aware playback settings.
+//! Transport helpers cover stop, pause, resume, seek, clone, release, loop, tell, and active-source counting.
+//! Routing helpers create buses, assign them to sources, read bus metrics, and propagate shared volume or pitch intent.
+//! Filter and transition helpers manage low-pass, high-pass, fade-in, crossfade, random pitch, and stereo width state.
+//! Spatial helpers own listener and source transforms, doppler scale, distance model, and pan updates from positions.
+//! Queueable-source helpers manage push-buffer streaming slots, free-buffer accounting, and queueable lifecycle control.
+//! The mixer also owns pool creation and peak metering, making it the integration point for most runtime audio control.
+//! Open this file when playback orchestration changes; decode, pools, buses, and pure timing models live in siblings.
 
 use crate::audio::bus::Bus;
 use crate::dsp::{DynamicEffectSource, EffectParams};

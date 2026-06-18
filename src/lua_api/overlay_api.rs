@@ -1,4 +1,4 @@
-//! Lua bindings for `lurek.overlay` controllers, transitions, and screen-space telemetry. `src/lua_api/overlay_api.rs` registers the `lurek.overlay` Lua boundary for overlay behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.overlay` Lua API for overlay controllers, transitions, telemetry, and validated options.
 
 use super::SharedState;
 use crate::overlay::{Overlay, ScreenTransition, TransitionKind, WeatherType};

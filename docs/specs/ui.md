@@ -20,88 +20,31 @@
 
 ## Summary
 
-- The ui module provides a retained-mode interface system for HUDs, menus, overlays, and tool screens.
-- Dialogs now act as full popup windows with modal or non-modal behavior, footer slots, semantic actions, default/cancel shortcuts, and close-policy controls.
-- Popup shells support shared drag and resize behavior with viewport clamping, so dialogs and tool windows stay aligned in runtime behavior and rendering defaults.
-- It centralizes widget ownership in a context-managed arena with stable handles.
-- Stable IDs make per-frame mutation safe for large interactive trees.
-- The context owns lifecycle, layout, input routing, and event queue behavior.
-- Root scaling controls support DPI-aware rendering across resolutions.
-- Layout is recursive and deterministic from root to leaf bounds.
-- Container primitives include vertical, horizontal, grid, split, and dock arrangements.
-- Scrollable containers support overflow while preserving parent layout contracts.
-- Window containers support dragging and resizing interactions.
-- Nine-patch support preserves border fidelity under scale changes.
-- Widget base state captures visibility, interaction flags, and style links.
-- Shared state semantics keep hover, focus, and press behavior consistent.
-- Focus traversal supports sequential and geometric navigation modes.
-- Keyboard-driven UI is supported without mouse-only assumptions.
-- Input events are normalized into frame-coherent dispatch.
-- Event queues allow deterministic script-side consumption order.
-- Drag-and-drop lifecycle is explicit from begin to drop/cancel.
-- Parent-child safety checks prevent cyclic widget relationships.
-- Core controls include button, label, input, checkbox, radio, slider, and spinbox.
-- Additional controls include list, combo, progress, separator, and spacer variants.
-- Extended widgets include dialogs, menus, tree views, toolbars, and badges.
-- Notification/toast systems provide transient user feedback primitives.
-- Charts are owned by `lurek.charts`; `lurek.ui` should not expose chart constructors or chart-specific rendering wrappers.
-- Telemetry and analytics data can still be presented inside UI layouts by embedding textures or images produced by other modules.
-- DataFrame integration in this module stays focused on table/grid presentation and layout-driven UI flows.
-- Theming maps widget type/state to style records and semantic tokens.
-- Style records include colors, borders, shadows, spacing, and typography knobs.
-- Fallback style resolution keeps partial themes functional.
-- Theme tokenization supports global skin changes with low churn.
-- Rendering converts widget tree state into shared draw command primitives.
-- Headless software rendering supports screenshot and regression test flows.
-- Headless output allows CI verification without a window backend.
-- Text measurement is integrated with active font context and alignment rules.
-- Global and per-widget font overrides are both supported.
-- Animation channels include alpha, scale, rotation, and color transitions.
-- Animation updates are integrated in context progression each frame.
-- Data bindings synchronize widget values with script-managed keys.
-- Binding utilities reduce repetitive synchronization code.
-- Layout loading supports TOML-defined UI structures.
-- Lua table definitions can also be loaded into runtime widget trees.
-- Data-driven layouts speed iteration without Rust-side recompilation.
-- Render signatures and cache controls reduce unnecessary full recomputation.
-- Widget count and cache APIs support runtime diagnostics.
-- Clear/reset APIs support controlled tree rebuild scenarios.
-- The module supports both lightweight HUDs and complex editor-like screens.
-- It is designed for predictable behavior under heavy UI mutation.
-- Ownership boundaries separate widget semantics from gameplay domain logic.
-- Integration with runtime and render remains explicit and acyclic.
-- Geometry and color helpers are consumed through math/color modules.
-- The module does not own business logic; it owns presentation and interaction contracts.
-- Deterministic traversal order is a core invariant.
-- Stable widget handle lifetime is a core invariant.
-- Layout consistency across scale changes is a core invariant.
-- Style fallback correctness is a core invariant.
-- Event ordering guarantees are required for reproducible interaction behavior.
-- The API surface is broad but internally structured by focused submodules.
-- Context, controls, containers, theme, and render layers remain separated.
-- This separation keeps maintenance practical as feature count grows.
-- The module supports accessibility-oriented keyboard navigation paths.
-- It supports tool-facing UI and in-game UI with one runtime model.
-- It enables rapid prototyping while staying production-capable.
-- Headless rendering makes visual QA automatable in test pipelines.
-- Theme tokens make large-scale visual changes manageable.
-- Drag/drop support enables inventory and editor workflows.
-- Chart widgets make telemetry and debugging views first-class.
-- The retained model reduces imperative draw boilerplate in scripts.
-- It improves readability and maintainability of complex interface flows.
-- The module is a key user-facing layer in Feature Systems.
-- It bridges gameplay state and player interaction with deterministic contracts.
-- It is designed for reliability under both runtime and tooling workloads.
-- Overall, ui is the canonical interface subsystem in Lurek2D.
-- It closes the full loop of definition, layout, input, animation, and rendering.
-- It provides the structure needed to scale UI complexity without architectural drift.
-- The subsystem remains testable, observable, and extensible by design.
-- This balance of flexibility and control is its primary architectural value.
-- It is intended to remain the long-term UI foundation across project types.
-- The module's contracts prioritize stability as screen complexity grows.
-- It gives teams one consistent UI language for game and tool surfaces.
+- The `ui` module is the engine's retained-interface system for users who want menus, HUDs, editors, overlays, and tool panels to behave like one persistent application layer instead of a loose pile of draw calls and ad hoc click tests.
+- Its core promise is continuity across frames. The UI context remembers widget identity, parent-child structure, focus, hover, active state, capture, bindings, transitions, and pending events, so a screen can evolve over time without losing the state that makes it feel interactive and stable.
+- This retained model matters because large interfaces are rarely redrawn from pure stateless logic. Text inputs need cursors and selection, lists need scroll position, windows need placement, trees need expansion state, and complex panels need to survive temporary data changes without resetting user intent.
+- Container widgets define the structural grammar of the module. Panels, windows, stacks, docks, split regions, scroll containers, frames, and nine-slice shells let projects assemble larger interface layouts from composable blocks rather than hand-managing every rectangle.
+- Basic controls sit on top of that structure as first-class runtime widgets. Buttons, labels, checkboxes, sliders, text boxes, radio groups, combo boxes, lists, tabs, steppers, toggles, and status displays all share the same identity, event, and style model.
+- The `extras` surface pushes the module past ordinary menus into more tool-like workflows by covering dialogs, menus, tree views, inspectors, status bars, toasts, overlays, and richer dashboard-oriented pieces that are common in internal tools and game editors.
+- Declarative layout loading from TOML is one of the most important user-facing capabilities because it means interface structure can be authored as content. Teams can describe screens in data, instantiate them into live widgets, and still use the same event, style, and binding behavior as hand-written UI.
+- Styling is not a thin afterthought. Themes, classes, semantic colors, spacing, typography, borders, fills, corner treatment, widget states, and transition-friendly variants all live inside one coherent theme system so several screens can share a recognizable visual language.
+- Layout calculation is another central responsibility. The module resolves requested size, parent constraints, alignment, padding, spacing, scrolling, overflow, clipping, stacking order, and viewport-aware placement into concrete geometry so widgets can be reasoned about structurally instead of geometrically line by line.
+- Scroll regions, nested containers, resizable panels, and dock-like arrangements are important examples of why layout belongs here: they require persistent bookkeeping and cross-widget coordination that would become brittle if each feature implemented its own layout rules.
+- Input routing is part of the same authority. Mouse, keyboard, controller-like activation, focus traversal, drag, drop, text entry, pointer capture, and event bubbling all flow through the UI context so the entire screen obeys one interaction model.
+- Binding support turns UI from a decorative layer into a practical application surface. Widgets can synchronize with script-visible values, settings models, editor records, or runtime debug state without every screen inventing its own plumbing for reads, writes, and synchronization.
+- That makes the module useful for options menus, save slots, inventory panels, runtime profilers, asset inspectors, conversation UIs, mission journals, or modding tools where visible controls need reliable two-way data flow.
+- Transition support matters because retained UI should still feel alive. Alpha fades, motion offsets, highlight ramps, show-hide behavior, and state-based animation can advance inside the same widget runtime instead of being bolted on as unrelated per-screen tween code.
+- Rendering support keeps the module viable in both normal gameplay and tooling contexts. The same resolved widget tree can be drawn into the live frame, directed to overlays, or exported through headless paths for screenshots, docs, regression tests, and proof artifacts.
+- The module also serves as a coordination layer between neighboring systems. `input` contributes raw control state, `render` turns resolved draw commands into pixels, `font` and `image` provide assets, and game systems provide data, but `ui` owns how those pieces become one coherent interface runtime.
+- Accessibility-like concerns such as focus order, keyboard navigation, readable state transitions, and predictable interaction semantics also belong naturally here because a retained UI system is only useful if complex screens remain operable and legible under several input styles.
+- That retained model is especially valuable for editor-style surfaces, where selection, docking, inspectors, and scroll state must survive incremental content changes.
+- It also gives testing and evidence workflows a stable target, because headless captures can reflect the same widget resolution and theme rules as the live runtime.
+- Data-driven layouts and retained state work well together here: authored screen structure can evolve without discarding the persistent interaction model behind it.
+- This is what lets the module cover both simple menus and large tool workspaces without switching to a different UI paradigm halfway through a project.
+- The module is therefore not only a widget library but also a screen-architecture system. It gives projects a stable way to build interfaces that can grow from a few controls to full editors, dashboards, and data-heavy tool surfaces without changing mental models.
+- For wiki readers, the practical boundary is clear: if a feature is about widget identity, composition, style, layout, focus, event dispatch, data binding, or retained state over time, it belongs to `ui` even when another system supplies the data being shown.
+- Read `ui` as the engine's main authority for structured interactive surfaces. It is the module that makes screens persistent, composable, themeable, testable, and interoperable, whether the result is a simple pause menu or a full internal editor workspace.
 
-This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -115,95 +58,119 @@ This module primarily collaborates with `color`, `dataframe`, `image`, `math`, `
 
 ### containers.rs
 
-- This file provides retained-mode UI containers that structure complex screen hierarchies. `ui/containers` delivers the containers implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It defines panels, layouts, windows, splits, and docks as composable spatial building blocks. The file owns or coordinates data contracts including `Panel`, `LayoutDirection`, `Layout`, `ScrollPanel`, `NineSlice`, and 4 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It drives vertical, horizontal, and grid arrangement with stable spacing and alignment rules. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `parse_str`, `as_str`, `perform_layout`, `max_scroll`, `clamp_scroll`, and 1 more stays attached to the local data model and invariants.
-- It supplies scrollable viewports for overflowed content without breaking parent layout flow. Runtime integration reaches sibling engine areas through crate modules `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It supports nine-slice framing so scalable borders keep visual intent across resolutions. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Defines retained UI container widgets that organize child hierarchies before controls or visuals are drawn.
+- Owns panels, windows, split layouts, scroll regions, docks, and nine-slice shells used across the UI tree.
+- Applies vertical, horizontal, and grid arrangement rules so parent widgets can size and place children predictably.
+- Keeps scroll overflow handling local to container state instead of leaking viewport math into leaf controls.
+- Provides scalable frame metadata through nine-slice records so borders survive resize without visual distortion.
+- Acts as the structural boundary between raw widget nodes and higher-level layout orchestration in the context.
+- Open this file when hierarchy composition, docking, scroll behavior, or container sizing rules look incorrect.
 
 ### context.rs
 
-- This file provides the central retained-mode UI context that owns widget state and lifecycle. `ui/context` delivers the context implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It stores all widget variants in one indexed arena so references stay compact and stable. The file owns or coordinates data contracts including `UiBindingValue`, `GuiEvent`, `WidgetKind`, `GuiContext`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It runs recursive layout to compute absolute rectangles from parent-relative placement data. Public callable behavior is centered on no named public items, while method-level behavior such as `base`, `base_mut`, `children`, `children_mut`, `new`, `clear`, and 79 more stays attached to the local data model and invariants.
-- It manages focus traversal and keyboard navigation for consistent interaction behavior. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It routes mouse and key events through controlled dispatch paths tied to active widgets. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It drives drag-and-drop with safety checks that prevent invalid parent-child cycles. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- It advances alpha and position transitions so UI motion remains smooth and deterministic. State changes, validation paths, and helper routines in `src/ui/context.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- It maintains data bindings that synchronize widget values with script-owned state keys. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
-- It tracks render signatures to detect dirtiness without expensive full-tree comparisons. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
-- It queues interface events so Lua can consume interactions in a frame-coherent order. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
+- Owns the central retained UI context that stores widget arenas, events, bindings, and per-frame lifecycle state.
+- Maintains stable widget identity through indexed storage so tree references survive updates and scripted mutation.
+- Runs recursive layout passes that turn parent-relative placement data into absolute rectangles for render and hit tests.
+- Routes mouse and keyboard input through explicit dispatch paths tied to focus, hover, capture, and active widgets.
+- Tracks drag, drop, and resize interactions while preventing invalid parent-child cycles or unsafe reparenting.
+- Queues UI events in frame order so Lua and gameplay systems observe interactions as a coherent transaction stream.
+- Advances alpha, position, and other transition state so motion and visibility changes remain deterministic.
+- Stores binding values that synchronize widget state with script-visible keys without leaking control internals.
+- Computes dirtiness and render signatures so unchanged subtrees avoid unnecessary rebuild and traversal work.
+- Owns dialog geometry helpers that keep body, footer, and chrome rectangles aligned with the active viewport.
+- Exposes children, base-state, and widget-lookup helpers used by layout, render, and control code paths.
+- Integrates math, runtime, and logging concerns only where they support safe UI orchestration and diagnostics.
+- Acts as the operational boundary between widget definitions and the live tree that receives layout and input.
+- Open this file when focus, event routing, bindings, drag logic, or retained-tree lifecycle behavior breaks.
+- It is the first owner to inspect for UI state bugs because most widget interaction semantics converge here.
 
 ### controls.rs
 
-- This file provides the concrete interactive controls used by the retained-mode UI layer. `ui/controls` delivers the controls implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It defines buttons, text inputs, toggles, selectors, and numeric widgets with shared behavior. The file owns or coordinates data contracts including `Button`, `Label`, `TextInput`, `CheckBox`, `Slider`, and 8 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It embeds common widget base state so style, layout, and interaction remain consistent. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_text`, `set_max_length`, `insert_text`, `backspace`, `move_cursor_left`, and 16 more stays attached to the local data model and invariants.
-- It validates and clamps editable values to enforce reliable control invariants. Runtime integration reaches sibling engine areas through crate modules `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It normalizes selection behavior when list-like data mutates at runtime. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It keeps control construction explicit so type identity is always unambiguous. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Defines the concrete interactive controls that sit on top of shared widget state inside the retained UI system.
+- Owns buttons, labels, text inputs, checkboxes, sliders, radios, combos, lists, tabs, and spin-style widgets.
+- Keeps control construction explicit so type identity, defaults, and base widget integration stay unambiguous.
+- Implements text editing helpers that clamp cursor motion, insertion, deletion, and maximum-length constraints.
+- Normalizes selection and numeric-value handling so dynamic option lists do not violate control invariants.
+- Provides the control-layer boundary between generic widget nodes and user-facing interactive primitives.
+- Feeds consistent layout, style, and interaction semantics into the context and renderer without extra adapters.
+- Open this file when editable values, selection rules, or control defaults behave differently than expected.
 
 ### extras.rs
 
-- This file provides the extended widget set that goes beyond baseline UI control primitives. `ui/extras` delivers the extras implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It defines overlays, trees, menus, toolbars, dialogs, grids, and feedback-oriented elements. The file owns or coordinates data contracts including `Toast`, `Separator`, `Spacer`, `TreeNode`, `TreeView`, and 18 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It supports rich interaction patterns such as accordions, tooltips, and modal UI workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `progress`, `is_expired`, `update`, `add_node`, `toggle_node`, and 30 more stays attached to the local data model and invariants.
-- It includes color and data-oriented widgets for editor-like and analytics-heavy interfaces. Runtime integration reaches sibling engine areas through crate modules `dataframe`, `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It models hierarchical trees and menu structures in forms suitable for retained updates. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It supplies status and notification components that communicate system state to players. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- It keeps advanced widgets aligned with shared base style and layout semantics. State changes, validation paths, and helper routines in `src/ui/extras.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- It provides custom widget shells for script-driven rendering and bespoke interactions. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+- Defines the extended widget set that covers dialogs, menus, trees, overlays, toasts, tables, and status views.
+- Owns richer retained components used by editor-like, data-heavy, or feedback-oriented screens beyond core controls.
+- Models hierarchical trees and menu structures in forms that remain safe for incremental retained updates.
+- Provides toast and status style widgets that surface runtime feedback without custom one-off widget plumbing.
+- Supplies dialog, accordion, toolbar, and custom widget shells for script-driven or advanced interaction patterns.
+- Includes data and color oriented helpers that support dashboards, inspectors, and analytics-heavy interfaces.
+- Keeps advanced widgets aligned with shared base semantics so layout, focus, and render code can stay generic.
+- Acts as the boundary for non-baseline widgets that still need first-class participation in the retained tree.
+- Open this file when complex composite widgets work incorrectly even though simpler controls still behave well.
+- Read this owner for tree, menu, dialog, or notification issues before changing the central context logic.
 
 ### layout_loader.rs
 
-- This file provides declarative UI loading from TOML definitions into live widget trees. `ui/layout_loader` delivers the layout loader implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It maps textual widget kinds onto concrete context constructors with consistent defaults. The file owns or coordinates data contracts including `DialogActionDef`, `WidgetDef`, `LayoutDef`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It applies generic and type-specific properties so authored layouts become runtime-ready. Public callable behavior is centered on `load_layout_def`, `load_layout_toml`, `render_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- It supports recursive child structures that mirror retained parent-child composition. Runtime integration reaches sibling engine areas through crate modules `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It offers headless image rendering for snapshot checks and offline layout verification. External integration uses `serde`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It enables fast iteration on UI structure without hardcoding full trees in Lua scripts. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Loads declarative TOML layout definitions into live widget trees built on the retained UI context.
+- Maps textual widget kinds onto concrete constructors so authored layouts resolve to the same runtime widgets.
+- Applies shared base properties and per-type fields to convert authored structure into usable live controls.
+- Supports recursive child definitions that mirror the same parent-child composition used by code-built screens.
+- Provides headless render-to-image helpers so declarative layouts can be snapshotted and verified offline.
+- Keeps serde and parsing concerns local instead of spreading authored-layout decoding through widget modules.
+- Acts as the data-driven boundary between TOML layout content and concrete UI tree construction.
+- Open this file when authored layout files load with wrong structure, defaults, or snapshot rendering output.
 
 ### mod.rs
 
-- This module delivers the full retained UI toolkit used by gameplay and tooling layers. `ui/mod` is the ui module index, declaring `containers`, `context`, `controls`, `extras`, `render`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
-- It combines context, widgets, containers, rendering, and theming into one coherent surface. `src/ui/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `containers::{ DockPanel, GUIWindow, Layout, LayoutDirection, NinePatch, NineSlice, Panel, ScrollPanel, SplitPanel, }`, `context::{GuiContext, GuiEvent, UiBindingValue}`, `controls::{ Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider, SpinBox, Switch, TabBar, TextInput, }`, `extras::{ Accordion, AccordionSection, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget, MenuBar, MenuItem, Separator, Spacer, StatusBar, TableColumn, Toast, Toolbar, ToolbarButton, TooltipPanel, TreeNode, TreeView, }`, and 3 more centralized for the ui subsystem.
-- It keeps interface construction flexible through code-first and data-driven layout paths. The file documents how ui submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- `ui/mod` is the ui module index, declaring `containers`, `context`, `controls`, `extras`, `render`, and 3 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/ui/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `containers::{ DockPanel, GUIWindow, Layout, LayoutDirection, NinePatch, NineSlice, Panel, ScrollPanel, SplitPanel, }`, `context::{GuiContext, GuiEvent, UiBindingValue}`, `controls::{ Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider, SpinBox, Switch, TabBar, TextInput, }`, `extras::{ Accordion, AccordionSection, Badge, ColorPicker, CustomWidget, Dialog, GUITable, ImageWidget, MenuBar, MenuItem, Separator, Spacer, StatusBar, TableColumn, Toast, Toolbar, ToolbarButton, TooltipPanel, TreeNode, TreeView, }`, and 3 more centralized for the ui subsystem.
-- The file documents how ui submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- Exports the retained UI subsystem surface that combines widgets, containers, context, render, and theming.
+- Acts as the index for UI ownership so callers can see where tree state, controls, layout, and draw logic live.
+- Centralizes module visibility and re-exports instead of storing live widget state or performing UI updates.
+- Connects code-built and data-driven UI flows by exposing the owners used by both runtime screens and tools.
+- Open this file first when adding or removing a UI owner or when public UI re-export policy needs to change.
+- Use it to map a UI concern to its concrete Rust file before editing control, context, or render behavior.
 
 ### render.rs
 
-- This file provides UI render emission for GPU commands and headless pixel raster outputs. `ui/render` delivers the rendering adapter and draw-command integration for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It draws the full retained widget catalog with consistent visual behavior across states. The file owns or coordinates data contracts including `TextLine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It resolves theme style data per widget and applies alpha-aware color composition. Public callable behavior is centered on `push_scissor`, `pop_scissor`, while method-level behavior such as `build_render_commands_with_fonts`, `build_render_commands`, `generate_render_commands`, `draw_to_image` stays attached to the local data model and invariants.
-- It emits shared primitives for shadows, fills, borders, gradients, and highlights. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `runtime`, `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It handles control-specific visuals such as sliders, checks, radios, combos, and switches. External integration uses `slotmap`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It renders hierarchical content like trees and menus while preserving structural readability. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- It supports color-picker internals with hue-space conversion used during visual generation. State changes, validation paths, and helper routines in `src/ui/render.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- It threads context, font, and output carriers through one deterministic render traversal. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
-- It merges generic and type-specific child sources so nested widgets render in correct order. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
-- It measures and aligns text with active font context to keep typography placement stable. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
+- Turns retained UI state into render commands and headless pixel output for screenshots, docs, and tests.
+- Resolves theme style data per widget state and applies alpha-aware fills, borders, shadows, and highlights.
+- Emits control-specific visuals for sliders, checkboxes, radios, combos, switches, and progress indicators.
+- Measures, lays out, and draws text with active font context so labels and values stay aligned across widgets.
+- Renders tree, menu, and other hierarchical content while preserving ordering and structural readability.
+- Supports CPU image output for offline verification so UI visuals can be checked without a live GPU frame.
+- Includes hue conversion and color-picker helpers needed by visual controls inside the retained widget catalog.
+- Merges generic children and type-specific children into one deterministic traversal for stable render ordering.
+- Threads context, fonts, scissor state, and output carriers through a single render pass boundary.
+- Keeps widget drawing policy local so the central context does not need to understand visual implementation details.
+- Acts as the presentation boundary between retained widget state and the renderer command language.
+- Exposes draw-to-image behavior that tooling and tests rely on when comparing visual regressions frame to frame.
+- Integrates only the math and render helpers required to translate widget rectangles into concrete draw output.
+- Open this file when a widget exists and lays out correctly but still draws with the wrong visual behavior.
+- It is the right owner for UI paint bugs because control semantics stay elsewhere and visuals converge here.
 
 ### theme.rs
 
-- This file provides the theming system that maps widget type and state to visual style data. `ui/theme` delivers the theme implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It stores colors, typography, borders, shadows, gradients, and alignment in reusable records. The file owns or coordinates data contracts including `ThemeToken`, `WidgetStyle`, `Theme`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It resolves requested styles with controlled fallback so partial themes remain functional. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_style`, `set_class_style`, `get_style`, `get_style_with_class`, `get_token`, and 2 more stays attached to the local data model and invariants.
-- It ships practical defaults that cover standard widgets without requiring custom setup. Runtime integration reaches sibling engine areas through crate modules `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It keeps style records clonable for cheap per-screen forks and variation experiments. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It supports semantic theme tokens so shared visual meanings stay consistent across widgets. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- It integrates directly with render-time style resolution inside the UI drawing pipeline. State changes, validation paths, and helper routines in `src/ui/theme.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- It includes debug-oriented raster helpers for quick visual verification of style states. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+- Defines the UI theming system that maps widget kind and state onto colors, borders, spacing, and text style.
+- Stores widget styles, class styles, and semantic tokens so one theme can drive many screens consistently.
+- Resolves requested style records through fallback lookup so incomplete themes still render usable interfaces.
+- Keeps style records cheap to clone, which makes per-screen theme forks practical without deep mutation costs.
+- Ships default dark theme values that cover standard widgets without forcing custom setup before first use.
+- Supports semantic tokens so shared meanings like accent, error, or muted visuals stay stable across controls.
+- Feeds render-time style resolution directly, making this the owner for visual defaults rather than draw code.
+- Includes image helpers used to visualize theme states when verifying widget styling outside the live runtime.
+- Acts as the styling boundary between retained widget state and the colors or metrics chosen for presentation.
+- Open this file when visuals drift by state or class even though layout and control logic still behave correctly.
+- Read this owner before renderer changes when the problem looks like bad token lookup or missing theme fallback.
 
 ### widget.rs
 
-- This file provides core widget primitives that define shared UI node state and semantics. `ui/widget` delivers the widget implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It models layout metrics, style linkage, identity, and interaction flags per widget instance. The file owns or coordinates data contracts including `TextVAlign`, `WidgetState`, `MouseFilter`, `WidgetType`, `EasingFunction`, and 3 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It represents the tree unit that context, layout, and renderer pipelines operate on. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `as_str`, `default_size`, `eval`, `alpha`, `position`, and 7 more stays attached to the local data model and invariants.
-- It supports state transitions that drive hover, focus, press, and animated visual behavior. Runtime integration reaches sibling engine areas through crate modules `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It keeps parent-child composition explicit so traversal and ownership rules remain stable. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It anchors type and state enums used across all concrete control and container variants. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Defines the core widget primitives that carry identity, layout, state flags, and transition semantics.
+- Owns shared enums and records for widget type, mouse filtering, easing, alignment, and common widget fields.
+- Represents the tree unit that context, layout, and renderer code all consume, mutate, and traverse.
+- Keeps parent-child composition explicit so ownership and traversal remain stable across retained updates.
+- Stores transition-facing values like alpha, position, and scale that drive hover, press, and animated visuals.
+- Provides parsing and helper accessors that normalize widget metadata before higher layers inspect it.
+- Acts as the contract boundary between concrete control variants and the shared state every widget carries.
+- Open this file when widget identity, state flags, or transition values fail before control-specific logic runs.
+- It is the base owner for UI node semantics, so upstream layout and render bugs often start with this shape.
 
 
 

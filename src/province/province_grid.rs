@@ -1,9 +1,12 @@
-//! Province-grid extraction engine for converting color-coded map imagery into discrete province ids and the geometric structures that later systems depend on.
-//! The file begins at pixel level, assigning ownership by unique source colors and preserving reverse lookup between ids and their originating map colors.
-//! From that raw ownership grid it derives adjacency relationships, which are the topological backbone for province routing and border semantics.
-//! Span extraction turns irregular filled regions into horizontal runs that are much cheaper to render and analyze than full per-pixel scans.
-//! Border segment generation and polygon tracing add shape-aware outputs suitable for outlines, hit testing, and geometry-oriented tooling.
-//! Simplification keeps traced contours readable and compact instead of mirroring every staircase artifact from the raster source.
+//! Extracts province ownership from color images and derives spans, adjacencies, borders, and polygon outlines.
+//! Owns ProvinceGrid cell storage, color-to-id mappings, adjacency tracking, and cached geometric shape products.
+//! Provides constructors from images and files, direct cell lookup, province counts, and color recovery helpers.
+//! Builds province spans and border segments that later feed registries, caches, render generation, and labels.
+//! Traces polygon loops from directed border edges, then simplifies them for downstream consumers that need shapes.
+//! This file is the algorithmic owner for converting painted province maps into structured topology and geometry.
+//! Neighboring changes usually involve import image assumptions, border indexing, registry hydration, and caching.
+//! Open this owner when province extraction correctness, polygon quality, or adjacency detection needs adjustment.
+//! It is the right file for shape cache invariants because no sibling module owns the raw pixel-to-province pass.
 
 use crate::image::ImageData;
 use std::collections::{HashMap, HashSet};

@@ -1,4 +1,4 @@
-//! `src/lua_api/callback_registry.rs` registers the `lurek.callback_registry` Lua boundary for callback_registry behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Defines the Lua callback registry owner that stores, invokes, inspects, and clears registry-backed callbacks.
 
 use mlua::prelude::*;
 use std::collections::HashMap;

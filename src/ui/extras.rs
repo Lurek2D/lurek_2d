@@ -1,11 +1,13 @@
-//! This file provides the extended widget set that goes beyond baseline UI control primitives. `ui/extras` delivers the extras implementation for the ui subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It defines overlays, trees, menus, toolbars, dialogs, grids, and feedback-oriented elements. The file owns or coordinates data contracts including `Toast`, `Separator`, `Spacer`, `TreeNode`, `TreeView`, and 18 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It supports rich interaction patterns such as accordions, tooltips, and modal UI workflows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `progress`, `is_expired`, `update`, `add_node`, `toggle_node`, and 30 more stays attached to the local data model and invariants.
-//! It includes color and data-oriented widgets for editor-like and analytics-heavy interfaces. Runtime integration reaches sibling engine areas through crate modules `dataframe`, `ui`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It models hierarchical trees and menu structures in forms suitable for retained updates. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! It supplies status and notification components that communicate system state to players. The file boundary separates ui implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! It keeps advanced widgets aligned with shared base style and layout semantics. State changes, validation paths, and helper routines in `src/ui/extras.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! It provides custom widget shells for script-driven rendering and bespoke interactions. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! Defines the extended widget set that covers dialogs, menus, trees, overlays, toasts, tables, and status views.
+//! Owns richer retained components used by editor-like, data-heavy, or feedback-oriented screens beyond core controls.
+//! Models hierarchical trees and menu structures in forms that remain safe for incremental retained updates.
+//! Provides toast and status style widgets that surface runtime feedback without custom one-off widget plumbing.
+//! Supplies dialog, accordion, toolbar, and custom widget shells for script-driven or advanced interaction patterns.
+//! Includes data and color oriented helpers that support dashboards, inspectors, and analytics-heavy interfaces.
+//! Keeps advanced widgets aligned with shared base semantics so layout, focus, and render code can stay generic.
+//! Acts as the boundary for non-baseline widgets that still need first-class participation in the retained tree.
+//! Open this file when complex composite widgets work incorrectly even though simpler controls still behave well.
+//! Read this owner for tree, menu, dialog, or notification issues before changing the central context logic.
 
 use crate::dataframe::frame::{ColRef, DataFrame};
 use crate::ui::widget::{WidgetBase, WidgetType};

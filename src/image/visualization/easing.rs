@@ -1,8 +1,9 @@
-//! Renders easing and curve diagnostics as image charts for motion-tuning and teaching workflows. `image/visualization/easing` delivers the easing implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Produces labeled curve galleries arranged in grids for side-by-side behavior comparison. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Draws overlay traces that contrast multiple easing functions on shared coordinate axes. Public callable behavior is centered on `easing_gallery_to_image`, `easing_comparison_to_image`, `bezier_curves_to_image`, `draw_bezier_advanced_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Includes Bezier-focused views with control-point and segment cues for shape inspection. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supplies advanced Bezier visualization for derivative and edit-oriented debugging scenarios. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Renders easing and Bezier diagnostics into charts so motion curves can be inspected without live playback.
+//! Builds multi-panel galleries and shared comparison graphs for side-by-side evaluation of easing behavior.
+//! Plots arbitrary curve callbacks onto raster images, making this the owner for sampled chart generation.
+//! Visualizes Bezier control points, segments, derivatives, and edits using the math Bezier runtime directly.
+//! Supports advanced screenshots that show interpolation angle and length for curve-editing regression checks.
+//! Open this file when motion-curve images are wrong or when new charting views are needed for animation work.
 
 use crate::image::ImageData;
 /// Render a gallery of easing curves in a grid into an image.

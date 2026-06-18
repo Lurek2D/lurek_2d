@@ -1,6 +1,7 @@
-//! 2D circle geometry primitive with center point and non-negative radius clamped on construction for collision and containment tests.
-//! Implements point-in-circle, circle-circle intersection, and AABB containment queries using distance comparisons for gameplay geometry.
-//! Computes area and perimeter values for numerical analysis enabling physics-based interactions and spatial reasoning in game logic.
+//! This file owns the 2D circle primitive used for containment, overlap tests, and simple numeric shape properties.
+//! `Circle` stores center and radius, while area, perimeter, center, and AABB helpers expose the owned geometry.
+//! Point and circle intersection checks stay here because distance-based circle semantics belong with the primitive.
+//! Open it when circle-shape behavior changes; rectangle, polygon, and geometry helper code live in siblings.
 
 use super::vec2::Vec2;
 

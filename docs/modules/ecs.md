@@ -260,6 +260,8 @@ end
 
 #### `LRelationshipManager:defineType`
 
+Defines a named relationship type with ordered level labels and an optional default level for new pairs.
+
 ```lua
 LRelationshipManager:defineType(name, levels, default_level)
 ```
@@ -268,9 +270,9 @@ LRelationshipManager:defineType(name, levels, default_level)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `name` | any |  |
-| `levels` | any |  |
-| `default_level?` | any |  |
+| `name` | string | Relationship type name used for later `setLevel` and `getLevel` calls. |
+| `levels` | string[] | Array table of allowed level labels in their semantic order. |
+| `default_level?` | string | Optional fallback level assigned when a pair has no explicit level for this type. |
 
 **Example**
 
@@ -286,6 +288,8 @@ end
 
 #### `LRelationshipManager:getLevel`
 
+Returns the effective named level for one relationship type on a pair, falling back to the type default when no explicit level exists.
+
 ```lua
 LRelationshipManager:getLevel(a, b, type_name)
 ```
@@ -294,9 +298,15 @@ LRelationshipManager:getLevel(a, b, type_name)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | any |  |
-| `b` | any |  |
-| `type_name` | any |  |
+| `a` | number | Source entity id for the relationship pair. |
+| `b` | number | Target entity id for the relationship pair. |
+| `type_name` | string | Registered relationship type name to query. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| string? | Stored level label or the type default when available, otherwise `nil` if the type is unknown. |
 
 **Example**
 
@@ -438,6 +448,8 @@ end
 
 #### `LRelationshipManager:setLevel`
 
+Assigns a named level for one relationship type between two entity ids and reports whether the type-level pair was accepted.
+
 ```lua
 LRelationshipManager:setLevel(a, b, type_name, level)
 ```
@@ -446,10 +458,16 @@ LRelationshipManager:setLevel(a, b, type_name, level)
 
 | Name | Type | Description |
 |------|------|-------------|
-| `a` | any |  |
-| `b` | any |  |
-| `type_name` | any |  |
-| `level` | any |  |
+| `a` | number | Source entity id for the relationship pair. |
+| `b` | number | Target entity id for the relationship pair. |
+| `type_name` | string | Registered relationship type name to mutate. |
+| `level` | string | Level label to store for the given type on this entity pair. |
+
+**Returns**
+
+| Type | Description |
+|------|-------------|
+| boolean | True when the type exists and the supplied level is valid for that type. |
 
 **Example**
 

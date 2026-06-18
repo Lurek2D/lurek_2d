@@ -1,7 +1,8 @@
-//! Encodes frame sequences of `ImageData` into animated GIF files for evidence and export flows. `image/animated_gif` delivers the animated gif implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Validates frame dimensions and timing up front so Lua-facing callers get deterministic failures. The file owns or coordinates data contracts including `AnimatedGifRepeat`, `AnimatedGifOptions`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Uses per-frame quantization from RGBA buffers to keep the API simple for software-rendered captures. Public callable behavior is centered on `encode_gif`, `save_gif`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! `image/animated_gif` delivers the animated gif implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! Encodes a sequence of RGBA frames into animated GIF output and owns the save path used by image exports.
+//! Defines repeat and timing options that validate frame delays and playback speed before bytes are emitted.
+//! Builds per-frame palette data from ImageData snapshots so tooling can export simple preview animations.
+//! Handles quantization and encoder setup in one owner instead of spreading GIF policy across render code.
+//! Open this file when looping policy, frame timing, or GIF export failures affect generated image sequences.
 
 use crate::image::ImageData;
 use ::gif::{Encoder, Frame, Repeat};

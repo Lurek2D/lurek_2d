@@ -1,7 +1,8 @@
-//! This file provides the validation orchestrator that runs rule sets over project content. `validator/engine` delivers the engine implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It composes built-in and custom rules into one execution plan shaped by config. The file owns or coordinates data contracts including `ValidationEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It dispatches checks across files and aggregates findings into structured reports. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_asset_rule`, `add_import_rule`, `add_api_rule`, `add_pattern_rule`, `load_toml_rules`, and 5 more stays attached to the local data model and invariants.
-//! It serves as the main engine entry used by runtime tooling and validation commands. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `ValidationEngine`, the orchestrator that assembles rule sets and runs them over Lua files.
+//! It stores root path, execution config, and registered rules, then delegates walking and parallel work to siblings.
+//! Builder-style helpers install built-in asset, import, API, Lua-pattern, and TOML-defined rule sources.
+//! Run methods cover whole-root scans, explicit file lists, and single-file checks while returning uniform reports.
+//! Open this file when validator orchestration changes; rules, reports, and file walking belong to siblings.
 
 use super::api_check::ApiComplianceRule;
 use super::asset_check::AssetExistenceRule;

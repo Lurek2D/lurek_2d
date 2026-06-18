@@ -17,17 +17,14 @@
 
 ## Summary
 
-- The serialize module gives users one multi-format surface for decoding, encoding, and validation.
-- It supports JSON, TOML, CSV, XML, INI, and MessagePack through a shared intermediate value model.
-- Automatic format detection helps ingest unknown text payloads in tool-style workflows.
-- Lua table bridging converts between script data and typed serialized structures.
-- Mixed Lua tables that combine array slots with named fields are preserved as maps instead of silently dropping named entries.
-- Codec adapters isolate format-specific quirks so callers can use consistent APIs.
-- Schema validation enforces structure and constraints before data reaches gameplay logic.
-- Default-merge helpers fill missing fields from schema definitions.
-- Path-specific validation errors make malformed data easier to diagnose quickly.
+- The `serialize` module is the format-translation surface for users who want several external data formats to map into one shared runtime value model.
+- JSON, TOML, CSV, XML, INI, MessagePack, schemas, and codec entrypoints all matter here because a project often needs to move content between several representations without rewriting conversion logic each time.
+- The module is useful both for loading or saving data and for validating whether data actually fits the expected structure after translation.
+- Its shared intermediate tree is the key user-facing idea: several formats can participate in the same workflows because they resolve into one common serial representation.
+- That shared representation is what makes cross-format tooling practical. A validator, exporter, or transform step can reason about one normalized value model instead of reimplementing logic for every source format separately.
+- That shared model keeps cross-format validation and conversion workflows in one place.
+- Read `serialize` as the normalization layer for structured data. Other modules decide what the data means, but `serialize` decides how that data is parsed, validated, and emitted across supported formats.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -37,72 +34,81 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### codec.rs
 
-- This file provides the format-agnostic front door for serialization work across text and binary payloads. `serialize/codec` delivers the codec implementation for the serialize subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It decides which codec to use, how to route decoding and encoding, and when content can be recognized automatically. The file owns or coordinates data contracts including `SerialFormat`, `DecodeOptions`, `EncodeOptions`, `EncodedValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Text and binary paths are separated here so callers can use one interface without collapsing all format quirks into one parser.
-- The file is therefore the dispatcher that turns unknown serialized input into a chosen translation path. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the format-agnostic serialization front door for text and binary payloads across supported formats.
+- It defines `SerialFormat`, encode or decode options, and the `EncodedValue` result used by top-level callers.
+- Format detection inspects text content, while explicit routing sends MessagePack through byte decoding only.
+- Encode and decode helpers centralize dispatch so callers do not need per-format branching spread across modules.
+- Open this file when top-level serialization routing changes; concrete format implementations live in siblings.
 
 ### csv.rs
 
-- This file translates between tabular CSV text and the engine's generic serial value tree. `serialize/csv` delivers the csv implementation for the serialize subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It supports row-oriented data that may be keyed by headers or treated as plain positional sequences. The file owns or coordinates data contracts including `CsvOptions`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Delimiters, quoting behavior, and output shape are handled here so spreadsheet-style data stays usable without special caller code.
-- Encoding and decoding live together because CSV round-trips depend on consistent assumptions about row structure. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns CSV translation between delimited rows and the shared `SerialValue` tree used by the engine.
+- It defines `CsvOptions`, parses header-aware or positional records, and serializes row sequences back to text.
+- Header mode maps columns into ordered maps, while headerless mode keeps each record as a plain value sequence.
+- Encoding enforces compatible row shapes so CSV assumptions stay aligned between read and write operations.
+- Open this file when tabular serialization rules change; generic dispatch and value-tree ownership live nearby.
 
 ### ini.rs
 
-- This file handles INI-style configuration text for projects and tools that still prefer simple sectioned key-value documents.
-- It converts section headers, assignments, and comments into a nested serial representation without pretending INI is richer than it is.
-- Insertion order is preserved so output remains readable and familiar when round-tripped back toward human-edited config files.
+- This file owns INI decoding for simple sectioned key-value configuration that fits the shared serial tree.
+- It parses comments, section headers, and `key=value` assignments into ordered root and nested section maps.
+- Top-level keys remain at the root, while named sections become child maps under their section identifiers.
+- Open this file when INI parsing rules change; generic codec dispatch and other formats live in sibling files.
 
 ### json.rs
 
-- This file provides JSON translation to and from the engine's intermediate serial value tree. `serialize/json` delivers the json implementation for the serialize subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It preserves the normal JSON shape of scalars, arrays, and objects while exposing that data through one engine-wide representation.
-- Pretty and compact output choices live here because readable config and compact payloads are both common JSON use cases.
+- This file owns JSON translation between `serde_json::Value` and the engine's shared `SerialValue` tree.
+- It parses input text, converts scalars, arrays, and objects, and emits compact or pretty JSON output on demand.
+- Ordered maps and JSON-specific success logging live here so structure and instrumentation stay format-local.
+- Open this file when JSON mapping rules change; codec dispatch and Lua bridging remain in sibling modules.
 
 ### lua_table.rs
 
-- This file bridges the dynamic world of Lua tables and values into the typed intermediate tree used by the serialization subsystem.
-- It decides when Lua data should be treated as sequences, maps, scalars, or explicit null-like values for downstream codecs.
-- Array-like tables are recognized structurally so callers do not have to tag them manually before encoding. Public callable behavior is centered on `to_lua`, `from_lua`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- The reverse path also lives here, turning decoded serial values back into Lua-friendly tables and primitives. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `SerialValue` plus Lua conversion helpers that bridge dynamic Lua values into serializable Rust data.
+- It decides whether Lua tables become sequences or maps, while preserving scalars, nulls, and string-keyed content.
+- `to_lua` rebuilds Lua primitives and tables from decoded values so serialized data can round-trip through scripts.
+- Array detection is structural and automatic, which keeps callers from tagging plain Lua tables before encoding.
+- Open this file when shared value semantics change; concrete text and binary codecs live in sibling modules.
 
 ### mod.rs
 
-- This module provides the engine's multi-format serialization stack around one shared intermediate value representation. `serialize/mod` is the serialize module index, declaring `codec`, `csv`, `ini`, `json`, `lua_table`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-- It covers encoding, decoding, schema validation, defaults, and Lua bridging across text and binary data formats. `src/serialize/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `codec::{ decode_bytes, decode_text, detect_format, encode, DecodeOptions, EncodeOptions, EncodedValue, SerialFormat, }`, `csv::{from_csv, to_csv, CsvOptions}`, `ini::from_ini`, `json::{from_json, to_json}`, and 5 more centralized for the serialize subsystem.
-- At the highest level this is the data-translation foundation used when engine data must cross file, tool, or script boundaries.
-- `serialize/mod` is the serialize module index, declaring `codec`, `csv`, `ini`, `json`, `lua_table`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/serialize/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `codec::{ decode_bytes, decode_text, detect_format, encode, DecodeOptions, EncodeOptions, EncodedValue, SerialFormat, }`, `csv::{from_csv, to_csv, CsvOptions}`, `ini::from_ini`, `json::{from_json, to_json}`, and 5 more centralized for the serialize subsystem.
-- The file documents how serialize submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- This module re-exports the serialization subsystem surface for codecs, formats, Lua bridging, and schema helpers.
+- It is the navigation map for shared value representation, text or binary translation, and validation boundaries.
+- `codec.rs` dispatches format-aware encode and decode entry points, while `lua_table.rs` owns the shared value tree.
+- `json.rs`, `toml.rs`, `csv.rs`, `xml.rs`, `ini.rs`, and `msgpack.rs` each implement one concrete format path.
+- `schema.rs` applies defaults and validates decoded trees before those values flow into runtime or tooling code.
+- Change this file when the public serialization symbol map moves; change siblings when format behavior changes.
 
 ### msgpack.rs
 
-- This file handles the compact binary MessagePack path for serial values when text readability is less important than size and speed.
-- It translates through an internal bridge representation that fits the expectations of the underlying MessagePack tooling.
-- Buffer sizing and conversion details are handled here so callers can treat MessagePack as just another supported format.
-- Compatibility with JSON-like value shapes is preserved where practical to keep cross-format workflows predictable. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns MessagePack translation for compact binary serialization of the shared `SerialValue` tree.
+- It converts through a local `MsgValue` bridge that matches serde-based MessagePack encoding and decoding needs.
+- Size estimation, trailing-byte checks, and JSON-value helpers keep binary workflows predictable for callers.
+- Logging lives here so MessagePack-specific encode and decode activity stays next to the binary conversion path.
+- Open this file when MessagePack mapping changes; generic dispatch and shared value ownership live nearby.
 
 ### schema.rs
 
-- This file validates serialized data against declarative structural expectations before that data reaches game logic. `serialize/schema` delivers the schema implementation for the serialize subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Schemas describe required fields, allowed types, numeric and string constraints, nested shapes, and array item rules. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Missing values can also be filled from schema defaults so partially specified input can be upgraded into a complete shape.
-- Validation failures are reported with paths that point at the exact part of the value tree that broke the contract. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Logging support is integrated because schema checks often matter during content ingestion, save loading, and config debugging.
+- This file owns schema validation and default application for decoded `SerialValue` trees before runtime use.
+- Validation checks required fields, declared types, numeric limits, string lengths, nested fields, and array items.
+- Errors include dotted paths so content authors can find the exact subtree that violates a schema contract.
+- Default application walks the same tree shape, filling missing fields or items from schema-provided fallback values.
+- Schema pass and fail logging also lives here because validation is a common content-ingestion debugging boundary.
+- Open this file when structural validation rules change; format parsers and Lua conversion live in sibling files.
 
 ### toml.rs
 
-- This file translates TOML documents into the engine's intermediate serial tree and back again. `serialize/toml` delivers the toml implementation for the serialize subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It exists mainly for human-edited structured configuration where readability and stable nesting matter more than raw compactness.
-- Conversion details between the external TOML value model and the engine's generic serial model are localized here. Public callable behavior is centered on `parse_toml`, `from_toml`, `encode_toml`, `to_toml`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns TOML translation between human-edited configuration text and the shared `SerialValue` tree.
+- It parses raw TOML, converts value trees in both directions, and encodes table-shaped output back to text.
+- Datetime values are normalized into strings, while nulls are rejected because TOML has no native null value.
+- Open this file when TOML mapping rules change; generic codec dispatch and other formats live in sibling files.
 
 ### xml.rs
 
-- This file handles XML decoding for hierarchical data sources that arrive as elements, attributes, text nodes, and repeated children.
-- It recursively reshapes document structure into the engine's generic serial tree without requiring callers to speak DOM directly.
-- Attribute and child-content handling are kept together here so engine importers see one consistent XML-to-value mapping.
+- This file owns XML decoding into the shared `SerialValue` tree for element, attribute, text, and child structure.
+- It reshapes each node into a map containing tag name, optional attrs, optional text, and optional child sequences.
+- The mapping keeps XML hierarchy explicit so importers can inspect one predictable tree instead of raw DOM APIs.
+- Open this file when XML-to-value rules change; generic dispatch and non-XML codecs live in sibling modules.
 
 
 

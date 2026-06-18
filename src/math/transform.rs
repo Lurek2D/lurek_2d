@@ -1,7 +1,8 @@
-//! Mutable 2D affine transform that accumulates position, rotation, scale, and shear. `math/transform` delivers the transform implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Wraps a 3x3 matrix so chained edits stay compact and composable. The file owns or coordinates data contracts including `Transform`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Exposes forward and inverse point mapping for world and local space conversion. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_components`, `translate`, `rotate`, `scale`, `shear`, and 7 more stays attached to the local data model and invariants.
-//! Includes SRT decomposition for systems that need readable transform components. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the mutable 2D affine transform wrapper that accumulates translation, rotation, scale, and shear.
+//! `Transform` stores one `Mat3` and exposes chainable editing, inversion, point mapping, and component construction.
+//! SRT-plus-origin assembly stays here because transform composition order is a policy of this higher-level wrapper.
+//! Inverse mapping and decomposition also belong here since world-to-local conversion uses the owned matrix directly.
+//! Open it when transform-editing semantics change; raw matrix algebra lives in `mat3.rs`, not in this file.
 
 use crate::math::mat3::Mat3;
 use crate::math::vec2::Vec2;

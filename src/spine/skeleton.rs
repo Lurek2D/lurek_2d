@@ -1,9 +1,10 @@
-//! This file implements the main skeleton container that holds the full moving rig, visual attachment points, animations, and runtime playback state.
-//! Bones and slots are managed together here because final pose evaluation must understand both transform hierarchy and attachment ownership.
-//! Animation playback advances in this file, including looping, clamping, blending, and application of sampled values onto the rig.
-//! Constraint solving and skin switching are also coordinated here so procedural adjustments and visual variants act on the same live structure.
-//! World transforms are recomputed in hierarchy order, which keeps every downstream query grounded in one authoritative pose.
-//! Debug drawing support is included because skeletal systems are much easier to tune when their invisible structure can be inspected directly.
+//! This file owns `Skeleton`, the main runtime container for bones, slots, animations, IK constraints, skins, and playback.
+//! It stores root transform, pose arrays, registered clips, skin mappings, and current animation state in one owner.
+//! Helpers add or find bones and slots, switch skins, start or stop animations, and expose attachment or pose queries.
+//! Animation updates sample timelines here, then IK solving and hierarchy traversal recompute the final world-space pose.
+//! World transform updates require parent-before-child order, making this file the owner of pose propagation invariants.
+//! Debug image helpers live here so rig tuning can inspect the same live structure that gameplay and rendering use.
+//! Open this file when skeletal runtime semantics change; importer parsing and draw-command translation live in siblings.
 
 use super::bone::Bone;
 use super::ik::IKConstraint;

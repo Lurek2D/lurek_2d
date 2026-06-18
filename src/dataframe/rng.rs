@@ -1,6 +1,6 @@
-//! Implements lightweight xorshift64 random generation used by dataframe-local sampling utilities. `dataframe/rng` delivers the rng implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Produces deterministic integer, float, and index outputs from a compact 64-bit state. The file owns or coordinates data contracts including `Xorshift64`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Remaps zero seed values to prevent degenerate all-zero generator behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `next_u64`, `next_f64`, `next_usize` stays attached to the local data model and invariants.
+//! This file owns the local xorshift64 generator used by dataframe sampling and synthetic row generation helpers.
+//! `Xorshift64` stores one 64-bit state word and exposes deterministic integer, float, and bounded index draws.
+//! Open it when reproducible dataframe randomness changes; filtering, SQL, and typed storage live in sibling files.
 
 /// Hold xorshift64 state used by dataframe-local random helpers.
 pub(crate) struct Xorshift64 {

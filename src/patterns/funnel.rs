@@ -1,7 +1,7 @@
-//! Buffered funnel for gathering small tagged numeric events into controlled flush windows instead of reacting to every sample the instant it arrives.
-//! The file couples entry accumulation with elapsed-time tracking and count thresholds so callers can model batch release, burst shaping, or windowed aggregation with simple state.
-//! Immediate windows, manual discard, and explicit readiness checks make the behavior usable for both deterministic simulation ticks and script-driven control loops.
-//! Functionally this delivers a compact batching primitive for telemetry, combo capture, score staging, and other flows where grouping matters more than raw per-event immediacy.
+//! This file owns the buffered funnel primitive used to batch tagged numeric events into timed or counted flushes.
+//! `FunnelEntry` stores ids, tags, and values, while `Funnel` tracks pending entries, timers, and flush statistics.
+//! Push, update, flush, and discard stay here because batching windows and max-entry thresholds define funnel semantics.
+//! Open it when buffered release behavior changes; throttles, rings, and queues live in sibling pattern modules.
 
 /// A single accumulated value pushed into a `Funnel`.
 #[derive(Debug, Clone)]

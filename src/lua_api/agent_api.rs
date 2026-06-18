@@ -1,4 +1,4 @@
-//! `src/lua_api/agent_api.rs` registers the `lurek.agent` Lua boundary for agent behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.agent` Lua API for agent orchestration, batch workflows, and engine-backed agent userdata.
 
 use self::runtime::{
     lua_to_json, AgentBatchTask, LuaAISystemRuntime, LuaAgentManagerRuntime, LuaAgentRuntime,

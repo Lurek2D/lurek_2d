@@ -18,46 +18,25 @@
 
 ## Summary
 
-- This module gives users a unified navigation toolkit across grid, hex, isometric, navmesh, and graph-based worlds.
-- Standard grid pathfinding supports A*, Dijkstra, BFS, and related movement-query workflows.
-- JPS support accelerates open-grid shortest-path searches.
-- Bidirectional A* support improves long-distance query efficiency in many layouts.
-- Hierarchical pathfinding support scales large-map queries through abstracted chunk-level routing.
-- NavGrid APIs support walkability, cost weights, and variable-unit-size navigation constraints.
-- Path smoothing helpers reduce noisy waypoint chains through line-of-sight checks.
-- Partial-path and budgeted search modes support frame-time-safe fallback behavior.
-- Async path pool support offloads heavy queries to worker threads.
-- Versioned async path queries support stale-result suppression for replanning-heavy agents.
-- Prioritized async path queries let urgent requests jump ahead of background work.
-- Streamed partial async path events support frame-friendly fallback movement while long searches continue.
-- Cancellation support helps avoid wasting work on stale async requests.
-- Flow-field support enables crowd movement toward goals with per-cell direction guidance.
-- Goal-map support enables multi-source distance and flee-style gradient queries.
-- Influence-map support enables tactical pressure fields with stamp, blur, and decay behaviors.
-- Graph-nav support enables non-grid routing for province and abstract node networks.
-- Province/path graph helpers support strategic map movement and region-level planning.
-- Hex and isometric grid variants support non-rectangular movement models.
-- Navmesh support enables polygonal traversal for open-area navigation.
-- Range-map utilities support movement radius and reachable-area previews.
-- Unit-pathfinder wrappers support per-agent cached path behavior.
-- Debug rendering support visualizes paths, fields, and influence layers for tuning.
-- Image export debug paths support snapshot-based validation workflows.
-- The module is useful for AI locomotion, tactical planning, and player movement assistance.
-- It centralizes navigation behaviors that are often fragmented across game systems.
-- For users, this means consistent path semantics across very different map representations.
-- It reduces bespoke path code and improves runtime observability.
-- The practical result is more reliable movement behavior under scale.
-- It also supports iteration speed through rich debugging surfaces.
-- Overall, users get a comprehensive pathfinding and spatial-reasoning runtime.
-- This makes advanced navigation systems feasible without custom engine rewrites.
-- It bridges low-level search algorithms and gameplay-facing movement decisions.
-- That bridge is critical in projects combining tactical AI, large worlds, and real-time constraints.
-- Users can start simple and scale toward hierarchical and async strategies as complexity grows.
-- The module keeps those strategies within one coherent API family.
-- It supports both direct movement and higher-level strategic navigation logic.
-- In short, it is the engine's navigation backbone for diverse world topologies.
+- The `pathfind` module is the engine's navigation and movement-analysis surface for users who need more than one hard-coded shortest-path helper.
+- It supports several spatial models at once, including weighted grids, hex and isometric spaces, province-style graphs, influence fields, and other routing abstractions, so different worlds can still share one navigation family.
+- A* is only part of the surface. The module also covers bidirectional search, Jump Point Search, hierarchical routing, graph travel, flow fields, influence maps, and reachability-style analysis under one subsystem.
+- This breadth matters because movement questions differ dramatically across features. Some systems need one precise route, others need shared guidance, tactical pressure, move ranges, or background jobs for expensive searches.
+- That makes the module useful not only for point-to-point travel but also for squad guidance, threat-aware movement, logistics overlays, and strategic map reasoning where spatial scoring matters.
+- Async search support is especially important because pathfinding is often one of the first systems that must leave the main loop without losing an engine-owned, script-facing API.
+- Shared abstractions for grids and graph-like inputs reduce adapter overhead and make it easier for a project to compare algorithms without rewriting all navigation data plumbing.
+- Range and reachability helpers are as important as final path extraction. Many systems need to know where a unit could move, what lies inside a budget, or which cells are effectively controlled before they need an explicit route.
+- Influence and shared-field helpers broaden the module into tactical analysis. Movement is not only about reaching a goal; it is also about preferring safe zones, avoiding danger, or flowing several actors in roughly the same direction.
+- Because several world models can feed the same pathfinding family, projects can evolve from simple grid routing to richer graph or field-based navigation without abandoning the same conceptual subsystem.
+- That flexibility is one of the main reasons the module exists as a family rather than as one algorithm wrapper: different gameplay scales can still share one navigation vocabulary.
+- Cost rules are part of that vocabulary too. Terrain penalties, danger zones, ownership boundaries, and temporary blockers can all be expressed as navigation data instead of being bolted on after a path is returned.
+- This helps projects keep route quality and tactical intent aligned, because the same system can explain not only where an actor can go, but why one route is preferred over another.
+- The module is also valuable when several agents share the same traversability model but need different routing policies over it.
+- That makes `pathfind` a planning layer, not only a shortest-path helper.
+- Debug and visualization helpers matter because navigation bugs usually come from topology, weights, or blocked-space assumptions rather than from the solver implementation alone.
+- `tilemap`, `province`, and related modules define traversable space, but `pathfind` owns how that space is searched, scored, and turned into movement advice.
+- Read `pathfind` as the reusable navigation layer of the engine, not as a locomotion or animation system.
 
-This module primarily collaborates with `flownet`, `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -70,168 +49,196 @@ This module primarily collaborates with `flownet`, `image`, `render`, `runtime`.
 
 ### ai_flow_field.rs
 
-- Precomputed flow field steering many agents toward a single goal cell. `pathfind/ai_flow_field` delivers the ai flow field implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Propagates breadth-first distance over 8-directional neighbours with diagonal cost. The file owns or coordinates data contracts including `FlowField`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Stores per-cell direction vectors for smooth unit movement. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_goal`, `compute`, `get_direction`, `get_distance` stays attached to the local data model and invariants.
-- Respects walkability masks when terrain blocks pathing. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Builds a lightweight steering field from one goal cell so many agents can follow shared directional guidance.
+- Owns per-cell distances, normalized direction vectors, the active goal, and the walkability mask it samples.
+- Uses breadth-first expansion over eight neighbors, then derives best downhill directions for each reachable cell.
+- Provides the boundary between simple static obstacle masks and agent steering code that only needs local vectors.
+- Open this owner when single-goal flow behavior, diagonal step rules, or direction synthesis needs correction.
 
 ### astar.rs
 
-- A* pathfinding on a NavGrid with diagonal modes and configurable unit sizes. `pathfind/astar` delivers the astar implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Chooses octile or Manhattan heuristics to match the movement model. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Stops early when a node budget is reached and falls back to a partial path. Public callable behavior is centered on `astar`, `line_of_sight`, `smooth_path`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Uses Bresenham line-of-sight checks for path smoothing and validation. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Removes redundant waypoints through string-pull smoothing. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Implements the core NavGrid A* search used by higher-level pathfinding features across the engine runtime.
+- Owns heap nodes, octile and Manhattan heuristics, unit-size neighbor expansion, and parent reconstruction logic.
+- Supports early termination with partial paths, then offers Bresenham line-of-sight checks and path smoothing.
+- Provides the solver boundary between raw NavGrid movement rules and callers that need an ordered route result.
+- This file is where diagonal policy, per-tile costs, and max-node budget semantics are coordinated together.
+- Open this owner before changing dependent path systems when the bug affects baseline grid path quality itself.
 
 ### async_pool.rs
 
-- Prioritized async path-query service for off-thread A* execution. `pathfind/async_pool` delivers the async pool implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports cancellation, version-based stale-result suppression, and optional partial-path streaming. The file owns or coordinates data contracts including `PathResult`, `PathEventStatus`, `AsyncPathEvent`, `AsyncPathRequest`, `PathThreadPool`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Keeps worker lifecycle and queue management isolated from Lua bindings and gameplay code. Public callable behavior is centered on no named public items, while method-level behavior such as `legacy`, `new`, `submit_query`, `submit`, `poll_events`, `poll`, and 4 more stays attached to the local data model and invariants.
-- `pathfind/async_pool` delivers the async pool implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The file owns or coordinates data contracts including `PathResult`, `PathEventStatus`, `AsyncPathEvent`, `AsyncPathRequest`, `PathThreadPool`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Public callable behavior is centered on no named public items, while method-level behavior such as `legacy`, `new`, `submit_query`, `submit`, `poll_events`, `poll`, and 4 more stays attached to the local data model and invariants.
+- Runs prioritized off-thread path queries so expensive A* work can happen without blocking the main game loop.
+- Owns async request and event payloads, worker queue state, cancellation tables, and owner-version supersession.
+- Streams partial or final path results back to callers, including cancelled, failed, complete, and superseded states.
+- Provides the execution boundary between synchronous path solvers and systems that need queued background navigation.
+- Tracks per-owner live requests so newer versions can invalidate stale work before outdated routes reach gameplay.
+- This file is the right owner for queue ordering, thread-count policy, pending counts, and worker shutdown rules.
+- Neighboring changes usually involve NavGrid snapshots, A* budget behavior, and Lua or gameplay request adapters.
+- Open this file when path jobs need new lifecycle semantics or when streamed progress events stop matching callers.
 
 ### bidir.rs
 
-- Bidirectional A* search that expands from both start and goal at once. `pathfind/bidir` delivers the bidir implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Meets in the middle when the closed sets overlap to cut explored nodes. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Falls back to a partial forward path when the node budget runs out. Public callable behavior is centered on `bidirectional_astar`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Respects NavGrid diagonal mode and per-cell movement cost. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `pathfind`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Supports variable unit sizes for multi-tile pathfinding. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Runs bidirectional A* on NavGrid data so search can expand from start and goal until the frontiers meet.
+- Owns paired open sets, forward and backward parent tables, shared heuristics, and meet-point reconstruction.
+- Respects diagonal mode, unit-size walkability, and tile costs while still supporting partial fallback results.
+- Provides the algorithm boundary between single-frontier A* and reduced-expansion searches for longer routes.
+- This file is the right owner when meet detection, backward expansion, or budget exhaustion behavior is wrong.
+- Neighboring edits usually involve NavGrid movement policy and baseline A* helpers reused by both frontiers.
 
 ### flow_field.rs
 
-- Dijkstra-based flow field seeded from one or more goal cells over a NavGrid. `pathfind/flow_field` delivers the flow field implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores normalized direction vectors toward the nearest goal beside accumulated cost. The file owns or coordinates data contracts including `FlowField`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports variable unit sizes for clearance-aware pathfinding. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `calculate`, `calculate_multi`, `get_direction`, `get_direction_angle`, `get_cost_to_target`, and 6 more stays attached to the local data model and invariants.
-- Converts world-space positions into tile lookups and steering velocities. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Includes debug visualisation for directions and obstacles. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Builds a NavGrid-backed flow field that points each reachable cell toward one or more target cells.
+- Owns direction vectors, accumulated costs, target storage, and the shared-grid reference used for recomputation.
+- Calculates steering data with unit-size aware walkability, then exposes direction, angle, cost, and velocity helpers.
+- Also renders a debug image so field quality and blocked-cell effects can be inspected outside the live renderer.
+- Provides the boundary between raw navigation costs and agent steering systems that need cheap per-frame guidance.
+- Open this owner when target propagation, steering output, or debug visualization stops matching pathing intent.
 
 ### goal_map.rs
 
-- Multi-source Dijkstra distance field for goal-oriented AI movement. `pathfind/goal_map` delivers the goal map implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Builds a cost-to-reach map from many weighted source cells. The file owns or coordinates data contracts including `GoalSource`, `GoalMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Returns downhill gradient, uphill flee direction, and flood-fill reachability. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `width`, `height`, `add_source`, `set_sources`, `clear_sources`, and 8 more stays attached to the local data model and invariants.
-- Supports custom blocker predicates during baking from Lua bindings. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Serializes and restores the field as a compact binary blob. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Builds a multi-source goal distance map that AI can sample for attraction, fleeing, and reachability queries.
+- Owns weighted source definitions, packed distance storage, dirty tracking, and binary save and restore helpers.
+- Bakes a four-neighbor Dijkstra field from registered sources and a blocker predicate supplied by the caller.
+- Exposes direct distance lookup, downhill gradients, flee vectors, and threshold flood-fill over baked results.
+- Provides the boundary between authored goal sets and cheap runtime samples that agents can use every frame.
+- Open this owner when source registration, bake rules, or serialized distance-field contracts need adjustment.
 
 ### graph_nav.rs
 
-- A* shortest-path search over weighted directed or bidirectional graphs. `pathfind/graph_nav` delivers the graph nav implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports cost-bounded range queries for reachable nodes. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Falls back to Dijkstra when no heuristic is provided. Public callable behavior is centered on `graph_astar`, `graph_range`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Reconstructs paths from predecessor maps for caller consumption. Runtime integration reaches sibling engine areas through crate modules `flownet`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Implements generic graph A* and budgeted range traversal for flownet-style node and edge networks.
+- Owns graph heap nodes, predecessor reconstruction, and directed or bidirectional edge walking rules.
+- Searches active graph edges only, then returns ordered node ids or reachable nodes with accumulated cost.
+- Provides the boundary between generic graph data and systems that need reusable network traversal primitives.
+- Open this owner when graph heuristic use, edge direction handling, or range flood semantics need revision.
 
 ### graph_path.rs
 
-- Province-level A* pathfinding across adjacency graphs with configurable move costs. `pathfind/graph_path` delivers the graph path implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Adds Dijkstra-based reachability flooding for budget-limited travel. The file owns or coordinates data contracts including `ProvincePath`, `ProvinceCostFn`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Models blocked provinces and edge-tag costs in the search cost. Public callable behavior is centered on `find_province_path`, `province_reachable`, while method-level behavior such as `new` stays attached to the local data model and invariants.
-- Uses a min-heap priority queue node for standard BinaryHeap ordering. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Applies a Euclidean centroid heuristic for admissible A* search. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Runs province-level graph pathfinding over adjacency maps with configurable province and edge-tag move costs.
+- Owns ProvincePath results, ProvinceCostFn rules, blocked-province handling, and centroid-based A* heuristics.
+- Computes cheapest province routes and budget-limited reachability, keeping graph traversal near cost semantics.
+- Provides the boundary between province topology data and higher-level systems that need traversable region paths.
+- This file matters when province blocking, tag surcharges, or centroid heuristic assumptions need revision.
+- Open this owner before touching province registries when only path cost policy or graph search behavior changed.
 
 ### grid.rs
 
-- Flat 2D grid storage with per-cell walkability flags and movement-cost values enabling pathfinding and navigation queries on tile-based maps.
-- Implements A* algorithm with optional 8-connected diagonal movement, configurable Euclidean/Manhattan heuristics, and cached distance scoring.
-- Supports Dijkstra and BFS variants for weighted multi-target distance fields and uniform-cost search enabling flow field and range queries.
-- Provides efficient indexing, neighbor enumeration, and reconstruction helpers supporting O(log N) priority-queue based pathfinding.
-- Integrates cell walkability validation preventing path generation through obstacles while respecting per-cell terrain movement costs.
+- Implements the general weighted tile grid used for A*, Dijkstra, BFS, and flow-field style distance queries.
+- Owns walkability flags, per-cell float costs, priority-queue nodes, and parent reconstruction over flat storage.
+- Exposes multiple search styles from one owner so callers can swap between heuristic, weighted, and uniform modes.
+- Provides the boundary between simple tile cost maps and higher-level systems that need reusable grid algorithms.
+- Also builds a distance field from many targets, keeping multi-goal propagation close to the core grid substrate.
+- This file matters when neighbor policy, cost semantics, or path reconstruction rules for generic grids change.
+- Open this owner for shared grid-search fixes before touching specialized NavGrid, hex, iso, or province solvers.
 
 ### hex_grid.rs
 
-- Hex grid with configurable flat-top or pointy-top offset layout. `pathfind/hex_grid` delivers the hex grid implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores blocked flags and movement costs for weighted pathfinding. The file owns or coordinates data contracts including `HexLayout`, `HexGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Runs A* search for shortest paths between hex cells. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_blocked`, `set_cost`, `is_blocked`, `find_path`, `line_of_sight`, and 4 more stays attached to the local data model and invariants.
-- Exposes line-of-sight, field-of-view, and movement-range queries. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Uses cube-coordinate math for distance, interpolation, and rounding. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Implements weighted pathfinding on hex maps with selectable flat-top or pointy-top offset coordinate layouts.
+- Owns blocked flags, movement costs, neighbor offset rules, cube-coordinate conversion, and hex-line generation.
+- Runs A* between hexes, then also exposes line of sight, field of view, and movement budget range queries.
+- Provides the boundary between hex topology math and gameplay systems that need pathing over six-neighbor boards.
+- Uses cube rounding and interpolation so visibility and distance logic stay aligned with the chosen hex layout.
+- This file matters when hex adjacency, path cost semantics, or range calculations no longer match map behavior.
+- Open this owner for hex-specific navigation fixes before changing rectangular grid, iso, or navmesh code paths.
 
 ### hpa.rs
 
-- Hierarchical Pathfinding A* over a chunked NavGrid abstraction. `pathfind/hpa` delivers the hpa implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Partitions the grid into fixed-size chunks and detects entrance nodes at boundaries. The file owns or coordinates data contracts including `AbstractEdge`, `AbstractNode`, `Chunk`, `AbstractGraph`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Builds an abstract graph of chunk-to-chunk edges with computed costs. Public callable behavior is centered on `build_abstract`, `hpa_star`, `is_reachable`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Runs abstract A* search with an octile heuristic. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Refines abstract waypoints back into full grid-level paths per segment. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Supports BFS reachability checks over chunk connectivity. The file boundary separates pathfind implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Builds the hierarchical pathfinding layer that partitions a NavGrid into chunks and entrance-based abstract nodes.
+- Owns chunk metadata, abstract nodes, abstract edges, and the scans that detect cross-chunk entrances on borders.
+- Constructs an abstract graph with intra-chunk edge costs, then uses abstract A* before refining to grid paths.
+- Provides the scale boundary between low-level tile walkability and long-distance routing that needs fewer expands.
+- Also exposes reachability checks over chunk connectivity so callers can reject impossible goals before refinement.
+- This file is where chunk size, entrance placement, abstract heuristics, and refinement strategy are coordinated.
+- Neighboring edits usually involve NavGrid dirty tracking, base A* behavior, and systems consuming long routes.
+- Open this owner when large-map path performance changes or when abstract graph correctness needs investigation.
 
 ### influence_map.rs
 
-- Grid-based influence map with named floating-point layers over a uniform cell grid. `pathfind/influence_map` delivers the influence map implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stamps radial influence with falloff, smooths through neighbours, and decays over time. The file owns or coordinates data contracts including `InfluenceMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Queries aggregated influence in rectangles or locates extrema positions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_layer`, `has_layer`, `set_influence`, `get_influence`, `get_width`, and 13 more stays attached to the local data model and invariants.
-- Blends multiple layers into a destination layer with weighted combination. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Exposes debug visualisation into an RGBA image for inspection. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Owns named influence layers over a uniform grid so AI can score space with floating-point tactical signals.
+- Supports stamping radial influence, smoothing, decay, blending, extrema queries, and rectangular aggregation.
+- Stores layer data in flat arrays keyed by layer name, keeping spatial analytics close to their update helpers.
+- Also renders influence layers to debug images so designers can inspect how fields combine across the map.
+- Provides the boundary between abstract decision weights and concrete cell-space data queried by gameplay code.
+- Open this owner when layer math, blend semantics, or visualization of influence values needs correction.
 
 ### iso_grid.rs
 
-- Grid-based A* pathfinding over a rectangular isometric cell map. `pathfind/iso_grid` delivers the iso grid implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores blocked flags and movement costs for weighted searches. The file owns or coordinates data contracts including `IsoGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Uses Bresenham line-of-sight checks for visibility and smoothing support. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_blocked`, `set_cost`, `find_path`, `line_of_sight`, `neighbors` stays attached to the local data model and invariants.
-- Expands four-direction neighbours with bounds and passability filtering. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Implements weighted pathfinding on rectangular isometric grids with blocked flags and per-cell costs.
+- Owns cell indexing, four-neighbor A*, Manhattan heuristics, and Bresenham line-of-sight checks for the map.
+- Returns ordered tile paths for iso maps while keeping cost weighting and obstacle handling in one owner.
+- Provides the boundary between isometric map data and systems that need reliable navigation on projected tiles.
+- Open this file when iso path cost rules, neighbor policy, or LOS behavior no longer matches gameplay maps.
 
 ### jps.rs
 
-- Jump Point Search optimized A* on uniform-cost 8-directional grids. `pathfind/jps` delivers the jps implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Prunes symmetric neighbours to skip large open areas. The file owns or coordinates data contracts including `JpsGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Identifies forced neighbours and jump points along cardinal and diagonal directions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_blocked`, `is_blocked`, `find_path` stays attached to the local data model and invariants.
-- Reconstructs a full tile-by-tile path from the jump points. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Uses an octile heuristic and a min-heap open list. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Implements Jump Point Search on uniform eight-way grids so large open areas can be searched with fewer expansions.
+- Owns blocked-cell storage, jump detection, forced-neighbor rules, pruned successor generation, and path expansion.
+- Searches by leaping between jump points, then reconstructs the full tile path that callers expect to consume.
+- Provides the optimization boundary between plain grid A* and symmetry-pruned search for cost-uniform maps.
+- This file is the right owner when forced-neighbor logic, jump recursion, or successor pruning needs correction.
+- Neighboring changes usually involve uniform grid assumptions and tooling that compares JPS routes to baseline A*.
+- Open this owner when open-area path performance regresses or when jump-point reconstruction becomes inconsistent.
 
 ### mod.rs
 
-- Unified pathfinding module collecting grid-based (A*, Dijkstra, BFS, JPS) and graph-based (topological, bidirectional, HPA*) algorithms with unified API.
-- Supports multiple navigation surface types (rectangular grids, hexagonal, isometric, navmeshes, province graphs) enabling diverse game world representations.
-- Provides async path-request dispatch through thread pool enabling long-running queries without blocking game loop or frame timing.
-- Includes debug rendering utilities for visualizing pathfinding structures, computed distances, flow fields, and path results during development.
-- `pathfind/mod` is the pathfind module index, declaring `ai_flow_field`, `astar`, `async_pool`, `bidir`, `flow_field`, and 15 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/pathfind/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `ai_flow_field::FlowField as SimpleFlowField`, `astar::{astar, line_of_sight, smooth_path}`, `async_pool::{AsyncPathEvent, AsyncPathRequest, PathEventStatus, PathThreadPool}`, `bidir::bidirectional_astar`, and 15 more centralized for the pathfind subsystem.
+- Exports the pathfinding subsystem surface that groups grid search, async execution, graph routing, and debug views.
+- Acts as the navigation index for A*, bidirectional, HPA, flow fields, influence maps, and province graph helpers.
+- Keeps public module boundaries explicit so callers can find whether a pathing concern belongs to data, search, or draw.
+- Open this file when adding or retiring pathfinding owners or when re-export policy for runtime helpers needs changes.
+- The exports here connect generic tile grids, hex and iso variants, navmeshes, and province graph traversal utilities.
+- Agents should start here when tracing navigation behavior because it reveals the authoritative file split by feature.
+- This index owns visibility and re-export contracts rather than live state, queues, caches, or search data itself.
+- Neighboring work usually spans NavGrid, async request handling, path solvers, and debug rendering adapters below.
 
 ### nav_grid.rs
 
-- Integer-cost walkability grid for tile-based pathfinding. `pathfind/nav_grid` delivers the nav grid implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores per-cell movement weight where zero means blocked and higher values cost more. The file owns or coordinates data contracts including `DiagonalMode`, `NavGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Exposes cardinal and diagonal neighbour queries with corner-cut policies. Public callable behavior is centered on no named public items, while method-level behavior such as `from_lua_str`, `to_lua_str`, `new`, `from_costs`, `get_width`, `get_height`, and 20 more stays attached to the local data model and invariants.
-- Tracks dirty rectangles for deferred HPA hierarchy invalidation. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Supports bulk fill, rect fill, byte import/export, and snapshot cloning. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Owns the runtime walkability grid that stores byte movement costs, diagonal policy, and HPA dirty rectangles.
+- Provides constructors, bulk mutation, byte import and export, snapshots, and cell queries over flat tile data.
+- Defines DiagonalMode parsing so Lua and engine callers share one source of truth for corner-cutting behavior.
+- Also enforces unit-size walkability checks, making this file the clearance boundary for multi-tile navigation.
+- This file is where chunk size, dirty invalidation hints, and neighbor enumeration rules are coordinated together.
+- Neighboring changes usually involve A*, HPA, render debug overlays, and Lua bindings that edit pathing grids.
+- Open this owner when navigation cost storage or directional movement policy changes across the pathfind stack.
 
 ### navmesh.rs
 
-- Polygon-based navigation mesh for 2D pathfinding. `pathfind/navmesh` delivers the navmesh implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Runs A* over a polygon adjacency graph with a centroid heuristic. The file owns or coordinates data contracts including `NavMesh`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Checks point containment with ray-cast tests and extracts centroid waypoints. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_polygon`, `connect`, `polygon_count`, `find_path` stays attached to the local data model and invariants.
-- Supports directed and bidirectional polygon connectivity. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Implements polygon-based pathfinding where free movement areas are modeled as connected mesh regions.
+- Owns polygon vertex storage, polygon adjacency lists, centroid heuristics, and point-in-polygon lookups.
+- Finds a corridor of polygons with A*, then returns world-space start, centroid waypoints, and goal points.
+- Provides the boundary between arbitrary 2D walk regions and gameplay code that cannot rely on tile grids.
+- Open this owner when polygon connectivity, centroid routing, or containment checks need correction.
 
 ### pathgrid.rs
 
-- Grid-based A* pathfinding with 8-directional movement and variable cell costs. `pathfind/pathgrid` delivers the pathgrid implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Uses Bresenham line-of-sight for path smoothing after search. The file owns or coordinates data contracts including `Cell`, `PathGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Converts cell indices to world-space centres with configurable cell size. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `in_bounds`, `set_walkable`, `is_walkable`, `set_cost`, `get_cost`, and 3 more stays attached to the local data model and invariants.
-- Prevents diagonal corner cutting through blocked corners. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Uses an octile heuristic for consistent cost estimation. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Implements a world-space path grid whose cells carry walkability and float costs for eight-way A* searches.
+- Owns Cell records, octile search nodes, line-of-sight smoothing, and cell-center conversion for world outputs.
+- Returns paths as world coordinates, making this file the adapter between tile search and movement-space waypoints.
+- Also blocks diagonal corner cutting so smoothed routes still respect impassable geometry at cell boundaries.
+- This file matters when world coordinate conversion, smoothing rules, or per-cell cost handling need adjustment.
+- Open this owner before changing generic A* helpers when the bug only affects world-space path grid consumers.
 
 ### range_map.rs
 
-- Dijkstra-based budget-limited range expansion over a 2-D grid. `pathfind/range_map` delivers the range map implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Produces a cost map for cells reachable within a travel budget. The file owns or coordinates data contracts including `RangeMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports cardinal and diagonal movement with per-cell cost weights. Public callable behavior is centered on no named public items, while method-level behavior such as `from_grid`, `reachable`, `cost_to`, `reachable_cells`, `reachable_cells_with_cost` stays attached to the local data model and invariants.
-- Useful for movement preview, threat radius, and action-range queries. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Builds a budget-limited travel map over a weighted grid so callers can preview where movement can reach.
+- Owns per-cell optional costs, Dijkstra heap expansion, and helpers that return cells with or without distances.
+- Respects blockers, per-cell weights, and optional diagonal movement while capping expansion by a travel budget.
+- Provides the boundary between raw movement costs and UI or AI systems that need reachable-area calculations.
+- Open this owner when movement budget semantics, diagonal weighting, or reachability output shape needs changes.
 
 ### render.rs
 
-- Debug visualization for pathfinding structures as colored RenderCommand lists. `pathfind/render` delivers the rendering adapter and draw-command integration for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Draws NavGrid cells, FlowField arrows, and InfluenceMap heat overlays. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Returns batches ready for overlay drawing in the renderer. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
-- Gives developers a direct view into navigation data. Runtime integration reaches sibling engine areas through crate modules `pathfind`, `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Adds debug rendering adapters that turn pathfinding state into renderer commands for inspection overlays.
+- Owns NavGrid tile shading, FlowField arrow drawing, and InfluenceMap heat visualization command generation.
+- Provides the presentation boundary between pathfinding data structures and the generic RenderCommand stream.
+- This file is the right owner when debug overlay colors, glyph shapes, or sampling rules need adjustment.
+- Neighboring changes usually involve render command capabilities and the path structures being visualized.
 
 ### unit_pathfinder.rs
 
-- Stateful per-unit pathfinder wrapping a shared NavGrid reference. `pathfind/unit_pathfinder` delivers the unit pathfinder implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Runs full A* searches with optional string-pull smoothing. The file owns or coordinates data contracts including `Waypoint`, `UnitPathfinder`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports partial paths, BFS reachability, and nearest-walkable searches. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `find_path`, `find_path_smooth`, `get_path_length`, `get_path_cost`, `find_partial_path`, and 10 more stays attached to the local data model and invariants.
-- Caches recent routes with an LRU strategy and manual invalidation. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, `pathfind`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Exposes octile heuristic and Bresenham LOS helpers for local decisions. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Wraps a shared NavGrid in a stateful per-unit pathfinding service with cache-aware route and utility queries.
+- Owns Waypoint output records, cache keys, cached path storage, and optional LRU-style eviction behavior.
+- Calls baseline A* for full, smoothed, or partial routes, then exposes length, cost, LOS, and reachability helpers.
+- Also searches for the nearest walkable fallback cell, keeping per-unit recovery logic close to shared grid access.
+- Provides the boundary between raw navigation algorithms and gameplay units that need repeated path requests.
+- Open this owner when route caching, per-unit helper semantics, or fallback walkability behavior needs changes.
 
 
 

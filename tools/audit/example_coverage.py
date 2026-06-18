@@ -2,8 +2,8 @@
 """Cross-reference Lua example scripts against the lurek.* Lua API.
 
 Coverage is reported in four tiers:
-    - "FULL" -- --@api: or --@api-stub: block present, NO "-- TODO:" line, and block body has 2+ non-empty lines
-    - "PART" -- block present, no TODO, but body has fewer than 2 non-empty lines (thin block)
+    - "FULL" -- --@api: or --@api-stub: block present, NO "-- TODO:" line, and block body has 5+ code lines
+    - "PART" -- block present, no TODO, but body has fewer than 5 code lines (thin block)
     - "TODO" -- marker block present AND has a "-- TODO:" line
     - "MISS" -- no --@api: / --@api-stub: marker at all (item not tracked in any example)
 
@@ -11,7 +11,7 @@ Structural lint checks (E-codes) run automatically after the summary:
     E1 -- stub has no ``do`` block below it (not a recognised alias)
     E2 -- non-blank line (including a comment) between stub marker and ``do``
     E3 -- two or more stubs stacked with no ``do`` block between them
-    E4 -- ``do`` block body is thin (< 2 non-blank lines)
+    E4 -- ``do`` block body is thin (< 5 code lines, excluding blank/comment lines)
     E5 -- marker text is not a clean API identifier
     E6 -- marker text appears more than once across example files
     E7 -- top-level ``do`` block has no immediately preceding ``--@api:`` / ``--@api-stub:``
@@ -47,9 +47,9 @@ ROOT = Path(__file__).resolve().parents[2]
 API_JSON = ROOT / 'logs' / 'data' / 'lua_api_data.json'
 DEFAULT_EXAMPLES_DIR = ROOT / 'content' / 'examples'
 DEFAULT_MARKDOWN_REPORT = ROOT / 'logs' / 'reports' / 'example_coverage.md'
-# FULL requires at least this many non-blank body lines inside the do block.
+# FULL requires at least this many body code lines inside the do block.
 # Mirrors LINT_MIN_BODY_LINES so that thin blocks are PART (not FULL) AND trigger E4.
-FULL_BLOCK_MIN_LINES = 2
+FULL_BLOCK_MIN_LINES = 5
 
 DO_LINE_RE = re.compile(r'^do(?:\s*--.*)?$')
 FUNCTION_START_RE = re.compile(r'^(?:local\s+)?function\b')
@@ -372,6 +372,10 @@ def _parse_api_marker(stripped: str) -> str | None:
     return match.group(1).strip()
 
 
+def _is_body_code_line(stripped: str) -> bool:
+    return bool(stripped) and not stripped.startswith('--')
+
+
 def load_texts(d: Path) -> dict[str, dict]:
     """Load all .lua files.
 
@@ -438,7 +442,7 @@ def load_texts(d: Path) -> dict[str, dict]:
                     block_depth = 0
                     continue
 
-                if stripped:
+                if _is_body_code_line(stripped):
                     current_block['body_line_count'] += 1
 
                 block_depth += _count_scope_openings(stripped)
@@ -700,7 +704,7 @@ MARKER_VALID_RE = re.compile(
     r'(?::[A-Za-z_][A-Za-z0-9_]*)?'  # optional :method
     r'(?:\.\d+)?$'                    # optional .N dedup suffix
 )
-LINT_MIN_BODY_LINES = 2  # non-blank lines (code OR comment) inside a do block
+LINT_MIN_BODY_LINES = 5  # code lines inside a do block; comments and blanks do not count
 
 EXTRA_LINT_ISSUES: list[tuple[str, int, str, str]] = []
 
@@ -736,7 +740,7 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
       E1  stub has no ``do`` block below it
       E2  non-blank, non-stub line between stub marker and ``do``
       E3  two or more stubs stacked with no ``do`` block between them
-      E4  ``do`` block body is thin (< LINT_MIN_BODY_LINES non-blank lines)
+      E4  ``do`` block body is thin (< LINT_MIN_BODY_LINES code lines)
       E5  marker text is not a clean API identifier
       E6  marker text appears more than once across example files
       E7  top-level ``do`` block has no immediately preceding example marker
@@ -819,10 +823,10 @@ def lint_example_files(examples_dir: Path, filt: str | None = None) -> list:
             end_idx, body_lines = _collect_do_block(lines, j)
 
             # E4: thin block
-            non_blank = [l for l in body_lines if l]
-            if len(non_blank) < LINT_MIN_BODY_LINES:
+            code_lines = [l for l in body_lines if _is_body_code_line(l)]
+            if len(code_lines) < LINT_MIN_BODY_LINES:
                 issues.append((p.name, stub_lineno, 'E4',
-                    f"stub '{marker}': block has {len(non_blank)} non-blank line(s) "
+                    f"stub '{marker}': block has {len(code_lines)} code line(s) "
                     f"(need >= {LINT_MIN_BODY_LINES})"))
 
             if is_pending_stub:

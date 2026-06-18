@@ -1,7 +1,8 @@
-//! This file provides the format-agnostic front door for serialization work across text and binary payloads. `serialize/codec` delivers the codec implementation for the serialize subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It decides which codec to use, how to route decoding and encoding, and when content can be recognized automatically. The file owns or coordinates data contracts including `SerialFormat`, `DecodeOptions`, `EncodeOptions`, `EncodedValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Text and binary paths are separated here so callers can use one interface without collapsing all format quirks into one parser.
-//! The file is therefore the dispatcher that turns unknown serialized input into a chosen translation path. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the format-agnostic serialization front door for text and binary payloads across supported formats.
+//! It defines `SerialFormat`, encode or decode options, and the `EncodedValue` result used by top-level callers.
+//! Format detection inspects text content, while explicit routing sends MessagePack through byte decoding only.
+//! Encode and decode helpers centralize dispatch so callers do not need per-format branching spread across modules.
+//! Open this file when top-level serialization routing changes; concrete format implementations live in siblings.
 
 use super::{
     from_csv, from_ini, from_json, from_toml, from_xml, to_csv, to_json, to_toml, CsvOptions,

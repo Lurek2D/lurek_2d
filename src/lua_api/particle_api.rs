@@ -1,4 +1,4 @@
-//! Lua bindings for `lurek.particle` system handles, trail handles, and visualization helpers. `src/lua_api/particle_api.rs` registers the `lurek.particle` Lua boundary for particle behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.particle` Lua API for particle systems, trails, validation, and particle option tables.
 
 use super::callback_registry::CallbackRegistry;
 use super::physics_api::LuaWorld;

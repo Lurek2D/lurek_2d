@@ -1,7 +1,8 @@
-//! Implements continuous utility-based action choice through layered consideration scoring pipelines. `ai/utility_ai` delivers the utility ai implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Shapes raw inputs with configurable response curves to express nonlinear decision preference. The file owns or coordinates data contracts including `ResponseCurve`, `Consideration`, `UAAction`, `UtilityAI`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Blends historical momentum with fresh evidence so action selection avoids abrupt instability. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `apply`, `new`, `add_action`, `add_consideration`, `last_action_name`, and 1 more stays attached to the local data model and invariants.
-//! Captures per-action score snapshots each tick for introspection and downstream decision context. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Owns the utility-AI scorer that ranks candidate actions through response curves and per-action consideration data.
+//! Defines response-curve variants, considerations, actions, and the last-evaluation score snapshot for inspection.
+//! Calls action scorers, applies momentum bonuses, and records the chosen action so later systems can read results.
+//! Provides the continuous scoring boundary between raw Lua evaluations and one selected utility-driven action.
+//! Open this owner when nonlinear score shaping, momentum behavior, or action-evaluation bookkeeping needs changes.
 
 use mlua::prelude::*;
 use mlua::RegistryKey;

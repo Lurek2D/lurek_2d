@@ -1,6 +1,7 @@
-//! This file converts a posed skeleton into renderer-facing commands for debug or simplified skeletal visualization. `spine/render` delivers the rendering adapter and draw-command integration for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Bone and slot state are flattened here into ordinary draw operations so the rest of the renderer does not need skeleton awareness.
-//! The output emphasizes readable structure over full attachment rendering complexity. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
+//! This file owns the draw-command bridge that turns a posed `Skeleton` into generic debug render commands.
+//! It flattens bone transforms and slot attachments into circles and outlines for a skeleton-agnostic renderer.
+//! The output favors readable rig structure over full attachment rendering, making it useful for tooling and inspection.
+//! Open this file when skeleton-to-command translation changes; pose updates and slot ownership live in siblings.
 
 use super::skeleton::Skeleton;
 use crate::render::renderer::{DrawMode, RenderCommand};

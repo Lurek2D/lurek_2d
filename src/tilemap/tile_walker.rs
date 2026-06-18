@@ -1,8 +1,9 @@
-//! This file provides a discrete grid walker model with stable cardinal facing semantics. `tilemap/tile_walker` delivers the tile walker implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It supports forward, backward, and strafe movement as first-class motion primitives. The file owns or coordinates data contracts including `Facing`, `TileWalker`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It tracks previous state snapshots so interpolation can smooth visual motion between ticks. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `to_str`, `angle`, `dx`, `dy`, `new`, and 20 more stays attached to the local data model and invariants.
-//! It classifies neighboring cells relative to facing for directional interaction logic. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It separates passability queries from concrete collision backends for flexible integration. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Defines a discrete grid walker with stable facing semantics for tile-based movement and interaction logic.
+//! Supports forward, backward, and strafe motion as first-class primitives over one consistent facing model.
+//! Tracks previous state so interpolation can smooth visual movement between simulation ticks or input steps.
+//! Classifies neighboring cells relative to facing, which supports directional interaction and sensing flows.
+//! Keeps movement and facing logic separate from collision backends so pathing integrations stay flexible.
+//! Open this file when walker facing, step logic, interpolation, or directional neighbor math behaves incorrectly.
 
 use std::f32::consts::PI;
 

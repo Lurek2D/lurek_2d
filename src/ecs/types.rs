@@ -1,6 +1,7 @@
-//! Provides core ECS identifier wrappers used to pass entity handles across module boundaries. `ecs/types` delivers the shared type definitions and data contracts for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Defines lightweight typed ids that keep call sites explicit while preserving compact storage. The file owns or coordinates data contracts including `EntityId`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Delivers a shared identity contract for indexing, mapping, and query-level interoperability. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `raw` stays attached to the local data model and invariants.
+//! This file owns `EntityId`, the typed wrapper around packed ECS entity handles passed across module boundaries.
+//! It keeps call sites explicit while preserving cheap copy semantics and direct conversion to and from integers.
+//! `new`, `raw`, `Display`, and numeric `From` impls make the wrapper usable in maps, logs, and Lua glue code.
+//! Open it when public entity-handle semantics change; id packing and world storage live in sibling ECS files.
 
 /// Unique identifier for an ECS entity.
 ///

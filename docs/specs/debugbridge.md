@@ -16,15 +16,11 @@
 
 ## Summary
 
-- Connects a running game session to external tooling so developers can inspect and control runtime state live.
-- Enables remote debugging workflows without stopping gameplay or attaching heavyweight local instrumentation.
-- Exposes protocol and capability metadata so client tools can negotiate supported bridge behavior safely.
-- Streams print history and broadcast events to connected clients for faster issue triage.
-- Supports screenshot and hot-reload request flows that accelerate iteration during content and script tuning.
-- Provides basic session hardening through handshake and nonce-based access checks.
-- Gives teams one remote diagnostics channel for live observability and command dispatch.
+- The `debugbridge` module is the remote inspection channel between a running game and external development tools such as the VS Code extension or MCP-style clients.
+- It owns the bridge state, network protocol, queued requests and responses, print-history streaming, and guarded remote operations such as screenshots or hot reload requests.
+- This keeps remote inspection and tool commands under one controlled runtime policy.
+- Read it as the integration boundary for external observability: gameplay systems do not need to know editor protocols, because `debugbridge` translates between runtime state and tool clients.
 
-This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -34,24 +30,31 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 
 ### bridge.rs
 
-- Implements shared state and queue structures for runtime-to-client debug bridge communication. `debugbridge/bridge` delivers the bridge implementation for the debugbridge subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores pending requests and responses exchanged between network server and runtime logic. The file owns or coordinates data contracts including `PendingRequest`, `PendingResponse`, `PrintEntry`, `BridgeShared`, `SharedBridge`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Tracks rolling performance metrics and bounded print history for debugger-side inspection. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `elapsed`, `get_performance`, `push_print`, `record_frame`, `set_max_print_history`, and 3 more stays attached to the local data model and invariants.
-- Maintains session configuration and capability metadata used across active bridge connections. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Provides broadcast event queues for fan-out delivery to all connected debug clients. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- `src/debugbridge/bridge.rs` owns the shared debug bridge state used by the runtime thread and debugger clients.
+- It defines queued request and response records, print history rows, and the `BridgeShared` container that holds them.
+- Request, response, and broadcast queues live here so networking code and runtime handlers exchange data through it.
+- This file also tracks frame timing samples, client counts, capabilities, handshake nonce data, and screenshot requests.
+- Open it when telemetry retention, queue semantics, print history policy, or bridge session metadata must change.
+- Higher layers should treat this file as the synchronization and state boundary, not the place for TCP parsing logic.
 
 ### mod.rs
 
-- Defines the debugbridge module boundary for runtime-to-IDE transport and state exchange. `debugbridge/mod` is the debugbridge module index, declaring `bridge`, `server` so agents can identify which files own each feature slice before opening implementation code.
-- Groups shared bridge state and TCP server functionality under one integration surface. `src/debugbridge/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bridge::{BridgeShared, PendingRequest, PendingResponse, PrintEntry, SharedBridge}`, `server::{handle_client_message, server_thread}` centralized for the debugbridge subsystem.
+- `src/debugbridge/mod.rs` is the module index that exposes the runtime debug bridge state and server entry points.
+- It reexports shared queue types and network handlers so runtime code and tooling consume one stable debugger surface.
+- No bridge state lives here; this file only declares child modules and defines which debug transport symbols are public.
+- Read this index when wiring IDE integration, because it shows where shared state ends and socket handling begins.
+- Changes here reshape the debugger boundary, since reexports decide what engine code may import without deep paths.
+- This module keeps bridge storage and TCP protocol handling separate, which makes debugger ownership easier to trace.
 
 ### server.rs
 
-- Implements the non-blocking TCP server loop for debugbridge client connectivity and dispatch. `debugbridge/server` delivers the server implementation for the debugbridge subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Accepts client sessions and parses JSON-RPC messages into runtime and built-in command handlers. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Delivers queued responses and broadcast events across connected debugger endpoints. Public callable behavior is centered on `server_thread`, `handle_client_message`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Handles handshake, protocol version checks, and nonce-based authentication workflows. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Supports eval, ping, performance, print-history, and screenshot-oriented protocol requests. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- `src/debugbridge/server.rs` owns the non-blocking TCP loop that accepts debugger clients and reads line-delimited JSON.
+- `server_thread` manages client sockets, flushes queued responses, and fans out broadcast events from bridge state.
+- `handle_client_message` validates JSON requests, enforces nonce and protocol checks, and dispatches supported methods.
+- Built-in commands such as ping, status, performance, print history, hot reload, and screenshots are handled here.
+- Runtime-bound operations like eval, globals, locals, and call-stack inspection are queued for later engine execution.
+- Read this file when debugger transport behavior, authorization rules, or per-method response payloads need to change.
+- This is the network edge of debugbridge; shared queues stay in `bridge.rs`, while protocol flow and I/O live here.
 
 
 

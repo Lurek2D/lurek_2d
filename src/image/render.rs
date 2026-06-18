@@ -1,4 +1,6 @@
-//! Thin bridge layer converting ImageData buffers into render command payloads that reference texture resources and screen placement coordinates.
+//! This file owns the thin `ImageData` rendering bridge that turns image buffers into renderer commands.
+//! It emits `DrawImage` command payloads with texture keys and screen placement, and can clone buffers as images.
+//! Open this file when image-to-render command translation changes; pixel storage and effects live in siblings.
 
 use super::image_data::ImageData;
 use crate::render::renderer::RenderCommand;

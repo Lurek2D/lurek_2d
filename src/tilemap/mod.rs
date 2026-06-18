@@ -1,9 +1,11 @@
-//! This module delivers the high-level tile world stack for storage, generation, import, and rendering. `tilemap/mod` is the tilemap module index, declaring `autotile_sheet`, `chunk`, `coords`, `isomap`, `large_map_renderer`, and 11 more so agents can identify which files own each feature slice before opening implementation code.
-//! It unifies layered map data for orthogonal and isometric play spaces under one runtime contract. `src/tilemap/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `autotile_sheet::{AutoTileLayout, AutoTileSheet}`, `chunk::ChunkMap`, `coords::*`, `isomap::{IsoDrawItem, IsoLevel, IsoMap, IsoTile, IsoTilePart}`, and 7 more centralized for the tilemap subsystem.
-//! It connects authored formats, procedural tools, autotiling, and region geometry into one pipeline. The file documents how tilemap submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! It provides the structural backbone for large interactive 2D worlds in Lurek2D. Agents should read this index to choose the narrow owner file first, because it maps names such as `autotile_sheet`, `chunk`, `coords`, `isomap`, `large_map_renderer`, and 11 more to concrete implementation responsibilities.
-//! `tilemap/mod` is the tilemap module index, declaring `autotile_sheet`, `chunk`, `coords`, `isomap`, `large_map_renderer`, and 11 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/tilemap/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `autotile_sheet::{AutoTileLayout, AutoTileSheet}`, `chunk::ChunkMap`, `coords::*`, `isomap::{IsoDrawItem, IsoLevel, IsoMap, IsoTile, IsoTilePart}`, and 7 more centralized for the tilemap subsystem.
+//! Exports the tilemap subsystem surface that combines storage, import, generation, geometry, and render helpers.
+//! Acts as the ownership index for tile worlds so callers can see where chunks, tilesets, maps, and importers live.
+//! Centralizes module visibility and re-exports instead of storing live map data or running generation itself.
+//! Connects authored formats, autotiling, region maps, large-map helpers, and base tile storage into one stack.
+//! Provides the first navigation point when tracing whether a tile concern belongs to import, storage, or rendering.
+//! Keeps the public tilemap surface coherent while allowing specialized owners like isomap or TMX to stay narrow.
+//! Open this file first when adding a tilemap owner or changing re-export policy for shared tilemap APIs.
+//! Use it to map a tile feature to its concrete Rust owner before editing storage, import, or render behavior.
 
 /// Autotile sprite-sheet layout and rule matching.
 pub mod autotile_sheet;

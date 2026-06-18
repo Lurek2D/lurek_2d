@@ -1,8 +1,9 @@
-//! Fog-of-war state storage with per-region two-bit visibility tiers (Hidden, Explored, Visible) enabling strategic information gating and map knowledge.
-//! Maintains per-viewer FogMask instances so different observers independently track map revelation, supporting multiplayer scenarios and split-screen views.
-//! Provides reveal(), hide(), explore(), and toggle() operations for direct gameplay events plus batch reveal for efficient region updates.
-//! Encodes fog state as base64-packed two-bit values enabling compact save-file persistence and safe transmission across network boundaries.
-//! Exposes visibility and explored subset queries returning region IDs for UI rendering, camera targeting, and game logic decision systems.
+//! Owns globe fog-of-war masks that store Hidden, Explored, and Visible state for every supported region id.
+//! Maintains per-viewer FogMask instances so different observers can carry independent revelation and visibility sets.
+//! Provides reveal, hide, explore, toggle, batch update, and subset query helpers used by gameplay and UI logic.
+//! Encodes masks to and from packed base64 strings, making persistence and transport compact and deterministic.
+//! Acts as the state boundary between visibility gameplay rules and globe renderers that only need fog answers.
+//! Open this owner when viewer-specific fog semantics or serialized fog payloads need exact behavioral changes.
 
 use crate::globe::types::{FogState, RegionId, MAX_REGIONS};
 use base64::Engine;

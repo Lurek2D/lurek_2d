@@ -1,4 +1,6 @@
-//! Implements Lua value pretty-print conversion for REPL and debug-facing display output. `devtools/lua_display` delivers the lua display implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns Lua value display formatting used by the REPL and other developer-facing text output paths.
+//! It converts primitive `mlua::Value` variants to readable strings and uses placeholders for opaque runtime kinds.
+//! Open this file when debug text rendering changes; command history and evaluation flow live in sibling modules.
 
 /// Convert one Lua value to display text and return a fallback for unknown kinds.
 pub fn value_to_string(v: &mlua::Value) -> String {

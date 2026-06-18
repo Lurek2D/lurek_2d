@@ -1,4 +1,4 @@
-//! Registers the public `lurek.binary` API for byte buffers, packing, compression, hashing, and encoding helpers. `src/lua_api/binary_api.rs` registers the `lurek.binary` Lua boundary for binary behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.binary` Lua API for byte packing, compression, hashing, ring buffers, and TOML helpers.
 
 use super::SharedState;
 use crate::binary::{

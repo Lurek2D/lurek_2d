@@ -1,10 +1,10 @@
 {
   "version": "auto-generated",
-  "generated": "2026-06-16",
+  "generated": "2026-06-18",
   "modules": [
     {
       "name": "agent",
-      "description": "File: src/lua_api/agent_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Registers the `lurek.agent` Lua API for agent orchestration, batch workflows, and engine-backed agent userdata.",
       "functions": [
         {
           "name": "new",
@@ -321,7 +321,7 @@
     },
     {
       "name": "ai",
-      "description": "File: src/lua_api/ai_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Registers the `lurek.ai` Lua API for AI command helpers, option parsing, and thin bindings over engine logic.",
       "functions": [
         {
           "name": "newWorld",
@@ -919,7 +919,7 @@
     },
     {
       "name": "animation",
-      "description": "File: src/lua_api/animation_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.animation` Lua API for clip control, draw options, validation, and frame rendering helpers.",
       "functions": [
         {
           "name": "new",
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "asset",
-      "description": "Lua bindings for the `lurek.asset` cache module.\n\nExposes ref-counted asset loading, metadata queries, batch preload, and\nsearch helpers over the shared runtime asset cache.",
+      "description": "Registers the `lurek.asset` Lua API for cache access, preload flows, handle lookup, and text asset retrieval.",
       "functions": [
         {
           "name": "load",
@@ -1485,7 +1485,7 @@
     },
     {
       "name": "audio",
-      "description": "File: src/lua_api/audio_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Registers the `lurek.audio` Lua API for sound playback, source handles, beat clocks, and audio data parsing.",
       "functions": [
         {
           "name": "newSource",
@@ -3344,7 +3344,7 @@
     },
     {
       "name": "automation",
-      "description": "File: src/lua_api/automation_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Registers the `lurek.automation` Lua API for automation data bridging, vector decoding, and runtime controls.",
       "functions": [
         {
           "name": "load",
@@ -3851,7 +3851,7 @@
     },
     {
       "name": "binary",
-      "description": "File: src/lua_api/binary_api.rs\nRegisters the public `lurek.binary` API for byte buffers, packing, compression, hashing, and encoding helpers.\nKeeps the Lua-facing layer focused on validation and userdata wiring while delegating byte-oriented logic to `src/binary/`.\nBridges Lua strings, tables, and scalars into raw byte operations without forcing UTF-8 interpretation on binary payloads.\nExposes mutable userdata handles such as `LByteData`, `LDataView`, and `LDataWriter` for structured binary workflows.\nReturns `mlua::Result` errors across the boundary so malformed offsets, bit ranges, and format strings stay recoverable from Lua.",
+      "description": "Registers the `lurek.binary` Lua API for byte packing, compression, hashing, ring buffers, and TOML helpers.",
       "functions": [
         {
           "name": "pack",
@@ -4355,7 +4355,7 @@
     },
     {
       "name": "camera",
-      "description": "Lua bindings for `lurek.camera`.\n\nExposes camera construction, viewport transforms, rigs, path helpers, and\ntile-walker camera control over the runtime camera subsystem.",
+      "description": "Registers the `lurek.camera` Lua API for camera userdata, follow easing, zoom easing, and view controls.",
       "functions": [
         {
           "name": "new",
@@ -4445,7 +4445,7 @@
     },
     {
       "name": "charts",
-      "description": "Registers the `lurek.charts` Lua API and keeps chart userdata wrappers thin.\nParses chart config/data inputs at the Lua boundary, delegates rendering to `src/charts`,\nand bridges CPU-generated chart images into the engine's texture-backed draw queue.\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.charts` Lua API for chart userdata, texture upload, drawing, and chart image exports.",
       "functions": [
         {
           "name": "newLine",
@@ -4607,7 +4607,7 @@
     },
     {
       "name": "cinematic",
-      "description": "File: src/lua_api/cinematic_api.rs\n\nLua API wrapper for the `cinematic` engine module.\nExposes `lurek.cinematic` to Lua scripts.\n\n# Exposed API (`lurek.cinematic`)\n- `new()` → `LCinematic` – creates an empty cinematic timeline handle.\n\n# `LCinematic` methods\n- `addCut(time, description)` – appends a timed cut to the timeline.\n- `play()` – plays all cuts (fires engine events).\n- `clear()` – removes all cuts from the timeline.\n- `cutCount()` → integer – number of cuts in the timeline.\n- `type()` → `\"LCinematic\"`.\n- `typeOf(name)` → boolean.",
+      "description": "Registers the `lurek.cinematic` Lua API for cinematic timelines, userdata controls, and script-side playback.",
       "functions": [
         {
           "name": "new",
@@ -4636,7 +4636,7 @@
     },
     {
       "name": "color",
-      "description": "Lua bindings for `lurek.color`.\n\nExposes constructors, color-space conversion, blending, palettes, and\nutility helpers over the engine's core `Color` type.",
+      "description": "Registers the `lurek.color` Lua API for color table parsing, normalization, conversion, and struct bridging.",
       "functions": [
         {
           "name": "new",
@@ -5171,7 +5171,7 @@
     },
     {
       "name": "compute",
-      "description": "File: src/lua_api/compute_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.compute` Lua API for ndarray and tensor conversion, shapes, dtypes, and numeric tables.",
       "functions": [
         {
           "name": "newArray",
@@ -5483,7 +5483,7 @@
     },
     {
       "name": "cursor",
-      "description": "Lua bindings for `lurek.cursor`.\n\nExposes cursor managers, custom cursor pixel data, animated cursor frames,\ncontext rules, trails, and zoom helpers to Lua.",
+      "description": "Registers the `lurek.cursor` Lua API for cursor userdata, window cursor control, and pointer-related helpers.",
       "functions": [
         {
           "name": "newManager",
@@ -5566,7 +5566,7 @@
     },
     {
       "name": "dataframe",
-      "description": "File: src/lua_api/dataframe_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Registers the `lurek.dataframe` Lua API for rows, schemas, cells, validation, and file-backed table import.",
       "functions": [
         {
           "name": "newDataFrame",
@@ -5877,7 +5877,7 @@
     },
     {
       "name": "debugbridge",
-      "description": "File: src/lua_api/debugbridge_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Registers the `lurek.debugbridge` Lua API for JSON bridging between Lua values and external debug tooling.",
       "functions": [
         {
           "name": "start",
@@ -6120,7 +6120,7 @@
     },
     {
       "name": "devtools",
-      "description": "File: src/lua_api/devtools_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.devtools` Lua API for profiling zones, debug tables, and developer-facing runtime tools.",
       "functions": [
         {
           "name": "log",
@@ -6884,7 +6884,7 @@
     },
     {
       "name": "dialog",
-      "description": "File: src/lua_api/dialog_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Registers the `lurek.dialog` Lua API for dialog userdata, action control, and script-managed dialog flows.",
       "functions": [
         {
           "name": "newAI",
@@ -7097,7 +7097,7 @@
     },
     {
       "name": "docs",
-      "description": "File: src/lua_api/docs_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.docs` Lua API for runtime doc reflection, module scans, entries, and quality reporting.",
       "functions": [
         {
           "name": "scan",
@@ -7648,7 +7648,7 @@
     },
     {
       "name": "dsp",
-      "description": "File: src/lua_api/dsp_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.dsp` Lua API for offline effects, waveform exports, filters, and audio analysis tasks.",
       "functions": [
         {
           "name": "newEffectParams",
@@ -8476,7 +8476,7 @@
     },
     {
       "name": "ecs",
-      "description": "File: src/lua_api/ecs_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.ecs` Lua API for ECS userdata, entity access, and thin binding helpers over ECS state.",
       "functions": [
         {
           "name": "newUniverse",
@@ -8505,7 +8505,7 @@
     },
     {
       "name": "effect",
-      "description": "Lua bindings for `lurek.effect` constructors, post-effect userdata, and capture control.\nValidates Lua-facing effect names, stack arguments, and image-effect chain specs at the API edge.\nKeeps renderer submission and mutable post-effect state in Rust engine modules rather than in Lua glue.",
+      "description": "Registers the `lurek.effect` Lua API for post-effect constructors, pass sync, and capture-related userdata.",
       "functions": [
         {
           "name": "newEffect",
@@ -8695,7 +8695,7 @@
     },
     {
       "name": "engine",
-      "description": "File: src/lua_api/engine_api.rs\nRegisters the public `lurek.engine` namespace for engine timing, profiling, and memory diagnostics.\nExposes read-mostly runtime metadata plus a small control surface for resource-budget reporting.",
+      "description": "Registers the `lurek.engine` Lua API for engine timing, profiling, memory inspection, and runtime metrics.",
       "functions": [
         {
           "name": "getVersion",
@@ -8852,7 +8852,7 @@
     },
     {
       "name": "event",
-      "description": "File: src/lua_api/event_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Registers the `lurek.event` Lua API for event priorities, dispatch helpers, and runtime exit requests.",
       "functions": [
         {
           "name": "exit",
@@ -9120,7 +9120,7 @@
     },
     {
       "name": "filesystem",
-      "description": "File: src/lua_api/filesystem_api.rs\nRegisters the `lurek.filesystem` Lua namespace over the sandboxed GameFS service.\nExposes safe save writes, mount-aware reads, async helpers, watcher polling, and ZIP handles.\nKeeps ZIP archives standalone through `LZipMount` rather than mutating the shared GameFS mount table.",
+      "description": "Registers the `lurek.filesystem` Lua API over GameFS for sandboxed paths, saves, and file operations.",
       "functions": [
         {
           "name": "mountZip",
@@ -9943,7 +9943,7 @@
     },
     {
       "name": "flownet",
-      "description": "File: src/lua_api/flownet_api.rs\nRegisters the public `lurek.graph` Lua API for FLOWNET graph creation, mutation, routing, and simulation.\nConverts Lua userdata handles into Rust graph ids while keeping storage and simulation logic inside `src/flownet/`.\nValidates numeric bounds, enum-like strings, and handle ownership at the Lua boundary before mutating graph state.\nDispatches simulation events back into Lua callbacks without exposing internal Rust containers directly.\nKeeps Lua-facing documentation, names, defaults, and runtime errors aligned with the FLOWNET module contract.",
+      "description": "Registers the `lurek.flownet` Lua API for graph routing, simulation, validation, and flow-network userdata.",
       "functions": [
         {
           "name": "newGraph",
@@ -9961,7 +9961,7 @@
     },
     {
       "name": "font",
-      "description": "Lua bindings for `lurek.font`.\n\nExposes built-in and runtime-loaded font handles, measurement helpers,\nwrapping utilities, and shaping helpers backed by the render font store.",
+      "description": "Registers the `lurek.font` Lua API for font handles, builtin font lookup, and font activation helpers.",
       "functions": [
         {
           "name": "getDefault",
@@ -10253,7 +10253,7 @@
     },
     {
       "name": "globe",
-      "description": "File: src/lua_api/globe_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.globe` Lua API for globe state, markers, regions, colors, and latitude-longitude validation.",
       "functions": [
         {
           "name": "newRegistry",
@@ -10607,7 +10607,7 @@
     },
     {
       "name": "grep",
-      "description": "Lua bindings for `lurek.grep`.\n\nThis module exposes the repo's literal-first search engine, simple file filters,\nand JSON/log helpers to Lua. Directory scans use buffered file reads plus a small\nworker pool, while regex and glob support stay on the lightweight matcher path.",
+      "description": "Registers the `lurek.grep` Lua API for search requests, result conversion, and script-side grep inspection.",
       "functions": [
         {
           "name": "newEngine",
@@ -10743,7 +10743,7 @@
     },
     {
       "name": "html",
-      "description": "File: src/lua_api/html_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.html` Lua API for DOM-like elements, event emission, listeners, and HTML userdata.",
       "functions": [
         {
           "name": "preventDefault",
@@ -10849,7 +10849,7 @@
     },
     {
       "name": "i18n",
-      "description": "Lua bindings for `lurek.i18n`.\n\nThis module exposes translation catalogs, fallback-aware lookup, interpolation,\nplural helpers, locale metadata, and locale-aware number/date formatting to Lua.\nBindings keep the public API thin while delegating lookup and formatting rules to\n`crate::i18n`.",
+      "description": "Registers the `lurek.i18n` Lua API for translation bundles, table flattening, and localization helpers.",
       "functions": [
         {
           "name": "loadTable",
@@ -11516,7 +11516,7 @@
     },
     {
       "name": "image",
-      "description": "File: src/lua_api/image_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.image` Lua API for image userdata, dimension checks, GIF options, and image transforms.",
       "functions": [
         {
           "name": "newImageData",
@@ -11791,7 +11791,7 @@
     },
     {
       "name": "input",
-      "description": "File: src/lua_api/input_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.input` Lua API for key, mouse, and gamepad bindings, state queries, and axes.",
       "functions": [
         {
           "name": "isDown",
@@ -13332,7 +13332,7 @@
     },
     {
       "name": "layout",
-      "description": "Lua bindings for `lurek.layout`.\n\nThis module exposes tree, DAG, force-directed, and post-processing layout helpers\nto Lua. Bindings preserve node geometry and coordinates when results are passed back\ninto `snapToGrid` and `centerInArea`.",
+      "description": "Registers the `lurek.layout` Lua API for graph layout parsing, config handling, and result table bridging.",
       "functions": [
         {
           "name": "tree",
@@ -13489,7 +13489,7 @@
     },
     {
       "name": "learning",
-      "description": "File: src/lua_api/learning_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.learning` Lua API for RL spaces, tensors, observations, and environment callbacks.",
       "functions": [
         {
           "name": "newQLearner",
@@ -14040,7 +14040,7 @@
     },
     {
       "name": "light",
-      "description": "Lua bindings for `lurek.light` world controls, light handles, and occluder handles.\nValidates numeric ranges, enum-like strings, and options-table fields before mutating runtime light state.\nKeeps lighting behavior in `src/light` while exposing a thin, predictable `lurek.light` API surface.",
+      "description": "Registers the `lurek.light` Lua API for light worlds, occluders, blends, and validated lighting options.",
       "functions": [
         {
           "name": "newLight",
@@ -14428,7 +14428,7 @@
     },
     {
       "name": "log",
-      "description": "Lua bindings for `lurek.log`.\n\nThis module exposes severity helpers, sink management, structured fields, and\ncallback/file/memory routing to Lua. Callback sinks follow the same level and tag\nfilters as every other sink.",
+      "description": "Registers the `lurek.log` Lua API for structured logging, field and tag parsing, and runtime log dispatch.",
       "functions": [
         {
           "name": "debug",
@@ -14816,7 +14816,7 @@
     },
     {
       "name": "mapblock",
-      "description": "File: src/lua_api/mapblock_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.mapblock` Lua API for map blocks, edge parsing, cell lists, and block userdata.",
       "functions": [
         {
           "name": "newConfig",
@@ -15029,7 +15029,7 @@
     },
     {
       "name": "math",
-      "description": "File: src/lua_api/math_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Registers the `lurek.math` Lua API for math userdata, polygon tables, metadata maps, and helper conversions.",
       "functions": [
         {
           "name": "newRandomGenerator",
@@ -17536,7 +17536,7 @@
     },
     {
       "name": "midi",
-      "description": "File: src/lua_api/midi_api.rs\nModule API documentation",
+      "description": "Registers the `lurek.midi` Lua API for MIDI-facing runtime helpers and thin script bindings over playback.",
       "functions": [
         {
           "name": "newPlayer",
@@ -17601,7 +17601,7 @@
     },
     {
       "name": "minimap",
-      "description": "File: src/lua_api/minimap_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.minimap` Lua API for minimap userdata, icon parsing, colors, and minimap rendering.",
       "functions": [
         {
           "name": "newMinimap",
@@ -17644,7 +17644,7 @@
     },
     {
       "name": "mods",
-      "description": "File: src/lua_api/mods_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Registers the `lurek.mods` Lua API for mod metadata, config schemas, info tables, and mod-management userdata.",
       "functions": [
         {
           "name": "newMod",
@@ -17715,7 +17715,7 @@
     },
     {
       "name": "network",
-      "description": "File: src/lua_api/network_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.network` Lua API for net values, rooms, stats, snapshots, and network event bridging.",
       "functions": [
         {
           "name": "newHost",
@@ -18398,7 +18398,7 @@
     },
     {
       "name": "overlay",
-      "description": "Lua bindings for `lurek.overlay` controllers, transitions, and screen-space telemetry.\nValidates overlay dimensions, color channels, durations, and weather parameters at the API edge.\nKeeps long-lived atmosphere, flash, fade, and weather behavior in `src/overlay` rather than in Lua glue.",
+      "description": "Registers the `lurek.overlay` Lua API for overlay controllers, transitions, telemetry, and validated options.",
       "functions": [
         {
           "name": "new",
@@ -18459,7 +18459,7 @@
     },
     {
       "name": "parallax",
-      "description": "File: src/lua_api/parallax_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.parallax` Lua API for parallax layers, blend modes, sorting, and render command helpers.",
       "functions": [
         {
           "name": "newLayer",
@@ -18526,7 +18526,7 @@
     },
     {
       "name": "particle",
-      "description": "Lua bindings for `lurek.particle` system handles, trail handles, and visualization helpers.\nValidates particle dimensions, lifetimes, callback inputs, and physics bridge arguments before touching runtime state.\nKeeps emitter simulation, collision, and rendering logic in `src/particle` while exposing a thin Lua API layer.",
+      "description": "Registers the `lurek.particle` Lua API for particle systems, trails, validation, and particle option tables.",
       "functions": [
         {
           "name": "newSystem",
@@ -18647,7 +18647,7 @@
     },
     {
       "name": "pathfind",
-      "description": "File: src/lua_api/pathfind_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.pathfind` Lua API for path queries, async pools, waypoint conversion, and grid validation.",
       "functions": [
         {
           "name": "newNavGrid",
@@ -19003,7 +19003,7 @@
     },
     {
       "name": "patterns",
-      "description": "File: src/lua_api/patterns_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Registers the `lurek.patterns` Lua API for pattern graphs, node ticking, flushing, and pattern userdata.",
       "functions": [
         {
           "name": "newEventBus",
@@ -19376,7 +19376,7 @@
     },
     {
       "name": "physics",
-      "description": "File: src/lua_api/physics_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Registers the `lurek.physics` Lua API for bodies, shapes, raycasts, queries, events, and debug settings.",
       "functions": [
         {
           "name": "newWorld",
@@ -20049,7 +20049,7 @@
     },
     {
       "name": "pipeline",
-      "description": "File: src/lua_api/pipeline_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.pipeline` Lua API for async pipelines, step callbacks, progress, and pipeline userdata.",
       "functions": [
         {
           "name": "newStep",
@@ -20116,7 +20116,7 @@
     },
     {
       "name": "procgen",
-      "description": "File: src/lua_api/procgen_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.procgen` Lua API for generators, noise settings, option parsing, and procgen userdata.",
       "functions": [
         {
           "name": "cellularAutomata",
@@ -21095,7 +21095,7 @@
     },
     {
       "name": "province",
-      "description": "File: src/lua_api/province_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.province` Lua API for province maps, markers, tints, borders, and province registries.",
       "functions": [
         {
           "name": "newFromPng",
@@ -21467,7 +21467,7 @@
     },
     {
       "name": "raycaster",
-      "description": "File: src/lua_api/raycaster_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Registers the `lurek.raycaster` Lua API for raycast scenes, textures, level parsing, and raycaster userdata.",
       "functions": [
         {
           "name": "new",
@@ -21944,7 +21944,7 @@
     },
     {
       "name": "render",
-      "description": "File: src/lua_api/render_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Registers the `lurek.render` Lua API for render commands, sprites, fonts, shapes, and queued draw helpers.",
       "functions": [
         {
           "name": "setColor",
@@ -24832,7 +24832,7 @@
     },
     {
       "name": "repl",
-      "description": "File: src/lua_api/repl_api.rs\nRegisters the public `lurek.repl` API for creating headless Lua REPL sessions.\nKeeps the Lua-facing layer limited to userdata registration, result formatting, history exposure, and completion wiring.\nDelegates parsing, command handling, evaluation, and bounded history management to `src/repl/`.",
+      "description": "Registers the `lurek.repl` Lua API for headless REPL sessions, REPL userdata, and script-driven evaluation.",
       "functions": [
         {
           "name": "new",
@@ -24857,7 +24857,7 @@
     },
     {
       "name": "save",
-      "description": "File: src/lua_api/save_api.rs\nRegisters the public `lurek.save` API for slot persistence, auto-save scheduling, migration hooks, and metadata queries.\nKeeps Lua bindings thin by translating callbacks and tables into `src/save/` operations instead of embedding persistence logic here.\nLoads save payloads through the constrained parser in `src/save/save_manager.rs` so slot metadata and content never require arbitrary Lua evaluation.",
+      "description": "Registers the public `lurek.save` API for slot persistence, auto-save scheduling, migration hooks, and metadata queries.",
       "functions": [
         {
           "name": "newSaveManager",
@@ -24875,7 +24875,7 @@
     },
     {
       "name": "scene",
-      "description": "File: src/lua_api/scene_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.scene` Lua API for scene userdata, target resolution, and script scene transitions.",
       "functions": [
         {
           "name": "push",
@@ -25976,7 +25976,7 @@
     },
     {
       "name": "serialize",
-      "description": "File: src/lua_api/serialize_api.rs\nRegisters the public `lurek.serial` API for multi-format encode, decode, and validation helpers.\nKeeps the Lua-facing layer thin by translating option tables and values into `src/serialize/` domain calls.\nReturns decoded Lua tables or encoded strings while delegating format-specific behavior to the serialization module.",
+      "description": "Registers the `lurek.serialize` Lua API for multi-format encode, decode, validation, and CSV options.",
       "functions": [
         {
           "name": "fromJson",
@@ -26337,7 +26337,7 @@
     },
     {
       "name": "spine",
-      "description": "File: src/lua_api/spine_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Registers the `lurek.spine` Lua API for Spine animation userdata, bone options, and validated playback.",
       "functions": [
         {
           "name": "newSkeleton",
@@ -26422,7 +26422,7 @@
     },
     {
       "name": "sprite",
-      "description": "File: src/lua_api/sprite_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.sprite` Lua API for sprite userdata, clips, quads, frames, and sprite table conversion.",
       "functions": [
         {
           "name": "newSprite",
@@ -26633,7 +26633,7 @@
     },
     {
       "name": "svg",
-      "description": "Lua bindings for the vector SVG graphics module.\nExposes the LSvgImage userdata and lurek.svg.load API.\nMethods mirror the image/sprite module patterns: factory, dimension queries,\nelement state reads/writes/resets, hierarchy navigation, bounds, and GPU canvas caching.\nModule API documentation",
+      "description": "Registers the `lurek.svg` Lua API for vector SVG graphics, userdata wrappers, and script-side SVG control.",
       "functions": [
         {
           "name": "load",
@@ -26658,7 +26658,7 @@
     },
     {
       "name": "system",
-      "description": "File: src/lua_api/system_api.rs\nRegisters the public `lurek.runtime` namespace for host, process, and runtime utility helpers.\nKeeps environment queries, clipboard helpers, logging controls, and batch utilities in one runtime-facing surface.",
+      "description": "Registers the `lurek.system` Lua API for host utilities, process helpers, and runtime environment queries.",
       "functions": [
         {
           "name": "getOS",
@@ -27069,7 +27069,7 @@
     },
     {
       "name": "terminal",
-      "description": "File: src/lua_api/terminal_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.terminal` Lua API for terminal widgets, font sizing, layout fit, and terminal userdata.",
       "functions": [
         {
           "name": "newTerminal",
@@ -27756,7 +27756,7 @@
     },
     {
       "name": "thread",
-      "description": "File: src/lua_api/thread_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Registers the `lurek.thread` Lua API for thread userdata, thread control, and script-visible thread helpers.",
       "functions": [
         {
           "name": "newThread",
@@ -27887,7 +27887,7 @@
     },
     {
       "name": "tilemap",
-      "description": "File: src/lua_api/tilemap_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Registers the `lurek.tilemap` Lua API for tilemap userdata, imports, one-based coordinates, and validation.",
       "functions": [
         {
           "name": "newTileSet",
@@ -28763,7 +28763,7 @@
     },
     {
       "name": "timer",
-      "description": "File: src/lua_api/timer_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Registers the `lurek.timer` Lua API for timer userdata, callback removal, scheduling, and timer control.",
       "functions": [
         {
           "name": "getDelta",
@@ -29063,7 +29063,7 @@
     },
     {
       "name": "tween",
-      "description": "File: src/lua_api/tween_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5",
+      "description": "Registers the `lurek.tween` Lua API for tween userdata, chain control, progress queries, and ticking.",
       "functions": [
         {
           "name": "update",
@@ -29389,7 +29389,7 @@
     },
     {
       "name": "ui",
-      "description": "File: src/lua_api/ui_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3\nTODO: add doc note 4\nTODO: add doc note 5\nTODO: add doc note 6\nTODO: add doc note 7",
+      "description": "Registers the `lurek.ui` Lua API for widget userdata, render-to-image helpers, dialogs, and typed widgets.",
       "functions": [
         {
           "name": "setAutoInput",
@@ -30981,7 +30981,7 @@
     },
     {
       "name": "validator",
-      "description": "File: src/lua_api/validator_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2",
+      "description": "Registers the `lurek.validator` Lua API for validator userdata, report conversion, and validation helpers.",
       "functions": [
         {
           "name": "newEngine",
@@ -31042,7 +31042,7 @@
     },
     {
       "name": "visibility",
-      "description": "File: src/lua_api/visibility_api.rs\nModule API documentation\n\nTODO: add doc note 1\nTODO: add doc note 2\nTODO: add doc note 3",
+      "description": "Registers the `lurek.visibility` Lua API for visibility userdata, queries, and visibility-side validation.",
       "functions": [
         {
           "name": "new",
@@ -31085,7 +31085,7 @@
     },
     {
       "name": "window",
-      "description": "File: src/lua_api/window_api.rs\nRegisters the public `lurek.window` API used by scripts to inspect and request desktop window changes.\nKeeps Lua bindings thin by delegating window state mutations and display queries to `src/window/`.\nBridges Lua tables into typed deferred window commands so the event loop can apply them safely.",
+      "description": "Registers the `lurek.window` Lua API for displays, window config requests, dialogs, and window inspection.",
       "functions": [
         {
           "name": "setTitle",
@@ -116696,24 +116696,24 @@
           "name": "defineType",
           "fullPath": "LRelationshipManager:defineType",
           "signature": "(name, levels, [default_level])",
-          "description": "",
+          "description": "Defines a named relationship type with ordered level labels and an optional default level for new pairs.",
           "parameters": [
             {
               "name": "name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Relationship type name used for later `setLevel` and `getLevel` calls.",
               "optional": false
             },
             {
               "name": "levels",
-              "type": "any",
-              "description": "",
+              "type": "string[]",
+              "description": "Array table of allowed level labels in their semantic order.",
               "optional": false
             },
             {
               "name": "default_level",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Optional fallback level assigned when a pair has no explicit level for this type.",
               "optional": true
             }
           ],
@@ -116839,35 +116839,35 @@
           "name": "setLevel",
           "fullPath": "LRelationshipManager:setLevel",
           "signature": "(a, b, type_name, level)",
-          "description": "",
+          "description": "Assigns a named level for one relationship type between two entity ids and reports whether the type-level pair was accepted.",
           "parameters": [
             {
               "name": "a",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Source entity id for the relationship pair.",
               "optional": false
             },
             {
               "name": "b",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Target entity id for the relationship pair.",
               "optional": false
             },
             {
               "name": "type_name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Registered relationship type name to mutate.",
               "optional": false
             },
             {
               "name": "level",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Level label to store for the given type on this entity pair.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "boolean",
+          "returnType": "boolean",
           "isMethod": true,
           "objectType": "LRelationshipManager"
         },
@@ -116875,29 +116875,29 @@
           "name": "getLevel",
           "fullPath": "LRelationshipManager:getLevel",
           "signature": "(a, b, type_name)",
-          "description": "",
+          "description": "Returns the effective named level for one relationship type on a pair, falling back to the type default when no explicit level exists.",
           "parameters": [
             {
               "name": "a",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Source entity id for the relationship pair.",
               "optional": false
             },
             {
               "name": "b",
-              "type": "any",
-              "description": "",
+              "type": "integer",
+              "description": "Target entity id for the relationship pair.",
               "optional": false
             },
             {
               "name": "type_name",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Registered relationship type name to query.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string?",
+          "returnType": "string?",
           "isMethod": true,
           "objectType": "LRelationshipManager"
         },
@@ -160744,554 +160744,7 @@
       "queue"
     ]
   },
-  "callbacks": [
-    {
-      "name": "draw",
-      "signature": "function lurek.draw()",
-      "description": "Called every frame for world rendering.",
-      "parameters": []
-    },
-    {
-      "name": "draw_ui",
-      "signature": "function lurek.draw_ui()",
-      "description": "Called every frame after `draw` for UI rendering.",
-      "parameters": []
-    },
-    {
-      "name": "errorhandler",
-      "signature": "function lurek.errorhandler(msg)",
-      "description": "Called for unhandled Lua errors.",
-      "parameters": [
-        {
-          "name": "msg",
-          "type": "string",
-          "description": "Error message text.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "exit",
-      "signature": "function lurek.exit()",
-      "description": "Called when the engine is shutting down.",
-      "parameters": []
-    },
-    {
-      "name": "fixedUpdate",
-      "signature": "function lurek.fixedUpdate(dt)",
-      "description": "Deprecated alias for `process_physics`.",
-      "parameters": [
-        {
-          "name": "dt",
-          "type": "number",
-          "description": "Fixed-step delta time in seconds.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "focus",
-      "signature": "function lurek.focus(has_focus)",
-      "description": "Called when window focus changes.",
-      "parameters": [
-        {
-          "name": "has_focus",
-          "type": "boolean",
-          "description": "True when focused.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "gamepadaxis",
-      "signature": "function lurek.gamepadaxis(id, axis, value)",
-      "description": "Called when a gamepad axis value changes.",
-      "parameters": [
-        {
-          "name": "id",
-          "type": "number",
-          "description": "Gamepad id.",
-          "optional": false
-        },
-        {
-          "name": "axis",
-          "type": "string",
-          "description": "Axis name.",
-          "optional": false
-        },
-        {
-          "name": "value",
-          "type": "number",
-          "description": "Axis value in range -1..1.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "gamepadpressed",
-      "signature": "function lurek.gamepadpressed(id, button)",
-      "description": "Called when a gamepad button is pressed.",
-      "parameters": [
-        {
-          "name": "id",
-          "type": "number",
-          "description": "Gamepad id.",
-          "optional": false
-        },
-        {
-          "name": "button",
-          "type": "string",
-          "description": "Button name.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "gamepadreleased",
-      "signature": "function lurek.gamepadreleased(id, button)",
-      "description": "Called when a gamepad button is released.",
-      "parameters": [
-        {
-          "name": "id",
-          "type": "number",
-          "description": "Gamepad id.",
-          "optional": false
-        },
-        {
-          "name": "button",
-          "type": "string",
-          "description": "Button name.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "init",
-      "signature": "function lurek.init()",
-      "description": "Called once when the engine initialises.",
-      "parameters": []
-    },
-    {
-      "name": "joystickadded",
-      "signature": "function lurek.joystickadded(id)",
-      "description": "Called when a gamepad is connected.",
-      "parameters": [
-        {
-          "name": "id",
-          "type": "number",
-          "description": "Gamepad id.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "joystickremoved",
-      "signature": "function lurek.joystickremoved(id)",
-      "description": "Called when a gamepad is disconnected.",
-      "parameters": [
-        {
-          "name": "id",
-          "type": "number",
-          "description": "Gamepad id.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "keypressed",
-      "signature": "function lurek.keypressed(key, scancode, isrepeat)",
-      "description": "Called when a keyboard key is pressed.",
-      "parameters": [
-        {
-          "name": "key",
-          "type": "string",
-          "description": "Key name.",
-          "optional": false
-        },
-        {
-          "name": "scancode",
-          "type": "string",
-          "description": "Platform scancode.",
-          "optional": false
-        },
-        {
-          "name": "isrepeat",
-          "type": "boolean",
-          "description": "True when key repeat generated the event.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "keyreleased",
-      "signature": "function lurek.keyreleased(key, scancode)",
-      "description": "Called when a keyboard key is released.",
-      "parameters": [
-        {
-          "name": "key",
-          "type": "string",
-          "description": "Key name.",
-          "optional": false
-        },
-        {
-          "name": "scancode",
-          "type": "string",
-          "description": "Platform scancode.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "mousemoved",
-      "signature": "function lurek.mousemoved(x, y, dx, dy)",
-      "description": "Called when the mouse cursor moves.",
-      "parameters": [
-        {
-          "name": "x",
-          "type": "number",
-          "description": "Mouse x coordinate.",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Mouse y coordinate.",
-          "optional": false
-        },
-        {
-          "name": "dx",
-          "type": "number",
-          "description": "Horizontal delta.",
-          "optional": false
-        },
-        {
-          "name": "dy",
-          "type": "number",
-          "description": "Vertical delta.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "mousepressed",
-      "signature": "function lurek.mousepressed(x, y, button)",
-      "description": "Called when a mouse button is pressed.",
-      "parameters": [
-        {
-          "name": "x",
-          "type": "number",
-          "description": "Mouse x coordinate.",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Mouse y coordinate.",
-          "optional": false
-        },
-        {
-          "name": "button",
-          "type": "number",
-          "description": "Button index.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "mousereleased",
-      "signature": "function lurek.mousereleased(x, y, button)",
-      "description": "Called when a mouse button is released.",
-      "parameters": [
-        {
-          "name": "x",
-          "type": "number",
-          "description": "Mouse x coordinate.",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Mouse y coordinate.",
-          "optional": false
-        },
-        {
-          "name": "button",
-          "type": "number",
-          "description": "Button index.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "process",
-      "signature": "function lurek.process(dt)",
-      "description": "Called every frame for variable-step gameplay logic.",
-      "parameters": [
-        {
-          "name": "dt",
-          "type": "number",
-          "description": "Delta time in seconds.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "process_late",
-      "signature": "function lurek.process_late(dt)",
-      "description": "Called every frame after `process`.",
-      "parameters": [
-        {
-          "name": "dt",
-          "type": "number",
-          "description": "Delta time in seconds.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "process_physics",
-      "signature": "function lurek.process_physics(dt)",
-      "description": "Called on the fixed physics step.",
-      "parameters": [
-        {
-          "name": "dt",
-          "type": "number",
-          "description": "Fixed-step delta time in seconds.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "quit",
-      "signature": "function lurek.quit()",
-      "description": "Called before shutdown; return true to cancel quit.",
-      "parameters": []
-    },
-    {
-      "name": "ready",
-      "signature": "function lurek.ready()",
-      "description": "Called once after init, when runtime state is ready.",
-      "parameters": []
-    },
-    {
-      "name": "resize",
-      "signature": "function lurek.resize(w, h)",
-      "description": "Called when window size changes.",
-      "parameters": [
-        {
-          "name": "w",
-          "type": "number",
-          "description": "New window width.",
-          "optional": false
-        },
-        {
-          "name": "h",
-          "type": "number",
-          "description": "New window height.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "textedited",
-      "signature": "function lurek.textedited(text, start, length)",
-      "description": "Called when IME composition text changes.",
-      "parameters": [
-        {
-          "name": "text",
-          "type": "string",
-          "description": "Composition text.",
-          "optional": false
-        },
-        {
-          "name": "start",
-          "type": "number",
-          "description": "Cursor start offset.",
-          "optional": false
-        },
-        {
-          "name": "length",
-          "type": "number",
-          "description": "Selection length.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "textinput",
-      "signature": "function lurek.textinput(text)",
-      "description": "Called when text input is received.",
-      "parameters": [
-        {
-          "name": "text",
-          "type": "string",
-          "description": "Input text fragment.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "touchmoved",
-      "signature": "function lurek.touchmoved(id, x, y, dx, dy, pressure)",
-      "description": "Called when a touch point moves.",
-      "parameters": [
-        {
-          "name": "id",
-          "type": "number",
-          "description": "Touch id.",
-          "optional": false
-        },
-        {
-          "name": "x",
-          "type": "number",
-          "description": "Touch x coordinate.",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Touch y coordinate.",
-          "optional": false
-        },
-        {
-          "name": "dx",
-          "type": "number",
-          "description": "Horizontal delta.",
-          "optional": false
-        },
-        {
-          "name": "dy",
-          "type": "number",
-          "description": "Vertical delta.",
-          "optional": false
-        },
-        {
-          "name": "pressure",
-          "type": "number",
-          "description": "Touch pressure.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "touchpressed",
-      "signature": "function lurek.touchpressed(id, x, y, dx, dy, pressure)",
-      "description": "Called when a touch begins.",
-      "parameters": [
-        {
-          "name": "id",
-          "type": "number",
-          "description": "Touch id.",
-          "optional": false
-        },
-        {
-          "name": "x",
-          "type": "number",
-          "description": "Touch x coordinate.",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Touch y coordinate.",
-          "optional": false
-        },
-        {
-          "name": "dx",
-          "type": "number",
-          "description": "Horizontal delta.",
-          "optional": false
-        },
-        {
-          "name": "dy",
-          "type": "number",
-          "description": "Vertical delta.",
-          "optional": false
-        },
-        {
-          "name": "pressure",
-          "type": "number",
-          "description": "Touch pressure.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "touchreleased",
-      "signature": "function lurek.touchreleased(id, x, y, dx, dy, pressure)",
-      "description": "Called when a touch ends.",
-      "parameters": [
-        {
-          "name": "id",
-          "type": "number",
-          "description": "Touch id.",
-          "optional": false
-        },
-        {
-          "name": "x",
-          "type": "number",
-          "description": "Touch x coordinate.",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Touch y coordinate.",
-          "optional": false
-        },
-        {
-          "name": "dx",
-          "type": "number",
-          "description": "Horizontal delta.",
-          "optional": false
-        },
-        {
-          "name": "dy",
-          "type": "number",
-          "description": "Vertical delta.",
-          "optional": false
-        },
-        {
-          "name": "pressure",
-          "type": "number",
-          "description": "Touch pressure.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "visible",
-      "signature": "function lurek.visible(is_visible)",
-      "description": "Called when window visibility changes.",
-      "parameters": [
-        {
-          "name": "is_visible",
-          "type": "boolean",
-          "description": "True when visible.",
-          "optional": false
-        }
-      ]
-    },
-    {
-      "name": "wheelmoved",
-      "signature": "function lurek.wheelmoved(x, y)",
-      "description": "Called when the mouse wheel moves.",
-      "parameters": [
-        {
-          "name": "x",
-          "type": "number",
-          "description": "Horizontal wheel delta.",
-          "optional": false
-        },
-        {
-          "name": "y",
-          "type": "number",
-          "description": "Vertical wheel delta.",
-          "optional": false
-        }
-      ]
-    }
-  ],
+  "callbacks": [],
   "keyNames": [
     "space",
     "return",

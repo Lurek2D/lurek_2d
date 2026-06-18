@@ -2697,13 +2697,13 @@ LQueryView:typeOf(name: string) -> boolean -- Returns whether this cached query-
 
 ```lua
 LRelationshipManager:adjustValue(a: integer, b: integer, delta: number) -- Adds a delta to the numeric relationship value between two entity ids.
-LRelationshipManager:defineType(name: any, levels: any, [default_level]: any)
-LRelationshipManager:getLevel(a: any, b: any, type_name: any)
+LRelationshipManager:defineType(name: string, levels: string[], [default_level]: string) -- Defines a named relationship type with ordered level labels and an optional default level for new pairs.
+LRelationshipManager:getLevel(a: integer, b: integer, type_name: string) -> string? -- Returns the effective named level for one relationship type on a pair, falling back to the type default whe...
 LRelationshipManager:getValue(a: integer, b: integer) -> number -- Returns the numeric relationship value between two entity ids.
 LRelationshipManager:pairCount() -> integer -- Returns how many entity-id pairs currently have tracked relationship data.
 LRelationshipManager:removePair(a: integer, b: integer) -- Removes all tracked relationship data between two entity ids.
 LRelationshipManager:removeType(name: string) -- Removes a named relationship type definition.
-LRelationshipManager:setLevel(a: any, b: any, type_name: any, level: any)
+LRelationshipManager:setLevel(a: integer, b: integer, type_name: string, level: string) -> boolean -- Assigns a named level for one relationship type between two entity ids and reports whether the type-level p...
 LRelationshipManager:setValue(a: integer, b: integer, value: number) -- Sets the numeric relationship value between two entity ids.
 LRelationshipManager:type() -> string -- Returns the Lua-visible type name for this relationship manager handle.
 LRelationshipManager:typeNames() -> string[] -- Returns the defined relationship type names.

@@ -1,4 +1,6 @@
-//! Lightweight geometry overlap helpers for code that needs quick collision answers without standing up a full physics world.
+//! This file owns lightweight overlap helpers for AABBs, circles, and point tests without a full physics world.
+//! It provides stateless boolean queries used by gameplay code that only needs immediate geometric answers.
+//! Open this file when simple collision predicates change; buffered collision events and bodies live elsewhere.
 
 /// Return true when two AABBs overlap (axes: x-right, y-down).
 #[allow(clippy::too_many_arguments)]

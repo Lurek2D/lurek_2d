@@ -1,7 +1,8 @@
-//! Defines typed automation step contracts that describe input actions and control-flow intent. `automation/step` delivers the step implementation for the automation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Covers keyboard, mouse, wheel, text, wait, macro, and assertion-oriented event categories. The file owns or coordinates data contracts including `Action`, `Step`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Stores optional action payload fields in one flexible step record consumed by script playback. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_action`, `as_str`, `new`, `effective_scancode` stays attached to the local data model and invariants.
-//! Maps textual action tags to enum variants for deterministic parse and dispatch behavior. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/automation/step.rs` owns the typed action enum and step record that describe timed automation inputs and checks.
+//! It defines `Action` and `Step`, keeping parseable action names and optional per-step payload fields under one owner.
+//! Keyboard, mouse, wheel, text, wait, macro, assert, and visual-assert step categories are all declared here.
+//! Read this file when action vocabulary, step fields, or scancode fallback behavior for automation content changes.
+//! This file is the schema boundary for automation scripts, while parsing and playback behavior stay in sibling modules.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Input event kind dispatched by a `Step` during automation playback.

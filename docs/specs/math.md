@@ -18,50 +18,25 @@
 
 ## Summary
 
-- This module gives users the shared numeric foundation used by movement, collision, rendering, AI, and procedural systems.
-- Vec2 and Vec3 types provide common vector operations for positions, directions, and velocity calculations.
-- Mat3 and transform utilities support 2D affine composition for translation, rotation, scale, and shear workflows.
-- Scalar helpers cover clamp, remap, interpolation, inverse interpolation, and smoothstep-style value shaping.
-- Easing utilities provide standardized motion curves for animation and UI transitions.
-- Tween helpers support consistent timing math for value progression over runtime updates.
-- Bézier and spline primitives support authored paths and smooth camera or object trajectories.
-- Geometry helpers support line tests, segment queries, and circle interactions.
-- Rectangle and circle primitives provide reliable containment and overlap checks.
-- Polygon operations support hulls, winding, triangulation, and shape analysis use cases.
-- Delaunay and Voronoi utilities support procedural region generation and spatial partition workflows.
-- AABB tree support enables dynamic broad-phase spatial queries over moving entities.
-- Spatial hash support enables efficient neighborhood and occupancy-style lookups.
-- Both spatial indices are useful for reducing expensive all-to-all collision checks.
-- Random utilities provide deterministic seeded generation for reproducible simulation and content workflows.
-- Gaussian and uniform sampling helpers support varied procedural distributions.
-- Loot table support implements weighted sampling with efficient runtime draws.
-- Pity-tracking helpers support predictable reward behavior over repeated rolls.
-- Math functions are designed to remain deterministic and side-effect free.
-- This keeps subsystems aligned on shared numeric semantics.
-- It reduces subtle divergence between physics, rendering, and gameplay calculations.
-- The module is useful for both low-level engine code and high-level gameplay scripts.
-- It supports debugging by making core geometric and numeric operations explicit and reusable.
-- It improves maintainability by avoiding ad-hoc reimplementation of common formulas.
-- Consistent helper APIs reduce cognitive load when switching between engine domains.
-- Curve and interpolation features support expressive but controlled runtime motion.
-- Spatial structures support scalability as world density and actor counts grow.
-- Deterministic random support helps test reproducibility and save/load continuity.
-- The module acts as a single source for core math contracts used throughout the project.
-- Users can build advanced systems without importing separate math stacks.
-- It bridges authored data and runtime simulation with consistent numeric behavior.
-- It is especially valuable in projects with pathfinding, tactics, and procedural generation layers.
-- Shared conventions improve cross-team collaboration and bug diagnosis.
-- The practical result is fewer numeric edge-case regressions.
-- It also improves performance by reusing optimized foundational primitives.
-- Overall, this module is the backbone for reliable, composable engine mathematics.
-- It underpins gameplay feel, simulation accuracy, and visual coherence.
-- Users benefit from one coherent math vocabulary across all major subsystems.
-- That coherence is critical for long-lived projects with many interacting systems.
-- The module enables growth from simple prototypes to complex simulations.
-- It keeps mathematical behavior predictable as feature complexity increases.
-- In short, it is the engine's core quantitative infrastructure.
+- The `math` module is the engine's shared numerical and geometric foundation for users who need consistent rules for coordinates, shapes, transforms, interpolation, sampling, and spatial reasoning across many different feature areas.
+- Its most important role is standardization. When rendering, physics, pathfinding, camera logic, UI layout, procedural generation, and gameplay helpers all rely on the same vector, matrix, angle, and shape vocabulary, the rest of the engine can cooperate without hidden conversions or drifting assumptions.
+- Core vector and matrix types provide the base language for position, direction, orientation, scale, projection, and composition. They are the primitives that let modules talk about where something is, how it is rotated, how it moves, and how one space maps into another.
+- This shared language matters because many bugs in game engines come from mismatched coordinate reasoning rather than from sophisticated algorithms. A common math layer reduces those mismatches by making transformation and geometry rules explicit.
+- Geometry helpers extend the module beyond raw numbers into practical spatial entities. Rectangles, circles, polygons, bounds, and related helpers give several systems a reusable way to talk about area, containment, overlap, distance, clipping, and region tests.
+- Those shape operations are used everywhere: collision broad phases, selection boxes, viewport culling, UI hit testing, trigger zones, tile overlays, procedural regions, and visual debug helpers all benefit from the same geometry contracts.
+- Transform logic is another major user-facing category. Translation, rotation, scale, matrix composition, inversion, and coordinate-space conversion allow scripts and subsystems to move between local space, world space, map space, and screen-oriented representations without ambiguous manual math.
+- Curve-oriented helpers such as Bézier and spline support matter because many systems need more than straight lines. Motion paths, camera rails, authored trajectories, procedural contours, and smooth data interpolation all depend on parameterized curve logic.
+- Easing and interpolation functions play a similarly central role over time. Animation, UI transitions, camera smoothing, scripted effects, and numeric value blending all need shaped progression between states, and keeping those rules here helps the rest of the engine share the same motion grammar.
+- Value-shaping helpers are important because many systems need to clamp, remap, bias, normalize, or otherwise transform values before using them for gameplay or presentation. Housing those operations in one place keeps the engine's “small math” habits consistent.
+- Spatial indexing and broad-phase style utilities show that the module is also about organizing space, not only calculating within it. Large systems often need hashes, partitions, or other reusable structures before they perform more expensive per-object tests.
+- Specialized algorithms such as Voronoi support and other applied helpers broaden the module's value for world generation, region construction, and data-driven gameplay systems that need compact but dependable geometric building blocks.
+- The module therefore acts as a substrate for both high-level and low-level work. It supports everything from “move this value smoothly” to “construct this region structure” to “convert between spaces reliably.”
+- It also gives the engine one shared place for sampling, projection, and transform composition so neighboring systems do not drift into incompatible spatial assumptions.
+- That common layer matters when world space, screen space, local space, and authored coordinate systems must all stay interoperable.
+- Deterministic geometric helpers are equally valuable for tests and tools, because reproducible math behavior is often what makes visual or simulation evidence trustworthy.
+- The boundary with neighboring modules is straightforward: other specs describe domain behavior, but `math` owns the primitive numbers, shapes, transform rules, interpolation tools, and spatial utilities those domains share.
+- Read `math` as the place where the engine standardizes numeric and geometric reasoning across the rest of the project.
 
-This module primarily collaborates with `globe`, `image`. Its responsibility should stay inside the Foundations group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -72,140 +47,162 @@ This module primarily collaborates with `globe`, `image`. Its responsibility sho
 
 ### aabb_tree.rs
 
-- Dynamic broad-phase spatial index for 2D world queries and overlap culling. `math/aabb_tree` delivers the aabb tree implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores moving bounds in a hierarchy that stays tight as entries shift each frame. The file owns or coordinates data contracts including `AabbEntry`, `AabbTree`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Serves fast insert, remove, move, and query flows for dynamic actors. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `insert`, `remove`, `query`, `query_point`, `query_circle`, and 6 more stays attached to the local data model and invariants.
-- Reuses nodes through an internal pool to reduce allocation churn. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Chooses sibling branches with a cost heuristic that keeps the tree balanced. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Answers rectangle, point, circle, and segment tests from one entry map. The file boundary separates math implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns the dynamic AABB tree used as a broad-phase index for rectangle, point, circle, and segment queries.
+- `AabbEntry` stores the public leaf bounds, while `AabbTree` owns nodes, leaf indices, entry records, and the root.
+- Insert, remove, and update stay here because node allocation, sibling choice, and upward refits define tree semantics.
+- The internal `Node` and `NodeKind` types also belong here since branch-versus-leaf ownership is tree-local state.
+- Surface-area sibling selection remains local because balancing decisions shape runtime query cost for moving actors.
+- Circle and segment verification also belong here since broad-phase pruning and exact AABB tests share one boundary.
+- Free-list reuse is part of this owner because node lifetime and allocation churn are concerns of the tree itself.
+- Open it when broad-phase bounds logic changes; spatial hashes and shape helpers live in sibling math modules.
 
 ### bezier.rs
 
-- Flexible Bézier curve utility for smooth motion paths and procedural shaping. `math/bezier` delivers the bezier implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports dynamic control points, clamped evaluation, and partial-segment sampling. The file owns or coordinates data contracts including `BezierCurve`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides tangent and derivative queries for orientation and velocity-aware effects. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `evaluate`, `render`, `render_segment`, `get_derivative`, `get_control_point`, and 11 more stays attached to the local data model and invariants.
-- Can be transformed in place with translate, rotate, and scale operations. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Designed for path authoring, easing-like shaping, and motion interpolation use cases. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns the editable Bezier-curve model used for smooth paths, tangents, and sampled motion trajectories.
+- `BezierCurve` stores its control-point list and provides evaluation, derivative, arc-length, and sampling helpers.
+- Transform operations stay here because translating, rotating, or scaling points changes the owned curve geometry.
+- Segment rendering and distance-based evaluation also belong here since they derive directly from the same curve data.
+- Control-point insertion, removal, and mutation remain local because path editing is part of the curve's core contract.
+- Open it when authored path semantics change; splines and easing families live in sibling math modules.
 
 ### circle.rs
 
-- 2D circle geometry primitive with center point and non-negative radius clamped on construction for collision and containment tests.
-- Implements point-in-circle, circle-circle intersection, and AABB containment queries using distance comparisons for gameplay geometry.
-- Computes area and perimeter values for numerical analysis enabling physics-based interactions and spatial reasoning in game logic.
+- This file owns the 2D circle primitive used for containment, overlap tests, and simple numeric shape properties.
+- `Circle` stores center and radius, while area, perimeter, center, and AABB helpers expose the owned geometry.
+- Point and circle intersection checks stay here because distance-based circle semantics belong with the primitive.
+- Open it when circle-shape behavior changes; rectangle, polygon, and geometry helper code live in siblings.
 
 ### easing.rs
 
-- Comprehensive easing function library supporting in/out/in-out variants across quadratic, cubic, quartic, sine, exponential, and elastic motion families.
-- Implements normalized [0,1] input parameter curves producing normalized output ranges enabling composition into tween and animation systems.
-- Handles edge clamping for exponential and elastic curves preventing invalid outputs at boundaries while supporting smooth S-curve acceleration patterns.
-- Provides linear identity passthrough and symmetric in-out variants enabling data-driven animation selection from configuration files.
-- Standardizes easing semantics across animation interpolation enabling consistent motion timing and response characteristics in gameplay animations.
+- This file owns the library of named easing curves used to shape normalized animation and interpolation timing.
+- Linear, polynomial, sine, exponential, elastic, bounce, back, and smooth-step families all live in one owner.
+- Boundary clamping for exponential and elastic variants stays here because endpoint correctness is easing semantics.
+- `apply`, `easing_names`, and `resolve_easing_fn` also belong here since name lookup is part of the public surface.
+- The CSS-style `cubic_bezier` helper remains local because it evaluates one more timing curve under the same contract.
+- This file provides pure scalar mappings only, not tween state, animation tracks, or scene-update orchestration.
+- Open it when motion-curve semantics change; path geometry and transforms live in sibling math modules.
 
 ### facade.rs
 
-- Small scalar helper layer for interpolation and numeric remapping. `math/facade` delivers the public facade over lower-level subsystem helpers for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Groups lerp, inverse lerp, remap, smoothstep, clamp, and sign behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Operates on f32 values only and stays side-effect free. Public callable behavior is centered on `lerp`, `remap`, `clamp`, `sign`, `smoothstep`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns small scalar helpers such as lerp, remap, clamp, sign, smoothstep, and inverse_lerp.
+- The functions stay together because they provide the tiny numeric facade reused across the wider math subsystem.
+- They are pure f32 mappings, not vector types, geometry storage, or matrix-based transform owners.
+- Open it when scalar helper semantics change; curves, shapes, and vector primitives live in sibling modules.
 
 ### geometry.rs
 
-- Standalone geometry toolbox for flat coordinate math and polygon routines. `math/geometry` delivers the geometry implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Covers circle, segment, line, and point queries used by gameplay systems. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Computes polygon area, centroid, convex hull, and point inclusion tests. Public callable behavior is centered on `angle_between`, `circle_contains_point`, `circle_intersects_circle`, `circle_intersects_line`, `circle_intersects_segment`, and 9 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Provides line rasterization for grid traversal and tile-based effects. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Includes Delaunay triangulation helpers for procedural meshes and Voronoi prep. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Uses f32 for engine-facing work and f64 where triangulation precision matters. The file boundary separates math implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns standalone geometry routines for angles, intersections, rasterization, hulls, and polygon measures.
+- Circle, line, segment, and point helpers stay here because they are free functions rather than shape-owned methods.
+- Polygon area, centroid, point inclusion, and convex-hull utilities also belong here as shared flat-coordinate tools.
+- Bresenham line stepping remains local because grid traversal is geometry support, not a rendering system concern.
+- Delaunay triangulation also belongs here since it provides reusable mesh and Voronoi preparation over raw points.
+- This file is the shared toolbox boundary, not the owner of rectangles, circles, vectors, or dynamic spatial indexes.
+- Open it when low-level query semantics change; dedicated shape types and trees live in sibling math modules.
 
 ### loot_table.rs
 
-- Weighted loot sampling and pity tracking for deterministic drop systems. `math/loot_table` delivers the loot table implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Uses the alias method for O(1) draws after an O(n) build step. The file owns or coordinates data contracts including `LootEntry`, `LootTable`, `PityTracker`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Keeps the raw weight table and RNG state serializable for save files. Public callable behavior is centered on `sample_with_pity`, while method-level behavior such as `new`, `with_seed`, `set_seed`, `add`, `remove`, `set_weight`, and 14 more stays attached to the local data model and invariants.
-- Supports guaranteed outcomes once a pity threshold is reached. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Lets callers combine normal sampling with tracked fail counters. External integration uses `std`, `toml`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Preserves fast runtime lookups without hiding the probability model. The file boundary separates math implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns weighted loot sampling, alias-table construction, save-state restoration, and pity-drop tracking.
+- `LootEntry` defines one drop, `LootTable` owns weights and sampling state, and `PityTracker` tracks miss streaks.
+- Walker-Vose alias construction stays here because O(1) draw preparation is central to the table's runtime contract.
+- Mutation helpers such as add, remove, merge, and set_weight also belong here since they invalidate built sampling data.
+- Binary save and restore logic remain local because entries, alias arrays, and RNG state are owned by this structure.
+- TOML loading also belongs here since serialized table definitions are part of the table's authoring-facing boundary.
+- `sample_with_pity` remains local because guaranteed-drop forcing depends on both table sampling and pity state rules.
+- Open it when drop-table semantics change; general RNG helpers live in `random.rs`, not in this file.
 
 ### mat3.rs
 
-- Row-major 3x3 matrix for 2D affine transforms and coordinate mapping. `math/mat3` delivers the mat3 implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Builds identity, translation, rotation, scale, and shear matrices. The file owns or coordinates data contracts including `Mat3`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports inversion and multiplication for transform composition. Public callable behavior is centered on no named public items, while method-level behavior such as `identity`, `from_row_major`, `from_translation`, `from_rotation`, `from_shear`, `from_scale`, and 2 more stays attached to the local data model and invariants.
-- Maps points through a compact linear algebra core. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the row-major 3x3 matrix used for 2D affine translation, rotation, scale, and shear math.
+- `Mat3` stores matrix elements and exposes constructors, inversion, multiplication, and point transformation helpers.
+- Affine constructors stay here because matrix layout and basis placement are local concerns of this linear type.
+- Inverse and multiplication logic also belong here since composition semantics must stay with the matrix owner.
+- Open it when 2D matrix behavior changes; high-level transform editing lives in `transform.rs` instead.
 
 ### mod.rs
 
-- Core math module wiring the vector, matrix, shape, curve, and utility submodules. `math/mod` is the math module index, declaring `aabb_tree`, `bezier`, `circle`, `easing`, `facade`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
-- Collects the primitives that other engine systems build on for motion, collision, and mapping. `src/math/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `aabb_tree::AabbTree`, `bezier::BezierCurve`, `circle::Circle`, `facade::{clamp, inverse_lerp, lerp, remap, sign, smoothstep}`, and 13 more centralized for the math subsystem.
-- Groups spatial structures with interpolation, geometry, and procedural helpers under one namespace. The file documents how math submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- Keeps the public math surface compact while exposing the full foundation layer. Agents should read this index to choose the narrow owner file first, because it maps names such as `aabb_tree`, `bezier`, `circle`, `easing`, `facade`, and 12 more to concrete implementation responsibilities.
-- `math/mod` is the math module index, declaring `aabb_tree`, `bezier`, `circle`, `easing`, `facade`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/math/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `aabb_tree::AabbTree`, `bezier::BezierCurve`, `circle::Circle`, `facade::{clamp, inverse_lerp, lerp, remap, sign, smoothstep}`, and 13 more centralized for the math subsystem.
+- This module is the math index, exposing vectors, matrices, shapes, curves, random tools, and spatial data helpers.
+- It wires together core geometry owners such as `vec2`, `vec3`, `rect`, `circle`, `polygon`, and `transform`.
+- It also exports support systems such as `aabb_tree`, `spatial_hash`, `loot_table`, `random`, and `easing`.
+- `mod.rs` owns visibility and reexport boundaries, not runtime state, so implementation ownership stays in siblings.
+- Open this file to map where interpolation, bounds queries, triangulation, transforms, or weighted sampling are owned.
+- `geometry.rs`, `polygon.rs`, and `voronoi.rs` cover free-function geometric analysis and derived cell construction.
+- `vec2.rs`, `vec3.rs`, `mat3.rs`, and `transform.rs` cover reusable numeric primitives and affine composition.
+- `aabb_tree.rs`, `spatial_hash.rs`, and `loot_table.rs` cover indexing, query acceleration, and weighted selection.
 
 ### polygon.rs
 
-- Polygon toolkit for clipping, hull building, triangulation, and winding cleanup. `math/polygon` delivers the polygon implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Handles simple and concave shapes with routines aimed at gameplay geometry. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides intersection and boolean-style operations for shape processing. Public callable behavior is centered on `triangulate`, `is_convex`, `polygon_clip`, `polygon_intersection`, `polygon_union`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Computes signed area and point-in-triangle tests for structural checks. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Normalizes vertex order so downstream consumers can rely on consistent winding. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns polygon operations such as triangulation, convexity checks, clipping, and simple boolean-style edits.
+- Ear clipping stays here because triangulation depends on polygon winding, ear tests, and point-in-triangle checks.
+- Intersection, union, and difference helpers also belong here since they manipulate polygon contours directly.
+- Convex-hull and winding normalization remain local because downstream polygon operations rely on consistent ordering.
+- This file is about polygon contour processing, not free-form segment queries or dedicated rectangle primitives.
+- Open it when polygon-topology semantics change; generic geometry helpers live in sibling math modules.
 
 ### random.rs
 
-- Seedable pseudo-random generator wrapper for deterministic gameplay and replay. `math/random` delivers the random implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Produces uniform integer, float, and Gaussian samples from one stateful source. The file owns or coordinates data contracts including `RandomGenerator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Serializes and restores seed state so saves can resume the same sequence. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_seed`, `random`, `random_int`, `random_float`, `random_normal`, and 14 more stays attached to the local data model and invariants.
-- Gives higher-level systems a simple random facade without exposing backend details. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the seedable random-generator wrapper used for deterministic integers, floats, normals, and dice rolls.
+- `RandomGenerator` stores the backend RNG plus persisted seed so runtime sampling and save restoration share one owner.
+- Dice helpers stay here because exploding, kept, advantaged, and summed rolls are just structured RNG consumers.
+- State serialization also belongs here since replay-safe continuation is part of the generator's contract.
+- Open it when generic RNG behavior changes; weighted loot policy lives in `loot_table.rs`, not here.
 
 ### rect.rs
 
-- Axis-aligned rectangle helper for layout, bounds, and collision checks. `math/rect` delivers the rect implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores top-left position plus size under the engine's y-down convention. The file owns or coordinates data contracts including `Rect`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports containment, overlap, union, and bounding-box construction. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `center`, `area`, `contains`, `intersects`, `intersect`, and 3 more stays attached to the local data model and invariants.
-- Offers both corner-based and center-based creation paths. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the axis-aligned rectangle primitive used for layout, bounds tests, and overlap computations.
+- `Rect` stores position and size, while center, area, contains, intersect, union, and builders expose that geometry.
+- Top-left and center-based constructors stay here because rectangle creation semantics belong to the shape owner.
+- Point and rectangle overlap checks also remain local since they define how this primitive behaves in queries.
+- Open it when rectangle semantics change; circles, polygons, and free geometry helpers live in sibling modules.
 
 ### spatial_hash.rs
 
-- Uniform-grid spatial hash for broad-phase collision and proximity search. `math/spatial_hash` delivers the spatial hash implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Buckets moving bounds into cells so query cost follows local density, not world size. The file owns or coordinates data contracts including `SpatialItem`, `SpatialHash`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports insert, remove, update, and deduplicated multi-shape queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `cell_size`, `item_count`, `insert`, `remove`, `update`, and 4 more stays attached to the local data model and invariants.
-- Handles rectangle, circle, and segment probes with shared cell traversal logic. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Uses slab-style segment tests for fast box intersection checks. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns the uniform-grid spatial hash used to bucket AABBs for broad-phase neighbor and overlap searches.
+- `SpatialItem` stores one registered box, while `SpatialHash` owns cell size, item storage, and bucket membership.
+- Insert, remove, update, and clear stay here because bucket residency and cell-range mapping are local index rules.
+- Rectangle, circle, and segment queries also belong here since they reuse one deduplicated bucket-traversal boundary.
+- The slab-style segment-versus-AABB helper remains local because query correctness depends on the same grid owner.
+- Open it when uniform-grid indexing changes; tree-based broad phase lives in `aabb_tree.rs` instead.
 
 ### spline.rs
 
-- Multi-segment spline helper for smooth interpolation across control points. `math/spline` delivers the spline implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Bridges Catmull-Rom and Hermite style curve handling under one shape. The file owns or coordinates data contracts including `CatmullRomSpline`, `HermiteSpline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports normalized sampling across full paths or individual segments. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `sample`, `sample_segment`, `len`, `is_empty`, `add_point`, and 1 more stays attached to the local data model and invariants.
-- Tracks control points dynamically so paths can be edited at runtime. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns spline interpolation helpers for editable Catmull-Rom paths and single Hermite curve segments.
+- `CatmullRomSpline` stores dynamic control points, while `HermiteSpline` stores endpoints and tangent vectors.
+- Normalized full-path sampling stays here because segment selection and local parameter mapping are spline semantics.
+- Point insertion and removal also belong here since runtime path editing is part of the Catmull-Rom owner contract.
+- Open it when spline interpolation behavior changes; Bezier paths and easing curves live in sibling modules.
 
 ### transform.rs
 
-- Mutable 2D affine transform that accumulates position, rotation, scale, and shear. `math/transform` delivers the transform implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Wraps a 3x3 matrix so chained edits stay compact and composable. The file owns or coordinates data contracts including `Transform`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Exposes forward and inverse point mapping for world and local space conversion. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_components`, `translate`, `rotate`, `scale`, `shear`, and 7 more stays attached to the local data model and invariants.
-- Includes SRT decomposition for systems that need readable transform components. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the mutable 2D affine transform wrapper that accumulates translation, rotation, scale, and shear.
+- `Transform` stores one `Mat3` and exposes chainable editing, inversion, point mapping, and component construction.
+- SRT-plus-origin assembly stays here because transform composition order is a policy of this higher-level wrapper.
+- Inverse mapping and decomposition also belong here since world-to-local conversion uses the owned matrix directly.
+- Open it when transform-editing semantics change; raw matrix algebra lives in `mat3.rs`, not in this file.
 
 ### vec2.rs
 
-- Fundamental 2D float vector for position, velocity, direction, and offsets. `math/vec2` delivers the vec2 implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Covers arithmetic, normalization, projection, and distance-style helpers. The file owns or coordinates data contracts including `Vec2`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Adds rotation, reflection, and angle conversion support for gameplay math. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `zero`, `splat`, `dot`, `length`, `length_squared`, and 9 more stays attached to the local data model and invariants.
-- Offers interpolation and unit-direction construction from radians. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Serves as the common scalar pair used throughout the engine. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns the core 2D vector primitive used for positions, directions, offsets, and planar numeric operations.
+- `Vec2` stores x and y, while constants and methods expose dot, length, normalization, rotation, and reflection.
+- Operator overloads stay here because arithmetic semantics are part of the vector type, not external helper policy.
+- Angle, cross, lerp, distance, and `from_angle` also belong here since they derive directly from one 2D vector model.
+- This file is the shared 2D numeric backbone, not a transform owner, curve editor, or collision broad-phase system.
+- Open it when 2D vector semantics change; 3D vectors, matrices, and shapes live in sibling math modules.
 
 ### vec3.rs
 
-- 3D float vector for cross products, directions, and other compact spatial math. `math/vec3` delivers the vec3 implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides arithmetic and geometric helpers for dot, cross, normalize, and reflection work. The file owns or coordinates data contracts including `Vec3`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports projection, interpolation, distance, and length queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `zero`, `one`, `splat`, `dot`, `cross`, and 7 more stays attached to the local data model and invariants.
-- Acts as the small 3D companion to the 2D math core. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns the compact 3D vector primitive used for cross products, directions, and three-axis numeric math.
+- `Vec3` stores x, y, and z, while methods expose dot, cross, length, normalization, projection, and reflection.
+- Arithmetic operator overloads stay here because component-wise addition, scaling, and negation are type semantics.
+- Interpolation and distance also belong here since they derive directly from the owned three-component vector model.
+- Open it when 3D vector semantics change; 2D vectors, transforms, and polygons live in sibling math modules.
 
 ### voronoi.rs
 
-- Voronoi cell builder from 2D point sets using incremental Delaunay construction. `math/voronoi` delivers the voronoi implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Produces closed polygonal cells with stable point deduplication and cleanup. The file owns or coordinates data contracts including `VoronoiCell`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Relies on circumcircle predicates to drive triangulation updates. Public callable behavior is centered on `voronoi_from_points`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Extracts boundary edges and orders vertices counter-clockwise for each region. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns Voronoi-cell construction from 2D points using Bowyer-Watson Delaunay triangulation underneath.
+- `VoronoiCell` stores one site and its circumcenter polygon, while local helpers manage triangles and edge keys.
+- Duplicate-point filtering and super-triangle setup stay here because they are part of this file's build contract.
+- Circumcenter ordering and deduplication also belong here since stable CCW cell vertices define the result surface.
+- Open it when Voronoi cell semantics change; generic triangulation helpers live in sibling geometry modules.
 
 
 

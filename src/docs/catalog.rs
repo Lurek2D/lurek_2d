@@ -1,7 +1,7 @@
-//! Provides the in-memory documentation catalog used to collect and organize normalized API entries. `docs/catalog` delivers the catalog implementation for the docs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Preserves insertion order while supporting grouping, filtering, and lookup across module boundaries. The file owns or coordinates data contracts including `Catalog`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Enables merge and dedup workflows for combining multiple documentation sources into one view. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_entries`, `add`, `modules`, `all_entries`, `entries_for_module`, and 6 more stays attached to the local data model and invariants.
-//! Delivers the central container that feeds both export generation and quality analysis stages. Runtime integration reaches sibling engine areas through crate modules `docs`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/docs/catalog.rs` owns the in-memory catalog that stores, groups, searches, merges, and clears doc entries.
+//! It provides the collection boundary over `DocEntry`, preserving insertion order while exposing module and kind queries.
+//! Merge and lookup behavior live here so export and reporting stages can share one consistent documentation container.
+//! Read it when catalog search, deduplication, module grouping, or entry aggregation behavior needs to change.
 
 use crate::docs::entry::DocEntry;
 /// Hold the in-memory list of documentation entries collected from source data.

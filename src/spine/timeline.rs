@@ -1,8 +1,10 @@
-//! This file defines the animation timeline machinery that turns keyed values over time into sampled pose changes for a skeleton.
-//! Interpolation curves live here so motion can feel stepped, smooth, weighted, or otherwise shaped between authored keys. The file owns or coordinates data contracts including `EasingType`, `BoneProperty`, `Keyframe`, `BoneTimeline`, `EventKeyframe`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Bone-property timelines are stored and evaluated here because timing semantics should remain consistent across all clips.
-//! Event keyframes share the same temporal framework, which lets animation playback trigger gameplay or audio markers at controlled moments.
-//! Full animation clips are assembled from many timelines and can be sampled, blended, reversed, or parsed from serialized sources.
+//! This file owns the keyframe system for skeletal animation, including easing curves, events, timelines, and clips.
+//! It stores sorted keys per bone property and evaluates them into sampled values so every clip shares one timing model.
+//! `BoneTimeline` interpolates translation, rotation, and scale, while `EasingType` defines the curve between keys.
+//! `SkeletonAnimation` groups timelines plus event markers, then applies, blends, reverses, or serializes pose data.
+//! Event collection and pose snapshots live here so runtime playback and tooling can inspect the same temporal model.
+//! This file is the timing boundary between imported animation data and mutable bone fields on a live skeleton.
+//! Open this file when clip sampling semantics change; skeleton state and importer parsing live in sibling owners.
 
 use super::bone::Bone;
 /// Interpolation curve applied between two adjacent keyframes.

@@ -1,8 +1,9 @@
-//! Discovers, validates, and loads mod packages from disk. `mods/mod_loader` delivers the mod loader implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Scans manifests, builds instances, and applies deterministic load order. The file owns or coordinates data contracts including `FieldValue`, `ModInstance`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Verifies API requirements before any Lua code starts running. Public callable behavior is centered on `load_instances_from_toml`, while method-level behavior such as `as_string`, `as_integer`, `as_float`, `as_bool`, `new`, `set_field`, and 2 more stays attached to the local data model and invariants.
-//! Supports priority-based override and atomic reload of changed packages. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Provides the bootstrap path from content folders into live mod instances. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/mods/mod_loader.rs` parses TOML content files into typed `ModInstance` records ready for registry validation.
+//! It owns `FieldValue`, `ModInstance`, scalar coercion helpers, line-based manifest parsing, and source-path attachment.
+//! Instance bootstrap from content files happens here so manifest decoding stays separate from registration and execution.
+//! Complex field values are flattened for validation, while richer table and array data stay in `FieldValue`.
+//! This file does not manage dependency order or sandbox policy; it only turns content text into structured instances.
+//! Read it when TOML parsing, field coercion, instance IDs, or source-file tracking for mods needs to change.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};

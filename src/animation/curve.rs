@@ -1,8 +1,9 @@
-//! Implements keyframed property timelines that interpolate numeric animation parameters over time. `animation/curve` delivers the curve implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports stepped, linear, eased, and callback-defined transitions for authored motion behavior. The file owns or coordinates data contracts including `EasingKind`, `AnimCurve`, `AnimPropertyTimeline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Evaluates sparse named tracks into sampled property values at arbitrary timeline positions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_easing`, `add_keyframe`, `keyframe_count`, `clear`, `eval`, and 3 more stays attached to the local data model and invariants.
-//! Provides both single-property reads and full snapshot sampling for synchronized consumers. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Keeps interpolation semantics explicit so authored curves remain predictable across runtime contexts. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns numeric animation curves and sparse property timelines used to sample values over time.
+//! `AnimCurve` stores sorted keyframes plus easing, while `AnimPropertyTimeline` groups named property tracks.
+//! Evaluation helpers support stepped, linear, quadratic, and custom-id easing across arbitrary sample times.
+//! Timeline insertion backfills missing property values so snapshots remain defined across uneven keyframe sets.
+//! Sampling helpers return one property or all properties, making the file the owner of interpolation semantics.
+//! Open it when authored curve math changes; clip stepping and render export live in sibling animation files.
 
 use crate::math::easing;
 use std::collections::HashMap;

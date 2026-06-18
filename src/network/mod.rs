@@ -1,9 +1,9 @@
-//! Multiplayer networking across TCP, WebSocket, relay, and HTTP helpers. `network/mod` is the network module index, declaring `constants`, `error`, `host`, `http`, `lobby`, and 9 more so agents can identify which files own each feature slice before opening implementation code.
-//! Hosts the host/client model, lobby flow, peer management, and game-state sync. `src/network/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `sse::{SseEvent, SseStream}` centralized for the network subsystem.
-//! Runs the background async runtime for non-blocking socket I/O. The file documents how network submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! `network/mod` is the network module index, declaring `constants`, `error`, `host`, `http`, `lobby`, and 9 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/network/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `sse::{SseEvent, SseStream}` centralized for the network subsystem.
-//! The file documents how network submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! This module is the network index, exposing transports, host ownership, sync helpers, and background workers.
+//! It reexports only `SseEvent` and `SseStream`, while the rest of the surface stays partitioned by transport owner.
+//! `host.rs` owns ENet peers, `net_thread.rs` owns blocking IO workers, and `message.rs` owns portable wire values.
+//! `http.rs`, `tcp.rs`, `websocket.rs`, and `sse.rs` implement request or socket backends used by the runtime.
+//! `lobby.rs`, `relay.rs`, `rpc.rs`, `net_sync.rs`, and `netstate.rs` cover higher-level multiplayer coordination.
+//! Open this file to navigate subsystem boundaries; actual transport logic and state live in sibling modules.
 
 /// Shared numeric limits and protocol constants used across all network layers.
 pub mod constants;

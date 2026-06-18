@@ -1,7 +1,8 @@
-//! Provides globe snapshot transfer structures for cross-thread synchronization and state exchange. `globe/sync` delivers the sync implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Defines channel wrappers and snapshot payload shapes used to move globe state safely. The file owns or coordinates data contracts including `GlobeSyncSnapshot`, `GlobeSyncChannel`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports building and applying snapshots to keep remote and local globe views aligned. Public callable behavior is centered on `build_snapshot`, `apply_snapshot`, while method-level behavior such as `new` stays attached to the local data model and invariants.
-//! Delivers the synchronization utility layer for background simulation integration. Runtime integration reaches sibling engine areas through crate modules `globe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Defines snapshot payloads and channel helpers used to transfer full globe state safely across thread boundaries.
+//! Owns GlobeSyncSnapshot contents, channel creation, and the copy rules that build and apply globe state snapshots.
+//! Clones topology, fog, overlays, labels, markers, arcs, sectors, and timing so remote views can stay aligned.
+//! Provides the sync boundary between live Globe instances and background systems that exchange complete state images.
+//! Open this owner when snapshot completeness, sync transport shape, or restore semantics need to change together.
 
 use crate::globe::fog::FogStore;
 use crate::globe::label::LabelStore;

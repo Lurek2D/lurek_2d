@@ -1,6 +1,6 @@
-//! This file computes a radial visibility fan from a source point against segment obstacles in the plane. `raycaster/visibility` delivers the visibility implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Rays are aimed around segment endpoints with slight angular offsets so the resulting contour closes gaps that naive sampling would miss.
-//! The output is shaped for immediate drawing or further masking work wherever a 2D field of view needs explicit polygon points.
+//! This file owns `field_of_view`, the radial visibility-polygon builder that casts around segment endpoints.
+//! It samples slight angular offsets, reuses segment casting, and returns points ready for drawing or masking.
+//! Open this file when 2D visibility contour generation changes; segment hits and grid raycasting live in siblings.
 
 use super::segment::{cast_ray_2d, Segment};
 /// Cast radial rays at all segment-endpoint angles from `(ox, oy)` and return.

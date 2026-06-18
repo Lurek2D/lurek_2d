@@ -1,8 +1,9 @@
-//! This file validates serialized data against declarative structural expectations before that data reaches game logic. `serialize/schema` delivers the schema implementation for the serialize subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Schemas describe required fields, allowed types, numeric and string constraints, nested shapes, and array item rules. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Missing values can also be filled from schema defaults so partially specified input can be upgraded into a complete shape.
-//! Validation failures are reported with paths that point at the exact part of the value tree that broke the contract. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Logging support is integrated because schema checks often matter during content ingestion, save loading, and config debugging.
+//! This file owns schema validation and default application for decoded `SerialValue` trees before runtime use.
+//! Validation checks required fields, declared types, numeric limits, string lengths, nested fields, and array items.
+//! Errors include dotted paths so content authors can find the exact subtree that violates a schema contract.
+//! Default application walks the same tree shape, filling missing fields or items from schema-provided fallback values.
+//! Schema pass and fail logging also lives here because validation is a common content-ingestion debugging boundary.
+//! Open this file when structural validation rules change; format parsers and Lua conversion live in sibling files.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

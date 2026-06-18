@@ -1,6 +1,7 @@
-//! This file provides grid-locked locomotion rules for games that want raycaster movement to snap cleanly from tile to tile.
-//! Facing direction is reduced to stable cardinal deltas so movement input stays predictable for dungeon crawlers and similar designs.
-//! Collision checks are delegated through a caller-provided blocking rule, which lets map logic stay external while motion rules stay reusable.
+//! This file owns grid-locked movement helpers for raycaster games that step actors one tile at a time.
+//! It defines `GridMoveAction`, parses move tokens, and converts facing direction into cardinal world deltas.
+//! `try_move` applies bounds and caller-provided blocking tests so locomotion rules stay reusable across maps.
+//! Open this file when snapped movement semantics change; ray casting and wall visibility logic live in siblings.
 
 /// Discrete movement intent for a single step on the grid.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

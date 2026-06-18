@@ -1,7 +1,8 @@
-//! This file provides the multi-channel interpolator that converts progress into animated values. `tween/interpolator` delivers the interpolator implementation for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It resolves easing names through flexible aliases so script-facing naming remains forgiving. The file owns or coordinates data contracts including `TweenValue`, `Tween`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It keeps independent tween clocks with reset and seek support for controlled playback. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_value`, `update`, `get_value`, `get_all_values`, `reset`, and 6 more stays attached to the local data model and invariants.
-//! It interpolates registered channels each frame using the resolved easing curve semantics. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `Tween`, a generic multi-channel interpolator that samples registered start and target values over time.
+//! It stores the easing function, preserved easing name, playback clock, duration, and the channel list in one owner.
+//! Methods here add channels, advance or seek the clock, and read one channel or all channels through eased sampling.
+//! The local easing resolver accepts both core names and `easeIn*` aliases so script spelling stays backward compatible.
+//! Open this file when non-Lua interpolation behavior changes without touching engine registries or Lua handle lifecycles.
 
 use crate::math::easing;
 

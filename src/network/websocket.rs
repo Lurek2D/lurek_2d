@@ -1,8 +1,9 @@
-//! Pool of active WebSocket connections keyed by caller-assigned id. `network/websocket` delivers the websocket implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Spawns background threads for TLS and TCP handshakes so connect never blocks the game loop. The file owns or coordinates data contracts including `WebSocketManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Polls live sockets for text, binary, and close frames without blocking. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_empty`, `connect`, `send`, `close`, `poll_all`, and 1 more stays attached to the local data model and invariants.
-//! Sends text or binary frames and performs graceful close with drain semantics. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Posts connection lifecycle events through an MPSC channel. External integration uses `super`, `log`, `std`, `tungstenite`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns the WebSocket connection pool used by the background runtime for framed duplex messaging.
+//! `WebSocketManager` stores live sockets and pending handshakes, while `PendingConnect` tracks helper-thread results.
+//! Connect-time worker spawning stays here because TLS handshakes and tungstenite setup must not block the game loop.
+//! Frame send, close, and poll logic also live here because text, binary, and close-event handling is backend-specific.
+//! Pending-connect promotion belongs here since open or error events are derived from handshake completion state.
+//! Open it when WebSocket lifecycle changes; request routing, TCP sockets, and message values live elsewhere.
 
 use super::net_thread::{NetworkResponse, WsEvent};
 use log::{debug, warn};

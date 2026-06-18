@@ -1,7 +1,8 @@
-//! Implements structured developer logging with severity levels and bounded in-memory retention. `devtools/logger` delivers the logger implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Parses level labels case-insensitively and applies configurable minimum-level filtering. The file owns or coordinates data contracts including `LogLevel`, `LogEntry`, `Logger`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports optional category filtering and tail-style retrieval over retained log entries. Public callable behavior is centered on no named public items, while method-level behavior such as `from_str`, `as_str`, `new`, `elapsed`, `push`, `tail`, and 2 more stays attached to the local data model and invariants.
-//! Mirrors accepted records to stderr and optional append-only file outputs. Runtime integration reaches sibling engine areas through crate modules `devtools`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `LogLevel`, `LogEntry`, and `Logger`, the bounded developer logging stack for runtime diagnostics.
+//! It parses severity labels, timestamps accepted records, mirrors output to stderr, and can append to a log file.
+//! History helpers retain recent entries, return configurable tails, and filter categories by lowercase prefix match.
+//! The logger uses `TimeAnchor` for relative timestamps so devtools records share one stable elapsed-time reference.
+//! Open this file when log retention or filtering changes; clocks, profiling, and file watching live in siblings.
 
 use crate::devtools::time_anchor::TimeAnchor;
 use std::collections::VecDeque;

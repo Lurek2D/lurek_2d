@@ -1,7 +1,7 @@
-//! Voronoi field generator for dividing space into nearest-seed regions and measuring how each cell relates to its closest feature points.
-//! The file returns both ownership and distance information, which makes it useful for region maps, borders, crackle patterns, and cell-based world partitioning.
-//! Optional warp support roughens otherwise clean geometric boundaries so the resulting regions can feel less synthetic. Public callable behavior is centered on `voronoi_diagram`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Functionally this file delivers region tessellation data for map segmentation and distance-based procedural effects. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the Voronoi diagram helper that assigns each cell to its nearest feature point and distance fields.
+//! `VoronoiOpts` stores optional domain-warp parameters so clean tessellation can be roughened without new APIs.
+//! The diagram routine stays here because nearest-point ownership and first or second distance extraction are local.
+//! Hash-based warp noise also belongs here since boundary distortion is part of Voronoi output semantics.
 
 use super::lcg::Lcg;
 

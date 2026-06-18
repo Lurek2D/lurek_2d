@@ -1,4 +1,4 @@
-//! Lua bindings for `lurek.grep`. `src/lua_api/grep_api.rs` registers the `lurek.grep` Lua boundary for grep behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.grep` Lua API for search requests, result conversion, and script-side grep inspection.
 
 use super::SharedState;
 use crate::grep::{engine::GrepEngine, filter::FileFilter, json_search, log_search, GrepConfig};

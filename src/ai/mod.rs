@@ -1,11 +1,13 @@
-//! Groups the full AI runtime surface into one coherent module boundary for decision and control. `ai/mod` is the ai module index, declaring `agent`, `behavior_tree`, `command_queue`, `fsm`, `goap`, and 16 more so agents can identify which files own each feature slice before opening implementation code.
-//! Exposes complementary layers for actor state, sensing, planning, steering, coordination, and tooling. `src/ai/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `crate::learning::QLearner`, `crate::patterns::{Blackboard, BlackboardValue}`, `agent::{Agent, DecisionModel}`, `behavior_tree::{BTNode, BTStatus, BehaviorTree, ParallelPolicy}`, and 23 more centralized for the ai subsystem.
-//! Keeps integration predictable by publishing shared types through a single composition entry point. The file documents how ai submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! Aligns tactical and strategic subsystems under consistent data flow and update expectations. Agents should read this index to choose the narrow owner file first, because it maps names such as `agent`, `behavior_tree`, `command_queue`, `fsm`, `goap`, and 16 more to concrete implementation responsibilities.
-//! Defines the high-level contract of engine-side intelligence capabilities available to the rest of runtime. Re-export decisions in this file define the stable Rust boundary consumed by sibling modules, Lua bindings, generated specs, and examples that mention ai features.
-//! `ai/mod` is the ai module index, declaring `agent`, `behavior_tree`, `command_queue`, `fsm`, `goap`, and 16 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/ai/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `crate::learning::QLearner`, `crate::patterns::{Blackboard, BlackboardValue}`, `agent::{Agent, DecisionModel}`, `behavior_tree::{BTNode, BTStatus, BehaviorTree, ParallelPolicy}`, and 23 more centralized for the ai subsystem.
-//! The file documents how ai submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! Exports the AI subsystem surface that groups decision models, sensing, planning, steering, pacing, and debug tools.
+//! Acts as the navigation index for agent state, behavior trees, GOAP, HTN, MCTS, squads, and utility scoring.
+//! Keeps module boundaries explicit so callers can find whether an AI concern belongs to storage, reasoning, or draw.
+//! Open this file when adding or retiring AI owners or when public re-export policy for shared AI APIs changes.
+//! The exported set here connects tactical motion, world awareness, strategic choice, and supporting data models.
+//! Agents should start here when tracing AI behavior because it reveals the authoritative file split by concern.
+//! This index owns visibility and compatibility re-exports rather than world state, planners, or runtime solvers.
+//! Neighboring work usually spans Agent, AIWorld, steering, planning modules, and debug visualization helpers.
+//! It is the right owner for composition-level AI API changes that should not alter any one behavior algorithm.
+//! Read this file first when generated specs or Lua bindings need to map a feature to its concrete Rust owner.
 
 /// Core agent type and decision model wiring.
 pub mod agent;

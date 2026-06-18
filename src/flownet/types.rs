@@ -1,7 +1,8 @@
-//! Provides shared flownet identifier wrappers used to type node, edge, and item handles. `flownet/types` delivers the shared type definitions and data contracts for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Encapsulates raw numeric ids in lightweight newtypes for clearer API contracts. The file owns or coordinates data contracts including `NodeId`, `EdgeId`, `ItemId`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports conversion and display behavior needed across simulation and tooling call paths. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `raw` stays attached to the local data model and invariants.
-//! Delivers the common identity foundation for graph storage and cross-module interoperability. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the lightweight `NodeId`, `EdgeId`, and `ItemId` newtypes that label every flownet handle.
+//! It keeps raw `u64` identities wrapped so graph APIs, logs, and serialization stay type-safe at call boundaries.
+//! Constructors, `raw()`, display, and `From` conversions live here because id ergonomics must stay uniform everywhere.
+//! No graph storage lives here; this file is the narrow contract that other flownet files share for stable references.
+//! Open it when identifier semantics change; node, edge, item, and graph behavior are implemented in sibling files.
 
 /// Unique identifier for a flownet graph node.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

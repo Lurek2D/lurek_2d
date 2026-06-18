@@ -1,8 +1,9 @@
-//! This file manages world-space billboard content that should appear inside the raycast view without becoming part of the wall grid.
-//! It keeps sprite placement, identity, and visibility data in one registry so gameplay systems can add props, pickups, or actors cheaply.
-//! When the camera needs them, sprites are exposed in depth-aware order that fits alpha-friendly first-person rendering. Public callable behavior is centered on no named public items, while method-level behavior such as `select_for_viewer`, `new`, `add`, `add_directional`, `remove`, `set_position`, and 6 more stays attached to the local data model and invariants.
-//! The registry therefore acts as the dynamic object layer that rides on top of static map geometry. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! `raycaster/sprite_manager` delivers the sprite manager implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `DirectionalSpriteTextures`, `WorldSprite`, and `SpriteManager`, the billboard sprite registry.
+//! It stores sprite identity, world position, texture choice, directional variants, scale, and visibility in one owner.
+//! Directional texture selection compares viewer angle to facing so billboards can swap front, side, or back art.
+//! Manager helpers add, remove, move, retarget, hide, clear, and distance-sort visible sprites for camera use.
+//! The registry keeps dynamic object presentation separate from wall cells while matching the raycaster depth pipeline.
+//! Open this file when billboard registry or facing-selection semantics change; scene projection stays elsewhere.
 
 fn normalize_signed_angle(mut angle: f32) -> f32 {
     while angle > std::f32::consts::PI {

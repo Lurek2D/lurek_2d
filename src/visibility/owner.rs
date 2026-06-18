@@ -1,6 +1,7 @@
-//! This file provides ownership and alliance mapping used for shared visibility semantics. `visibility/owner` delivers the owner implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It tracks player grouping so allied entities can inherit reveal information coherently. The file owns or coordinates data contracts including `PlayerOwnership`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It answers hot-path sharing queries that visibility updates depend on each frame. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_group`, `remove_from_group`, `allies_of`, `shares_visibility`, `player_count` stays attached to the local data model and invariants.
+//! This file owns `PlayerOwnership`, the shared-vision layer that decides which players inherit each other's sight.
+//! It stores player-to-group assignments and answers ally lookups so reveal propagation stays centralized and consistent.
+//! Group helpers add shared-visibility teams, remove members, and answer hot-path visibility-sharing checks by player id.
+//! Open this file when alliance semantics change; region state storage and transition events live in sibling files.
 
 use std::collections::HashMap;
 

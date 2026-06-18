@@ -1,7 +1,8 @@
-//! Implements deferred dataframe query planning through composable step-chain descriptions. `dataframe/lazy` delivers the lazy implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores filter, sort, select, window, and limit operations without immediate execution. The file owns or coordinates data contracts including `LazyQuery`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Materializes lazy plans on collect by applying steps over cloned source-frame state. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `tombstone`, `filter`, `sort`, `select`, `head`, and 6 more stays attached to the local data model and invariants.
-//! Preserves deterministic step order and transformation semantics during pipeline realization. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns deferred dataframe pipelines, storing query steps until a caller materializes them with `collect`.
+//! `LazyQuery` keeps a cloned source frame plus ordered filter, sort, select, slice, nil-drop, and limit operations.
+//! Execution stays here because lazy semantics are defined by step ordering, cloning rules, and collect-time dispatch.
+//! The file also adds `DataFrame::lazy()` so eager tables can hand off into deferred planning without Lua involvement.
+//! Open it when pipeline semantics change; concrete row transforms, SQL parsing, and async jobs live in siblings.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 #[derive(Clone)]

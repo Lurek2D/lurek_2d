@@ -1,9 +1,12 @@
-//! Registry and coordination layer for live mods and their dependencies. `mods/mod_manager` delivers the mod manager implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Tracks enabled mods by id and capability for lookup and lifecycle control. The file owns or coordinates data contracts including `ModInfo`, `ModManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Parses manifests and validates the required fields before registration. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_parts`, `check_api_version`, `register_mod`, `unregister_mod`, `get_mod`, and 16 more stays attached to the local data model and invariants.
-//! Resolves dependency order with topological sorting and priority ties. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Detects missing dependencies and circular relationships early. External integration uses `sha2`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Prevents asset path collisions across simultaneously loaded mods. The file boundary separates mods implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! `src/mods/mod_manager.rs` owns the runtime registry for discovered mods, manifest metadata, reload queues, and order.
+//! It stores `ModInfo` records with dependencies, capabilities, asset paths, config schema, signatures, and session state.
+//! Registration, lookup, enable-state tracking, capability queries, and custom load-order overrides all live in this file.
+//! Dependency validation and topological ordering live here so mod startup remains deterministic and cycle-aware.
+//! Manifest parsing from `mod.toml` also happens here, including warnings, signature checks, and asset conflicts.
+//! Folder scanning and hot-reload processing are coordinated here so disk changes can update registered mods safely.
+//! This file is the lifecycle and integrity boundary for mods; it does not define schema types or sandbox policy details.
+//! Read it when manifest semantics, reload behavior, dependency resolution, or mod registry ownership needs to change.
+//! Higher layers should treat this file as the source of truth for mod discovery and effective runtime load order.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{MD01_MGR_INIT, MD02_MOD_REG, MD04_ORDER_OK};

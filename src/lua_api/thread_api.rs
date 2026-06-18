@@ -1,4 +1,4 @@
-//! `src/lua_api/thread_api.rs` registers the `lurek.thread` Lua boundary for thread behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.thread` Lua API for thread userdata, thread control, and script-visible thread helpers.
 
 use super::lua_types::{add_type_methods, LurekType};
 use super::SharedState;

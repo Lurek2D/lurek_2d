@@ -1,6 +1,7 @@
-//! This file applies simple highlighting rules to terminal text so input or output can be visually segmented by meaning. `terminal/highlighter` delivers the highlighter implementation for the terminal subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Matching produces ordered colored spans instead of immediate cell writes, which keeps highlighting reusable across render paths.
-//! Rule priority is resolved consistently here so overlapping matches do not create unstable coloring behavior. Public callable behavior is centered on `highlight_spans`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! This file owns literal-pattern highlighting that converts terminal text into ordered colored spans before render.
+//! `HighlightRule` defines match strings and colors, while `ColoredSpan` carries resolved output runs for writers.
+//! `highlight_spans` applies leftmost-first matching so reusable highlight data can feed multiple terminal paths.
+//! Open it when span-generation semantics change; ANSI decoding and cell drawing live in sibling terminal files.
 
 /// A plain-string pattern with associated foreground and optional background colors.
 pub struct HighlightRule {

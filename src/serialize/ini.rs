@@ -1,6 +1,7 @@
-//! This file handles INI-style configuration text for projects and tools that still prefer simple sectioned key-value documents.
-//! It converts section headers, assignments, and comments into a nested serial representation without pretending INI is richer than it is.
-//! Insertion order is preserved so output remains readable and familiar when round-tripped back toward human-edited config files.
+//! This file owns INI decoding for simple sectioned key-value configuration that fits the shared serial tree.
+//! It parses comments, section headers, and `key=value` assignments into ordered root and nested section maps.
+//! Top-level keys remain at the root, while named sections become child maps under their section identifiers.
+//! Open this file when INI parsing rules change; generic codec dispatch and other formats live in sibling files.
 
 use super::lua_table::SerialValue;
 use indexmap::IndexMap;

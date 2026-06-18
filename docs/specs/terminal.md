@@ -17,24 +17,17 @@
 
 ## Summary
 
-- This module gives users an in-engine terminal surface built on a styled character-cell grid.
-- Cell state tracks glyphs and color attributes for text-mode rendering and interaction.
-- ANSI parsing support enables rich styled output from terminal-like streams.
-- Syntax highlighting support applies rule-driven color spans for readable text contexts.
-- Completion support improves command-entry ergonomics with candidate cycling.
-- Scrollback and command history support persistent console workflows.
-- Widget support includes labels, buttons, lists, text boxes, borders, and panels.
-- Focus and input routing keep keyboard and mouse behavior coherent across widget compositions.
-- Cell-to-pixel rendering keeps terminal output crisp under scale and resize changes.
-- Auto-resize and cell-size controls support predictable layout fitting to window dimensions.
-- Render-to-image paths support terminal snapshots for tooling and evidence.
-- Utility APIs support ANSI strip/parse and command-history operations.
-- The module is useful for in-game consoles, debug UIs, and text-heavy tool interfaces.
-- For users, it centralizes terminal behavior rather than reimplementing ad-hoc text UI layers.
-- It supports both low-level cell drawing and higher-level widget composition.
-- Overall, users get a complete interactive terminal runtime with rendering and input integration.
+- The `terminal` module is the engine's character-grid interface surface for users who want text-mode displays, debug consoles, command panels, or roguelike-style presentation.
+- It treats terminal behavior as a real interface model rather than as plain text drawing: cells, ANSI parsing, completion, highlighting, editing state, and render helpers all cooperate under one system.
+- This matters because terminal-style surfaces need cursor behavior, history, prompt handling, navigation, and scrollback, not only glyph output.
+- The cell-grid model gives the module a distinct role from ordinary widget UI and makes it suitable for dense textual dashboards, shells, and ASCII-heavy interfaces.
+- Completion, highlighting, and command-history support make the feature practical for tools and debug consoles as well as for games.
+- Widget-like terminal panels and command surfaces are also part of the value, because many projects want an interactive console that behaves like a proper runtime tool instead of a passive text dump.
+- ANSI-aware styling and grid semantics make it possible to reuse familiar console-oriented output formats while still keeping them inside the engine's own rendering and interaction model.
+- It is especially valuable when a project needs command-driven introspection, because prompts, completions, and history can expose structured controls without building a separate debug UI for every task.
+- Systems can feed or consume text, but `terminal` owns how that interaction becomes an editable, navigable, character-grid surface.
+- Read `terminal` as the owner of interactive text-grid behavior inside the engine.
 
-This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -46,68 +39,81 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ### ansi.rs
 
-- This file interprets ANSI terminal escape sequences so colored or styled text streams can be understood by the in-engine terminal.
-- It strips control bytes when plain text is needed and decodes styling spans when visual fidelity matters. The file owns or coordinates data contracts including `AnsiColor`, `AnsiSpan`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Classic palette colors, extended xterm indexes, and full RGB forms are all resolved here into engine-friendly color data.
-- Span extraction is part of the same logic so one input string can become ordered runs with shared style state. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Low-level parsing helpers stay close to the decoder because escape handling is sensitive to byte structure and malformed fragments.
+- This file owns ANSI escape parsing that turns styled byte streams into plain text or resolved color spans.
+- `AnsiColor` and `AnsiSpan` capture the decoded foreground, background, and bold state for each text run.
+- `strip_ansi_codes` removes control sequences when callers need raw text without styling metadata.
+- `parse_ansi_spans` and SGR helpers decode classic, bright, xterm-256, and explicit RGB color forms.
+- Low-level UTF-8 walking stays here because malformed escapes and multibyte chars must be handled together.
+- Open it when styled-stream parsing changes; highlighting and grid rendering live in sibling terminal files.
 
 ### cell.rs
 
-- This file defines the atomic cell unit that the terminal grid stores for every visible character position. `terminal/cell` delivers the cell implementation for the terminal subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It packages glyph and color state into one compact record so the rest of the terminal can treat the screen as a regular matrix.
-- The type is the smallest visible building block of the terminal subsystem. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns `TCell`, the atomic terminal grid record that stores one glyph plus foreground and background colors.
+- It also defines the default glyph and RGBA constants used when terminal surfaces reset or allocate fresh cells.
+- Open it when per-cell storage changes; terminal state, widgets, and render composition live in sibling files.
 
 ### completion.rs
 
-- This file provides the terminal's lightweight completion engine for command-like text entry. `terminal/completion` delivers the completion implementation for the terminal subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It manages a candidate set that can be queried by prefix or cycled interactively as the user repeats completion input. The file owns or coordinates data contracts including `CompletionEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Dynamic updates are supported because terminal commands and symbols may change while the application is running. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_candidate`, `remove_candidate`, `clear`, `len`, `is_empty`, and 3 more stays attached to the local data model and invariants.
-- The file is the discoverability helper for typed terminal interaction. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `CompletionEngine`, the sorted candidate store used for prefix lookup and Tab-style cycling.
+- It stores the candidate list plus active cycle state so repeated completion presses can advance predictably.
+- Helper methods add, remove, clear, filter, and rotate matches without coupling completion to command sources.
+- Open it when typed-discovery behavior changes; widgets and terminal input routing live in sibling files.
 
 ### highlighter.rs
 
-- This file applies simple highlighting rules to terminal text so input or output can be visually segmented by meaning. `terminal/highlighter` delivers the highlighter implementation for the terminal subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Matching produces ordered colored spans instead of immediate cell writes, which keeps highlighting reusable across render paths.
-- Rule priority is resolved consistently here so overlapping matches do not create unstable coloring behavior. Public callable behavior is centered on `highlight_spans`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns literal-pattern highlighting that converts terminal text into ordered colored spans before render.
+- `HighlightRule` defines match strings and colors, while `ColoredSpan` carries resolved output runs for writers.
+- `highlight_spans` applies leftmost-first matching so reusable highlight data can feed multiple terminal paths.
+- Open it when span-generation semantics change; ANSI decoding and cell drawing live in sibling terminal files.
 
 ### mod.rs
 
-- This module provides the in-engine terminal stack, combining a character grid, ANSI-aware text handling, interactive widgets, and renderer handoff.
-- It supports both console-like workflows and text-heavy in-game interfaces built on a cell-based presentation model. `src/terminal/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `cell::TCell`, `terminal_state::Terminal`, `widget::{BorderStyle, Widget, WidgetBase, WidgetKind}` centralized for the terminal subsystem.
+- This module is the terminal index, re-exporting cell, widget, state, completion, ANSI, and render support.
+- It is the navigation point for character-grid storage, styled text parsing, visual composition, and input routing.
+- `terminal_state.rs` owns the mutable grid, cursor, histories, widget focus, and render-cell composition logic.
+- `widget.rs` owns terminal UI parts, while `ansi.rs`, `highlighter.rs`, and `completion.rs` enrich text flows.
+- `cell.rs` and `text_utils.rs` provide the atomic grid unit plus UTF-8-safe helpers reused across terminal code.
+- Change this file when public terminal exports move; change siblings when behavior or rendering semantics change.
 
 ### render.rs
 
-- This file converts the composed terminal surface into visual output for both renderer command streams and software image snapshots.
-- Grid cells and overlaid widgets are flattened together here so the rest of the engine sees one finished terminal presentation.
-- Color mapping and glyph placement are resolved at this stage rather than scattered across terminal state management. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands`, `draw_to_image` stays attached to the local data model and invariants.
-- The file is therefore the terminal subsystem's final visual export layer. Runtime integration reaches sibling engine areas through crate modules `image`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns terminal-to-render export helpers that flatten the composed cell surface into visual outputs.
+- `generate_render_commands` translates cells into `RenderCommand` streams with colored backgrounds and glyphs.
+- `draw_to_image` rasterizes the same terminal surface into a coarse `ImageData` snapshot for tools or previews.
+- Both paths read the composed grid through terminal helpers, so widget overlays are included automatically.
+- Open it when terminal visual export changes; core grid mutation and widget layout live in sibling state files.
 
 ### terminal_state.rs
 
-- This file implements the terminal's main state machine, where the character grid, cursor, colors, histories, widgets, and input routing all meet.
-- The core grid behaves like a persistent text surface rather than a transient print stream, allowing callers to treat terminal space as editable UI.
-- Resize behavior preserves as much existing content as possible so the terminal remains usable across font or window changes.
-- Scrollback and command history live here because they are part of the terminal's long-lived interactive memory rather than renderer output.
-- Widget composition is layered on top of the cell grid in this file so buttons, lists, panels, and text boxes share one event and focus model.
-- Keyboard, text, and mouse input are dispatched here because only this layer understands both raw terminal coordinates and focused widgets.
-- Border and panel behaviors are also coordinated here, giving text-mode interfaces a richer structure than plain character dumps.
-- Cell-level writing helpers remain part of this file because direct text painting and higher-level widgets must coexist on the same surface.
+- This file owns `Terminal`, the main state machine for the character grid, cursor, widgets, and histories.
+- It stores the row-major cell buffer, focus state, clipboard, command history, scrollback, and size overrides.
+- Helper functions draw compact buttons, frames, cursor text, and bounded writes onto composed cell slices.
+- Input handlers route keyboard, text, and mouse events to focused widgets and emit typed terminal events.
+- Text-box editing covers cursor movement, selection replacement, clipboard shortcuts, and word deletes.
+- List handling covers focus, selection, scrolling, and mouse hit resolution for terminal UI controls.
+- Render composition overlays visible widgets on top of the base grid and reuses scratch buffers.
+- Border rendering, panel child maintenance, and widget removal cleanup keep layered layouts consistent.
+- Public grid APIs cover cell reads, writes, resizing, colored printing, default colors, and cursor moves.
+- History APIs manage scrollback limits, command navigation, and durable memory beyond render output.
+- Command builders translate the composed surface into batched render commands without duplicated logic.
+- Open it when terminal interaction or surface semantics change; widgets and exporters depend on it.
 
 ### text_utils.rs
 
-- Shared text helpers used across the terminal subsystem. `terminal/text_utils` delivers the text utils implementation for the terminal subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- These helpers centralize UTF-8-safe character counting, truncation, and indexing logic. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- `terminal/text_utils` delivers the text utils implementation for the terminal subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns UTF-8-safe terminal text helpers for counts, byte offsets, truncation, and lead-byte widths.
+- These helpers keep cursor movement, clipping, and parser logic consistent when code mixes chars and bytes.
+- Open it when Unicode indexing rules change; ANSI parsing and text editing consume these utilities nearby.
 
 ### widget.rs
 
-- This file defines the widget vocabulary used by the terminal so character-grid interfaces can be composed from reusable interactive parts.
-- Shared widget state is centralized here because labels, buttons, lists, text boxes, borders, and panels all need common positioning and visibility rules.
-- Each widget kind extends that shared base with behavior suited to text-mode UI rather than pixel-perfect retained graphics widgets.
-- Border and panel concepts live here because framed layout is a fundamental part of terminal-style interface composition.
-- Text-bearing widgets are shaped around cell coordinates and constrained widths, which keeps them honest to the grid they inhabit.
-- List widgets manage items and selection semantics here so terminal state can treat them as one coherent interactive object.
+- This file owns the terminal widget model used to build labels, buttons, text boxes, lists, borders, and panels.
+- `BorderStyle` defines frame glyph choices, while `WidgetBase` centralizes position, size, visibility, and tags.
+- `WidgetKind` stores kind-specific data for text, selection, scroll, border styling, and panel child membership.
+- `Widget` constructors create grid-aligned UI parts with size clamping that matches terminal row limits.
+- Mutation helpers keep text, color, max-length, selection, border style, and title updates in one owner.
+- List helpers manage item addition, removal, scroll, and 1-based selection semantics used by input handlers.
+- Kind-check helpers let callers branch on widget behavior without matching all enum payloads at each call site.
+- Open it when terminal UI object semantics change; event dispatch and rendering integration live in state.
 
 
 

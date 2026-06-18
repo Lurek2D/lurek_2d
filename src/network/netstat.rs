@@ -1,6 +1,7 @@
-//! Engine module for network statistics. `network/netstat` delivers the netstat implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides runtime metrics such as bytes sent/received and latency. The file owns or coordinates data contracts including `NetStat`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! This is a generic, genre‑agnostic API. Public callable behavior is centered on `register`, while method-level behavior such as `new`, `update`, `snapshot` stays attached to the local data model and invariants.
+//! This file owns a small network-statistics userdata that reports sent bytes, received bytes, and latency.
+//! `NetStat` stores the counters, while `register` publishes Lua constructors and mutation helpers under `lurek`.
+//! The file is a thin state carrier for scripting, not a transport implementation or runtime worker boundary.
+//! Open it when scripting metrics change; host telemetry and socket polling live in other network owners.
 
 use crate::runtime::SharedState;
 use mlua::prelude::*;

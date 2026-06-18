@@ -1,8 +1,10 @@
-//! Implements grouping-oriented dataframe operations for keyed aggregation and cross-tab reshaping. `dataframe/query/grouping` delivers the grouping implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Aggregates grouped values with selectable reducers such as mean, sum, min, max, and count. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Builds pivoted result frames from row, column, and value key combinations. Public callable behavior is centered on no named public items, while method-level behavior such as `group_agg`, `par_group_agg`, `pivot`, `corr`, `correlation_matrix` stays attached to the local data model and invariants.
-//! Computes pairwise Pearson correlation between selected numeric columns. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Generates full numeric correlation matrices for multivariate relationship inspection. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns keyed aggregation and reshaping helpers such as `group_agg`, `par_group_agg`, `pivot`, and `corr`.
+//! It groups rows by one key, then applies shared `AggFn` reducers while preserving deterministic key output order.
+//! Parallel grouped aggregation lives here because partitioning and per-group reduction are grouping-layer semantics.
+//! Pivot construction also stays here because row and column key expansion is a reshape built on grouped identities.
+//! Pearson correlation and correlation matrices belong here as cross-column relationship summaries over numeric groups.
+//! This file extends query behavior after basic filtering, not storage ownership, payload parsing, or SQL tokenization.
+//! Open it when keyed summaries change; rolling windows, row filters, and dataframe core state live in siblings.
 
 use crate::dataframe::frame::{AggFn, CellValue, ColRef, DataFrame};
 impl DataFrame {

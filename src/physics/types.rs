@@ -1,6 +1,7 @@
-//! Small core type surface for the physics subsystem where stable identifiers need stronger meaning than a bare integer can provide.
-//! The file wraps body identity in a dedicated type so physics handles remain cheap to pass around while still reading as deliberate domain values.
-//! Functionally this delivers the low-friction type safety that keeps body references explicit across Rust and Lua-facing boundaries.
+//! This file owns `BodyId`, the stable typed identifier used to reference bodies across the physics subsystem.
+//! It wraps raw slot indices with conversions, display formatting, and Lua bridging so body handles stay explicit.
+//! Open this file when body-handle representation changes; world storage and body descriptors live in sibling owners.
+//! This is the right owner for changing Rust or Lua identity semantics without touching simulation behavior directly.
 
 /// Unique identifier for a physics body.
 /// # Fields

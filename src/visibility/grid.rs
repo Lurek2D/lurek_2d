@@ -1,7 +1,8 @@
-//! This file provides the main visibility grid that stores region state across players and factions. `visibility/grid` delivers the grid implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It tracks current and historical knowledge levels to separate visible and discovered outcomes. The file owns or coordinates data contracts including `VisibilityGrid`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It drives reveal and hide progression while emitting state-change events for script consumers. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `reveal`, `hide`, `get_state`, `get_fog_intensity`, `set_cost`, and 11 more stays attached to the local data model and invariants.
-//! It marks dirty regions so rendering and event systems process only meaningful transitions. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `VisibilityGrid`, the main per-player region store for hidden, discovered, visible, and flagged data.
+//! It tracks fog intensity, reveal costs, ownership sharing, and pending `VisibilityEvent` output in one state holder.
+//! Reveal and hide operations propagate through allied players, update fog and flags, and record transition events.
+//! Utility methods expose per-region state, costs, flags, player groups, global reveal, reset, and fog configuration.
+//! Open this file when multi-player visibility behavior changes; topology contracts and tile FOV live in siblings.
 
 use super::{FogConfig, PlayerOwnership, VisibilityEvent, VisibilityFlags, VisibilityState};
 

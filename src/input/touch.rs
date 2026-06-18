@@ -1,7 +1,7 @@
-//! Tracks multi-touch contacts with active-point state and per-frame transition sets. `input/touch` delivers the touch implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores per-contact position and pressure values keyed by stable touch identifiers. The file owns or coordinates data contracts including `TouchPoint`, `TouchState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Clears transient pressed and released markers at frame boundaries while preserving active points. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `begin_frame`, `touch_start`, `touch_move`, `touch_end`, `was_pressed`, and 4 more stays attached to the local data model and invariants.
-//! Provides touch lifecycle mutation paths for start, move, and end events from the platform layer. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `TouchPoint` and `TouchState`, the multitouch state used to track active contacts per frame.
+//! It stores current contacts by id plus pressed and released delta sets so touch queries stay deterministic.
+//! Mutation helpers cover touch start, move, and end, while `begin_frame` clears only transient transition markers.
+//! Open this file when touch-state semantics change; mouse, keyboard, and event-loop dispatch live in siblings.
 
 use std::collections::{HashMap, HashSet};
 

@@ -16,16 +16,11 @@
 
 ## Summary
 
-- The asset module provides shared, ref-counted resource lifetime management for scripts and runtime systems.
-- Stable handles prevent duplicate loads and make ownership explicit across subsystems.
-- Metadata supports naming, grouping, and tagging for structured content management.
-- Query helpers support lookup by name fragment, type, tag, and group.
-- Batch preload paths support startup and streaming workflows.
-- Ref-counted unload behavior removes entries only when the last user releases them.
-- Cache identity and discovery are centralized here for predictable sharing.
-- Decoding and rendering stay in feature-specific modules instead of the cache layer.
+- The `asset` module is the shared runtime catalog for loaded resources, so users can work with stable handles instead of repeatedly reopening raw file paths.
+- Its core value is lifecycle control: the cache keeps assets deduplicated, reference counted, and discoverable by name, group, and tag, which makes reuse explicit across gameplay systems and tools.
+- Preload and lookup features turn it into more than a passive cache, because startup setup, content pipelines, and diagnostic scripts can all ask the same module what is loaded and what should stay alive.
+- Read it as the ownership layer for resource identity and retention. Neighboring modules still decide how loaded resources are consumed.
 
-This module is mostly self-contained inside the `Feature Systems` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -35,17 +30,22 @@ This module is mostly self-contained inside the `Feature Systems` group. Cross-m
 
 ### cache.rs
 
-- Implements a reference-counted asset registry for tracking media lifecycle across runtime systems. `asset/cache` delivers the cache implementation for the asset subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores normalized metadata, optional text payloads, and ownership counters for shared access. The file owns or coordinates data contracts including `AssetType`, `AssetEntry`, `AssetCache`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Separates cache bookkeeping from decoded resource ownership handled by feature-specific modules. Public callable behavior is centered on no named public items, while method-level behavior such as `from_type_str`, `is_text_like`, `as_str`, `new`, `register`, `inc_ref`, and 18 more stays attached to the local data model and invariants.
-- Supports acquisition, release, and eviction decisions through explicit handle lifecycle updates. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Provides metadata and tag-query surfaces for tooling, filtering, and runtime introspection. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Preserves deterministic cache semantics so repeated asset flow remains predictable. The file boundary separates asset implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- `src/asset/cache.rs` owns ref-counted asset bookkeeping, including registration, lookup, tagging, and eviction.
+- It defines `AssetType`, `AssetEntry`, and `AssetCache`, keeping asset identity and lifecycle under one owner.
+- Normalized path keys live here so repeated registrations of the same typed asset resolve to one shared cache entry.
+- Reference increments, decrements, and zero-count removal are handled here, keeping lifetime behavior explicit.
+- Search helpers for names, groups, tags, and types also live here, giving tools and runtime systems one query surface.
+- Text-like assets may retain source content in memory here, while binary assets keep only path and metadata references.
+- Open this file when asset identity, retention policy, cache queries, or metadata semantics need engine-wide changes.
 
 ### mod.rs
 
-- Defines the top-level asset module boundary for cache-backed media lifecycle management. `asset/mod` is the asset module index, declaring `cache` so agents can identify which files own each feature slice before opening implementation code.
-- Exposes shared cache contracts while concentrating concrete registry behavior in the cache layer. `src/asset/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `cache::{AssetCache, AssetEntry, AssetType}` centralized for the asset subsystem.
+- `src/asset/mod.rs` is the asset module index, exposing the cache surface used to track media lifetimes.
+- It reexports `AssetCache`, `AssetEntry`, and `AssetType` so callers reach asset bookkeeping through one boundary.
+- No runtime cache state lives here; this file defines visibility while concrete asset lifecycle rules stay in `cache.rs`.
+- Read this index when wiring asset features, because it shows which cache contracts are intentionally public and shared.
+- Changes here alter the asset boundary, since reexports decide what runtime systems and bindings may import directly.
+- This module keeps media lifecycle ownership separate from loaders, decoders, and subsystem-specific resources.
 
 
 

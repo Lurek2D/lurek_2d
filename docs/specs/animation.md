@@ -18,26 +18,17 @@
 
 ## Summary
 
-- Use `lurek.animation` when runtime animation needs to be controlled as a system, not frame swapping.
-- The module turns authored timelines into deterministic playback and transition behavior.
-- It supports frame clips, state-machine switching, blend layers, and Spine bridging in one API.
-- Clip sources include grid slicing, explicit frame rectangles, and Aseprite JSON imports.
-- Imported durations, tags, and clip metadata map directly to runtime controllers.
-- Playback supports loop, reverse, ping-pong, pause, restart, and one-shot modes.
-- Timeline milestones emit events for gameplay synchronization points.
-- This makes animation useful for combat timing, effects, and state transitions, not only visuals.
-- State-machine control supports named states and parameter-driven transition rules.
-- Crossfades smooth clip handoffs and preserve readability during fast state changes.
-- Blend layers allow multiple animation streams to compose into one result.
-- Bone masks support partial-body overrides like upper-body aim and additive reactions.
-- Curves provide keyed numeric animation beyond sprite frames.
-- Interpolation modes include stepped, linear, eased, and custom callback-driven easing.
-- Sync groups keep multiple instances phase-aligned for crowds and linked props.
-- The module owns playback, transition governance, blending, import normalization, and frame sampling.
-- It collaborates with image/render/runtime/spine, but animation state policy lives here.
-- Use it when animation must be authorable, queryable, synchronized, and blendable at runtime.
+- The `animation` module is the engine's time-based motion system for users who need sprites, poses, and related visual states to advance through structured runtime playback.
+- Clips, frames, controllers, state machines, sync groups, events, blending, and curve handling live together here so simple loops and richer motion behavior share one model.
+- This matters because animation is not only frame stepping; it also needs transitions, timing hooks, authored state changes, and gameplay-aware playback control.
+- Runtime events make the module useful beyond visuals, since footsteps, attack windows, cutscene timing, and other logic often need to fire from the animation timeline.
+- Aseprite import and Spine bridging keep the feature aligned with common art pipelines instead of forcing everything into one internal-only format.
+- Blend and sync-group support matter because animated systems often need continuity across states or coordinated playback across several visual parts instead of abrupt clip swaps.
+- The module therefore works as both a playback layer and a timing surface for game logic that needs authored motion to remain inspectable and deterministic enough for tools and debugging.
+- This is especially useful for gameplay-driven animation, where movement, combat, cutscene timing, and feedback effects all want to share the same authored motion surface instead of fighting several parallel playback hacks.
+- `render` shows the result and `spine` specializes skeletal rigs, but `animation` owns clip selection, synchronization, transitions, and timeline advancement.
+- Read `animation` as the owner of animation sequencing and playback semantics across the engine.
 
-This module primarily collaborates with `image`, `math`, `render`, `runtime`, `spine`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -51,83 +42,98 @@ This module primarily collaborates with `image`, `math`, `render`, `runtime`, `s
 
 ### aseprite.rs
 
-- Parses Aseprite export data into engine-ready frame geometry, timing, and clip-tag metadata. `animation/aseprite` delivers the aseprite implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports multiple JSON frame layout variants while enforcing deterministic playback ordering. The file owns or coordinates data contracts including `AsepriteFrameData`, `AsepriteDirection`, `AsepriteTagData`, `AsepriteParsed`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Validates structural assumptions early so malformed exports fail before runtime animation usage. Public callable behavior is centered on `load_aseprite_json`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Extracts frame rectangles and durations into normalized data consumable by controller pipelines. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns Aseprite JSON parsing that turns sheet exports into frame rectangles, timing, and clip tags.
+- `AsepriteParsed` stores normalized frame and tag metadata, while helpers validate numeric fields and layout.
+- Import logic accepts array and object frame layouts, derives sheet size, and preserves deterministic ordering.
+- Tag parsing normalizes forward, reverse, and ping-pong directions for later clip creation in the controller.
+- Open it when authored import semantics change; runtime playback and rendering live in sibling animation files.
 
 ### blend.rs
 
-- Implements layered animation blending where multiple clip outputs combine into one final pose. `animation/blend` delivers the blend implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Applies per-layer influence weights to shape how strongly each source contributes over time. The file owns or coordinates data contracts including `BlendMask`, `BlendLayer`, `BlendLayerSet`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports optional bone masks for partial-body mixing without disturbing unrelated motion regions. Public callable behavior is centered on no named public items, while method-level behavior such as `all`, `from_bones`, `includes`, `new`, `len`, `is_empty`, and 7 more stays attached to the local data model and invariants.
-- Maintains ordered layer stacking so blend precedence stays explicit and predictable. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns blend-layer data used to combine multiple animation clips into one ordered composite pose.
+- `BlendMask` restricts layers to named bones, while `BlendLayer` stores clip name, weight, and mask state.
+- `BlendLayerSet` centralizes ordered layer storage, uniqueness checks, weight changes, and mask replacement.
+- It is data-oriented rather than evaluative, leaving actual pose mixing to downstream systems that consume layers.
+- Open it when layer or mask semantics change; playback and render export live in sibling animation files.
 
 ### clip.rs
 
-- Defines reusable animation clip metadata over frame spans, playback direction, and loop policy. `animation/clip` delivers the clip implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns clip metadata that names frame spans, default FPS, looping intent, and playback direction.
+- `AnimClip` stores frame indices and policy, while `ClipPlaybackMode` selects forward, reverse, or ping-pong flow.
+- Open it when authored clip semantics change; frame storage and live playback logic live in sibling files.
 
 ### controller.rs
 
-- Implements the central frame-animation runtime that owns clips, frames, cursor state, and event flow. `animation/controller` delivers the controller implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Advances playback through forward, reverse, ping-pong, looped, and paused progression modes. The file owns or coordinates data contracts including `Animation`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Applies speed scaling and transition blending so timing and clip handoff remain artistically controllable. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_frame`, `add_frames_from_grid`, `add_frames_from_rects`, `add_clip`, `add_clip_with_mode`, and 26 more stays attached to the local data model and invariants.
-- Builds runtime clip libraries from grids, explicit frame data, and imported authoring metadata. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Emits timeline events for frame changes and lifecycle boundaries to drive gameplay synchronization. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Exposes current frame sampling for render-facing systems that require stable quad lookup each tick. The file boundary separates animation implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns `Animation`, the runtime controller that stores frames, clips, timers, events, and blend state.
+- It manages clip libraries, current clip selection, frame position, playback speed, pause state, and ping-pong flow.
+- Frame builders load quads from grids, explicit rectangles, and parsed Aseprite metadata into one frame store.
+- Clip registration validates frame references, FPS, looping, and playback mode before data enters runtime use.
+- Update logic advances timers, applies frame-duration overrides, emits loop and finish events, and stops cleanly.
+- Crossfade helpers capture outgoing quads and expose blend state so render-facing callers can mix transitions.
+- Preview helpers draw the current frame or a grid of all frames into `ImageData` for tools and inspection paths.
+- Render integration stays read-only here through current-quad sampling, leaving draw-command mapping to siblings.
+- Open it when playback semantics change; clips, frames, imports, and FSM control all depend on this owner file.
 
 ### curve.rs
 
-- Implements keyframed property timelines that interpolate numeric animation parameters over time. `animation/curve` delivers the curve implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports stepped, linear, eased, and callback-defined transitions for authored motion behavior. The file owns or coordinates data contracts including `EasingKind`, `AnimCurve`, `AnimPropertyTimeline`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Evaluates sparse named tracks into sampled property values at arbitrary timeline positions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_easing`, `add_keyframe`, `keyframe_count`, `clear`, `eval`, and 3 more stays attached to the local data model and invariants.
-- Provides both single-property reads and full snapshot sampling for synchronized consumers. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Keeps interpolation semantics explicit so authored curves remain predictable across runtime contexts. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns numeric animation curves and sparse property timelines used to sample values over time.
+- `AnimCurve` stores sorted keyframes plus easing, while `AnimPropertyTimeline` groups named property tracks.
+- Evaluation helpers support stepped, linear, quadratic, and custom-id easing across arbitrary sample times.
+- Timeline insertion backfills missing property values so snapshots remain defined across uneven keyframe sets.
+- Sampling helpers return one property or all properties, making the file the owner of interpolation semantics.
+- Open it when authored curve math changes; clip stepping and render export live in sibling animation files.
 
 ### event.rs
 
-- Defines the event payload contract emitted by animation playback state transitions. `animation/event` delivers the event implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Captures completion, loop, and frame-change signals as stable timeline reaction points. The file owns or coordinates data contracts including `AnimEvent`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Serves gameplay and scripting systems that listen to animation progression milestones. Public callable behavior is centered on no named public items, while method-level behavior such as `type_name`, `frame_index` stays attached to the local data model and invariants.
+- This file owns `AnimEvent`, the playback signal set emitted when clips finish, loop, or advance frames.
+- Helper accessors expose stable event names and optional frame indices for consumers reacting to timeline changes.
+- Open it when animation event semantics change; the controller owns event emission and queue draining nearby.
 
 ### frame.rs
 
-- Defines the minimal frame payload of source rectangle and optional per-frame timing override. `animation/frame` delivers the frame implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `AnimFrame`, the minimal frame payload of source quad plus optional per-frame duration override.
+- It keeps authored geometry and timing local so clips can reference frame data without duplicating rectangle state.
+- Open it when frame payload semantics change; clip policy and playback progression live in sibling files.
 
 ### mod.rs
 
-- Defines the animation module boundary that unifies playback, blending, transitions, and render bridging. `animation/mod` is the animation module index, declaring `aseprite`, `blend`, `clip`, `controller`, `curve`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
-- Groups import, curve, event, sync, and state-control subsystems into one coherent runtime surface. `src/animation/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `aseprite::{ load_aseprite_json, AsepriteDirection, AsepriteFrameData, AsepriteParsed, AsepriteTagData, }`, `blend::{BlendLayer, BlendLayerSet, BlendMask}`, `clip::{AnimClip, ClipPlaybackMode}`, `controller::Animation`, and 7 more centralized for the animation subsystem.
-- Keeps frame-based and bridge-based animation features accessible through a consistent composition root. The file documents how animation submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- Serves as the high-level integration entry for character animation behavior in engine runtime. Agents should read this index to choose the narrow owner file first, because it maps names such as `aseprite`, `blend`, `clip`, `controller`, `curve`, and 6 more to concrete implementation responsibilities.
-- `animation/mod` is the animation module index, declaring `aseprite`, `blend`, `clip`, `controller`, `curve`, and 6 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/animation/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `aseprite::{ load_aseprite_json, AsepriteDirection, AsepriteFrameData, AsepriteParsed, AsepriteTagData, }`, `blend::{BlendLayer, BlendLayerSet, BlendMask}`, `clip::{AnimClip, ClipPlaybackMode}`, `controller::Animation`, and 7 more centralized for the animation subsystem.
+- This module is the animation index, re-exporting clips, frames, playback, curves, state control, and render glue.
+- It is the navigation point for authored imports, runtime playback, event flow, blending, and synchronization.
+- `controller.rs` owns the live playback controller, while `clip.rs` and `frame.rs` hold core timeline data.
+- `curve.rs` and `state_machine.rs` cover property interpolation and condition-driven state transitions.
+- `blend.rs` owns layer and mask data, while `render.rs` converts current quads into renderer draw commands.
+- `aseprite.rs` imports authored sheets, `event.rs` defines playback signals, and `sync_group.rs` coordinates peers.
+- `spine_bridge.rs` connects FSM state to Spine playback when that feature is enabled for the runtime build.
+- Change this file when public animation exports move; change siblings when playback or import rules change.
 
 ### render.rs
 
-- Converts active animation frame state into renderer-ready textured draw command payloads. `animation/render` delivers the rendering adapter and draw-command integration for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Bundles atlas identity and transform inputs so frame sampling maps cleanly to render execution. The file owns or coordinates data contracts including `AnimRenderParams`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Keeps rendering adaptation lightweight while preserving consistent frame-to-visual translation. Public callable behavior is centered on `quad_to_draw_command`, while method-level behavior such as `generate_render_command` stays attached to the local data model and invariants.
+- This file owns animation-to-render helpers that convert the current frame quad into renderer draw commands.
+- `AnimRenderParams` bundles atlas and transform inputs, while helpers produce stable quad draw payloads.
+- It reads current playback state without owning animation stepping, keeping visual export separate from timing.
+- Open it when draw-command mapping changes; frame advancement and clip state live in the controller file.
 
 ### spine_bridge.rs
 
-- Bridges animation state-machine transitions to Spine clip playback through explicit state mapping. `animation/spine_bridge` delivers the spine bridge implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Owns skeleton progression and transform refresh so Spine output remains time-synchronized. The file owns or coordinates data contracts including `SpineAnimBridge`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Keeps external state changes aligned with internal skeleton animation updates each frame. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `map`, `map_looping`, `update`, `skeleton`, `skeleton_mut`, and 2 more stays attached to the local data model and invariants.
+- This file owns the Spine bridge that maps animation FSM states onto skeleton clip playback and updates.
+- It stores the owned skeleton, state-to-clip mappings, looping overrides, and the last applied FSM state.
+- Update logic advances the FSM, swaps Spine clips on state changes, and refreshes world transforms each tick.
+- Open it when Spine integration changes; generic animation state control lives in sibling subsystem files.
 
 ### state_machine.rs
 
-- Implements animation finite-state control with typed parameters and condition-driven transitions. `animation/state_machine` delivers the state machine implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Evaluates transition rules each frame to move between clip-bound states deterministically. The file owns or coordinates data contracts including `AnimParamValue`, `ConditionOp`, `ConditionValue`, `TransitionCondition`, `AnimTransition`, and 2 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Parses authored condition expressions into executable checks used during state progression. Public callable behavior is centered on `compare_nums`, `parse_condition`, while method-level behavior such as `new`, `add_state`, `add_transition`, `set_param_float`, `set_param_bool`, `set_param_int`, and 6 more stays attached to the local data model and invariants.
-- Activates destination clips immediately on state change to keep visual intent synchronized. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Provides parameterized graph control for expressive authored animation behavior. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns animation FSM control with typed parameters, parsed conditions, and clip-bound named states.
+- `AnimStateMachine` stores states, transitions, params, and an owned `Animation` controller for visual output.
+- Condition parsing and comparison helpers turn authored strings into executable numeric or boolean checks.
+- Update logic advances the inner animation, then processes bounded transition chains from the current state.
+- State changes immediately play destination clips and apply looping policy, keeping visuals aligned with graph flow.
+- Open it when authored graph semantics change; low-level clip playback and frames live in sibling files.
 
 ### sync_group.rs
 
-- Defines synchronization groups for animation instances that must maintain shared playback phase. `animation/sync_group` delivers the sync group implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Tracks unique membership so timing alignment stays stable across coordinated animated entities. The file owns or coordinates data contracts including `AnimSyncGroup`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Serves as lightweight grouping state for systems that enforce multi-entity animation sync. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `remove`, `clear`, `member_count`, `members` stays attached to the local data model and invariants.
+- This file owns `AnimSyncGroup`, the membership list used to keep multiple animation instances phase-aligned.
+- It stores unique slotmap keys and exposes small mutation helpers so synchronization systems share one contract.
+- Open it when coordination-group semantics change; actual playback state and stepping live in sibling files.
 
 
 

@@ -1,7 +1,8 @@
-//! Serializable description of the engine API surface exposed to mods. `mods/api_schema` delivers the api schema implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores parameter types, return types, and short summaries for each entry. The file owns or coordinates data contracts including `FieldType`, `FieldDef`, `MethodDef`, `AssetRequirement`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Loads from generated API metadata at startup. Public callable behavior is centered on no named public items, while method-level behavior such as `from_name`, `as_str`, `new`, `optional`, `with_default`, `with_description`, and 2 more stays attached to the local data model and invariants.
-//! Supports version checks so mods can declare a minimum engine release. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/mods/api_schema.rs` defines schema types that describe mod fields, methods, and asset requirements.
+//! It owns `FieldType`, `FieldDef`, `MethodDef`, and `AssetRequirement`, including helper builders and type-name parsing.
+//! Optional, array, and userdata type encoding lives here so manifests and generated API metadata share one contract shape.
+//! This file carries schema data only; it does not register types, load manifests, or coordinate live mod lifecycles.
+//! Read it when mod schema fields, type parsing semantics, or API-description payload shapes need to change.
 
 /// Field type variant for an API schema.
 #[derive(Debug, Clone, PartialEq, Eq)]

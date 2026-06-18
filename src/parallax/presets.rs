@@ -1,6 +1,6 @@
-//! Ready-made parallax layer constructors for common depth planes. `parallax/presets` delivers the presets implementation for the parallax subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Covers far background, mid background, and foreground fog presets. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Bakes scroll factor, repeat, z-order, opacity, and blend mode into each preset. Public callable behavior is centered on `far_background`, `mid_background`, `foreground_fog`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! `src/parallax/presets.rs` defines ready-made `ParallaxLayer` constructors for common background and fog depth planes.
+//! It owns opinionated defaults for scroll factors, repeat flags, z ordering, opacity, blend modes, and motion stretch.
+//! Read it when stock parallax layer recipes or their visual tuning should change without touching core layer behavior.
 
 use crate::parallax::ParallaxLayer;
 use crate::render::BlendMode;

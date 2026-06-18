@@ -1,5 +1,9 @@
-//! This module delivers the high-level concurrency layer for isolated Lua workers in the runtime. `thread/mod` is the thread module index, declaring `channel`, `pool`, `promise`, `worker` so agents can identify which files own each feature slice before opening implementation code.
-//! It combines channels, worker execution, pools, and one-shot promises into one coherent flow model. `src/thread/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through no named public items centralized for the thread subsystem.
+//! `src/thread/mod.rs` is the module index that exposes channels, workers, pools, and promises for Lua concurrency.
+//! It groups message transport and worker orchestration so background Lua execution uses one thread surface.
+//! No live thread state lives here; this file only declares child modules and documents the concurrency split by concern.
+//! Read this index when wiring background execution, because it shows where message passing ends and worker control begins.
+//! Changes here reshape the thread boundary, since module visibility defines which concurrency tools other systems use.
+//! This module keeps channels, worker lifecycles, pooling, and one-shot results separated for easier ownership tracing.
 
 /// Typed MPMC channel built on `crossbeam`-style semantics for cross-thread messages.
 pub mod channel;

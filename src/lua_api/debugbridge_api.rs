@@ -1,4 +1,4 @@
-//! `src/lua_api/debugbridge_api.rs` registers the `lurek.debugbridge` Lua boundary for debugbridge behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.debugbridge` Lua API for JSON bridging between Lua values and external debug tooling.
 
 use super::SharedState;
 use crate::debugbridge::{server_thread, BridgeShared, PendingRequest, PendingResponse};

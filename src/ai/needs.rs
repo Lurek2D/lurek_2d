@@ -1,7 +1,8 @@
-//! Models internal drives as normalized pressures that decay, recover, and compete for attention. `ai/needs` delivers the needs implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Converts need intensity into urgency signals that higher decision layers can compare directly. The file owns or coordinates data contracts including `Need`, `NeedAdvertisement`, `NeedSystem`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Scores available satisfiers against context so fulfillment choice remains situational and explainable. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `is_urgent`, `urgency_score`, `satisfy`, `deprive`, `update`, and 10 more stays attached to the local data model and invariants.
-//! Maintains cooldown-aware motivation flow to avoid oscillation between equivalent opportunities. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Owns normalized need pressures and advertisements so motivation can decay, recover, and compete for attention.
+//! Defines individual needs, local satisfier offers, cooldown handling, and the need-system collection for one agent.
+//! Scores urgency and candidate advertisements so fulfillment choice can depend on both pressure and travel context.
+//! Provides the motivation boundary between internal drives and higher decision layers that choose what to satisfy.
+//! Open this owner when urgency math, advertisement cooldowns, or need decay behavior needs coordinated changes.
 
 /// One tracked need with a normalized value.
 pub struct Need {

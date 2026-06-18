@@ -1,4 +1,4 @@
-//! `src/lua_api/sprite_api.rs` registers the `lurek.sprite` Lua boundary for sprite behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.sprite` Lua API for sprite userdata, clips, quads, frames, and sprite table conversion.
 
 use super::SharedState;
 use crate::image::{NineSliceInsets, TextureAtlas};

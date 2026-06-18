@@ -1,4 +1,4 @@
-//! Builds the shared `lurek` Lua table and registers enabled public modules into a fresh VM. `src/lua_api/register.rs` registers the `lurek.register` Lua boundary for register behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Builds Lua VMs, locks down standard libraries, and registers enabled public modules into the `lurek` table.
 
 #[cfg(feature = "automation-plugin")]
 use super::automation_api;

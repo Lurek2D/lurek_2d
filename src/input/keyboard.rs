@@ -1,8 +1,10 @@
-//! Implements per-frame keyboard state with held keys, transition deltas, and modifier tracking. `input/keyboard` delivers the keyboard implementation for the input subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Separates logical key identity from physical scancode paths for layout-aware and layout-agnostic input. The file owns or coordinates data contracts including `KeyboardState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Updates modifier bitmasks on each event to keep control-state queries cheap and consistent. Public callable behavior is centered on `get_scancode_from_key`, `get_key_from_scancode`, `winit_key_to_string`, `winit_scancode_to_string`, while method-level behavior such as `new`, `begin_frame`, `press_scancode`, `release_scancode`, `is_scancode_down`, `was_scancode_pressed`, and 16 more stays attached to the local data model and invariants.
-//! Maintains optional key-repeat and text-input buffering for UI fields and chat-like interactions. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Performs translation from backend key enums into stable engine key naming conventions. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `KeyboardState` and key-translation helpers, the runtime keyboard model used by the engine.
+//! It stores held logical keys, held scancodes, pressed and released deltas, modifier bits, and text input buffers.
+//! Frame helpers clear transient deltas, while mutation methods record presses, releases, repeat policy, and IME text.
+//! Lookup helpers expose current state, any-key queries, modifier flags, and raw frame-local text input collections.
+//! Name translation also lives here, mapping winit logical keys and physical keycodes into stable engine strings.
+//! The file separates logical key identity from scancodes so layout-aware and physical-input paths can both coexist.
+//! Open it when keyboard semantics change; action maps, combos, and app event dispatch live in sibling modules.
 
 use std::collections::HashSet;
 

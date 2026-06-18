@@ -1,9 +1,9 @@
-//! High-level mapblock module that wires blocks, scripts, constraints, and output conversion together. `mapblock/mod` is the mapblock module index, declaring `block`, `config`, `constraints`, `generator`, `group`, and 8 more so agents can identify which files own each feature slice before opening implementation code.
-//! Exposes the procedural assembly surface used to build tilemaps from authored content. `src/mapblock/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `block::{Edge, MapBlock}`, `config::MapBlockConfig`, `constraints::{EdgeConstraint, NeighborRules}`, `generator::MapBlockGenerator`, and 9 more centralized for the mapblock subsystem.
-//! Keeps layered generation, orientation handling, and placement validation under one namespace. The file documents how mapblock submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! `mapblock/mod` is the mapblock module index, declaring `block`, `config`, `constraints`, `generator`, `group`, and 8 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/mapblock/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `block::{Edge, MapBlock}`, `config::MapBlockConfig`, `constraints::{EdgeConstraint, NeighborRules}`, `generator::MapBlockGenerator`, and 9 more centralized for the mapblock subsystem.
-//! The file documents how mapblock submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! This module is the mapblock index, exposing authored blocks, constraints, scripts, placement, and output conversion.
+//! It reexports `MapBlockGenerator`, block types, script data, placement state, and result carriers as one surface.
+//! `block.rs` owns atomic block geometry, while `placement.rs` and `generator.rs` own legality checks and execution flow.
+//! `config.rs`, `maptile.rs`, `layer.rs`, and `tileset_ref.rs` define the slot, tile, and tileset contracts here.
+//! `output.rs` and `multilevel.rs` handle built-map materialization, while `group.rs` and `script.rs` organize content.
+//! Open this file to navigate ownership quickly; actual generation logic, transforms, and storage live in sibling files.
 
 /// Map block definition: tile slots, metadata, and per-block configuration.
 pub mod block;

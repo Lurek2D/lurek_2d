@@ -1,11 +1,13 @@
-//! Implements typed vectorized column storage for high-throughput dataframe-style numeric processing. `dataframe/vectorized` delivers the vectorized implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports float, integer, boolean, and text columns with optional validity-mask semantics. The file owns or coordinates data contracts including `ColumnStore`, `ScalarOp`, `BinaryOp`, `ReduceOp`, `CmpOp`, and 1 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides scalar element-wise transforms across arithmetic and unary operation families. Public callable behavior is centered on no named public items, while method-level behavior such as `dtype_name`, `len`, `is_empty`, `is_valid`, `valid_f64s`, `filter`, and 18 more stays attached to the local data model and invariants.
-//! Executes binary column operations with dtype-aware coercion and compatibility checks. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Computes reductions including sum, mean, min, max, variance, and related aggregate metrics. External integration uses `rayon`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Generates comparison masks for predicate-style filtering over typed column values. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! Supports bidirectional conversion between vectorized frames and generic dataframe representations. State changes, validation paths, and helper routines in `src/dataframe/vectorized.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! Applies parallelized multi-column operations and reductions via rayon-backed execution paths. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! This file owns typed column stores and vectorized execution paths used for faster numeric dataframe workloads.
+//! `ColumnStore` models float, int, bool, and text buffers with optional validity masks for nil-aware processing.
+//! `VecFrame` stores ordered typed columns, converts to and from `DataFrame`, and resolves names for later operators.
+//! Scalar, binary, reduction, and comparison enums live here because they define the operation vocabulary on typed data.
+//! In-place scalar ops and clamps belong here because they mutate raw numeric buffers without going through cell wrappers.
+//! Binary ops and reductions also stay here so numeric coercion, validity propagation, and dtype checks share one owner.
+//! Mask construction and application are local because predicate filtering over typed buffers is a vectorized concern.
+//! Column casting remains here because representation changes between float, int, and text are storage-level decisions.
+//! Rayon-backed `par_reduce`, `par_scalar_op`, and `par_apply_column` live here as the parallel execution boundary.
+//! Open it when typed execution changes; SQL parsing, generic frame semantics, and file codecs live in siblings.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 use rayon::prelude::*;

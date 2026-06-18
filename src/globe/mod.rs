@@ -1,9 +1,11 @@
-//! Provides the high-level globe module boundary for region topology, projection, and visual overlay orchestration. `globe/mod` is the globe module index, declaring `composition`, `draw`, `export`, `fog`, `label`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
-//! Connects rendering, fog state, markers, labels, layers, and picking into one map-runtime surface. `src/globe/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `fog::{FogMask, FogStore}`, `picking::PickResult`, `projection::OrbitCamera`, `registry::{Globe, GlobeRegistry}`, and 7 more centralized for the globe subsystem.
-//! Supports synchronization and loading flows so globe state can be updated from external game systems. The file documents how globe submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! Delivers a cohesive planetary-view feature set for strategic map presentation and interaction. Agents should read this index to choose the narrow owner file first, because it maps names such as `composition`, `draw`, `export`, `fog`, `label`, and 12 more to concrete implementation responsibilities.
-//! `globe/mod` is the globe module index, declaring `composition`, `draw`, `export`, `fog`, `label`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/globe/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `fog::{FogMask, FogStore}`, `picking::PickResult`, `projection::OrbitCamera`, `registry::{Globe, GlobeRegistry}`, and 7 more centralized for the globe subsystem.
+//! Exports the globe subsystem surface that groups topology, projection, loading, rendering, overlays, and syncing.
+//! Acts as the navigation index for globe drawing, fog, labels, markers, picking, registry state, and type owners.
+//! Keeps the module boundary explicit so callers can find whether a globe concern belongs to storage, math, or draw.
+//! Open this file when adding or retiring globe submodules or when re-export policy for shared globe APIs changes.
+//! The exported set here connects runtime state, geographic math, import paths, visual overlays, and sync helpers.
+//! Agents should start here when tracing globe behavior because it reveals the authoritative file split by concern.
+//! This index owns visibility and compatibility re-exports rather than camera state, topology caches, or draw code.
+//! Neighboring work usually spans Globe, RegionGraph, OrbitCamera, fog state, and frame emission helpers below.
 
 /// Globe composition helpers. This module is publicly re-exported.
 pub mod composition;

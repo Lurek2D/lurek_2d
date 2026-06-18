@@ -1,7 +1,8 @@
-//! Registry of which lurek namespaces and functions a mod may use. `mods/api_registry` delivers the api registry implementation for the mods subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Maps API names to permitted callable identifiers for sandbox checks. The file owns or coordinates data contracts including `TypeSchema`, `GameApiRegistry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Loads from the built-in API schema and any engine plugins at startup. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_field`, `add_method`, `add_asset_requirement`, `required_fields`, `optional_fields`, and 6 more stays attached to the local data model and invariants.
-//! Lets mods declare required API surface in manifest data. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/mods/api_registry.rs` owns the registry of mod-declarable API types and the validation rules attached to each type.
+//! It stores `TypeSchema` records with fields, methods, asset requirements, and descriptions for manifest-driven instances.
+//! Required-field checks and unknown-field detection live here so mod instance validation stays consistent across loaders.
+//! This file depends on schema definitions but does not parse TOML, manage live mods, or enforce Lua sandbox boundaries.
+//! Read it when mod type registration, instance validation, or allowed API surface contracts need to change.
 
 use super::api_schema::{AssetRequirement, FieldDef, MethodDef};
 use std::collections::HashMap;

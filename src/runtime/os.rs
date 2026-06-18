@@ -1,7 +1,8 @@
-//! This file exposes the runtime's view of the host operating system for startup policy and script-facing platform checks. `runtime/os` delivers the os implementation for the runtime subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Detection is compile-time oriented rather than probe-heavy, which keeps the answer stable and cheap for every call site.
-//! Startup code relies on this information for platform-shaped defaults such as paths and environment-sensitive behavior. Public callable behavior is centered on `get_os_name`, `get_processor_count`, `get_memory_size`, `open_url`, `get_preferred_locales`, and 1 more, while method-level behavior such as `as_str` stays attached to the local data model and invariants.
-//! Lua-visible platform queries also depend on the same source so scripts and Rust agree on the current host label. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the runtime-facing OS helpers used for platform labels, browser launch, locales, and host info.
+//! It exposes compile-time OS naming, logical processor count, memory size, URL opening, and locale preferences.
+//! Power-state reporting also lives here so Lua and Rust read one host abstraction instead of ad hoc probes.
+//! URL launching is validated here because runtime callers need one policy gate for allowed external schemes.
+//! Open it when platform-query semantics change; startup config and shared state live in sibling runtime files.
 
 use crate::log_msg;
 use crate::runtime::log_messages::LA03_OPEN_URL_REJECTED;

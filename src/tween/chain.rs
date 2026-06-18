@@ -1,8 +1,9 @@
-//! This file provides composable tween chains for staged motion and timing choreography. `tween/chain` delivers the chain implementation for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It supports sequential and grouped progression so animation beats can be orchestrated clearly. The file owns or coordinates data contracts including `ChainStep`, `ChainEvent`, `TweenChain`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It carries optional step labels that let scripts react to completion boundaries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `value`, `is_done`, `start`, `stop`, `pause`, and 15 more stays attached to the local data model and invariants.
-//! It advances with frame delta while preserving deterministic chain state transitions. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It translates complex cinematic timing into a readable structure for runtime execution. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `ChainStep`, `ChainEvent`, and `TweenChain`, the staged playback model for chained tween timing.
+//! It stores ordered steps, the active cursor, loop flags, pause state, and iteration counts for deterministic progress.
+//! Each step carries duration, easing, endpoints, optional labels, and local elapsed time used to compute live values.
+//! The `tick` loop can finish multiple short steps in one frame, emit completion events, and carry leftover delta forward.
+//! Sequence-level helpers start, stop, pause, reset, jump, and report progress without involving Lua registry handles.
+//! Open this file when scripted animation choreography or labeled step transitions change, not field-writing logic.
 
 use crate::math::easing;
 

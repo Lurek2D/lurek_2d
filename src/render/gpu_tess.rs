@@ -1,9 +1,12 @@
-//! GPU tessellator converting high-level 2D vector shapes (rectangles, circles, arcs, text glyphs, sprites, meshes) into vertex and index buffers.
-//! Implements dynamic segment-count adaptation for circles and ellipses based on screen-space radius ensuring smooth curves at any zoom level.
-//! Tessellates stroked lines as screen-aligned rectangular quads with configurable line width supporting dashed borders and outline styles.
-//! Packs ColorVertex and TexVertex buffers with positions, UV coordinates, tint colors, and transform data for unified pipeline ingestion.
-//! Applies 3x3 model-view transformations per vertex enabling local coordinate systems and nested transform hierarchies. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Computes scissor rectangles and culls geometry outside viewport bounds reducing GPU workload and preventing render artifacts.
+//! Converts high-level 2D draw shapes into GPU-ready vertices and indices for the hardware renderer pipeline.
+//! Tessellates rectangles, circles, arcs, glyph quads, sprites, and meshes under one geometry conversion owner.
+//! Adapts curve segment counts to screen-space radius so curved shapes stay smooth across different zoom levels.
+//! Builds stroked lines as quads with explicit widths, supporting borders, outlines, and dashed style variants.
+//! Packs position, uv, tint, and transform data into ColorVertex and TexVertex streams expected by GPU code.
+//! Applies local transforms per vertex so nested coordinate systems do not need pre-flattened geometry upstream.
+//! Computes scissor rectangles and culls out-of-bounds geometry to reduce wasted GPU work and visual artifacts.
+//! Acts as the GPU tessellation boundary between front-end draw intent and raw vertex buffer contents.
+//! Open this file when hardware path geometry, scissor math, or shape triangulation behaves incorrectly.
 
 use super::GpuRenderer;
 use crate::math::{Mat3, Vec2};

@@ -1,4 +1,6 @@
-//! Numeric limits for peer connections, channels, and buffer sizes. `network/constants` delivers the constants implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns shared numeric limits for peers, channels, timeouts, and socket buffer sizes in networking.
+//! It centralizes defaults such as `DEFAULT_PEERS`, `DEFAULT_CHANNELS`, and transport buffer capacities.
+//! Open it when protocol ceilings change; host logic, runtime polling, and message framing live in siblings.
 
 /// Hard ceiling on simultaneous peer connections across all transports.
 pub const MAX_PEERS: usize = 4096;

@@ -1,9 +1,11 @@
-//! Province renderer for turning abstract registry state into concrete draw commands that express political regions, labels, capitals, and border semantics on screen.
-//! The file works from cached province geometry and active map-mode policy so the same province data can be projected into different strategic views without rebuilding the map model.
-//! Viewport culling keeps large maps practical by limiting work to the currently visible window instead of brute-forcing every province each frame.
-//! Fill generation based on span geometry gives irregular regions a raster-efficient rendering path that still respects per-province styling.
-//! Border drawing layers additional meaning through type configs and pair-specific overrides, making the edges between provinces visually informative rather than decorative only.
-//! Capitals and labels add orientation and identity, keeping the renderer tied to map readability as well as raw color fill.
+//! Generates province render commands from registry state so the map can draw fills, borders, labels, and overlays.
+//! Owns ProvinceRenderOptions, zoom-mode interpretation, viewport culling, and helper rules for visible border output.
+//! Converts province spans, styles, capitals, roads, labels, and selection state into ordered RenderCommand batches.
+//! Provides the presentation boundary between authoritative province data and the lower renderer command stream.
+//! Encodes how fog, visibility, hover, border types, and level-of-detail choices alter what the province map emits.
+//! Neighboring changes usually involve ProvinceRegistry fields, map mode colors, and render command capabilities.
+//! Open this owner when visual province behavior changes, especially if command ordering or LOD rules need revision.
+//! This file is where province-specific drawing policy lives instead of the generic renderer or data registry layers.
 
 use std::collections::HashMap;
 

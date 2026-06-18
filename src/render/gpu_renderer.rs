@@ -1,13 +1,18 @@
-//! Primary hardware-accelerated 2D rendering orchestrator for Lurek2D. `render/gpu_renderer` delivers the gpu renderer implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Integrates with wgpu to manage device, queue, swapchain, and graphics resources. The file owns or coordinates data contracts including `GpuRenderer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Translates Lua-side render commands into structured draw calls and pipeline states. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `resize`, `render_frame` stays attached to the local data model and invariants.
-//! Controls multi-pass rendering flow including scenes, shadows, decals, and post-fx. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Aggressively coalesces contiguous draw calls sharing material parameters and textures. External integration uses `slotmap`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Implements static geometry caching to bypass tessellation and CPU upload overhead. The file boundary separates render implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! Implements GPU-side instancing to render repetitive sprite grids and particle buffers. State changes, validation paths, and helper routines in `src/render/gpu_renderer.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! Renders primitive vector shapes, dynamic outlines, rounded quads, and ellipses. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
-//! Resolves text rendering by drawing character quads lookup from font atlases. The implementation keeps feature-specific decisions near their data and helper functions, reducing cross-module coupling while preserving a clear engine-facing boundary.
-//! Manages offscreen canvases as render targets to enable composite camera views. Documentation here is intended to feed source-derived specs, so every file-level line states concrete responsibilities instead of generic presence or placeholder text.
+//! Owns the main hardware renderer that turns front-end render commands into concrete wgpu draw submission.
+//! Manages device, queue, swapchain, canvases, textures, and persistent GPU state under one frame orchestrator.
+//! Drives multi-pass flow for scene color, shadows, decals, text, province maps, and post-processing output.
+//! Coalesces compatible draw calls so repeated materials and textures do not force unnecessary pipeline churn.
+//! Uploads and reuses static geometry to bypass repeated tessellation and reduce CPU-side frame overhead.
+//! Supports GPU instancing for repeated sprites, particles, and grid-like content that share one draw shape.
+//! Resolves text rendering by expanding glyph quads from atlas data and batching them with other draw work.
+//! Maintains offscreen canvases as render targets so composite views and multi-surface workflows stay possible.
+//! Handles resize, viewport updates, and target-dimension logic that keep swapchain-backed output coherent.
+//! Owns readback orchestration for surfaces when screenshots or software-visible capture need GPU results.
+//! Bridges lighting, shadows, geometry, and resource owners instead of embedding their detailed policies here.
+//! Acts as the runtime boundary between the engine's render command language and low-level wgpu execution.
+//! Concentrates helper routines near state so render-frame changes remain auditable despite subsystem breadth.
+//! Open this file when full-frame GPU output is wrong and the fault is not isolated to one narrow helper owner.
+//! It is the right owner for render orchestration bugs because most GPU passes and resource handoffs converge here.
 
 use crate::log_msg;
 use crate::math::{polygon, Mat3, Vec2};

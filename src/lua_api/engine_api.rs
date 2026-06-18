@@ -1,4 +1,4 @@
-//! Registers the public `lurek.engine` namespace for engine timing, profiling, and memory diagnostics. `src/lua_api/engine_api.rs` registers the `lurek.engine` Lua boundary for engine behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.engine` Lua API for engine timing, profiling, memory inspection, and runtime metrics.
 
 use super::SharedState;
 use crate::app::frame_profile::format_frame_profile_line;

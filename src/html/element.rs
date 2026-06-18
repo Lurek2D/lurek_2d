@@ -1,8 +1,9 @@
-//! Defines the core DOM node shape used to store structure, attributes, text, and layout geometry. `html/element` delivers the element implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Keeps normalized attribute and inline-style maps in sync so style edits remain coherent with HTML state. The file owns or coordinates data contracts including `HtmlElementId`, `HtmlRect`, `HtmlElement`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides class token mutation paths that preserve deterministic ordering and membership checks. Public callable behavior is centered on `normalise_name`, while method-level behavior such as `contains`, `new`, `id`, `tag_name`, `parent`, `children`, and 14 more stays attached to the local data model and invariants.
-//! Tracks parent-child linkage and removal flags to support stable traversal without index churn. Runtime integration reaches sibling engine areas through crate modules `html`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Carries axis-aligned rectangles for hit testing, layout output, and pointer targeting in UI flow. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/html/element.rs` owns the core DOM element record used to store structure, attributes, text, and geometry.
+//! It defines `HtmlElementId`, `HtmlRect`, and `HtmlElement`, including parent links, child ids, styles, and removal state.
+//! Attribute normalization, class-token mutation, inline-style syncing, and hit-test rectangles all live in this file.
+//! This file is the DOM-storage boundary for HTML; it does not parse source text or orchestrate whole-document layout.
+//! Read it when element fields, attribute behavior, class handling, or geometry ownership for HTML nodes need changes.
+//! Parent-child linkage and removal flags stay here so traversal can remain stable without reindexing the element store.
 
 use crate::html::style::parse_declarations;
 use std::collections::BTreeMap;

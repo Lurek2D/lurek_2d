@@ -1,4 +1,4 @@
-//! `src/lua_api/dialog_api.rs` registers the `lurek.dialog` Lua boundary for dialog behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.dialog` Lua API for dialog userdata, action control, and script-managed dialog flows.
 
 use crate::dialog::{
     DialogSequencer, DialogueAI, DialogueState, SequencerNode, Speaker, SpeakerRegistry,

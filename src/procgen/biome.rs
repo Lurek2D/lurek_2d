@@ -1,8 +1,9 @@
-//! Biome classification layer for turning raw environmental values such as elevation, moisture, and temperature into readable world-region identities.
-//! The file defines the terrain vocabulary itself and the threshold rules that decide when a sampled point should become ocean, coast, forest, desert, tundra, or another high-level biome.
-//! Classifier logic stays stateless so single points and full maps can be categorized with the same predictable rule set. Public callable behavior is centered on `biome_map_to_rgba`, while method-level behavior such as `as_str`, `color_rgba`, `new`, `default_rules`, `classify`, `classify_map`, and 1 more stays attached to the local data model and invariants.
-//! Color mapping lives beside the rules, which makes the biome model useful both for gameplay semantics and for direct visualization in tools or previews.
-//! Threshold tuning is part of the authored surface, allowing different world flavors to emerge without changing the classification algorithm.
+//! This file owns biome classification rules that turn height, moisture, and temperature samples into named world regions.
+//! `BiomeType` defines the terrain vocabulary, while `BiomeRules` stores the thresholds that drive every decision.
+//! `BiomeClassifier` stays stateless so single-point queries and full-map classification share one predictable rule set.
+//! Color helpers also belong here because biome identity and preview rendering use the same canonical mapping table.
+//! Map-wide classification remains local since missing-sample defaults and per-cell rule dispatch are biome semantics.
+//! Open it when climate thresholds change; height, noise, and region graphs live in sibling procgen modules.
 
 /// Biome variant covering terrain from ocean to ice cap.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

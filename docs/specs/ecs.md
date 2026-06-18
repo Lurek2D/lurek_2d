@@ -17,25 +17,16 @@
 
 ## Summary
 
-- This module gives users a full ECS world model for organizing gameplay state at scale.
-- Entities use generational identities, which helps prevent stale-handle bugs after deletion and reuse.
-- Components can be attached and queried dynamically, enabling data-driven behavior composition.
-- Hierarchy, tags, and layers support practical grouping for rendering, logic, and tooling workflows.
-- Relationship support lets systems model directed links and graph-like ownership between entities.
-- Standalone relationship-manager handles are owned here through `lurek.ecs.newRelationshipManager()`.
-- Query APIs support include/exclude filtering so systems can target the exact data shape they need.
-- Cached query-view handles can reuse component-query results until the world query-change tick advances.
-- System registration and ordering rules provide deterministic update and render phase execution.
-- Dependency-aware scheduling reduces order-related bugs in multi-system simulations.
-- Blueprint and bulk-spawn features speed up content-heavy spawning scenarios.
-- Snapshot and serialization flows support save/restore, rollback, and sync-style workflows.
-- Dirty tracking and observer hooks help downstream systems react to world mutations efficiently.
-- For users, the value is one coherent world-state core instead of scattered object tables.
-- It scales from simple prototypes to larger simulations with many interacting subsystems.
-- The module keeps ECS ergonomics script-friendly while preserving predictable runtime behavior.
-- In practice, it enables maintainable gameplay architecture with better queryability and control.
+- The `ecs` module is the engine's entity-component world model for users who want gameplay state to scale through entities, components, queries, and scheduled systems.
+- Its core value is separation of identity from data. Entities provide stable handles, components hold structured state, and systems or queries interpret that state without forcing one rigid object hierarchy.
+- Generational handles, dynamic component attachment, tags, layers, and relationships make the model practical for varied world populations such as actors, props, projectiles, and temporary runtime markers.
+- Query views and dirty tracking are especially important because downstream systems need efficient access to exactly the slices of world state they care about.
+- Blueprints, bulk spawning, snapshots, and serialization broaden the module from live simulation into save/load, rollback, reset, and data-driven population workflows.
+- Hierarchy and relationship support matter because game worlds are rarely flat; parent-child links, semantic grouping, and layered ownership all need to remain queryable as the world grows.
+- The module also improves feature isolation, because several systems can share the same entities without collapsing their state into one oversized object model.
+- The ECS world becomes a shared substrate for rendering, AI, physics, UI, and tooling, but `ecs` owns the organization of that world rather than the domain behavior of those consumers.
+- Read `ecs` as the authority for entity identity, component storage, queries, and shared world composition.
 
-This module primarily collaborates with `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -45,62 +36,78 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 
 ### generational_id.rs
 
-- Provides stateless generational id packing that combines slot and generation into one compact handle. `ecs/generational_id` delivers the generational id implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns stateless packing of entity slot and generation into one compact handle used across ECS.
+- `GenerationalId` encodes a 24-bit slot plus 8-bit generation and exposes direct unpack helpers for both parts.
+- Open it when entity-id layout changes; typed wrappers, world storage, and queries live in sibling ECS files.
 
 ### lua_table.rs
 
-- Provides Lua table deep-copy behavior for ECS operations that require independent state snapshots. `ecs/lua_table` delivers the lua table implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns recursive Lua table cloning used when ECS snapshots and blueprints must not share nested state.
+- `deep_copy_table` preserves keys and non-table values while recursively duplicating child tables by value.
+- Open it when Lua-owned ECS copy semantics change; entity storage and queries live in sibling ECS files.
 
 ### mod.rs
 
-- Provides the high-level ECS module boundary for entities, components, relationships, and lifecycle management. `ecs/mod` is the ecs module index, declaring `generational_id`, `lua_table`, `relationships`, `types`, `universe` so agents can identify which files own each feature slice before opening implementation code.
-- Connects identity, storage, query, and hierarchy capabilities into one composable runtime data model. `src/ecs/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `generational_id::GenerationalId`, `lua_table::deep_copy_table`, `relationships::{RelationType, Relationship, RelationshipManager}`, `types::EntityId`, and 1 more centralized for the ecs subsystem.
+- This module is the ECS index, re-exporting entity ids, world storage, relationships, and Lua table helpers.
+- It is the navigation point for identity packing, query caching, hierarchy state, and component row ownership.
+- `universe.rs` owns live entities, components, tags, layers, blueprints, systems, and directed relation helpers.
+- `relationships.rs` owns typed pair records and named links, while `query_view.rs` caches component-set lookups.
+- `types.rs`, `generational_id.rs`, and `lua_table.rs` provide handles, id packing, and recursive table cloning.
+- Change this file when public ECS exports move; change siblings when storage rules or query semantics change.
 
 ### query_view.rs
 
-- Provides cached component-query views that reuse the last result set until the owning universe changes. `ecs/query_view` delivers the query view implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores normalized include and exclude component lists so repeated view refreshes stay deterministic. The file owns or coordinates data contracts including `QueryView`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Delivers coarse-grained query invalidation keyed off the universe change tick rather than per-call recomputation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `ids`, `refresh`, `last_change_tick` stays attached to the local data model and invariants.
+- This file owns `QueryView`, the cached component-set view used by Lua-facing ECS query handles.
+- It stores normalized include and exclude names, cached ids, and the universe tick that produced them.
+- Refresh logic reuses cached results until `Universe` bumps its coarse query invalidation counter.
+- Open it when query-cache behavior changes; world mutations and component matching live in `universe.rs`.
 
 ### relationships.rs
 
-- Provides typed relationship modeling for unordered pair links and directed named connections between entities. `ecs/relationships` delivers the relationships implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Defines relationship categories with constrained level labels and validated default values. The file owns or coordinates data contracts including `RelationType`, `Relationship`, `RelationshipManager`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Stores affinity metrics and per-type state in canonical pair records for stable lookups. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `has_level`, `define_type`, `remove_type`, `get_type`, `type_names`, and 16 more stays attached to the local data model and invariants.
-- Supports directed link sets that capture one-way ownership or routing semantics. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Exposes query and mutation helpers that keep relationship operations centralized and consistent. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns typed relationship definitions, pair records, and directed named links between entities.
+- `RelationType` validates allowed level labels, while `Relationship` stores canonical unordered pair state.
+- `RelationshipManager` centralizes type registration, numeric affinity updates, levels, and relation removal.
+- Directed link helpers track one-way targets separately from pair records, covering routing or ownership edges.
+- Entity-removal cleanup lives here so pair maps and directed link buckets cannot retain stale ids after kills.
+- Open it when graph semantics change; the universe owns lifecycle and component rows in sibling ECS files.
 
 ### types.rs
 
-- Provides core ECS identifier wrappers used to pass entity handles across module boundaries. `ecs/types` delivers the shared type definitions and data contracts for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Defines lightweight typed ids that keep call sites explicit while preserving compact storage. The file owns or coordinates data contracts including `EntityId`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Delivers a shared identity contract for indexing, mapping, and query-level interoperability. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `raw` stays attached to the local data model and invariants.
+- This file owns `EntityId`, the typed wrapper around packed ECS entity handles passed across module boundaries.
+- It keeps call sites explicit while preserving cheap copy semantics and direct conversion to and from integers.
+- `new`, `raw`, `Display`, and numeric `From` impls make the wrapper usable in maps, logs, and Lua glue code.
+- Open it when public entity-handle semantics change; id packing and world storage live in sibling ECS files.
 
 ### universe.rs
 
-- Provides the central ECS Universe storage that owns entity lifecycle, component rows, and indexing state. `ecs/universe` delivers the universe implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Manages spawn and deletion flows with generational identity to prevent stale-handle reuse errors. The file owns or coordinates data contracts including `SnapshotDiff`, `Universe`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Stores component payloads in Lua-backed tables while exposing predictable set, get, and remove semantics. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_system_store`, `pack_id`, `unpack_slot`, `unpack_gen`, `get_query_change_tick`, and 51 more stays attached to the local data model and invariants.
-- Maintains tag, layer, and hierarchy structures for efficient grouping and ordered runtime traversal. Runtime integration reaches sibling engine areas through crate modules `ecs`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Tracks blueprint templates and mutation helpers so scripted spawning remains data-driven and reusable. External integration uses `super`, `mlua`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Coordinates system metadata needed for later scheduling and phase-aware execution ordering. The file boundary separates ecs implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- Captures snapshot-diff signals so external consumers can observe incremental state changes. State changes, validation paths, and helper routines in `src/ecs/universe.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- Supports query acceleration and deterministic iteration patterns for stable gameplay behavior. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+- This file owns `Universe`, the central ECS world that manages entity lifetime, component rows, and queries.
+- It stores live slots, recycled ids, generation counters, and retired slots that prevent stale-handle reuse.
+- Component data lives in Lua registry tables, while dirty sets and add or remove events track row mutations.
+- Tagging support includes string-tag indexes, bitmap-tag bit assignment, layer values, and sorted retrieval.
+- Hierarchy support stores parent and child slot maps, validates cycles, and enables recursive deletions.
+- Blueprint support deep-copies template tables, supports extension with overrides, and spawns named entities.
+- System support tracks Lua system tables with priorities, phases, names, and dependency lists for scheduling.
+- Relationship support delegates directed links and pairwise affinity data while still enforcing entity liveness.
+- Query helpers cover exact component sets, cached invalidation ticks, per-component callbacks, and tag scans.
+- Snapshot helpers expose component events, dirty entities, deleted ids, and structured diff drains to callers.
+- Open it when ECS storage or lifecycle semantics change; extensions and caches depend on this owner file.
 
 ### universe_ext.rs
 
-- Provides extended Universe operations for advanced queries, bulk spawning, and table-based state exchange. `ecs/universe_ext` delivers the universe ext implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Implements inclusion and exclusion query paths that support richer component-selection workflows. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports callback-oriented multi-component iteration for efficient script-side data access. Public callable behavior is centered on no named public items, while method-level behavior such as `query_not`, `query_multi`, `spawn_bulk`, `serialize_to_table`, `deserialize_from_table` stays attached to the local data model and invariants.
-- Enables batch entity creation from blueprints with optional per-instance override payloads. Runtime integration reaches sibling engine areas through crate modules `ecs`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Serializes and deserializes complete world snapshots including hierarchy and tag structures. External integration uses `super`, `mlua`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file extends `Universe` with higher-level queries, bulk blueprint spawning, and table snapshot exchange.
+- `query_not` and `query_multi` build on core component selection for exclusions and callback-based iteration.
+- `spawn_bulk` clones optional overrides per entity so repeated blueprint spawns do not share Lua tables.
+- Snapshot helpers serialize entities, components, tags, layers, bitmap tags, and hierarchy into Lua tables.
+- Deserialization rebuilds live state, stores, indexes, and parent-child links from one captured snapshot.
+- Open it when ECS import/export or batch-spawn semantics change; core storage lives in `universe.rs`.
 
 ### universe_systems.rs
 
-- Provides Universe system-management behavior for registration, removal, and inspection of runtime systems. `ecs/universe_systems` delivers the universe systems implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Computes deterministic execution order using priorities combined with dependency-aware topological sorting. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Applies phase filtering rules so system selection remains predictable across update and render passes. Public callable behavior is centered on no named public items, while method-level behavior such as `add_system`, `get_sorted_system_indices_all`, `get_sorted_system_indices_for_phase`, `remove_system`, `get_system_count` stays attached to the local data model and invariants.
-- Encapsulates scheduling metadata handling to keep orchestration logic separate from core ECS storage. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file extends `Universe` with system registration, ordering, removal, and per-phase scheduling helpers.
+- It stores metadata in parallel vectors while Lua registry tables keep the actual system objects per world.
+- Ordering helpers sort by priority first, then apply dependency-aware topological ordering for named graphs.
+- Phase filtering treats empty phases as default update or render participation under current conventions.
+- Open it when ECS scheduling semantics change; entity storage and component operations live in `universe.rs`.
 
 
 
@@ -150,13 +157,13 @@ This module primarily collaborates with `runtime`. Its responsibility should sta
 ##### Methods
 
 - `LRelationshipManager:adjustValue(a, b, delta) -> nil`: Adds a delta to the numeric relationship value between two entity ids.
-- `LRelationshipManager:defineType(name, levels, default_level?) -> nil`: Lua-visible method.
-- `LRelationshipManager:getLevel(a, b, type_name) -> nil`: Lua-visible method.
+- `LRelationshipManager:defineType(name, levels, default_level?) -> nil`: Defines a named relationship type with ordered level labels and an optional default level for new pairs.
+- `LRelationshipManager:getLevel(a, b, type_name) -> string?`: Returns the effective named level for one relationship type on a pair, falling back to the type default when no explicit level exists.
 - `LRelationshipManager:getValue(a, b) -> number`: Returns the numeric relationship value between two entity ids.
 - `LRelationshipManager:pairCount() -> integer`: Returns how many entity-id pairs currently have tracked relationship data.
 - `LRelationshipManager:removePair(a, b) -> nil`: Removes all tracked relationship data between two entity ids.
 - `LRelationshipManager:removeType(name) -> nil`: Removes a named relationship type definition.
-- `LRelationshipManager:setLevel(a, b, type_name, level) -> nil`: Lua-visible method.
+- `LRelationshipManager:setLevel(a, b, type_name, level) -> boolean`: Assigns a named level for one relationship type between two entity ids and reports whether the type-level pair was accepted.
 - `LRelationshipManager:setValue(a, b, value) -> nil`: Sets the numeric relationship value between two entity ids.
 - `LRelationshipManager:type() -> string`: Returns the Lua-visible type name for this relationship manager handle.
 - `LRelationshipManager:typeNames() -> string[]`: Returns the defined relationship type names.

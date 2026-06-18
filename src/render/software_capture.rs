@@ -1,9 +1,12 @@
-//! CPU-side screenshot fallback for queued 2D render commands. `render/software_capture` delivers the software capture implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Replays a practical subset of `RenderCommand` values into `ImageData`. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Exists to support evidence capture in headless/unit environments where GPU readback is unavailable. Public callable behavior is centered on `capture_commands_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! `render/software_capture` delivers the software capture implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Public callable behavior is centered on `capture_commands_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! Implements CPU-side screenshot capture by replaying supported render commands into mutable ImageData output.
+//! Exists as a fallback path for tests, headless evidence, and environments where GPU readback is unavailable.
+//! Replays a practical subset of RenderCommand values so visual assertions can run without a live graphics device.
+//! Includes local transform, pixel write, stencil, and line helpers needed to rasterize queued commands in software.
+//! Keeps capture logic separate from the main GPU renderer so test-friendly output does not complicate frame code.
+//! Acts as the software-capture boundary between front-end render commands and headless image generation.
+//! Provides one owner for CPU replay semantics, making screenshot differences easier to debug in non-GPU runs.
+//! Open this file when headless capture output differs from expected draw behavior or misses command coverage.
+//! Use this owner before GPU renderer changes when only software screenshot evidence appears incorrect.
 
 use crate::image::ImageData;
 use crate::render::mesh::Mesh;

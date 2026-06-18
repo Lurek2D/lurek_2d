@@ -1,8 +1,10 @@
-//! This file provides a multi-level isometric map model with separate parts per tile cell. `tilemap/isomap` delivers the isomap implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It maps tile coordinates to diamond-projected screen space for coherent scene placement. The file owns or coordinates data contracts including `IsoTilePart`, `IsoTile`, `IsoLevel`, `IsoDrawItem`, `IsoMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It iterates draw order by diagonal progression so elevation layering reads correctly. Public callable behavior is centered on no named public items, while method-level behavior such as `from_index`, `index`, `new`, `get_tile`, `get_tile_mut`, `add_level`, and 13 more stays attached to the local data model and invariants.
-//! It lets each elevation level be shown or hidden to support staged world presentation. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It keeps part ordering configurable so floor, wall, and object composition remains flexible. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Defines a multi-level isometric map model where each tile can carry separate floor, wall, and object parts.
+//! Maps tile coordinates into diamond-projected screen placement so isometric draw order stays coherent.
+//! Iterates diagonal draw order to make elevation layering and overlap read correctly during presentation.
+//! Lets each level be shown or hidden, which supports staged reveals and editor-style focused inspection.
+//! Keeps part ordering configurable so floor, wall, and object composition can vary by project needs.
+//! Acts as the isometric-map boundary instead of forcing the general orthogonal TileMap owner to absorb it.
+//! Open this file when iso level stacking, tile part ordering, or projected draw ordering looks incorrect.
 
 /// Draw-layer part of an isometric tile (floor, walls, objects).
 #[non_exhaustive]

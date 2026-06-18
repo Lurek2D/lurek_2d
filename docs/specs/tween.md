@@ -16,25 +16,18 @@
 
 ## Summary
 
-- This module gives users timed interpolation tools for animating numeric table fields with expressive motion behavior.
-- Built-in easing functions support common UI and gameplay transition curves.
-- Custom easing registration allows project-specific motion signatures.
-- Spring simulation support enables physics-like settle and overshoot behavior.
-- Property tweens write directly onto target tables during engine update ticks.
-- Tween handles support pause, resume, cancel, repeat, yoyo, and relative modes.
-- Sequence APIs support ordered multi-step animation choreography.
-- Parallel APIs support synchronized multi-lane motion blocks.
-- Chain APIs support fluent step composition for cinematic timing flows.
-- Delay and callback steps support mixed timing-and-action sequences.
-- Await support lets coroutines pause until tween completion.
-- Engine-level update paths manage lifecycle and cleanup of active tween structures.
-- This module is useful for UI transitions, camera motion, gameplay effects, and scripted cutscenes.
-- For users, it centralizes animation timing logic instead of ad-hoc per-system interpolation code.
-- It improves consistency of motion feel across the project.
-- Overall, users get a full motion orchestration toolkit in one runtime module.
-- The practical value is faster iteration on polished, deterministic animation behavior.
+- The `tween` module is the engine's interpolation and motion-sequencing surface for users who want values to change over time without hand-writing frame-by-frame update loops.
+- Tweens, handles, chains, grouped sequences, interpolators, and springs all live together here so one-off transitions and larger scripted motion can share one model.
+- This matters because many features need shaped progression, not just endpoint changes: UI reveals, camera motion, gameplay feedback, and scripted effects all depend on timing semantics.
+- Easing and spring behavior give the module expressive range, while handle-based control makes active transitions inspectable, cancelable, and synchronizable.
+- The sequencing surface is important because many real transitions happen in stages. A panel may fade and slide together, a camera may zoom then settle, and a gameplay cue may need several timed phases instead of one linear interpolation.
+- Parallel and chained motion therefore belong in the same subsystem as simple tweens, which keeps authored timing workflows coherent instead of scattering them across unrelated feature code.
+- This makes the module suitable not only for decorative polish, but also for stateful workflows where motion is part of how a feature behaves instead of merely how it looks.
+- The feature is useful whenever another system decides what should move but still needs reusable rules for how that movement advances over time.
+- `tween` does not own the meaning of the value being animated; it owns progression, sequencing, and control once the target state is known.
+- The module improves consistency across UI, cameras, overlays, and feedback systems by giving them one temporal vocabulary.
+- Read `tween` as the engine's reusable workflow for interpolation, sequencing, and spring-like motion.
 
-This module primarily collaborates with `math`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -44,53 +37,64 @@ This module primarily collaborates with `math`. Its responsibility should stay i
 
 ### chain.rs
 
-- This file provides composable tween chains for staged motion and timing choreography. `tween/chain` delivers the chain implementation for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It supports sequential and grouped progression so animation beats can be orchestrated clearly. The file owns or coordinates data contracts including `ChainStep`, `ChainEvent`, `TweenChain`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It carries optional step labels that let scripts react to completion boundaries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `value`, `is_done`, `start`, `stop`, `pause`, and 15 more stays attached to the local data model and invariants.
-- It advances with frame delta while preserving deterministic chain state transitions. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It translates complex cinematic timing into a readable structure for runtime execution. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns `ChainStep`, `ChainEvent`, and `TweenChain`, the staged playback model for chained tween timing.
+- It stores ordered steps, the active cursor, loop flags, pause state, and iteration counts for deterministic progress.
+- Each step carries duration, easing, endpoints, optional labels, and local elapsed time used to compute live values.
+- The `tick` loop can finish multiple short steps in one frame, emit completion events, and carry leftover delta forward.
+- Sequence-level helpers start, stop, pause, reset, jump, and report progress without involving Lua registry handles.
+- Open this file when scripted animation choreography or labeled step transitions change, not field-writing logic.
 
 ### engine.rs
 
-- This file provides the active tween engine that updates all running animation handles. `tween/engine` delivers the engine implementation for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It tracks tweens, sequences, parallels, and springs through one coordinated update surface. The file owns or coordinates data contracts including `TweenEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It resolves easing behavior and value writes directly onto Lua-owned target tables. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `cancel_all`, `active_count` stays attached to the local data model and invariants.
-- It manages lifecycle cleanup so completed animations exit without stale runtime state. Runtime integration reaches sibling engine areas through crate modules `tween`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `TweenEngine`, the runtime registry that ticks standalone tweens, sequences, parallels, and springs.
+- It stores Lua registry keys for active animation units plus named custom easing callbacks registered at runtime.
+- The `update` path advances each live handle, drops completed registry entries, and preserves parent-owned tween rules.
+- The `cancel_all` path shuts down outstanding animations, fires cancel callbacks where present, and clears engine state.
+- Open this file when animation lifecycle cleanup, active counts, or per-frame coordination across handle types changes.
 
 ### handle.rs
 
-- This file provides Lua-facing tween handle types that expose animation control to scripts. `tween/handle` delivers the handle implementation for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It defines single tweens, sequences, and parallel groups with a consistent lifecycle contract. The file owns or coordinates data contracts including `LuaTween`, `SequenceStep`, `LuaTweenSequence`, `ParallelEntry`, `LuaTweenParallel`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It stores progression state, target bindings, and callback hooks close to each animation unit. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `tick_with`, `fire_on_complete`, `set_relative`, `add_waiter`, `resume_waiters`, and 4 more stays attached to the local data model and invariants.
-- It writes interpolated values to Lua tables each frame through explicit field mappings. Runtime integration reaches sibling engine areas through crate modules `tween`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It supports repeat, yoyo, relative targets, and custom easing for expressive motion design. External integration uses `mlua`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It coordinates sequence boundaries with carry-over delta to avoid timing gaps between steps. The file boundary separates tween implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns the Lua-facing tween handle types that scripts manipulate for single, sequential, and parallel motion.
+- It defines `LuaTween`, `LuaTweenSequence`, `LuaTweenParallel`, and their step records around one lifecycle contract.
+- Single tweens store target table bindings, captured starts, end values, repeat rules, yoyo state, waiters, and hooks.
+- Sequence steps cover field tweens, timed delays, and instant callbacks so one handle can express ordered choreography.
+- Parallel entries keep per-lane timing and field mappings so multiple table updates can complete under one parent.
+- Tick methods write interpolated values back into Lua tables, resume waiting coroutines, and fire completion callbacks.
+- This file is the boundary between raw tween progression state and the Lua userdata objects registered by the engine.
+- Open it when script-visible tween semantics change; use sibling files for easing math, chain flow, or engine cleanup.
 
 ### interpolator.rs
 
-- This file provides the multi-channel interpolator that converts progress into animated values. `tween/interpolator` delivers the interpolator implementation for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It resolves easing names through flexible aliases so script-facing naming remains forgiving. The file owns or coordinates data contracts including `TweenValue`, `Tween`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It keeps independent tween clocks with reset and seek support for controlled playback. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_value`, `update`, `get_value`, `get_all_values`, `reset`, and 6 more stays attached to the local data model and invariants.
-- It interpolates registered channels each frame using the resolved easing curve semantics. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `Tween`, a generic multi-channel interpolator that samples registered start and target values over time.
+- It stores the easing function, preserved easing name, playback clock, duration, and the channel list in one owner.
+- Methods here add channels, advance or seek the clock, and read one channel or all channels through eased sampling.
+- The local easing resolver accepts both core names and `easeIn*` aliases so script spelling stays backward compatible.
+- Open this file when non-Lua interpolation behavior changes without touching engine registries or Lua handle lifecycles.
 
 ### mod.rs
 
-- This module delivers the motion interpolation stack used for scripted and systemic animation. `tween/mod` is the tween module index, declaring `engine`, `handle`, `interpolator`, `spring`, `state`, and 1 more so agents can identify which files own each feature slice before opening implementation code.
-- It combines timed easing, spring dynamics, and composition primitives in one cohesive surface. `src/tween/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `engine::TweenEngine`, `handle::{LuaTween, LuaTweenParallel, LuaTweenSequence, ParallelEntry, SequenceStep}`, `interpolator::{Tween, TweenValue}`, `spring::{SpringAxis, SpringSystem}`, and 2 more centralized for the tween subsystem.
+- This module re-exports the tween runtime surface so callers can reach engines, handles, springs, and chains.
+- It keeps `src/tween` navigation shallow by naming which sibling files own ticking, interpolation, easing, and flow.
+- Public exports here route scripts and internal runtime code toward `TweenEngine` for active animation scheduling.
+- It also exposes `LuaTween`, `LuaTweenSequence`, and `LuaTweenParallel` as the Lua-facing control shapes.
+- State-oriented helpers such as `TweenState`, `Tween`, `SpringSystem`, and `TweenChain` stay discoverable here.
+- Change this file when the tween subsystem boundary or public symbol map changes, not when animation logic changes.
 
 ### spring.rs
 
-- This file provides damped spring simulation for motion that should feel physical and responsive. `tween/spring` delivers the spring implementation for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It models spring parameters and settle rules so values converge smoothly toward targets. The file owns or coordinates data contracts including `SpringAxis`, `SpringSystem`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It groups named spring axes under shared defaults for coordinated multi-field behaviors. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `is_settled`, `reset`, `set_target`, `add_axis`, and 1 more stays attached to the local data model and invariants.
-- It integrates state each tick and snaps on settle to remove micro-jitter residue. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `SpringAxis` and `SpringSystem`, which provide damped spring motion for one field or named axis sets.
+- It stores per-axis position, velocity, target, stiffness, damping, precision, and settled state for each simulation.
+- Update methods integrate motion each tick, snap settled axes to their targets, and expose queries or target changes.
+- The system wrapper groups multiple axes under shared defaults so higher layers can drive coordinated spring motion.
+- Open this file when physical-feel parameters or settle behavior change, not when keyframe easing rules change.
 
 ### state.rs
 
-- This file provides canonical tween progress state shared across animation handle types. `tween/state` delivers the state container and transition helpers for the tween subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It tracks elapsed time, duration, pause state, and resolved easing behavior in one unit. The file owns or coordinates data contracts including `TweenState`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It resolves easing names case-insensitively with aliases that match common script habits. Public callable behavior is centered on `resolve_easing`, `builtin_easing_names`, while method-level behavior such as `new`, `tick`, `reset`, `t_raw`, `t_eased`, `lerp`, and 1 more stays attached to the local data model and invariants.
-- It exposes built-in easing catalog data for tooling, validation, and autocomplete features. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `TweenState`, the shared timing record that tracks duration, elapsed time, pause state, and easing.
+- It resolves easing names through the math catalog, including aliases exposed to scripts and tooling lookups.
+- Methods here convert raw clock progress into eased progress, linear interpolation, reset behavior, and completion tests.
+- The exported `builtin_easing_names` list gives validators, docs, and completion code one canonical set of names.
+- Open this file when tween timing semantics or accepted easing identifiers change across multiple animation owners.
 
 
 

@@ -16,16 +16,12 @@
 
 ## Summary
 
-- The automation module replays scripted input and validates gameplay flows deterministically.
-- It converts Lua/TOML steps into time-ordered actions so scenarios run the same on every machine.
-- Supported inputs include keyboard, mouse, wheel, text, and macro playback.
-- Pause, resume, speed scaling, and wait predicates make failures easier to reproduce and inspect.
-- Visual assertions with tolerance thresholds catch rendering regressions in CI-style runs.
-- Progress, failure state, and last-error queries provide actionable harness diagnostics.
-- Script replay reduces manual smoke testing across gameplay, UI, and input-heavy systems.
-- The module exists as the user-facing foundation for regression automation.
+- The `automation` module is the scripted replay layer for users who want deterministic QA, repeatable demos, or regression-oriented gameplay checks.
+- It turns authored steps into real runtime input flow, covering the parsing of automation scripts, ordered playback, and step-level control over how the scenario advances.
+- Simulation and assertion features work together here: the same module can replay actions, wait on conditions, and verify visual or behavioral outcomes under the same timing rules.
+- Determinism is the key promise: authored steps should replay under controlled timing so failures can be reproduced rather than observed only once.
+- Read it as the coordination layer above raw input and clocks. Neighboring modules provide the low-level events and timing primitives, while `automation` turns them into a reusable test workflow.
 
-This module primarily collaborates with `event`, `input`, `runtime`, `timer`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -38,31 +34,40 @@ This module primarily collaborates with `event`, `input`, `runtime`, `timer`. It
 
 ### mod.rs
 
-- Defines the automation module boundary for deterministic input replay and scripted verification flows. `automation/mod` is the automation module index, declaring `script`, `simulator`, `step` so agents can identify which files own each feature slice before opening implementation code.
-- Groups script parsing, playback simulation, and typed step contracts under one coherent runtime surface. `src/automation/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `script::Script`, `simulator::Simulator`, `step::{Action, Step}` centralized for the automation subsystem.
+- `src/automation/mod.rs` is the module index that exposes script parsing, playback simulation, and automation steps.
+- It reexports `Script`, `Simulator`, `Action`, and `Step` so callers consume one stable automation surface.
+- No active script or playback state lives here; this file only declares child modules and chooses public symbols.
+- Read this index when wiring replay or verification flows, because it shows where script data ends and execution begins.
+- Changes here reshape the automation boundary, since reexports decide what runtime code may import without deep paths.
+- This module keeps step contracts, TOML loading, and playback logic separated for clearer ownership and testability.
 
 ### script.rs
 
-- Implements automation script storage as named, time-ordered step sequences for deterministic replay. `automation/script` delivers the script implementation for the automation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Parses TOML definitions into typed runtime steps with metadata and validated field extraction. The file owns or coordinates data contracts including `Script`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Expands repeat directives into concrete scheduled steps at computed temporal offsets. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_description`, `step_count`, `set_step_limit`, `get_step_limit`, `from_toml` stays attached to the local data model and invariants.
-- Enforces bounded script size to protect playback and memory behavior under large inputs. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/automation/script.rs` owns automation script storage and TOML parsing into named, time-sorted step sequences.
+- It defines `Script`, expands repeat directives, sorts steps by time, and enforces bounded script size in one owner.
+- Metadata loading and field extraction from TOML also live here, keeping authoring rules close to stored script data.
+- This file is the boundary for authored automation content before runtime playback policy is applied by the simulator.
+- Read this file when script import rules, repeat expansion, or step-cap enforcement for automation content must change.
 
 ### simulator.rs
 
-- Implements deterministic automation playback that advances script time and dispatches input events. `automation/simulator` delivers the simulator implementation for the automation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Maintains registries of named scripts and macros for reusable scenario composition. The file owns or coordinates data contracts including `StepEventSink`, `Simulator`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Evaluates boolean condition expressions to gate control-flow steps and assertion behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `load`, `unload`, `has_script`, `get_scripts`, `start`, and 27 more stays attached to the local data model and invariants.
-- Supports pause, resume, and speed scaling so runs can be inspected or accelerated as needed. Runtime integration reaches sibling engine areas through crate modules `event`, `input`, `log_msg`, `runtime`, `timer`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Inlines macro calls into active playback flow while preserving temporal consistency. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Executes visual assertions through baseline comparison with configurable tolerance thresholds. The file boundary separates automation implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- `src/automation/simulator.rs` owns playback execution for automation scripts, macros, conditions, and visual assertions.
+- It defines `StepEventSink` and `Simulator`, keeping script registries, playback state, and dispatch logic together.
+- Time advancement, pause and resume, speed scaling, macro expansion, and step dispatch all live in this file.
+- Condition parsing and boolean evaluation also live here, so `when` and `assert` expressions share one execution policy.
+- Visual assert behavior is implemented here too, including image diffing and max-difference failure thresholds.
+- This file is the runtime boundary for automation execution; script storage and step schemas stay in sibling files.
+- Read it when playback ordering, macro inlining, assertion semantics, or emitted input-event behavior must change.
+- It also centralizes drift-safe time accumulation during playback, which keeps long automation runs deterministic.
+- Higher layers should treat this file as the owner of automation control flow rather than rebuilding policy elsewhere.
 
 ### step.rs
 
-- Defines typed automation step contracts that describe input actions and control-flow intent. `automation/step` delivers the step implementation for the automation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Covers keyboard, mouse, wheel, text, wait, macro, and assertion-oriented event categories. The file owns or coordinates data contracts including `Action`, `Step`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Stores optional action payload fields in one flexible step record consumed by script playback. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_action`, `as_str`, `new`, `effective_scancode` stays attached to the local data model and invariants.
-- Maps textual action tags to enum variants for deterministic parse and dispatch behavior. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/automation/step.rs` owns the typed action enum and step record that describe timed automation inputs and checks.
+- It defines `Action` and `Step`, keeping parseable action names and optional per-step payload fields under one owner.
+- Keyboard, mouse, wheel, text, wait, macro, assert, and visual-assert step categories are all declared here.
+- Read this file when action vocabulary, step fields, or scancode fallback behavior for automation content changes.
+- This file is the schema boundary for automation scripts, while parsing and playback behavior stay in sibling modules.
 
 
 

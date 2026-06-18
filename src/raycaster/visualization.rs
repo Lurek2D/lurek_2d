@@ -1,9 +1,10 @@
-//! This file provides software visualizers that expose how the raycaster sees, marches, shades, and composes space without requiring the main renderer.
-//! It can paint overhead maps, first-person wall bands, line-of-sight traces, depth previews, and sweep atlases directly into image buffers.
-//! Procedural material coloring is embedded here so diagnostic or demo output can still look spatially rich without loading authored textures.
-//! The helpers are useful when tuning collision, sampling, map layout, or visibility because they make invisible intermediate state immediately legible.
-//! Outputs stay in plain image memory, which makes them easy to save, inspect in tools, or present inside UI overlays. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Several views deliberately trade physical correctness for fast explanation, prioritizing readable spatial evidence over final-game polish.
+//! This file owns software diagnostic views that render raycaster internals directly into `ImageData` buffers.
+//! It attaches debug rendering methods to `Raycaster2D` for top-down maps, wall bands, depth views, and sight traces.
+//! Helpers reuse live ray casts and line-of-sight logic so visual evidence matches the subsystem's marching behavior.
+//! Camera sweep and textured preview outputs let tools inspect sampling and material interpretation without the renderer.
+//! Procedural colouring stays local here so explanations remain readable even when authored textures are unavailable.
+//! The outputs live in plain image memory, making them easy to save, diff, or embed inside editor and UI overlays.
+//! Open this file when debug-view semantics change; core casting and scene assembly live in sibling owners.
 
 use super::dda::Raycaster2D;
 impl Raycaster2D {

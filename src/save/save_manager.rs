@@ -1,9 +1,11 @@
-//! This file implements the practical save manager that coordinates collection, serialization, persistence, and restoration of game state.
-//! Registered sections let different gameplay systems contribute their own data while still producing one coherent slot payload.
-//! Dirty tracking and auto-save timing live here so disk writes happen when needed instead of on every frame or every small state change.
-//! Schema versioning and migration routing are also handled here, which lets older saves evolve forward as projects change over time.
-//! Serialization and compression are part of the same flow so slot files remain structured, compact, and easy to validate on load.
-//! The file is therefore the operational core of persistence for games built on the engine. The file boundary separates save implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! `src/save/save_manager.rs` owns slot persistence: registration, dirty tracking, schema versioning, and restore flow.
+//! `SaveManager` decides which Lua tables join a slot, when writes should happen, and which migrations must run.
+//! The file also defines `SaveValue` and `SlotMeta`, so payload structure and save-select metadata share one owner.
+//! Compression, decompression, table serialization, and parsing live here to keep format logic near persistence policy.
+//! Auto-save timing and slot path construction are handled locally, keeping higher runtime layers free of save bookkeeping.
+//! The internal parser reads the restricted Lua table format emitted here, keeping load behavior aligned with save output.
+//! Neighboring systems matter here mainly at the runtime and binary utility boundary, not in modules that register state.
+//! Open this file when save format, migration routing, compression policy, or slot lifecycle behavior needs to change.
 
 use crate::binary::compress::{compress, decompress, CompressFormat};
 use crate::log_msg;

@@ -19,58 +19,26 @@
 
 ## Summary
 
-- The tilemap module provides map data, import, rendering support, and grid query tools for 2D worlds.
-- It supports orthogonal, isometric, and hex map orientations under one API surface.
-- Core map data includes layered tile IDs, tint, parallax, and visibility metadata.
-- Coordinate conversion utilities provide deterministic world-to-tile mapping.
-- Chunked storage supports large maps without monolithic memory updates.
-- Dirty-region tracking enables localized updates rather than full-map rebuilds.
-- Large-map rendering helpers cull work to the current camera viewport.
-- TMX import supports XML, CSV, and base64 tile payload decoding.
-- TMX import normalizes flip-flag handling for consistent GID semantics.
-- LDtk import maps level/layer JSON into native runtime structures.
-- Tileset metadata maps GID ranges to atlas UV geometry and tile properties.
-- Animated tile timelines are advanced in deterministic update flow.
-- Autotile logic derives transitions from neighborhood bitmask context.
-- Autotile supports both four-way and eight-way neighborhood policies.
-- Iso and hex coordinate helpers support tactical and projection-oriented workflows.
-- Hex utilities include line, ring, area, and spiral traversal helpers.
-- Tile walker helpers support stepwise movement and directional orientation.
-- Swept collision supports continuous rectangle-vs-solid-tile checks.
-- Collision output includes hit normal, contact point, and tile coordinates.
-- Reverse index structures support fast lookup by global tile ID.
-- Walkability export supports direct pathfinding integration.
-- Procedural mapgen supports block-based assembly and scripted operations.
-- Seeded generation keeps outputs reproducible for tests and saves.
-- Isometric map structures support diagonal draw ordering.
-- Polygon map overlays support irregular zones over grid terrain.
-- Polygon zones support hit tests, bounds, and highlight state.
-- Crossing events support tile transition callbacks for gameplay triggers.
-- Minimap sync helpers project map solidity into simplified overlays.
-- Render emission produces commands compatible with shared render backend.
-- Hex rendering uses the same command path as other map orientations.
-- Animated tile invalidation is integrated with visibility and dirty-state logic.
-- Data model boundaries separate map state from rigid-body simulation ownership.
-- Integration with runtime, render, image, math, and color remains explicit.
-- The module owns map semantics and grid-level queries.
-- Deterministic GID mapping is a core invariant.
-- Locality of update cost is another core invariant.
-- Reproducible generator behavior is a third core invariant.
-- The module supports authored, imported, and procedural map workflows.
-- It scales from small levels to large chunked worlds.
-- APIs support both gameplay runtime and tooling diagnostics.
-- The architecture keeps subconcerns separated across focused files.
-- Tilemap is a major Feature Systems foundation for world-space gameplay.
-- It avoids hidden coupling by exposing explicit conversion and query contracts.
-- Overall, tilemap is the canonical map runtime in Lurek2D.
-- It bridges level authoring formats with deterministic in-engine behavior.
-- The module is designed for both flexibility and predictable performance.
-- It is suitable for action, tactics, sandbox, and exploration game styles.
-- Clear ownership boundaries make it maintainable as map features expand.
-- This keeps long-term evolution practical without API fragmentation.
-- Tilemap remains a high-value subsystem across many game genres.
+- The `tilemap` module is the engine's full grid-world framework for users who want tile-based spaces to be authored, generated, rendered, queried, and traversed through one reusable system rather than through several disconnected helpers.
+- Its value begins with representation. The module gives projects a stable way to describe tile space itself, including orthogonal, isometric, hex-based, layered, large, and chunked interpretations, so different grid styles can still live inside one conceptual family.
+- That multi-model support matters because grid worlds are not all alike. A tactics map, an isometric action world, a hex strategy board, and a layered platforming scene all have different adjacency, transform, and draw-order assumptions, yet they still need shared tooling.
+- Storage and indexing are only the foundation. Practical tile worlds also require import pipelines, coordinate conversion, tile queries, collision helpers, rendering rules, overlays, metadata, and traversal semantics, and this module keeps those concerns together.
+- Import support for formats such as TMX or LDtk makes the module useful in authored-content workflows, while generation helpers and block-based assembly support keep it relevant for procedural or hybrid worlds built at runtime.
+- Autotiling is also a major user-facing capability because it lets projects derive coherent visual transitions from simpler authored data instead of manually placing every terrain variant.
+- Coordinate helpers are central because tile worlds constantly move between grid cells, world positions, screen projections, isometric transforms, hex neighbors, and chunk-local indices, and those conversions must stay consistent.
+- Collision and sweep-style queries are a major practical feature. A tile world should be directly searchable for blocked cells, traversable neighbors, hits, ranges, or occupancy questions without escalating every problem into full rigid-body simulation.
+- Isometric and hex support deserve special emphasis because those spaces bring their own neighbor rules, movement assumptions, vertical ordering concerns, and projection logic that should not feel bolted onto a rectangular grid core.
+- Large-map and chunk-aware rendering support keep the system practical at scale, where naive whole-map processing would be too expensive or too inflexible.
+- Polygon overlays, named regions, and related metadata helpers extend the feature from geometry into gameplay space by letting designers describe areas, triggers, provinces, and semantic regions layered over the same map.
+- The module is also a bridge between authored content and runtime systems. Maps loaded from external tools, generated chunks, and script-applied overlays can all resolve into one consistent tile-space authority.
+- That consistency matters because neighboring modules frequently depend on the exact same tile coordinates for different reasons: pathfinding needs traversability, render needs projection, and gameplay logic needs regions, triggers, or occupancy.
+- It also gives projects a stable place to express tile metadata, adjacency, and region semantics without scattering that meaning across several helper layers.
+- Chunk-aware storage matters beyond performance, because streaming, tooling, and large-world editing all depend on a shared notion of how the map is partitioned.
+- That makes `tilemap` useful not only for drawing terrain, but also for organizing the world model that several other modules stand on.
+- The feature therefore serves as both storage and interpretation: it does not merely hold tile IDs, it defines what tile-space means well enough for the rest of the engine to build on top of it.
+- `pathfind`, `physics`, `raycaster`, and `render` all consume tile-space in specialized ways, but `tilemap` owns what the grid world fundamentally is.
+- Read `tilemap` as the engine's main authority for tile space and tile-world structure.
 
-This module primarily collaborates with `color`, `image`, `math`, `render`, `runtime`. Its responsibility should stay inside the Feature Systems group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -84,135 +52,158 @@ This module primarily collaborates with `color`, `image`, `math`, `render`, `run
 
 ### autotile_sheet.rs
 
-- This file provides the autotile sheet model that turns neighborhood context into final tile picks. `tilemap/autotile_sheet` delivers the autotile sheet implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It keeps multiple atlas layouts coherent so different terrain styles share one usage contract. The file owns or coordinates data contracts including `AutoTileLayout`, `AutoTileSheet`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It centralizes bitmask interpretation and rule matching in a single graphics selection layer. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_layout`, `get_tile_count`, `get_tile_width`, `get_tile_height`, `apply_to_tileset`, and 7 more stays attached to the local data model and invariants.
-- It resolves corner relationships carefully so terrain seams stay clean across transitions. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It supports quarter-tile composition when rendering needs sub-tile assembly for smooth blends. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Defines the autotile sheet model that turns neighborhood bitmasks into final atlas tile selections.
+- Owns supported autotile layouts and the shared contract used by different terrain or border art styles.
+- Centralizes bitmask interpretation so terrain seam logic stays in one graphics-selection owner.
+- Resolves corner and edge relationships carefully so transitions remain visually clean across map joins.
+- Supports quarter-tile composition for layouts that assemble one final tile from smaller atlas regions.
+- Bridges tileset geometry with adjacency rules instead of mixing autotile policy into general map storage.
+- Open this file when terrain transitions, mask lookup, or autotile atlas mapping behaves incorrectly.
 
 ### chunk.rs
 
-- This file provides sparse chunk storage for very large tile worlds that load data on demand. `tilemap/chunk` delivers the chunk implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It decouples tile access from raw memory layout so map scale can grow without full allocation. The file owns or coordinates data contracts including `ChunkMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It keeps world-to-chunk and local cell transforms precise for predictable addressing. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_chunk_size`, `get_tile`, `set_tile`, `clear_tile`, `fill_rect`, and 10 more stays attached to the local data model and invariants.
-- It exposes range operations and visible-chunk selection to drive rendering and streaming paths. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Implements sparse chunk storage for very large tile worlds that should not allocate one full dense grid.
+- Keeps world-to-chunk and local-cell transforms precise so reads, writes, and clears hit stable addresses.
+- Provides visible-chunk queries and range updates used by streaming, culling, and large-map maintenance paths.
+- Acts as the storage boundary between raw world tile access and higher-level render or generation systems.
+- Open this file when chunk loading, addressing, fill ranges, or visible-region selection behaves incorrectly.
 
 ### coords.rs
 
-- This file provides coordinate transforms for isometric and hex grids used across map systems. `tilemap/coords` delivers the coords implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It keeps one geometric language between screen space, tile space, and movement direction logic. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It offers orientation, rotation, and side classification helpers for grid navigation flows. Public callable behavior is centered on `to_screen_iso`, `from_screen_iso`, `iso_rotate`, `iso_direction_name`, `iso_direction_from_angle`, and 11 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- It supports hex metrics and neighborhoods so pathing and range tools share a stable base. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Provides coordinate transforms for isometric and hex grids shared by map rendering, pathing, and range tools.
+- Converts between screen space, grid space, and directional labels so systems use one geometric language.
+- Supplies rotation, neighbor, line, ring, and spiral helpers needed by hex navigation and selection logic.
+- Keeps orientation-specific math out of map storage owners so projection changes stay locally auditable.
+- Open this file when iso or hex coordinate conversion, direction naming, or grid metric math is wrong.
 
 ### isomap.rs
 
-- This file provides a multi-level isometric map model with separate parts per tile cell. `tilemap/isomap` delivers the isomap implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It maps tile coordinates to diamond-projected screen space for coherent scene placement. The file owns or coordinates data contracts including `IsoTilePart`, `IsoTile`, `IsoLevel`, `IsoDrawItem`, `IsoMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It iterates draw order by diagonal progression so elevation layering reads correctly. Public callable behavior is centered on no named public items, while method-level behavior such as `from_index`, `index`, `new`, `get_tile`, `get_tile_mut`, `add_level`, and 13 more stays attached to the local data model and invariants.
-- It lets each elevation level be shown or hidden to support staged world presentation. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It keeps part ordering configurable so floor, wall, and object composition remains flexible. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Defines a multi-level isometric map model where each tile can carry separate floor, wall, and object parts.
+- Maps tile coordinates into diamond-projected screen placement so isometric draw order stays coherent.
+- Iterates diagonal draw order to make elevation layering and overlap read correctly during presentation.
+- Lets each level be shown or hidden, which supports staged reveals and editor-style focused inspection.
+- Keeps part ordering configurable so floor, wall, and object composition can vary by project needs.
+- Acts as the isometric-map boundary instead of forcing the general orthogonal TileMap owner to absorb it.
+- Open this file when iso level stacking, tile part ordering, or projected draw ordering looks incorrect.
 
 ### large_map_renderer.rs
 
-- This file provides chunk-oriented rendering support for tilemaps that exceed single-pass scale. `tilemap/large_map_renderer` delivers the large map renderer implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It partitions the full grid into fixed blocks with dirty tracking for incremental refresh. The file owns or coordinates data contracts including `MapChunk`, `LargeMapRenderer`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It uses camera and viewport state to cull work at chunk granularity before draw emission. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_map_data`, `set_tile`, `get_tile`, `get_map_size`, `set_chunk_size`, and 13 more stays attached to the local data model and invariants.
-- It supports per-tile mutation with automatic invalidation so updates stay localized. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It applies optional zoom-aware detail reduction to keep large-world rendering responsive. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Owns chunk-oriented rendering support for tilemaps that are too large for one monolithic redraw strategy.
+- Partitions the full grid into fixed chunks with dirty tracking so small edits trigger only local refresh work.
+- Uses camera and viewport state to cull at chunk granularity before generating tile-oriented draw output.
+- Supports per-tile mutation with automatic invalidation so edits stay localized across large-world scenes.
+- Optionally reduces detail with zoom-aware logic to keep massive maps responsive during interactive viewing.
+- Open this file when chunk invalidation, visible-chunk culling, or large-map redraw performance is wrong.
 
 ### ldtk.rs
 
-- This file provides LDtk JSON import into the engine-native tilemap representation. `tilemap/ldtk` delivers the ldtk implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It parses levels and tile layers while rebuilding tileset geometry needed by runtime maps. The file owns or coordinates data contracts including `LdtkImportError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It converts pixel-based LDtk placements into stable grid-cell coordinates for simulation. Public callable behavior is centered on `load_ldtk`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- It keeps external level content aligned with the engine's layered tile data model. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Loads LDtk JSON content into the engine tilemap model while rebuilding the geometry and layer data it needs.
+- Parses levels and tile layers, then converts pixel placements into stable grid-cell coordinates for runtime use.
+- Keeps external LDtk import rules separate from TMX and procedural paths so format-specific failures stay local.
+- Acts as the LDtk boundary between authored project files and the engine layered tilemap representation.
+- Open this file when LDtk levels, layer placement, or imported tileset reconstruction behaves incorrectly.
 
 ### mapgen.rs
 
-- This file provides scripted procedural generation for tile worlds built from reusable block pieces. `tilemap/mapgen` delivers the mapgen implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It models block edges and matching rules so assembled regions connect with coherent boundaries. The file owns or coordinates data contracts including `MapBlock`, `MapGroup`, `StepType`, `ScriptStep`, `MapScript`, and 5 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It groups reusable content and scripts into named generation palettes for targeted world styles. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_tile`, `get_tile`, `set_side`, `get_side`, `get_width`, and 45 more stays attached to the local data model and invariants.
-- It defines step-driven operations for fill, placement, scatter, flood spread, and path carving. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It orchestrates generation with seeded randomness so outputs are repeatable and testable. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It supports both single-map and multi-region production with independent deterministic seeds. The file boundary separates tilemap implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- It applies zone and orientation metadata so generated content matches downstream render expectations. State changes, validation paths, and helper routines in `src/tilemap/mapgen.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- It controls how layers receive writes, enabling unified or split composition strategies. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+- Implements scripted procedural tilemap generation built from reusable blocks, groups, and step sequences.
+- Models block edges and matching rules so assembled regions connect with coherent boundaries and orientations.
+- Groups reusable content into named palettes that let projects target distinct world styles with one runtime.
+- Defines fill, place, scatter, flood, carve, and related generation steps under one deterministic script owner.
+- Uses seeded randomness so outputs remain repeatable for tests, content iteration, and offline batch generation.
+- Supports both single-map and multi-region production with independent seeds and layered write strategies.
+- Applies zone, side, and orientation metadata so downstream rendering and gameplay read generated maps correctly.
+- Controls how writes land on layers, allowing unified or split composition without duplicating generation logic.
+- Acts as the procedural-authoring boundary instead of pushing rule assembly into the base map storage type.
+- Open this file when generation scripts, edge matching, seeded outputs, or layered placement behave incorrectly.
 
 ### mapgen_model.rs
 
-- Core data types for procedural map generation, centered on the Edge enum representing cardinal block boundaries (North, East, South, West).
-- Supports bidirectional Edge-to-string conversion enabling parsing from config files and serialization for save persistence.
-- Enables consistent edge-matching logic across procedural generators that tile blocks based on edge constraints and adjacency rules.
+- Defines the core map-generation model types, especially cardinal edges used by block matching and adjacency rules.
+- Provides string conversion for edge values so config parsing and persistence share one canonical representation.
+- Open this file when procedural edge semantics or serialized edge naming stops matching generator expectations.
 
 ### mod.rs
 
-- This module delivers the high-level tile world stack for storage, generation, import, and rendering. `tilemap/mod` is the tilemap module index, declaring `autotile_sheet`, `chunk`, `coords`, `isomap`, `large_map_renderer`, and 11 more so agents can identify which files own each feature slice before opening implementation code.
-- It unifies layered map data for orthogonal and isometric play spaces under one runtime contract. `src/tilemap/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `autotile_sheet::{AutoTileLayout, AutoTileSheet}`, `chunk::ChunkMap`, `coords::*`, `isomap::{IsoDrawItem, IsoLevel, IsoMap, IsoTile, IsoTilePart}`, and 7 more centralized for the tilemap subsystem.
-- It connects authored formats, procedural tools, autotiling, and region geometry into one pipeline. The file documents how tilemap submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- It provides the structural backbone for large interactive 2D worlds in Lurek2D. Agents should read this index to choose the narrow owner file first, because it maps names such as `autotile_sheet`, `chunk`, `coords`, `isomap`, `large_map_renderer`, and 11 more to concrete implementation responsibilities.
-- `tilemap/mod` is the tilemap module index, declaring `autotile_sheet`, `chunk`, `coords`, `isomap`, `large_map_renderer`, and 11 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/tilemap/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `autotile_sheet::{AutoTileLayout, AutoTileSheet}`, `chunk::ChunkMap`, `coords::*`, `isomap::{IsoDrawItem, IsoLevel, IsoMap, IsoTile, IsoTilePart}`, and 7 more centralized for the tilemap subsystem.
+- Exports the tilemap subsystem surface that combines storage, import, generation, geometry, and render helpers.
+- Acts as the ownership index for tile worlds so callers can see where chunks, tilesets, maps, and importers live.
+- Centralizes module visibility and re-exports instead of storing live map data or running generation itself.
+- Connects authored formats, autotiling, region maps, large-map helpers, and base tile storage into one stack.
+- Provides the first navigation point when tracing whether a tile concern belongs to import, storage, or rendering.
+- Keeps the public tilemap surface coherent while allowing specialized owners like isomap or TMX to stay narrow.
+- Open this file first when adding a tilemap owner or changing re-export policy for shared tilemap APIs.
+- Use it to map a tile feature to its concrete Rust owner before editing storage, import, or render behavior.
 
 ### polygon_map.rs
 
-- Named polygon region storage supporting convex and concave shapes for zone-based gameplay overlaying tile maps (capture zones, provinces, trigger regions).
-- Stores vertex lists with per-region fill colors, optional text labels, and shared outline styling enabling visual consistency across all regions.
-- Implements efficient point-in-polygon queries using ray-casting algorithm supporting selection, trigger detection, and ownership checks per frame.
-- Computes region centroids and bounding boxes enabling camera framing, layout decisions, and spatial analysis for AI and gameplay systems.
-- Provides dynamic lifecycle operations (add, remove, update) allowing runtime zone modification without map reload or editor access.
+- Owns named polygon regions that overlay tile worlds for provinces, triggers, capture zones, or selection areas.
+- Stores vertex lists, fill colors, labels, and shared outline styling so region presentation stays consistent.
+- Implements point-in-polygon queries used for selection, ownership checks, and trigger evaluation at runtime.
+- Computes centers and bounding boxes so cameras, UI, and spatial systems can reason about named regions.
+- Supports add, remove, and update flows so regions can change at runtime without reloading the whole tile map.
+- Open this file when region lookup, labeling, coloring, or polygon geometry behavior is incorrect.
 
 ### render.rs
 
-- This file provides tilemap render-command emission with camera-aware culling across map layers. `tilemap/render` delivers the rendering adapter and draw-command integration for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It maps tile IDs to debug colors so rendering can proceed even without atlas texture sampling. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It applies per-layer visibility and tint state when composing command output for the renderer. Public callable behavior is centered on no named public items, while method-level behavior such as `build_render_commands`, `generate_render_commands` stays attached to the local data model and invariants.
-- It respects orthogonal, isometric, and hexagonal map orientation so debug rendering matches map space. Runtime integration reaches sibling engine areas through crate modules `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It keeps draw generation predictable so map visualization remains stable during updates. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Generates tilemap render commands with camera-aware culling across layers and supported map orientations.
+- Maps tile ids to fallback debug colors so maps can still visualize without relying on atlas sampling.
+- Applies per-layer visibility and tint while composing deterministic draw output for the shared renderer.
+- Handles orthogonal, isometric, and hex layouts so debug and runtime visualization match map geometry.
+- Acts as the tilemap-to-render boundary rather than mixing draw emission into the base TileMap owner.
+- Open this file when tile draw order, culling, tint, or orientation-specific render output is incorrect.
 
 ### tile_walker.rs
 
-- This file provides a discrete grid walker model with stable cardinal facing semantics. `tilemap/tile_walker` delivers the tile walker implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It supports forward, backward, and strafe movement as first-class motion primitives. The file owns or coordinates data contracts including `Facing`, `TileWalker`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It tracks previous state snapshots so interpolation can smooth visual motion between ticks. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `to_str`, `angle`, `dx`, `dy`, `new`, and 20 more stays attached to the local data model and invariants.
-- It classifies neighboring cells relative to facing for directional interaction logic. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It separates passability queries from concrete collision backends for flexible integration. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Defines a discrete grid walker with stable facing semantics for tile-based movement and interaction logic.
+- Supports forward, backward, and strafe motion as first-class primitives over one consistent facing model.
+- Tracks previous state so interpolation can smooth visual movement between simulation ticks or input steps.
+- Classifies neighboring cells relative to facing, which supports directional interaction and sensing flows.
+- Keeps movement and facing logic separate from collision backends so pathing integrations stay flexible.
+- Open this file when walker facing, step logic, interpolation, or directional neighbor math behaves incorrectly.
 
 ### tilemap.rs
 
-- This file provides the core layered tilemap data model used by simulation and rendering paths. `tilemap/tilemap` delivers the tilemap implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It stores per-cell tile IDs, per-layer state, tint metadata, and parallax movement factors. The file owns or coordinates data contracts including `TileLayer`, `SweepResult`, `TileMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It resolves global IDs through attached tilesets so tile ownership stays deterministic. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_tileset`, `get_tileset`, `get_tileset_count`, `add_layer`, `get_layer_count`, and 41 more stays attached to the local data model and invariants.
-- It computes autotile neighborhood masks and substitution outputs for terrain continuity. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It performs swept collision checks against solid tiles for top-down and platform movement. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It advances tile animation timelines from tileset frame data during runtime updates. The file boundary separates tilemap implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-- It converts world and tile coordinates in both directions using map geometry settings. State changes, validation paths, and helper routines in `src/tilemap/tilemap.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-- It emits culled draw commands for viewport-scoped visualization and debug rendering. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+- Defines the core layered tilemap data model used by simulation, collision, generation, and rendering paths.
+- Stores per-cell gids, per-layer visibility, tint, parallax, and geometry settings under one coherent runtime.
+- Resolves global ids through attached tilesets so tile ownership and atlas lookup stay deterministic.
+- Computes autotile neighborhood masks and substitution results that preserve terrain continuity across edits.
+- Performs swept collision checks against solid tiles for movement systems that need stable tile-based blocking.
+- Advances animated tile timelines from tileset frame data so visual state updates stay tied to map content.
+- Converts between world and tile coordinates using the active map geometry instead of hardcoded projection math.
+- Emits culled draw commands for viewport-scoped debug or runtime visualization without duplicating map scans.
+- Acts as the operational boundary for layered tile storage rather than external import or large-map chunk policy.
+- Open this file when layered map state, autotiling, collisions, or coordinate conversion behaves incorrectly.
 
 ### tilemap_collision.rs
 
-- Narrow-phase collision detection for tilemap movement using swept AABB-vs-AABB testing with separating-axis theorem implementation.
-- Computes continuous time-of-impact values in [0, 1) for moving rectangles against static tile geometry, enabling smooth sliding physics.
-- Returns collision metadata including hit surface normal, contact point, and tile coordinates to support wall-sliding and obstacle interactions.
+- Implements narrow-phase tilemap collision using swept AABB tests so moving rectangles detect continuous impact.
+- Computes time of impact, contact point, tile coordinates, and hit normal for sliding and obstacle responses.
+- Keeps collision math separate from general map storage so movement fixes stay local and auditable.
+- Open this file when tile collision timing, normals, or contact metadata behaves incorrectly in movement code.
 
 ### tilemap_index.rs
 
-- Reverse-index mapping from Global Tile ID (GID) to list of (x, y) grid coordinates for fast spatial tile lookups in tilemaps.
+- This file owns the reverse-index maintenance helper that maps tile GIDs back to their grid positions.
+- The function removes one coordinate from a GID bucket and deletes empty buckets to keep index state compact.
+- Open this file when tile lookup bookkeeping changes; map storage and generation logic belong to siblings.
 
 ### tileset.rs
 
-- This file provides tileset geometry and metadata that define how tile IDs map to atlas pixels. `tilemap/tileset` delivers the tileset implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It computes source rectangles from local IDs so render code can sample the correct sprite area. The file owns or coordinates data contracts including `TileAnimFrame`, `TileSet`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It stores solidity metadata per tile to support collision and gameplay filtering decisions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_first_gid`, `get_tile_count`, `get_columns`, `get_tile_width`, `get_tile_height`, and 12 more stays attached to the local data model and invariants.
-- It tracks frame-based tile animations so animated map cells advance with deterministic timing. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `math`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Defines tileset geometry and metadata that map gids onto atlas rectangles, solidity, and animation sequences.
+- Computes source quads from local ids so renderer code can sample the correct sprite region deterministically.
+- Stores per-tile solidity and animation data used by collision, filtering, and animated map presentation.
+- Acts as the atlas-metadata boundary between raw tilesheet images and higher-level map storage owners.
+- Open this file when tile quad lookup, solid flags, or animated tileset frame data behaves incorrectly.
 
 ### tmx.rs
 
-- This file provides TMX import that converts Tiled XML maps into engine-native map structures. `tilemap/tmx` delivers the tmx implementation for the tilemap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- It supports major TMX orientation modes so authored content can target varied 2D projections. The file owns or coordinates data contracts including `TmxImportError`, `TmxOrientation`, `TmxStaggerAxis`, `TmxTileset`, `TmxTileLayer`, and 4 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- It decodes tile data from csv, xml, and compressed base64 payloads into stable gid streams. Public callable behavior is centered on `load_tmx`, while method-level behavior such as `tile_layers`, `object_layers` stays attached to the local data model and invariants.
-- It ingests tileset geometry and metadata needed for atlas lookup and collision interpretation. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- It parses object layers to retain placement, sizing, and semantic type annotations. External integration uses `base64`, `flate2`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- It strips flip flags from raw gids so stored tile identity stays clean and comparable. The file boundary separates tilemap implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- Loads Tiled TMX maps into engine tile structures while preserving orientation, layers, objects, and tilesets.
+- Supports TMX orientation modes so authored content can target orthogonal, isometric, and hex-style layouts.
+- Decodes csv, xml, and compressed base64 tile payloads into stable gid streams used by runtime map storage.
+- Parses tileset geometry and metadata required for atlas lookup, collision filtering, and tile animation.
+- Ingests object layers so placement, sizing, and semantic type annotations survive the import boundary.
+- Strips flip flags from raw gids so stored tile identity remains clean, comparable, and easy to post-process.
+- Keeps TMX-specific error handling local instead of mixing format policy into procedural or LDtk importers.
+- Open this file when TMX import, gid decoding, orientation handling, or object-layer parsing is incorrect.
 
 
 

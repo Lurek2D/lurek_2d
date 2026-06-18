@@ -1,9 +1,11 @@
-//! Provides the shared globe data model defining regions, overlays, markers, labels, arcs, and view artifacts. `globe/types` delivers the shared type definitions and data contracts for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Encodes geographic geometry with centroids, adjacency, edge tags, and per-region render attributes. The file owns or coordinates data contracts including `RegionId`, `RegionPart`, `Region`, `FogState`, `HeatLayer`, and 14 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Defines globe specification parameters that drive atmosphere, lighting, rotation, and border behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `raw`, `with_data`, `with_parts_data`, `from_parts`, `primary_vertices`, and 2 more stays attached to the local data model and invariants.
-//! Supplies layer and heat-overlay structures used to blend thematic map information at runtime. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Models marker and label style data with visibility, pulse, and level-of-detail controls. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Includes projection result types for screen-space rendering and interaction pipelines. The file boundary separates globe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Defines the shared globe data model for regions, overlays, markers, labels, arcs, specs, and projected outputs.
+//! Owns stable identifiers, multipart geographic geometry, edge tags, base styling, and screen-space result types.
+//! Encodes the parameters that drive rotation, lighting, atmosphere, borders, and thematic overlay composition.
+//! Provides the schema boundary that every globe owner depends on, from loaders and registries to draw and picking.
+//! Also models fog state, label and marker styles, heat layers, and level-of-detail tiers used across rendering.
+//! This file matters when globe shape data, overlay contracts, or style fields need to stay reusable everywhere.
+//! Neighboring edits usually involve loader parsing, projection outputs, registry state, and draw-time expectations.
+//! Open this owner for shape-independent globe schema changes before touching behavior-specific sibling modules.
 
 use crate::globe::sphere::{lat_lon_to_unit, unit_to_lat_lon};
 use crate::math::{Vec2, Vec3};

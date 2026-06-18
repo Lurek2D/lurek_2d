@@ -1,4 +1,4 @@
-//! `src/lua_api/pathfind_api.rs` registers the `lurek.pathfind` Lua boundary for pathfind behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.pathfind` Lua API for path queries, async pools, waypoint conversion, and grid validation.
 
 use super::tilemap_api::LuaTileMap;
 use super::SharedState;

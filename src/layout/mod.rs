@@ -1,5 +1,9 @@
-//! Aggregates graph and tree layout strategies into one coherent coordinate service for runtime visuals. `layout/mod` is the layout module index, declaring `dag`, `force`, `grid_align`, `tree`, `types` so agents can identify which files own each feature slice before opening implementation code.
-//! Unifies result and config contracts so callers can switch placement style without changing integration code. `src/layout/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `dag::layout_dag`, `force::{layout_force, ForceConfig}`, `grid_align::{center_in_area, snap_to_grid}`, `tree::layout_tree`, and 1 more centralized for the layout subsystem.
+//! `src/layout/mod.rs` is the module index for layout algorithms, shared types, and post-processing helpers.
+//! It declares DAG, tree, force, and grid-alignment files while keeping the shared layout contracts in `types.rs`.
+//! This file reexports the main entry points so callers can switch layout strategy without importing deep module paths.
+//! No layout state or coordinate math lives here; it only defines the public surface and subsystem ownership map.
+//! Read this index first when tracing layout behavior, because it shows where algorithms end and shared data begins.
+//! Changes here affect reachability and API shape, not node placement rules, spacing policy, or result generation.
 
 /// Sugiyama layered layout algorithm for directed acyclic graphs (DAGs).
 pub mod dag;

@@ -1,9 +1,9 @@
-//! High-level image module that unifies pixel buffers, effects, serialization, and atlas-oriented helpers. `image/mod` is the image module index, declaring `image_data`, `compressed`, `effects`, `palette_lut`, `layers`, and 7 more so agents can identify which files own each feature slice before opening implementation code.
-//! Re-exports core image types and decoding utilities used across runtime systems and content pipelines. `src/image/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `image_data::ImageData`, `compressed::{CompressedFormat, CompressedImageData}`, `palette_lut::PaletteLUT`, `layers::{ImageLayer, LayeredImage}`, and 5 more centralized for the image subsystem.
-//! Defines the integration boundary between CPU image manipulation and render-upload preparation. The file documents how image submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! `image/mod` is the image module index, declaring `image_data`, `compressed`, `effects`, `palette_lut`, `layers`, and 7 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/image/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `image_data::ImageData`, `compressed::{CompressedFormat, CompressedImageData}`, `palette_lut::PaletteLUT`, `layers::{ImageLayer, LayeredImage}`, and 5 more centralized for the image subsystem.
-//! The file documents how image submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! Exports the image subsystem surface that groups buffers, effects, formats, atlases, layers, and visuals.
+//! Acts as the navigation index for CPU image ownership, showing where loading, edits, packing, and specs live.
+//! Re-exports ImageData, compressed assets, palette LUTs, layered images, GIF helpers, and atlas structures.
+//! Keeps compatibility exports such as ProvinceGrid local to the module boundary instead of scattered in users.
+//! Open this file first when tracing which image feature belongs to storage, processing, serialization, or UI.
+//! This owner defines image-module visibility and composition, not the pixel algorithms implemented below it.
 
 /// Core RGBA image storage and drawing helpers.
 pub mod image_data;

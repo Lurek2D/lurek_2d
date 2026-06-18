@@ -1,6 +1,6 @@
-//! Lightweight service locator for runtime feature discovery when systems need to find shared capabilities by agreed names instead of direct construction paths.
-//! The file keeps registration, removal, lookup, and sorted listing in one compact registry so service presence stays explicit and easy to inspect.
-//! Functionally this delivers a simple dependency access hub for loosely coupled gameplay code, especially where availability changes during runtime.
+//! This file owns the string-keyed service registry used to advertise shared runtime capabilities by agreed names.
+//! `ServiceLocator` stores the registered names set so feature presence can be queried, listed, or cleared centrally.
+//! Open it when service-discovery semantics change; factories, strategies, and event routers live in siblings.
 
 use std::collections::HashSet;
 

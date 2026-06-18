@@ -16,16 +16,13 @@
 
 ## Summary
 
-- This module exposes scriptable text search across project files from one Lua-facing API.
-- Literal and multi-literal search are the strongest paths today.
-- Regex, glob, and fuzzy modes remain lightweight helpers, not full external-engine equivalents.
-- Directory scans use buffered file reads, size caps, and small std-thread worker pools.
-- Result ordering is deterministic after parallel merge.
-- `GrepConfig.max_results` caps returned matches after collection.
-- File filters handle extensions, path substring exclusions, and hidden-file policy.
-- JSON and structured-log helpers support data-oriented searches beside plain text.
+- The `grep` module is the scriptable text-search surface for users who want to scan project files, logs, or structured content from inside the engine environment.
+- Search configuration, path filtering, matching, and specialized JSON or log helpers work together so one module can cover ordinary content search as well as more structured diagnostic queries.
+- Literal-first behavior matters because many runtime and tooling searches are about exact identifiers, paths, or messages rather than full external-regex-engine complexity.
+- Threaded scanning and result shaping make the module practical for tools, editors, audit scripts, and content workflows that need search without leaving the project runtime.
+- This keeps search results usable inside larger audit and tooling flows.
+- Read it as the in-engine file-search utility layer: it does not replace every external grep tool, but it gives scripts a controlled search workflow that fits the engine's data and file model.
 
-This module is mostly self-contained inside the `Edge/Integration` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -35,79 +32,87 @@ This module is mostly self-contained inside the `Edge/Integration` group. Cross-
 
 ### config.rs
 
-- Grep engine configuration: thread count, file size limits, and encoding settings. `grep/config` delivers the configuration schema and defaults for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- `GrepConfig` holds `thread_count`, `max_file_size`, `case_sensitive`, and `whole_word`. The file owns or coordinates data contracts including `GrepConfig`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Deserialized from the `[grep]` TOML block or constructed via Lua table defaults. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns `GrepConfig`, the shared search configuration for thread count, limits, casing, and result caps.
+- It stores worker count, max file size, whole-word mode, case sensitivity, max results, and context-line settings.
+- Open this file when grep defaults or tunable search limits change; engine flow and path filtering live in siblings.
 
 ### engine.rs
 
-- High-level search engine: wires configuration, file filter, and pattern matcher. `grep/engine` delivers the engine implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Delegates file discovery to `FileFilter` and matching to the lightweight `Matcher`. The file owns or coordinates data contracts including `GrepEngine`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Work is split across a small std-thread worker set sized from `GrepConfig::thread_count`. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `search_literal`, `search_regex`, `search_multi`, `search_files`, `count`, and 1 more stays attached to the local data model and invariants.
-- Returned results are deterministically sorted and capped by `GrepConfig::max_results`. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `GrepEngine`, the high-level search facade that combines config, filters, matchers, and workers.
+- It builds literal, regex-like, and multi-literal searches, then delegates filesystem scanning to `ParallelSearch`.
+- Result capping happens here so every entry point obeys `GrepConfig::max_results` before callers inspect matches.
+- Open this file when top-level grep workflows change; pattern evaluation and raw file traversal live in siblings.
 
 ### filter.rs
 
-- File extension and path filters for narrowing the search scope. `grep/filter` delivers the filter implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- `FileFilter` accepts `include_extensions`, `exclude_extensions`, and glob patterns. The file owns or coordinates data contracts including `FileFilter`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- `FileFilter::matches(path)` is a pure predicate; no I/O at the filter stage. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `matches`, `lua_files`, `toml_files`, `game_content` stays attached to the local data model and invariants.
-- Hidden files and directories starting with `.` are excluded by default. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `FileFilter`, the path-selection layer used to narrow grep scans before any file content is read.
+- It stores allowed and blocked extensions, include and exclude substrings, a size cap, and hidden-file policy.
+- `matches` is a pure path predicate, so discovery can reject files cheaply without loading bytes or parsing lines.
+- Preset constructors provide ready-made filters for Lua, TOML, and broader game-content scans across repo assets.
+- Open this file when file-selection rules change; text matching and parallel execution live in sibling modules.
 
 ### json_search.rs
 
-- JSON path search: query structured key-value paths within JSON files. `grep/json_search` delivers the json search implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- `search_json_path` scans a directory for JSON files and extracts values at a path. The file owns or coordinates data contracts including `JsonMatch`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- `search_json_file` operates on a single file; returns `Option<serde_json::Value>`. Public callable behavior is centered on `search_json_path`, `search_json_file`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+- This file owns lightweight JSON-path search helpers that scan text or files for matching structured key paths.
+- It returns `JsonMatch` records containing the queried path and extracted value for each matching source line.
+- The implementation is heuristic and line-based, using simple `:` or `=` extraction instead of full tree walking.
+- Open this file when structured JSON grep behavior changes; generic text matching and filters live in siblings.
 
 ### log_search.rs
 
-- Structured log file search with level, time-range, and text pattern filters. `grep/log_search` delivers the log search implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- `parse_log_lines` parses lines of the form `[LEVEL TIMESTAMP] MESSAGE`. The file owns or coordinates data contracts including `LogEntry`, `LogSearchOpts`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- `search_logs` filters `Vec<LogEntry>` by level, time bounds, and text pattern. Public callable behavior is centered on `parse_log_lines`, `search_logs`, while method-level behavior such as `new` stays attached to the local data model and invariants.
-- `LogSearchOpts` drives the filter; all fields are optional (zero = no filter). Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns structured log parsing and filtering for grep-style inspection of timestamped runtime log lines.
+- It defines `LogEntry` and `LogSearchOpts`, then parses common bracketed or ISO-like log formats into fields.
+- Search helpers filter by severity, optional time bounds, and message substrings without re-reading source files.
+- Timestamp filtering uses string comparison, which fits normalized log formats but keeps parsing deliberately simple.
+- Open this file when log-specific grep semantics change; generic matchers and file traversal live in siblings.
 
 ### matcher.rs
 
-- Low-level pattern matcher: wraps the supported pattern kinds behind one helper. `grep/matcher` delivers the matcher implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- `Matcher` implements literal, simplified regex/glob, fuzzy, and multi-literal search. The file owns or coordinates data contracts including `Matcher`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Returns a `Vec<(usize, usize)>` of byte-span matches within the target string. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `matches_line`, `find_positions` stays attached to the local data model and invariants.
-- Regex and glob support are lightweight custom matchers rather than full regex-crate semantics. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Fuzzy matching uses an edit-distance threshold per query. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns `Matcher`, the text-evaluation layer that applies one `PatternKind` to lines and match spans.
+- It dispatches literal, regex-like, glob, fuzzy, and multi-literal checks behind one consistent search interface.
+- Literal searches can return byte ranges, while non-literal modes fall back to whole-line spans after a match check.
+- Regex and glob support are custom lightweight implementations here, not full crate-backed regular expressions.
+- Fuzzy matching uses an edit-distance threshold over sliding windows so near matches can be found in plain text.
+- Open this file when pattern semantics change; enum construction and high-level grep orchestration live nearby.
 
 ### mod.rs
 
-- Text search engine for game and tooling content files. `grep/mod` is the grep module index, declaring `config`, `engine`, `filter`, `json_search`, `log_search`, and 5 more so agents can identify which files own each feature slice before opening implementation code.
-- Literal-first matching with simplified regex/glob/fuzzy helpers and multi-pattern search. `src/grep/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `config::GrepConfig`, `engine::GrepEngine`, `filter::FileFilter`, `matcher::Matcher`, and 4 more centralized for the grep subsystem.
-- Buffered file reading with a configurable size cap. The file documents how grep submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- Deterministic std-thread parallel file search for directory scans. Agents should read this index to choose the narrow owner file first, because it maps names such as `config`, `engine`, `filter`, `json_search`, `log_search`, and 5 more to concrete implementation responsibilities.
-- Specialized JSON path search and log file parsing. Re-export decisions in this file define the stable Rust boundary consumed by sibling modules, Lua bindings, generated specs, and examples that mention grep features.
-- No streaming callbacks or memory-mapped reader in the current implementation. The module stays implementation-light by delegating behavior to child files, which preserves a clear boundary between navigation metadata and executable subsystem logic.
+- This module re-exports the grep subsystem surface for config, filtering, matching, readers, and search results.
+- It exists as the navigation map that tells callers which sibling files own engine flow, pattern kinds, or log helpers.
+- `engine.rs` drives top-level searches, while `parallel.rs` and `reader.rs` cover filesystem work and file loading.
+- `matcher.rs` and `pattern.rs` define how literal, regex-like, glob, fuzzy, and multi-pattern checks are evaluated.
+- `filter.rs`, `json_search.rs`, and `log_search.rs` narrow scope or parse structured content beyond raw text lines.
+- Change this file when the public grep symbol map moves; change siblings when search behavior or data rules change.
 
 ### parallel.rs
 
-- Parallel file search: distributes work across a small std-thread worker set. `grep/parallel` delivers the parallel implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Files are collected eagerly, chunked deterministically, and merged after workers finish. The file owns or coordinates data contracts including `ParallelSearch`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Thread count comes from `GrepConfig`; `0` is clamped to a single worker. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `search`, `search_files` stays attached to the local data model and invariants.
-- Matching remains literal-first and filesystem-oriented rather than a streaming validator engine. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `ParallelSearch`, the filesystem worker layer that splits grep work across deterministic chunks.
+- It gathers candidate files, reads them through `FileReader`, applies `Matcher`, and merges sorted `FileMatch` output.
+- Directory scans recurse through subfolders, skip hidden entries when configured, and keep file ordering predictable.
+- Chunk workers run inside scoped threads, so search stays std-only and shares readers without async machinery.
+- Open this file when traversal or worker behavior changes; top-level query setup and pattern logic live in siblings.
 
 ### pattern.rs
 
-- Pattern kinds: literal, regex, glob, fuzzy, and multi-literal match strategies. `grep/pattern` delivers the pattern implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- `PatternKind` is the discriminant stored in `Matcher` to select dispatch logic. The file owns or coordinates data contracts including `PatternKind`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- `Literal` and `MultiLiteral` use Aho-Corasick for sub-linear multi-pattern search. Public callable behavior is centered on no named public items, while method-level behavior such as `literal`, `regex`, `glob`, `fuzzy`, `multi_literal` stays attached to the local data model and invariants.
+- This file owns `PatternKind`, the enum that names every grep match strategy before a `Matcher` executes it.
+- It stores literal, regex-like, glob, fuzzy, and multi-literal variants so search intent stays explicit in data.
+- Constructor helpers create each variant without exposing enum field details to higher-level engine call sites.
+- Open this file when supported pattern families change; evaluation logic and file traversal live in sibling files.
 
 ### reader.rs
 
-- File reading utilities: buffered I/O with a simple size gate. `grep/reader` delivers the reader implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Files larger than the configured limit are skipped instead of partially streamed. The file owns or coordinates data contracts including `FileReader`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Callers can read line-by-line or whole-file UTF-8 content through the same helper. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `read_lines`, `read_string`, `is_readable` stays attached to the local data model and invariants.
+- This file owns `FileReader`, the size-gated file access helper shared by grep directory and flat-file searches.
+- It reads UTF-8 content as lines or one full string, but rejects oversized or unreadable files before loading them.
+- `is_readable` exposes the same gate as a cheap metadata check so callers can reason about search eligibility.
+- Open this file when grep file-loading rules change; path filtering and match semantics live in sibling modules.
 
 ### result.rs
 
-- Search result types: per-line matches, per-file matches, and totals. `grep/result` delivers the result implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- `LineMatch` carries `line_number`, `content` string, and `positions` spans. The file owns or coordinates data contracts including `LineMatch`, `FileMatch`, `SearchResult`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- `FileMatch` groups `Vec<LineMatch>` under a `PathBuf` source path. Public callable behavior is centered on no named public items, while method-level behavior such as `empty`, `is_empty`, `limit_total_matches` stays attached to the local data model and invariants.
-- `GrepResult` is the top-level return: `matches`, `files_searched`, `total_matches`. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `LineMatch`, `FileMatch`, and `SearchResult`, the structured output produced by grep searches.
+- It records matched paths, line numbers, source text, byte spans, aggregate counts, and elapsed search duration.
+- `SearchResult::empty` provides a zeroed baseline, while `limit_total_matches` trims nested matches to a cap.
+- Result limiting rewrites per-file totals so callers see consistent counts after truncation across many files.
+- Open this file when grep output structure changes; matching logic and filesystem traversal live in siblings.
 
 
 

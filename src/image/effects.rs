@@ -1,9 +1,12 @@
-//! Provides the main CPU image effect toolkit for color grading, filtering, resampling, and compositing. `image/effects` delivers the effects implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Applies brightness, contrast, saturation, gamma, tint, threshold, and stylization transforms per pixel. The file owns or coordinates data contracts including `ResizeFilter`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports deterministic noise injection and alpha-aware operations for repeatable visual post-processing. Public callable behavior is centered on no named public items, while method-level behavior such as `parse`, `brightness`, `contrast`, `saturation`, `gamma`, `tint`, and 22 more stays attached to the local data model and invariants.
-//! Implements geometric edits like crop, flip, and rotation for texture preparation and UI workflows. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Includes nearest, bilinear, and Lanczos resize paths to balance speed and quality by caller choice. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Runs blur, sharpen, and generic kernel convolution with safe boundary handling on edge samples. The file boundary separates image implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Implements the main CPU image-effects surface for color correction, transforms, filtering, and composition.
+//! Applies brightness, contrast, saturation, gamma, tint, grayscale, sepia, invert, threshold, and posterize.
+//! Adds deterministic RGB noise and alpha scaling so tests and tooling can reproduce visual post-processing.
+//! Owns crop, region copy, horizontal flip, vertical flip, and ninety-degree rotation for image editing flows.
+//! Provides nearest, bilinear, and Lanczos resize paths through ResizeFilter so callers can choose quality.
+//! Runs blur, sharpen, and generic square-kernel convolution while clamping edges and preserving source alpha.
+//! Blends source images with alpha-aware blit semantics and a fast opaque-copy path for large image overlays.
+//! Draws nine-slice patches by extracting source regions, resizing them, and composing them into a target UI.
+//! Open this file when visual output drift comes from pixel math rather than loading, storage, or GPU upload.
 
 use super::image_data::ImageData;
 /// Resize kernels supported by the image resampler.

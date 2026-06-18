@@ -1,7 +1,8 @@
-//! Provides Universe system-management behavior for registration, removal, and inspection of runtime systems. `ecs/universe_systems` delivers the universe systems implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Computes deterministic execution order using priorities combined with dependency-aware topological sorting. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Applies phase filtering rules so system selection remains predictable across update and render passes. Public callable behavior is centered on no named public items, while method-level behavior such as `add_system`, `get_sorted_system_indices_all`, `get_sorted_system_indices_for_phase`, `remove_system`, `get_system_count` stays attached to the local data model and invariants.
-//! Encapsulates scheduling metadata handling to keep orchestration logic separate from core ECS storage. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file extends `Universe` with system registration, ordering, removal, and per-phase scheduling helpers.
+//! It stores metadata in parallel vectors while Lua registry tables keep the actual system objects per world.
+//! Ordering helpers sort by priority first, then apply dependency-aware topological ordering for named graphs.
+//! Phase filtering treats empty phases as default update or render participation under current conventions.
+//! Open it when ECS scheduling semantics change; entity storage and component operations live in `universe.rs`.
 
 use super::Universe;
 use mlua::{Lua, Result as LuaResult, Table, Value as LuaValue};

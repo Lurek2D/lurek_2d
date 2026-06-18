@@ -1,7 +1,7 @@
-//! Provides the global AI registry that owns agents, lookup indices, and shared world context. `ai/world` delivers the authoritative runtime world state for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Keeps identity-to-storage mapping synchronized so retrieval remains stable across lifecycle changes. The file owns or coordinates data contracts including `AIWorld`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Centralizes broad update progression to advance many actors through one coherent world pulse. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_agent`, `remove_agent`, `get_agent_index`, `agent`, `agent_mut`, and 4 more stays attached to the local data model and invariants.
-//! Serves as the integration hub where individual agent logic becomes population-level simulation flow. Runtime integration reaches sibling engine areas through crate modules `ai`, `patterns`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Owns the global AI world registry that stores agents, name lookup, and the shared blackboard inherited by new actors.
+//! Provides add, remove, index, and mutable access helpers so population-level systems can manage agents coherently.
+//! Advances all agents through one broad world pulse, integrating velocity into position inside the central owner.
+//! Open this owner when registry integrity or world-wide update flow needs coordinated changes across agents.
 
 use crate::ai::agent::Agent;
 use crate::patterns::Blackboard;

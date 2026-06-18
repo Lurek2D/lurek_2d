@@ -1,11 +1,15 @@
-//! Implements SQL-like query execution over dataframe and database table structures. `dataframe/sql` delivers the sql implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Tokenizes input query text into typed lexical units for downstream parser consumption. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Parses SELECT statements through recursive-descent grammar with explicit clause ordering. Public callable behavior is centered on `query_sql`, `explain_sql`, `query_sql_database`, `query_sql_database_params`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Builds expression trees for WHERE and HAVING filters including boolean and pattern operators. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supports projection arithmetic with aliasing and function-call style aggregate expressions. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Executes grouping, aggregation, ordering, limits, and offsets over intermediate query results. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
-//! Parses and applies join clauses for multi-table query paths within database containers. State changes, validation paths, and helper routines in `src/dataframe/sql.rs` should be reviewed together because they collectively define the safe operational surface for this feature.
-//! Implements LIKE-style wildcard matching semantics compatible with SQL-style pattern tokens. Agents reading this file should use the module docs to understand provided functionality first, then inspect item docs and tests only where the behavior is being changed.
+//! This file owns the SQL-like execution layer that tokenizes, parses, plans, and runs SELECT queries over dataframes.
+//! Its lexer and parser store tokens, select expressions, joins, arithmetic nodes, and boolean expression trees.
+//! `query_sql` executes against one `DataFrame`, while database variants resolve `FROM` and `JOIN` tables from `Database`.
+//! Parameter binding also lives here because `?` replacement and SQL literal escaping are part of query boundary safety.
+//! Projection evaluation stays here because aliases, arithmetic columns, and aggregate calls are SELECT semantics.
+//! WHERE, LIKE, IN, HAVING, ORDER BY, LIMIT, and OFFSET execution also belong here as statement-level behavior.
+//! Group execution is implemented here because grouped SELECT lists and HAVING filters depend on parsed SQL structure.
+//! Join application stays here because database queries must merge tables before the rest of statement execution runs.
+//! `explain_sql` is local because the plan summary reflects parser state, clause presence, and selected projections.
+//! Aggregate helpers also stay here so COUNT, SUM, AVG, MIN, and MAX reuse one evaluation path for grouped summaries.
+//! LIKE wildcard matching and expression evaluation are local internals because they serve SQL semantics only.
+//! Open it when query grammar changes; frame storage, payload codecs, and deferred pipelines live in sibling owners.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame, Database};
 #[derive(Debug, Clone, PartialEq)]

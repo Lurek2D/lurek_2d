@@ -1,6 +1,7 @@
-//! Narrow-phase collision detection for tilemap movement using swept AABB-vs-AABB testing with separating-axis theorem implementation.
-//! Computes continuous time-of-impact values in [0, 1) for moving rectangles against static tile geometry, enabling smooth sliding physics.
-//! Returns collision metadata including hit surface normal, contact point, and tile coordinates to support wall-sliding and obstacle interactions.
+//! Implements narrow-phase tilemap collision using swept AABB tests so moving rectangles detect continuous impact.
+//! Computes time of impact, contact point, tile coordinates, and hit normal for sliding and obstacle responses.
+//! Keeps collision math separate from general map storage so movement fixes stay local and auditable.
+//! Open this file when tile collision timing, normals, or contact metadata behaves incorrectly in movement code.
 
 use super::tilemap::SweepResult;
 use crate::math::{Rect, Vec2};

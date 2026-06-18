@@ -1,4 +1,4 @@
-//! `src/lua_api/automation_api.rs` registers the `lurek.automation` Lua boundary for automation behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.automation` Lua API for automation data bridging, vector decoding, and runtime controls.
 
 use super::SharedState;
 use crate::automation::{Action, Script, Simulator, Step};

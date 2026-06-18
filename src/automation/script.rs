@@ -1,7 +1,8 @@
-//! Implements automation script storage as named, time-ordered step sequences for deterministic replay. `automation/script` delivers the script implementation for the automation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Parses TOML definitions into typed runtime steps with metadata and validated field extraction. The file owns or coordinates data contracts including `Script`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Expands repeat directives into concrete scheduled steps at computed temporal offsets. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `with_description`, `step_count`, `set_step_limit`, `get_step_limit`, `from_toml` stays attached to the local data model and invariants.
-//! Enforces bounded script size to protect playback and memory behavior under large inputs. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/automation/script.rs` owns automation script storage and TOML parsing into named, time-sorted step sequences.
+//! It defines `Script`, expands repeat directives, sorts steps by time, and enforces bounded script size in one owner.
+//! Metadata loading and field extraction from TOML also live here, keeping authoring rules close to stored script data.
+//! This file is the boundary for authored automation content before runtime playback policy is applied by the simulator.
+//! Read this file when script import rules, repeat expansion, or step-cap enforcement for automation content must change.
 
 use super::{Action, Step};
 /// Maximum number of steps retained in a single automation script.

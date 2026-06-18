@@ -1,7 +1,8 @@
-//! Provides the runtime font registry that stores, resolves, and returns loaded font handles by name. `font/registry` delivers the lookup registry and handle ownership for the font subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Maps style and size metadata onto cached font assets for consistent lookup semantics. The file owns or coordinates data contracts including `FontStyle`, `FontHandle`, `FontRegistry`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports registration and replacement flows while maintaining stable handle-based access patterns. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `register`, `get`, `get_by_name`, `default_font`, `list_fonts` stays attached to the local data model and invariants.
-//! Centralizes font ownership so rendering systems consume one authoritative source of text assets. Runtime integration reaches sibling engine areas through crate modules `font`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/font/registry.rs` owns runtime font registration, handle allocation, and lookup by name for loaded bitmap fonts.
+//! It defines `FontStyle`, `FontHandle`, and `FontRegistry`, keeping public font identity separate from raw font storage.
+//! Replacement, default-font selection, and registration order live here so text consumers share one asset authority.
+//! Open this file when font ownership, lookup semantics, or public handle metadata for runtime text assets must change.
+//! Neighboring systems should treat this file as the font boundary for asset access, not the place for shaping or metrics.
 
 use std::collections::HashMap;
 

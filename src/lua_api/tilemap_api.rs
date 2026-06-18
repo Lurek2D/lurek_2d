@@ -1,4 +1,4 @@
-//! `src/lua_api/tilemap_api.rs` registers the `lurek.tilemap` Lua boundary for tilemap behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.tilemap` Lua API for tilemap userdata, imports, one-based coordinates, and validation.
 
 use super::SharedState;
 use crate::math::Rect;

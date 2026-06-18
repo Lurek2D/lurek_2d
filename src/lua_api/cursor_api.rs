@@ -1,4 +1,4 @@
-//! Lua bindings for `lurek.cursor`. `src/lua_api/cursor_api.rs` registers the `lurek.cursor` Lua boundary for cursor behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.cursor` Lua API for cursor userdata, window cursor control, and pointer-related helpers.
 
 use super::SharedState;
 use crate::cursor::{

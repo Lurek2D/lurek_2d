@@ -1,7 +1,8 @@
-//! Implements waypoint-driven camera path interpolation for scripted movement and guided shots. `camera/path` delivers the path implementation for the camera subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides zoom tweening with easing control for smooth focal transitions over fixed durations. The file owns or coordinates data contracts including `CameraPath`, `CameraTweenEasing`, `CameraZoomTween`, `ZoomTween`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Tracks segment progress across multi-point paths to produce continuous positional interpolation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `progress`, `reset`, `new_with_easing` stays attached to the local data model and invariants.
-//! Supports reusable easing selection so authored camera motion keeps consistent temporal character. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/camera/path.rs` owns waypoint paths and zoom tweens used for scripted camera travel and focal transitions.
+//! It defines `CameraPath`, `CameraTweenEasing`, `CameraZoomTween`, and `ZoomTween`, keeping timed interpolation together.
+//! Waypoint progression, segment interpolation, tween progress, and easing-aware zoom updates all live in this file.
+//! This is the path-and-tween boundary for authored camera motion, while base camera transforms and effects stay elsewhere.
+//! Read it when path timing, easing selection, or scripted movement interpolation behavior needs to change.
 
 use super::types::CameraEasing;
 

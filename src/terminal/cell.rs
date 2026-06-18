@@ -1,6 +1,6 @@
-//! This file defines the atomic cell unit that the terminal grid stores for every visible character position. `terminal/cell` delivers the cell implementation for the terminal subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It packages glyph and color state into one compact record so the rest of the terminal can treat the screen as a regular matrix.
-//! The type is the smallest visible building block of the terminal subsystem. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! This file owns `TCell`, the atomic terminal grid record that stores one glyph plus foreground and background colors.
+//! It also defines the default glyph and RGBA constants used when terminal surfaces reset or allocate fresh cells.
+//! Open it when per-cell storage changes; terminal state, widgets, and render composition live in sibling files.
 
 /// Default foreground color: opaque white [r, g, b, a].
 pub(crate) const DEFAULT_FG: [f32; 4] = [1.0, 1.0, 1.0, 1.0];

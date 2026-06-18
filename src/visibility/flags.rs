@@ -1,6 +1,7 @@
-//! This file provides bitflag storage for per-region visibility-related feature markers. `visibility/flags` delivers the flags implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It encodes what information layers are present or unlocked for each map region. The file owns or coordinates data contracts including `VisibilityFlags`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It supports gated reveal logic by combining flag checks with discovery progression rules. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set`, `has`, `union`, `intersect`, `count` stays attached to the local data model and invariants.
+//! This file owns `VisibilityFlags`, the per-region bitfield used to mark which information layers are currently revealed.
+//! It supports custom terrain, unit, building, or game-specific reveal channels through a compact `u64` wrapper.
+//! Helpers set, test, merge, intersect, and count bits so reveal systems can evolve information without new enums.
+//! Open this file when reveal-flag semantics change; grid storage and fog state live in sibling modules.
 
 /// Bitfield flags controlling what is visible per region.
 /// Games define their own flag semantics (e.g., bit 0 = terrain, bit 1 = units).

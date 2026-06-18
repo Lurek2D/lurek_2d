@@ -1,8 +1,10 @@
-//! Comprehensive easing function library supporting in/out/in-out variants across quadratic, cubic, quartic, sine, exponential, and elastic motion families.
-//! Implements normalized [0,1] input parameter curves producing normalized output ranges enabling composition into tween and animation systems.
-//! Handles edge clamping for exponential and elastic curves preventing invalid outputs at boundaries while supporting smooth S-curve acceleration patterns.
-//! Provides linear identity passthrough and symmetric in-out variants enabling data-driven animation selection from configuration files.
-//! Standardizes easing semantics across animation interpolation enabling consistent motion timing and response characteristics in gameplay animations.
+//! This file owns the library of named easing curves used to shape normalized animation and interpolation timing.
+//! Linear, polynomial, sine, exponential, elastic, bounce, back, and smooth-step families all live in one owner.
+//! Boundary clamping for exponential and elastic variants stays here because endpoint correctness is easing semantics.
+//! `apply`, `easing_names`, and `resolve_easing_fn` also belong here since name lookup is part of the public surface.
+//! The CSS-style `cubic_bezier` helper remains local because it evaluates one more timing curve under the same contract.
+//! This file provides pure scalar mappings only, not tween state, animation tracks, or scene-update orchestration.
+//! Open it when motion-curve semantics change; path geometry and transforms live in sibling math modules.
 
 use std::f32::consts::PI;
 

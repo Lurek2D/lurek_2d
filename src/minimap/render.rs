@@ -1,8 +1,9 @@
-//! Converts minimap state into an ordered render command stream. `minimap/render` delivers the rendering adapter and draw-command integration for the minimap subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Draws terrain, fog, overlays, objects, pings, markers, and viewport guides. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Projects grid coordinates through the minimap transform into screen space. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
-//! Keeps the drawing order stable so HUD elements stack predictably. Runtime integration reaches sibling engine areas through crate modules `render`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supports zoom-dependent and animated presentation without mutating the world model. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/minimap/render.rs` converts minimap state into ordered `RenderCommand` batches for HUD drawing.
+//! It walks visible cells, fog, overlays, paths, viewport guides, pings, objects, and markers without mutating model state.
+//! Screen projection from minimap grid space also happens here, using `Minimap` view settings to place each primitive.
+//! This file owns draw ordering, fallback shapes, and icon emission so renderer integration stays out of state storage.
+//! Read it when minimap visuals stack incorrectly, cell colors draw wrong, or HUD command generation needs new behavior.
+//! Province imports and raycaster extraction stay elsewhere; this file only turns minimap state into rendering.
 
 use super::minimap::Minimap;
 use super::types::{FogLevel, OverlayShape};

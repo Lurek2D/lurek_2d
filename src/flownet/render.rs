@@ -1,6 +1,7 @@
-//! Provides debug render-command generation that visualizes flownet topology as node-edge diagrams. `flownet/render` delivers the rendering adapter and draw-command integration for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Lays out nodes on a circular frame and draws links with deterministic mapping. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Colors nodes by type to expose structural roles at a glance during inspection. Public callable behavior is centered on no named public items, while method-level behavior such as `generate_render_commands` stays attached to the local data model and invariants.
+//! This file owns the debug render adapter that turns flownet topology into generic `RenderCommand` previews.
+//! It lays nodes out on a deterministic circle, colors them by type, and draws visible links for quick inspection.
+//! No graph mutation lives here; it is a read-only bridge from `Graph` storage into the engine renderer surface.
+//! Open it when flownet visualization changes; simulation, routing, and topology ownership stay in sibling files.
 
 use crate::flownet::core::Graph;
 use crate::render::renderer::{DrawMode, RenderCommand};

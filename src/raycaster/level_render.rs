@@ -1,7 +1,8 @@
-//! This file handles the column-wise drawing logic for stacked raycaster levels where openings can reveal space above or below the current slice.
-//! It decides which neighboring cells remain visible through holes so multi-level layouts feel connected instead of collapsing into isolated layers.
-//! Framebuffer output is written directly in software, with floor and ceiling sampling tuned for readable textured planes in narrow screen columns.
-//! The file therefore acts as the specialized draw path for vertical level relationships that are more complex than the flat scene builder alone.
+//! This file owns hole-visibility helpers and rendering config for stacked raycaster levels with openings.
+//! It defines `TileHighlight` and `LevelRenderConfig`, then computes which holed cells stay visible from camera.
+//! The visibility pass filters floor openings by distance so adjacent levels can render through holes efficiently.
+//! These types support software column rendering paths where above and below slices need per-cell decisions.
+//! Open this file when multi-level reveal rules change; generic ray hits and projection math belong to siblings.
 
 /// Wireframe highlight configuration for a tile.
 #[derive(Debug, Clone, Copy)]

@@ -1,8 +1,10 @@
-//! Implements scene-level light management for `Light2D` and occluder collections keyed by stable handles. `light/light_world` delivers the light world implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports creation, removal, lookup, and bulk mutation of lighting entities across runtime updates. The file owns or coordinates data contracts including `LightWorld`, `NormalMapLightHint`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Applies group-based operations for coordinated enable, color, and intensity adjustments. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_light`, `add_occluder`, `remove_light`, `remove_occluder`, `get_light`, and 17 more stays attached to the local data model and invariants.
-//! Advances active flicker states efficiently to animate selected lights over time. Runtime integration reaches sibling engine areas through crate modules `color`, `light`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Exposes renderer-oriented snapshots such as ambient terms and directional data aggregates. External integration uses `slotmap`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `LightWorld`, the scene-level container for registered lights, occluders, ambient color, and limits.
+//! It stores slotmaps, flicker indexes, and ambient settings, then exposes stable keys for runtime light ownership.
+//! Mutation helpers add, remove, query, group-edit, clear, and count lights or occluders without leaking storage details.
+//! Flicker stepping and reindexing live here so animated lights can advance efficiently across the whole scene.
+//! Renderer-facing helpers emit debug images, ambient color hints, directional tuples, and normal-map light snapshots.
+//! This file is the owner for scene lighting orchestration rather than for one light's individual option semantics.
+//! Open it when collection behavior changes; per-light data definitions and shadow geometry live in sibling files.
 
 use crate::color::Color;
 use crate::light::light2d::Light2D;

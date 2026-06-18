@@ -1,4 +1,4 @@
-//! Registers the public `lurek.repl` API for creating headless Lua REPL sessions. `src/lua_api/repl_api.rs` registers the `lurek.repl` Lua boundary for repl behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.repl` Lua API for headless REPL sessions, REPL userdata, and script-driven evaluation.
 
 use crate::repl::ReplSession;
 use crate::runtime::SharedState;

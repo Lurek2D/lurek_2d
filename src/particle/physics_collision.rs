@@ -1,4 +1,6 @@
-//! Bounce particles off rapier colliders using AABB overlap probes. `particle/physics_collision` delivers the physics collision implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns the simple particle-to-world bounce bridge that probes Rapier AABBs and reflects particle velocities.
+//! It reads `ParticleSystem` positions plus the physics `World`, then applies restitution and a small hit separation step.
+//! Open it when particle/world collision policy changes; emitter integration and general physics ownership live elsewhere.
 
 use crate::particle::ParticleSystem;
 use crate::physics::World;

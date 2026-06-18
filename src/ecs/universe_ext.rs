@@ -1,8 +1,9 @@
-//! Provides extended Universe operations for advanced queries, bulk spawning, and table-based state exchange. `ecs/universe_ext` delivers the universe ext implementation for the ecs subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Implements inclusion and exclusion query paths that support richer component-selection workflows. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports callback-oriented multi-component iteration for efficient script-side data access. Public callable behavior is centered on no named public items, while method-level behavior such as `query_not`, `query_multi`, `spawn_bulk`, `serialize_to_table`, `deserialize_from_table` stays attached to the local data model and invariants.
-//! Enables batch entity creation from blueprints with optional per-instance override payloads. Runtime integration reaches sibling engine areas through crate modules `ecs`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Serializes and deserializes complete world snapshots including hierarchy and tag structures. External integration uses `super`, `mlua`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file extends `Universe` with higher-level queries, bulk blueprint spawning, and table snapshot exchange.
+//! `query_not` and `query_multi` build on core component selection for exclusions and callback-based iteration.
+//! `spawn_bulk` clones optional overrides per entity so repeated blueprint spawns do not share Lua tables.
+//! Snapshot helpers serialize entities, components, tags, layers, bitmap tags, and hierarchy into Lua tables.
+//! Deserialization rebuilds live state, stores, indexes, and parent-child links from one captured snapshot.
+//! Open it when ECS import/export or batch-spawn semantics change; core storage lives in `universe.rs`.
 
 use super::Universe;
 use crate::ecs::lua_table::deep_copy_table;

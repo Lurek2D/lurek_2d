@@ -1,4 +1,6 @@
-//! Defines cursor-system configuration values loaded from project settings and startup defaults. `cursor/config` delivers the configuration schema and defaults for the cursor subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! `src/cursor/config.rs` owns the shared configuration schema for enabling cursor trail, zoom, rules, and idle hiding.
+//! It defines `CursorConfig`, keeping top-level cursor feature toggles and idle timeout settings in one small owner.
+//! Read this file when startup defaults or project-level cursor feature flags need to change for the runtime.
 
 /// Global cursor system configuration.
 #[derive(Debug, Clone)]

@@ -1,6 +1,6 @@
-//! This file defines the slot concept that binds visible attachments to bones without making the bone itself a rendering record.
-//! Slots carry appearance and ordering intent so one skeleton can swap visuals or reorder layers without changing its transform hierarchy.
-//! The type is the visual attachment bridge between pose evaluation and rendered character parts. Public callable behavior is centered on no named public items, while method-level behavior such as `new` stays attached to the local data model and invariants.
+//! This file owns `Slot`, the attachment record that links drawable content and tint state to one skeleton bone.
+//! It stores slot identity, bone index, tint channels, optional attachment name, and draw-order intent for the rig.
+//! Open this file when attachment payloads change; bone transforms and skeleton playback coordination live in siblings.
 
 /// Attachment point on a bone with colour tint and optional texture attachment name.
 #[derive(Debug, Clone)]

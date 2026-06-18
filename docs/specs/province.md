@@ -19,35 +19,19 @@
 
 ## Summary
 
-- The province module manages irregular region maps as semantic territories rather than tile cells.
-- It provides authoritative province identity, topology, style, and metadata state.
-- PNG color-map import converts authored raster maps into province ownership grids.
-- Marker sanitation handles capital and label helper pixels during import.
-- CSV/TOML integration maps external metadata into runtime province records.
-- Geometry extraction converts ownership maps into spans, borders, and contour products.
-- Adjacency graph construction provides stable province-neighbor topology.
-- The registry is the source of truth for mutable province runtime state.
-- Revision counters and change logs support incremental synchronization flows.
-- Map modes project the same geometry into different semantic visual views.
-- Pair-specific border overrides support relationship-aware edge styling.
-- Distance fields encode inward depth from borders for shaders and heuristics.
-- Label anchoring uses geometric centers derived from actual region coverage.
-- Routing utilities provide BFS and weighted path search over adjacency.
-- Connected-component analysis supports strategic map diagnostics.
-- Per-province properties support extensible game-specific metadata.
-- Cache layers persist geometry products for fast reload in large maps.
-- GPU bridge/upload paths convert state into shader-ready texture/buffer formats.
-- View transforms support robust screen-map coordinate conversion.
-- Render integration supports culling, highlighting, labels, and capitals.
-- The module owns province map state and topology, not strategy gameplay policy.
-- It collaborates with image, render, and runtime through explicit boundaries.
-- Invariants emphasize stable identity and deterministic topology reconstruction.
-- It is the canonical runtime substrate for region-based strategy features.
-- Overall, province turns authored map art into queryable and renderable territorial data.
-- It balances import flexibility with strict runtime state ownership.
-- The module supports both game presentation and tooling workflows.
+- The `province` module is the engine's territory-region system for users who want named areas, borders, ownership, routing, and province-like gameplay state to behave as one native feature.
+- Topology, registries, imports, labels, caches, route helpers, property layers, render bridges, and view transforms all matter here because a province map is more than a color fill; it is a structured graph of regions with state and presentation rules.
+- Province identity is central from the user perspective. Scripts typically need to ask which region an area belongs to, how regions connect, what properties they carry, and how those answers change over time.
+- Ownership, labels, borders, and view helpers make the module useful for strategy maps, campaign layers, regional simulations, and UI-heavy territory systems where territory data must be both playable and readable.
+- Import and cache support show that the module is designed for large-world workflows rather than toy examples. Province data often comes from authored assets or preprocessing, then has to be reused efficiently during live play.
+- Routing and adjacency behavior extend the feature from passive map metadata into active game logic, because movement, logistics, diplomacy, or campaign progression often depend on region-to-region relationships.
+- GPU-facing upload paths and rendering support matter because province state often needs to be redrawn at scale while still reflecting dynamic changes such as ownership or overlays.
+- Property layers and events make the module valuable as a simulation substrate. A region can carry more than one identity or visual trait, and the rest of the game can react when those values change.
+- Picking, highlighting, and view-transform helpers are important for strategy and map-heavy tools because province systems often need direct user interaction, not only passive rendering or query-by-id access.
+- The module is therefore useful both as a gameplay authority for territory logic and as an interaction surface for map UIs, overlays, and editor-style region inspection.
+- Cached lookup and region-scale rendering paths matter because province-heavy games often operate over large maps where repeated ownership, border, and adjacency queries must stay cheap and visually synchronized.
+- Read `province` as the territory authority of the engine. Other systems may navigate, draw, or summarize provinces, but this module decides how provinces are represented, connected, labeled, updated, and queried.
 
-This module primarily collaborates with `image`, `render`, `runtime`. Its responsibility should stay inside the `Edge/Integration` group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -59,136 +43,157 @@ This module primarily collaborates with `image`, `render`, `runtime`. Its respon
 
 ### border_index.rs
 
-- Border-pair indexing layer that turns neighboring province relationships into a stable per-pixel border identifier map. `province/border_index` delivers the border index implementation for the province subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- The file scans province ownership changes across the grid and assigns compact ids that higher rendering paths can treat as semantic border channels instead of raw color differences.
-- Stable pair ids matter because styled borders need consistent addressing across shading, upload, and change-driven rebuilds.
-- Optional dilation broadens those indexed borders so thick outlines can be expressed without re-deriving topology at draw time.
+- Builds a province-pair lookup from the ownership grid so render and gameplay systems can query shared borders quickly.
+- Owns ProvinceBorderIndex storage, pair-id assignment, and the dilation pass that widens border pixels by style hints.
+- Provides the boundary between raw province occupancy data and later GPU or renderer code that needs stable border IDs.
+- This file is the right owner when border pairing, style-aware expansion, or pair lookup invariants need adjustment.
+- Neighboring changes usually involve ProvinceGrid extraction, registry border styles, and GPU bridge packing formats.
 
 ### cache.rs
 
-- Geometry cache for province maps that would otherwise need expensive pixel rescans every time spans and border segments are needed again.
-- The file captures a registry snapshot into a portable binary form so precomputed geometry can survive reloads and avoid repeating extraction work.
-- Versioned encoding keeps the cache format explicit and safe to evolve alongside the runtime representation. Public callable behavior is centered on no named public items, while method-level behavior such as `from_registry`, `encode`, `decode` stays attached to the local data model and invariants.
-- Functionally this file delivers fast reloadable province geometry persistence for large map workflows. Runtime integration reaches sibling engine areas through crate modules `province`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Persists compact province geometry blobs so expensive span and border extraction can be reused across repeated loads.
+- Owns ProvinceGeometryCache records plus binary encode and decode helpers for span lists and border segment payloads.
+- Provides a storage boundary between derived province shapes and callers that want fast startup without recomputation.
+- Open this file when cache schema, geometry serialization, or compatibility rules for saved province artifacts change.
 
 ### distance_field.rs
 
-- Border-distance precompute for province pixels so later rendering and analysis code can reason about how deep a location sits inside its owning region.
-- The file starts from boundary cells and spreads inward with a multi-source traversal, producing a compact measure of interior distance without per-frame recomputation.
-- Keeping the result as a small field makes it practical for shading, stylization, and level-of-detail style logic. Public callable behavior is centered on `compute_distance_field`, `compute_distance_field_from_registry`, while method-level behavior such as `at` stays attached to the local data model and invariants.
-- The computation is map-wide and structural, which means it belongs here rather than in ad hoc rendering code. Runtime integration reaches sibling engine areas through crate modules `province`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Builds per-pixel distance maps from province borders so map overlays can reason about interior depth and edge falloff.
+- Owns ProvinceDistanceField dimensions, flat cell storage, and the multi-source BFS that propagates border distances.
+- Exposes constructors from raw province grids and registries, plus direct sampling helpers for downstream render logic.
+- This file marks the boundary between discrete province ownership data and continuous-looking distance queries.
+- Change this owner when border seed rules, traversal neighborhoods, or distance consumers in rendering need revision.
 
 ### events.rs
 
-- Province change and event vocabulary for describing what shifted in map state without forcing listeners to diff whole registry snapshots.
-- The file models fine-grained mutation records and higher-level events so Lua and engine code can react to province updates in a deliberate typed way.
-- It keeps visual state changes, style changes, and map-mode level notifications under one shared event language. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Functionally this file delivers the signaling surface for incremental province sync and reactive map behavior. Runtime integration reaches sibling engine areas through crate modules `province`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Defines province change payloads that describe what part of registry state moved so observers can react precisely.
+- Owns ProvinceChange variants and ProvinceEvent records carrying revision numbers for incremental update consumers.
+- Provides a narrow contract between registry mutation code and systems that mirror styles, labels, or border state.
+- Read this file when adding new observable province mutations or tightening the meaning of emitted change reasons.
 
 ### gpu_bridge.rs
 
-- GPU bridge for translating rich province registry state into tightly packed records suitable for direct shader consumption.
-- The file strips province visuals down to a deterministic binary layout so rendering can upload stable arrays rather than reinterpret high-level Rust structures on the fly.
-- Sorted record building keeps province ordering predictable across runs, which matters for synchronization and debugging.
-- Functionally this file delivers the structured handoff from province data ownership to GPU-ready style buffers. Runtime integration reaches sibling engine areas through crate modules `province`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- Maps province registry data into flat GPU-friendly records that shaders and upload code can consume without Rust state.
+- Owns ProvinceGpuRecord and BorderStyleGpuRecord layouts plus builders that normalize colors, flags, and style bits.
+- Provides the translation boundary between rich province metadata and tightly packed buffers for renderer-side lookup.
+- Use this file when GPU record shape, packing rules, or registry fields required by province shaders are changing.
 
 ### gpu_upload.rs
 
-- Province texture upload layer for moving grid-derived ids, border indices, and auxiliary fields from CPU memory into GPU-friendly texture resources.
-- The file standardizes texture shapes and formats so every upload path speaks the same low-level contract for province data.
-- Packing helpers keep byte layout rules centralized, which reduces the chance of subtle mismatches between generation code, upload code, and tests.
-- This is not generic rendering infrastructure but province-specific transfer logic shaped around the module's data products.
-- Keeping the upload details here lets registry and renderer code stay focused on map meaning instead of texture plumbing.
+- Creates province-related GPU textures so shaders can sample ownership, pair IDs, and distance fields by map pixel.
+- Owns upload helpers for R32Uint, R16Uint, and R8Unorm texture creation plus byte-packing for integer cell arrays.
+- Provides the renderer-facing resource boundary between CPU province structures and wgpu texture initialization calls.
+- This file is where texture dimensions, formats, and upload staging logic for province data are coordinated together.
+- Neighboring edits usually come from ProvinceGrid, ProvinceBorderIndex, or ProvinceDistanceField layout adjustments.
+- Open this owner when a shader needs new province lookup textures or existing upload formats stop matching consumers.
 
 ### import.rs
 
-- Province import pipeline for turning external cartography assets into live engine-native registry data without manual per-province construction.
-- The file reads color maps, metadata tables, and optional structured definitions as one coordinated ingestion process instead of a loose collection of converters.
-- Marker sanitization is part of that process because capital and label hint pixels must be interpreted semantically and then repaired back into ordinary province ownership.
-- Neighbor search logic resolves ambiguous marker ownership from surrounding color context, which is essential for real authored maps that encode helper pixels inside regions.
-- CSV and TOML parsing bind visual source data to game ids, names, terrain, and other metadata expected by the runtime registry.
-- Deterministic color derivation and label extraction keep imported provinces visually usable even when the source assets provide only partial semantic structure.
+- Implements the province metadata import pipeline that turns marker art, CSV tables, and TOML into registry state.
+- Owns marker sanitization rules, metadata import options, and summaries describing skipped rows or inferred values.
+- Parses RGB to game-id mappings, province property tables, and label or capital hints before mutating the registry.
+- Derives political colors and province attributes from imported records so gameplay data attaches to painted regions.
+- Provides the ingestion boundary between external authoring assets and the authoritative ProvinceRegistry contents.
+- This file is the right place for changes to import validation, marker cleanup, or asset-to-registry field mapping.
+- Neighboring systems include image loading, registry mutators, and province labels that consume imported metadata.
+- Open this owner when province authoring files change format or when import diagnostics need more exact coverage.
 
 ### labels.rs
 
-- Label-anchor helper for finding meaningful province centers from span geometry rather than relying on arbitrary bounding-box guesses.
+- This file owns centroid calculation for province span data so label anchors come from occupied pixels.
+- It accumulates weighted x and y sums per province id and ignores empty or zero-width spans during reduction.
+- Open this file when province label anchor math changes; rendering and routing logic live in sibling owners.
 
 ### map_modes.rs
 
-- Map-mode configuration layer for province rendering where the same geometry must support multiple semantic views such as political, terrain, or visibility overlays.
-- The file treats each mode as authored data registered at runtime, allowing game code to decide which province property should drive visible color and presentation.
-- That indirection keeps the renderer generic while still letting projects define radically different strategic lenses over the same province set.
-- Mode lookup and color resolution live here so rendering code can ask for final style intent instead of interpreting per-mode config itself.
+- Stores province map-mode definitions that decide how fills are colored when the renderer asks for thematic overlays.
+- Owns MapModeConfig and MapModeRegistry data, including fill-color lookup rules and fallback behavior per province.
+- Provides the styling boundary between raw province attributes and render-time color selection for alternate views.
+- This file matters when new map modes, fallback color semantics, or province-style integration rules are added.
+- Neighboring changes usually involve ProvinceStyle fields, registry storage, and renderer mode selection logic.
 
 ### mod.rs
 
-- Province runtime module for irregular region maps that need authoritative state, import tooling, geometry extraction, GPU preparation, and on-screen rendering in one connected system.
-- It treats provinces as semantic map entities rather than tilemap cells, combining topology, styling, labels, capitals, and change tracking into a single map stack.
-- The module also owns the bridges that move province data from imported assets through cached geometry and into renderable outputs.
-- Functionally this file is the high-level entry point for province-based cartography, visualization, and region-centric gameplay support.
-- `province/mod` is the province module index, declaring `border_index`, `cache`, `distance_field`, `events`, `gpu_bridge`, and 12 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/province/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `province_grid::{AdjacencyPair, ProvinceGrid, ProvinceShapeCacheEntry}`, `events::{ProvinceChange, ProvinceEvent}`, `import::{ import_metadata_from_files, sanitize_marked_png, MarkerSanitizeOptions, MarkerSanitizeSummary, ProvinceMetadataImportOptions, ProvinceMetadataImportSummary, }`, `properties::ProvinceProperties`, and 3 more centralized for the province subsystem.
+- Exports the province subsystem surface that groups grid extraction, registry state, rendering, import, and helpers.
+- Acts as the navigation entry for province ownership, borders, labels, map modes, and GPU support modules below.
+- Keeps the module boundary explicit so callers can find whether a province concern belongs to data, import, or draw.
+- Open this file when adding or retiring province submodules or when the public organization of province code shifts.
+- Neighboring work usually spans ProvinceRegistry, ProvinceGrid, render generation, and metadata import pipelines.
+- The exported set here defines which province owners are considered part of the supported internal engine surface.
+- Agents should start here when tracing province features because it reveals the authoritative file split by concern.
+- This file stays thin by contract, so substantive province behavior belongs in the concrete owners it re-exports.
 
 ### properties.rs
 
-- Per-province property store for game-defined metadata that should live beside map identity without hard-coding economy or strategy logic into the engine core.
-- The file gives each province a flexible typed key-value table so scripts can attach stats, ownership signals, or gameplay annotations while keeping storage centralized.
-- Serialization support means those values can round-trip through save flows without custom glue for every separate property family.
-- Functionally this file delivers the extensible metadata layer that makes the province runtime useful beyond pure rendering.
+- Stores extensible per-province metadata so gameplay and rendering code can attach numeric, text, and flag values.
+- Owns ProvinceProperties maps for numbers, strings, and booleans plus typed setters and lookups for those stores.
+- Provides a lightweight attribute boundary between fixed registry fields and project-specific province annotations.
+- Open this file when province property typing, persistence expectations, or attribute access patterns need changes.
 
 ### province_grid.rs
 
-- Province-grid extraction engine for converting color-coded map imagery into discrete province ids and the geometric structures that later systems depend on.
-- The file begins at pixel level, assigning ownership by unique source colors and preserving reverse lookup between ids and their originating map colors.
-- From that raw ownership grid it derives adjacency relationships, which are the topological backbone for province routing and border semantics.
-- Span extraction turns irregular filled regions into horizontal runs that are much cheaper to render and analyze than full per-pixel scans.
-- Border segment generation and polygon tracing add shape-aware outputs suitable for outlines, hit testing, and geometry-oriented tooling.
-- Simplification keeps traced contours readable and compact instead of mirroring every staircase artifact from the raster source.
+- Extracts province ownership from color images and derives spans, adjacencies, borders, and polygon outlines.
+- Owns ProvinceGrid cell storage, color-to-id mappings, adjacency tracking, and cached geometric shape products.
+- Provides constructors from images and files, direct cell lookup, province counts, and color recovery helpers.
+- Builds province spans and border segments that later feed registries, caches, render generation, and labels.
+- Traces polygon loops from directed border edges, then simplifies them for downstream consumers that need shapes.
+- This file is the algorithmic owner for converting painted province maps into structured topology and geometry.
+- Neighboring changes usually involve import image assumptions, border indexing, registry hydration, and caching.
+- Open this owner when province extraction correctness, polygon quality, or adjacency detection needs adjustment.
+- It is the right file for shape cache invariants because no sibling module owns the raw pixel-to-province pass.
 
 ### registry.rs
 
-- Authoritative province registry that holds the full living state of a province map, from region identity and geometry to style, labels, and incremental change history.
-- The file is the module's main source of truth, joining pixel-derived structure with higher-level metadata such as political color, terrain, fog, visibility, and custom attributes.
-- Fast lookup paths matter here because gameplay, rendering, and tools all need to move quickly between coordinates, province ids, and region records.
-- Adjacency ownership is stored as first-class topology rather than recomputed on demand, which keeps neighborhood and border reasoning efficient and consistent.
-- Capital markers, label baselines, and province text live alongside style so visual presentation remains attached to the same province identity that game logic uses.
-- Monotonic revisions and ordered change logs make the registry incrementally observable, which is important for sync, UI refresh, and Lua-facing event delivery.
+- Owns the authoritative mutable province model that centralizes ids, geometry, styles, labels, and change tracking.
+- Stores province records, border style tables, map modes, adjacency data, and per-province spans or bounds together.
+- Builds registry state from ProvinceGrid inputs and then exposes lookup, mutation, and revision-aware event helpers.
+- Provides the subsystem boundary where imported metadata and gameplay edits become durable province state changes.
+- Tracks capitals, label placement, fog, terrain, ownership colors, custom attrs, and border presentation settings.
+- Emits change log entries so renderers or tooling can react incrementally instead of rescanning the whole registry.
+- Neighboring systems include import, rendering, routing, map modes, and GPU bridges that consume registry records.
+- Open this file whenever province state semantics, mutation APIs, or revision contracts need coordinated updates.
 
 ### render.rs
 
-- Province renderer for turning abstract registry state into concrete draw commands that express political regions, labels, capitals, and border semantics on screen.
-- The file works from cached province geometry and active map-mode policy so the same province data can be projected into different strategic views without rebuilding the map model.
-- Viewport culling keeps large maps practical by limiting work to the currently visible window instead of brute-forcing every province each frame.
-- Fill generation based on span geometry gives irregular regions a raster-efficient rendering path that still respects per-province styling.
-- Border drawing layers additional meaning through type configs and pair-specific overrides, making the edges between provinces visually informative rather than decorative only.
-- Capitals and labels add orientation and identity, keeping the renderer tied to map readability as well as raw color fill.
+- Generates province render commands from registry state so the map can draw fills, borders, labels, and overlays.
+- Owns ProvinceRenderOptions, zoom-mode interpretation, viewport culling, and helper rules for visible border output.
+- Converts province spans, styles, capitals, roads, labels, and selection state into ordered RenderCommand batches.
+- Provides the presentation boundary between authoritative province data and the lower renderer command stream.
+- Encodes how fog, visibility, hover, border types, and level-of-detail choices alter what the province map emits.
+- Neighboring changes usually involve ProvinceRegistry fields, map mode colors, and render command capabilities.
+- Open this owner when visual province behavior changes, especially if command ordering or LOD rules need revision.
+- This file is where province-specific drawing policy lives instead of the generic renderer or data registry layers.
 
 ### routing.rs
 
-- Province-routing helper layer for asking strategic map questions about reachability, shortest paths, and isolated clusters across province adjacencies.
-- The file offers both unweighted and weighted traversal styles so games can move from simple neighbor hops to cost-aware movement without swapping data models.
-- Connectivity and component helpers make the map graph useful for analysis, not just for single-route requests. Public callable behavior is centered on `build_adjacency_map`, `find_route_bfs`, `find_route_dijkstra`, `connected_components`, `is_connected`, and 2 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- These routines stay separate from the core registry so graph algorithms do not crowd the state store itself. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Functionally this file delivers travel and connectivity reasoning over the province adjacency network. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- Computes province-level traversal data so gameplay systems can ask for paths, components, and neighbor aggregates.
+- Owns adjacency-map builders plus BFS, Dijkstra, connected-component, and isolation helpers over province graphs.
+- Provides the query boundary between raw neighbor relationships and higher-level movement or analytics operations.
+- Also aggregates owner-tagged values across province groups, keeping route analysis close to topology utilities.
+- Use this file when province path cost rules, graph traversal outputs, or connectivity helpers need adjustment.
+- Neighboring edits usually involve ProvinceRegistry adjacency data and gameplay systems that consume path results.
 
 ### topology.rs
 
-- Province adjacency graph for representing which regions touch each other once the raster map has been decoded into province ids.
-- The file keeps neighbor lists sorted and deduplicated so adjacency queries remain compact, deterministic, and cheap to inspect.
-- Rebuild logic turns raw province pairs into a clean undirected graph while filtering out meaningless self-links. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `rebuild_from_pairs`, `neighbors_of`, `is_adjacent`, `province_ids`, `adjacency_pairs` stays attached to the local data model and invariants.
+- Normalizes province adjacency pairs into a stable undirected graph so higher-level systems can traverse neighbors.
+- Owns ProvinceGraph storage and the rebuild pass that sorts, deduplicates, and mirrors province connections safely.
+- Provides the low-level topology boundary between raw adjacency detection and consumers that need graph queries.
+- Read this owner when graph invariants, pair normalization, or neighbor list construction rules are changing.
 
 ### types.rs
 
-- Core province domain types for expressing identity, border semantics, style, and snapshot state with names that match the map system's real concepts.
-- The file gives province ids stronger meaning than plain integers while also defining the compact style and border structures that other province layers share.
-- Snapshot forms matter because callers often need a stable read-only view of province state without borrowing the full mutable registry.
-- By concentrating these definitions here, the module keeps shared province vocabulary consistent across import, rendering, routing, and Lua exposure.
+- Defines shared province value types used across registry, rendering, routing, and import code paths together.
+- Owns identifiers, border configuration structs, style payloads, and lightweight province snapshot structures.
+- Provides the data contract boundary for province styling and border-pair semantics that many files depend on.
+- This file is the right owner for shape-independent province schema changes that should stay reusable everywhere.
+- Neighboring work often touches registry mutation APIs, renderer color logic, and border indexing expectations.
 
 ### view_transform.rs
 
-- Pure view-transform helpers for moving between screen space, map space, and province-cell space without tying camera math to registry ownership.
-- The file handles fitting, anchored zoom, and coordinate conversion in a way that stays numerically safe even when dimensions or inputs are degenerate.
-- Keeping these transforms pure makes them easy to reuse from rendering, picking, and tooling without hidden mutable state.
+- Provides province map camera math for fitting, panning, zoom anchoring, and screen-to-map coordinate conversion.
+- Owns stateless helpers that convert between screen positions, map space, and province cell coordinates safely.
+- Forms the boundary between generic input or viewport handling and province-specific grid-space interactions.
+- Open this file when map interaction math, zoom focus behavior, or screen-to-cell selection rules must change.
 
 
 

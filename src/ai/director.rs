@@ -1,8 +1,9 @@
-//! Models encounter tempo as a cyclic pressure waveform that alternates escalation and release. `ai/director` delivers the director implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Converts accumulated tension into phase shifts that shape danger, reward, and ambient load. The file owns or coordinates data contracts including `DirectorPhase`, `DirectorConfig`, `AIDirector`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Keeps pacing legible by using bounded transitions instead of abrupt binary difficulty jumps. Public callable behavior is centered on no named public items, while method-level behavior such as `as_str`, `new`, `with_config`, `tension`, `phase`, `phase_str`, and 9 more stays attached to the local data model and invariants.
-//! Exposes intensity signals that other systems can follow to stay synchronized with scenario mood. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Preserves long-session flow by balancing peaks against recovery windows in deterministic cadence. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Owns the encounter pacing director that turns accumulated tension into build-up, peak, sustain, and relief phases.
+//! Stores tuning thresholds, decay rates, event counts, sustain timers, and phase-specific spawn or loot multipliers.
+//! Updates a bounded tension waveform so other systems can read ambient intensity and pacing pressure each frame.
+//! Provides the scenario-mood boundary between raw gameplay events and systemic intensity signals for AI content.
+//! This file matters when pacing swings feel erratic or when reward and spawn factors drift out of phase together.
+//! Open this owner for encounter cadence fixes before changing local combat or navigation logic in sibling modules.
 
 /// Director pacing phase. This item is part of the public API.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

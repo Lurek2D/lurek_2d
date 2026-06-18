@@ -17,28 +17,17 @@
 
 ## Summary
 
-- This module gives users dynamic 2D lighting and shadow control for mood, readability, and gameplay signaling.
-- It supports point, spot, and directional light types with configurable intensity and color behavior.
-- Attenuation and falloff controls let teams tune how light fades across distance.
-- Blend modes support additive and subtractive composition for different visual styles.
-- Ambient controls provide scene-wide baseline illumination.
-- Group operations allow bulk edits to sets of lights during state transitions.
-- Flicker and transition helpers support animated lighting effects without custom per-frame math.
-- Shadow casting uses polygon occluders for geometry-driven blocking behavior.
-- Shadow masks and receiver masks provide control over which objects interact with which lights.
-- Filter settings support quality/performance trade-offs for hard and softened shadows.
-- Normal-map hinting and volumetric-adjacent settings help integrate richer shading workflows.
-- Light-world APIs centralize creation, mutation, and cleanup of runtime light entities.
-- Preview-to-image utilities support debug and evidence workflows for visual validation.
-- The module is useful for stealth, atmosphere, navigation cues, and dramatic scene transitions.
-- For users, it turns lighting from static art into a controllable gameplay system.
-- It reduces custom lighting glue code while keeping behavior script-driven.
-- The practical result is faster lighting iteration and clearer visual feedback loops.
-- It also improves testability by exposing deterministic controls and introspection-friendly outputs.
-- Overall, users get a comprehensive 2D illumination toolkit integrated with runtime scripting.
-- This helps teams balance style, performance, and legibility in one place.
+- The `light` module is the engine's shared 2D lighting-data surface for users who need lights, occluders, shadows, and illumination behavior to remain structured before rendering.
+- It lets scripts reason about lighting as scene data instead of raw draw commands by grouping light types, falloff, attenuation, blend modes, occlusion, and shadow-related state in one model.
+- This matters because atmosphere, visibility, stealth cues, alarms, and scene readability often depend on several changing lights at once.
+- Flicker, ramps, fades, and other transitions are part of the contract because lighting is usually dynamic rather than fixed at load time.
+- Light-world organization matters too, since several systems may contribute lights and occluders to the same scene and still need one inspectable runtime authority.
+- Blend and attenuation semantics are especially important because they control not only whether a light exists, but how strongly it influences surrounding space and how several lights combine visually.
+- Occluder-aware behavior is equally important because lights only become useful for scene reasoning when blocking and shadow semantics are modeled alongside them.
+- This lets the same subsystem support both atmosphere and gameplay readability, since visibility cues often depend on how light is shaped by world geometry rather than on color alone.
+- `render` draws the final result, but `light` owns how 2D light entities, falloff, and occlusion semantics are represented together.
+- Read `light` as the owner of light definitions and light-world state inside the engine.
 
-This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its responsibility should stay inside the Platform Services group rather than absorb behavior owned by those neighbors.
 
 ## Imports
 
@@ -51,72 +40,85 @@ This module primarily collaborates with `color`, `image`, `math`, `runtime`. Its
 
 ### attenuation.rs
 
-- Quadratic attenuation model encapsulating distance-based light intensity falloff using constant, linear, and quadratic coefficients.
-- Computes attenuation factors (1.0 / denominator) at arbitrary distances enabling physically-plausible light contribution evaluation in shaders.
-- Prevents division-by-zero at zero distance by clamping denominator to >= 1.0 ensuring stable light brightness at light source origin.
-- Includes debug visualization rendering attenuation curves to image buffers for interactive tuning of falloff behavior during lighting design.
+- This file owns `Attenuation`, the quadratic distance-decay model used by lights to scale brightness over range.
+- It stores constant, linear, and quadratic coefficients, then evaluates a stable inverse denominator factor.
+- A debug image helper also plots multiple attenuation curves so designers can inspect and tune falloff behavior.
+- Open this file when distance-decay semantics change; full light objects and world ownership live in siblings.
 
 ### blend_mode.rs
 
-- Defines compositing modes that control how each light contribution merges into accumulated lighting. `light/blend_mode` delivers the blend mode implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `LightBlendMode`, the enum that describes how one light contributes to the accumulated buffer.
+- It defines additive, subtractive, and mix-style compositing so light accumulation policy stays explicit in data.
+- Open this file when light compositing semantics change; per-light state and world processing live in siblings.
 
 ### falloff.rs
 
-- Defines radial falloff profiles that shape brightness between light center and radius boundary. `light/falloff` delivers the falloff implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `FalloffMode`, the enum that shapes radial brightness inside a light's effective radius.
+- It distinguishes linear, smooth, and constant profiles so lights can vary edge softness without new code paths.
+- Open this file when radial falloff semantics change; attenuation math and full light state live in sibling files.
 
 ### flicker.rs
 
-- Defines sine-based flicker state that modulates light intensity across time. `light/flicker` delivers the flicker implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Tracks oscillation phase, speed, and strength for controllable temporal variation. The file owns or coordinates data contracts including `FlickerConfig`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports deterministic per-frame advancement with wrapped phase continuity. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `multiplier`, `advance` stays attached to the local data model and invariants.
+- This file owns `FlickerConfig`, the sine-based animation state that modulates light intensity over time.
+- It stores enabled state, speed, strength, and phase, then advances deterministically for frame-driven updates.
+- Multiplier and advance helpers keep temporal variation local so worlds can animate many lights consistently.
+- Open this file when flicker behavior changes; full light ownership and batch stepping live in sibling modules.
 
 ### light2d.rs
 
-- Defines the full per-light data model covering transform, color, energy, and shading behavior. `light/light2d` delivers the light2d implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Encapsulates light geometry, blend mode, falloff, attenuation, and layer-mask participation. The file owns or coordinates data contracts including `Light2DAttenuationPatch`, `Light2DOptionsPatch`, `Light2D`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Stores spot-cone, shadow, normal-map, and volumetric options in one configurable runtime object. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_position`, `get_position`, `set_radius`, `get_radius`, `set_color`, and 48 more stays attached to the local data model and invariants.
-- Provides constructor defaults tuned for immediate point-light usage without extra setup. Runtime integration reaches sibling engine areas through crate modules `color`, `light`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Exposes field access patterns used by world management and Lua-facing controls. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-- Supports optional flicker and grouping metadata for batched animation and edits. The file boundary separates light implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+- This file owns `Light2D` and its patch structs, the complete per-light data model used by the lighting system.
+- It stores transform, radius, color, energy, attenuation, masks, shadows, type, flicker, grouping, and normal-map data.
+- Constructor defaults create a ready point light, while many getters and setters expose stable field-level control.
+- `Light2DOptionsPatch` and `Light2DAttenuationPatch` let callers update selected options without rebuilding a light.
+- Spot angles, shadow settings, volumetrics, blend mode, falloff, and attenuation all live in this one ownership unit.
+- Debug rendering for falloff comparisons also lives here because it depends on the same light-specific option semantics.
+- This file is the boundary for one light's authored and runtime state, not for scene collection orchestration.
+- Open it when per-light option semantics change; world storage and occluder ownership live in sibling files.
 
 ### light_type.rs
 
-- Defines geometric light models used by the 2D lighting pipeline. `light/light_type` delivers the light type implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `LightType`, the geometric light-kind enum used to distinguish point, directional, and spot lights.
+- It keeps illumination shape explicit inside `Light2D` so worlds and renderers branch on one stable discriminant.
+- Open this file when supported light geometries change; shadow, falloff, and world behavior live in siblings.
 
 ### light_world.rs
 
-- Implements scene-level light management for `Light2D` and occluder collections keyed by stable handles. `light/light_world` delivers the light world implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Supports creation, removal, lookup, and bulk mutation of lighting entities across runtime updates. The file owns or coordinates data contracts including `LightWorld`, `NormalMapLightHint`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Applies group-based operations for coordinated enable, color, and intensity adjustments. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_light`, `add_occluder`, `remove_light`, `remove_occluder`, `get_light`, and 17 more stays attached to the local data model and invariants.
-- Advances active flicker states efficiently to animate selected lights over time. Runtime integration reaches sibling engine areas through crate modules `color`, `light`, `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Exposes renderer-oriented snapshots such as ambient terms and directional data aggregates. External integration uses `slotmap`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- This file owns `LightWorld`, the scene-level container for registered lights, occluders, ambient color, and limits.
+- It stores slotmaps, flicker indexes, and ambient settings, then exposes stable keys for runtime light ownership.
+- Mutation helpers add, remove, query, group-edit, clear, and count lights or occluders without leaking storage details.
+- Flicker stepping and reindexing live here so animated lights can advance efficiently across the whole scene.
+- Renderer-facing helpers emit debug images, ambient color hints, directional tuples, and normal-map light snapshots.
+- This file is the owner for scene lighting orchestration rather than for one light's individual option semantics.
+- Open it when collection behavior changes; per-light data definitions and shadow geometry live in sibling files.
 
 ### mod.rs
 
-- High-level lighting module that groups light types, occluders, world state, and transition utilities. `light/mod` is the light module index, declaring `attenuation`, `blend_mode`, `falloff`, `flicker`, `light2d`, and 5 more so agents can identify which files own each feature slice before opening implementation code.
-- Re-exports core enums and structs used to configure 2D illumination behavior across the engine. `src/light/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `attenuation::Attenuation`, `blend_mode::LightBlendMode`, `falloff::FalloffMode`, `flicker::FlickerConfig`, and 5 more centralized for the light subsystem.
-- Defines the module boundary for attenuation, blending, shadows, and runtime light orchestration. The file documents how light submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-- `light/mod` is the light module index, declaring `attenuation`, `blend_mode`, `falloff`, `flicker`, `light2d`, and 5 more so agents can identify which files own each feature slice before opening implementation code.
-- `src/light/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `attenuation::Attenuation`, `blend_mode::LightBlendMode`, `falloff::FalloffMode`, `flicker::FlickerConfig`, and 5 more centralized for the light subsystem.
-- The file documents how light submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+- This module re-exports the lighting subsystem surface for light types, falloff, shadows, occluders, and world state.
+- It serves as the navigation map for per-light data, attenuation rules, group control, and renderer-facing hints.
+- `light2d.rs` owns the full light object, while `light_world.rs` manages scene collections and batch operations.
+- `attenuation.rs`, `falloff.rs`, `flicker.rs`, and `transition.rs` describe how light output changes over time or space.
+- `occluder.rs`, `shadow.rs`, `blend_mode.rs`, and `light_type.rs` define masking, filtering, and compositing choices.
+- Change this file when the public light symbol map moves; change siblings when runtime lighting behavior changes.
 
 ### occluder.rs
 
-- Defines convex polygon occluders that block light and contribute to shadow casting. `light/occluder` delivers the occluder implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores local vertices with world offset and opacity controls for flexible scene placement. The file owns or coordinates data contracts including `Occluder`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Supports runtime vertex replacement from typed points or flat coordinate inputs. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_vertices`, `from_flat_coords`, `get_vertices`, `set_position`, `get_position`, and 6 more stays attached to the local data model and invariants.
-- Applies layer-mask and enable flags to scope occluder influence across light groups. Runtime integration reaches sibling engine areas through crate modules `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `Occluder`, the convex polygon shadow caster used by `LightWorld` to block and mask lighting.
+- It stores local vertices, world offset, opacity, layer mask, and enabled state for runtime shadow participation.
+- Construction helpers validate vertex counts and support both typed point lists and flat coordinate arrays.
+- Open this file when shadow-geometry semantics change; light collection logic and filter presets live in siblings.
 
 ### shadow.rs
 
-- Defines shadow filtering quality presets used by soft-shadow evaluation paths. `light/shadow` delivers the shadow implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+- This file owns `ShadowFilter`, the preset enum that selects soft-shadow kernel quality for light rendering paths.
+- It distinguishes no filtering, five-tap PCF, and thirteen-tap PCF so shadow softness cost stays explicit in data.
+- Open this file when shadow-filter semantics change; per-light state and occluder ownership live in sibling files.
 
 ### transition.rs
 
-- Implements time-based linear transitions for light color, intensity, and radius values. `light/transition` delivers the transition implementation for the light subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Tracks elapsed progress against duration to produce deterministic interpolated states. The file owns or coordinates data contracts including `LightTransition`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Clamps timing parameters to safe bounds for stable update behavior. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `update`, `progress` stays attached to the local data model and invariants.
-- Supports per-frame stepping until transitions reach their configured targets. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- This file owns `LightTransition`, the linear tween state used to animate light color, intensity, and radius.
+- It stores from and to values plus elapsed time and duration, then computes clamped per-frame interpolated output.
+- Update and progress helpers keep transition timing deterministic and local to light-animation orchestration code.
+- Open this file when light tween semantics change; flicker behavior and scene ownership live in sibling modules.
 
 
 

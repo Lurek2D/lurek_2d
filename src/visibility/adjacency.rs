@@ -1,6 +1,7 @@
-//! This file provides the adjacency abstraction that supplies neighborhood topology to visibility. `visibility/adjacency` delivers the adjacency implementation for the visibility subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It defines a geometry-agnostic contract so grids, graphs, and region maps share one interface. The file owns or coordinates data contracts including `AdjacencyProvider`, `SimpleAdjacency`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It enables visibility algorithms to run without coupling to any single world representation. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_neighbor`, `add_bidirectional` stays attached to the local data model and invariants.
+//! This file owns adjacency contracts for visibility systems that need region-neighbor lookup without grid coupling.
+//! It defines `AdjacencyProvider` plus `SimpleAdjacency`, a small adjacency-list implementation for graph-like maps.
+//! Visibility and discovery code can query neighbors through this boundary without knowing how worlds store topology.
+//! Open this file when neighborhood semantics change; visibility state and fog progression live in sibling modules.
 
 /// Trait for providing neighbor information to the visibility system.
 /// Implementations can be grid-based, graph-based, or any custom topology.

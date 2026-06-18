@@ -1,8 +1,10 @@
-//! This file defines the transient geometry language that the raycaster uses between spatial reasoning and final drawing. `raycaster/scene` delivers the scene implementation for the raycaster subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Walls, floors, ceilings, sprites, and injected meshes all share a quad-oriented representation so later stages can sort and emit them uniformly.
-//! Each record carries the texture routing, light tint, depth meaning, and UV state needed to survive the trip from world logic to renderer.
-//! The scene container groups one frame of these surfaces into a single package sized to the active viewport. Runtime integration reaches sibling engine areas through crate modules `math`, `render`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! In practice it is the raycaster's staging area for everything the camera can currently see. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `RaycasterScene` and its quad, sprite, mesh, pick, and build-stat record types for one frame.
+//! It stores walls, floors, ceilings, billboard sprites, transient models, viewport size, and build counters.
+//! Quad records carry corners, UVs, texture routing, light tint, depth, and perspective data for later draw paths.
+//! Picking helpers resolve screen pixels against projected sprites and model triangles, with optional sprite alpha tests.
+//! `EntityPickResult` and related enums define the stable payload returned when higher layers query scene selections.
+//! This file is the staging boundary between raycaster world reasoning and renderer or CPU draw translation.
+//! Open this file when prepared-scene data or picking semantics change; build and render flow live in siblings.
 
 use crate::math::Vec2;
 use crate::render::mesh::Mesh;

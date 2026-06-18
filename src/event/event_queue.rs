@@ -1,8 +1,10 @@
-//! Provides a dual-priority FIFO event queue that dispatches high-priority items before normal traffic. `event/event_queue` delivers the event queue implementation for the event subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Defines portable event payload shapes that carry scalar and shallow table data across boundaries. The file owns or coordinates data contracts including `EventPriority`, `EventTableKey`, `EventArg`, `Event`, `EventQueue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports blocking wait semantics with timeout control for synchronized producer-consumer patterns. Public callable behavior is centered on `event_arg_to_lua_value`, `event_to_lua_multi`, while method-level behavior such as `new`, `push`, `push_with_priority`, `push_event`, `push_event_with_priority`, `poll`, and 6 more stays attached to the local data model and invariants.
-//! Converts queued payloads between Rust and Lua value domains using predictable marshalling rules. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Preserves insertion order inside each priority lane to keep event flow behavior deterministic. External integration uses `std`, `mlua`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/event/event_queue.rs` owns queued runtime events, their portable payload shapes, and Rust-Lua marshalling helpers.
+//! It defines `EventPriority`, `EventTableKey`, `EventArg`, `Event`, and `EventQueue` under one event-delivery owner.
+//! High and normal priority lanes live here, preserving FIFO order within each lane while dispatch prefers urgent traffic.
+//! The queue also exposes blocking wait semantics with wake epochs and a condition variable for producer-consumer flows.
+//! Shallow Lua table copying and conversion back to Lua values are implemented here so payload rules stay local.
+//! Read this file when queue ordering, timeout behavior, marshalling limits, or payload shape rules need to change.
+//! Higher layers should treat it as the queued-event boundary, while signal name matching lives separately in `signal.rs`.
 
 use std::collections::VecDeque;
 use std::sync::{Condvar, Mutex};

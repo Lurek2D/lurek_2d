@@ -1,7 +1,8 @@
-//! Ready-made ParticleConfig constructors for common visual effects. `particle/presets` delivers the presets implementation for the particle subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Covers fire, smoke, rain, snow, sparks, and other standard patterns. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Returns self-contained configs with tuned lifetime, speed, color ramp, and shape. Public callable behavior is centered on `fire`, `smoke`, `rain`, `snow`, `sparks`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Lets callers start from a stable preset and override fields afterward. Runtime integration reaches sibling engine areas through crate modules `particle`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns ready-made `ParticleConfig` constructors for common effects such as fire, smoke, rain, snow, and sparks.
+//! Each function returns a fully populated config with tuned lifetimes, speeds, colors, sizes, and emission shapes.
+//! The presets are data-oriented so callers can clone them and override fields without touching emitter internals.
+//! No live particle state is stored here; this file is the catalog layer for reusable effect starting points.
+//! Open it when shared effect defaults change; config schema and emitter execution live in sibling files.
 
 use crate::particle::{EmissionShape, ParticleConfig};
 /// Return a `ParticleConfig` producing an upward fire effect with turbulence and RGB fade.

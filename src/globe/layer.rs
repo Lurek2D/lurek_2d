@@ -1,7 +1,7 @@
-//! Provides named globe layer storage that overlays per-region color and visibility modifications. `globe/layer` delivers the layer implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports insert, remove, lookup, and alpha control for composable thematic map styling. The file owns or coordinates data contracts including `LayerStore`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Resolves effective colors in z-order so stacked overlays produce deterministic final output. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `remove`, `get`, `get_mut`, `set_province_color`, and 7 more stays attached to the local data model and invariants.
-//! Delivers the overlay-composition layer used by draw logic and gameplay visualization. Runtime integration reaches sibling engine areas through crate modules `globe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Stores named globe overlay layers that apply ordered region color overrides on top of each region's base style.
+//! Owns layer insertion, removal, visibility, alpha, region-color mutation, and z-order sorted resolution helpers.
+//! Provides the overlay state boundary between gameplay thematic maps and draw code that asks for effective colors.
+//! Open this owner when layer stacking, alpha policy, or region color override semantics need to be revised.
 
 use crate::globe::types::{Layer, RegionId};
 use std::collections::HashMap;

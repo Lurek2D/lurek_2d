@@ -1,8 +1,9 @@
-//! This file provides the thread-safe message bus that moves typed payloads between isolated Lua VMs. `thread/channel` delivers the channel implementation for the thread subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It defines a stable transport value model that preserves scalar values, nested tables, and binary blobs. The file owns or coordinates data contracts including `ChannelValue`, `OverflowPolicy`, `Channel`, `LuaChannel`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It supports bounded and unbounded queues so gameplay code can choose backpressure or open throughput. Public callable behavior is centered on `lua_to_channel_value`, `channel_value_to_lua`, while method-level behavior such as `new`, `bounded`, `named`, `named_bounded`, `push`, `try_push`, and 9 more stays attached to the local data model and invariants.
-//! It offers blocking and non-blocking push and pull flows for deterministic runtime synchronization. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! It bridges Rust and Lua value domains with explicit conversion rules that avoid hidden sharing. External integration uses `mlua`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! `src/thread/channel.rs` owns the thread-safe message channel used to move portable values between isolated Lua VMs.
+//! It defines `ChannelValue`, `OverflowPolicy`, `Channel`, and `LuaChannel`, keeping transport rules under one owner.
+//! Bounded and unbounded queue creation, blocking push and demand, non-blocking operations, and queue inspection live here.
+//! Rust-Lua conversion helpers also live here, including recursive table transport and byte-string handling for messages.
+//! Read this file when backpressure, wake-up behavior, transferable value rules, or channel naming semantics must change.
+//! Higher layers should treat it as the cross-thread transport boundary, while worker lifecycle logic stays in `worker.rs`.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{CH01, CH02, CH03, CH04};

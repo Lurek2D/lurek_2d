@@ -1,4 +1,4 @@
-//! `src/lua_api/visibility_api.rs` registers the `lurek.visibility` Lua boundary for visibility behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.visibility` Lua API for visibility userdata, queries, and visibility-side validation.
 
 use super::SharedState;
 use crate::visibility::{FogConfig, TileFov, VisibilityEvent, VisibilityFlags, VisibilityGrid};

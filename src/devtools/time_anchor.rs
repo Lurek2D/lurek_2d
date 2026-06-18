@@ -1,4 +1,6 @@
-//! Implements a monotonic timing anchor used to compute elapsed seconds on demand. `devtools/time_anchor` delivers the time anchor implementation for the devtools subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns `TimeAnchor`, the monotonic clock wrapper used to measure elapsed devtools time in seconds.
+//! It stores one `Instant` and exposes lightweight construction plus elapsed reads for loggers and profilers.
+//! Open this file when shared elapsed-time semantics change; higher-level history and capture logic lives in siblings.
 
 use std::time::Instant;
 #[derive(Debug, Clone)]

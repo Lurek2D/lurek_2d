@@ -1,6 +1,7 @@
-//! Pipeline outcome model for turning many individual step endings into one readable picture of how a workflow actually finished.
-//! The file records lifecycle state, per-step timing, errors, and completion data so callers can inspect success, failure, skips, and duration after a run.
-//! Convenience queries keep common result questions cheap and direct instead of forcing every user to re-interpret raw status fields.
+//! `src/pipeline/result.rs` owns the aggregated outcome model used to summarize how a pipeline run finished overall.
+//! It defines `PipelineStatus` and `PipelineResult`, keeping final lifecycle state, per-step buckets, and errors together.
+//! Success checks and summary formatting also live here, so caller-facing run interpretation stays out of graph code.
+//! Read this file when result-state semantics, summary text, or outcome aggregation behavior for completed runs changes.
 
 /// Lifecycle state of a pipeline run.
 #[derive(Debug, Clone, PartialEq, Eq)]

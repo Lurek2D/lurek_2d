@@ -1,7 +1,7 @@
-//! Per-province property store for game-defined metadata that should live beside map identity without hard-coding economy or strategy logic into the engine core.
-//! The file gives each province a flexible typed key-value table so scripts can attach stats, ownership signals, or gameplay annotations while keeping storage centralized.
-//! Serialization support means those values can round-trip through save flows without custom glue for every separate property family.
-//! Functionally this file delivers the extensible metadata layer that makes the province runtime useful beyond pure rendering.
+//! Stores extensible per-province metadata so gameplay and rendering code can attach numeric, text, and flag values.
+//! Owns ProvinceProperties maps for numbers, strings, and booleans plus typed setters and lookups for those stores.
+//! Provides a lightweight attribute boundary between fixed registry fields and project-specific province annotations.
+//! Open this file when province property typing, persistence expectations, or attribute access patterns need changes.
 
 use std::collections::HashMap;
 

@@ -1,8 +1,9 @@
-//! Grid-based influence map with named floating-point layers over a uniform cell grid. `pathfind/influence_map` delivers the influence map implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stamps radial influence with falloff, smooths through neighbours, and decays over time. The file owns or coordinates data contracts including `InfluenceMap`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Queries aggregated influence in rectangles or locates extrema positions. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add_layer`, `has_layer`, `set_influence`, `get_influence`, `get_width`, and 13 more stays attached to the local data model and invariants.
-//! Blends multiple layers into a destination layer with weighted combination. Runtime integration reaches sibling engine areas through crate modules `runtime`, `log_msg`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Exposes debug visualisation into an RGBA image for inspection. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Owns named influence layers over a uniform grid so AI can score space with floating-point tactical signals.
+//! Supports stamping radial influence, smoothing, decay, blending, extrema queries, and rectangular aggregation.
+//! Stores layer data in flat arrays keyed by layer name, keeping spatial analytics close to their update helpers.
+//! Also renders influence layers to debug images so designers can inspect how fields combine across the map.
+//! Provides the boundary between abstract decision weights and concrete cell-space data queried by gameplay code.
+//! Open this owner when layer math, blend semantics, or visualization of influence values needs correction.
 
 use crate::runtime::log_messages::{IF01, IF02, IF03};
 

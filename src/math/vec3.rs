@@ -1,7 +1,8 @@
-//! 3D float vector for cross products, directions, and other compact spatial math. `math/vec3` delivers the vec3 implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Provides arithmetic and geometric helpers for dot, cross, normalize, and reflection work. The file owns or coordinates data contracts including `Vec3`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports projection, interpolation, distance, and length queries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `zero`, `one`, `splat`, `dot`, `cross`, and 7 more stays attached to the local data model and invariants.
-//! Acts as the small 3D companion to the 2D math core. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the compact 3D vector primitive used for cross products, directions, and three-axis numeric math.
+//! `Vec3` stores x, y, and z, while methods expose dot, cross, length, normalization, projection, and reflection.
+//! Arithmetic operator overloads stay here because component-wise addition, scaling, and negation are type semantics.
+//! Interpolation and distance also belong here since they derive directly from the owned three-component vector model.
+//! Open it when 3D vector semantics change; 2D vectors, transforms, and polygons live in sibling math modules.
 
 use std::fmt;
 use std::ops::{Add, Div, Mul, Neg, Sub};

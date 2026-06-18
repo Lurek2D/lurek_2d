@@ -1,7 +1,8 @@
-//! Provides demand-processing logic that matches prioritized needs against available network supply. `flownet/supply_demand` delivers the supply demand implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Uses pathfinding to route produced items from supplier nodes toward consumer destinations. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Tracks fulfillment progress and decrements source supply quantities during transfer. Public callable behavior is centered on no named public items, while method-level behavior such as `process_demand` stays attached to the local data model and invariants.
-//! Emits simulation events that expose depletion and fulfillment transitions to observers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns demand-matching logic that scans node requests, finds supplier paths, and dispatches items in order.
+//! It sorts demands by priority, checks available supply, and uses `find_path` plus `send_item` to start transfers.
+//! Supply depletion and fulfillment events are emitted here because this pass owns cross-node matching side effects.
+//! This is not the general tick loop; decay, transit, push, pull, and conversion updates live in `simulation.rs`.
+//! Open it when fulfillment policy changes; graph storage, pathfinding, and edge transit rules live in sibling files.
 
 use super::core::Graph;
 use super::simulation::GraphEvent;

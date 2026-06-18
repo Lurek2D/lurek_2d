@@ -16,14 +16,11 @@
 
 ## Summary
 
-- The color module gives scripts one toolbox for creation, conversion, blending, and palette-based styling.
-- It supports RGB, HSL, HSV, and hex workflows so designers can work in the representation that fits the task.
-- Predictable interpolation and compositing support fades, highlights, and layered UI rendering.
-- Blend modes and luminance helpers help with effects tuning and contrast-aware presentation.
-- Retro palettes accelerate thematic prototyping without manual color picking.
-- The module bridges art-facing color intent with runtime-safe numeric operations.
+- The `color` module is the shared toolbox for defining, converting, and reusing runtime color values across the engine.
+- It combines low-level color math with practical authoring workflows, so scripts can move between RGB, HSL, HSV, hex, blending, and interpolation without custom conversion helpers.
+- That makes the module useful for themes, fades, highlights, palette work, and effect tuning, because color changes can stay data-driven instead of becoming hardcoded rendering logic.
+- Read it as the common color language for the engine: other systems decide where color is used, but `color` keeps conversion, composition, and palette logic consistent.
 
-This module is mostly self-contained inside the `Foundations` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
 
 ## Imports
 
@@ -33,30 +30,37 @@ This module is mostly self-contained inside the `Foundations` group. Cross-modul
 
 ### blend.rs
 
-- Implements color blending helpers for interpolation and compositing-style channel math. `color/blend` delivers the blend implementation for the color subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Provides clamped linear interpolation between RGBA values for smooth visual transitions. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Keeps operations lightweight and deterministic for per-frame use in effects and tween flows. Public callable behavior is centered on `lerp_color`, `multiply`, `screen`, `overlay`, `additive`, and 1 more, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Serves as the core blend-utility layer consumed by rendering-adjacent systems. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/color/blend.rs` owns lightweight RGBA blend operators and interpolation helpers used by rendering-side color math.
+- `lerp_color`, `multiply`, `screen`, `overlay`, `additive`, and `alpha_blend` live here under one blend-focused owner.
+- These functions keep compositing and transition rules separate from color representation, simplifying effect code reuse.
+- Read this file when blend equations, clamping rules, or alpha-compositing behavior for runtime visuals need to change.
 
 ### color_core.rs
 
-- Implements core color representation and conversion utilities across RGB, HSL, and HSV domains. `color/color_core` delivers the color core implementation for the color subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Parses hex color strings into structured channel values with support for common shorthand forms. The file owns or coordinates data contracts including `Color`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Serializes RGBA channel values back to canonical hexadecimal text for interchange and debugging. Public callable behavior is centered on `hsv_to_rgb`, `gamma_to_linear`, `linear_to_gamma`, `hsl_to_rgb`, while method-level behavior such as `from_u8`, `from_hsl`, `from_hsv`, `from_hex`, `to_u8`, `to_rgb_u32`, and 6 more stays attached to the local data model and invariants.
-- Provides pure color-space transforms suitable for runtime use without hidden global state. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-- Exposes stable conversion behavior reused by palettes, blending, and Lua-visible color APIs. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+- `src/color/color_core.rs` owns the `Color` type plus the core RGB, HSL, HSV, gamma, and hex conversion routines.
+- It defines channel constants, constructors, packing helpers, parsing, serialization, and utility methods together.
+- Hex parsing and formatting live here alongside HSL and HSV transforms, keeping interchange and editing rules consistent.
+- Brightness, inversion, alpha replacement, and color mixing also live here so higher layers reuse one color model.
+- This file is the boundary for color semantics; palettes and blend equations should depend on it, not replace it.
+- Read it when channel storage, conversion policy, or text-to-color and color-to-text behavior must change.
+- It also centralizes gamma conversion helpers, so renderer-facing color-space policy changes should start in this file.
 
 ### mod.rs
 
-- Defines the color module boundary for channel types, conversion logic, palettes, and blending helpers. `color/mod` is the color module index, declaring `blend`, `color_core`, `palette` so agents can identify which files own each feature slice before opening implementation code.
-- Groups core color math and curated palette sources into one reusable runtime surface. `src/color/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `blend::{additive, alpha_blend, lerp_color, multiply, overlay, screen}`, `color_core::{gamma_to_linear, hsl_to_rgb, hsv_to_rgb, linear_to_gamma, Color}`, `palette::{css_named, retro, Palette}` centralized for the color subsystem.
+- `src/color/mod.rs` is the module index that exposes core color math, blending helpers, and curated palettes.
+- It reexports `Color`, conversion functions, blend operators, and palette accessors through one stable color surface.
+- No color instances or palette storage live here; this file only declares child modules and defines public visibility.
+- Read this index when wiring rendering or styling code, because it shows where color math ends and palette data begins.
+- Changes here reshape the color boundary, since reexports decide which helpers other systems import without deep paths.
+- This module keeps channel math, conversion logic, and preset palette data separated for clearer ownership and reuse.
 
 ### palette.rs
 
-- Implements named color-palette collections for retro, utility, and designer-oriented presets. `color/palette` delivers the palette implementation for the color subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-- Stores curated palette definitions as static data for low-overhead runtime access. The file owns or coordinates data contracts including `Palette`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-- Provides lookup and conversion helpers that map palette entries into structured color values. Public callable behavior is centered on no named public items, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-- Supports extension flows where new palette sets can be surfaced through higher API layers. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+- `src/color/palette.rs` owns named palette datasets and the `Palette` type used to package curated color collections.
+- It stores CSS named colors and retro console presets as static data, keeping reusable swatches separate from color math.
+- Open this file when preset color libraries, palette naming, or exported curated swatch collections need to change.
+- Higher layers should treat it as the palette-data boundary, while conversions and blending stay in sibling color files.
+- This file provides reusable color libraries for tooling and styling without mixing preset data into math helpers.
 
 
 

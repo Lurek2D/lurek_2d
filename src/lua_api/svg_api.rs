@@ -1,4 +1,4 @@
-//! Lua bindings for the vector SVG graphics module. `src/lua_api/svg_api.rs` registers the `lurek.svg` Lua boundary for svg behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.svg` Lua API for vector SVG graphics, userdata wrappers, and script-side SVG control.
 
 use crate::lua_api::math_api::LuaVec2;
 use crate::runtime::SharedState;

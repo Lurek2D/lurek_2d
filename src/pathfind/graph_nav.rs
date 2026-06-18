@@ -1,7 +1,8 @@
-//! A* shortest-path search over weighted directed or bidirectional graphs. `pathfind/graph_nav` delivers the graph nav implementation for the pathfind subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports cost-bounded range queries for reachable nodes. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Falls back to Dijkstra when no heuristic is provided. Public callable behavior is centered on `graph_astar`, `graph_range`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Reconstructs paths from predecessor maps for caller consumption. Runtime integration reaches sibling engine areas through crate modules `flownet`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Implements generic graph A* and budgeted range traversal for flownet-style node and edge networks.
+//! Owns graph heap nodes, predecessor reconstruction, and directed or bidirectional edge walking rules.
+//! Searches active graph edges only, then returns ordered node ids or reachable nodes with accumulated cost.
+//! Provides the boundary between generic graph data and systems that need reusable network traversal primitives.
+//! Open this owner when graph heuristic use, edge direction handling, or range flood semantics need revision.
 
 use crate::flownet::core::Graph;
 use std::cmp::Ordering;

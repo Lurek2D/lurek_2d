@@ -1,9 +1,11 @@
-//! Imports standard Spine and DragonBones JSON skeleton shapes into runtime Skeleton data. `spine/importer` delivers the importer implementation for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! The importer focuses on common production fields for bones, slots, skins, and basic timelines. The file owns or coordinates data contracts including `SpineImportError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It intentionally rejects malformed or unsupported structures with explicit, stable errors. Public callable behavior is centered on `skeleton_from_json_str`, `skeleton_from_json_value`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! `spine/importer` delivers the importer implementation for the spine subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! The file owns or coordinates data contracts including `SpineImportError`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Public callable behavior is centered on `skeleton_from_json_str`, `skeleton_from_json_value`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
+//! This file owns Spine and DragonBones JSON import for the skeletal runtime, turning payloads into `Skeleton` data.
+//! It defines `SpineImportError` plus parsing for bones, slots, skins, animations, and event channels across both formats.
+//! Bone and slot parsing resolve names into indices so the runtime receives parent-linked rigs instead of loose strings.
+//! Animation parsing maps translate, rotate, scale, and event data into `SkeletonAnimation` timelines with stable units.
+//! DragonBones and Spine variants share helpers for numeric extraction, duration handling, and error reporting.
+//! The importer rejects malformed or unsupported structures early so asset issues fail before runtime playback.
+//! This file is the boundary between third-party skeletal data formats and engine-owned rig, clip, and skin structures.
+//! Open this file when supported JSON schema or import policy changes; runtime skeleton behavior lives in siblings.
 
 use crate::spine::timeline::{BoneProperty, EasingType, SkeletonAnimation};
 use crate::spine::{BoneParams, Skeleton};

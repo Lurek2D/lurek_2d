@@ -1,9 +1,11 @@
-//! Implements struct-style format packing and unpacking for compact binary schema workflows. `binary/pack` delivers the pack implementation for the binary subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Parses tokenized format strings covering numeric types, strings, and explicit padding markers. The file owns or coordinates data contracts including `PackValue`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports endian switching through prefix directives for cross-platform wire compatibility. Public callable behavior is centered on `pack`, `unpack`, `get_packed_size`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Handles both fixed and variable-width string representations during serialization and decode. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Applies numeric widening and coercion rules so value variants map safely onto target tokens. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Performs strict bounds checks on reads with token-aware failure context for truncated input. The file boundary separates binary implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns the character-format packing layer that serializes and parses compact struct-like layouts.
+//! `PackValue` carries signed, unsigned, floating, string, and raw byte variants consumed by the interpreter.
+//! The `pack` path walks one-character tokens to write padding, endian-selected scalars, and variable strings.
+//! The `unpack` path mirrors those tokens, advances an offset cursor, and returns values plus the next offset.
+//! Supported tokens cover integer widths, floats, doubles, length-prefixed bytes, null-terminated bytes, and pad.
+//! Coercion helpers widen numeric variants and accept strings or raw bytes where the format expects payload data.
+//! Bounds helpers attach token-specific underflow errors so truncated buffers fail with structural context.
+//! Open it when compact schema rules change; tokenized `bin_pack` and raw buffer utilities live in siblings.
 
 use super::byte_data::ByteData;
 #[derive(Debug, Clone)]

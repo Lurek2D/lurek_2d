@@ -1,7 +1,8 @@
-//! Turns raw CSS color text into normalized RGBA values ready for render-side blending. `html/color` delivers the color implementation for the html subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Accepts hex codes, rgb/rgba, hsl/hsla forms, and named web colors used by authored styles. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Normalizes hue units and percentage channels so mixed input formats resolve to one stable shape. Public callable behavior is centered on `parse_css_color_rgba`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Applies alpha parsing with clamping semantics that keep transparent and opaque intent predictable. Runtime integration reaches sibling engine areas through crate modules `color`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/html/color.rs` owns CSS color parsing that turns author text into normalized RGBA values for HTML styling.
+//! It handles hex, rgb or rgba, hsl or hsla, and named web colors while clamping channels into one stable output shape.
+//! Hue normalization, percent handling, alpha parsing, and HSL-to-RGB conversion all live here as color-text semantics.
+//! This file is the color-text boundary for HTML styles; it does not own DOM state, CSS rules, or selector matching.
+//! Read it when supported color syntax, channel clamping, or normalized RGBA output rules for HTML styles need changes.
 
 use crate::color::Color;
 /// Parse a CSS color string and return normalized RGBA components, or `None` when unsupported.

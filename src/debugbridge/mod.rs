@@ -1,5 +1,9 @@
-//! Defines the debugbridge module boundary for runtime-to-IDE transport and state exchange. `debugbridge/mod` is the debugbridge module index, declaring `bridge`, `server` so agents can identify which files own each feature slice before opening implementation code.
-//! Groups shared bridge state and TCP server functionality under one integration surface. `src/debugbridge/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `bridge::{BridgeShared, PendingRequest, PendingResponse, PrintEntry, SharedBridge}`, `server::{handle_client_message, server_thread}` centralized for the debugbridge subsystem.
+//! `src/debugbridge/mod.rs` is the module index that exposes the runtime debug bridge state and server entry points.
+//! It reexports shared queue types and network handlers so runtime code and tooling consume one stable debugger surface.
+//! No bridge state lives here; this file only declares child modules and defines which debug transport symbols are public.
+//! Read this index when wiring IDE integration, because it shows where shared state ends and socket handling begins.
+//! Changes here reshape the debugger boundary, since reexports decide what engine code may import without deep paths.
+//! This module keeps bridge storage and TCP protocol handling separate, which makes debugger ownership easier to trace.
 
 /// Expose shared bridge state and pending request or response buffers.
 pub mod bridge;

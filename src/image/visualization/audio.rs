@@ -1,8 +1,9 @@
-//! Converts audio sample streams into waveform images suitable for tooling and in-engine diagnostics. `image/visualization/audio` delivers the audio implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Renders mono and stereo views with channel separation and baseline guides for quick interpretation. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports zoom-oriented sampling views to inspect transient detail in dense signal regions. Public callable behavior is centered on `waveform_to_image`, `waveform_stereo_to_image`, `waveform_zoomed_to_image`, `draw_sound_waveform_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Adds labels and configurable color accents so waveform panels fit different UI styles. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Normalizes peak ranges to keep amplitude visualization stable across varying source loudness. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Turns mono and stereo sample arrays into waveform images for debugging audio content and UI visualizers.
+//! Normalizes peak amplitude per render so quiet and loud sources stay readable on the same plotting surface.
+//! Draws baseline guides, channel separators, and bounds frames to make timing and clipping easy to inspect.
+//! Supports a zoomed waveform mode that interpolates early samples for transient-focused signal inspection.
+//! Provides a labeled colored strip renderer for HUD or tool previews that need lightweight waveform graphics.
+//! Open this owner when waveform scaling, channel layout, or sample-to-pixel mapping looks visually wrong.
 
 use crate::image::ImageData;
 /// Render a mono waveform preview into an image.

@@ -5,156 +5,6 @@ lurek = {}
 
 ---@alias LuaValue nil|boolean|number|string|table|function|userdata|thread
 
---- Global engine callbacks invoked by the runtime when defined in `main.lua`.
-
---- Called every frame for world rendering.
-function lurek.draw() end
-
---- Called every frame after `draw` for UI rendering.
-function lurek.draw_ui() end
-
---- Called for unhandled Lua errors.
----@param msg string Error message text.
-function lurek.errorhandler(msg) end
-
---- Called when the engine is shutting down.
-function lurek.exit() end
-
---- Deprecated alias for `process_physics`.
----@deprecated Deprecated alias for `process_physics`.
----@param dt number Fixed-step delta time in seconds.
-function lurek.fixedUpdate(dt) end
-
---- Called when window focus changes.
----@param has_focus boolean True when focused.
-function lurek.focus(has_focus) end
-
---- Called when a gamepad axis value changes.
----@param id number Gamepad id.
----@param axis string Axis name.
----@param value number Axis value in range -1..1.
-function lurek.gamepadaxis(id, axis, value) end
-
---- Called when a gamepad button is pressed.
----@param id number Gamepad id.
----@param button string Button name.
-function lurek.gamepadpressed(id, button) end
-
---- Called when a gamepad button is released.
----@param id number Gamepad id.
----@param button string Button name.
-function lurek.gamepadreleased(id, button) end
-
---- Called once when the engine initialises.
-function lurek.init() end
-
---- Called when a gamepad is connected.
----@param id number Gamepad id.
-function lurek.joystickadded(id) end
-
---- Called when a gamepad is disconnected.
----@param id number Gamepad id.
-function lurek.joystickremoved(id) end
-
---- Called when a keyboard key is pressed.
----@param key string Key name.
----@param scancode string Platform scancode.
----@param isrepeat boolean True when key repeat generated the event.
-function lurek.keypressed(key, scancode, isrepeat) end
-
---- Called when a keyboard key is released.
----@param key string Key name.
----@param scancode string Platform scancode.
-function lurek.keyreleased(key, scancode) end
-
---- Called when the mouse cursor moves.
----@param x number Mouse x coordinate.
----@param y number Mouse y coordinate.
----@param dx number Horizontal delta.
----@param dy number Vertical delta.
-function lurek.mousemoved(x, y, dx, dy) end
-
---- Called when a mouse button is pressed.
----@param x number Mouse x coordinate.
----@param y number Mouse y coordinate.
----@param button number Button index.
-function lurek.mousepressed(x, y, button) end
-
---- Called when a mouse button is released.
----@param x number Mouse x coordinate.
----@param y number Mouse y coordinate.
----@param button number Button index.
-function lurek.mousereleased(x, y, button) end
-
---- Called every frame for variable-step gameplay logic.
----@param dt number Delta time in seconds.
-function lurek.process(dt) end
-
---- Called every frame after `process`.
----@param dt number Delta time in seconds.
-function lurek.process_late(dt) end
-
---- Called on the fixed physics step.
----@param dt number Fixed-step delta time in seconds.
-function lurek.process_physics(dt) end
-
---- Called before shutdown; return true to cancel quit.
-function lurek.quit() end
-
---- Called once after init, when runtime state is ready.
-function lurek.ready() end
-
---- Called when window size changes.
----@param w number New window width.
----@param h number New window height.
-function lurek.resize(w, h) end
-
---- Called when IME composition text changes.
----@param text string Composition text.
----@param start number Cursor start offset.
----@param length number Selection length.
-function lurek.textedited(text, start, length) end
-
---- Called when text input is received.
----@param text string Input text fragment.
-function lurek.textinput(text) end
-
---- Called when a touch point moves.
----@param id number Touch id.
----@param x number Touch x coordinate.
----@param y number Touch y coordinate.
----@param dx number Horizontal delta.
----@param dy number Vertical delta.
----@param pressure number Touch pressure.
-function lurek.touchmoved(id, x, y, dx, dy, pressure) end
-
---- Called when a touch begins.
----@param id number Touch id.
----@param x number Touch x coordinate.
----@param y number Touch y coordinate.
----@param dx number Horizontal delta.
----@param dy number Vertical delta.
----@param pressure number Touch pressure.
-function lurek.touchpressed(id, x, y, dx, dy, pressure) end
-
---- Called when a touch ends.
----@param id number Touch id.
----@param x number Touch x coordinate.
----@param y number Touch y coordinate.
----@param dx number Horizontal delta.
----@param dy number Vertical delta.
----@param pressure number Touch pressure.
-function lurek.touchreleased(id, x, y, dx, dy, pressure) end
-
---- Called when window visibility changes.
----@param is_visible boolean True when visible.
-function lurek.visible(is_visible) end
-
---- Called when the mouse wheel moves.
----@param x number Horizontal wheel delta.
----@param y number Vertical wheel delta.
-function lurek.wheelmoved(x, y) end
-
 ---@class LNetworkRpc
 LNetworkRpc = {}
 
@@ -11126,14 +10976,17 @@ function LQueryView:typeOf(name) end
 ---@param delta number Signed amount added to the current pair value.
 function LRelationshipManager:adjustValue(a, b, delta) end
 
----@param name any
----@param levels any
----@param default_level? any
+--- Defines a named relationship type with ordered level labels and an optional default level for new pairs.
+---@param name string Relationship type name used for later `setLevel` and `getLevel` calls.
+---@param levels string[] Array table of allowed level labels in their semantic order.
+---@param default_level? string Optional fallback level assigned when a pair has no explicit level for this type.
 function LRelationshipManager:defineType(name, levels, default_level) end
 
----@param a any
----@param b any
----@param type_name any
+--- Returns the effective named level for one relationship type on a pair, falling back to the type default when no explicit level exists.
+---@param a number Source entity id for the relationship pair.
+---@param b number Target entity id for the relationship pair.
+---@param type_name string Registered relationship type name to query.
+---@return string? Stored level label or the type default when available, otherwise `nil` if the type is unknown.
 function LRelationshipManager:getLevel(a, b, type_name) end
 
 --- Returns the numeric relationship value between two entity ids.
@@ -11155,10 +11008,12 @@ function LRelationshipManager:removePair(a, b) end
 ---@param name string Relationship type name to delete.
 function LRelationshipManager:removeType(name) end
 
----@param a any
----@param b any
----@param type_name any
----@param level any
+--- Assigns a named level for one relationship type between two entity ids and reports whether the type-level pair was accepted.
+---@param a number Source entity id for the relationship pair.
+---@param b number Target entity id for the relationship pair.
+---@param type_name string Registered relationship type name to mutate.
+---@param level string Level label to store for the given type on this entity pair.
+---@return boolean True when the type exists and the supplied level is valid for that type.
 function LRelationshipManager:setLevel(a, b, type_name, level) end
 
 --- Sets the numeric relationship value between two entity ids.

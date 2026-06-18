@@ -1,7 +1,8 @@
-//! Provides flownet edge state that links nodes with transit limits, timing, and routing metadata. `flownet/edge` delivers the edge implementation for the flownet subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Encodes capacity, throughput, cooldown, and filtering constraints that govern movement eligibility. The file owns or coordinates data contracts including `Edge`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports directional and bidirectional semantics with pathfinding weight and speed modifiers. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `get_type`, `set_type`, `is_on_cooldown`, `is_item_type_allowed`, `add_allowed_type`, and 9 more stays attached to the local data model and invariants.
-//! Delivers the per-connection transport contract used by simulation and routing systems. Runtime integration reaches sibling engine areas through crate modules `flownet`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns edge state, covering endpoints, type filters, transit capacity, travel timing, and cooldown behavior.
+//! `Edge` stores bidirectionality, weights, reservations, and in-transit item ids that pathfinding and simulation both use.
+//! Capacity reservation helpers live here so planners and runtime sends evaluate the same available-space calculations.
+//! Filtering and cooldown checks here define whether an item type may enter an edge before any transit update begins.
+//! Open it when connection constraints change; node policy, route search, and graph indexing live in sibling files.
 
 use std::collections::HashSet;
 

@@ -1,9 +1,12 @@
-//! Defines the central mutable RGBA buffer used across rendering, tooling, and image-side gameplay logic. `image/image_data` delivers the image data implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Creates images from dimensions, files, encoded bytes, or direct raw pixel payloads. The file owns or coordinates data contracts including `ImageData`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides pixel access, region copy, and whole-buffer transform flows in serial and parallel variants. Public callable behavior is centered on no named public items, while method-level behavior such as `rgba_byte_len`, `try_new`, `new`, `from_file`, `from_encoded_bytes`, `from_bytes`, and 18 more stays attached to the local data model and invariants.
-//! Implements primitive raster drawing for lines, rectangles, circles, labels, and debug overlays. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Supports blending and paste semantics that keep alpha composition behavior explicit and predictable. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Carries width, height, and packed bytes in a compact row-major memory representation. The file boundary separates image implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! Defines the core mutable RGBA buffer used by image tooling, debug rendering, and software-side transforms.
+//! Constructs buffers from dimensions, files, encoded bytes, or exact RGBA payloads with strict size checks.
+//! Exposes width, height, dimensions, and raw-byte access so higher layers can move image data efficiently.
+//! Provides per-pixel read, write, paste, and map operations for subsystems that mutate images in memory.
+//! Draws rectangles, circles, lines, bitmap labels, and font-atlas text directly into the packed pixel buffer.
+//! Encodes PNG bytes for export while keeping raw storage row-major and local to the Rust image subsystem.
+//! Uses a parallel pixel-mapping path above a threshold so large transforms can scale across worker threads.
+//! Logs image-load and byte-mismatch diagnostics here, making this the owner for CPU-side buffer integrity.
+//! Open this file when image bytes, dimensions, drawing, or in-memory mutation semantics behave incorrectly.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{IM01_IMAGE_LOADED, IM02_IMAGE_MISMATCH};

@@ -1,7 +1,8 @@
-//! This file provides the worker lifecycle that boots an isolated Lua VM on its own OS thread. `thread/worker` delivers the worker implementation for the thread subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It tracks execution transitions from pending to running to completed or failed outcomes. The file owns or coordinates data contracts including `ThreadState`, `LuaThread`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It injects a restricted capability surface so background scripts run inside controlled boundaries. Public callable behavior is centered on `worker_capabilities`, while method-level behavior such as `new`, `start`, `wait`, `wait_timeout`, `is_running`, `get_error` stays attached to the local data model and invariants.
-//! It connects workers to shared named channels so inter-VM communication remains explicit and typed. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, `thread`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! `src/thread/worker.rs` owns the isolated Lua worker lifecycle that runs one script on its own OS thread.
+//! It defines `ThreadState` and `LuaThread`, keeping startup, completion, error tracking, and join logic under one owner.
+//! Worker capability registration also lives here, including channel lookup, fs.read access, `arg`, and package path setup.
+//! This file is the policy boundary for what background Lua code may access and how worker completion is observed.
+//! Read it when worker sandbox rules, spawn lifecycle, timeout waiting, or exposed thread capabilities need to change.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{TH01_WORKER_INIT, TH02_WORKER_START, TH04_WORKER_ERROR};

@@ -1,8 +1,9 @@
-//! Provides globe projection math driven by an orbit camera with latitude, longitude, and zoom control. `globe/projection` delivers the projection implementation for the globe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Builds view transforms from globe rotation, axial tilt, and camera orientation inputs. The file owns or coordinates data contracts including `OrbitCamera`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Projects points and regions from spherical coordinates into screen-space render geometry. Public callable behavior is centered on `build_view_matrix`, `project_point`, `project_region`, `project_geo_loop`, `project_province`, and 3 more, while method-level behavior such as `clamp`, `pan`, `zoom_by`, `lod` stays attached to the local data model and invariants.
-//! Applies facing checks and depth culling to reject back-hemisphere geometry during projection. Runtime integration reaches sibling engine areas through crate modules `globe`, `math`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Delivers camera and projection utilities used by drawing, picking, and interaction code paths. External integration uses `super`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! Owns globe projection math driven by OrbitCamera, axial tilt, and planet rotation into screen-space geometry.
+//! Builds view matrices, projects points and region loops, clips hidden hemisphere geometry, and computes screen pans.
+//! Also defines camera clamping, panning, zooming, and zoom-derived LOD selection used by draw and interaction code.
+//! Provides the math boundary between spherical globe coordinates and the 2D screen positions used by rendering.
+//! This file matters when back-hemisphere culling, camera feel, or projected vertex placement stops being correct.
+//! Open this owner before draw or picking when the root bug is in globe transforms rather than visual policy.
 
 use super::sphere::{axial_tilt_mat, lat_lon_to_unit, rot_x, rot_y, Mat3x3};
 use crate::globe::types::{GlobeSpec, LodTier, ProjectedRegion, Region};

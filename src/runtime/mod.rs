@@ -1,9 +1,9 @@
-//! This module provides the foundational runtime layer that the rest of the engine stands on during startup and per-frame execution.
-//! Configuration, shared mutable state, error contracts, operating modes, and resource handle types are gathered here. `src/runtime/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `config::Config`, `error::{EngineError, EngineResult, ErrorCategory, ErrorSnapshot}`, `headless::{run_headless, run_headless_checked, HeadlessOptions}`, `messages::MessageCatalog`, and 2 more centralized for the runtime subsystem.
-//! At the highest level this is the engine's coordination core, not a gameplay feature module. The file documents how runtime submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
-//! `runtime/mod` is the runtime module index, declaring `config`, `error`, `headless`, `log_messages`, `messages`, and 4 more so agents can identify which files own each feature slice before opening implementation code.
-//! `src/runtime/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `config::Config`, `error::{EngineError, EngineResult, ErrorCategory, ErrorSnapshot}`, `headless::{run_headless, run_headless_checked, HeadlessOptions}`, `messages::MessageCatalog`, and 2 more centralized for the runtime subsystem.
-//! The file documents how runtime submodules compose into one engine surface, with module declarations separating storage, behavior, rendering, and Lua-facing integration points.
+//! This module is the runtime index, re-exporting config, shared state, modes, errors, messages, and headless flow.
+//! It is the navigation point for startup policy, shared engine state, process modes, and stable runtime contracts.
+//! `shared_state.rs` owns the mutable cross-system hub, while `config.rs` owns TOML-backed startup configuration.
+//! `error.rs` owns failure vocabulary, `mode.rs` owns startup mode parsing, and `headless.rs` runs no-window sessions.
+//! `messages.rs` and `log_messages.rs` own runtime text lookup plus stable log identifiers and formatting helpers.
+//! Change this file when public runtime exports move; change siblings when startup or shared-state rules change.
 
 /// Runtime configuration model loaded from `conf.toml`.
 pub mod config;

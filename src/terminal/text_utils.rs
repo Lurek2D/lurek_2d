@@ -1,6 +1,6 @@
-//! Shared text helpers used across the terminal subsystem. `terminal/text_utils` delivers the text utils implementation for the terminal subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! These helpers centralize UTF-8-safe character counting, truncation, and indexing logic. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! `terminal/text_utils` delivers the text utils implementation for the terminal subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns UTF-8-safe terminal text helpers for counts, byte offsets, truncation, and lead-byte widths.
+//! These helpers keep cursor movement, clipping, and parser logic consistent when code mixes chars and bytes.
+//! Open it when Unicode indexing rules change; ANSI parsing and text editing consume these utilities nearby.
 
 /// Return the number of Unicode scalar values in `text`.
 pub(crate) fn char_count(text: &str) -> usize {

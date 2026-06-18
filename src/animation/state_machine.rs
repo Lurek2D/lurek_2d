@@ -1,8 +1,9 @@
-//! Implements animation finite-state control with typed parameters and condition-driven transitions. `animation/state_machine` delivers the state machine implementation for the animation subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Evaluates transition rules each frame to move between clip-bound states deterministically. The file owns or coordinates data contracts including `AnimParamValue`, `ConditionOp`, `ConditionValue`, `TransitionCondition`, `AnimTransition`, and 2 more, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Parses authored condition expressions into executable checks used during state progression. Public callable behavior is centered on `compare_nums`, `parse_condition`, while method-level behavior such as `new`, `add_state`, `add_transition`, `set_param_float`, `set_param_bool`, `set_param_int`, and 6 more stays attached to the local data model and invariants.
-//! Activates destination clips immediately on state change to keep visual intent synchronized. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Provides parameterized graph control for expressive authored animation behavior. External integration uses `super`, `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns animation FSM control with typed parameters, parsed conditions, and clip-bound named states.
+//! `AnimStateMachine` stores states, transitions, params, and an owned `Animation` controller for visual output.
+//! Condition parsing and comparison helpers turn authored strings into executable numeric or boolean checks.
+//! Update logic advances the inner animation, then processes bounded transition chains from the current state.
+//! State changes immediately play destination clips and apply looping policy, keeping visuals aligned with graph flow.
+//! Open it when authored graph semantics change; low-level clip playback and frames live in sibling files.
 
 use super::controller::Animation;
 use std::collections::HashMap;

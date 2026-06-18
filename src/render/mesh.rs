@@ -1,7 +1,8 @@
-//! Defines reusable 2D mesh data for complex vector drawing and models. `render/mesh` delivers the mesh implementation for the render subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores vertex coordinates, UV maps, colors, and topology information. The file owns or coordinates data contracts including `MeshDrawMode`, `MeshVertex`, `Mesh`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Bridges custom loaded model assets and procedural vector geometries. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `from_vertices`, `from_vertex_rows`, `set_vertex`, `get_vertex`, `set_vertex_map`, and 4 more stays attached to the local data model and invariants.
-//! Supports multiple drawing topologies including triangle lists and fans. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Defines reusable 2D mesh data for custom vector geometry, imported models, and textured draw content.
+//! Stores vertex positions, colors, uv maps, topology mode, and optional texture binding under one asset type.
+//! Supports multiple draw topologies so callers can express lists, strips, fans, or related mesh patterns.
+//! Acts as the mesh-asset boundary between content generation and later tessellation or draw submission code.
+//! Open this file when mesh vertex data, topology choice, or texture attachment behavior looks incorrect.
 
 use crate::log_msg;
 use crate::runtime::log_messages::MS01;

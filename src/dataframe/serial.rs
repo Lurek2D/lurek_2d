@@ -1,9 +1,12 @@
-//! Implements serialization and parsing for dataframe and database payloads across multiple formats. `dataframe/serial` delivers the serial implementation for the dataframe subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports CSV decode and encode with quoting, escaping, and type-inference behavior. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Provides JSON array-object conversion between textual payloads and dataframe structures. Public callable behavior is centered on `from_csv`, `from_json`, `from_binary`, `database_from_json`, while method-level behavior such as `to_csv`, `to_json`, `to_binary`, `to_string_table` stays attached to the local data model and invariants.
-//! Handles nested JSON values and arrays during parser traversal and value coercion. Runtime integration reaches sibling engine areas through crate modules `dataframe`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Encodes and decodes compact LVDF binary format for efficient dataframe transport storage. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
-//! Supplies text-table rendering helpers for debugging and readable frame inspection outputs. The file boundary separates dataframe implementation details from Lua bindings, generated specs, and examples, so public behavior remains documented at the owning source.
+//! This file owns dataframe payload codecs for CSV, JSON, LVDF binary bytes, debug tables, and database JSON maps.
+//! `from_csv`, `from_json`, and `from_binary` rebuild `DataFrame` state, while methods serialize the same state back out.
+//! CSV parsing and quoting live here because field escaping and type inference are payload concerns, not storage policy.
+//! The JSON parser also stays here, including object walking, string escapes, nested value coercion, and array skipping.
+//! LVDF encoding belongs here because binary tags, version bytes, and truncation checks define the wire representation.
+//! `to_string_table` is local because readable inspection output depends on column widths but not on query semantics.
+//! `database_from_json` and `Database::to_json` live here to keep table-map payload structure beside frame JSON codecs.
+//! Open it when interchange formats change; caller transport, SQL planning, and row mutation live in sibling files.
+//! This file is about conversion boundaries only, not lazy execution, grouping math, or background dataframe workers.
 
 use crate::dataframe::frame::{CellValue, DataFrame};
 /// Parse CSV text and return DataFrame or validation error.

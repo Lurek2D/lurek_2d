@@ -1,7 +1,8 @@
-//! Provides convolution and pooling layers for CPU-side learning and feature-extraction pipelines. `learning/conv` delivers the conv implementation for the learning subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Implements tensor-shape-aware forward passes over channel-first image-style inputs. The file owns or coordinates data contracts including `Conv2D`, `MaxPool2D`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Stores trainable kernels and biases in flat buffers compatible with evolutionary parameter flows. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `forward` stays attached to the local data model and invariants.
-//! Supports stride and padding behavior needed for practical stacked convolution blocks. Runtime integration reaches sibling engine areas through crate modules `learning`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns convolution and max-pooling layers over channel-first tensors used by CPU learning pipelines.
+//! `Conv2D` stores flat kernels and biases, while `MaxPool2D` owns pooling geometry without any trainable parameters.
+//! Forward passes live here because stride, padding, and pooling window semantics are specific to image-style layer math.
+//! `Conv2D` also implements `EvolutionaryLayer` so convolution weights can be packed for genetic or search-based training.
+//! Open it when spatial-layer behavior changes; tensors, dense nets, and engine orchestration live in sibling files.
 
 use crate::learning::tensor::LurekTensor;
 use crate::learning::EvolutionaryLayer;

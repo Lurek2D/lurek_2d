@@ -1,7 +1,7 @@
-//! Bidirectional map storage for cases where game code must move between symbolic keys and canonical values with equal ease.
-//! The file maintains mirrored forward and reverse tables so each mutation preserves a single authoritative pairing instead of forcing callers to manage two separate maps by hand.
-//! Inserts, removals, and containment checks are shaped around keeping that two-way contract coherent even when entries are replaced or deleted from either side.
-//! Functionally this delivers fast reversible lookup for registries, id-name bindings, alias tables, and other systems that need symmetry rather than one-directional indexing.
+//! This file owns the mirrored key-to-value and value-to-key tables used for symmetric lookup in both directions.
+//! `BiMap` keeps forward and reverse hashes synchronized so inserts and removals preserve one authoritative pairing.
+//! Containment and removal helpers also belong here because duplicate-key and duplicate-value conflict rules are local.
+//! Open it when reversible registry bindings change; tries, graphs, and event-routing structures live in siblings.
 
 use std::collections::HashMap;
 use std::hash::Hash;

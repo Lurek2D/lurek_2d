@@ -1,7 +1,8 @@
-//! Defines group-level coordination state that binds members around shared intent and leadership. `ai/squad` delivers the squad implementation for the ai subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Maintains formation semantics as geometric offsets that stay coherent during leader motion. The file owns or coordinates data contracts including `FormationType`, `Squad`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Carries shared tactical context so squad behavior can react as one unit instead of isolated actors. Public callable behavior is centered on no named public items, while method-level behavior such as `parse_str`, `as_str`, `new`, `get_formation_position` stays attached to the local data model and invariants.
-//! Produces placement guidance for synchronized movement patterns across common formation styles. Runtime integration reaches sibling engine areas through crate modules `patterns`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Owns squad-level coordination state that groups members around a leader, formation choice, and shared blackboard.
+//! Defines formation semantics for line, wedge, circle, and column layouts, yielding member offsets from the leader.
+//! Provides the group-coordination boundary between individual agents and higher-level formation-aware movement logic.
+//! Also carries squad-local context so cooperative decisions can read shared tactical state instead of isolated tags.
+//! Open this owner when formation geometry or leader-centric placement rules need to change across the whole squad.
 
 use crate::patterns::Blackboard;
 /// Supported squad formation shapes.

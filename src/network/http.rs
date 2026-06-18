@@ -1,7 +1,8 @@
-//! Synchronous HTTP client built on ureq for common request verbs. `network/http` delivers the http implementation for the network subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Supports per-request timeout configuration through the agent builder. The file owns or coordinates data contracts including `HttpResponse`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Returns a unified response object with status, body, headers, and error text. Public callable behavior is centered on `execute_request`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Keeps the API small so game code can fetch remote data without async setup. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns synchronous HTTP execution used by matchmaking, auth flows, and simple remote fetches.
+//! `HttpResponse` stores status, body, headers, and error text so callers receive one uniform completion payload.
+//! `execute_request` and its agent helper stay here because timeout, headers, and body dispatch are HTTP concerns.
+//! The file keeps network-runtime callers free from ureq details while still returning raw response bytes.
+//! Open it when blocking request behavior changes; sockets, lobbies, and background orchestration live elsewhere.
 
 use log::{debug, warn};
 use std::time::Duration;

@@ -1,7 +1,7 @@
-//! Markov-style name generator for producing plausible invented words from example corpora without hand-authoring every outcome.
-//! The file learns local character transitions from source words and then samples new sequences with configurable order to balance familiarity against novelty.
-//! Deterministic seeding keeps generated names stable when needed for saves, tests, or curated content batches. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `generate`, `generate_n` stays attached to the local data model and invariants.
-//! Length constraints and bounded retries make batch generation practical rather than endlessly exploratory. Runtime integration reaches sibling engine areas through crate modules `procgen`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the Markov-style name generator that learns character transitions from example word corpora.
+//! `NameGen` stores chain order, learned successor tables, and the internal seeded RNG used during sampling.
+//! Batch generation and bounded retries stay here because name length constraints are part of generator semantics.
+//! Open it when invented-name rules change; grammar rewriting and terrain synthesis live in sibling modules.
 
 use crate::procgen::lcg::Lcg;
 use std::collections::HashMap;

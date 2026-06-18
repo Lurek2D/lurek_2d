@@ -1,7 +1,8 @@
-//! Axis-aligned rectangle helper for layout, bounds, and collision checks. `math/rect` delivers the rect implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores top-left position plus size under the engine's y-down convention. The file owns or coordinates data contracts including `Rect`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports containment, overlap, union, and bounding-box construction. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `center`, `area`, `contains`, `intersects`, `intersect`, and 3 more stays attached to the local data model and invariants.
-//! Offers both corner-based and center-based creation paths. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns the axis-aligned rectangle primitive used for layout, bounds tests, and overlap computations.
+//! `Rect` stores position and size, while center, area, contains, intersect, union, and builders expose that geometry.
+//! Top-left and center-based constructors stay here because rectangle creation semantics belong to the shape owner.
+//! Point and rectangle overlap checks also remain local since they define how this primitive behaves in queries.
+//! Open it when rectangle semantics change; circles, polygons, and free geometry helpers live in sibling modules.
 
 use super::vec2::Vec2;
 

@@ -1,6 +1,7 @@
-//! File reading utilities: buffered I/O with a simple size gate. `grep/reader` delivers the reader implementation for the grep subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Files larger than the configured limit are skipped instead of partially streamed. The file owns or coordinates data contracts including `FileReader`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Callers can read line-by-line or whole-file UTF-8 content through the same helper. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `read_lines`, `read_string`, `is_readable` stays attached to the local data model and invariants.
+//! This file owns `FileReader`, the size-gated file access helper shared by grep directory and flat-file searches.
+//! It reads UTF-8 content as lines or one full string, but rejects oversized or unreadable files before loading them.
+//! `is_readable` exposes the same gate as a cheap metadata check so callers can reason about search eligibility.
+//! Open this file when grep file-loading rules change; path filtering and match semantics live in sibling modules.
 
 use std::fs;
 use std::io::{self, BufRead, BufReader};

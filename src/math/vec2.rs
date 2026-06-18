@@ -1,8 +1,9 @@
-//! Fundamental 2D float vector for position, velocity, direction, and offsets. `math/vec2` delivers the vec2 implementation for the math subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Covers arithmetic, normalization, projection, and distance-style helpers. The file owns or coordinates data contracts including `Vec2`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Adds rotation, reflection, and angle conversion support for gameplay math. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `zero`, `splat`, `dot`, `length`, `length_squared`, and 9 more stays attached to the local data model and invariants.
-//! Offers interpolation and unit-direction construction from radians. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Serves as the common scalar pair used throughout the engine. External integration uses `std`, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns the core 2D vector primitive used for positions, directions, offsets, and planar numeric operations.
+//! `Vec2` stores x and y, while constants and methods expose dot, length, normalization, rotation, and reflection.
+//! Operator overloads stay here because arithmetic semantics are part of the vector type, not external helper policy.
+//! Angle, cross, lerp, distance, and `from_angle` also belong here since they derive directly from one 2D vector model.
+//! This file is the shared 2D numeric backbone, not a transform owner, curve editor, or collision broad-phase system.
+//! Open it when 2D vector semantics change; 3D vectors, matrices, and shapes live in sibling math modules.
 
 use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Sub, SubAssign};
 

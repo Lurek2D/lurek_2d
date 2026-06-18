@@ -1,7 +1,7 @@
-//! Even-spacing point sampler for procedural placement problems where randomness should look natural without collapsing into visible clustering.
-//! The file implements Bridson-style Poisson disk generation with acceleration structures and seeded control so distribution quality and reproducibility both stay strong.
-//! Functionally this file delivers scattered-but-separated 2D points for trees, loot, enemies, landmarks, and other placement-heavy content.
-//! `procgen/poisson` delivers the poisson implementation for the procgen subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns the Poisson disk sampler used to place 2D points with minimum separation and seeded randomness.
+//! The Bridson-style active list, acceleration grid, and distance checks stay here because they define point quality.
+//! It returns accepted coordinates only, keeping the file focused on sparse placement rather than map interpretation.
+//! Open it when scatter-placement semantics change; Voronoi and world-graph generation live in sibling modules.
 
 use super::lcg::Lcg;
 

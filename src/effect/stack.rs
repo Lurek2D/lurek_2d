@@ -1,8 +1,10 @@
-//! Provides ordered post-effect stack management with per-entry enable state and target dimensions. `effect/stack` delivers the stack implementation for the effect subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores effect references in application order while preserving synchronized activation flags. The file owns or coordinates data contracts including `PostFxStack`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports insertion, removal, reordering, and dedup operations for dynamic runtime composition. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `add`, `remove`, `insert`, `set_enabled`, `is_enabled`, and 17 more stays attached to the local data model and invariants.
-//! Exposes query helpers that report active subsets and positional stack metadata. Runtime integration reaches sibling engine areas through crate modules `log_msg`, `runtime`, which explains the subsystem dependencies an agent should inspect before changing behavior.
-//! Includes stack-introspection render helpers for debugging and visual tooling overlays. External integration uses no named public items, keeping third-party API details localized so higher layers continue to consume stable Lurek2D-owned abstractions.
+//! This file owns `PostFxStack`, the ordered effect-index container that tracks enable flags, size, and capture state.
+//! It stores application order in parallel vectors, supports insertion and removal, and toggles entries efficiently.
+//! Query helpers report enabled subsets, one-based positions, dimensions, emptiness, and deduplicated index counts.
+//! Resize and clear operations keep render-target bookkeeping local so post-effect callers do not manage raw vectors.
+//! Dedup logic preserves first occurrence order while cleaning repeated effect references from dynamic compositions.
+//! Several debug image helpers also live here because they visualize stack entries, labels, params, and effect catalogs.
+//! Open this file when stack orchestration changes; effect instances, presets, and render commands live in siblings.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{FX01, FX02};

@@ -1,7 +1,8 @@
-//! This file provides TOML-driven rule loading for data-defined validation extensions. `validator/rules_toml` delivers the rules toml implementation for the validator subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! It parses rule entries into runtime rule objects used by the validation engine. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! It supports loading from files and raw TOML text for flexible integration points. Public callable behavior is centered on `load_rules_from_toml`, `load_rules_from_file`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! It enables configurable policy checks without adding new compiled rule types. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns TOML rule loading helpers that decode declarative validator rules into `LuaPatternRule` values.
+//! It parses `[[rule]]` sections, carries severity and invert flags forward, and builds rules without compilation.
+//! Loaders support both raw TOML text and on-disk files so validator setup can reuse one parsing path.
+//! The parser handles a narrow key syntax, keeping validation policy simple and predictable for project authors.
+//! Open this file when TOML rule schema changes; runtime pattern execution and report models live in siblings.
 
 use super::report::Severity;
 use super::rules_lua::LuaPatternRule;

@@ -1,6 +1,7 @@
-//! Tileset reference metadata used to resolve slot values into concrete tile resources. `mapblock/tileset_ref` delivers the tileset ref implementation for the mapblock subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Stores tileset identity, sizing, and index-offset data shared across blocks. The file owns or coordinates data contracts including `TilesetRef`, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Supports reuse of one tileset with different offset conventions per content group. Public callable behavior is centered on no named public items, while method-level behavior such as `new`, `set_image_path`, `id`, `name` stays attached to the local data model and invariants.
+//! This file owns tileset reference metadata used by mapblocks to resolve slot values into concrete art resources.
+//! `TilesetRef` stores ids, display name, atlas dimensions, tile sizes, and an optional image path for authored content.
+//! Simple setters and accessors stay here because tileset identity is metadata, not generator or placement behavior.
+//! Open it when asset reference fields change; tile payloads, blocks, and output assembly live in sibling files.
 
 /// Reference to a tileset used by map blocks.
 #[derive(Debug, Clone)]

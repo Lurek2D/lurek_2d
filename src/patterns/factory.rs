@@ -1,6 +1,7 @@
-//! Runtime factory registry for systems that construct objects by declared type names instead of hard-wiring every spawn path to concrete branches.
-//! The file keeps canonical names and aliases aligned so different labels can converge on the same build target while still allowing registration changes at runtime.
-//! Resolution, replacement, and removal are framed around keeping the name graph explicit and queryable rather than letting construction rules disappear into scattered conditionals.
+//! This file owns the runtime factory registry that maps canonical type names and aliases to constructable targets.
+//! `Factory` stores registered types plus alias mappings so multiple labels can resolve onto one canonical build name.
+//! Registration, removal, and resolution stay here because alias invalidation rules are part of factory ownership.
+//! Open it when type-lookup semantics change; service discovery and strategy selection live in sibling modules.
 
 use std::collections::HashSet;
 /// Registry of named constructable types with optional string aliases.

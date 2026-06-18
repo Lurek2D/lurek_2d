@@ -1,4 +1,4 @@
-//! `src/lua_api/docs_api.rs` registers the `lurek.docs` Lua boundary for docs behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.docs` Lua API for runtime doc reflection, module scans, entries, and quality reporting.
 
 use super::SharedState;
 use crate::docs;

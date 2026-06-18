@@ -1,4 +1,4 @@
-//! `src/lua_api/compute_api.rs` registers the `lurek.compute` Lua boundary for compute behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.compute` Lua API for ndarray and tensor conversion, shapes, dtypes, and numeric tables.
 
 use super::SharedState;
 use crate::compute::analytics;

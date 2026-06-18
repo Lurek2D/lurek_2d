@@ -1,4 +1,4 @@
-//! `src/lua_api/math_api.rs` registers the `lurek.math` Lua boundary for math behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.math` Lua API for math userdata, polygon tables, metadata maps, and helper conversions.
 
 use super::SharedState;
 use crate::math::easing;

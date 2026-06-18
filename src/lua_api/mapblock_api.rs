@@ -1,4 +1,4 @@
-//! `src/lua_api/mapblock_api.rs` registers the `lurek.mapblock` Lua boundary for mapblock behavior, converts Lua values into engine types, validates arguments and error messages, and exposes userdata or callbacks while keeping implementation state in Rust modules.
+//! Registers the `lurek.mapblock` Lua API for map blocks, edge parsing, cell lists, and block userdata.
 
 use super::SharedState;
 use crate::mapblock::{

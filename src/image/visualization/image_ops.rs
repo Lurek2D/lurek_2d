@@ -1,7 +1,8 @@
-//! Composes side-by-side image operation previews for fast visual comparison of processing outputs. `image/visualization/image_ops` delivers the image ops implementation for the image subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
-//! Builds slot-based layouts with scaling and padding so varied source sizes stay presentable. The file owns or coordinates data contracts including no named public items, so readers can connect concrete Rust types to the feature responsibilities described by this module.
-//! Labels each panel to make transform deltas clear during review and regression analysis. Public callable behavior is centered on `draw_image_comparison_to_image`, `draw_pixel_transform_grid_to_image`, `draw_color_wheel_to_image`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! Includes color-wheel and transform showcase helpers for broad image-operation demonstrations. Runtime integration reaches sibling engine areas through crate modules `image`, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! Builds composite images that compare source variants, transform grids, and color-wheel style references.
+//! Places labeled inputs side by side so image-processing deltas can be checked in one exported frame.
+//! Generates a four-column transform grid showing original, inverted, grayscale, and tinted sample outputs.
+//! Renders an HSV wheel directly into pixels, making this a general visualization helper for color debugging.
+//! Open this file when comparison layouts or operation showcase images need changes for docs or regression art.
 
 use super::hsv_to_rgb_viz;
 use crate::image::ImageData;

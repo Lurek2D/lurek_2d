@@ -1,7 +1,8 @@
-//! This file bridges the dynamic world of Lua tables and values into the typed intermediate tree used by the serialization subsystem.
-//! It decides when Lua data should be treated as sequences, maps, scalars, or explicit null-like values for downstream codecs.
-//! Array-like tables are recognized structurally so callers do not have to tag them manually before encoding. Public callable behavior is centered on `to_lua`, `from_lua`, while method-level behavior such as no named public items stays attached to the local data model and invariants.
-//! The reverse path also lives here, turning decoded serial values back into Lua-friendly tables and primitives. Runtime integration reaches sibling engine areas through crate modules no named public items, which explains the subsystem dependencies an agent should inspect before changing behavior.
+//! This file owns `SerialValue` plus Lua conversion helpers that bridge dynamic Lua values into serializable Rust data.
+//! It decides whether Lua tables become sequences or maps, while preserving scalars, nulls, and string-keyed content.
+//! `to_lua` rebuilds Lua primitives and tables from decoded values so serialized data can round-trip through scripts.
+//! Array detection is structural and automatic, which keeps callers from tagging plain Lua tables before encoding.
+//! Open this file when shared value semantics change; concrete text and binary codecs live in sibling modules.
 
 use indexmap::IndexMap;
 use mlua::prelude::{Lua, LuaResult, LuaValue};

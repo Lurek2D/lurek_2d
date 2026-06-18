@@ -1,5 +1,9 @@
-//! Defines the dataframe query module boundary for filtering, grouping, processing, analytics, and window logic. `dataframe/query/mod` is the dataframe module index, declaring `analytics`, `filter`, `grouping`, `processing`, `window` so agents can identify which files own each feature slice before opening implementation code.
-//! Groups query submodules under one cohesive extension surface over core frame structures. `src/dataframe/query/mod.rs` owns visibility and re-export boundaries rather than runtime state, keeping public access through `analytics::percentile` centralized for the dataframe subsystem.
+//! This module is the query index, grouping filter, processing, analytics, and window extensions over `DataFrame`.
+//! It exposes `analytics`, `filter`, `grouping`, `processing`, and `window` from one focused table-transform surface.
+//! `filter.rs` owns row selection and joins, `grouping.rs` owns keyed reshaping, and `window.rs` owns ordered spans.
+//! `processing.rs` covers diagnostics and date helpers, while `analytics.rs` adds scaling, mode, and entropy utilities.
+//! Only `percentile` is reexported here; all other behavior stays attached to `DataFrame` impl blocks in sibling files.
+//! Open this file to navigate query ownership quickly; storage, codecs, and SQL grammar live outside this submodule.
 
 /// Statistical and distribution-oriented query helpers.
 pub mod analytics;

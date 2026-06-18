@@ -1,6 +1,6 @@
-//! Small shared capacity metadata for collection-style pattern objects that expose bounded or unbounded behavior through one consistent rule set.
-//! The file centralizes count, limit, and full-state semantics so stacks, queues, and similar wrappers can agree on what capacity means without duplicating bookkeeping code.
-//! Functionally this delivers the lightweight policy layer behind collection limits, especially the convention that zero means unbounded while positive values enforce a hard ceiling.
+//! This file owns shared capacity metadata structs that give bounded stack and queue wrappers one common limit policy.
+//! `StackMeta` and `QueueMeta` centralize the rule that zero means unbounded while positive values enforce hard caps.
+//! Open it when collection limit semantics change; concrete histories, rings, and priority stores live in siblings.
 
 /// Capacity metadata for a bounded stack.
 #[derive(Debug, Default, Clone)]

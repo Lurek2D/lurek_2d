@@ -1,4 +1,6 @@
-//! Formats frame timing samples into compact textual summaries for trace and diagnostics output. `app/frame_profile` delivers the frame profile implementation for the app subsystem, giving agents the file-level map for what behavior, state, and boundaries live here.
+//! This file owns compact frame-profile formatting used to serialize runtime timing samples into one diagnostic line.
+//! It reads `runtime::FrameProfile` fields and emits tick, update, render, and callback totals in milliseconds.
+//! Open this file when frame timing text changes; frame collection and event-loop orchestration live in sibling files.
 
 use crate::runtime::FrameProfile;
 /// Format one `FrameProfile` sample as a compact single-line timing string.
